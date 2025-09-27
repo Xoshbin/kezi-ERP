@@ -17,7 +17,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 class ValidInventoryMovementRule implements ValidationRule
 {
     public function __construct(
-        private Product $product,
+        private \Modules\Product\Models\Product $product,
         private StockMoveType $moveType,
         private float $quantity
     ) {}
@@ -52,7 +52,7 @@ class ValidInventoryMovementRule implements ValidationRule
     /**
      * Create a rule instance for incoming movements
      */
-    public static function incoming(Product $product, float $quantity): self
+    public static function incoming(\Modules\Product\Models\Product $product, float $quantity): self
     {
         return new self($product, StockMoveType::Incoming, $quantity);
     }
@@ -60,7 +60,7 @@ class ValidInventoryMovementRule implements ValidationRule
     /**
      * Create a rule instance for outgoing movements
      */
-    public static function outgoing(Product $product, float $quantity): self
+    public static function outgoing(\Modules\Product\Models\Product $product, float $quantity): self
     {
         return new self($product, StockMoveType::Outgoing, $quantity);
     }

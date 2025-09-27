@@ -24,19 +24,19 @@ class FilamentInlineCreate
         return auth()->user()?->companies()->firstOrFail()->getKey();
     }
 
-    public static function partner(array $overrides = []): Partner
+    public static function partner(array $overrides = []): \Modules\Foundation\Models\Partner
     {
         $defaults = [
             'company_id' => self::companyId(),
             'name' => 'Test Partner',
-            'type' => \App\Enums\Partners\PartnerType::Vendor,
+            'type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor,
             'email' => 'ap@test.local',
         ];
 
-        return Partner::factory()->create(array_merge($defaults, $overrides));
+        return \Modules\Foundation\Models\Partner::factory()->create(array_merge($defaults, $overrides));
     }
 
-    public static function currency(array $overrides = []): Currency
+    public static function currency(array $overrides = []): \Modules\Foundation\Models\Currency
     {
         $defaults = [
             'code' => 'EUR',
@@ -44,7 +44,7 @@ class FilamentInlineCreate
             'symbol' => '€',
         ];
 
-        return Currency::query()->firstOrCreate(
+        return \Modules\Foundation\Models\Currency::query()->firstOrCreate(
             ['code' => Arr::get($overrides, 'code', $defaults['code'])],
             array_merge($defaults, $overrides)
         );
@@ -65,18 +65,18 @@ class FilamentInlineCreate
         return Journal::factory()->for($company)->create($data);
     }
 
-    public static function account(array $overrides = []): Account
+    public static function account(array $overrides = []): \Modules\Accounting\Models\Account
     {
         $company = $overrides['company'] ?? auth()->user()?->companies()->first();
 
         $defaults = [
             'code' => '100100',
             'name' => 'Main Bank',
-            'type' => AccountType::BankAndCash,
+            'type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash,
         ];
 
         $data = array_merge($defaults, Arr::except($overrides, ['company']));
 
-        return Account::factory()->for($company)->create($data);
+        return \Modules\Accounting\Models\Account::factory()->for($company)->create($data);
     }
 }

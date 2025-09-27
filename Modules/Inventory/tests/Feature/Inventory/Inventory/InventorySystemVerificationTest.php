@@ -30,7 +30,7 @@ beforeEach(function () {
     $this->quantService = app(StockQuantService::class);
 
     // Create COGS account for testing
-    $this->cogsAccount = \App\Models\Account::factory()->for($this->company)->create([
+    $this->cogsAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'name' => 'Cost of Goods Sold',
         'type' => 'expense'
     ]);
@@ -42,10 +42,10 @@ beforeEach(function () {
 describe('Inventory System Verification with Sample Figures', function () {
     it('verifies basic inventory operations work correctly', function () {
         // Create a simple product
-        $product = Product::factory()->for($this->company)->create([
+        $product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
             'name' => 'Test Product',
             'sku' => 'TEST-001',
-            'type' => ProductType::Storable,
+            'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::AVCO,
             'unit_price' => Money::of(100000, 'IQD'), // 100 IQD
             'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -90,13 +90,13 @@ describe('Inventory System Verification with Sample Figures', function () {
 /**
  * Helper function to create a stock receipt with proper valuation and quant updates
  */
-function createStockReceiptForTest($testCase, Product $product, float $quantity, Money $costPerUnit, Carbon $date): void
+function createStockReceiptForTest($testCase, \Modules\Product\Models\Product $product, float $quantity, Money $costPerUnit, Carbon $date): void
 {
     $valuationService = app(\App\Services\Inventory\InventoryValuationService::class);
     $quantService = app(\App\Services\Inventory\StockQuantService::class);
 
     // Create a mock VendorBill for testing
-    $vendorBill = \App\Models\VendorBill::factory()->for($product->company)->create([
+    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($product->company)->create([
         'bill_date' => $date,
         'accounting_date' => $date,
         'total_amount' => $costPerUnit->multipliedBy($quantity),
@@ -113,7 +113,7 @@ function createStockReceiptForTest($testCase, Product $product, float $quantity,
         'status' => \App\Enums\Inventory\StockMoveStatus::Done,
         'move_date' => $date,
         'reference' => 'TEST-RECEIPT-' . $date->format('Ymd'),
-        'source_type' => \App\Models\VendorBill::class,
+        'source_type' => \Modules\Purchase\Models\VendorBill::class,
         'source_id' => $vendorBill->id,
         'created_by_user_id' => $testCase->user->id,
     ]);

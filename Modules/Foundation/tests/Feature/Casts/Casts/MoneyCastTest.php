@@ -21,13 +21,13 @@ uses(RefreshDatabase::class);
 // To test a new model, you simply add a new line here. No new test function is needed.
 dataset('money_cast_scenarios', [
     // Description          Child Model              Parent Model        Relationship      Field          Currency   Input         Expected Minor
-    'Invoice Line IQD' => [InvoiceLine::class,      Invoice::class,      'invoice',      'unit_price',    'IQD',    5000000,      5000000000],
-    'Invoice Line USD' => [InvoiceLine::class,      Invoice::class,      'invoice',      'unit_price',    'USD',    '500.55',     50055],
-    'Vendor Bill Line IQD' => [VendorBillLine::class,   VendorBill::class,   'vendorBill',   'unit_price',    'IQD',    1234,         1234000],
-    'Vendor Bill Line USD' => [VendorBillLine::class,   VendorBill::class,   'vendorBill',   'unit_price',    'USD',    '199.99',     19999],
+    'Invoice Line IQD' => [\Modules\Sales\Models\InvoiceLine::class,      \Modules\Sales\Models\Invoice::class,      'invoice',      'unit_price',    'IQD',    5000000,      5000000000],
+    'Invoice Line USD' => [\Modules\Sales\Models\InvoiceLine::class,      \Modules\Sales\Models\Invoice::class,      'invoice',      'unit_price',    'USD',    '500.55',     50055],
+    'Vendor Bill Line IQD' => [VendorBillLine::class,   \Modules\Purchase\Models\VendorBill::class,   'vendorBill',   'unit_price',    'IQD',    1234,         1234000],
+    'Vendor Bill Line USD' => [VendorBillLine::class,   \Modules\Purchase\Models\VendorBill::class,   'vendorBill',   'unit_price',    'USD',    '199.99',     19999],
     'Journal Entry Line IQD' => [JournalEntryLine::class, JournalEntry::class, 'journalEntry', 'debit',         'IQD',    '2500.500',   2500500],
     'Journal Entry Line USD' => [JournalEntryLine::class, JournalEntry::class, 'journalEntry', 'credit',        'USD',    1000,         100000],
-    'Depreciation Entry USD' => [DepreciationEntry::class, Asset::class,       'asset',        'amount',        'USD',    '75.50',      7550],
+    'Depreciation Entry USD' => [\Modules\Accounting\Models\DepreciationEntry::class, \Modules\Accounting\Models\Asset::class,       'asset',        'amount',        'USD',    '75.50',      7550],
 ]);
 
 it('correctly casts money fields on various related models', function (
@@ -40,7 +40,7 @@ it('correctly casts money fields on various related models', function (
     int $expectedMinor
 ) {
     // Arrange: Create the currency and the parent document (e.g., Invoice, VendorBill).
-    $currency = Currency::factory()->create([
+    $currency = \Modules\Foundation\Models\Currency::factory()->create([
         'code' => $currencyCode,
         'decimal_places' => $currencyCode === 'IQD' ? 3 : 2,
     ]);
@@ -49,7 +49,7 @@ it('correctly casts money fields on various related models', function (
     if ($parentModelClass === JournalEntry::class) {
         $company = Company::factory()->for($currency, 'currency')->create();
         $parent = $parentModelClass::factory()->for($company, 'company')->for($currency, 'currency')->create();
-    } elseif ($parentModelClass === Asset::class) {
+    } elseif ($parentModelClass === \Modules\Accounting\Models\Asset::class) {
         $company = Company::factory()->for($currency, 'currency')->create();
         $parent = $parentModelClass::factory()->for($company, 'company')->create();
     } else {
@@ -61,7 +61,7 @@ it('correctly casts money fields on various related models', function (
     $factory = $modelClass::factory()->for($parent, $relationship);
 
     // Special case: DepreciationEntry should be created as Draft to allow updates
-    if ($modelClass === DepreciationEntry::class) {
+    if ($modelClass === \Modules\Accounting\Models\DepreciationEntry::class) {
         $factory = $factory->state(['status' => \App\Enums\Assets\DepreciationEntryStatus::Draft]);
     }
 
@@ -70,16 +70,16 @@ it('correctly casts money fields on various related models', function (
     // Eager-load the required relationships for the casting system
     if ($modelClass === JournalEntryLine::class) {
         $model->load('journalEntry.company.currency');
-    } elseif ($modelClass === DepreciationEntry::class) {
+    } elseif ($modelClass === \Modules\Accounting\Models\DepreciationEntry::class) {
         $model->load('asset.company.currency');
-    } elseif ($modelClass === InvoiceLine::class) {
+    } elseif ($modelClass === \Modules\Sales\Models\InvoiceLine::class) {
         $model->load('invoice.currency');
     } elseif ($modelClass === VendorBillLine::class) {
         $model->load('vendorBill.currency');
     }
 
     // Debug: Check if relationships are loaded
-    if ($modelClass === InvoiceLine::class) {
+    if ($modelClass === \Modules\Sales\Models\InvoiceLine::class) {
         expect($model->relationLoaded('invoice'))->toBeTrue();
         expect($model->invoice->relationLoaded('currency'))->toBeTrue();
     }

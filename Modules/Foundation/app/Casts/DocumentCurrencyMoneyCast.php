@@ -18,11 +18,11 @@ class DocumentCurrencyMoneyCast extends MoneyCast
     /**
      * Resolve the currency from the document's header.
      */
-    protected function resolveCurrency(Model $model): Currency
+    protected function resolveCurrency(Model $model): \Modules\Foundation\Models\Currency
     {
         // Case 1: The model IS the document header (e.g., Invoice, VendorBill).
         if (isset($model->currency_id)) {
-            $currency = Currency::findOrFail($model->currency_id);
+            $currency = \Modules\Foundation\Models\Currency::findOrFail($model->currency_id);
             // Ensure we have a single Currency model, not a collection
             if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
                 $currency = $currency->first();
@@ -40,7 +40,7 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             $invoice = $model->getRelation('invoice');
             if ($invoice instanceof \Illuminate\Database\Eloquent\Model && method_exists($invoice, 'currency')) {
                 $currency = $invoice->relationLoaded('currency') ? $invoice->getRelation('currency') : $invoice->currency()->first();
-                if ($currency instanceof \App\Models\Currency) {
+                if ($currency instanceof \Modules\Foundation\Models\Currency) {
                     return $currency;
                 }
             }
@@ -49,7 +49,7 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             $vendorBill = $model->getRelation('vendorBill');
             if ($vendorBill instanceof \Illuminate\Database\Eloquent\Model && method_exists($vendorBill, 'currency')) {
                 $currency = $vendorBill->relationLoaded('currency') ? $vendorBill->getRelation('currency') : $vendorBill->currency()->first();
-                if ($currency instanceof \App\Models\Currency) {
+                if ($currency instanceof \Modules\Foundation\Models\Currency) {
                     return $currency;
                 }
             }
@@ -58,7 +58,7 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             $adjustmentDocument = $model->getRelation('adjustmentDocument');
             if ($adjustmentDocument instanceof \Illuminate\Database\Eloquent\Model && method_exists($adjustmentDocument, 'currency')) {
                 $currency = $adjustmentDocument->relationLoaded('currency') ? $adjustmentDocument->getRelation('currency') : $adjustmentDocument->currency()->first();
-                if ($currency instanceof \App\Models\Currency) {
+                if ($currency instanceof \Modules\Foundation\Models\Currency) {
                     return $currency;
                 }
             }
@@ -67,7 +67,7 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             $payment = $model->getRelation('payment');
             if ($payment instanceof \Illuminate\Database\Eloquent\Model && method_exists($payment, 'currency')) {
                 $currency = $payment->relationLoaded('currency') ? $payment->getRelation('currency') : $payment->currency()->first();
-                if ($currency instanceof \App\Models\Currency) {
+                if ($currency instanceof \Modules\Foundation\Models\Currency) {
                     return $currency;
                 }
             }
@@ -76,7 +76,7 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             $bankStatement = $model->getRelation('bankStatement');
             if ($bankStatement instanceof \Illuminate\Database\Eloquent\Model && method_exists($bankStatement, 'currency')) {
                 $currency = $bankStatement->relationLoaded('currency') ? $bankStatement->getRelation('currency') : $bankStatement->currency()->first();
-                if ($currency instanceof \App\Models\Currency) {
+                if ($currency instanceof \Modules\Foundation\Models\Currency) {
                     return $currency;
                 }
             }
@@ -85,7 +85,7 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             $purchaseOrder = $model->getRelation('purchaseOrder');
             if ($purchaseOrder instanceof \Illuminate\Database\Eloquent\Model && method_exists($purchaseOrder, 'currency')) {
                 $currency = $purchaseOrder->relationLoaded('currency') ? $purchaseOrder->getRelation('currency') : $purchaseOrder->currency()->first();
-                if ($currency instanceof \App\Models\Currency) {
+                if ($currency instanceof \Modules\Foundation\Models\Currency) {
                     return $currency;
                 }
             }
@@ -94,7 +94,7 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             $salesOrder = $model->getRelation('salesOrder');
             if ($salesOrder instanceof \Illuminate\Database\Eloquent\Model && method_exists($salesOrder, 'currency')) {
                 $currency = $salesOrder->relationLoaded('currency') ? $salesOrder->getRelation('currency') : $salesOrder->currency()->first();
-                if ($currency instanceof \App\Models\Currency) {
+                if ($currency instanceof \Modules\Foundation\Models\Currency) {
                     return $currency;
                 }
             }
@@ -104,7 +104,7 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             $loan = $model->getRelation('loan');
             if ($loan instanceof \Illuminate\Database\Eloquent\Model && method_exists($loan, 'currency')) {
                 $currency = $loan->relationLoaded('currency') ? $loan->getRelation('currency') : $loan->currency()->first();
-                if ($currency instanceof \App\Models\Currency) {
+                if ($currency instanceof \Modules\Foundation\Models\Currency) {
                     return $currency;
                 }
             }
@@ -156,7 +156,7 @@ class DocumentCurrencyMoneyCast extends MoneyCast
         // Some models expose a direct currency() relationship (e.g., PaymentDocumentLink)
         if (method_exists($model, 'currency')) {
             $currency = $model->relationLoaded('currency') ? $model->getRelation('currency') : $model->currency()->first();
-            if ($currency instanceof Currency) {
+            if ($currency instanceof \Modules\Foundation\Models\Currency) {
                 return $currency;
             }
         }
@@ -184,22 +184,22 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             // Try to resolve currency using raw attributes first to support factory/order of assignment
             $currency = null;
             if (isset($attributes['currency_id'])) {
-                $currency = \App\Models\Currency::find($attributes['currency_id']);
+                $currency = \Modules\Foundation\Models\Currency::find($attributes['currency_id']);
             }
             if (! $currency && isset($attributes['invoice_id'])) {
-                $currency = optional(\App\Models\Invoice::find($attributes['invoice_id']))->currency;
+                $currency = optional(\Modules\Sales\Models\Invoice::find($attributes['invoice_id']))->currency;
             }
             if (! $currency && isset($attributes['vendor_bill_id'])) {
-                $currency = optional(\App\Models\VendorBill::find($attributes['vendor_bill_id']))->currency;
+                $currency = optional(\Modules\Purchase\Models\VendorBill::find($attributes['vendor_bill_id']))->currency;
             }
             if (! $currency && isset($attributes['adjustment_document_id'])) {
-                $currency = optional(\App\Models\AdjustmentDocument::find($attributes['adjustment_document_id']))->currency;
+                $currency = optional(\Modules\Inventory\Models\AdjustmentDocument::find($attributes['adjustment_document_id']))->currency;
             }
             if (! $currency && isset($attributes['payment_id'])) {
-                $currency = optional(\App\Models\Payment::find($attributes['payment_id']))->currency;
+                $currency = optional(\Modules\Payment\Models\Payment::find($attributes['payment_id']))->currency;
             }
             if (! $currency && isset($attributes['bank_statement_id'])) {
-                $currency = optional(\App\Models\BankStatement::find($attributes['bank_statement_id']))->currency;
+                $currency = optional(\Modules\Accounting\Models\BankStatement::find($attributes['bank_statement_id']))->currency;
             }
             if (! $currency && isset($attributes['purchase_order_id'])) {
                 $currency = optional(\App\Models\PurchaseOrder::find($attributes['purchase_order_id']))->currency;

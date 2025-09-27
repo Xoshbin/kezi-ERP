@@ -16,7 +16,7 @@ class CurrencyRateForm
     {
         return $schema
             ->components([
-                TranslatableSelect::forModel('currency_id', Currency::class)
+                TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class)
                     ->label(__('currency.exchange_rates.currency'))
                     ->searchable()
                     ->preload()

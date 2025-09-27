@@ -28,25 +28,25 @@ class ProductFactory extends Factory
             'sku' => strtoupper($this->faker->unique()->bothify('SKU-####')),
             'description' => $this->faker->sentence(),
             'unit_price' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
-            'type' => ProductType::Service, // Default to Service to avoid inventory complications in tests
+            'type' => \Modules\Product\Enums\Products\ProductType::Service, // Default to Service to avoid inventory complications in tests
             'inventory_valuation_method' => ValuationMethod::AVCO,
             'income_account_id' => function (array $attributes) {
-                return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
+                return \Modules\Accounting\Models\Account::factory()->create(['company_id' => $attributes['company_id']])->id;
             },
             'expense_account_id' => function (array $attributes) {
-                return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
+                return \Modules\Accounting\Models\Account::factory()->create(['company_id' => $attributes['company_id']])->id;
             },
             'default_inventory_account_id' => function (array $attributes) {
                 // Ensure storable products have an inventory account by default
-                return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
+                return \Modules\Accounting\Models\Account::factory()->create(['company_id' => $attributes['company_id']])->id;
             },
             'default_cogs_account_id' => function (array $attributes) {
                 // Ensure storable products have a COGS account by default
-                return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
+                return \Modules\Accounting\Models\Account::factory()->create(['company_id' => $attributes['company_id']])->id;
             },
             'default_stock_input_account_id' => function (array $attributes) {
                 // Ensure storable products have a stock input account by default
-                return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
+                return \Modules\Accounting\Models\Account::factory()->create(['company_id' => $attributes['company_id']])->id;
             },
             'average_cost' => Money::of($this->faker->randomFloat(2, 50, 500), 'USD'), // Default positive average cost
             'is_active' => $this->faker->boolean(),

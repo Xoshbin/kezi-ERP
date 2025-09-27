@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @property-read \App\Models\AdjustmentDocument $adjustmentDocument
+ * @property-read \Modules\Inventory\Models\AdjustmentDocument $adjustmentDocument
  */
 #[ObservedBy([AdjustmentDocumentLineObserver::class])]
 class AdjustmentDocumentLine extends Model
@@ -42,12 +42,12 @@ class AdjustmentDocumentLine extends Model
 
     protected $casts = [
         'quantity' => 'decimal:2',
-        'unit_price' => DocumentCurrencyMoneyCast::class,
-        'unit_price_company_currency' => BaseCurrencyMoneyCast::class,
-        'subtotal' => DocumentCurrencyMoneyCast::class,
-        'subtotal_company_currency' => BaseCurrencyMoneyCast::class,
-        'total_line_tax' => DocumentCurrencyMoneyCast::class,
-        'total_line_tax_company_currency' => BaseCurrencyMoneyCast::class,
+        'unit_price' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'unit_price_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'subtotal' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'subtotal_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'total_line_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'total_line_tax_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
     ];
 
     /**
@@ -70,7 +70,7 @@ class AdjustmentDocumentLine extends Model
 
     public function calculateLineTotals(): void
     {
-        /** @var \App\Models\Currency $currency */
+        /** @var \Modules\Foundation\Models\Currency $currency */
         $currency = $this->adjustmentDocument->currency;
         $quantity = $this->quantity;
 

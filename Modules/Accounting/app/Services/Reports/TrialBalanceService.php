@@ -78,7 +78,7 @@ class TrialBalanceService
                 accountId: $row->account_id,
                 accountCode: $row->account_code,
                 accountName: $row->account_name,
-                accountType: AccountType::from($row->account_type),
+                accountType: \Modules\Accounting\Enums\Accounting\AccountType::from($row->account_type),
                 debit: $debit,
                 credit: $credit
             );

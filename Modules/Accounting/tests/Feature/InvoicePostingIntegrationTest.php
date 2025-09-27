@@ -24,15 +24,15 @@ class InvoicePostingIntegrationTest extends TestCase
 
     private Company $company;
 
-    private Partner $customer;
+    private \Modules\Foundation\Models\Partner $customer;
 
-    private Currency $currency;
+    private \Modules\Foundation\Models\Currency $currency;
 
     private User $user;
 
-    private Account $incomeAccount;
+    private \Modules\Accounting\Models\Account $incomeAccount;
 
-    private Account $receivableAccount;
+    private \Modules\Accounting\Models\Account $receivableAccount;
 
     private Journal $salesJournal;
 
@@ -43,17 +43,17 @@ class InvoicePostingIntegrationTest extends TestCase
         parent::setUp();
 
         // Create test data
-        $this->currency = Currency::factory()->create(['code' => 'USD']);
+        $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
         $this->company = Company::factory()->create(['currency_id' => $this->currency->id]);
-        $this->customer = Partner::factory()->create(['company_id' => $this->company->id]);
+        $this->customer = \Modules\Foundation\Models\Partner::factory()->create(['company_id' => $this->company->id]);
         $this->user = User::factory()->create();
 
-        $this->incomeAccount = Account::factory()->create([
+        $this->incomeAccount = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'income',
         ]);
 
-        $this->receivableAccount = Account::factory()->create([
+        $this->receivableAccount = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'receivable',
         ]);
@@ -172,7 +172,7 @@ class InvoicePostingIntegrationTest extends TestCase
         $this->assertCount(5, array_unique($journalEntryReferences));
     }
 
-    private function createTestInvoice(string $description = 'Test Item'): Invoice
+    private function createTestInvoice(string $description = 'Test Item'): \Modules\Sales\Models\Invoice
     {
         $invoiceDTO = new CreateInvoiceDTO(
             company_id: $this->company->id,
@@ -193,6 +193,6 @@ class InvoicePostingIntegrationTest extends TestCase
             fiscal_position_id: null
         );
 
-        return app(CreateInvoiceAction::class)->execute($invoiceDTO);
+        return app(\Modules\Sales\Actions\Sales\CreateInvoiceAction::class)->execute($invoiceDTO);
     }
 }

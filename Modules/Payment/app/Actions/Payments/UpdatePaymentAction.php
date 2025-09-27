@@ -19,14 +19,14 @@ use InvalidArgumentException;
 
 class UpdatePaymentAction
 {
-    public function __construct(private readonly LockDateService $lockDateService) {}
+    public function __construct(private readonly \Modules\Accounting\Services\Accounting\LockDateService $lockDateService) {}
 
-    public function execute(UpdatePaymentDTO $dto): Payment
+    public function execute(UpdatePaymentDTO $dto): \Modules\Payment\Models\Payment
     {
         $payment = $dto->payment;
 
         if ($payment->status !== PaymentStatus::Draft) {
-            throw new UpdateNotAllowedException('Only draft payments can be updated.');
+            throw new \Modules\Foundation\Exceptions\UpdateNotAllowedException('Only draft payments can be updated.');
         }
 
         // Infer flow from presence of document links
@@ -41,7 +41,7 @@ class UpdatePaymentAction
         $this->lockDateService->enforce($payment->company, Carbon::parse($dto->payment_date));
 
         return DB::transaction(function () use ($dto, $payment) {
-            $currencyCode = Currency::findOrFail($dto->currency_id)->code;
+            $currencyCode = \Modules\Foundation\Models\Currency::findOrFail($dto->currency_id)->code;
 
             // Determine payment details based on presence of document links
             if (! empty($dto->document_links)) {
@@ -56,9 +56,9 @@ class UpdatePaymentAction
 
                     if (! $partnerId) {
                         if ($link->document_type === 'invoice') {
-                            $partnerId = Invoice::findOrFail($link->document_id)->customer_id;
+                            $partnerId = \Modules\Sales\Models\Invoice::findOrFail($link->document_id)->customer_id;
                         } elseif ($link->document_type === 'vendor_bill') {
-                            $partnerId = VendorBill::findOrFail($link->document_id)->vendor_id;
+                            $partnerId = \Modules\Purchase\Models\VendorBill::findOrFail($link->document_id)->vendor_id;
                         }
                     }
                 }

@@ -16,7 +16,7 @@ class SettlementSummaryWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        if (! $this->record instanceof Invoice) {
+        if (! $this->record instanceof \Modules\Sales\Models\Invoice) {
             return [];
         }
 

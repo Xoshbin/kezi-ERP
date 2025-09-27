@@ -26,7 +26,7 @@ class FeeLinesRelationManager extends RelationManager
                 ->default(function () {
                     $owner = $this->getOwnerRecord();
 
-                    return $owner instanceof \App\Models\LoanAgreement ? $owner->currency_id : null;
+                    return $owner instanceof \Modules\Accounting\Models\LoanAgreement ? $owner->currency_id : null;
                 }),
             DatePicker::make('date')->required(),
             Select::make('type')

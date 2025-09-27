@@ -75,7 +75,7 @@ class EmployeeForm
                         ->preload()
                         ->columnSpan(1),
 
-                    TranslatableSelect::forModel('manager_id', Employee::class)
+                    TranslatableSelect::forModel('manager_id', \Modules\HR\Models\Employee::class)
                         ->label(__('employee.manager'))
                         ->searchable()
                         ->searchableFields(['first_name', 'last_name', 'employee_number'])

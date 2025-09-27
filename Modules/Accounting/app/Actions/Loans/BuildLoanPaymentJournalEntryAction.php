@@ -15,10 +15,10 @@ use Illuminate\Support\Facades\DB;
 
 class BuildLoanPaymentJournalEntryAction
 {
-    public function __construct(private readonly CreateJournalEntryAction $createJE) {}
+    public function __construct(private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJE) {}
 
     public function execute(
-        LoanAgreement $loan,
+        \Modules\Accounting\Models\LoanAgreement $loan,
         User $user,
         int $journalId,
         int $bankAccountId,
@@ -34,7 +34,7 @@ class BuildLoanPaymentJournalEntryAction
             }
             $code = (string) data_get($currencyModel, 'code');
 
-            /** @var LoanScheduleEntry $entry */
+            /** @var \Modules\Accounting\Models\LoanScheduleEntry $entry */
             $entry = $loan->scheduleEntries()->where('sequence', $forMonthSequence)->firstOrFail();
             /** @var Money $int */ $int = $entry->interest_component;
             /** @var Money $prin */ $prin = $entry->principal_component;
@@ -106,7 +106,7 @@ class BuildLoanPaymentJournalEntryAction
                 created_by_user_id: $user->id,
                 is_posted: true,
                 lines: $lines,
-                source_type: LoanAgreement::class,
+                source_type: \Modules\Accounting\Models\LoanAgreement::class,
                 source_id: $loan->id,
             );
 

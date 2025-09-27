@@ -16,12 +16,12 @@ class ProcessDepreciations extends Command
     {
         $this->info('Processing depreciations...');
 
-        $entries = DepreciationEntry::where('status', 'draft')
+        $entries = \Modules\Accounting\Models\DepreciationEntry::where('status', 'draft')
             ->where('depreciation_date', '<=', now())
             ->get();
 
         foreach ($entries as $entry) {
-            ProcessDepreciationJob::dispatch($entry);
+            \Modules\Accounting\Jobs\ProcessDepreciationJob::dispatch($entry);
         }
 
         $this->info('Done.');

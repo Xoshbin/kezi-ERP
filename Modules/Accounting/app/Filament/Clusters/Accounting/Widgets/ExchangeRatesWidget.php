@@ -19,7 +19,7 @@ class ExchangeRatesWidget extends StatsOverviewWidget
         $stats = [];
 
         // Get active currencies with recent rates
-        $currencies = Currency::where('is_active', true)
+        $currencies = \Modules\Foundation\Models\Currency::where('is_active', true)
             ->whereHas('rates', function ($query) {
                 $query->where('effective_date', '>=', Carbon::now()->subDays(7));
             })
@@ -28,16 +28,16 @@ class ExchangeRatesWidget extends StatsOverviewWidget
             ->get();
 
         foreach ($currencies as $currency) {
-            /** @var CurrencyRate|null $latestRate */
+            /** @var \Modules\Foundation\Models\CurrencyRate|null $latestRate */
             $latestRate = $currency->latestRate;
 
-            if (! $latestRate instanceof CurrencyRate) {
+            if (! $latestRate instanceof \Modules\Foundation\Models\CurrencyRate) {
                 continue;
             }
 
             // Get previous rate for comparison
-            /** @var CurrencyRate|null $previousRate */
-            $previousRate = CurrencyRate::where('currency_id', $currency->getKey())
+            /** @var \Modules\Foundation\Models\CurrencyRate|null $previousRate */
+            $previousRate = \Modules\Foundation\Models\CurrencyRate::where('currency_id', $currency->getKey())
                 ->where('effective_date', '<', $latestRate->effective_date)
                 ->orderBy('effective_date', 'desc')
                 ->first();
@@ -46,7 +46,7 @@ class ExchangeRatesWidget extends StatsOverviewWidget
             $changeColor = 'gray';
             $changeIcon = null;
 
-            if ($previousRate instanceof CurrencyRate) {
+            if ($previousRate instanceof \Modules\Foundation\Models\CurrencyRate) {
                 $changePercent = (((float) $latestRate->rate - (float) $previousRate->rate) / max((float) $previousRate->rate, 0.000001)) * 100;
                 $change = number_format($changePercent, 2).'%';
 

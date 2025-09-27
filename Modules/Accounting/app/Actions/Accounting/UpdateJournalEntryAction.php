@@ -19,7 +19,7 @@ use Illuminate\Validation\ValidationException;
 class UpdateJournalEntryAction
 {
     public function __construct(
-        protected LockDateService $lockDateService,
+        protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
     ) {}
 
     public function execute(UpdateJournalEntryDTO $dto): JournalEntry
@@ -34,10 +34,10 @@ class UpdateJournalEntryAction
         $this->lockDateService->enforce($company, Carbon::parse($journalEntry->entry_date));
 
         if ($journalEntry->is_posted) {
-            throw new UpdateNotAllowedException('Cannot modify a posted journal entry.');
+            throw new \Modules\Foundation\Exceptions\UpdateNotAllowedException('Cannot modify a posted journal entry.');
         }
 
-        $currency = Currency::find($dto->currency_id);
+        $currency = \Modules\Foundation\Models\Currency::find($dto->currency_id);
         if (! $currency) {
             throw new \InvalidArgumentException('Currency not found');
         }

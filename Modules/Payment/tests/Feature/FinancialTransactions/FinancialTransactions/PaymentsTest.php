@@ -21,7 +21,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 test('an inbound payment can be created and linked to an invoice', function () {
     // Arrange: Create an invoice to be paid.
     $currency = $this->company->currency;
-    $invoice = Invoice::factory()->for($this->company)->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'status' => 'posted',
         'total_amount' => Money::of(200, $currency->code),
         'currency_id' => $currency->id,
@@ -66,7 +66,7 @@ test('an inbound payment can be created and linked to an invoice', function () {
 test('an outbound payment can be created and linked to a vendor bill', function () {
     // Arrange: Create a vendor bill to be paid.
     $currency = $this->company->currency;
-    $vendorBill = VendorBill::factory()->for($this->company)->create([
+    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
         'status' => 'posted',
         'total_amount' => Money::of(150, $currency->code),
         'currency_id' => $currency->id,
@@ -110,8 +110,8 @@ test('an outbound payment can be created and linked to a vendor bill', function 
 
 test('creating a payment generates the correct journal entry', function () {
     // Arrange: Set up the necessary accounts and journal.
-    $receivableAccount = Account::factory()->for($this->company)->create(['type' => 'receivable']);
-    $bankAccount = Account::factory()->for($this->company)->create(['type' => 'bank_and_cash']);
+    $receivableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'receivable']);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'bank_and_cash']);
     $bankJournal = Journal::factory()->for($this->company)->create([
         'type' => JournalType::Bank,
         'default_debit_account_id' => $bankAccount->id,
@@ -120,7 +120,7 @@ test('creating a payment generates the correct journal entry', function () {
     $this->company->update(['default_accounts_receivable_id' => $receivableAccount->id]);
 
     // Arrange: Create a posted invoice.
-    $invoice = Invoice::factory()->for($this->company)->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'status' => 'posted',
         'total_amount' => Money::of(500, $this->company->currency->code),
         'currency_id' => $this->company->currency_id,

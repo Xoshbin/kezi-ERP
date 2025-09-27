@@ -28,7 +28,7 @@ it('shows docs action on create payment page', function () {
 });
 
 it('shows docs action on edit payment page', function () {
-    $payment = Payment::factory()->for($this->company)->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
         'status' => PaymentStatus::Draft,
     ]);
 
@@ -37,7 +37,7 @@ it('shows docs action on edit payment page', function () {
 });
 
 it('shows Register Payment action on posted invoice with balance', function () {
-    $invoice = \App\Models\Invoice::factory()
+    $invoice = \Modules\Sales\Models\Invoice::factory()
         ->for($this->company)
         ->withLines(1)
         ->create([
@@ -49,7 +49,7 @@ it('shows Register Payment action on posted invoice with balance', function () {
 });
 
 it('shows Register Payment action on posted vendor bill with balance', function () {
-    $bill = \App\Models\VendorBill::factory()
+    $bill = \Modules\Purchase\Models\VendorBill::factory()
         ->for($this->company)
         ->withLines(1)
         ->create([

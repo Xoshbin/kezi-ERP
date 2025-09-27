@@ -40,7 +40,7 @@ use Spatie\Translatable\HasTranslations;
  * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
  *
- * @method static CurrencyFactory factory($count = null, $state = [])
+ * @method static \Modules\Foundation\Database\Factories\CurrencyFactory factory($count = null, $state = [])
  * @method static Builder<static>|Currency newModelQuery()
  * @method static Builder<static>|Currency newQuery()
  * @method static Builder<static>|Currency query()
@@ -56,7 +56,7 @@ use Spatie\Translatable\HasTranslations;
  *
  * @mixin Eloquent
  */
-#[ObservedBy([CurrencyObserver::class])]
+#[ObservedBy([\Modules\Foundation\Observers\CurrencyObserver::class])]
 class Currency extends Model
 {
     use HasFactory, HasTranslations;

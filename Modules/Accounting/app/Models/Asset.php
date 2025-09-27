@@ -109,8 +109,8 @@ class Asset extends Model
      */
     protected $casts = [
         'purchase_date' => 'date',
-        'purchase_value' => BaseCurrencyMoneyCast::class,
-        'salvage_value' => BaseCurrencyMoneyCast::class,
+        'purchase_value' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'salvage_value' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
         'useful_life_years' => 'integer',
         'status' => AssetStatus::class,
         'depreciation_method' => DepreciationMethod::class,

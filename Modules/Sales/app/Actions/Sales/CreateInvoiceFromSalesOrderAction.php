@@ -18,14 +18,14 @@ use Illuminate\Validation\ValidationException;
 class CreateInvoiceFromSalesOrderAction
 {
     public function __construct(
-        private readonly LockDateService $lockDateService,
+        private readonly \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         private readonly CreateInvoiceLineAction $createInvoiceLineAction
     ) {}
 
     /**
      * Execute the action to create an invoice from a sales order
      */
-    public function execute(CreateInvoiceFromSalesOrderDTO $dto): Invoice
+    public function execute(CreateInvoiceFromSalesOrderDTO $dto): \Modules\Sales\Models\Invoice
     {
         $salesOrder = $dto->salesOrder;
 
@@ -50,7 +50,7 @@ class CreateInvoiceFromSalesOrderAction
             $currencyCode = $salesOrder->currency->code;
 
             // Create the invoice
-            $invoice = Invoice::create([
+            $invoice = \Modules\Sales\Models\Invoice::create([
                 'company_id' => $salesOrder->company_id,
                 'customer_id' => $salesOrder->customer_id,
                 'sales_order_id' => $salesOrder->id,

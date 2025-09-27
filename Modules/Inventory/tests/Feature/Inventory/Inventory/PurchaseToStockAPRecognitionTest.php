@@ -18,8 +18,8 @@ it('posts AP for storable product bills and posts inventory + input tax correctl
     $this->setupInventoryTestEnvironment();
 
     // Create storable product with inventory accounts
-    $this->product = Product::factory()->for($this->company)->create([
-        'type' => \App\Enums\Products\ProductType::Storable,
+    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
@@ -29,7 +29,7 @@ it('posts AP for storable product bills and posts inventory + input tax correctl
     $unitPrice = Money::of(200, $this->company->currency->code);
     $total = $unitPrice->multipliedBy($quantity);
 
-    $vendorBill = VendorBill::factory()->for($this->company)->create([
+    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $this->vendor->id,
         'status' => 'draft',
     ]);

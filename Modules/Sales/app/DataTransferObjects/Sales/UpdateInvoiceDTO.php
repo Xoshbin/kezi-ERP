@@ -10,7 +10,7 @@ class UpdateInvoiceDTO
      * @param  UpdateInvoiceLineDTO[]  $lines
      */
     public function __construct(
-        public readonly Invoice $invoice,
+        public readonly \Modules\Sales\Models\Invoice $invoice,
         public readonly int $customer_id,
         public readonly int $currency_id,
         public readonly string $invoice_date,

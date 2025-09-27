@@ -62,7 +62,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read User|null $approvedByUser
  * @property-read Collection<int, PayrollLine> $payrollLines
  */
-#[ObservedBy([AuditLogObserver::class, PayrollObserver::class])]
+#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class, PayrollObserver::class])]
 class Payroll extends Model
 {
     use HasFactory;
@@ -117,22 +117,22 @@ class Payroll extends Model
         'period_start_date' => 'date',
         'period_end_date' => 'date',
         'pay_date' => 'date',
-        'base_salary' => DocumentCurrencyMoneyCast::class,
-        'overtime_amount' => DocumentCurrencyMoneyCast::class,
-        'housing_allowance' => DocumentCurrencyMoneyCast::class,
-        'transport_allowance' => DocumentCurrencyMoneyCast::class,
-        'meal_allowance' => DocumentCurrencyMoneyCast::class,
-        'other_allowances' => DocumentCurrencyMoneyCast::class,
-        'bonus' => DocumentCurrencyMoneyCast::class,
-        'commission' => DocumentCurrencyMoneyCast::class,
-        'gross_salary' => DocumentCurrencyMoneyCast::class,
-        'income_tax' => DocumentCurrencyMoneyCast::class,
-        'social_security' => DocumentCurrencyMoneyCast::class,
-        'health_insurance' => DocumentCurrencyMoneyCast::class,
-        'pension_contribution' => DocumentCurrencyMoneyCast::class,
-        'other_deductions' => DocumentCurrencyMoneyCast::class,
-        'total_deductions' => DocumentCurrencyMoneyCast::class,
-        'net_salary' => DocumentCurrencyMoneyCast::class,
+        'base_salary' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'overtime_amount' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'housing_allowance' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'transport_allowance' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'meal_allowance' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'other_allowances' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'bonus' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'commission' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'gross_salary' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'income_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'social_security' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'health_insurance' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'pension_contribution' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'other_deductions' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'total_deductions' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'net_salary' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
         'processed_at' => 'datetime',
         'approved_at' => 'datetime',
         'adjustments' => 'array',

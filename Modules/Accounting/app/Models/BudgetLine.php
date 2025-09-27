@@ -78,9 +78,9 @@ class BudgetLine extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'budgeted_amount' => BaseCurrencyMoneyCast::class,
-        'achieved_amount' => BaseCurrencyMoneyCast::class,
-        'committed_amount' => BaseCurrencyMoneyCast::class,
+        'budgeted_amount' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'achieved_amount' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'committed_amount' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

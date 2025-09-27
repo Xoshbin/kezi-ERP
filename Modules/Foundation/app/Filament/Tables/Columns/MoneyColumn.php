@@ -24,14 +24,14 @@ class MoneyColumn extends TextColumn
 
             // If it's already a Money object, format it directly
             if ($state instanceof Money) {
-                return NumberFormatter::formatMoneyTo($state);
+                return \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($state);
             }
 
             // Handle raw numeric values (like pivot fields) - construct Money object
             if (is_numeric($state) && $record) {
                 $money = $this->getMoneyObject($state, $record);
                 if ($money instanceof Money) {
-                    return NumberFormatter::formatMoneyTo($money);
+                    return \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($money);
                 }
             }
 
@@ -59,7 +59,7 @@ class MoneyColumn extends TextColumn
                 $currencyCode = $currencyModel->code;
             }
         } elseif (isset($record->currency_id)) {
-            $currency = Currency::find($record->currency_id);
+            $currency = \Modules\Foundation\Models\Currency::find($record->currency_id);
             // Ensure we have a single Currency model, not a collection
             if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
                 $currency = $currency->first();
@@ -86,7 +86,7 @@ class MoneyColumn extends TextColumn
             }
 
             if ($ownerRecord instanceof \Illuminate\Database\Eloquent\Model && method_exists($ownerRecord, 'currency')) {
-                /** @var \App\Models\Currency|null $currency */
+                /** @var \Modules\Foundation\Models\Currency|null $currency */
                 $currency = $ownerRecord->relationLoaded('currency') ? $ownerRecord->getRelation('currency') : $ownerRecord->currency()->first();
                 if ($currency) {
                     $currencyCode = $currency->code;

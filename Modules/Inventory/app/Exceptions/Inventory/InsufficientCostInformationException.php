@@ -16,7 +16,7 @@ use Exception;
 class InsufficientCostInformationException extends Exception
 {
     public function __construct(
-        public readonly Product $product,
+        public readonly \Modules\Product\Models\Product $product,
         public readonly array $suggestedActions = [],
         public readonly array $attemptedSources = [],
         ?string $message = null
@@ -61,7 +61,7 @@ class InsufficientCostInformationException extends Exception
     /**
      * Get the product that caused the exception
      */
-    public function getProduct(): Product
+    public function getProduct(): \Modules\Product\Models\Product
     {
         return $this->product;
     }

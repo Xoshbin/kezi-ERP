@@ -13,7 +13,7 @@ class AssetObserver
     /**
      * Handle the Asset "updated" event.
      */
-    public function updated(Asset $asset): void
+    public function updated(\Modules\Accounting\Models\Asset $asset): void
     {
         // Check if the status was just changed to 'Confirmed'.
         if ($asset->wasChanged('status') && $asset->status === AssetStatus::Confirmed) {
@@ -33,25 +33,25 @@ class AssetObserver
      * Provides a safety net to prevent deletion of assets with financial records,
      * even if the service layer is bypassed.
      */
-    public function deleting(Asset $asset): void
+    public function deleting(\Modules\Accounting\Models\Asset $asset): void
     {
         // Safety net: Prevent deletion of non-draft assets
         if ($asset->status !== AssetStatus::Draft) {
-            throw new DeletionNotAllowedException(
+            throw new \Modules\Foundation\Exceptions\DeletionNotAllowedException(
                 'Cannot delete a confirmed asset. Only draft assets can be deleted.'
             );
         }
 
         // Safety net: Prevent deletion of assets with depreciation entries
         if ($asset->depreciationEntries()->exists()) {
-            throw new DeletionNotAllowedException(
+            throw new \Modules\Foundation\Exceptions\DeletionNotAllowedException(
                 'Cannot delete an asset with depreciation entries. Depreciation history must be preserved.'
             );
         }
 
         // Safety net: Prevent deletion of assets with journal entries
         if ($asset->journalEntries()->exists()) {
-            throw new DeletionNotAllowedException(
+            throw new \Modules\Foundation\Exceptions\DeletionNotAllowedException(
                 'Cannot delete an asset with associated journal entries. Financial records must be preserved.'
             );
         }

@@ -130,7 +130,7 @@ class CreateInventoryAdjustmentAction
         int $adjustmentLocationId,
         float $quantity
     ): void {
-        $product = \App\Models\Product::find($line->product_id);
+        $product = \Modules\Product\Models\Product::find($line->product_id);
         $productLineDto = new \App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO(
             product_id: $line->product_id,
             quantity: $quantity,
@@ -192,7 +192,7 @@ class CreateInventoryAdjustmentAction
         int $adjustmentLocationId,
         float $quantity
     ): void {
-        $product = \App\Models\Product::find($line->product_id);
+        $product = \Modules\Product\Models\Product::find($line->product_id);
         $productLineDto = new \App\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO(
             product_id: $line->product_id,
             quantity: $quantity,
@@ -328,13 +328,13 @@ class CreateInventoryAdjustmentAction
         ]);
 
         // Find an adjustment account (expense type)
-        $adjustmentAccount = \App\Models\Account::where('company_id', $company->id)
+        $adjustmentAccount = \Modules\Accounting\Models\Account::where('company_id', $company->id)
             ->where('type', 'expense')
             ->where('name', 'LIKE', '%adjustment%')
             ->first();
 
         if (!$adjustmentAccount) {
-            $adjustmentAccount = \App\Models\Account::where('company_id', $company->id)
+            $adjustmentAccount = \Modules\Accounting\Models\Account::where('company_id', $company->id)
                 ->where('type', 'expense')
                 ->first();
         }
@@ -402,13 +402,13 @@ class CreateInventoryAdjustmentAction
         ]);
 
         // Find an adjustment account (expense type)
-        $adjustmentAccount = \App\Models\Account::where('company_id', $company->id)
+        $adjustmentAccount = \Modules\Accounting\Models\Account::where('company_id', $company->id)
             ->where('type', 'expense')
             ->where('name', 'LIKE', '%adjustment%')
             ->first();
 
         if (!$adjustmentAccount) {
-            $adjustmentAccount = \App\Models\Account::where('company_id', $company->id)
+            $adjustmentAccount = \Modules\Accounting\Models\Account::where('company_id', $company->id)
                 ->where('type', 'expense')
                 ->first();
         }

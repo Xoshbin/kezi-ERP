@@ -25,17 +25,17 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 function createCustomer()
 {
-    return \App\Models\Partner::factory()->create([
+    return \Modules\Foundation\Models\Partner::factory()->create([
         'company_id' => test()->company->id,
-        'type' => PartnerType::Customer,
+        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
     ]);
 }
 
 test('can create sales order with lines', function () {
     $customer = createCustomer();
-    $product = Product::factory()->create([
+    $product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
     ]);
 
     $lineDto = new CreateSalesOrderLineDTO(
@@ -66,12 +66,12 @@ test('can create sales order with lines', function () {
 test('can create invoice from sales order', function () {
     // Create a sales order first
     $customer = createCustomer();
-    $product = Product::factory()->create([
+    $product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
     ]);
 
-    $incomeAccount = Account::factory()->create([
+    $incomeAccount = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'income',
     ]);
@@ -121,25 +121,25 @@ test('direct invoices always create stock moves regardless of inventory mode', f
     $this->company->update(['inventory_accounting_mode' => InventoryAccountingMode::AUTO_RECORD_ON_BILL]);
 
     $customer = createCustomer();
-    $product = Product::factory()->create([
+    $product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
     ]);
 
-    $incomeAccount = Account::factory()->create([
+    $incomeAccount = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'income',
     ]);
 
     // Create invoice directly (not from sales order)
-    $invoice = \App\Models\Invoice::factory()->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $customer->id,
         'currency_id' => $this->company->currency_id,
         'sales_order_id' => null, // Direct invoice, not from sales order
     ]);
 
-    $invoiceLine = \App\Models\InvoiceLine::factory()->create([
+    $invoiceLine = \Modules\Sales\Models\InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'product_id' => $product->id,
         'income_account_id' => $incomeAccount->id,
@@ -159,14 +159,14 @@ test('direct invoices always create stock moves regardless of inventory mode', f
     // Test manual mode
     $this->company->update(['inventory_accounting_mode' => InventoryAccountingMode::MANUAL_INVENTORY_RECORDING]);
 
-    $invoice2 = \App\Models\Invoice::factory()->create([
+    $invoice2 = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $customer->id,
         'currency_id' => $this->company->currency_id,
         'sales_order_id' => null, // Direct invoice, not from sales order
     ]);
 
-    $invoiceLine2 = \App\Models\InvoiceLine::factory()->create([
+    $invoiceLine2 = \Modules\Sales\Models\InvoiceLine::factory()->create([
         'invoice_id' => $invoice2->id,
         'product_id' => $product->id,
         'income_account_id' => $incomeAccount->id,
@@ -189,12 +189,12 @@ test('invoice from sales order does not create stock moves regardless of mode', 
     $this->company->update(['inventory_accounting_mode' => InventoryAccountingMode::AUTO_RECORD_ON_BILL]);
 
     $customer = createCustomer();
-    $product = Product::factory()->create([
+    $product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
     ]);
 
-    $incomeAccount = Account::factory()->create([
+    $incomeAccount = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'income',
     ]);

@@ -12,14 +12,14 @@ class PartnerObserver
      *
      * Prevents deletion if the partner is linked to any financial transactions.
      */
-    public function deleting(Partner $partner): void
+    public function deleting(\Modules\Foundation\Models\Partner $partner): void
     {
         if ($partner->invoices()->exists()
             || $partner->vendorBills()->exists()
             || $partner->payments()->exists()
         ) {
             // Throw the exception to completely block the deletion.
-            throw new DeletionNotAllowedException(
+            throw new \Modules\Foundation\Exceptions\DeletionNotAllowedException(
                 'Cannot delete a partner with associated financial documents (invoices, bills, or payments).'
             );
         }

@@ -35,20 +35,20 @@ test('it generates a balanced trial balance report', function () {
     $journal = Journal::factory()->for($company)->create();
     $asOfDate = Carbon::parse('2025-12-31');
 
-    $bankAccount = Account::factory()->for($company)->create([
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create([
         'code' => '1000',
         'name' => 'Bank Account',
-        'type' => AccountType::BankAndCash,
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash,
     ]);
-    $salesAccount = Account::factory()->for($company)->create([
+    $salesAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create([
         'code' => '4000',
         'name' => 'Sales Revenue',
-        'type' => AccountType::Income,
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income,
     ]);
-    $expenseAccount = Account::factory()->for($company)->create([
+    $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create([
         'code' => '5000',
         'name' => 'Office Expenses',
-        'type' => AccountType::Expense,
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense,
     ]);
 
     // Transaction 1: Receive cash for a sale (1,500,000 IQD)
@@ -112,7 +112,7 @@ test('it shows unbalanced status when trial balance does not balance', function 
     $journal = Journal::factory()->for($company)->create();
     $asOfDate = Carbon::parse('2025-12-31');
 
-    $bankAccount = Account::factory()->for($company)->create(['type' => AccountType::BankAndCash]);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
 
     // Create an unbalanced entry by directly inserting into database
     $entry = JournalEntry::factory()->for($company)->for($journal)->create([
@@ -155,8 +155,8 @@ test('it excludes draft journal entries from trial balance', function () {
     $journal = Journal::factory()->for($company)->create();
     $asOfDate = Carbon::parse('2025-12-31');
 
-    $bankAccount = Account::factory()->for($company)->create(['type' => AccountType::BankAndCash]);
-    $salesAccount = Account::factory()->for($company)->create(['type' => AccountType::Income]);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+    $salesAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
 
     // Draft transaction (should be excluded)
     $draftEntry = JournalEntry::factory()->for($company)->for($journal)->create([
@@ -188,8 +188,8 @@ test('it respects the as of date filter', function () {
     $journal = Journal::factory()->for($company)->create();
     $asOfDate = Carbon::parse('2025-06-15');
 
-    $bankAccount = Account::factory()->for($company)->create(['type' => AccountType::BankAndCash]);
-    $salesAccount = Account::factory()->for($company)->create(['type' => AccountType::Income]);
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
+    $salesAccount = \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
 
     // Transaction before the as of date (should be included)
     $entry1 = JournalEntry::factory()->for($company)->for($journal)->create([

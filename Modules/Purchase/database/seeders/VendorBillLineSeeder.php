@@ -52,9 +52,9 @@ class VendorBillLineSeeder extends Seeder
         //     );
         // }
 
-        $laptopBill = VendorBill::where('bill_reference', 'KE-LAPTOP-001')->first();
+        $laptopBill = \Modules\Purchase\Models\VendorBill::where('bill_reference', 'KE-LAPTOP-001')->first();
         if ($laptopBill) {
-            $itEquipmentAccount = Account::where('code', '150301')->firstOrFail();
+            $itEquipmentAccount = \Modules\Accounting\Models\Account::where('code', '150301')->firstOrFail();
             VendorBillLine::updateOrCreate(
                 ['vendor_bill_id' => $laptopBill->id, 'description' => 'High-End Laptop for Business Use'],
                 [

@@ -20,7 +20,7 @@ class InventoryPerformanceOptimizationTest extends TestCase
     use RefreshDatabase;
 
     private Company $company;
-    private Product $product;
+    private \Modules\Product\Models\Product $product;
     private StockLocation $location;
     private InventoryPerformanceMonitoringService $monitoringService;
     private InventoryQueryOptimizationService $optimizationService;
@@ -30,9 +30,9 @@ class InventoryPerformanceOptimizationTest extends TestCase
         parent::setUp();
 
         $this->company = Company::factory()->create();
-        $this->product = Product::factory()->create([
+        $this->product = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
-            'type' => \App\Enums\Products\ProductType::Storable,
+            'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         ]);
         $this->location = StockLocation::factory()->create(['company_id' => $this->company->id]);
 
@@ -102,9 +102,9 @@ class InventoryPerformanceOptimizationTest extends TestCase
     public function test_can_get_bulk_stock_quantities(): void
     {
         // Create test stock moves for multiple products
-        $product2 = Product::factory()->create([
+        $product2 = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
-            'type' => \App\Enums\Products\ProductType::Storable,
+            'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         ]);
 
         // Create incoming stock moves with product lines

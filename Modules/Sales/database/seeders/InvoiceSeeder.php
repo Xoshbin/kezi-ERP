@@ -21,19 +21,19 @@ class InvoiceSeeder extends Seeder
         $currencyCode = $company->currency->code;
 
         // --- Fetch Products by SKU ---
-        $consultingProduct = Product::where('sku', 'CONS-001')->firstOrFail();
-        $routerProduct = Product::where('sku', 'PROD-ROUTER-01')->firstOrFail();
-        $cableProduct = Product::where('sku', 'PROD-CABLE-01')->firstOrFail();
-        $switchProduct = Product::where('sku', 'PROD-SWITCH-01')->firstOrFail();
+        $consultingProduct = \Modules\Product\Models\Product::where('sku', 'CONS-001')->firstOrFail();
+        $routerProduct = \Modules\Product\Models\Product::where('sku', 'PROD-ROUTER-01')->firstOrFail();
+        $cableProduct = \Modules\Product\Models\Product::where('sku', 'PROD-CABLE-01')->firstOrFail();
+        $switchProduct = \Modules\Product\Models\Product::where('sku', 'PROD-SWITCH-01')->firstOrFail();
 
         // --- Fetch Partners ---
-        $hawrePartner = Partner::firstOrCreate(['name' => 'Hawre Trading Group', 'company_id' => $company->id], ['type' => PartnerType::Customer]);
-        $zryanPartner = Partner::firstOrCreate(['name' => 'Zryan Tech Store', 'company_id' => $company->id], ['type' => PartnerType::Customer]);
+        $hawrePartner = \Modules\Foundation\Models\Partner::firstOrCreate(['name' => 'Hawre Trading Group', 'company_id' => $company->id], ['type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer]);
+        $zryanPartner = \Modules\Foundation\Models\Partner::firstOrCreate(['name' => 'Zryan Tech Store', 'company_id' => $company->id], ['type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer]);
 
         $createLineAction = resolve(CreateInvoiceLineAction::class);
 
         // === INVOICE 1: Service Invoice ===
-        $invoice1 = Invoice::updateOrCreate(
+        $invoice1 = \Modules\Sales\Models\Invoice::updateOrCreate(
             ['company_id' => $company->id, 'invoice_number' => 'INV-001'],
             [
                 'customer_id' => $hawrePartner->id,
@@ -50,7 +50,7 @@ class InvoiceSeeder extends Seeder
         }
 
         // === INVOICE 2: Product Invoice ===
-        $invoice2 = Invoice::updateOrCreate(
+        $invoice2 = \Modules\Sales\Models\Invoice::updateOrCreate(
             ['company_id' => $company->id, 'invoice_number' => 'INV-002'],
             [
                 'customer_id' => $hawrePartner->id,
@@ -68,7 +68,7 @@ class InvoiceSeeder extends Seeder
         }
 
         // === INVOICE 3: Product Invoice ===
-        $invoice3 = Invoice::updateOrCreate(
+        $invoice3 = \Modules\Sales\Models\Invoice::updateOrCreate(
             ['company_id' => $company->id, 'invoice_number' => 'INV-003'],
             [
                 'customer_id' => $zryanPartner->id,

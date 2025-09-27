@@ -28,7 +28,7 @@ class CreatePayment extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        $currency = Currency::findOrFail($data['currency_id']);
+        $currency = \Modules\Foundation\Models\Currency::findOrFail($data['currency_id']);
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
             $currency = $currency->first();

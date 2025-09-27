@@ -18,7 +18,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int $payment_term_id
  * @property int $sequence
- * @property PaymentTermType $type
+ * @property \Modules\Foundation\Enums\PaymentTerms\PaymentTermType $type
  * @property int $days
  * @property float $percentage
  * @property int|null $day_of_month
@@ -28,7 +28,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read PaymentTerm $paymentTerm
  *
- * @method static PaymentTermLineFactory factory($count = null, $state = [])
+ * @method static \Modules\Foundation\Database\Factories\PaymentTermLineFactory factory($count = null, $state = [])
  * @method static Builder<static>|PaymentTermLine newModelQuery()
  * @method static Builder<static>|PaymentTermLine newQuery()
  * @method static Builder<static>|PaymentTermLine query()
@@ -46,7 +46,7 @@ use Illuminate\Support\Carbon;
  *
  * @mixin \Eloquent
  */
-#[ObservedBy([AuditLogObserver::class])]
+#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class PaymentTermLine extends Model
 {
     /** @use HasFactory<\Database\Factories\PaymentTermLineFactory> */
@@ -74,7 +74,7 @@ class PaymentTermLine extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'type' => PaymentTermType::class,
+        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::class,
         'percentage' => 'float',
         'discount_percentage' => 'float',
         'created_at' => 'datetime',
@@ -95,10 +95,10 @@ class PaymentTermLine extends Model
     public function calculateDueDate(Carbon $documentDate): Carbon
     {
         return match ($this->type) {
-            PaymentTermType::Net => $documentDate->copy()->addDays($this->days),
-            PaymentTermType::EndOfMonth => $this->calculateEndOfMonthDate($documentDate),
-            PaymentTermType::DayOfMonth => $this->calculateDayOfMonthDate($documentDate),
-            PaymentTermType::Immediate => $documentDate->copy(),
+            \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net => $documentDate->copy()->addDays($this->days),
+            \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::EndOfMonth => $this->calculateEndOfMonthDate($documentDate),
+            \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::DayOfMonth => $this->calculateDayOfMonthDate($documentDate),
+            \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Immediate => $documentDate->copy(),
         };
     }
 
@@ -172,12 +172,12 @@ class PaymentTermLine extends Model
     public function getDescription(): string
     {
         $description = match ($this->type) {
-            PaymentTermType::Immediate => __('payment_terms.immediate'),
-            PaymentTermType::Net => __('payment_terms.net_days', ['days' => $this->days]),
-            PaymentTermType::EndOfMonth => $this->days > 0
+            \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Immediate => __('payment_terms.immediate'),
+            \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net => __('payment_terms.net_days', ['days' => $this->days]),
+            \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::EndOfMonth => $this->days > 0
                 ? __('payment_terms.end_of_month_plus_days', ['days' => $this->days])
                 : __('payment_terms.end_of_month'),
-            PaymentTermType::DayOfMonth => __('payment_terms.day_of_month', [
+            \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::DayOfMonth => __('payment_terms.day_of_month', [
                 'day' => (string) $this->day_of_month,
                 'days' => (string) $this->days,
             ]),

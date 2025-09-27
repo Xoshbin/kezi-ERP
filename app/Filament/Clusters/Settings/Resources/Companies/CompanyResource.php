@@ -69,7 +69,7 @@ class CompanyResource extends Resource
                         Textarea::make('address')
                             ->label(__('company.address'))
                             ->columnSpanFull(),
-                        TranslatableSelect::forModel('currency_id', Currency::class)
+                        TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class)
                             ->label(__('company.currency_id'))
                             ->searchable()
                             ->preload()

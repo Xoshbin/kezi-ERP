@@ -54,7 +54,7 @@ use Illuminate\Support\Carbon;
  * @property-read PurchaseOrder|null $purchaseOrder
  * @property-read Partner $vendor
  *
- * @method static VendorBillFactory factory($count = null, $state = [])
+ * @method static \Modules\Purchase\Database\Factories\VendorBillFactory factory($count = null, $state = [])
  * @method static Builder<static>|VendorBill newModelQuery()
  * @method static Builder<static>|VendorBill newQuery()
  * @method static Builder<static>|VendorBill posted()
@@ -78,10 +78,10 @@ use Illuminate\Support\Carbon;
  *
  * @mixin \Eloquent
  */
-#[ObservedBy([AuditLogObserver::class, VendorBillObserver::class])]
+#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class, VendorBillObserver::class])]
 class VendorBill extends Model
 {
-    use HasFactory, HasPaymentState;
+    use HasFactory, \Modules\Foundation\Traits\HasPaymentState;
 
     /**
      * The database table associated with the model.
@@ -134,10 +134,10 @@ class VendorBill extends Model
         'due_date' => 'date',       // Cast to date for consistency .
         'status' => VendorBillStatus::class,
         'exchange_rate_at_creation' => 'decimal:10',
-        'total_amount' => DocumentCurrencyMoneyCast::class,  // Document currency amounts
-        'total_tax' => DocumentCurrencyMoneyCast::class,  // Document currency amounts
-        'total_amount_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
-        'total_tax_company_currency' => BaseCurrencyMoneyCast::class,  // Company base currency amounts
+        'total_amount' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'total_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,  // Document currency amounts
+        'total_amount_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,  // Company base currency amounts
+        'total_tax_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,  // Company base currency amounts
         'posted_at' => 'datetime',   // Records the exact time of posting for audit .
         'reset_to_draft_log' => 'json',       // Stores audit log as JSON .
         'created_at' => 'datetime',   // Automatically managed by Eloquent.

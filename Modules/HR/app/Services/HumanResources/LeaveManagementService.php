@@ -106,7 +106,7 @@ class LeaveManagementService
      *
      * @return array<string, mixed>
      */
-    public function getLeaveBalance(Employee $employee, LeaveType $leaveType, ?int $year = null): array
+    public function getLeaveBalance(\Modules\HR\Models\Employee $employee, LeaveType $leaveType, ?int $year = null): array
     {
         $year = $year ?? now()->year;
         $contract = $employee->currentContract;
@@ -167,7 +167,7 @@ class LeaveManagementService
      */
     private function validateLeaveRequest(CreateLeaveRequestDTO $dto): void
     {
-        $employee = Employee::findOrFail($dto->employee_id);
+        $employee = \Modules\HR\Models\Employee::findOrFail($dto->employee_id);
         $leaveType = LeaveType::findOrFail($dto->leave_type_id);
 
         // Check if employee has sufficient leave balance
@@ -219,7 +219,7 @@ class LeaveManagementService
         while ($currentDate->lte($endDate)) {
             // Skip weekends (assuming 5-day work week)
             if (! $currentDate->isWeekend()) {
-                /** @var \App\Models\Employee $employee */
+                /** @var \Modules\HR\Models\Employee $employee */
                 $employee = $leaveRequest->employee;
                 $employee->attendances()->updateOrCreate(
                     [
@@ -243,7 +243,7 @@ class LeaveManagementService
      */
     private function removeLeaveAttendanceRecords(LeaveRequest $leaveRequest): void
     {
-        /** @var \App\Models\Employee $employee */
+        /** @var \Modules\HR\Models\Employee $employee */
         $employee = $leaveRequest->employee;
         $employee->attendances()
             ->where('leave_request_id', $leaveRequest->getKey())
@@ -253,7 +253,7 @@ class LeaveManagementService
     /**
      * Calculate carried forward days from previous year.
      */
-    private function calculateCarriedForwardDays(Employee $employee, LeaveType $leaveType, int $previousYear): int
+    private function calculateCarriedForwardDays(\Modules\HR\Models\Employee $employee, LeaveType $leaveType, int $previousYear): int
     {
         $previousYearBalance = $this->getLeaveBalance($employee, $leaveType, $previousYear);
         $unusedDays = $previousYearBalance['remaining_days'];

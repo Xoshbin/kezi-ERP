@@ -11,7 +11,7 @@ use Brick\Money\Money;
 
 class CreateAdjustmentDocumentLineAction
 {
-    public function execute(AdjustmentDocument $adjustmentDocument, CreateAdjustmentDocumentLineDTO $dto): AdjustmentDocumentLine
+    public function execute(\Modules\Inventory\Models\AdjustmentDocument $adjustmentDocument, CreateAdjustmentDocumentLineDTO $dto): AdjustmentDocumentLine
     {
         $currency = $adjustmentDocument->currency;
 

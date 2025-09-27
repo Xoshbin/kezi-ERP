@@ -20,7 +20,7 @@ beforeEach(function () {
 describe('Vendor Bill Confirmation Business Rules', function () {
     it('prevents confirming vendor bill without line items via UI', function () {
         // Test Setup: Create a vendor bill in draft status with zero line items
-        $vendorBill = VendorBill::factory()->for($this->company)->create([
+        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
             'status' => VendorBillStatus::Draft,
             'bill_date' => now()->format('Y-m-d'),
             'accounting_date' => now()->format('Y-m-d'),
@@ -53,7 +53,7 @@ describe('Vendor Bill Confirmation Business Rules', function () {
 
     it('prevents confirming vendor bill without line items via backend service', function () {
         // Test Setup: Create a vendor bill in draft status with zero line items
-        $vendorBill = VendorBill::factory()->for($this->company)->create([
+        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
             'status' => VendorBillStatus::Draft,
             'bill_date' => now()->format('Y-m-d'),
             'accounting_date' => now()->format('Y-m-d'),
@@ -79,18 +79,18 @@ describe('Vendor Bill Confirmation Business Rules', function () {
 
     it('allows confirming vendor bill with line items', function () {
         // Create vendor and product with proper setup
-        $vendor = \App\Models\Partner::factory()->vendor()->create([
+        $vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
             'company_id' => $this->company->id,
         ]);
 
-        $product = \App\Models\Product::factory()->create([
+        $product = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code),
-            'type' => \App\Enums\Products\ProductType::Service, // Use service to avoid inventory account requirement
+            'type' => \Modules\Product\Enums\Products\ProductType::Service, // Use service to avoid inventory account requirement
         ]);
 
         // Create vendor bill manually to ensure proper setup
-        $vendorBill = VendorBill::factory()->for($this->company)->create([
+        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
             'vendor_id' => $vendor->id,
             'currency_id' => $this->company->currency_id,
             'status' => VendorBillStatus::Draft,
@@ -130,7 +130,7 @@ describe('Vendor Bill Confirmation Business Rules', function () {
 
     it('shows user-friendly error message when confirming empty vendor bill via UI', function () {
         // Test Setup: Create a vendor bill in draft status with zero line items
-        $vendorBill = VendorBill::factory()->for($this->company)->create([
+        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
             'status' => VendorBillStatus::Draft,
             'bill_date' => now()->format('Y-m-d'),
             'accounting_date' => now()->format('Y-m-d'),
@@ -154,13 +154,13 @@ describe('Vendor Bill Confirmation Business Rules', function () {
 
     it('prevents confirmation when vendor bill has zero total amount', function () {
         // Create an expense account for the test
-        $expenseAccount = \App\Models\Account::factory()->for($this->company)->create([
+        $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
             'type' => 'expense',
             'name' => 'Test Expense Account',
         ]);
 
         // Edge case: vendor bill with lines but zero amounts
-        $vendorBill = VendorBill::factory()->for($this->company)->create([
+        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
             'status' => VendorBillStatus::Draft,
             'bill_date' => now()->format('Y-m-d'),
             'accounting_date' => now()->format('Y-m-d'),
@@ -192,18 +192,18 @@ describe('Vendor Bill Confirmation Business Rules', function () {
 
     it('enables confirm action when vendor bill has valid line items', function () {
         // Create vendor and product
-        $vendor = \App\Models\Partner::factory()->vendor()->create([
+        $vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
             'company_id' => $this->company->id,
         ]);
 
-        $product = \App\Models\Product::factory()->create([
+        $product = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code),
-            'type' => \App\Enums\Products\ProductType::Service,
+            'type' => \Modules\Product\Enums\Products\ProductType::Service,
         ]);
 
         // Create vendor bill with valid line items
-        $vendorBill = VendorBill::factory()->for($this->company)->create([
+        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
             'vendor_id' => $vendor->id,
             'currency_id' => $this->company->currency_id,
             'status' => VendorBillStatus::Draft,
@@ -237,43 +237,43 @@ describe('Vendor Bill Confirmation Business Rules', function () {
 
     it('successfully confirms vendor bill with storable products via Filament UI', function () {
         // Create vendor and storable product
-        $vendor = \App\Models\Partner::factory()->vendor()->create([
+        $vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
             'company_id' => $this->company->id,
         ]);
 
         // Create required accounts for storable product
-        $inventoryAccount = \App\Models\Account::factory()->create([
+        $inventoryAccount = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'name' => ['en' => 'Inventory Asset'],
             'code' => '1300',
-            'type' => \App\Enums\Accounting\AccountType::CurrentAssets,
+            'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets,
         ]);
 
-        $stockInputAccount = \App\Models\Account::factory()->create([
+        $stockInputAccount = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'name' => ['en' => 'Stock Input'],
             'code' => '2100',
-            'type' => \App\Enums\Accounting\AccountType::CurrentLiabilities,
+            'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities,
         ]);
 
-        $expenseAccount = \App\Models\Account::factory()->create([
+        $expenseAccount = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'name' => ['en' => 'Product Expense'],
             'code' => '5000',
-            'type' => \App\Enums\Accounting\AccountType::Expense,
+            'type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense,
         ]);
 
-        $product = \App\Models\Product::factory()->create([
+        $product = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code),
-            'type' => \App\Enums\Products\ProductType::Storable, // Use storable to test inventory workflow
+            'type' => \Modules\Product\Enums\Products\ProductType::Storable, // Use storable to test inventory workflow
             'default_inventory_account_id' => $inventoryAccount->id,
             'default_stock_input_account_id' => $stockInputAccount->id,
             'expense_account_id' => $expenseAccount->id,
         ]);
 
         // Create vendor bill with storable product
-        $vendorBill = VendorBill::factory()->for($this->company)->create([
+        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
             'vendor_id' => $vendor->id,
             'currency_id' => $this->company->currency_id,
             'status' => VendorBillStatus::Draft,
@@ -324,7 +324,7 @@ describe('Vendor Bill Confirmation Business Rules', function () {
         }
 
         // Create a fresh vendor bill for UI test (can't reset posted bills due to constraints)
-        $uiTestVendorBill = VendorBill::factory()->for($this->company)->create([
+        $uiTestVendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
             'vendor_id' => $vendor->id,
             'currency_id' => $this->company->currency_id,
             'status' => VendorBillStatus::Draft,
@@ -372,7 +372,7 @@ describe('Vendor Bill Confirmation Business Rules', function () {
         expect($journalEntry->is_posted)->toBeTrue();
 
         // Verify stock move was created for storable product
-        $stockMove = \App\Models\StockMove::where('source_type', VendorBill::class)
+        $stockMove = \App\Models\StockMove::where('source_type', \Modules\Purchase\Models\VendorBill::class)
             ->where('source_id', $uiTestVendorBill->id)
             ->first();
         expect($stockMove)->not->toBeNull();
@@ -385,7 +385,7 @@ describe('Vendor Bill Confirmation Business Rules', function () {
         // Verify no duplicate journal entry constraint violations occurred
         // This test specifically addresses the issue where multiple journal entries
         // with the same reference were being created, causing constraint violations
-        $journalEntries = \App\Models\JournalEntry::where('source_type', VendorBill::class)
+        $journalEntries = \App\Models\JournalEntry::where('source_type', \Modules\Purchase\Models\VendorBill::class)
             ->where('source_id', $uiTestVendorBill->id)
             ->get();
 
@@ -408,10 +408,10 @@ describe('Vendor Bill Confirmation Business Rules', function () {
 
     it('handles exchange rate fallback during vendor bill confirmation via UI', function () {
         // Create foreign currency
-        $usd = \App\Models\Currency::factory()->create(['code' => 'USD']);
+        $usd = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
 
         // Create current exchange rate (not for historical date)
-        \App\Models\CurrencyRate::factory()->create([
+        \Modules\Foundation\Models\CurrencyRate::factory()->create([
             'company_id' => $this->company->id,
             'currency_id' => $usd->id,
             'rate' => 1460.0,
@@ -419,18 +419,18 @@ describe('Vendor Bill Confirmation Business Rules', function () {
         ]);
 
         // Create vendor and product
-        $vendor = \App\Models\Partner::factory()->vendor()->create([
+        $vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
             'company_id' => $this->company->id,
         ]);
 
-        $product = \App\Models\Product::factory()->create([
+        $product = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'unit_price' => \Brick\Money\Money::of(100, 'USD'),
-            'type' => \App\Enums\Products\ProductType::Service,
+            'type' => \Modules\Product\Enums\Products\ProductType::Service,
         ]);
 
         // Create vendor bill with historical date (no rate available for this date)
-        $vendorBill = VendorBill::factory()->for($this->company)->create([
+        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
             'vendor_id' => $vendor->id,
             'currency_id' => $usd->id,
             'status' => VendorBillStatus::Draft,

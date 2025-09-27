@@ -28,7 +28,7 @@ class AccountResource extends Resource
 {
     use Translatable;
 
-    protected static ?string $model = Account::class;
+    protected static ?string $model = \Modules\Accounting\Models\Account::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-list-bullet';
 
@@ -65,8 +65,8 @@ class AccountResource extends Resource
                             ->label(__('account.type'))
                             ->required()
                             ->options(
-                                collect(AccountType::cases())
-                                    ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())
+                                    ->mapWithKeys(fn (\Modules\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
                             )
                             ->searchable(),
                         Toggle::make('is_deprecated')

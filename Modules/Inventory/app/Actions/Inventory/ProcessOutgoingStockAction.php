@@ -28,7 +28,7 @@ class ProcessOutgoingStockAction
             if (isset($stockMove->product_id) && $stockMove->product_id) {
                 // Old structure - single product
                 $product = $stockMove->product;
-                if (! $product instanceof \App\Models\Product) {
+                if (! $product instanceof \Modules\Product\Models\Product) {
                     throw new \Exception('Product not found for stock move');
                 }
 
@@ -42,7 +42,7 @@ class ProcessOutgoingStockAction
                 // New structure - multiple product lines
                 foreach ($stockMove->productLines as $productLine) {
                     $product = $productLine->product;
-                    if (! $product instanceof \App\Models\Product) {
+                    if (! $product instanceof \Modules\Product\Models\Product) {
                         throw new \Exception('Product not found for product line');
                     }
 

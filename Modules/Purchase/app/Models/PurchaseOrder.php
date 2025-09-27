@@ -51,10 +51,10 @@ use Illuminate\Support\Carbon;
  * @property-read StockLocation|null $deliveryLocation
  * @property-read \Illuminate\Database\Eloquent\Collection<int, PurchaseOrderLine> $lines
  * @property-read int|null $lines_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, VendorBill> $vendorBills
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Modules\Purchase\Models\VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
  */
-#[ObservedBy([AuditLogObserver::class])]
+#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class PurchaseOrder extends Model
 {
     use HasFactory;
@@ -94,10 +94,10 @@ class PurchaseOrder extends Model
         'confirmed_at' => 'datetime',
         'cancelled_at' => 'datetime',
         'exchange_rate_at_creation' => 'decimal:6',
-        'total_amount' => DocumentCurrencyMoneyCast::class,
-        'total_tax' => DocumentCurrencyMoneyCast::class,
-        'total_amount_company_currency' => BaseCurrencyMoneyCast::class,
-        'total_tax_company_currency' => BaseCurrencyMoneyCast::class,
+        'total_amount' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'total_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'total_amount_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'total_tax_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -167,7 +167,7 @@ class PurchaseOrder extends Model
      */
     public function vendorBills(): HasMany
     {
-        return $this->hasMany(VendorBill::class);
+        return $this->hasMany(\Modules\Purchase\Models\VendorBill::class);
     }
 
     /**

@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class PaymentTermLineFactory extends Factory
 {
-    protected $model = PaymentTermLine::class;
+    protected $model = \Modules\Foundation\Models\PaymentTermLine::class;
 
     /**
      * Define the model's default state.
@@ -22,9 +22,9 @@ class PaymentTermLineFactory extends Factory
     public function definition(): array
     {
         return [
-            'payment_term_id' => PaymentTerm::factory(),
+            'payment_term_id' => \Modules\Foundation\Models\PaymentTerm::factory(),
             'sequence' => 1,
-            'type' => $this->faker->randomElement(PaymentTermType::cases()),
+            'type' => $this->faker->randomElement(\Modules\Foundation\Enums\PaymentTerms\PaymentTermType::cases()),
             'days' => $this->faker->numberBetween(0, 90),
             'percentage' => 100.0,
             'day_of_month' => null,
@@ -39,7 +39,7 @@ class PaymentTermLineFactory extends Factory
     public function immediate(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => PaymentTermType::Immediate,
+            'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Immediate,
             'days' => 0,
             'percentage' => 100.0,
         ]);
@@ -51,7 +51,7 @@ class PaymentTermLineFactory extends Factory
     public function net(int $days = 30): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => PaymentTermType::Net,
+            'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
             'days' => $days,
             'percentage' => 100.0,
         ]);
@@ -63,7 +63,7 @@ class PaymentTermLineFactory extends Factory
     public function endOfMonth(int $additionalDays = 0): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => PaymentTermType::EndOfMonth,
+            'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::EndOfMonth,
             'days' => $additionalDays,
             'percentage' => 100.0,
         ]);
@@ -75,7 +75,7 @@ class PaymentTermLineFactory extends Factory
     public function dayOfMonth(int $dayOfMonth = 15, int $additionalDays = 0): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => PaymentTermType::DayOfMonth,
+            'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::DayOfMonth,
             'days' => $additionalDays,
             'day_of_month' => $dayOfMonth,
             'percentage' => 100.0,

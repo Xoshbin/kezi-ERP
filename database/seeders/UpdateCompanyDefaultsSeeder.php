@@ -22,12 +22,12 @@ class UpdateCompanyDefaultsSeeder extends Seeder
         }
 
         // Find the default accounts and journals created by other seeders.
-        $apAccount = Account::where('code', '210101')->where('company_id', $company->id)->first();
-        $arAccount = Account::where('code', '120101')->where('company_id', $company->id)->first();
-        $salesDiscountAccount = Account::where('code', '490101')->where('company_id', $company->id)->first();
-        $bankAccount = Account::where('code', '110101')->where('company_id', $company->id)->first(); // Using 'Bank Account (USD)'
-        $outstandingReceiptsAccount = Account::where('code', '110301')->where('company_id', $company->id)->first();
-        $taxAccount = Account::where('code', '220101')->where('company_id', $company->id)->first(); // Using 'VAT Payable' as a sensible default
+        $apAccount = \Modules\Accounting\Models\Account::where('code', '210101')->where('company_id', $company->id)->first();
+        $arAccount = \Modules\Accounting\Models\Account::where('code', '120101')->where('company_id', $company->id)->first();
+        $salesDiscountAccount = \Modules\Accounting\Models\Account::where('code', '490101')->where('company_id', $company->id)->first();
+        $bankAccount = \Modules\Accounting\Models\Account::where('code', '110101')->where('company_id', $company->id)->first(); // Using 'Bank Account (USD)'
+        $outstandingReceiptsAccount = \Modules\Accounting\Models\Account::where('code', '110301')->where('company_id', $company->id)->first();
+        $taxAccount = \Modules\Accounting\Models\Account::where('code', '220101')->where('company_id', $company->id)->first(); // Using 'VAT Payable' as a sensible default
 
         // ** FIXED: Query journals by their unique short_code for reliability **
         $purchaseJournal = Journal::where('short_code', 'BILL')->where('company_id', $company->id)->first();

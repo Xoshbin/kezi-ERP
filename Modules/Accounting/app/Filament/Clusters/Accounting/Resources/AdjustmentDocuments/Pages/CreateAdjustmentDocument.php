@@ -30,13 +30,13 @@ class CreateAdjustmentDocument extends CreateRecord
         // 1. Forcefully derive currency_id if it's missing but a source document is linked.
         if (empty($data['currency_id'])) {
             if (! empty($data['original_invoice_id'])) {
-                $invoice = Invoice::find($data['original_invoice_id']);
+                $invoice = \Modules\Sales\Models\Invoice::find($data['original_invoice_id']);
                 if ($invoice instanceof \Illuminate\Database\Eloquent\Collection) {
                     $invoice = $invoice->first();
                 }
                 $data['currency_id'] = $invoice?->currency_id;
             } elseif (! empty($data['original_vendor_bill_id'])) {
-                $bill = VendorBill::find($data['original_vendor_bill_id']);
+                $bill = \Modules\Purchase\Models\VendorBill::find($data['original_vendor_bill_id']);
                 if ($bill instanceof \Illuminate\Database\Eloquent\Collection) {
                     $bill = $bill->first();
                 }
@@ -69,7 +69,7 @@ class CreateAdjustmentDocument extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         // This method will now always receive a valid $data['currency_id']
-        $currency = Currency::findOrFail($data['currency_id']);
+        $currency = \Modules\Foundation\Models\Currency::findOrFail($data['currency_id']);
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
             $currency = $currency->first();

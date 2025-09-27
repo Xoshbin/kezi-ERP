@@ -166,7 +166,7 @@ it('can delete a journal entry', function () {
 
 it('can display correct major amount in edit form', function () {
     // Arrange
-    $currency = Currency::where('code', 'IQD')->firstOrFail();
+    $currency = \Modules\Foundation\Models\Currency::where('code', 'IQD')->firstOrFail();
 
     $journalEntry = JournalEntry::factory()
         ->for($this->company)
@@ -203,13 +203,13 @@ it('can display correct major amount in edit form', function () {
 
 it('can create capital injection journal entry following Step 4 scenario', function () {
     // Arrange: Create the specific accounts needed for the capital injection scenario
-    $bankAccount = Account::factory()->for($this->company)->create([
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'code' => '1010',
         'name' => 'Bank',
         'type' => 'bank_and_cash',
     ]);
 
-    $ownersEquityAccount = Account::factory()->for($this->company)->create([
+    $ownersEquityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'code' => '3000',
         'name' => "Owner's Equity",
         'type' => 'equity',
@@ -302,7 +302,7 @@ it('can create and post capital injection journal entry using Filament interface
     expect($this->company->currency->code)->toBe('IQD');
 
     // Set up currency rates for the test (IQD to IQD should be 1.0)
-    \App\Models\CurrencyRate::create([
+    \Modules\Foundation\Models\CurrencyRate::create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id, // IQD
         'rate' => 1.0,
@@ -311,13 +311,13 @@ it('can create and post capital injection journal entry using Filament interface
     ]);
 
     // Arrange: Create the specific accounts needed for the capital injection scenario
-    $bankAccount = Account::factory()->for($this->company)->create([
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'code' => '1010',
         'name' => 'Bank',
         'type' => 'bank_and_cash',
     ]);
 
-    $ownersEquityAccount = Account::factory()->for($this->company)->create([
+    $ownersEquityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'code' => '3000',
         'name' => "Owner's Equity",
         'type' => 'equity',
@@ -423,7 +423,7 @@ it('can create and post capital injection journal entry using Filament interface
     // Verify deletion is prevented for posted entries
     $journalEntryService = app(\App\Services\JournalEntryService::class);
     expect(fn () => $journalEntryService->delete($journalEntry))
-        ->toThrow(\App\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a posted journal entry');
+        ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a posted journal entry');
 
     // Verify the accounting equation: Assets = Liabilities + Equity
     // Bank (Asset) increased by 15,000,000 IQD
@@ -437,13 +437,13 @@ it('can create and post capital injection journal entry using Filament interface
 
 it('shows proper error when trying to create duplicate reference', function () {
     // Arrange: Create the specific accounts needed for the capital injection scenario
-    $bankAccount = Account::factory()->for($this->company)->create([
+    $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'code' => '1010',
         'name' => 'Bank',
         'type' => 'bank_and_cash',
     ]);
 
-    $ownersEquityAccount = Account::factory()->for($this->company)->create([
+    $ownersEquityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'code' => '3000',
         'name' => "Owner's Equity",
         'type' => 'equity',
@@ -644,7 +644,7 @@ it('calculates and fills totals on edit page load', function () {
 
 it('can create multi-currency capital injection journal entry in USD with proper conversion to IQD base currency', function () {
     // Arrange: Create USD currency
-    $usdCurrency = Currency::firstOrCreate(
+    $usdCurrency = \Modules\Foundation\Models\Currency::firstOrCreate(
         ['code' => 'USD'],
         [
             'name' => ['en' => 'US Dollar', 'ckb' => 'دۆلاری ئەمریکی', 'ar' => 'دولار أمريكي'],
@@ -657,7 +657,7 @@ it('can create multi-currency capital injection journal entry in USD with proper
     // Set up exchange rate: 1 USD = 1460 IQD
     // Use updateOrCreate to handle potential existing rates
     $transactionDate = \Carbon\Carbon::parse('2024-01-01');
-    $currencyRate = \App\Models\CurrencyRate::updateOrCreate(
+    $currencyRate = \Modules\Foundation\Models\CurrencyRate::updateOrCreate(
         [
             'currency_id' => $usdCurrency->id,
             'effective_date' => $transactionDate->toDateString(),
@@ -678,14 +678,14 @@ it('can create multi-currency capital injection journal entry in USD with proper
     expect($currencyRate->rate)->toBe('1460.0000000000');
 
     // Create the specific accounts mentioned in the scenario
-    $cashUsdAccount = Account::factory()->for($this->company)->create([
+    $cashUsdAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'code' => '110201',
         'name' => 'Cash (USD)',
         'type' => 'bank_and_cash',
         'currency_id' => $usdCurrency->id, // Currency locked to USD
     ]);
 
-    $ownersEquityAccount = Account::factory()->for($this->company)->create([
+    $ownersEquityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'code' => '320101',
         'name' => "Owner's Equity",
         'type' => 'equity',

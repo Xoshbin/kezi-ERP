@@ -38,7 +38,7 @@ use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class AssetResource extends Resource
 {
-    protected static ?string $model = Asset::class;
+    protected static ?string $model = \Modules\Accounting\Models\Asset::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-archive-box';
 
@@ -78,7 +78,7 @@ class AssetResource extends Resource
                         ->maxLength(255)
                         ->columnSpan(2),
 
-                    TranslatableSelect::forModel('currency_id', Currency::class)
+                    TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class)
                         ->label(__('asset.currency'))
                         ->required()
                         ->searchable()
@@ -91,7 +91,7 @@ class AssetResource extends Resource
                         })
                         ->afterStateUpdated(function (callable $set, $state) {
                             if ($state) {
-                                $currency = Currency::find($state);
+                                $currency = \Modules\Foundation\Models\Currency::find($state);
                                 // Ensure we have a single Currency model, not a collection
                                 if ($currency instanceof Collection) {
                                     $currency = $currency->first();
@@ -99,7 +99,7 @@ class AssetResource extends Resource
                                 $company = Filament::getTenant();
 
                                 if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
-                                    $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
+                                    $latestRate = \Modules\Foundation\Models\CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
                                         $set('current_exchange_rate', $latestRate);
                                     }
@@ -185,7 +185,7 @@ class AssetResource extends Resource
                         ->required()
                         ->columnSpan(1),
 
-                    TranslatableSelect::forModel('asset_account_id', Account::class)
+                    TranslatableSelect::forModel('asset_account_id', \Modules\Accounting\Models\Account::class)
                         ->label(__('asset.asset_account'))
                         ->searchableFields(['name', 'code'])
                         ->searchable()
@@ -203,8 +203,8 @@ class AssetResource extends Resource
                                 ->required(),
                             Select::make('type')
                                 ->label(__('account.type'))
-                                ->options(collect(AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
-                                ->default(AccountType::FixedAssets->value)
+                                ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
+                                ->default(\Modules\Accounting\Enums\Accounting\AccountType::FixedAssets->value)
                                 ->required(),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
@@ -212,7 +212,7 @@ class AssetResource extends Resource
                         ->required()
                         ->columnSpan(1),
 
-                    TranslatableSelect::forModel('depreciation_expense_account_id', Account::class)
+                    TranslatableSelect::forModel('depreciation_expense_account_id', \Modules\Accounting\Models\Account::class)
                         ->label(__('asset.depreciation_expense_account'))
                         ->searchableFields(['name', 'code'])
                         ->searchable()
@@ -230,8 +230,8 @@ class AssetResource extends Resource
                                 ->required(),
                             Select::make('type')
                                 ->label(__('account.type'))
-                                ->options(collect(AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
-                                ->default(AccountType::Depreciation->value)
+                                ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
+                                ->default(\Modules\Accounting\Enums\Accounting\AccountType::Depreciation->value)
                                 ->required(),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
@@ -239,7 +239,7 @@ class AssetResource extends Resource
                         ->required()
                         ->columnSpan(1),
 
-                    TranslatableSelect::forModel('accumulated_depreciation_account_id', Account::class)
+                    TranslatableSelect::forModel('accumulated_depreciation_account_id', \Modules\Accounting\Models\Account::class)
                         ->label(__('asset.accumulated_depreciation_account'))
                         ->searchableFields(['name', 'code'])
                         ->searchable()
@@ -257,8 +257,8 @@ class AssetResource extends Resource
                                 ->required(),
                             Select::make('type')
                                 ->label(__('account.type'))
-                                ->options(collect(AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
-                                ->default(AccountType::FixedAssets->value)
+                                ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
+                                ->default(\Modules\Accounting\Enums\Accounting\AccountType::FixedAssets->value)
                                 ->required(),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
@@ -272,7 +272,7 @@ class AssetResource extends Resource
     }
 
     /**
-     * @return Builder<Asset>
+     * @return Builder<\Modules\Accounting\Models\Asset>
      */
     public static function getEloquentQuery(): Builder
     {

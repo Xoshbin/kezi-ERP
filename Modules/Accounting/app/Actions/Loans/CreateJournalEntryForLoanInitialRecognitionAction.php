@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\DB;
 
 class CreateJournalEntryForLoanInitialRecognitionAction
 {
-    public function __construct(private readonly CreateJournalEntryAction $createJE) {}
+    public function __construct(private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJE) {}
 
-    public function execute(LoanAgreement $loan, User $user, int $journalId, int $bankAccountId, int $loanAccountId): JournalEntry
+    public function execute(\Modules\Accounting\Models\LoanAgreement $loan, User $user, int $journalId, int $bankAccountId, int $loanAccountId): JournalEntry
     {
         return DB::transaction(function () use ($loan, $user, $journalId, $bankAccountId, $loanAccountId) {
             $loan->loadMissing('company', 'currency');
@@ -85,7 +85,7 @@ class CreateJournalEntryForLoanInitialRecognitionAction
                 created_by_user_id: (int) $user->getAttribute('id'),
                 is_posted: true,
                 lines: $lineDTOs,
-                source_type: LoanAgreement::class,
+                source_type: \Modules\Accounting\Models\LoanAgreement::class,
                 source_id: (int) $loan->getAttribute('id'),
             );
 

@@ -244,7 +244,7 @@ class InventoryQueryOptimizationService
     public function warmUpCache(Company $company): void
     {
         // Get all active products for the company
-        $productIds = Product::where('company_id', $company->id)
+        $productIds = \Modules\Product\Models\Product::where('company_id', $company->id)
             ->where('type', 'storable')
             ->pluck('id')
             ->toArray();

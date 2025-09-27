@@ -104,7 +104,7 @@ class EditPurchaseOrder extends EditRecord
                 ->action(function () {
                     try {
                         // Generate a unique bill reference
-                        $billReference = app(SequenceService::class)->getNextVendorBillNumber(
+                        $billReference = app(\Modules\Foundation\Services\SequenceService::class)->getNextVendorBillNumber(
                             $this->record->company,
                             Carbon::today()
                         );

@@ -50,7 +50,7 @@ use Illuminate\Support\Carbon;
  * @property-read JournalEntry|null $journalEntry
  *
  * @method static Builder<static>|Invoice draft()
- * @method static InvoiceFactory factory($count = null, $state = [])
+ * @method static \Modules\Sales\Database\Factories\InvoiceFactory factory($count = null, $state = [])
  * @method static Builder<static>|Invoice newModelQuery()
  * @method static Builder<static>|Invoice newQuery()
  * @method static Builder<static>|Invoice posted()
@@ -74,10 +74,10 @@ use Illuminate\Support\Carbon;
  *
  * @mixin \Eloquent
  */
-#[ObservedBy([AuditLogObserver::class])]
+#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class Invoice extends Model
 {
-    use HasFactory, HasPaymentState;
+    use HasFactory, \Modules\Foundation\Traits\HasPaymentState;
 
     /**
      * The table associated with the model.
@@ -128,10 +128,10 @@ class Invoice extends Model
         'due_date' => 'date',
         'status' => InvoiceStatus::class,
         'exchange_rate_at_creation' => 'decimal:10',
-        'total_amount' => DocumentCurrencyMoneyCast::class,
-        'total_tax' => DocumentCurrencyMoneyCast::class,
-        'total_amount_company_currency' => BaseCurrencyMoneyCast::class,
-        'total_tax_company_currency' => BaseCurrencyMoneyCast::class,
+        'total_amount' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'total_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'total_amount_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'total_tax_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
         'reset_to_draft_log' => 'json', // Store as JSON/Text as per source [1]
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

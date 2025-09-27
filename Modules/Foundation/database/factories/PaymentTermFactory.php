@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class PaymentTermFactory extends Factory
 {
-    protected $model = PaymentTerm::class;
+    protected $model = \Modules\Foundation\Models\PaymentTerm::class;
 
     /**
      * Define the model's default state.
@@ -72,10 +72,10 @@ class PaymentTermFactory extends Factory
                 'en' => 'Immediate Payment',
                 'ar' => 'دفع فوري',
             ],
-        ])->afterCreating(function (PaymentTerm $paymentTerm) {
+        ])->afterCreating(function (\Modules\Foundation\Models\PaymentTerm $paymentTerm) {
             $paymentTerm->lines()->create([
                 'sequence' => 1,
-                'type' => \App\Enums\PaymentTerms\PaymentTermType::Immediate,
+                'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Immediate,
                 'days' => 0,
                 'percentage' => 100,
             ]);
@@ -92,10 +92,10 @@ class PaymentTermFactory extends Factory
                 'en' => 'Net 30',
                 'ar' => 'صافي 30',
             ],
-        ])->afterCreating(function (PaymentTerm $paymentTerm) {
+        ])->afterCreating(function (\Modules\Foundation\Models\PaymentTerm $paymentTerm) {
             $paymentTerm->lines()->create([
                 'sequence' => 1,
-                'type' => \App\Enums\PaymentTerms\PaymentTermType::Net,
+                'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                 'days' => 30,
                 'percentage' => 100,
             ]);
@@ -112,10 +112,10 @@ class PaymentTermFactory extends Factory
                 'en' => '2% 10, Net 30',
                 'ar' => '2% خلال 10، صافي 30',
             ],
-        ])->afterCreating(function (PaymentTerm $paymentTerm) {
+        ])->afterCreating(function (\Modules\Foundation\Models\PaymentTerm $paymentTerm) {
             $paymentTerm->lines()->create([
                 'sequence' => 1,
-                'type' => \App\Enums\PaymentTerms\PaymentTermType::Net,
+                'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                 'days' => 30,
                 'percentage' => 100,
                 'discount_percentage' => 2.0,
@@ -134,17 +134,17 @@ class PaymentTermFactory extends Factory
                 'en' => '50% in 30 days, 50% in 60 days',
                 'ar' => '50% خلال 30 يوم، 50% خلال 60 يوم',
             ],
-        ])->afterCreating(function (PaymentTerm $paymentTerm) {
+        ])->afterCreating(function (\Modules\Foundation\Models\PaymentTerm $paymentTerm) {
             $paymentTerm->lines()->createMany([
                 [
                     'sequence' => 1,
-                    'type' => \App\Enums\PaymentTerms\PaymentTermType::Net,
+                    'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                     'days' => 30,
                     'percentage' => 50,
                 ],
                 [
                     'sequence' => 2,
-                    'type' => \App\Enums\PaymentTerms\PaymentTermType::Net,
+                    'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
                     'days' => 60,
                     'percentage' => 50,
                 ],

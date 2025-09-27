@@ -80,7 +80,7 @@ class JournalEntryResource extends Resource
                         ->required()
                         ->default(Journal::where('type', JournalType::Miscellaneous)->first()?->id)
                         ->columnSpan(2),
-                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
+                    TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class, 'name')
                         ->label(__('journal_entry.currency'))
                         ->required()
                         ->searchable()
@@ -128,13 +128,13 @@ class JournalEntryResource extends Resource
                             TableColumn::make(__('journal_entry.description'))->width('30%'),
                         ])
                         ->schema([
-                            TranslatableSelect::forModel('account_id', Account::class)
+                            TranslatableSelect::forModel('account_id', \Modules\Accounting\Models\Account::class)
                                 ->label(__('journal_entry.account'))
                                 ->searchableFields(['name', 'code'])
                                 ->searchable()
                                 ->preload()
                                 ->getOptionLabelFromRecordUsing(fn ($record) => $record->getTranslatedLabel('name').' ('.$record->code.')')
-                                ->rules([new ActiveAccount])
+                                ->rules([new \Modules\Accounting\Rules\ActiveAccount])
                                 ->required()
                                 ->columnSpan(3),
                             MoneyInput::make('debit')
@@ -149,7 +149,7 @@ class JournalEntryResource extends Resource
                                 ->currencyField('../../company.currency_id')
                                 ->live(onBlur: true)
                                 ->columnSpan(3),
-                            TranslatableSelect::forModel('partner_id', Partner::class, 'name')
+                            TranslatableSelect::forModel('partner_id', \Modules\Foundation\Models\Partner::class, 'name')
                                 ->label(__('journal_entry.partner'))
                                 ->searchableFields(['name', 'email', 'contact_person'])
                                 ->searchable()

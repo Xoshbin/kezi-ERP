@@ -28,7 +28,7 @@ class IncomeVsExpenseChart extends ChartWidget
             return $this->getEmptyData();
         }
 
-        $plService = app(ProfitAndLossStatementService::class);
+        $plService = app(\Modules\Accounting\Services\Reports\ProfitAndLossStatementService::class);
 
         $revenueData = [];
         $expenseData = [];

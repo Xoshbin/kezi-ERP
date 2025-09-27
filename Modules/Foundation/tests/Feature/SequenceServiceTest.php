@@ -16,15 +16,15 @@ class SequenceServiceTest extends TestCase
 
     private Company $company;
 
-    private SequenceService $sequenceService;
+    private \Modules\Foundation\Services\SequenceService $sequenceService;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $currency = Currency::factory()->create(['code' => 'USD']);
+        $currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
         $this->company = Company::factory()->create(['currency_id' => $currency->id]);
-        $this->sequenceService = app(SequenceService::class);
+        $this->sequenceService = app(\Modules\Foundation\Services\SequenceService::class);
     }
 
     public function test_it_generates_sequential_invoice_numbers()
@@ -71,7 +71,7 @@ class SequenceServiceTest extends TestCase
 
     public function test_it_creates_separate_sequences_for_different_companies()
     {
-        $currency = Currency::factory()->create(['code' => 'EUR']);
+        $currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'EUR']);
         $company2 = Company::factory()->create(['currency_id' => $currency->id]);
 
         $number1Company1 = $this->sequenceService->getNextInvoiceNumber($this->company);
@@ -90,7 +90,7 @@ class SequenceServiceTest extends TestCase
         $this->sequenceService->getNextInvoiceNumber($this->company);
 
         // Create a new service instance to simulate a new request
-        $newService = app(SequenceService::class);
+        $newService = app(\Modules\Foundation\Services\SequenceService::class);
         $nextNumber = $newService->getNextInvoiceNumber($this->company);
 
         $this->assertMatchesRegularExpression('/^INV\/\d{4}\/\d{2}\/\d{7}$/', $nextNumber);
@@ -128,7 +128,7 @@ class SequenceServiceTest extends TestCase
 
     public function test_sequence_model_atomic_increment()
     {
-        $sequence = Sequence::create([
+        $sequence = \Modules\Foundation\Models\Sequence::create([
             'company_id' => $this->company->id,
             'document_type' => 'test',
             'prefix' => 'TEST',

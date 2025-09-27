@@ -132,10 +132,10 @@ describe('Inventory CSV Export Verification', function () {
 
     it('handles special characters in CSV export', function () {
         // Create product with special characters
-        $specialProduct = Product::factory()->for(test()->company)->create([
+        $specialProduct = \Modules\Product\Models\Product::factory()->for(test()->company)->create([
             'name' => 'Product with "Quotes" & Commas, Special chars',
             'sku' => 'SPECIAL-001',
-            'type' => ProductType::Storable,
+            'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::FIFO,
             'default_inventory_account_id' => test()->inventoryAccount->id,
         ]);
@@ -164,8 +164,8 @@ describe('Inventory CSV Export Verification', function () {
 
     it('exports large datasets efficiently', function () {
         // Create many products and stock quants
-        $products = Product::factory()->count(100)->for(test()->company)->create([
-            'type' => ProductType::Storable,
+        $products = \Modules\Product\Models\Product::factory()->count(100)->for(test()->company)->create([
+            'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::FIFO,
             'default_inventory_account_id' => test()->inventoryAccount->id,
         ]);
@@ -298,24 +298,24 @@ function setupExportTestData(): void
 {
     // Create test products
     test()->products = collect([
-        Product::factory()->for(test()->company)->create([
+        \Modules\Product\Models\Product::factory()->for(test()->company)->create([
             'name' => 'Test Product A',
             'sku' => 'TEST-A',
-            'type' => ProductType::Storable,
+            'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::FIFO,
             'default_inventory_account_id' => test()->inventoryAccount->id,
         ]),
-        Product::factory()->for(test()->company)->create([
+        \Modules\Product\Models\Product::factory()->for(test()->company)->create([
             'name' => 'Test Product B',
             'sku' => 'TEST-B',
-            'type' => ProductType::Storable,
+            'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::AVCO,
             'default_inventory_account_id' => test()->inventoryAccount->id,
         ]),
-        Product::factory()->for(test()->company)->create([
+        \Modules\Product\Models\Product::factory()->for(test()->company)->create([
             'name' => 'Test Product C',
             'sku' => 'TEST-C',
-            'type' => ProductType::Storable,
+            'type' => \Modules\Product\Enums\Products\ProductType::Storable,
             'inventory_valuation_method' => ValuationMethod::LIFO,
             'default_inventory_account_id' => test()->inventoryAccount->id,
         ]),

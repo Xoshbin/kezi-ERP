@@ -39,7 +39,7 @@ class CreateVendorBill extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $currency = Currency::findOrFail($data['currency_id']);
+        $currency = \Modules\Foundation\Models\Currency::findOrFail($data['currency_id']);
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
             $currency = $currency->first();
@@ -113,7 +113,7 @@ class CreateVendorBill extends CreateRecord
                 $fileSize = Storage::disk('local')->size($filePath);
 
                 VendorBillAttachment::create([
-                    'company_id' => $this->getRecord() instanceof \App\Models\VendorBill ? $this->getRecord()->company_id : null,
+                    'company_id' => $this->getRecord() instanceof \Modules\Purchase\Models\VendorBill ? $this->getRecord()->company_id : null,
                     'vendor_bill_id' => $this->getRecord()?->getKey(),
                     'file_name' => $fileInfo['basename'],
                     'file_path' => $filePath,

@@ -25,7 +25,7 @@ class CreateBankStatement extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $currency = Currency::findOrFail($data['currency_id']);
+        $currency = \Modules\Foundation\Models\Currency::findOrFail($data['currency_id']);
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
             $currency = $currency->first();
@@ -39,7 +39,7 @@ class CreateBankStatement extends CreateRecord
             $amountInForeignCurrency = null;
 
             if (! empty($line['foreign_currency_id']) && ! empty($line['amount_in_foreign_currency'])) {
-                $foreignCurrency = Currency::findOrFail($line['foreign_currency_id']);
+                $foreignCurrency = \Modules\Foundation\Models\Currency::findOrFail($line['foreign_currency_id']);
                 // Ensure we have a single Currency model, not a collection
                 if ($foreignCurrency instanceof \Illuminate\Database\Eloquent\Collection) {
                     $foreignCurrency = $foreignCurrency->first();
@@ -67,7 +67,7 @@ class CreateBankStatement extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        $currency = Currency::findOrFail($data['currency_id']);
+        $currency = \Modules\Foundation\Models\Currency::findOrFail($data['currency_id']);
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
             $currency = $currency->first();

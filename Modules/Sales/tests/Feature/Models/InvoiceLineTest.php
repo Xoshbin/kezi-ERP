@@ -9,9 +9,9 @@ uses(RefreshDatabase::class);
 
 it('correctly resolves currency through its parent invoice relationship', function () {
     // Arrange
-    $usd = Currency::factory()->create(['code' => 'USD']);
-    $invoice = Invoice::factory()->create(['currency_id' => $usd->id]);
-    $line = InvoiceLine::factory()->create(['invoice_id' => $invoice->id]);
+    $usd = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $invoice = \Modules\Sales\Models\Invoice::factory()->create(['currency_id' => $usd->id]);
+    $line = \Modules\Sales\Models\InvoiceLine::factory()->create(['invoice_id' => $invoice->id]);
 
     // Eager load the relationship just as the application would
     $line->load('invoice.currency');

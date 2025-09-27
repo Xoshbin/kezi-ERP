@@ -24,7 +24,7 @@ class VendorBillFactory extends Factory
     {
         return [
             'company_id' => Company::factory(),
-            'vendor_id' => Partner::factory(),
+            'vendor_id' => \Modules\Foundation\Models\Partner::factory(),
             'currency_id' => function (array $attributes) {
                 return Company::find($attributes['company_id'])->currency_id;
             },
@@ -65,7 +65,7 @@ class VendorBillFactory extends Factory
 
     public function withLines(int $count = 1): self
     {
-        return $this->afterCreating(function (VendorBill $vendorBill) use ($count) {
+        return $this->afterCreating(function (\Modules\Purchase\Models\VendorBill $vendorBill) use ($count) {
             VendorBillLine::factory()->count($count)->create([
                 'vendor_bill_id' => $vendorBill->id,
             ]);

@@ -16,10 +16,10 @@ class CreateJournalEntryForAssetAcquisitionAction
         private readonly CreateJournalEntryAction $createJournalEntryAction
     ) {}
 
-    public function execute(Asset $asset, User $user): JournalEntry
+    public function execute(\Modules\Accounting\Models\Asset $asset, User $user): JournalEntry
     {
         $company = $asset->company;
-        /** @var \App\Models\Currency $assetCurrency */
+        /** @var \Modules\Foundation\Models\Currency $assetCurrency */
         $assetCurrency = $asset->currency;
 
         $payableAccountId = $company->default_accounts_payable_id;
@@ -62,7 +62,7 @@ class CreateJournalEntryForAssetAcquisitionAction
             created_by_user_id: $user->id,
             is_posted: true,
             lines: $lines,
-            source_type: Asset::class,
+            source_type: \Modules\Accounting\Models\Asset::class,
             source_id: $asset->id
         );
 

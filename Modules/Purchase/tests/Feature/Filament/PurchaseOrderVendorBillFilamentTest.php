@@ -21,7 +21,7 @@ beforeEach(function () {
     $this->setupInventoryTestEnvironment();
 
     // Create an expense account for products
-    $this->expenseAccount = Account::factory()->create([
+    $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'expense',
         'code' => '5000',
@@ -29,9 +29,9 @@ beforeEach(function () {
     ]);
 
     // Create a product with expense account
-    $this->product = Product::factory()->create([
+    $this->product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'expense_account_id' => $this->expenseAccount->id,
     ]);
 
@@ -152,14 +152,14 @@ it('can create vendor bill with purchase order link', function () {
         ->assertHasNoFormErrors();
 
     // Verify the vendor bill was created with PO link
-    $vendorBill = \App\Models\VendorBill::where('bill_reference', 'TEST-BILL-001')->first();
+    $vendorBill = \Modules\Purchase\Models\VendorBill::where('bill_reference', 'TEST-BILL-001')->first();
     expect($vendorBill)->not->toBeNull();
     expect((int) $vendorBill->purchase_order_id)->toBe($this->purchaseOrder->id);
 });
 
 it('validates purchase order compatibility when creating vendor bill', function () {
     // Create a PO with different vendor
-    $otherVendor = \App\Models\Partner::factory()->vendor()->create([
+    $otherVendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -196,15 +196,15 @@ it('validates purchase order compatibility when creating vendor bill', function 
 
     // The validation error should occur when trying to create
     // Let's check if the vendor bill is actually created or if validation prevents it
-    $initialCount = \App\Models\VendorBill::count();
+    $initialCount = \Modules\Purchase\Models\VendorBill::count();
 
     try {
         $component->call('create');
-        $finalCount = \App\Models\VendorBill::count();
+        $finalCount = \Modules\Purchase\Models\VendorBill::count();
 
         if ($finalCount > $initialCount) {
             // Bill was created - check if it has the wrong purchase_order_id
-            $bill = \App\Models\VendorBill::latest()->first();
+            $bill = \Modules\Purchase\Models\VendorBill::latest()->first();
             expect($bill->purchase_order_id)->toBe($otherPO->id, 'Bill was created with wrong PO - validation should have prevented this');
         } else {
             // Bill was not created - this is what we expect
@@ -236,7 +236,7 @@ it('can load purchase order data via action', function () {
 
 it('filters purchase orders by vendor in load action', function () {
     // Create another vendor and PO
-    $otherVendor = \App\Models\Partner::factory()->vendor()->create([
+    $otherVendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 

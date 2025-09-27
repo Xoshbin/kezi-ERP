@@ -16,7 +16,7 @@ class AdjustmentDocumentPosted
     /**
      * Create a new event instance.
      */
-    public function __construct(public AdjustmentDocument $adjustmentDocument)
+    public function __construct(public \Modules\Inventory\Models\AdjustmentDocument $adjustmentDocument)
     {
         //
     }

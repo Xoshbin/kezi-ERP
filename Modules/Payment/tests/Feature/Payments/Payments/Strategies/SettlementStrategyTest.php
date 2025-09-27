@@ -24,8 +24,8 @@ beforeEach(function () {
 
 test('it creates payment document links for settlement payment creation', function () {
     // Arrange
-    $invoice = Invoice::factory()->for($this->company)->create();
-    $payment = Payment::factory()->for($this->company)->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create();
+    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
 
         'payment_type' => PaymentType::Inbound,
         'currency_id' => $this->company->currency_id,
@@ -64,8 +64,8 @@ test('it creates payment document links for settlement payment creation', functi
 
 test('it creates payment document links for vendor bill settlement', function () {
     // Arrange
-    $vendorBill = VendorBill::factory()->for($this->company)->create();
-    $payment = Payment::factory()->for($this->company)->create([
+    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create();
+    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
 
         'payment_type' => PaymentType::Outbound,
         'currency_id' => $this->company->currency_id,
@@ -104,8 +104,8 @@ test('it creates payment document links for vendor bill settlement', function ()
 
 test('it updates payment document links correctly', function () {
     // Arrange
-    $invoice = Invoice::factory()->for($this->company)->create();
-    $payment = Payment::factory()->for($this->company)->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create();
+    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
 
         'payment_type' => PaymentType::Inbound,
         'currency_id' => $this->company->currency_id,

@@ -26,7 +26,7 @@ use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class AnalyticAccountResource extends Resource
 {
-    protected static ?string $model = AnalyticAccount::class;
+    protected static ?string $model = \Modules\Accounting\Models\AnalyticAccount::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chart-pie';
 
@@ -63,7 +63,7 @@ class AnalyticAccountResource extends Resource
                     ->label(__('analytic_account.company'))
                     ->placeholder(__('analytic_account.select_company'))
                     ->required(),
-                TranslatableSelect::forModel('currency_id', Currency::class)
+                TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class)
                     ->label(__('analytic_account.currency'))
                     ->searchable()
                     ->preload(),

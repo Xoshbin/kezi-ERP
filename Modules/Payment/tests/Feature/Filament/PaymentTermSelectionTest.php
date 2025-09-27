@@ -19,23 +19,23 @@ beforeEach(function () {
     $this->actingAs($this->user);
 
     // Create a payment term
-    $this->paymentTerm = PaymentTerm::factory()->create([
+    $this->paymentTerm = \Modules\Foundation\Models\PaymentTerm::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Net 30',
         'description' => '30 days payment term',
     ]);
 
-    PaymentTermLine::factory()->create([
+    \Modules\Foundation\Models\PaymentTermLine::factory()->create([
         'payment_term_id' => $this->paymentTerm->id,
         'sequence' => 1,
-        'type' => PaymentTermType::Net,
+        'type' => \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net,
         'days' => 30,
         'percentage' => 100.0,
     ]);
 });
 
 it('can select payment term in invoice form', function () {
-    $customer = Partner::factory()->customer()->create([
+    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -58,7 +58,7 @@ it('can select payment term in invoice form', function () {
 });
 
 it('can select payment term in vendor bill form', function () {
-    $vendor = Partner::factory()->vendor()->create([
+    $vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -81,11 +81,11 @@ it('can select payment term in vendor bill form', function () {
 });
 
 it('displays payment term in invoice table', function () {
-    $customer = Partner::factory()->customer()->create([
+    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $invoice = \App\Models\Invoice::factory()->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $customer->id,
         'currency_id' => $this->company->currency_id,
@@ -98,11 +98,11 @@ it('displays payment term in invoice table', function () {
 });
 
 it('displays payment term in vendor bill table', function () {
-    $vendor = Partner::factory()->vendor()->create([
+    $vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $vendorBill = \App\Models\VendorBill::factory()->create([
+    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
         'company_id' => $this->company->id,
         'vendor_id' => $vendor->id,
         'currency_id' => $this->company->currency_id,

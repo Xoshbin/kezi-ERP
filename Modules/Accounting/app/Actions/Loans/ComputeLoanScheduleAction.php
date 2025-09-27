@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\DB;
 
 class ComputeLoanScheduleAction
 {
-    public function __construct(private readonly InterestCalculatorService $interestCalc) {}
+    public function __construct(private readonly \Modules\Accounting\Services\Loans\InterestCalculatorService $interestCalc) {}
 
-    public function execute(LoanAgreement $loan): void
+    public function execute(\Modules\Accounting\Models\LoanAgreement $loan): void
     {
         DB::transaction(function () use ($loan) {
             $loan->loadMissing('currency', 'scheduleEntries', 'rateChanges');
@@ -38,7 +38,7 @@ class ComputeLoanScheduleAction
             // Prepare rate changes lookup by month index (1-based)
             $rateByMonth = [];
             foreach ($loan->rateChanges as $rc) {
-                /** @var \App\Models\LoanRateChange $rc */
+                /** @var \Modules\Accounting\Models\LoanRateChange $rc */
                 $effective = Carbon::parse($rc->effective_date);
                 $monthIndex = $date->diffInMonths($effective) + 1; // apply to installment whose due date covers period starting at effective
                 $monthIndex = max(1, min($n, $monthIndex));
@@ -68,7 +68,7 @@ class ComputeLoanScheduleAction
 
                 $balance = $balance->minus($principalComponent);
 
-                $entry = new LoanScheduleEntry;
+                $entry = new \Modules\Accounting\Models\LoanScheduleEntry;
                 $entry->loan()->associate($loan);
                 $entry->sequence = $i;
                 $entry->due_date = $date->copy()->addMonths($i);

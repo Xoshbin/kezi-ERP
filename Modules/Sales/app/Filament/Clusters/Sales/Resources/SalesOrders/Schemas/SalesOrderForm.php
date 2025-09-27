@@ -175,7 +175,7 @@ class SalesOrderForm
                                     ->live()
                                     ->afterStateUpdated(function ($state, callable $set) {
                                         if ($state) {
-                                            $product = Product::find($state);
+                                            $product = \Modules\Product\Models\Product::find($state);
                                             if ($product) {
                                                 $set('description', $product->name);
                                                 $set('unit_price', $product->sale_price?->getAmount() ?? 0);

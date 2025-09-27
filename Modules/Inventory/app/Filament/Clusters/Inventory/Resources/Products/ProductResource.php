@@ -51,7 +51,7 @@ class ProductResource extends Resource
 {
     use Translatable;
 
-    protected static ?string $model = Product::class;
+    protected static ?string $model = \Modules\Product\Models\Product::class;
 
     protected static ?string $cluster = InventoryCluster::class;
 
@@ -92,13 +92,13 @@ class ProductResource extends Resource
                             ->label(__('product.sku'))
                             ->required()
                             ->maxLength(255)
-                            ->unique(Product::class, 'sku', ignoreRecord: true),
+                            ->unique(\Modules\Product\Models\Product::class, 'sku', ignoreRecord: true),
                         Select::make('type')
                             ->label(__('product.type'))
                             ->required()
                             ->options(
-                                collect(ProductType::cases())
-                                    ->mapWithKeys(fn(ProductType $type) => [$type->value => $type->label()])
+                                collect(\Modules\Product\Enums\Products\ProductType::cases())
+                                    ->mapWithKeys(fn(\Modules\Product\Enums\Products\ProductType $type) => [$type->value => $type->label()])
                             )
                             ->searchable(),
                     ]),
@@ -131,7 +131,7 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->searchableFields(['name', 'code'])
-                            ->modifyQueryUsing(fn($query) => $query->whereIn('type', [AccountType::Income, AccountType::OtherIncome]))
+                            ->modifyQueryUsing(fn($query) => $query->whereIn('type', [\Modules\Accounting\Enums\Accounting\AccountType::Income, \Modules\Accounting\Enums\Accounting\AccountType::OtherIncome]))
                             ->createOptionForm([
                                 TextInput::make('code')
                                     ->label(__('account.code'))
@@ -145,8 +145,8 @@ class ProductResource extends Resource
                                     ->label(__('account.type'))
                                     ->required()
                                     ->options(
-                                        collect(AccountType::cases())
-                                            ->mapWithKeys(fn(AccountType $type) => [$type->value => $type->label()])
+                                        collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())
+                                            ->mapWithKeys(fn(\Modules\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
@@ -165,7 +165,7 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->searchableFields(['name', 'code'])
-                            ->modifyQueryUsing(fn($query) => $query->whereIn('type', [AccountType::Expense, AccountType::Depreciation, AccountType::CostOfRevenue]))
+                            ->modifyQueryUsing(fn($query) => $query->whereIn('type', [\Modules\Accounting\Enums\Accounting\AccountType::Expense, \Modules\Accounting\Enums\Accounting\AccountType::Depreciation, \Modules\Accounting\Enums\Accounting\AccountType::CostOfRevenue]))
                             ->createOptionForm([
                                 TextInput::make('code')
                                     ->label(__('account.code'))
@@ -179,8 +179,8 @@ class ProductResource extends Resource
                                     ->label(__('account.type'))
                                     ->required()
                                     ->options(
-                                        collect(AccountType::cases())
-                                            ->mapWithKeys(fn(AccountType $type) => [$type->value => $type->label()])
+                                        collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())
+                                            ->mapWithKeys(fn(\Modules\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
@@ -209,13 +209,13 @@ class ProductResource extends Resource
                             ->default(ValuationMethod::AVCO->value)
                             ->searchable()
                             ->live()
-                            ->visible(fn(Get $get) => $get('type') === ProductType::Storable->value)
+                            ->visible(fn(Get $get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
                             ->helperText(__('product.inventory_valuation_method_help')),
                         MoneyInput::make('average_cost')
                             ->label(__('product.average_cost'))
                             ->currencyField('currency_id')
                             ->disabled()
-                            ->visible(fn(Get $get) => $get('type') === ProductType::Storable->value)
+                            ->visible(fn(Get $get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
                             ->helperText(__('product.average_cost_help')),
                     ]),
                     Grid::make(2)->schema([
@@ -225,9 +225,9 @@ class ProductResource extends Resource
                             ->searchable()
                             ->preload()
                             ->searchableFields(['name'])
-                            ->required(fn(Get $get) => $get('type') === ProductType::Storable->value)
-                            ->rules(['required_if:type,' . ProductType::Storable->value])
-                            ->visible(fn(Get $get) => $get('type') === ProductType::Storable->value)
+                            ->required(fn(Get $get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
+                            ->rules(['required_if:type,' . \Modules\Product\Enums\Products\ProductType::Storable->value])
+                            ->visible(fn(Get $get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
                                     ->default(fn() => Filament::getTenant()?->getKey()),
@@ -243,8 +243,8 @@ class ProductResource extends Resource
                                     ->label(__('account.type'))
                                     ->required()
                                     ->options(
-                                        collect(AccountType::cases())
-                                            ->mapWithKeys(fn(AccountType $type) => [$type->value => $type->label()])
+                                        collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())
+                                            ->mapWithKeys(fn(\Modules\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
@@ -257,13 +257,13 @@ class ProductResource extends Resource
                             }),
                         TranslatableSelect::make('default_cogs_account_id')
                             ->relationship('defaultCogsAccount', 'name')
-                            ->forModel('default_cogs_account_id', Account::class, 'name')
+                            ->forModel('default_cogs_account_id', \Modules\Accounting\Models\Account::class, 'name')
                             ->label(__('product.default_cogs_account'))
                             ->searchable()
                             ->preload()
                             ->searchableFields(['name'])
 
-                            ->visible(fn(Get $get) => $get('type') === ProductType::Storable->value)
+                            ->visible(fn(Get $get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
                                     ->default(fn() => Filament::getTenant()?->getKey()),
@@ -279,8 +279,8 @@ class ProductResource extends Resource
                                     ->label(__('account.type'))
                                     ->required()
                                     ->options(
-                                        collect(AccountType::cases())
-                                            ->mapWithKeys(fn(AccountType $type) => [$type->value => $type->label()])
+                                        collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())
+                                            ->mapWithKeys(fn(\Modules\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
@@ -300,7 +300,7 @@ class ProductResource extends Resource
                             ->preload()
                             ->searchableFields(['name', 'code'])
 
-                            ->visible(fn(Get $get) => $get('type') === ProductType::Storable->value)
+                            ->visible(fn(Get $get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
                                     ->default(fn() => Filament::getTenant()?->getKey()),
@@ -316,8 +316,8 @@ class ProductResource extends Resource
                                     ->label(__('account.type'))
                                     ->required()
                                     ->options(
-                                        collect(AccountType::cases())
-                                            ->mapWithKeys(fn(AccountType $type) => [$type->value => $type->label()])
+                                        collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())
+                                            ->mapWithKeys(fn(\Modules\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
@@ -335,7 +335,7 @@ class ProductResource extends Resource
                             ->preload()
                             ->searchableFields(['name', 'code'])
 
-                            ->visible(fn(Get $get) => $get('type') === ProductType::Storable->value)
+                            ->visible(fn(Get $get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
                             ->createOptionForm([
                                 Hidden::make('company_id')
                                     ->default(fn() => Filament::getTenant()?->getKey()),
@@ -351,8 +351,8 @@ class ProductResource extends Resource
                                     ->label(__('account.type'))
                                     ->required()
                                     ->options(
-                                        collect(AccountType::cases())
-                                            ->mapWithKeys(fn(AccountType $type) => [$type->value => $type->label()])
+                                        collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())
+                                            ->mapWithKeys(fn(\Modules\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
@@ -368,10 +368,10 @@ class ProductResource extends Resource
                         Toggle::make('lot_tracking_enabled')
                             ->label(__('product.lot_tracking_enabled'))
                             ->helperText(__('product.lot_tracking_enabled_help'))
-                            ->visible(fn(Get $get) => $get('type') === ProductType::Storable->value),
+                            ->visible(fn(Get $get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value),
                     ]),
                 ])
-                ->visible(fn(Get $get) => $get('type') === ProductType::Storable->value),
+                ->visible(fn(Get $get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value),
 
             Section::make(__('product.status'))
                 ->description(__('product.status_description'))
@@ -410,12 +410,12 @@ class ProductResource extends Resource
                 TextColumn::make('type')
                     ->label(__('product.type'))
                     ->badge()
-                    ->formatStateUsing(fn(ProductType $state): string => $state->label())
-                    ->color(fn(ProductType $state): string => match ($state) {
-                        ProductType::Product => 'primary',
-                        ProductType::Service => 'success',
-                        ProductType::Storable => 'warning',
-                        ProductType::Consumable => 'info',
+                    ->formatStateUsing(fn(\Modules\Product\Enums\Products\ProductType $state): string => $state->label())
+                    ->color(fn(\Modules\Product\Enums\Products\ProductType $state): string => match ($state) {
+                        \Modules\Product\Enums\Products\ProductType::Product => 'primary',
+                        \Modules\Product\Enums\Products\ProductType::Service => 'success',
+                        \Modules\Product\Enums\Products\ProductType::Storable => 'warning',
+                        \Modules\Product\Enums\Products\ProductType::Consumable => 'info',
                     }),
                 MoneyColumn::make('unit_price')
                     ->label(__('product.unit_price'))
@@ -474,8 +474,8 @@ class ProductResource extends Resource
                 SelectFilter::make('type')
                     ->label(__('product.type'))
                     ->options(
-                        collect(ProductType::cases())
-                            ->mapWithKeys(fn(ProductType $type) => [$type->value => $type->label()])
+                        collect(\Modules\Product\Enums\Products\ProductType::cases())
+                            ->mapWithKeys(fn(\Modules\Product\Enums\Products\ProductType $type) => [$type->value => $type->label()])
                     )
                     ->multiple(),
                 TernaryFilter::make('is_active')
@@ -505,7 +505,7 @@ class ProductResource extends Resource
     }
 
     /**
-     * @return Builder<Product>
+     * @return Builder<\Modules\Product\Models\Product>
      */
     public static function getEloquentQuery(): Builder
     {

@@ -23,7 +23,7 @@ class CreatePaymentFromPayrollAction
      *
      * @throws InvalidArgumentException
      */
-    public function execute(Payroll $payroll, User $user): Payment
+    public function execute(\Modules\HR\Models\Payroll $payroll, User $user): \Modules\Payment\Models\Payment
     {
         // Validate payroll status
         if ($payroll->status !== 'processed') {

@@ -16,7 +16,7 @@ uses(WithConfiguredCompany::class);
 describe('Bank Statement Foreign Currency Transactions', function () {
     beforeEach(function () {
         // Create USD currency for foreign currency tests
-        $this->usdCurrency = Currency::firstOrCreate(
+        $this->usdCurrency = \Modules\Foundation\Models\Currency::firstOrCreate(
             ['code' => 'USD'],
             [
                 'name' => ['en' => 'US Dollar', 'ckb' => 'دۆلاری ئەمریکی', 'ar' => 'دولار أمريكي'],
@@ -27,7 +27,7 @@ describe('Bank Statement Foreign Currency Transactions', function () {
         );
 
         // Create EUR currency for additional tests
-        $this->eurCurrency = Currency::firstOrCreate(
+        $this->eurCurrency = \Modules\Foundation\Models\Currency::firstOrCreate(
             ['code' => 'EUR'],
             [
                 'name' => ['en' => 'Euro', 'ckb' => 'یۆرۆ', 'ar' => 'يورو'],
@@ -77,7 +77,7 @@ describe('Bank Statement Foreign Currency Transactions', function () {
         $bankStatement = app(CreateBankStatementAction::class)->execute($bankStatementDTO);
 
         // Assert: Verify that the statement was created correctly
-        expect($bankStatement)->toBeInstanceOf(BankStatement::class);
+        expect($bankStatement)->toBeInstanceOf(\Modules\Accounting\Models\BankStatement::class);
         expect($bankStatement->currency->code)->toBe('IQD');
         expect($bankStatement->starting_balance->getCurrency()->getCurrencyCode())->toBe('IQD');
         expect($bankStatement->ending_balance->getCurrency()->getCurrencyCode())->toBe('IQD');

@@ -20,7 +20,7 @@ class EmployeeResource extends Resource
 {
     use Translatable;
 
-    protected static ?string $model = Employee::class;
+    protected static ?string $model = \Modules\HR\Models\Employee::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user';
 
@@ -78,7 +78,7 @@ class EmployeeResource extends Resource
     }
 
     /**
-     * @return Builder<Employee>
+     * @return Builder<\Modules\HR\Models\Employee>
      */
     public static function getRecordRouteBindingEloquentQuery(): Builder
     {

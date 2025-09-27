@@ -34,13 +34,13 @@ class EditBankStatement extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        /** @var \App\Models\BankStatement $record */
+        /** @var \Modules\Accounting\Models\BankStatement $record */
         $record = $this->record;
         $record->loadMissing('bankStatementLines', 'currency');
 
-        /** @var \Illuminate\Database\Eloquent\Collection<int, BankStatementLine> $bankStatementLines */
+        /** @var \Illuminate\Database\Eloquent\Collection<int, \Modules\Accounting\Models\BankStatementLine> $bankStatementLines */
         $bankStatementLines = $record->bankStatementLines;
-        $linesData = $bankStatementLines->map(function (BankStatementLine $line) {
+        $linesData = $bankStatementLines->map(function (\Modules\Accounting\Models\BankStatementLine $line) {
             return [
                 'date' => $line->date->format('Y-m-d'),
                 'description' => $line->description,
@@ -57,14 +57,14 @@ class EditBankStatement extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        /** @var BankStatement $record */
+        /** @var \Modules\Accounting\Models\BankStatement $record */
         $lineDTOs = [];
         foreach ($data['bankStatementLines'] as $line) {
             $foreignCurrency = null;
             $amountInForeignCurrency = null;
 
             if (! empty($line['foreign_currency_id']) && ! empty($line['amount_in_foreign_currency'])) {
-                $foreignCurrency = Currency::findOrFail($line['foreign_currency_id']);
+                $foreignCurrency = \Modules\Foundation\Models\Currency::findOrFail($line['foreign_currency_id']);
                 // Ensure we have a single Currency model, not a collection
                 if ($foreignCurrency instanceof \Illuminate\Database\Eloquent\Collection) {
                     $foreignCurrency = $foreignCurrency->first();

@@ -21,14 +21,14 @@ class BaseCurrencyMoneyCast extends MoneyCast
      * Resolve the currency by finding the company's base currency.
      * This method now expects relationships to be eager-loaded to prevent N+1 issues.
      */
-    protected function resolveCurrency(Model $model): Currency
+    protected function resolveCurrency(Model $model): \Modules\Foundation\Models\Currency
     {
         // This is the most efficient path, traversing loaded relationships.
         if (method_exists($model, 'company') && $model->relationLoaded('company')) {
             $company = $model->getRelation('company');
             if ($company instanceof \Illuminate\Database\Eloquent\Model && method_exists($company, 'currency')) {
                 $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
-                if ($currency instanceof \App\Models\Currency) {
+                if ($currency instanceof \Modules\Foundation\Models\Currency) {
                     return $currency;
                 }
             }
@@ -39,7 +39,7 @@ class BaseCurrencyMoneyCast extends MoneyCast
                 $company = $journalEntry->relationLoaded('company') ? $journalEntry->getRelation('company') : $journalEntry->company()->first();
                 if ($company instanceof \Illuminate\Database\Eloquent\Model && method_exists($company, 'currency')) {
                     $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
-                    if ($currency instanceof \App\Models\Currency) {
+                    if ($currency instanceof \Modules\Foundation\Models\Currency) {
                         return $currency;
                     }
                 }
@@ -51,7 +51,7 @@ class BaseCurrencyMoneyCast extends MoneyCast
                 $company = $asset->relationLoaded('company') ? $asset->getRelation('company') : $asset->company()->first();
                 if ($company instanceof \Illuminate\Database\Eloquent\Model && method_exists($company, 'currency')) {
                     $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
-                    if ($currency instanceof \App\Models\Currency) {
+                    if ($currency instanceof \Modules\Foundation\Models\Currency) {
                         return $currency;
                     }
                 }
@@ -64,7 +64,7 @@ class BaseCurrencyMoneyCast extends MoneyCast
                 $company = $product->relationLoaded('company') ? $product->getRelation('company') : $product->company()->first();
                 if ($company instanceof \Illuminate\Database\Eloquent\Model && method_exists($company, 'currency')) {
                     $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
-                    if ($currency instanceof \App\Models\Currency) {
+                    if ($currency instanceof \Modules\Foundation\Models\Currency) {
                         return $currency;
                     }
                 }
@@ -78,7 +78,7 @@ class BaseCurrencyMoneyCast extends MoneyCast
         if (method_exists($model, 'company') && $model->getAttribute('company_id')) {
             $company = $model->company()->with('currency')->first();
             if ($company && $company->currency) {
-                /** @var \App\Models\Currency $currency */
+                /** @var \Modules\Foundation\Models\Currency $currency */
                 $currency = $company->currency;
 
                 return $currency;
@@ -87,7 +87,7 @@ class BaseCurrencyMoneyCast extends MoneyCast
         if (method_exists($model, 'journalEntry') && $model->getAttribute('journal_entry_id')) {
             $journalEntry = $model->journalEntry()->with('company.currency')->first();
             if ($journalEntry && $journalEntry->company && $journalEntry->company->currency) {
-                /** @var \App\Models\Currency $currency */
+                /** @var \Modules\Foundation\Models\Currency $currency */
                 $currency = $journalEntry->company->currency;
 
                 return $currency;
@@ -104,7 +104,7 @@ class BaseCurrencyMoneyCast extends MoneyCast
         try {
             $tenant = Filament::getTenant();
             if ($tenant instanceof \Illuminate\Database\Eloquent\Model && method_exists($tenant, 'currency')) {
-                /** @var \App\Models\Currency|null $currency */
+                /** @var \Modules\Foundation\Models\Currency|null $currency */
                 $currency = $tenant->relationLoaded('currency') ? $tenant->getRelation('currency') : $tenant->currency()->first();
                 if ($currency) {
                     return $currency;

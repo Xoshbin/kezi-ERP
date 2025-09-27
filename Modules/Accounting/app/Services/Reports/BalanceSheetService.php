@@ -30,13 +30,13 @@ class BalanceSheetService
 
         // 3. Get account models to access translated names
         $accountIds = $accountBalances->pluck('account_id')->unique();
-        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account> $accounts */
+        /** @var \Illuminate\Database\Eloquent\Collection<int, \Modules\Accounting\Models\Account> $accounts */
         $accounts = $company->accounts()->whereIn('id', $accountIds)->get()->keyBy('id');
 
         // 4. Process and assemble the DTO
-        $assetLines = $this->mapBalancesToReportLines($accountBalances, AccountType::assetTypes(), $currency, $accounts);
-        $liabilityLines = $this->mapBalancesToReportLines($accountBalances, AccountType::liabilityTypes(), $currency, $accounts, true);
-        $equityLines = $this->mapBalancesToReportLines($accountBalances, AccountType::equityTypes(), $currency, $accounts, true);
+        $assetLines = $this->mapBalancesToReportLines($accountBalances, \Modules\Accounting\Enums\Accounting\AccountType::assetTypes(), $currency, $accounts);
+        $liabilityLines = $this->mapBalancesToReportLines($accountBalances, \Modules\Accounting\Enums\Accounting\AccountType::liabilityTypes(), $currency, $accounts, true);
+        $equityLines = $this->mapBalancesToReportLines($accountBalances, \Modules\Accounting\Enums\Accounting\AccountType::equityTypes(), $currency, $accounts, true);
 
         $totalAssets = $this->sumLines($assetLines, $zero);
         $totalLiabilities = $this->sumLines($liabilityLines, $zero);
@@ -79,7 +79,7 @@ class BalanceSheetService
             ->join('accounts', 'journal_entry_lines.account_id', '=', 'accounts.id')
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
             ->where('accounts.company_id', $company->id)
-            ->whereIn('accounts.type', array_map(fn ($type) => $type->value, AccountType::balanceSheetTypes()))
+            ->whereIn('accounts.type', array_map(fn ($type) => $type->value, \Modules\Accounting\Enums\Accounting\AccountType::balanceSheetTypes()))
             ->where('journal_entries.state', JournalEntryState::Posted->value)
             ->where('journal_entries.entry_date', '<=', $asOfDate->toDateString())
             ->groupBy('accounts.id', 'accounts.code', 'accounts.name', 'accounts.type')
@@ -119,11 +119,11 @@ class BalanceSheetService
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
             ->where('accounts.company_id', $company->id)
             ->whereIn('accounts.type', [
-                AccountType::Income->value,
-                AccountType::OtherIncome->value,
-                AccountType::Expense->value,
-                AccountType::Depreciation->value,
-                AccountType::CostOfRevenue->value,
+                \Modules\Accounting\Enums\Accounting\AccountType::Income->value,
+                \Modules\Accounting\Enums\Accounting\AccountType::OtherIncome->value,
+                \Modules\Accounting\Enums\Accounting\AccountType::Expense->value,
+                \Modules\Accounting\Enums\Accounting\AccountType::Depreciation->value,
+                \Modules\Accounting\Enums\Accounting\AccountType::CostOfRevenue->value,
             ])
             ->where('journal_entries.state', JournalEntryState::Posted->value)
             ->whereBetween('journal_entries.entry_date', [$fiscalYearStart, $asOfDate])
@@ -142,15 +142,15 @@ class BalanceSheetService
 
         // Calculate total revenue (Income accounts have credit nature, so we negate)
         $totalRevenue = Money::ofMinor(
-            -$balances->get(AccountType::Income->value, 0) - $balances->get(AccountType::OtherIncome->value, 0),
+            -$balances->get(\Modules\Accounting\Enums\Accounting\AccountType::Income->value, 0) - $balances->get(\Modules\Accounting\Enums\Accounting\AccountType::OtherIncome->value, 0),
             $company->currency->code
         );
 
         // Calculate total expenses (Expense accounts have debit nature)
         $totalExpenses = Money::ofMinor(
-            $balances->get(AccountType::Expense->value, 0) +
-            $balances->get(AccountType::Depreciation->value, 0) +
-            $balances->get(AccountType::CostOfRevenue->value, 0),
+            $balances->get(\Modules\Accounting\Enums\Accounting\AccountType::Expense->value, 0) +
+            $balances->get(\Modules\Accounting\Enums\Accounting\AccountType::Depreciation->value, 0) +
+            $balances->get(\Modules\Accounting\Enums\Accounting\AccountType::CostOfRevenue->value, 0),
             $company->currency->code
         );
 
@@ -158,8 +158,8 @@ class BalanceSheetService
     }
 
     /**
-     * @param  array<AccountType>  $types
-     * @param  \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account>  $accounts
+     * @param array<\Modules\Accounting\Enums\Accounting\AccountType> $types
+     * @param \Illuminate\Database\Eloquent\Collection<int, \Modules\Accounting\Models\Account> $accounts
      * @return \Illuminate\Support\Collection<int, ReportLineDTO>
      */
     private function mapBalancesToReportLines(Collection $balances, array $types, string $currency, Collection $accounts, bool $negate = false): Collection

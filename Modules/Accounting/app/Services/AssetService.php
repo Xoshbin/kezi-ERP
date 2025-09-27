@@ -28,22 +28,22 @@ class AssetService
         protected PostDepreciationEntryAction $postDepreciationEntryAction
     ) {}
 
-    public function createAsset(CreateAssetDTO $dto): Asset
+    public function createAsset(\Modules\Accounting\DataTransferObjects\Assets\CreateAssetDTO $dto): \Modules\Accounting\Models\Asset
     {
         return $this->createAssetAction->execute($dto);
     }
 
-    public function updateAsset(Asset $asset, UpdateAssetDTO $dto): Asset
+    public function updateAsset(\Modules\Accounting\Models\Asset $asset, UpdateAssetDTO $dto): \Modules\Accounting\Models\Asset
     {
         return $this->updateAssetAction->execute($asset, $dto);
     }
 
-    public function disposeAsset(Asset $asset, DisposeAssetDTO $dto, User $user): Asset
+    public function disposeAsset(\Modules\Accounting\Models\Asset $asset, DisposeAssetDTO $dto, User $user): \Modules\Accounting\Models\Asset
     {
         return $this->disposeAssetAction->execute($asset, $dto, $user);
     }
 
-    public function postDepreciation(DepreciationEntry $depreciationEntry, User $user): DepreciationEntry
+    public function postDepreciation(\Modules\Accounting\Models\DepreciationEntry $depreciationEntry, User $user): \Modules\Accounting\Models\DepreciationEntry
     {
         return $this->postDepreciationEntryAction->execute($depreciationEntry, $user);
     }
@@ -52,30 +52,30 @@ class AssetService
      * Delete an asset, but only if it is in draft status and has no associated financial records.
      * Enforces the accounting principle of immutability for confirmed assets and those with financial history.
      *
-     * @param  Asset  $asset  The asset to be deleted.
+     * @param \Modules\Accounting\Models\Asset $asset The asset to be deleted.
      * @return bool True on successful deletion.
      *
-     * @throws DeletionNotAllowedException If the asset cannot be deleted due to business rules.
+     * @throws \Modules\Foundation\Exceptions\DeletionNotAllowedException If the asset cannot be deleted due to business rules.
      */
-    public function delete(Asset $asset): bool
+    public function delete(\Modules\Accounting\Models\Asset $asset): bool
     {
         // Guard Clause 1: Only allow deleting if the status is Draft.
         if ($asset->status !== AssetStatus::Draft) {
-            throw new DeletionNotAllowedException(
+            throw new \Modules\Foundation\Exceptions\DeletionNotAllowedException(
                 'Cannot delete a confirmed asset. Only draft assets can be deleted.'
             );
         }
 
         // Guard Clause 2: Check for any depreciation entries (even draft ones).
         if ($asset->depreciationEntries()->exists()) {
-            throw new DeletionNotAllowedException(
+            throw new \Modules\Foundation\Exceptions\DeletionNotAllowedException(
                 'Cannot delete an asset with depreciation entries. Depreciation history must be preserved.'
             );
         }
 
         // Guard Clause 3: Check for any journal entries.
         if ($asset->journalEntries()->exists()) {
-            throw new DeletionNotAllowedException(
+            throw new \Modules\Foundation\Exceptions\DeletionNotAllowedException(
                 'Cannot delete an asset with associated journal entries. Financial records must be preserved.'
             );
         }
@@ -89,7 +89,7 @@ class AssetService
     /**
      * @return Collection<int, array<string, mixed>>
      */
-    public function computeDepreciation(Asset $asset): Collection
+    public function computeDepreciation(\Modules\Accounting\Models\Asset $asset): Collection
     {
         $asset->load('currency');
         $depreciableValue = $asset->purchase_value->minus($asset->salvage_value, RoundingMode::HALF_UP);
@@ -102,7 +102,7 @@ class AssetService
 
         for ($i = 0; $i < $asset->useful_life_years * 12; $i++) {
             $depreciationDate = $depreciationDate->addMonth();
-            $entry = DepreciationEntry::create([
+            $entry = \Modules\Accounting\Models\DepreciationEntry::create([
                 'asset_id' => $asset->id,
                 'company_id' => $asset->company_id,
                 'amount' => $monthlyDepreciation,

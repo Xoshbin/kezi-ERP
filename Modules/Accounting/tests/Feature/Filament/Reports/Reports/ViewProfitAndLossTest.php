@@ -32,10 +32,10 @@ describe('ViewProfitAndLoss Filament Page', function () {
         $currency = $this->company->currency->code;
         $journal = Journal::factory()->for($this->company)->create();
 
-        $salesAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Income]);
-        $expenseAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Expense]);
-        $receivableAccount = Account::factory()->for($this->company)->create(['type' => AccountType::Receivable]);
-        $bankAccount = Account::factory()->for($this->company)->create(['type' => AccountType::BankAndCash]);
+        $salesAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
+        $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
+        $receivableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Receivable]);
+        $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash]);
 
         // Create a sale transaction
         $salesEntry = JournalEntry::factory()->for($this->company)->for($journal)

@@ -14,15 +14,15 @@ class VendorFinancialWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        if (! $this->record instanceof Partner) {
+        if (! $this->record instanceof \Modules\Foundation\Models\Partner) {
             return [];
         }
 
-        /** @var Partner $partner */
+        /** @var \Modules\Foundation\Models\Partner $partner */
         $partner = $this->record;
 
         // Only show for vendors and both types
-        if (! in_array($partner->type, [PartnerType::Vendor, PartnerType::Both])) {
+        if (! in_array($partner->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
             return [];
         }
 

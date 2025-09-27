@@ -30,13 +30,13 @@ it('can render the create page', function () {
 });
 
 it('can create an adjustment document', function () {
-    /** @var \App\Models\Account $account */
-    $account = Account::factory()->create([
+    /** @var \Modules\Accounting\Models\Account $account */
+    $account = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \App\Models\Product $product */
-    $product = Product::factory()->create([
+    /** @var \Modules\Product\Models\Product $product */
+    $product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Test Product Line', // Set a specific name to match the database assertion
         'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code), // Set a specific price for predictable total
@@ -75,7 +75,7 @@ it('can create an adjustment document', function () {
         'quantity' => 2,
     ]);
 
-    $adjustmentDocument = AdjustmentDocument::first();
+    $adjustmentDocument = \Modules\Inventory\Models\AdjustmentDocument::first();
     $this->assertEquals(200, $adjustmentDocument->total_amount->getAmount()->toFloat());
 });
 
@@ -99,7 +99,7 @@ it('can validate input on create', function () {
 });
 
 it('can render the edit page', function () {
-    $adjustmentDocument = AdjustmentDocument::factory()->create([
+    $adjustmentDocument = \Modules\Inventory\Models\AdjustmentDocument::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -108,12 +108,12 @@ it('can render the edit page', function () {
 });
 
 it('can edit an adjustment document', function () {
-    /** @var \App\Models\Account $account */
-    $account = Account::factory()->create([
+    /** @var \Modules\Accounting\Models\Account $account */
+    $account = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $adjustmentDocument = AdjustmentDocument::factory()->create([
+    $adjustmentDocument = \Modules\Inventory\Models\AdjustmentDocument::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'reference_number' => 'Old Ref',
@@ -151,12 +151,12 @@ it('can edit an adjustment document', function () {
 });
 
 it('can post an adjustment document', function () {
-    /** @var \App\Models\Account $account */
-    $account = Account::factory()->create([
+    /** @var \Modules\Accounting\Models\Account $account */
+    $account = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $adjustmentDocument = AdjustmentDocument::factory()->create([
+    $adjustmentDocument = \Modules\Inventory\Models\AdjustmentDocument::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'status' => AdjustmentDocumentStatus::Draft,

@@ -14,7 +14,7 @@ class CreateJournalEntryForDepreciationAction
 {
     public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 
-    public function execute(DepreciationEntry $entry, User $user): JournalEntry
+    public function execute(\Modules\Accounting\Models\DepreciationEntry $entry, User $user): JournalEntry
     {
         // 1. Load necessary relationships for context.
         $entry->load('asset.company.currency');
@@ -57,7 +57,7 @@ class CreateJournalEntryForDepreciationAction
             entry_date: $entry->depreciation_date,
             reference: 'DEPR/'.$asset->name.'/'.$entry->depreciation_date->format('Y-m'),
             description: 'Depreciation for '.$asset->name,
-            source_type: DepreciationEntry::class,
+            source_type: \Modules\Accounting\Models\DepreciationEntry::class,
             source_id: $entry->id,
             created_by_user_id: $user->id,
             is_posted: true,

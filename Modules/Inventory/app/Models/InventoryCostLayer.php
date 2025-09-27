@@ -25,7 +25,7 @@ class InventoryCostLayer extends Model
     protected $casts = [
         'quantity' => 'float',
         'remaining_quantity' => 'float',
-        'cost_per_unit' => BaseCurrencyMoneyCast::class,
+        'cost_per_unit' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
         'purchase_date' => 'date',
     ];
 

@@ -21,7 +21,7 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
 
     // Create foreign currency (USD)
-    $this->foreignCurrency = Currency::factory()->create([
+    $this->foreignCurrency = \Modules\Foundation\Models\Currency::factory()->create([
         'code' => 'USD',
         'name' => ['en' => 'US Dollar'],
         'symbol' => '$',
@@ -30,7 +30,7 @@ beforeEach(function () {
 
     // Create exchange rate for today (future date relative to test document)
     $this->exchangeRate = 1460.0;
-    CurrencyRate::create([
+    \Modules\Foundation\Models\CurrencyRate::create([
         'currency_id' => $this->foreignCurrency->id,
         'company_id' => $this->company->id,
         'rate' => $this->exchangeRate,
@@ -38,15 +38,15 @@ beforeEach(function () {
         'source' => 'manual',
     ]);
 
-    $this->vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
-    $this->customer = Partner::factory()->customer()->create(['company_id' => $this->company->id]);
-    $this->product = Product::factory()->create(['company_id' => $this->company->id]);
+    $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
+    $this->customer = \Modules\Foundation\Models\Partner::factory()->customer()->create(['company_id' => $this->company->id]);
+    $this->product = \Modules\Product\Models\Product::factory()->create(['company_id' => $this->company->id]);
 });
 
 describe('Exchange Rate Historical Fallback', function () {
     test('vendor bill service falls back to latest rate when no historical rate exists', function () {
         // Create vendor bill with historical date (before our exchange rate)
-        $vendorBill = VendorBill::factory()->create([
+        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -70,7 +70,7 @@ describe('Exchange Rate Historical Fallback', function () {
 
         // Should use the latest available rate (1460.0)
         expect((float) $vendorBill->exchange_rate_at_creation)->toBe($this->exchangeRate);
-        
+
         // Should convert amounts properly
         expect($vendorBill->total_amount_company_currency->getAmount()->toFloat())->toBe(146000.0); // 100 * 1460
         expect($vendorBill->total_tax_company_currency->getAmount()->toFloat())->toBe(14600.0); // 10 * 1460
@@ -78,7 +78,7 @@ describe('Exchange Rate Historical Fallback', function () {
 
     test('invoice service falls back to latest rate when no historical rate exists', function () {
         // Create invoice with historical date (before our exchange rate)
-        $invoice = Invoice::factory()->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
             'company_id' => $this->company->id,
             'customer_id' => $this->customer->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -102,7 +102,7 @@ describe('Exchange Rate Historical Fallback', function () {
 
         // Should use the latest available rate (1460.0)
         expect((float) $invoice->exchange_rate_at_creation)->toBe($this->exchangeRate);
-        
+
         // Should convert amounts properly
         expect($invoice->total_amount_company_currency->getAmount()->toFloat())->toBe(292000.0); // 200 * 1460
         expect($invoice->total_tax_company_currency->getAmount()->toFloat())->toBe(29200.0); // 20 * 1460
@@ -110,9 +110,9 @@ describe('Exchange Rate Historical Fallback', function () {
 
     test('vendor bill service uses manual exchange rate when provided', function () {
         $manualRate = 1500.0;
-        
+
         // Create vendor bill with manual exchange rate
-        $vendorBill = VendorBill::factory()->create([
+        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->foreignCurrency->id,
@@ -136,7 +136,7 @@ describe('Exchange Rate Historical Fallback', function () {
 
         // Should use the manual rate, not the latest rate
         expect((float) $vendorBill->exchange_rate_at_creation)->toBe($manualRate);
-        
+
         // Should convert amounts using manual rate
         expect($vendorBill->total_amount_company_currency->getAmount()->toFloat())->toBe(150000.0); // 100 * 1500
         expect($vendorBill->total_tax_company_currency->getAmount()->toFloat())->toBe(15000.0); // 10 * 1500
@@ -144,7 +144,7 @@ describe('Exchange Rate Historical Fallback', function () {
 
     test('services handle base currency documents correctly', function () {
         // Create vendor bill in base currency (IQD)
-        $vendorBill = VendorBill::factory()->create([
+        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->company->currency_id, // Base currency

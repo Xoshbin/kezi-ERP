@@ -15,7 +15,7 @@ class ProcessIncomingStockAction
 {
     public function __construct(
         protected InventoryValuationService $inventoryValuationService,
-        protected CurrencyConverterService $currencyConverter,
+        protected \Modules\Foundation\Services\CurrencyConverterService $currencyConverter,
         protected StockQuantService $stockQuantService,
     ) {}
 
@@ -35,7 +35,7 @@ class ProcessIncomingStockAction
         $costPerUnit = $this->extractCostFromSource($stockMove, $productLine);
 
         $product = $productLine->product;
-        if (! $product instanceof \App\Models\Product) {
+        if (! $product instanceof \Modules\Product\Models\Product) {
             throw new \Exception('Product not found for product line');
         }
 
@@ -47,7 +47,7 @@ class ProcessIncomingStockAction
         // Ensure cost is in company base currency
         $costPerUnitCompany = $costPerUnit;
         $companyCurrency = $product->company->currency;
-        if ($sourceDocument instanceof VendorBill) {
+        if ($sourceDocument instanceof \Modules\Purchase\Models\VendorBill) {
             // Use the vendor bill's stored exchange rate for consistency
             $exchangeRate = $sourceDocument->exchange_rate_at_creation ?? 1.0;
             if ($sourceDocument->currency_id !== $companyCurrency->id) {
@@ -79,7 +79,7 @@ class ProcessIncomingStockAction
     {
         $sourceDocument = $stockMove->source;
 
-        if ($sourceDocument instanceof VendorBill) {
+        if ($sourceDocument instanceof \Modules\Purchase\Models\VendorBill) {
             return $this->extractCostFromVendorBill($productLine, $sourceDocument);
         }
 
@@ -96,7 +96,7 @@ class ProcessIncomingStockAction
     /**
      * Extract cost from vendor bill line
      */
-    private function extractCostFromVendorBill(\App\Models\StockMoveProductLine $productLine, VendorBill $vendorBill): Money
+    private function extractCostFromVendorBill(\App\Models\StockMoveProductLine $productLine, \Modules\Purchase\Models\VendorBill $vendorBill): Money
     {
         // Find the vendor bill line that corresponds to this product
         $line = $vendorBill->lines()

@@ -36,10 +36,10 @@ class PaymentService
     /**
      * Confirm a draft payment, locking it and creating the journal entry.
      */
-    public function confirm(Payment $payment, User $user): Payment
+    public function confirm(\Modules\Payment\Models\Payment $payment, User $user): \Modules\Payment\Models\Payment
     {
         if ($payment->status !== PaymentStatus::Draft) {
-            throw new UpdateNotAllowedException('Only draft payments can be confirmed.');
+            throw new \Modules\Foundation\Exceptions\UpdateNotAllowedException('Only draft payments can be confirmed.');
         }
 
         return DB::transaction(function () use ($payment, $user) {
@@ -56,7 +56,7 @@ class PaymentService
             // After confirming the payment, update the status of linked documents.
             $this->updateLinkedDocumentStatus($payment, $user);
 
-            PaymentConfirmed::dispatch($payment);
+            \Modules\Payment\Events\PaymentConfirmed::dispatch($payment);
 
             return $payment;
         });
@@ -67,7 +67,7 @@ class PaymentService
      * Ensures documents are properly posted before marking as paid.
      * Uses the HasPaymentState trait for accurate multi-currency payment state calculation.
      */
-    protected function updateLinkedDocumentStatus(Payment $payment, User $user): void
+    protected function updateLinkedDocumentStatus(\Modules\Payment\Models\Payment $payment, User $user): void
     {
         $payment->load('paymentDocumentLinks.invoice', 'paymentDocumentLinks.vendorBill');
 
@@ -115,7 +115,7 @@ class PaymentService
     /**
      * Cancels a confirmed payment by creating a reversing journal entry and a detailed audit log.
      */
-    public function cancel(Payment $payment, User $user, string $reason): void // Add $reason parameter
+    public function cancel(\Modules\Payment\Models\Payment $payment, User $user, string $reason): void // Add $reason parameter
     {
         if ($payment->status !== PaymentStatus::Confirmed) {
             throw new Exception('Only confirmed payments can be cancelled.');
@@ -128,7 +128,7 @@ class PaymentService
             }
 
             // Step 1: Create the explicit audit log with the reason.
-            AuditLog::create([
+            \Modules\Foundation\Models\AuditLog::create([
                 'user_id' => $user->id,
                 'event_type' => 'cancellation',
                 'auditable_type' => get_class($payment),
@@ -156,15 +156,15 @@ class PaymentService
      * Deletes a payment, but only if it is in a draft state.
      * Enforces the accounting principle of immutability for confirmed transactions.
      *
-     * @param  Payment  $payment  The payment to be deleted.
+     * @param \Modules\Payment\Models\Payment $payment The payment to be deleted.
      *
-     * @throws DeletionNotAllowedException If the payment is not in a draft state.
+     * @throws \Modules\Foundation\Exceptions\DeletionNotAllowedException If the payment is not in a draft state.
      */
-    public function delete(Payment $payment): void
+    public function delete(\Modules\Payment\Models\Payment $payment): void
     {
         // THE GUARD CLAUSE: This is the core of the fix.
         if ($payment->status !== PaymentStatus::Draft) {
-            throw new DeletionNotAllowedException('Confirmed payments cannot be deleted. Please create a reversal entry instead.');
+            throw new \Modules\Foundation\Exceptions\DeletionNotAllowedException('Confirmed payments cannot be deleted. Please create a reversal entry instead.');
         }
 
         // If the payment is a draft, proceed with deletion.
@@ -175,7 +175,7 @@ class PaymentService
      * Process multi-currency amounts for a payment.
      * Captures exchange rate and converts amounts to company base currency.
      */
-    protected function processMultiCurrencyPayment(Payment $payment): void
+    protected function processMultiCurrencyPayment(\Modules\Payment\Models\Payment $payment): void
     {
         // Load necessary relationships
         $payment->load(['company', 'currency']);
@@ -225,7 +225,7 @@ class PaymentService
      * @param  array<int, array{document_type: string, document_id: int, amount_applied: string}>  $applications
      * @return array<int, \App\Models\PaymentDocumentLink>
      */
-    public function applyToDocuments(Payment $payment, array $applications, User $user): array
+    public function applyToDocuments(\Modules\Payment\Models\Payment $payment, array $applications, User $user): array
     {
         if ($payment->status !== PaymentStatus::Confirmed) {
             throw new Exception('Only confirmed payments can be applied to documents');
@@ -257,11 +257,11 @@ class PaymentService
     /**
      * Get document by type and ID.
      */
-    protected function getDocument(string $documentType, int $documentId): Invoice|VendorBill
+    protected function getDocument(string $documentType, int $documentId): \Modules\Sales\Models\Invoice|\Modules\Purchase\Models\VendorBill
     {
         return match ($documentType) {
-            'invoice' => Invoice::findOrFail($documentId),
-            'vendor_bill' => VendorBill::findOrFail($documentId),
+            'invoice' => \Modules\Sales\Models\Invoice::findOrFail($documentId),
+            'vendor_bill' => \Modules\Purchase\Models\VendorBill::findOrFail($documentId),
             default => throw new InvalidArgumentException("Invalid document type: {$documentType}")
         };
     }
@@ -269,7 +269,7 @@ class PaymentService
     /**
      * Create payment document link.
      */
-    protected function createPaymentDocumentLink(Payment $payment, \Illuminate\Database\Eloquent\Model $document, Money $amountApplied): \App\Models\PaymentDocumentLink
+    protected function createPaymentDocumentLink(\Modules\Payment\Models\Payment $payment, \Illuminate\Database\Eloquent\Model $document, Money $amountApplied): \App\Models\PaymentDocumentLink
     {
         $linkData = [
             'company_id' => $payment->company_id,
@@ -277,9 +277,9 @@ class PaymentService
             'amount_applied' => $amountApplied,
         ];
 
-        if ($document instanceof Invoice) {
+        if ($document instanceof \Modules\Sales\Models\Invoice) {
             $linkData['invoice_id'] = $document->id;
-        } elseif ($document instanceof VendorBill) {
+        } elseif ($document instanceof \Modules\Purchase\Models\VendorBill) {
             $linkData['vendor_bill_id'] = $document->id;
         }
 

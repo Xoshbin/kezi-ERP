@@ -23,7 +23,7 @@ beforeEach(function () {
 test('a loan payment creates the correct journal entry', function () {
     // Arrange: Create necessary accounts and partners
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $partner = Partner::factory()->for($this->company)->create();
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
 
     $paymentDTO = new CreatePaymentDTO(
         company_id: $this->company->id,
@@ -72,7 +72,7 @@ test('a loan payment creates the correct journal entry', function () {
 test('a capital injection payment creates the correct journal entry', function () {
     // Arrange
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $partner = Partner::factory()->for($this->company)->create();
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
 
     $paymentDTO = new CreatePaymentDTO(
         company_id: $this->company->id,
@@ -108,7 +108,7 @@ test('a capital injection payment creates the correct journal entry', function (
 test('an expense claim payment creates the correct journal entry', function () {
     // Arrange
     $bankJournal = Journal::factory()->for($this->company)->create(['type' => JournalType::Bank]);
-    $partner = Partner::factory()->for($this->company)->create();
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create();
 
     $paymentDTO = new CreatePaymentDTO(
         company_id: $this->company->id,

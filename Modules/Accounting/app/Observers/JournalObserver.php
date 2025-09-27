@@ -14,7 +14,7 @@ class JournalObserver
     public function deleting(Journal $journal): void
     {
         if ($journal->journalEntries()->exists()) {
-            throw new DeletionNotAllowedException('Cannot delete a journal with associated journal entries.');
+            throw new \Modules\Foundation\Exceptions\DeletionNotAllowedException('Cannot delete a journal with associated journal entries.');
         }
     }
 }

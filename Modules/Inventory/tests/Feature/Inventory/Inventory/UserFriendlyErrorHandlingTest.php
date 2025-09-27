@@ -18,9 +18,9 @@ beforeEach(function () {
     $this->company = Company::factory()->create();
     $this->user = User::factory()->create();
 
-    $this->product = Product::factory()->create([
+    $this->product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::FIFO,
         'average_cost' => Money::of(0, $this->company->currency->code),
     ]);
@@ -115,7 +115,7 @@ it('provides different solutions based on vendor bill status', function () {
     expect($message1)->toContain('create and confirm a vendor bill');
 
     // Create a draft vendor bill for the product
-    $vendorBill = \App\Models\VendorBill::factory()->create([
+    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
         'company_id' => $this->company->id,
         'status' => \App\Enums\Purchases\VendorBillStatus::Draft,
     ]);
@@ -206,9 +206,9 @@ it('exception provides user-friendly methods', function () {
 });
 
 it('handles AVCO valuation method appropriately', function () {
-    $avcoProduct = Product::factory()->create([
+    $avcoProduct = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'average_cost' => Money::of(0, $this->company->currency->code),
     ]);

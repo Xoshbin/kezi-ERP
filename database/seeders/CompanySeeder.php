@@ -17,7 +17,7 @@ class CompanySeeder extends Seeder
     public function run(): void
     {
         // Find the Iraqi Dinar (IQD) currency.
-        $iqdCurrency = Currency::where('code', 'IQD')->first();
+        $iqdCurrency = \Modules\Foundation\Models\Currency::where('code', 'IQD')->first();
         if (! $iqdCurrency) {
             throw new Exception('IQD currency not found. Please run the CurrencySeeder first.');
         }

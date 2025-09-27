@@ -13,7 +13,7 @@ it('creates partner custom field definition with company field', function () {
     $this->seed(PartnerCustomFieldSeeder::class);
 
     // Verify the custom field definition was created
-    $definition = CustomFieldDefinition::where('model_type', Partner::class)->first();
+    $definition = CustomFieldDefinition::where('model_type', \Modules\Foundation\Models\Partner::class)->first();
 
     expect($definition)->not->toBeNull();
     expect($definition->is_active)->toBeTrue();
@@ -46,7 +46,7 @@ it('is idempotent and can be run multiple times', function () {
     $this->seed(PartnerCustomFieldSeeder::class);
 
     // Should still have only one definition
-    $definitions = CustomFieldDefinition::where('model_type', Partner::class)->get();
+    $definitions = CustomFieldDefinition::where('model_type', \Modules\Foundation\Models\Partner::class)->get();
     expect($definitions)->toHaveCount(1);
 
     $definition = $definitions->first();
@@ -56,7 +56,7 @@ it('is idempotent and can be run multiple times', function () {
 it('updates existing definition if it already exists', function () {
     // Create an initial definition
     CustomFieldDefinition::create([
-        'model_type' => Partner::class,
+        'model_type' => \Modules\Foundation\Models\Partner::class,
         'name' => ['en' => 'Old Name'],
         'description' => ['en' => 'Old Description'],
         'field_definitions' => [
@@ -76,7 +76,7 @@ it('updates existing definition if it already exists', function () {
     $this->seed(PartnerCustomFieldSeeder::class);
 
     // Should still have only one definition, but updated
-    $definitions = CustomFieldDefinition::where('model_type', Partner::class)->get();
+    $definitions = CustomFieldDefinition::where('model_type', \Modules\Foundation\Models\Partner::class)->get();
     expect($definitions)->toHaveCount(1);
 
     $definition = $definitions->first();

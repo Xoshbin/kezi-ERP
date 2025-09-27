@@ -9,31 +9,31 @@ use Illuminate\Support\Facades\Cache;
 
 class LockDateObserver
 {
-    public function updating(LockDate $lockDate): void
+    public function updating(\Modules\Accounting\Models\LockDate $lockDate): void
     {
         if ($lockDate->lock_type === LockDateType::HardLock) {
-            throw new UpdateNotAllowedException('A hard lock date cannot be modified.');
+            throw new \Modules\Foundation\Exceptions\UpdateNotAllowedException('A hard lock date cannot be modified.');
         }
     }
 
-    public function deleting(LockDate $lockDate): void
+    public function deleting(\Modules\Accounting\Models\LockDate $lockDate): void
     {
         if ($lockDate->lock_type === LockDateType::HardLock) {
-            throw new UpdateNotAllowedException('A hard lock date cannot be removed.');
+            throw new \Modules\Foundation\Exceptions\UpdateNotAllowedException('A hard lock date cannot be removed.');
         }
     }
 
-    public function saved(LockDate $lockDate): void
+    public function saved(\Modules\Accounting\Models\LockDate $lockDate): void
     {
         $this->clearCache($lockDate);
     }
 
-    public function deleted(LockDate $lockDate): void
+    public function deleted(\Modules\Accounting\Models\LockDate $lockDate): void
     {
         $this->clearCache($lockDate);
     }
 
-    private function clearCache(LockDate $lockDate): void
+    private function clearCache(\Modules\Accounting\Models\LockDate $lockDate): void
     {
         $typeValue = $lockDate->lock_type->value;
         Cache::forget("lock_date_{$lockDate->company_id}_{$typeValue}");

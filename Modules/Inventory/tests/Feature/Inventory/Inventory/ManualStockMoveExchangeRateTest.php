@@ -24,14 +24,14 @@ beforeEach(function () {
     $this->user = User::factory()->create();
 
     // Set up currencies
-    $this->usdCurrency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
-    $this->iqdCurrency = Currency::where('code', 'IQD')->first() ?? Currency::factory()->create(['code' => 'IQD', 'decimal_places' => 3]);
+    $this->usdCurrency = \Modules\Foundation\Models\Currency::where('code', 'USD')->first() ?? \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
+    $this->iqdCurrency = \Modules\Foundation\Models\Currency::where('code', 'IQD')->first() ?? \Modules\Foundation\Models\Currency::factory()->create(['code' => 'IQD', 'decimal_places' => 3]);
 
     // Set company currency to IQD
     $this->company->update(['currency_id' => $this->iqdCurrency->id]);
 
     // Create vendor
-    $this->vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
+    $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
 
     // Create locations
     $this->vendorLocation = StockLocation::factory()->create([
@@ -52,12 +52,12 @@ beforeEach(function () {
     ]);
 
     // Create accounts first
-    $assetAccount = \App\Models\Account::factory()->create(['company_id' => $this->company->id]);
-    $depreciationAccount = \App\Models\Account::factory()->create(['company_id' => $this->company->id]);
-    $this->expenseAccount = \App\Models\Account::factory()->create(['company_id' => $this->company->id]);
+    $assetAccount = \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id]);
+    $depreciationAccount = \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id]);
+    $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id]);
 
     // Create required default accounts for vendor bill processing
-    $apAccount = \App\Models\Account::factory()->create(['company_id' => $this->company->id]);
+    $apAccount = \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id]);
     $purchaseJournal = \App\Models\Journal::factory()->create(['company_id' => $this->company->id]);
 
     // Set company default accounts
@@ -67,7 +67,7 @@ beforeEach(function () {
     ]);
 
     // Create asset category
-    $this->assetCategory = AssetCategory::create([
+    $this->assetCategory = \Modules\Accounting\Models\AssetCategory::create([
         'company_id' => $this->company->id,
         'name' => 'Test Asset Category',
         'asset_account_id' => $assetAccount->id,
@@ -86,21 +86,21 @@ beforeEach(function () {
     ]);
 
     // Create products
-    $this->product1 = Product::factory()->create([
+    $this->product1 = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => \App\Enums\Products\ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
     ]);
 
-    $this->product2 = Product::factory()->create([
+    $this->product2 = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => \App\Enums\Products\ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
     ]);
 
-    $this->product3 = Product::factory()->create([
+    $this->product3 = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => \App\Enums\Products\ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::AVCO,
     ]);
 });

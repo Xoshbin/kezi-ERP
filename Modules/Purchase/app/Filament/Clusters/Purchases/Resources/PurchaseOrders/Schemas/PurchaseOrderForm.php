@@ -190,7 +190,7 @@ class PurchaseOrderForm
                                 static::updateTotals($set, $get);
                             })
                             ->schema([
-                                TranslatableSelect::forModel('product_id', Product::class, 'name')
+                                TranslatableSelect::forModel('product_id', \Modules\Product\Models\Product::class, 'name')
                                     ->label(__('purchase_orders.fields.product'))
                                     ->searchableFields(['name', 'sku', 'description'])
                                     ->searchable()
@@ -199,7 +199,7 @@ class PurchaseOrderForm
                                     ->reactive()
                                     ->afterStateUpdated(function (callable $set, $state) {
                                         if ($state) {
-                                            $product = Product::find($state);
+                                            $product = \Modules\Product\Models\Product::find($state);
                                             if ($product) {
                                                 $set('description', $product->description ?: $product->name);
                                                 // Convert Money object to string for MoneyInput component
@@ -228,8 +228,8 @@ class PurchaseOrderForm
                                             ->required()
                                             ->live()
                                             ->options(
-                                                collect(ProductType::cases())
-                                                    ->mapWithKeys(fn(ProductType $type) => [$type->value => $type->label()])
+                                                collect(\Modules\Product\Enums\Products\ProductType::cases())
+                                                    ->mapWithKeys(fn(\Modules\Product\Enums\Products\ProductType $type) => [$type->value => $type->label()])
                                             ),
                                         Textarea::make('description')
                                             ->label(__('product.description'))
@@ -291,7 +291,7 @@ class PurchaseOrderForm
                                             ->default(fn() => Filament::getTenant()?->getKey()),
                                         Select::make('tax_account_id')
                                             ->options(function () {
-                                                return Account::where('company_id', Filament::getTenant()?->getKey())
+                                                return \Modules\Accounting\Models\Account::where('company_id', Filament::getTenant()?->getKey())
                                                     ->where('is_deprecated', false)
                                                     ->pluck('name', 'id');
                                             })
@@ -390,7 +390,7 @@ class PurchaseOrderForm
         }
 
         // Get currency for calculations
-        $currency = \App\Models\Currency::find($currencyId);
+        $currency = \Modules\Foundation\Models\Currency::find($currencyId);
         if (!$currency) {
             return;
         }

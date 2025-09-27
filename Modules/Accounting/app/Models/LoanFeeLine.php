@@ -18,7 +18,7 @@ class LoanFeeLine extends Model
 
     protected $casts = [
         'date' => 'date',
-        'amount' => DocumentCurrencyMoneyCast::class,
+        'amount' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
         'capitalize' => 'boolean',
         'type' => FeeType::class,
     ];

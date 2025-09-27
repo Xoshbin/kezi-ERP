@@ -33,8 +33,8 @@ class EditPayment extends EditRecord
                 ->label(__('payment.edit.action.confirm.label'))
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft)
-                ->action(function (Payment $record): void {
+                ->visible(fn (\Modules\Payment\Models\Payment $record): bool => $record->status === PaymentStatus::Draft)
+                ->action(function (\Modules\Payment\Models\Payment $record): void {
                     $this->save();
                     $service = app(PaymentService::class);
                     try {
@@ -73,7 +73,7 @@ class EditPayment extends EditRecord
             //     // Only show this button for Confirmed payments
             //     ->visible(fn(Payment $record): bool => $record->status === PaymentStatus::Confirmed),
             DeleteAction::make()
-                ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft),
+                ->visible(fn (\Modules\Payment\Models\Payment $record): bool => $record->status === PaymentStatus::Draft),
         ];
     }
 
@@ -81,7 +81,7 @@ class EditPayment extends EditRecord
     {
         // Set the 'amount' field from the record's Money object for standalone payments
         $record = $this->getRecord();
-        if ($record instanceof Payment) {
+        if ($record instanceof \Modules\Payment\Models\Payment) {
             $data['amount'] = $record->amount->getAmount()->toFloat();
         }
 
@@ -90,11 +90,11 @@ class EditPayment extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        if (! $record instanceof Payment) {
+        if (! $record instanceof \Modules\Payment\Models\Payment) {
             throw new \InvalidArgumentException('Expected Payment record');
         }
 
-        $currency = Currency::findOrFail($data['currency_id']);
+        $currency = \Modules\Foundation\Models\Currency::findOrFail($data['currency_id']);
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
             $currency = $currency->first();

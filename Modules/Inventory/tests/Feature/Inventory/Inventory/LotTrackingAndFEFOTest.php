@@ -33,12 +33,12 @@ beforeEach(function () {
     ]);
 
     // Create COGS account first
-    $this->cogsAccount = \App\Models\Account::factory()->for($this->company)->create([
+    $this->cogsAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
         'type' => 'cost_of_revenue',
     ]);
 
-    $this->product = Product::factory()->for($this->company)->create([
-        'type' => ProductType::Storable,
+    $this->product = \Modules\Product\Models\Product::factory()->for($this->company)->create([
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => \App\Enums\Inventory\ValuationMethod::FIFO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
@@ -49,8 +49,8 @@ beforeEach(function () {
     $this->reservationService = app(StockReservationService::class);
 
     // Create a customer for invoice tests
-    $this->customer = \App\Models\Partner::factory()->for($this->company)->create([
-        'type' => \App\Enums\Partners\PartnerType::Customer,
+    $this->customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
+        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
     ]);
 });
 
@@ -186,7 +186,7 @@ it('applies FEFO allocation when multiple lots exist with different expiration d
     ]);
 
     // Create a sales order for 7 units
-    $invoice = Invoice::factory()->for($this->company)->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $this->customer->id,
         'status' => 'draft',
     ]);
@@ -321,7 +321,7 @@ it('handles partial reservations and backorders correctly', function () {
     ]);
 
     // Create sales order for more than available
-    $invoice = Invoice::factory()->for($this->company)->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $this->customer->id,
         'status' => 'draft',
     ]);

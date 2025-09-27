@@ -27,17 +27,17 @@ beforeEach(function () {
     $this->actingAs(User::factory()->create());
 
     $this->company = Company::factory()->create();
-    $this->currency = Currency::factory()->create(['code' => 'USD']);
+    $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
     $this->company->update(['currency_id' => $this->currency->id]);
 
     // Set tenant context
     filament()->setTenant($this->company);
 
-    $this->partner = Partner::factory()->create([
+    $this->partner = \Modules\Foundation\Models\Partner::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
-    $this->product = Product::factory()->create([
+    $this->product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
     ]);
 

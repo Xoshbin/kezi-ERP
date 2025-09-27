@@ -14,8 +14,8 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
-    $this->vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
-    $this->product = Product::factory()->create([
+    $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
+    $this->product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Test Product',
         'description' => 'Test Product Description',
@@ -125,7 +125,7 @@ test('product selection auto-populates description and unit price', function () 
 })->skip('Auto-population requires browser testing for reactive callbacks');
 
 test('handles products with null unit price gracefully', function () {
-    $productWithoutPrice = Product::factory()->create([
+    $productWithoutPrice = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Product Without Price',
         'description' => 'No price set',

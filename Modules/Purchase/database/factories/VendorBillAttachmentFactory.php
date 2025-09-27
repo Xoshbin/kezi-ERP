@@ -31,12 +31,12 @@ class VendorBillAttachmentFactory extends Factory
 
         $fileType = $this->faker->randomElement($fileTypes);
 
-        $vendorBill = VendorBill::factory();
+        $vendorBill = \Modules\Purchase\Models\VendorBill::factory();
 
         return [
             'vendor_bill_id' => $vendorBill,
             'company_id' => function (array $attributes) {
-                return VendorBill::find($attributes['vendor_bill_id'])->company_id;
+                return \Modules\Purchase\Models\VendorBill::find($attributes['vendor_bill_id'])->company_id;
             },
             'file_name' => $fileType['name'],
             'file_path' => 'vendor-bill-attachments/'.$this->faker->uuid().'/'.$fileType['name'],

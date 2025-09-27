@@ -6,7 +6,7 @@ use Brick\Money\Money;
 it('formats money with English locale by default', function () {
     $money = Money::of(1234.56, 'USD');
 
-    $formatted = NumberFormatter::formatMoney($money);
+    $formatted = \Modules\Foundation\Support\NumberFormatter::formatMoney($money);
 
     // Should use English numerals regardless of app locale
     expect($formatted)->toContain('1,234.56');
@@ -15,21 +15,21 @@ it('formats money with English locale by default', function () {
 it('formats money using formatMoneyTo with configured locale', function () {
     $money = Money::of(1234.56, 'USD');
 
-    $formatted = NumberFormatter::formatMoneyTo($money);
+    $formatted = \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($money);
 
     // Should use English numerals regardless of app locale
     expect($formatted)->toContain('1,234.56');
 });
 
 it('formats numbers with English locale by default', function () {
-    $formatted = NumberFormatter::formatNumber(1234.56);
+    $formatted = \Modules\Foundation\Support\NumberFormatter::formatNumber(1234.56);
 
     // Should use English numerals
     expect($formatted)->toBe('1,234.56');
 });
 
 it('formats percentages with English locale by default', function () {
-    $formatted = NumberFormatter::formatPercentage(25.5);
+    $formatted = \Modules\Foundation\Support\NumberFormatter::formatPercentage(25.5);
 
     // Should use English numerals
     expect($formatted)->toBe('25.5%');
@@ -42,7 +42,7 @@ it('respects auto locale setting', function () {
     // Set app locale to Kurdish
     app()->setLocale('ckb');
 
-    $locale = NumberFormatter::getNumberLocale();
+    $locale = \Modules\Foundation\Support\NumberFormatter::getNumberLocale();
 
     expect($locale)->toBe('ckb');
 
@@ -56,7 +56,7 @@ it('uses configured locale when not auto', function () {
     // Even if app locale is Kurdish, should use English
     app()->setLocale('ckb');
 
-    $locale = NumberFormatter::getNumberLocale();
+    $locale = \Modules\Foundation\Support\NumberFormatter::getNumberLocale();
 
     expect($locale)->toBe('en');
 });

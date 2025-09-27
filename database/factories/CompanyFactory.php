@@ -15,7 +15,7 @@ class CompanyFactory extends Factory
             'address' => $this->faker->address,
             'tax_id' => $this->faker->unique()->numerify('##########'),
             // Let Laravel handle creation unless specified otherwise in the test.
-            'currency_id' => Currency::firstOrCreate(
+            'currency_id' => \Modules\Foundation\Models\Currency::firstOrCreate(
                 ['code' => 'IQD'],
                 [
                     'name' => 'Iraqi Dinar',

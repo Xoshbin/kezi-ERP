@@ -46,7 +46,7 @@ class ViewPurchaseOrder extends ViewRecord
             ->action(function () {
                 try {
                     // Generate unique bill reference
-                    $billReference = app(SequenceService::class)->getNextVendorBillNumber(
+                    $billReference = app(\Modules\Foundation\Services\SequenceService::class)->getNextVendorBillNumber(
                         $this->record->company,
                         Carbon::today()
                     );

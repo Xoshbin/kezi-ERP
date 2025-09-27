@@ -19,14 +19,14 @@ class AgingAnalysisWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        if (! $this->record instanceof Invoice) {
+        if (! $this->record instanceof \Modules\Sales\Models\Invoice) {
             return [];
         }
 
         $invoice = $this->record;
 
         // Only show aging for posted invoices that are not fully paid
-        if ($invoice->status !== InvoiceStatus::Posted || $invoice->paymentState === PaymentState::Paid) {
+        if ($invoice->status !== InvoiceStatus::Posted || $invoice->paymentState === \Modules\Foundation\Enums\Shared\PaymentState::Paid) {
             return [
                 Stat::make(__('invoice.aging_widget.status'), __('invoice.aging_widget.not_applicable'))
                     ->description(__('invoice.aging_widget.not_applicable_desc'))
@@ -61,7 +61,7 @@ class AgingAnalysisWidget extends BaseWidget
         ];
     }
 
-    private function calculateDaysOutstanding(Invoice $invoice): int
+    private function calculateDaysOutstanding(\Modules\Sales\Models\Invoice $invoice): int
     {
         // Due date is always set for posted invoices
 
@@ -71,7 +71,7 @@ class AgingAnalysisWidget extends BaseWidget
         return (int) max(0, $today->diffInDays($dueDate, false));
     }
 
-    private function calculateOutstandingAmount(Invoice $invoice): Money
+    private function calculateOutstandingAmount(\Modules\Sales\Models\Invoice $invoice): Money
     {
         $totalAmount = $invoice->total_amount;
         $paidAmount = $invoice->getPaidAmount();
@@ -128,7 +128,7 @@ class AgingAnalysisWidget extends BaseWidget
         return $this->getDaysOutstandingColor($daysOutstanding);
     }
 
-    private function getPaymentProgress(Invoice $invoice): string
+    private function getPaymentProgress(\Modules\Sales\Models\Invoice $invoice): string
     {
         $totalAmount = $invoice->total_amount;
         $paidAmount = $invoice->getPaidAmount();
@@ -139,21 +139,21 @@ class AgingAnalysisWidget extends BaseWidget
 
         $percentage = $paidAmount->dividedBy($totalAmount->getAmount(), RoundingMode::HALF_UP)->multipliedBy(100);
 
-        return NumberFormatter::formatPercentage($percentage->getAmount()->toFloat(), 1);
+        return \Modules\Foundation\Support\NumberFormatter::formatPercentage($percentage->getAmount()->toFloat(), 1);
     }
 
-    private function getPaymentProgressColor(Invoice $invoice): string
+    private function getPaymentProgressColor(\Modules\Sales\Models\Invoice $invoice): string
     {
         return match ($invoice->paymentState) {
-            PaymentState::NotPaid => 'gray',
-            PaymentState::PartiallyPaid => 'warning',
-            PaymentState::Paid => 'success',
+            \Modules\Foundation\Enums\Shared\PaymentState::NotPaid => 'gray',
+            \Modules\Foundation\Enums\Shared\PaymentState::PartiallyPaid => 'warning',
+            \Modules\Foundation\Enums\Shared\PaymentState::Paid => 'success',
         };
     }
 
     private function formatMoney(Money $money): string
     {
-        return NumberFormatter::formatMoney($money);
+        return \Modules\Foundation\Support\NumberFormatter::formatMoney($money);
     }
 
     protected function getColumns(): int

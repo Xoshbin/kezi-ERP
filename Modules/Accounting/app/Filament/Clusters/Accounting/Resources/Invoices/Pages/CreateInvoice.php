@@ -20,7 +20,7 @@ class CreateInvoice extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $currency = Currency::findOrFail($data['currency_id']);
+        $currency = \Modules\Foundation\Models\Currency::findOrFail($data['currency_id']);
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof \Illuminate\Database\Eloquent\Collection) {
             $currency = $currency->first();
@@ -60,7 +60,7 @@ class CreateInvoice extends CreateRecord
             fiscal_position_id: $data['fiscal_position_id'] ?? null
         );
 
-        $invoice = app(CreateInvoiceAction::class)->execute($invoiceDTO);
+        $invoice = app(\Modules\Sales\Actions\Sales\CreateInvoiceAction::class)->execute($invoiceDTO);
 
         // Set exchange_rate_at_creation if provided
         if ($exchangeRate) {

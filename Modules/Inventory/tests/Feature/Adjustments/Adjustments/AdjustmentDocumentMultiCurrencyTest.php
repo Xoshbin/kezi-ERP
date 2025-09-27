@@ -26,15 +26,15 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
 
     protected Company $company;
 
-    protected Currency $iqd;
+    protected \Modules\Foundation\Models\Currency $iqd;
 
-    protected Currency $usd;
+    protected \Modules\Foundation\Models\Currency $usd;
 
-    protected Product $product;
+    protected \Modules\Product\Models\Product $product;
 
     protected Tax $tax;
 
-    protected Account $account;
+    protected \Modules\Accounting\Models\Account $account;
 
     protected function setUp(): void
     {
@@ -43,11 +43,11 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
         $this->setupWithConfiguredCompany();
 
         // Setup currencies (use firstOrCreate to avoid conflicts)
-        $this->iqd = Currency::firstOrCreate(
+        $this->iqd = \Modules\Foundation\Models\Currency::firstOrCreate(
             ['code' => 'IQD'],
             ['name' => ['en' => 'Iraqi Dinar'], 'symbol' => 'IQD', 'decimal_places' => 3, 'is_active' => true]
         );
-        $this->usd = Currency::firstOrCreate(
+        $this->usd = \Modules\Foundation\Models\Currency::firstOrCreate(
             ['code' => 'USD'],
             ['name' => ['en' => 'US Dollar'], 'symbol' => '$', 'decimal_places' => 2, 'is_active' => true]
         );
@@ -56,7 +56,7 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
         $this->company->update(['currency_id' => $this->iqd->id]);
 
         // Create exchange rate: 1 USD = 1500 IQD
-        CurrencyRate::create([
+        \Modules\Foundation\Models\CurrencyRate::create([
             'company_id' => $this->company->id,
             'currency_id' => $this->usd->id,
             'rate' => 1500.0,
@@ -64,9 +64,9 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
         ]);
 
         // Setup test data
-        $this->product = Product::factory()->create(['company_id' => $this->company->id]);
+        $this->product = \Modules\Product\Models\Product::factory()->create(['company_id' => $this->company->id]);
         $this->tax = Tax::factory()->create(['company_id' => $this->company->id, 'rate' => 0.10]);
-        $this->account = Account::factory()->create(['company_id' => $this->company->id]);
+        $this->account = \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id]);
     }
 
     /** @test */
@@ -177,7 +177,7 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
     public function it_handles_missing_exchange_rate_gracefully()
     {
         // Remove the exchange rate
-        CurrencyRate::where('currency_id', $this->usd->id)->delete();
+        \Modules\Foundation\Models\CurrencyRate::where('currency_id', $this->usd->id)->delete();
 
         $action = app(CreateAdjustmentDocumentAction::class);
 
@@ -216,7 +216,7 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
     public function observer_updates_company_currency_totals_when_lines_change()
     {
         // Create adjustment document in USD
-        $adjustmentDocument = AdjustmentDocument::factory()->create([
+        $adjustmentDocument = \Modules\Inventory\Models\AdjustmentDocument::factory()->create([
             'company_id' => $this->company->id,
             'currency_id' => $this->usd->id,
             'exchange_rate_at_creation' => 1500.0,

@@ -13,7 +13,7 @@ class UpdatePaymentDTO
      * @param  UpdatePaymentDocumentLinkDTO[]  $document_links
      */
     public function __construct(
-        public readonly Payment $payment,
+        public readonly \Modules\Payment\Models\Payment $payment,
         public readonly int $company_id,
         public readonly int $journal_id,
         public readonly int $currency_id,

@@ -11,13 +11,13 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('it creates a correct journal entry for a depreciation entry', function () {
 
-    $asset = Asset::factory()->for($this->company)->create([
-        'depreciation_expense_account_id' => \App\Models\Account::factory()->for($this->company)->create()->id,
-        'accumulated_depreciation_account_id' => \App\Models\Account::factory()->for($this->company)->create()->id,
+    $asset = \Modules\Accounting\Models\Asset::factory()->for($this->company)->create([
+        'depreciation_expense_account_id' => \Modules\Accounting\Models\Account::factory()->for($this->company)->create()->id,
+        'accumulated_depreciation_account_id' => \Modules\Accounting\Models\Account::factory()->for($this->company)->create()->id,
     ]);
 
     // FIX: Be explicit about the state of the model before the action runs.
-    $depreciationEntry = DepreciationEntry::factory()
+    $depreciationEntry = \Modules\Accounting\Models\DepreciationEntry::factory()
         ->for($asset)
         ->create([
             'amount' => Money::of(120, $this->company->currency->code),

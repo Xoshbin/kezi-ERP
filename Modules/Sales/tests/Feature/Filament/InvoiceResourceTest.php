@@ -27,13 +27,13 @@ it('can render the create page', function () {
 });
 
 it('can create an invoice', function () {
-    /** @var \App\Models\Partner $customer */
-    $customer = Partner::factory()->customer()->create([
+    /** @var \Modules\Foundation\Models\Partner $customer */
+    $customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \App\Models\Product $product */
-    $product = Product::factory()->create([
+    /** @var \Modules\Product\Models\Product $product */
+    $product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Test Product Line', // Set a specific name to match the database assertion
         'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code), // Set a specific price for predictable total
@@ -71,7 +71,7 @@ it('can create an invoice', function () {
         'quantity' => 2,
     ]);
 
-    $invoice = Invoice::first();
+    $invoice = \Modules\Sales\Models\Invoice::first();
     expect($invoice->total_amount->getAmount()->toFloat())->toBe(200.0);
 });
 
@@ -93,7 +93,7 @@ it('can validate input on create', function () {
 });
 
 it('can render the edit page', function () {
-    $invoice = Invoice::factory()->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -102,12 +102,12 @@ it('can render the edit page', function () {
 });
 
 it('can edit an invoice', function () {
-    $invoice = Invoice::factory()->withLines(1)->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->withLines(1)->create([
         'company_id' => $this->company->id,
     ]);
 
-    /** @var \App\Models\Partner $newCustomer */
-    $newCustomer = Partner::factory()->customer()->create([
+    /** @var \Modules\Foundation\Models\Partner $newCustomer */
+    $newCustomer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -129,7 +129,7 @@ it('can edit an invoice', function () {
 });
 
 it('can confirm an invoice', function () {
-    $invoice = Invoice::factory()->withLines(1)->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->withLines(1)->create([
         'company_id' => $this->company->id,
         'status' => InvoiceStatus::Draft,
     ]);
@@ -208,7 +208,7 @@ it('can confirm an invoice', function () {
 
 describe('Invoice Confirmation Business Rules', function () {
     it('prevents confirming invoice without line items via UI', function () {
-        $invoice = Invoice::factory()->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Draft,
         ]);
@@ -231,7 +231,7 @@ describe('Invoice Confirmation Business Rules', function () {
     });
 
     it('prevents confirming invoice without line items via backend service', function () {
-        $invoice = Invoice::factory()->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Draft,
         ]);
@@ -251,12 +251,12 @@ describe('Invoice Confirmation Business Rules', function () {
     });
 
     it('prevents confirmation when invoice has zero total amount', function () {
-        $incomeAccount = \App\Models\Account::factory()->for($this->company)->create([
+        $incomeAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create([
             'type' => 'income',
             'name' => 'Test Income Account',
         ]);
 
-        $invoice = Invoice::factory()->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Draft,
             'total_amount' => \Brick\Money\Money::of(0, $this->company->currency->code),
@@ -285,15 +285,15 @@ describe('Invoice Confirmation Business Rules', function () {
     });
 
     it('enables confirm action when invoice has valid line items', function () {
-        $product = \App\Models\Product::factory()->create([
+        $product = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code),
-            'type' => \App\Enums\Products\ProductType::Service,
+            'type' => \Modules\Product\Enums\Products\ProductType::Service,
         ]);
 
-        $invoice = Invoice::factory()->create([
+        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
             'company_id' => $this->company->id,
-            'customer_id' => Partner::factory()->customer()->create(['company_id' => $this->company->id])->id,
+            'customer_id' => \Modules\Foundation\Models\Partner::factory()->customer()->create(['company_id' => $this->company->id])->id,
             'currency_id' => $this->company->currency_id,
             'status' => InvoiceStatus::Draft,
             'invoice_date' => now()->format('Y-m-d'),

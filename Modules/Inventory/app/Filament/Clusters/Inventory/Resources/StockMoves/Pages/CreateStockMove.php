@@ -67,7 +67,7 @@ class CreateStockMove extends CreateRecord
         );
 
         try {
-            return app(CreateStockMoveAction::class)->execute($dto);
+            return app(\Modules\Inventory\Actions\Inventory\CreateStockMoveAction::class)->execute($dto);
         } catch (InsufficientCostInformationException $e) {
             // Show user-friendly error notification
             Notification::make()

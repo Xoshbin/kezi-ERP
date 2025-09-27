@@ -14,7 +14,7 @@ class AccountFactory extends Factory
      *
      * @var string
      */
-    protected $model = Account::class;
+    protected $model = \Modules\Accounting\Models\Account::class;
 
     /**
      * Configure the model factory.
@@ -27,11 +27,11 @@ class AccountFactory extends Factory
      */
     public function configure(): static
     {
-        return $this->afterMaking(function (Account $account) {
+        return $this->afterMaking(function (\Modules\Accounting\Models\Account $account) {
             // If a code hasn't been explicitly set by a state, generate it
             // based on the account's final type. This is our single source of truth.
             if (empty($account->code)) {
-                $typeValue = $account->type instanceof AccountType
+                $typeValue = $account->type instanceof \Modules\Accounting\Enums\Accounting\AccountType
                     ? $account->type->value
                     : $account->type;
                 $account->code = $this->generateCodeForType($typeValue);

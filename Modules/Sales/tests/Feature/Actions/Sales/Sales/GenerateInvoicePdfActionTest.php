@@ -16,22 +16,22 @@ use Illuminate\Http\Response;
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->company = Company::factory()->create();
-    $this->currency = Currency::factory()->create(['code' => 'USD']);
-    $this->customer = Partner::factory()->create([
+    $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $this->customer = \Modules\Foundation\Models\Partner::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'customer',
     ]);
-    $this->product = Product::factory()->create([
+    $this->product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
     ]);
-    $this->account = Account::factory()->create([
+    $this->account = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
     ]);
 });
 
 test('it successfully generates a pdf for a posted invoice', function () {
     // Arrange
-    $invoice = Invoice::factory()->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -41,7 +41,7 @@ test('it successfully generates a pdf for a posted invoice', function () {
         'total_tax' => Money::of(10, 'USD'),
     ]);
 
-    InvoiceLine::factory()->create([
+    \Modules\Sales\Models\InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'product_id' => $this->product->id,
         'income_account_id' => $this->account->id,
@@ -67,7 +67,7 @@ test('it successfully generates a pdf for a posted invoice', function () {
 
 test('it successfully generates pdf for a draft invoice', function () {
     // Arrange
-    $invoice = Invoice::factory()->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -77,7 +77,7 @@ test('it successfully generates pdf for a draft invoice', function () {
         'total_tax' => Money::of(10, 'USD'),
     ]);
 
-    InvoiceLine::factory()->create([
+    \Modules\Sales\Models\InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
         'description' => 'Test Product',
@@ -101,7 +101,7 @@ test('it successfully generates pdf for a draft invoice', function () {
 
 test('it falls back to classic template when invalid template is provided', function () {
     // Arrange
-    $invoice = Invoice::factory()->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -109,7 +109,7 @@ test('it falls back to classic template when invalid template is provided', func
         'invoice_number' => 'INV-002',
     ]);
 
-    InvoiceLine::factory()->create([
+    \Modules\Sales\Models\InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);
@@ -127,7 +127,7 @@ test('it falls back to classic template when invalid template is provided', func
 
 test('it successfully generates pdf with modern template', function () {
     // Arrange
-    $invoice = Invoice::factory()->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -135,7 +135,7 @@ test('it successfully generates pdf with modern template', function () {
         'invoice_number' => 'INV-003',
     ]);
 
-    InvoiceLine::factory()->create([
+    \Modules\Sales\Models\InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);
@@ -153,7 +153,7 @@ test('it successfully generates pdf with modern template', function () {
 
 test('it successfully generates pdf with minimal template', function () {
     // Arrange
-    $invoice = Invoice::factory()->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -161,7 +161,7 @@ test('it successfully generates pdf with minimal template', function () {
         'invoice_number' => 'INV-004',
     ]);
 
-    InvoiceLine::factory()->create([
+    \Modules\Sales\Models\InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);
@@ -179,7 +179,7 @@ test('it successfully generates pdf with minimal template', function () {
 
 test('it successfully downloads pdf instead of streaming', function () {
     // Arrange
-    $invoice = Invoice::factory()->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -187,7 +187,7 @@ test('it successfully downloads pdf instead of streaming', function () {
         'invoice_number' => 'INV-005',
     ]);
 
-    InvoiceLine::factory()->create([
+    \Modules\Sales\Models\InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
     ]);
@@ -223,7 +223,7 @@ test('it returns available templates', function () {
 
 test('it loads all necessary relationships for pdf generation', function () {
     // Arrange
-    $invoice = Invoice::factory()->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -231,7 +231,7 @@ test('it loads all necessary relationships for pdf generation', function () {
         'invoice_number' => 'INV-006',
     ]);
 
-    InvoiceLine::factory()->create([
+    \Modules\Sales\Models\InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'product_id' => $this->product->id,
         'income_account_id' => $this->account->id,
@@ -253,7 +253,7 @@ test('it loads all necessary relationships for pdf generation', function () {
 
 test('it successfully downloads pdf for a draft invoice', function () {
     // Arrange
-    $invoice = Invoice::factory()->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,
         'currency_id' => $this->currency->id,
@@ -262,7 +262,7 @@ test('it successfully downloads pdf for a draft invoice', function () {
         'total_tax' => Money::of(10, 'USD'),
     ]);
 
-    InvoiceLine::factory()->create([
+    \Modules\Sales\Models\InvoiceLine::factory()->create([
         'invoice_id' => $invoice->id,
         'income_account_id' => $this->account->id,
         'description' => 'Test Product',

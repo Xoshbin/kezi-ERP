@@ -30,7 +30,7 @@ test('it throws exception when reconciliation is globally disabled', function ()
     $company = Company::first();
     if (! $company) {
         // If no company exists, create one
-        $currency = \App\Models\Currency::firstOrCreate(['code' => 'IQD'], [
+        $currency = \Modules\Foundation\Models\Currency::firstOrCreate(['code' => 'IQD'], [
             'name' => 'Iraqi Dinar',
             'symbol' => 'IQD',
             'is_active' => true,
@@ -52,7 +52,7 @@ test('it throws exception when reconciliation is globally disabled', function ()
 
     // Create accounts that belong to this company and allow reconciliation
     // (we want to test global reconciliation, not account-level reconciliation)
-    $account1 = Account::create([
+    $account1 = \Modules\Accounting\Models\Account::create([
         'company_id' => $company->id,
         'currency_id' => $company->currency_id,
         'code' => 'TEST1',
@@ -62,7 +62,7 @@ test('it throws exception when reconciliation is globally disabled', function ()
         'allow_reconciliation' => true, // Account allows reconciliation
     ]);
 
-    $account2 = Account::create([
+    $account2 = \Modules\Accounting\Models\Account::create([
         'company_id' => $company->id,
         'currency_id' => $company->currency_id,
         'code' => 'TEST2',
@@ -141,7 +141,7 @@ test('it throws exception when account does not allow reconciliation', function 
         $company->update(['enable_reconciliation' => true]);
     }
     // Create account that doesn't allow reconciliation manually
-    $account = Account::create([
+    $account = \Modules\Accounting\Models\Account::create([
         'company_id' => $company->id,
         'currency_id' => $company->currency_id,
         'code' => '1000',
@@ -211,7 +211,7 @@ test('it throws exception when journal entry lines are unbalanced', function () 
     $company->update(['enable_reconciliation' => true]);
 
     // Create account that allows reconciliation
-    $account = Account::create([
+    $account = \Modules\Accounting\Models\Account::create([
         'company_id' => $company->id,
         'currency_id' => $company->currency_id,
         'code' => '1001',
@@ -278,7 +278,7 @@ test('it throws exception when journal entry lines have different partners for A
     $company->update(['enable_reconciliation' => true]);
 
     // Create account that allows reconciliation
-    $account = Account::create([
+    $account = \Modules\Accounting\Models\Account::create([
         'company_id' => $company->id,
         'currency_id' => $company->currency_id,
         'code' => '1002',
@@ -289,7 +289,7 @@ test('it throws exception when journal entry lines have different partners for A
     ]);
 
     // Create different partners
-    $partner1 = Partner::create([
+    $partner1 = \Modules\Foundation\Models\Partner::create([
         'company_id' => $company->id,
         'name' => 'Partner 1',
         'email' => 'partner1@test.com',
@@ -298,7 +298,7 @@ test('it throws exception when journal entry lines have different partners for A
         'is_vendor' => false,
     ]);
 
-    $partner2 = Partner::create([
+    $partner2 = \Modules\Foundation\Models\Partner::create([
         'company_id' => $company->id,
         'name' => 'Partner 2',
         'email' => 'partner2@test.com',
@@ -357,7 +357,7 @@ test('it throws exception when journal entry lines are already reconciled', func
     $company->update(['enable_reconciliation' => true]);
 
     // Create account that allows reconciliation
-    $account = Account::create([
+    $account = \Modules\Accounting\Models\Account::create([
         'company_id' => $company->id,
         'currency_id' => $company->currency_id,
         'code' => '1003',
@@ -406,7 +406,7 @@ test('it throws exception when journal entry lines are already reconciled', func
     $lines = collect([$line1, $line2]);
 
     // Create existing reconciliation
-    $existingReconciliation = Reconciliation::create([
+    $existingReconciliation = \Modules\Accounting\Models\Reconciliation::create([
         'company_id' => $company->id,
         'reconciliation_type' => ReconciliationType::ManualGeneral,
         'reconciled_by_user_id' => 1,
@@ -426,7 +426,7 @@ test('it successfully creates reconciliation for valid balanced lines', function
     $company->update(['enable_reconciliation' => true]);
 
     // Create account that allows reconciliation
-    $account = Account::create([
+    $account = \Modules\Accounting\Models\Account::create([
         'company_id' => $company->id,
         'currency_id' => $company->currency_id,
         'code' => '1004',
@@ -437,7 +437,7 @@ test('it successfully creates reconciliation for valid balanced lines', function
     ]);
 
     // Create partner
-    $partner = Partner::create([
+    $partner = \Modules\Foundation\Models\Partner::create([
         'company_id' => $company->id,
         'name' => 'Success Partner',
         'email' => 'success@test.com',
@@ -494,7 +494,7 @@ test('it successfully creates reconciliation for valid balanced lines', function
     );
 
     expect($reconciliation)
-        ->toBeInstanceOf(Reconciliation::class)
+        ->toBeInstanceOf(\Modules\Accounting\Models\Reconciliation::class)
         ->and($reconciliation->company_id)->toBe($company->id)
         ->and($reconciliation->reconciliation_type)->toBe(ReconciliationType::ManualArAp)
         ->and($reconciliation->reference)->toBe('TEST-SUCCESS')
@@ -509,7 +509,7 @@ test('it allows reconciliation of lines without partners for general reconciliat
     $company->update(['enable_reconciliation' => true]);
 
     // Create account that allows reconciliation
-    $account = Account::create([
+    $account = \Modules\Accounting\Models\Account::create([
         'company_id' => $company->id,
         'currency_id' => $company->currency_id,
         'code' => '1005',
@@ -565,7 +565,7 @@ test('it allows reconciliation of lines without partners for general reconciliat
     );
 
     expect($reconciliation)
-        ->toBeInstanceOf(Reconciliation::class)
+        ->toBeInstanceOf(\Modules\Accounting\Models\Reconciliation::class)
         ->and($reconciliation->reconciliation_type)->toBe(ReconciliationType::ManualGeneral)
         ->and($reconciliation->journalEntryLines)->toHaveCount(2);
 });

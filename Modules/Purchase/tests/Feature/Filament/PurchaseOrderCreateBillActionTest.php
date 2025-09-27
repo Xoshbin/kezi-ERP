@@ -25,10 +25,10 @@ class PurchaseOrderCreateBillActionTest extends TestCase
 
     protected Company $company;
     protected User $user;
-    protected Currency $currency;
-    protected Partner $vendor;
+    protected \Modules\Foundation\Models\Currency $currency;
+    protected \Modules\Foundation\Models\Partner $vendor;
     protected Tax $tax;
-    protected Product $product;
+    protected \Modules\Product\Models\Product $product;
     protected PurchaseOrder $purchaseOrder;
 
     protected function setUp(): void
@@ -39,10 +39,10 @@ class PurchaseOrderCreateBillActionTest extends TestCase
         $this->user = User::factory()->create();
         $this->user->companies()->attach($this->company);
 
-        $this->currency = Currency::factory()->create(['code' => 'USD']);
-        $this->vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
+        $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+        $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
         $this->tax = Tax::factory()->create(['company_id' => $this->company->id]);
-        $this->product = Product::factory()->create(['company_id' => $this->company->id]);
+        $this->product = \Modules\Product\Models\Product::factory()->create(['company_id' => $this->company->id]);
 
         // Create a purchase order with FullyReceived status (allows bill creation)
         $this->purchaseOrder = PurchaseOrder::factory()->create([
@@ -103,7 +103,7 @@ class PurchaseOrderCreateBillActionTest extends TestCase
         // Verify vendor bill was created
         $this->assertDatabaseCount('vendor_bills', 1);
 
-        $vendorBill = VendorBill::first();
+        $vendorBill = \Modules\Purchase\Models\VendorBill::first();
 
         // Verify vendor bill data is correctly populated from purchase order
         $this->assertEquals($this->purchaseOrder->vendor_id, $vendorBill->vendor_id);

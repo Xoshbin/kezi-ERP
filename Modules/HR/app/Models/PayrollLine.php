@@ -35,7 +35,7 @@ class PayrollLine extends Model
         'quantity' => 'decimal:4',
         'rate' => PayrollCurrencyMoneyCast::class,
         'amount' => PayrollCurrencyMoneyCast::class,
-        'amount_company_currency' => BaseCurrencyMoneyCast::class,
+        'amount_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
         'tax_rate' => 'decimal:2',
         'is_taxable' => 'boolean',
         'is_statutory' => 'boolean',

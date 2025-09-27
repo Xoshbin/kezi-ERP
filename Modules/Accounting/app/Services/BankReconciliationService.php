@@ -25,7 +25,7 @@ class BankReconciliationService
         private CurrencyConverterService $currencyConverter
     ) {}
 
-    public function reconcilePayment(Payment $payment, BankStatementLine $statementLine, User $user): void
+    public function reconcilePayment(\Modules\Payment\Models\Payment $payment, \Modules\Accounting\Models\BankStatementLine $statementLine, User $user): void
     {
         // Check if reconciliation is enabled for the company
         $this->validateReconciliationEnabled($payment->company);
@@ -51,8 +51,8 @@ class BankReconciliationService
     public function reconcile(array $bankStatementLineIds, array $paymentIds, User $user): void
     {
         // Fetch all necessary models upfront
-        $lines = BankStatementLine::whereIn('id', $bankStatementLineIds)->get();
-        $payments = Payment::whereIn('id', $paymentIds)->with('company')->get();
+        $lines = \Modules\Accounting\Models\BankStatementLine::whereIn('id', $bankStatementLineIds)->get();
+        $payments = \Modules\Payment\Models\Payment::whereIn('id', $paymentIds)->with('company')->get();
 
         // Check if reconciliation is enabled for the company
         if ($payments->isNotEmpty()) {
@@ -90,7 +90,7 @@ class BankReconciliationService
         });
     }
 
-    public function createWriteOff(BankStatementLine $line, Account $writeOffAccount, User $user, string $description): void
+    public function createWriteOff(\Modules\Accounting\Models\BankStatementLine $line, \Modules\Accounting\Models\Account $writeOffAccount, User $user, string $description): void
     {
         // Create DTO and execute action - the action handles its own transaction
         $dto = new CreateJournalEntryForStatementLineDTO(
@@ -115,8 +115,8 @@ class BankReconciliationService
     public function reconcileMultiple(array $bankLineIds, array $paymentIds, User $user): void
     {
         // Pre-fetch to check reconciliation setting
-        $bankLines = BankStatementLine::whereIn('id', $bankLineIds)->with('bankStatement.company')->get();
-        $payments = Payment::whereIn('id', $paymentIds)->with(['currency', 'company'])->get();
+        $bankLines = \Modules\Accounting\Models\BankStatementLine::whereIn('id', $bankLineIds)->with('bankStatement.company')->get();
+        $payments = \Modules\Payment\Models\Payment::whereIn('id', $paymentIds)->with(['currency', 'company'])->get();
 
         // Check if reconciliation is enabled for the company
         if ($payments->isNotEmpty()) {
@@ -126,8 +126,8 @@ class BankReconciliationService
         }
 
         DB::transaction(function () use ($bankLineIds, $paymentIds, $user) {
-            $bankLines = BankStatementLine::whereIn('id', $bankLineIds)->with('bankStatement.currency')->get();
-            $payments = Payment::whereIn('id', $paymentIds)->with(['currency', 'company'])->get();
+            $bankLines = \Modules\Accounting\Models\BankStatementLine::whereIn('id', $bankLineIds)->with('bankStatement.currency')->get();
+            $payments = \Modules\Payment\Models\Payment::whereIn('id', $paymentIds)->with(['currency', 'company'])->get();
 
             // Validate that totals match using proper Money arithmetic
             $firstBankLine = $bankLines->first();
@@ -185,11 +185,11 @@ class BankReconciliationService
     /**
      * Get unreconciled bank statement lines for a given bank statement
      *
-     * @return Collection<int, BankStatementLine>
+     * @return Collection<int, \Modules\Accounting\Models\BankStatementLine>
      */
     public function getUnreconciledBankLines(int $bankStatementId)
     {
-        return BankStatementLine::where('bank_statement_id', $bankStatementId)
+        return \Modules\Accounting\Models\BankStatementLine::where('bank_statement_id', $bankStatementId)
             ->where('is_reconciled', false)
             ->get();
     }
@@ -197,11 +197,11 @@ class BankReconciliationService
     /**
      * Get unreconciled payments for a given company
      *
-     * @return Collection<int, Payment>
+     * @return Collection<int, \Modules\Payment\Models\Payment>
      */
     public function getUnreconciledPayments(int $companyId)
     {
-        return Payment::where('company_id', $companyId)
+        return \Modules\Payment\Models\Payment::where('company_id', $companyId)
             ->where('status', PaymentStatus::Confirmed)
             ->whereDoesntHave('bankStatementLines')
             ->with(['partner', 'currency'])

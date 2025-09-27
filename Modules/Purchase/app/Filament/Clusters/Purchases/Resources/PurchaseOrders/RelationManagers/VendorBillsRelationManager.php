@@ -30,7 +30,7 @@ class VendorBillsRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('reference')
                     ->label(__('vendor_bill.reference'))
-                    ->getStateUsing(function (VendorBill $record): string {
+                    ->getStateUsing(function (\Modules\Purchase\Models\VendorBill $record): string {
                         if ($record->bill_reference) {
                             return $record->bill_reference;
                         }
@@ -38,10 +38,10 @@ class VendorBillsRelationManager extends RelationManager
                         return 'DRAFT-' . str_pad((string) $record->id, 5, '0', STR_PAD_LEFT);
                     })
                     ->badge()
-                    ->color(fn(VendorBill $record): string => $record->bill_reference ? 'success' : 'warning')
-                    ->icon(fn(VendorBill $record): string => $record->bill_reference ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
+                    ->color(fn(\Modules\Purchase\Models\VendorBill $record): string => $record->bill_reference ? 'success' : 'warning')
+                    ->icon(fn(\Modules\Purchase\Models\VendorBill $record): string => $record->bill_reference ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
                     ->url(
-                        fn(VendorBill $record): string =>
+                        fn(\Modules\Purchase\Models\VendorBill $record): string =>
                         route('filament.jmeryar.accounting.resources.vendor-bills.view', [
                             'record' => $record,
                             'tenant' => Filament::getTenant(),
@@ -75,9 +75,9 @@ class VendorBillsRelationManager extends RelationManager
 
                 TextColumn::make('paymentState')
                     ->label(__('vendor_bill.payment_state'))
-                    ->formatStateUsing(fn(PaymentState $state): string => $state->label())
+                    ->formatStateUsing(fn(\Modules\Foundation\Enums\Shared\PaymentState $state): string => $state->label())
                     ->badge()
-                    ->color(fn(PaymentState $state): string => $state->color()),
+                    ->color(fn(\Modules\Foundation\Enums\Shared\PaymentState $state): string => $state->color()),
 
                 MoneyColumn::make('total_amount')
                     ->label(__('vendor_bill.total_amount'))

@@ -15,19 +15,19 @@ use Illuminate\Support\Facades\DB;
 class CreateInvoiceAction
 {
     public function __construct(
-        private readonly LockDateService $lockDateService,
+        private readonly \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         private readonly CreateInvoiceLineAction $createInvoiceLineAction
     ) {}
 
-    public function execute(CreateInvoiceDTO $dto): Invoice
+    public function execute(CreateInvoiceDTO $dto): \Modules\Sales\Models\Invoice
     {
         $company = Company::findOrFail($dto->company_id);
         $this->lockDateService->enforce($company, Carbon::parse($dto->invoice_date));
 
         $invoice = DB::transaction(function () use ($dto) {
-            $currencyCode = Currency::findOrFail($dto->currency_id)->code;
+            $currencyCode = \Modules\Foundation\Models\Currency::findOrFail($dto->currency_id)->code;
 
-            $invoice = Invoice::create([
+            $invoice = \Modules\Sales\Models\Invoice::create([
                 'company_id' => $dto->company_id,
                 'customer_id' => $dto->customer_id,
                 'currency_id' => $dto->currency_id,

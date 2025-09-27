@@ -24,7 +24,7 @@ class EditAsset extends EditRecord
             DeleteAction::make()
                 ->using(function ($record) {
                     // Use the AssetService to handle deletion with proper business logic
-                    return app(AssetService::class)->delete($record);
+                    return app(\Modules\Accounting\Services\AssetService::class)->delete($record);
                 }),
         ];
     }
@@ -32,11 +32,11 @@ class EditAsset extends EditRecord
     public function computeDepreciation(): void
     {
         $asset = $this->getRecord();
-        if (! $asset instanceof \App\Models\Asset) {
+        if (! $asset instanceof \Modules\Accounting\Models\Asset) {
             throw new \Exception('Asset not found');
         }
 
-        app(AssetService::class)->computeDepreciation($asset);
+        app(\Modules\Accounting\Services\AssetService::class)->computeDepreciation($asset);
         \Filament\Notifications\Notification::make()
             ->title('Depreciation board computed')
             ->success()
@@ -45,12 +45,12 @@ class EditAsset extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        if (! $record instanceof \App\Models\Asset) {
+        if (! $record instanceof \Modules\Accounting\Models\Asset) {
             throw new \Exception('Asset not found');
         }
 
         $dto = new UpdateAssetDTO(...$data);
 
-        return DB::transaction(fn () => app(AssetService::class)->updateAsset($record, $dto));
+        return DB::transaction(fn () => app(\Modules\Accounting\Services\AssetService::class)->updateAsset($record, $dto));
     }
 }

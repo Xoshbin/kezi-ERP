@@ -22,7 +22,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Currency $currency
  *
- * @method static CurrencyRateFactory factory($count = null, $state = [])
+ * @method static \Modules\Foundation\Database\Factories\CurrencyRateFactory factory($count = null, $state = [])
  * @method static Builder<static>|CurrencyRate newModelQuery()
  * @method static Builder<static>|CurrencyRate newQuery()
  * @method static Builder<static>|CurrencyRate query()

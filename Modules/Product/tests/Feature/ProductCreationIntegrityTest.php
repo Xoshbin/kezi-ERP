@@ -21,15 +21,15 @@ beforeEach(function () {
 
 it('can create a product with explicit inventory valuation method', function () {
     // Create the accounts needed for the product
-    $incomeAccount = Account::factory()->for($this->company)->create();
-    $expenseAccount = Account::factory()->for($this->company)->create();
-    $inventoryAccount = Account::factory()->for($this->company)->create();
+    $incomeAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $inventoryAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
 
     // This reproduces the exact scenario from the error message but with explicit valuation method
-    $product = Product::create([
+    $product = \Modules\Product\Models\Product::create([
         'name' => 'iphone',
         'sku' => 'iphone17',
-        'type' => ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'description' => 'iphone',
         'unit_price' => Money::of(100000, $this->company->currency->code),
         'income_account_id' => $incomeAccount->id,
@@ -41,24 +41,24 @@ it('can create a product with explicit inventory valuation method', function () 
     ]);
 
     // Verify the product was created successfully
-    expect($product)->toBeInstanceOf(Product::class)
+    expect($product)->toBeInstanceOf(\Modules\Product\Models\Product::class)
         ->and($product->name)->toBe('iphone')
         ->and($product->sku)->toBe('iphone17')
-        ->and($product->type)->toBe(ProductType::Storable)
+        ->and($product->type)->toBe(\Modules\Product\Enums\Products\ProductType::Storable)
         ->and($product->inventory_valuation_method)->toBe(ValuationMethod::AVCO);
 
     // Verify it's saved in the database
     $this->assertDatabaseHas('products', [
         'name' => json_encode(['en' => 'iphone']),
         'sku' => 'iphone17',
-        'type' => ProductType::Storable->value,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable->value,
         'inventory_valuation_method' => ValuationMethod::AVCO->value,
         'company_id' => $this->company->id,
     ]);
 });
 
 it('can create a product using factory that matches the database default', function () {
-    $product = Product::factory()->for($this->company)->create();
+    $product = \Modules\Product\Models\Product::factory()->for($this->company)->create();
 
     // Verify the factory default matches the database default
     expect($product->inventory_valuation_method)->toBe(ValuationMethod::AVCO);
@@ -71,14 +71,14 @@ it('can create a product using factory that matches the database default', funct
 });
 
 it('can create a product through Filament interface with default valuation method', function () {
-    $incomeAccount = Account::factory()->for($this->company)->create();
-    $expenseAccount = Account::factory()->for($this->company)->create();
+    $incomeAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $expenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
 
     livewire(CreateProduct::class)
         ->fillForm([
             'name' => 'Test Product',
             'sku' => 'TEST-001',
-            'type' => ProductType::Storable->value,
+            'type' => \Modules\Product\Enums\Products\ProductType::Storable->value,
             'unit_price' => 100000,
             'income_account_id' => $incomeAccount->id,
             'expense_account_id' => $expenseAccount->id,
@@ -93,7 +93,7 @@ it('can create a product through Filament interface with default valuation metho
     $this->assertDatabaseHas('products', [
         'name' => json_encode(['en' => 'Test Product']),
         'sku' => 'TEST-001',
-        'type' => ProductType::Storable->value,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable->value,
         'inventory_valuation_method' => ValuationMethod::AVCO->value,
         'company_id' => $this->company->id,
     ]);

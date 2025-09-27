@@ -23,23 +23,23 @@ beforeEach(function () {
 });
 
 test('HasPaymentState trait works correctly with Invoice model', function () {
-    $invoice = Invoice::factory()->for($this->company)->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'total_amount' => Money::of(100000, $this->company->currency->code),
         'currency_id' => $this->company->currency->id,
         'status' => InvoiceStatus::Posted,
     ]);
 
     // Test initial state
-    expect($invoice->paymentState)->toBe(PaymentState::NotPaid)
+    expect($invoice->paymentState)->toBe(\Modules\Foundation\Enums\Shared\PaymentState::NotPaid)
         ->and($invoice->isNotPaid())->toBeTrue()
         ->and($invoice->getPaidAmount())->toEqual(Money::of(0, $this->company->currency->code))
         ->and($invoice->getRemainingAmount())->toEqual(Money::of(100000, $this->company->currency->code));
 
     // Add partial payment
-    $customer = Partner::factory()->for($this->company)->create(['type' => 'customer']);
+    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => 'customer']);
     $journal = Journal::factory()->for($this->company)->create(['type' => 'bank']);
 
-    $payment = Payment::factory()->for($this->company)->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
         'amount' => Money::of(50000, $this->company->currency->code),
         'currency_id' => $this->company->currency->id,
         'paid_to_from_partner_id' => $customer->id,
@@ -55,30 +55,30 @@ test('HasPaymentState trait works correctly with Invoice model', function () {
 
     $invoice->refresh();
 
-    expect($invoice->paymentState)->toBe(PaymentState::PartiallyPaid)
+    expect($invoice->paymentState)->toBe(\Modules\Foundation\Enums\Shared\PaymentState::PartiallyPaid)
         ->and($invoice->isPartiallyPaid())->toBeTrue()
         ->and($invoice->getPaidAmount())->toEqual(Money::of(50000, $this->company->currency->code))
         ->and($invoice->getRemainingAmount())->toEqual(Money::of(50000, $this->company->currency->code));
 });
 
 test('HasPaymentState trait works correctly with VendorBill model', function () {
-    $vendorBill = VendorBill::factory()->for($this->company)->create([
+    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
         'total_amount' => Money::of(200000, $this->company->currency->code),
         'currency_id' => $this->company->currency->id,
         'status' => VendorBillStatus::Posted,
     ]);
 
     // Test initial state
-    expect($vendorBill->paymentState)->toBe(PaymentState::NotPaid)
+    expect($vendorBill->paymentState)->toBe(\Modules\Foundation\Enums\Shared\PaymentState::NotPaid)
         ->and($vendorBill->isNotPaid())->toBeTrue()
         ->and($vendorBill->getPaidAmount())->toEqual(Money::of(0, $this->company->currency->code))
         ->and($vendorBill->getRemainingAmount())->toEqual(Money::of(200000, $this->company->currency->code));
 
     // Add full payment
-    $vendor = Partner::factory()->for($this->company)->create(['type' => 'vendor']);
+    $vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => 'vendor']);
     $journal = Journal::factory()->for($this->company)->create(['type' => 'bank']);
 
-    $payment = Payment::factory()->for($this->company)->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
         'amount' => Money::of(200000, $this->company->currency->code),
         'currency_id' => $this->company->currency->id,
         'paid_to_from_partner_id' => $vendor->id,
@@ -94,23 +94,23 @@ test('HasPaymentState trait works correctly with VendorBill model', function () 
 
     $vendorBill->refresh();
 
-    expect($vendorBill->paymentState)->toBe(PaymentState::Paid)
+    expect($vendorBill->paymentState)->toBe(\Modules\Foundation\Enums\Shared\PaymentState::Paid)
         ->and($vendorBill->isFullyPaid())->toBeTrue()
         ->and($vendorBill->getPaidAmount())->toEqual(Money::of(200000, $this->company->currency->code))
         ->and($vendorBill->getRemainingAmount())->toEqual(Money::of(0, $this->company->currency->code));
 });
 
 test('HasPaymentState trait handles overpayment correctly', function () {
-    $invoice = Invoice::factory()->for($this->company)->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'total_amount' => Money::of(100000, $this->company->currency->code),
         'currency_id' => $this->company->currency->id,
         'status' => InvoiceStatus::Posted,
     ]);
 
-    $customer = Partner::factory()->for($this->company)->create(['type' => 'customer']);
+    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => 'customer']);
     $journal = Journal::factory()->for($this->company)->create(['type' => 'bank']);
 
-    $payment = Payment::factory()->for($this->company)->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
         'amount' => Money::of(150000, $this->company->currency->code), // Overpayment
         'currency_id' => $this->company->currency->id,
         'paid_to_from_partner_id' => $customer->id,
@@ -126,14 +126,14 @@ test('HasPaymentState trait handles overpayment correctly', function () {
 
     $invoice->refresh();
 
-    expect($invoice->paymentState)->toBe(PaymentState::Paid)
+    expect($invoice->paymentState)->toBe(\Modules\Foundation\Enums\Shared\PaymentState::Paid)
         ->and($invoice->isFullyPaid())->toBeTrue()
         ->and($invoice->getPaidAmount())->toEqual(Money::of(150000, $this->company->currency->code))
         ->and($invoice->getRemainingAmount())->toEqual(Money::of(0, $this->company->currency->code)); // Should not be negative
 });
 
 test('HasPaymentState trait helper methods work correctly', function () {
-    $vendorBill = VendorBill::factory()->for($this->company)->create([
+    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
         'total_amount' => Money::of(300000, $this->company->currency->code),
         'currency_id' => $this->company->currency->id,
         'status' => VendorBillStatus::Posted,
@@ -145,10 +145,10 @@ test('HasPaymentState trait helper methods work correctly', function () {
         ->and($vendorBill->isFullyPaid())->toBeFalse();
 
     // Add partial payment
-    $vendor = Partner::factory()->for($this->company)->create(['type' => 'vendor']);
+    $vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => 'vendor']);
     $journal = Journal::factory()->for($this->company)->create(['type' => 'bank']);
 
-    $payment = Payment::factory()->for($this->company)->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
         'amount' => Money::of(100000, $this->company->currency->code),
         'currency_id' => $this->company->currency->id,
         'paid_to_from_partner_id' => $vendor->id,
@@ -170,7 +170,7 @@ test('HasPaymentState trait helper methods work correctly', function () {
         ->and($vendorBill->isFullyPaid())->toBeFalse();
 
     // Add remaining payment
-    $payment2 = Payment::factory()->for($this->company)->create([
+    $payment2 = \Modules\Payment\Models\Payment::factory()->for($this->company)->create([
         'amount' => Money::of(200000, $this->company->currency->code),
         'currency_id' => $this->company->currency->id,
         'paid_to_from_partner_id' => $vendor->id,
@@ -193,7 +193,7 @@ test('HasPaymentState trait helper methods work correctly', function () {
 });
 
 test('HasPaymentState trait uses efficient queries', function () {
-    $invoice = Invoice::factory()->for($this->company)->create([
+    $invoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'total_amount' => Money::of(100000, $this->company->currency->code),
         'currency_id' => $this->company->currency->id,
         'status' => InvoiceStatus::Posted,
@@ -205,10 +205,10 @@ test('HasPaymentState trait uses efficient queries', function () {
     // Access payment state - should trigger efficient loadSum query
     $paymentState = $invoice->paymentState;
 
-    expect($paymentState)->toBe(PaymentState::NotPaid)
+    expect($paymentState)->toBe(\Modules\Foundation\Enums\Shared\PaymentState::NotPaid)
         ->and($invoice->paid_amount_sum ?? 0)->toBe(0);
 
     // Accessing again should not trigger another query since the sum is already loaded
     $paymentState2 = $invoice->paymentState;
-    expect($paymentState2)->toBe(PaymentState::NotPaid);
+    expect($paymentState2)->toBe(\Modules\Foundation\Enums\Shared\PaymentState::NotPaid);
 });

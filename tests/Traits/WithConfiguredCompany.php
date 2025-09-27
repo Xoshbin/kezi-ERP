@@ -37,9 +37,9 @@ trait WithConfiguredCompany
     protected function setupInventoryTestEnvironment(): void
     {
         // 1. Create inventory-specific GL accounts
-        $this->inventoryAccount = Account::factory()->for($this->company)->create(['name' => 'Stock Valuation', 'type' => 'current_assets']);
-        $this->stockInputAccount = Account::factory()->for($this->company)->create(['name' => 'Stock Input', 'type' => 'current_liabilities']);
-        $this->cogsAccount = Account::factory()->for($this->company)->create(['name' => 'Cost of Goods Sold', 'type' => 'expense']);
+        $this->inventoryAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Valuation', 'type' => 'current_assets']);
+        $this->stockInputAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Input', 'type' => 'current_liabilities']);
+        $this->cogsAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Cost of Goods Sold', 'type' => 'expense']);
 
         // 2. Create the necessary physical locations
         $this->vendorLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::Vendor]);
@@ -57,6 +57,6 @@ trait WithConfiguredCompany
         ]);
 
         // 4. Create a default vendor for the tests
-        $this->vendor = Partner::factory()->for($this->company)->create(['type' => PartnerType::Vendor]);
+        $this->vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor]);
     }
 }

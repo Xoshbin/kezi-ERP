@@ -35,7 +35,7 @@ class ViewLoanAgreement extends ViewRecord
                 ->label(__('Compute Schedule'))
                 ->action(function () {
                     $record = $this->getRecord();
-                    $loan = $record instanceof LoanAgreement ? $record : null;
+                    $loan = $record instanceof \Modules\Accounting\Models\LoanAgreement ? $record : null;
                     if (! $loan) {
                         return;
                     }
@@ -46,7 +46,7 @@ class ViewLoanAgreement extends ViewRecord
                 ->label(__('Recalculate EIR'))
                 ->action(function () {
                     $record = $this->getRecord();
-                    $loan = $record instanceof LoanAgreement ? $record : null;
+                    $loan = $record instanceof \Modules\Accounting\Models\LoanAgreement ? $record : null;
                     if (! $loan) {
                         return;
                     }
@@ -89,7 +89,7 @@ class ViewLoanAgreement extends ViewRecord
                         ->preload()
                         ->options(function () {
                             $tenant = Filament::getTenant();
-                            $q = Account::query();
+                            $q = \Modules\Accounting\Models\Account::query();
                             if ($tenant instanceof \App\Models\Company) {
                                 $q->where('company_id', $tenant->getKey());
                             }
@@ -101,10 +101,10 @@ class ViewLoanAgreement extends ViewRecord
                             TextInput::make('code')->required(),
                             TextInput::make('name')->required(),
                             Select::make('type')->options(
-                                collect(AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
+                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
                             )->required(),
                         ])
-                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => \Modules\Accounting\Models\Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
@@ -116,7 +116,7 @@ class ViewLoanAgreement extends ViewRecord
                         ->preload()
                         ->options(function () {
                             $tenant = Filament::getTenant();
-                            $q = Account::query();
+                            $q = \Modules\Accounting\Models\Account::query();
                             if ($tenant instanceof \App\Models\Company) {
                                 $q->where('company_id', $tenant->getKey());
                             }
@@ -128,10 +128,10 @@ class ViewLoanAgreement extends ViewRecord
                             TextInput::make('code')->required(),
                             TextInput::make('name')->required(),
                             Select::make('type')->options(
-                                collect(AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
+                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
                             )->required(),
                         ])
-                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => \Modules\Accounting\Models\Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
@@ -144,7 +144,7 @@ class ViewLoanAgreement extends ViewRecord
                 ])
                 ->action(function (array $data) {
                     $record = $this->getRecord();
-                    $loan = $record instanceof LoanAgreement ? $record : null;
+                    $loan = $record instanceof \Modules\Accounting\Models\LoanAgreement ? $record : null;
                     if (! $loan) {
                         return;
                     }
@@ -197,7 +197,7 @@ class ViewLoanAgreement extends ViewRecord
                         ->preload()
                         ->options(function () {
                             $tenant = Filament::getTenant();
-                            $q = Account::query();
+                            $q = \Modules\Accounting\Models\Account::query();
                             if ($tenant instanceof \App\Models\Company) {
                                 $q->where('company_id', $tenant->getKey());
                             }
@@ -209,10 +209,10 @@ class ViewLoanAgreement extends ViewRecord
                             TextInput::make('code')->required(),
                             TextInput::make('name')->required(),
                             Select::make('type')->options(
-                                collect(AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
+                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
                             )->required(),
                         ])
-                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => \Modules\Accounting\Models\Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
@@ -224,7 +224,7 @@ class ViewLoanAgreement extends ViewRecord
                         ->preload()
                         ->options(function () {
                             $tenant = Filament::getTenant();
-                            $q = Account::query();
+                            $q = \Modules\Accounting\Models\Account::query();
                             if ($tenant instanceof \App\Models\Company) {
                                 $q->where('company_id', $tenant->getKey());
                             }
@@ -236,10 +236,10 @@ class ViewLoanAgreement extends ViewRecord
                             TextInput::make('code')->required(),
                             TextInput::make('name')->required(),
                             Select::make('type')->options(
-                                collect(AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
+                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
                             )->required(),
                         ])
-                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => \Modules\Accounting\Models\Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
@@ -251,7 +251,7 @@ class ViewLoanAgreement extends ViewRecord
                         ->preload()
                         ->options(function () {
                             $tenant = Filament::getTenant();
-                            $q = Account::query();
+                            $q = \Modules\Accounting\Models\Account::query();
                             if ($tenant instanceof \App\Models\Company) {
                                 $q->where('company_id', $tenant->getKey());
                             }
@@ -263,10 +263,10 @@ class ViewLoanAgreement extends ViewRecord
                             TextInput::make('code')->required(),
                             TextInput::make('name')->required(),
                             Select::make('type')->options(
-                                collect(AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
+                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
                             )->required(),
                         ])
-                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => \Modules\Accounting\Models\Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
@@ -279,7 +279,7 @@ class ViewLoanAgreement extends ViewRecord
                 ])
                 ->action(function (array $data) {
                     $record = $this->getRecord();
-                    $loan = $record instanceof LoanAgreement ? $record : null;
+                    $loan = $record instanceof \Modules\Accounting\Models\LoanAgreement ? $record : null;
                     if (! $loan) {
                         return;
                     }
@@ -333,7 +333,7 @@ class ViewLoanAgreement extends ViewRecord
                         ->preload()
                         ->options(function () {
                             $tenant = Filament::getTenant();
-                            $q = Account::query();
+                            $q = \Modules\Accounting\Models\Account::query();
                             if ($tenant instanceof \App\Models\Company) {
                                 $q->where('company_id', $tenant->getKey());
                             }
@@ -345,10 +345,10 @@ class ViewLoanAgreement extends ViewRecord
                             TextInput::make('code')->required(),
                             TextInput::make('name')->required(),
                             Select::make('type')->options(
-                                collect(AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
+                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
                             )->required(),
                         ])
-                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => \Modules\Accounting\Models\Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
@@ -360,7 +360,7 @@ class ViewLoanAgreement extends ViewRecord
                         ->preload()
                         ->options(function () {
                             $tenant = Filament::getTenant();
-                            $q = Account::query();
+                            $q = \Modules\Accounting\Models\Account::query();
                             if ($tenant instanceof \App\Models\Company) {
                                 $q->where('company_id', $tenant->getKey());
                             }
@@ -372,10 +372,10 @@ class ViewLoanAgreement extends ViewRecord
                             TextInput::make('code')->required(),
                             TextInput::make('name')->required(),
                             Select::make('type')->options(
-                                collect(AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
+                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
                             )->required(),
                         ])
-                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => \Modules\Accounting\Models\Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
@@ -393,7 +393,7 @@ class ViewLoanAgreement extends ViewRecord
                 ])
                 ->action(function (array $data) {
                     $record = $this->getRecord();
-                    $loan = $record instanceof LoanAgreement ? $record : null;
+                    $loan = $record instanceof \Modules\Accounting\Models\LoanAgreement ? $record : null;
                     if (! $loan) {
                         return;
                     }

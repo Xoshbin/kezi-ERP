@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Log;
 
 class UpdateProductInventoryStatsAction
 {
-    public function execute(Product $product, int $quantityChange, Money $purchasePricePerUnit): Product
+    public function execute(\Modules\Product\Models\Product $product, int $quantityChange, Money $purchasePricePerUnit): \Modules\Product\Models\Product
     {
         return DB::transaction(function () use ($product, $quantityChange, $purchasePricePerUnit) {
             // Lock the product row to prevent race conditions during calculation.
-            $product = Product::lockForUpdate()->findOrFail($product->id);
+            $product = \Modules\Product\Models\Product::lockForUpdate()->findOrFail($product->id);
 
             $purchaseValue = $purchasePricePerUnit->multipliedBy($quantityChange, RoundingMode::HALF_UP);
             if (! $product->average_cost) {

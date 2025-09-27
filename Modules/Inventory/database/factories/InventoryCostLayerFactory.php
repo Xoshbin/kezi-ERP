@@ -25,7 +25,7 @@ class InventoryCostLayerFactory extends Factory
         $costPerUnit = Money::of($this->faker->numberBetween(10000, 100000), 'IQD');
 
         return [
-            'product_id' => Product::factory(),
+            'product_id' => \Modules\Product\Models\Product::factory(),
             'quantity' => $quantity,
             'remaining_quantity' => $quantity,
             'cost_per_unit' => $costPerUnit,
@@ -58,7 +58,7 @@ class InventoryCostLayerFactory extends Factory
     /**
      * Create a cost layer for a specific product
      */
-    public function forProduct(Product $product): static
+    public function forProduct(\Modules\Product\Models\Product $product): static
     {
         return $this->state(fn (array $attributes) => [
             'product_id' => $product->id,

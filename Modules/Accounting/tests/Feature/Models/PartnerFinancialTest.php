@@ -16,19 +16,19 @@ beforeEach(function () {
 });
 
 test('customer partner calculates outstanding balance correctly', function () {
-    $customer = Partner::factory()->for($this->company)->create([
-        'type' => PartnerType::Customer,
+    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
+        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
     ]);
 
     // Create posted invoices
-    $invoice1 = Invoice::factory()->for($this->company)->create([
+    $invoice1 = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $customer->id,
         'currency_id' => $this->currency->id,
         'total_amount' => Money::of(1000, $this->currency->code),
         'status' => InvoiceStatus::Posted,
     ]);
 
-    $invoice2 = Invoice::factory()->for($this->company)->create([
+    $invoice2 = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $customer->id,
         'currency_id' => $this->currency->id,
         'total_amount' => Money::of(500, $this->currency->code),
@@ -36,7 +36,7 @@ test('customer partner calculates outstanding balance correctly', function () {
     ]);
 
     // Create draft invoice (should not be included)
-    Invoice::factory()->for($this->company)->create([
+    \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $customer->id,
         'currency_id' => $this->currency->id,
         'total_amount' => Money::of(200, $this->currency->code),
@@ -49,19 +49,19 @@ test('customer partner calculates outstanding balance correctly', function () {
 });
 
 test('vendor partner calculates outstanding balance correctly', function () {
-    $vendor = Partner::factory()->for($this->company)->create([
-        'type' => PartnerType::Vendor,
+    $vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
+        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor,
     ]);
 
     // Create posted vendor bills
-    $bill1 = VendorBill::factory()->for($this->company)->create([
+    $bill1 = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $vendor->id,
         'currency_id' => $this->currency->id,
         'total_amount' => Money::of(800, $this->currency->code),
         'status' => VendorBillStatus::Posted,
     ]);
 
-    $bill2 = VendorBill::factory()->for($this->company)->create([
+    $bill2 = \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $vendor->id,
         'currency_id' => $this->currency->id,
         'total_amount' => Money::of(300, $this->currency->code),
@@ -74,12 +74,12 @@ test('vendor partner calculates outstanding balance correctly', function () {
 });
 
 test('partner calculates overdue balances correctly', function () {
-    $customer = Partner::factory()->for($this->company)->create([
-        'type' => PartnerType::Customer,
+    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
+        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
     ]);
 
     // Create overdue invoice
-    $overdueInvoice = Invoice::factory()->for($this->company)->create([
+    $overdueInvoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $customer->id,
         'currency_id' => $this->currency->id,
         'total_amount' => Money::of(600, $this->currency->code),
@@ -88,7 +88,7 @@ test('partner calculates overdue balances correctly', function () {
     ]);
 
     // Create current invoice (not overdue)
-    $currentInvoice = Invoice::factory()->for($this->company)->create([
+    $currentInvoice = \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $customer->id,
         'currency_id' => $this->currency->id,
         'total_amount' => Money::of(400, $this->currency->code),
@@ -104,12 +104,12 @@ test('partner calculates overdue balances correctly', function () {
 });
 
 test('both type partner calculates both customer and vendor balances', function () {
-    $partner = Partner::factory()->for($this->company)->create([
-        'type' => PartnerType::Both,
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
+        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Both,
     ]);
 
     // Create invoice (as customer)
-    Invoice::factory()->for($this->company)->create([
+    \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner->id,
         'currency_id' => $this->currency->id,
         'total_amount' => Money::of(500, $this->currency->code),
@@ -117,7 +117,7 @@ test('both type partner calculates both customer and vendor balances', function 
     ]);
 
     // Create vendor bill (as vendor)
-    VendorBill::factory()->for($this->company)->create([
+    \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->currency->id,
         'total_amount' => Money::of(300, $this->currency->code),
@@ -132,12 +132,12 @@ test('both type partner calculates both customer and vendor balances', function 
 });
 
 test('partner returns zero balance for wrong type', function () {
-    $customer = Partner::factory()->for($this->company)->create([
-        'type' => PartnerType::Customer,
+    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
+        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
     ]);
 
-    $vendor = Partner::factory()->for($this->company)->create([
-        'type' => PartnerType::Vendor,
+    $vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
+        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor,
     ]);
 
     // Customer should have zero vendor balance
@@ -150,15 +150,15 @@ test('partner returns zero balance for wrong type', function () {
 });
 
 test('partner calculates last transaction date correctly', function () {
-    $partner = Partner::factory()->for($this->company)->create([
-        'type' => PartnerType::Both,
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
+        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Both,
     ]);
 
     $recentDate = Carbon::today();
     $olderDate = Carbon::yesterday();
 
     // Create invoice with recent date
-    Invoice::factory()->for($this->company)->create([
+    \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner->id,
         'currency_id' => $this->currency->id,
         'invoice_date' => $recentDate,
@@ -166,7 +166,7 @@ test('partner calculates last transaction date correctly', function () {
     ]);
 
     // Create vendor bill with older date
-    VendorBill::factory()->for($this->company)->create([
+    \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->currency->id,
         'bill_date' => $olderDate,
@@ -179,8 +179,8 @@ test('partner calculates last transaction date correctly', function () {
 });
 
 test('partner with no transactions returns null for last transaction date', function () {
-    $partner = Partner::factory()->for($this->company)->create([
-        'type' => PartnerType::Customer,
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
+        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
     ]);
 
     $lastTransactionDate = $partner->getLastTransactionDate();
@@ -189,15 +189,15 @@ test('partner with no transactions returns null for last transaction date', func
 });
 
 test('partner detects overdue amounts correctly', function () {
-    $partner = Partner::factory()->for($this->company)->create([
-        'type' => PartnerType::Customer,
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
+        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
     ]);
 
     // Initially no overdue amounts
     expect($partner->hasOverdueAmounts())->toBeFalse();
 
     // Create overdue invoice
-    Invoice::factory()->for($this->company)->create([
+    \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner->id,
         'currency_id' => $this->currency->id,
         'total_amount' => Money::of(100, $this->currency->code),
@@ -212,12 +212,12 @@ test('partner detects overdue amounts correctly', function () {
 });
 
 test('partner calculates due within days correctly', function () {
-    $customer = Partner::factory()->for($this->company)->create([
-        'type' => PartnerType::Customer,
+    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
+        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
     ]);
 
     // Create invoice due in 5 days
-    Invoice::factory()->for($this->company)->create([
+    \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $customer->id,
         'currency_id' => $this->currency->id,
         'total_amount' => Money::of(500, $this->currency->code),
@@ -227,7 +227,7 @@ test('partner calculates due within days correctly', function () {
     ]);
 
     // Create invoice due in 15 days
-    Invoice::factory()->for($this->company)->create([
+    \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $customer->id,
         'currency_id' => $this->currency->id,
         'total_amount' => Money::of(300, $this->currency->code),
@@ -244,12 +244,12 @@ test('partner calculates due within days correctly', function () {
 });
 
 test('partner calculates monthly transaction value correctly', function () {
-    $partner = Partner::factory()->for($this->company)->create([
-        'type' => PartnerType::Both,
+    $partner = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create([
+        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Both,
     ]);
 
     // Create invoice this month
-    Invoice::factory()->for($this->company)->create([
+    \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner->id,
         'currency_id' => $this->currency->id,
         'total_amount' => Money::of(400, $this->currency->code),
@@ -258,7 +258,7 @@ test('partner calculates monthly transaction value correctly', function () {
     ]);
 
     // Create vendor bill this month
-    VendorBill::factory()->for($this->company)->create([
+    \Modules\Purchase\Models\VendorBill::factory()->for($this->company)->create([
         'vendor_id' => $partner->id,
         'currency_id' => $this->currency->id,
         'total_amount' => Money::of(200, $this->currency->code),
@@ -267,7 +267,7 @@ test('partner calculates monthly transaction value correctly', function () {
     ]);
 
     // Create invoice last month (should not be included)
-    Invoice::factory()->for($this->company)->create([
+    \Modules\Sales\Models\Invoice::factory()->for($this->company)->create([
         'customer_id' => $partner->id,
         'currency_id' => $this->currency->id,
         'total_amount' => Money::of(100, $this->currency->code),

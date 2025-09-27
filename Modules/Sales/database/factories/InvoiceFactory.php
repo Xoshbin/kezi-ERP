@@ -17,7 +17,7 @@ class InvoiceFactory extends Factory
         return [
             // Use factory instances for relationships. The test will provide these.
             'company_id' => Company::factory(),
-            'customer_id' => Partner::factory()->state(['type' => 'customer']),
+            'customer_id' => \Modules\Foundation\Models\Partner::factory()->state(['type' => 'customer']),
             'currency_id' => function (array $attributes) {
                 return Company::find($attributes['company_id'])->currency_id;
             },
@@ -45,8 +45,8 @@ class InvoiceFactory extends Factory
 
     public function withLines(int $count = 1): self
     {
-        return $this->afterCreating(function (Invoice $invoice) use ($count) {
-            InvoiceLine::factory()->count($count)->create([
+        return $this->afterCreating(function (\Modules\Sales\Models\Invoice $invoice) use ($count) {
+            \Modules\Sales\Models\InvoiceLine::factory()->count($count)->create([
                 'invoice_id' => $invoice->id,
             ]);
         });

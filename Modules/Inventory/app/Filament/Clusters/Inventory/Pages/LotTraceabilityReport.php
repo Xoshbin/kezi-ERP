@@ -28,7 +28,7 @@ class LotTraceabilityReport extends Page implements HasForms
 
     public ?array $reportData = null;
 
-    public ?Product $selectedProduct = null;
+    public ?\Modules\Product\Models\Product $selectedProduct = null;
 
     public ?Lot $selectedLot = null;
 
@@ -66,7 +66,7 @@ class LotTraceabilityReport extends Page implements HasForms
                         Select::make('product_id')
                             ->label(__('inventory_reports.lot_trace.filters.product'))
                             ->options(function () {
-                                return \App\Models\Product::query()
+                                return \Modules\Product\Models\Product::query()
                                     ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
                                     ->pluck('name', 'id');
                             })
@@ -74,7 +74,7 @@ class LotTraceabilityReport extends Page implements HasForms
                             ->preload()
                             ->live()
                             ->afterStateUpdated(function ($state) {
-                                $this->selectedProduct = $state ? Product::find($state) : null;
+                                $this->selectedProduct = $state ? \Modules\Product\Models\Product::find($state) : null;
                                 $this->data['lot_id'] = null;
                                 $this->selectedLot = null;
                                 $this->reportData = null;

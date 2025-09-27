@@ -110,12 +110,12 @@ class VendorBillLine extends Model
      */
     protected $casts = [
         'quantity' => 'decimal:2', // Ensures precision for quantities, allowing for fractional units.
-        'unit_price' => DocumentCurrencyMoneyCast::class, // Document currency amounts
-        'unit_price_company_currency' => BaseCurrencyMoneyCast::class, // Company base currency amounts
-        'subtotal' => DocumentCurrencyMoneyCast::class, // Document currency amounts
-        'subtotal_company_currency' => BaseCurrencyMoneyCast::class, // Company base currency amounts
-        'total_line_tax' => DocumentCurrencyMoneyCast::class, // Document currency amounts
-        'total_line_tax_company_currency' => BaseCurrencyMoneyCast::class, // Company base currency amounts
+        'unit_price' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class, // Document currency amounts
+        'unit_price_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class, // Company base currency amounts
+        'subtotal' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class, // Document currency amounts
+        'subtotal_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class, // Company base currency amounts
+        'total_line_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class, // Document currency amounts
+        'total_line_tax_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class, // Company base currency amounts
         'created_at' => 'datetime',  // Automatically managed by Eloquent for audit trails [2].
         'updated_at' => 'datetime',  // Automatically managed by Eloquent [2].
     ];

@@ -15,7 +15,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 it('creates initial recognition journal entry for a payable loan', function () {
     $code = $this->company->currency->code;
 
-    $loan = LoanAgreement::factory()->for($this->company)->create([
+    $loan = \Modules\Accounting\Models\LoanAgreement::factory()->for($this->company)->create([
         'currency_id' => $this->company->currency_id,
         'principal_amount' => Money::of('10000', $code),
         'loan_type' => LoanType::Payable,
@@ -24,8 +24,8 @@ it('creates initial recognition journal entry for a payable loan', function () {
         'interest_rate' => 12.0,
     ]);
 
-    $bank = Account::factory()->for($this->company)->create();
-    $loanLiab = Account::factory()->for($this->company)->create();
+    $bank = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
+    $loanLiab = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
     $journal = Journal::factory()->for($this->company)->create();
 
     $je = app(CreateJournalEntryForLoanInitialRecognitionAction::class)

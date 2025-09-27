@@ -39,7 +39,7 @@ use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class BankStatementResource extends Resource
 {
-    protected static ?string $model = BankStatement::class;
+    protected static ?string $model = \Modules\Accounting\Models\BankStatement::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 
@@ -73,7 +73,7 @@ class BankStatementResource extends Resource
             Section::make(__('bank_statement.statement_information'))
                 ->description(__('bank_statement.statement_information_description'))
                 ->schema([
-                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
+                    TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class, 'name')
                         ->label(__('bank_statement.currency'))
                         ->searchable()
                         ->preload()
@@ -204,7 +204,7 @@ class BankStatementResource extends Resource
                                 ->required()
                                 ->maxLength(255)
                                 ->columnSpan(4),
-                            TranslatableSelect::forModel('partner_id', Partner::class, 'name')
+                            TranslatableSelect::forModel('partner_id', \Modules\Foundation\Models\Partner::class, 'name')
                                 ->label(__('bank_statement.partner'))
                                 ->searchable()
                                 ->searchableFields(['name', 'email', 'contact_person'])
@@ -220,7 +220,7 @@ class BankStatementResource extends Resource
                                         ?? $get('currency_id');
 
                                     if ($currencyId) {
-                                        $currency = Currency::find($currencyId);
+                                        $currency = \Modules\Foundation\Models\Currency::find($currencyId);
 
                                         return $currency->code ?? 'IQD';
                                     }
@@ -235,7 +235,7 @@ class BankStatementResource extends Resource
                                 ->required()
                                 ->helperText(__('bank_statement.amount_in_statement_currency'))
                                 ->columnSpan(3),
-                            TranslatableSelect::forModel('foreign_currency_id', Currency::class, 'name')
+                            TranslatableSelect::forModel('foreign_currency_id', \Modules\Foundation\Models\Currency::class, 'name')
                                 ->label(__('bank_statement.foreign_currency'))
                                 ->searchable()
                                 ->preload()
@@ -243,7 +243,7 @@ class BankStatementResource extends Resource
                                 ->options(function ($get) {
                                     $statementCurrencyId = $get('../../../currency_id');
 
-                                    return Currency::where('is_active', true)
+                                    return \Modules\Foundation\Models\Currency::where('is_active', true)
                                         ->when($statementCurrencyId, function ($query, $statementCurrencyId) {
                                             return $query->where('id', '!=', $statementCurrencyId);
                                         })
@@ -335,7 +335,7 @@ class BankStatementResource extends Resource
                     ->label(__('bank_statement.reconcile'))
                     ->icon('heroicon-o-scale')
                     ->color('success')
-                    ->url(fn (BankStatement $record): string => static::getUrl('reconcile', ['record' => $record]))
+                    ->url(fn (\Modules\Accounting\Models\BankStatement $record): string => static::getUrl('reconcile', ['record' => $record]))
                     ->visible(fn (): bool => Filament::getTenant()->enable_reconciliation ?? false),
             ])
             ->toolbarActions([
@@ -346,7 +346,7 @@ class BankStatementResource extends Resource
     }
 
     /**
-     * @return Builder<BankStatement>
+     * @return Builder<\Modules\Accounting\Models\BankStatement>
      */
     public static function getEloquentQuery(): Builder
     {

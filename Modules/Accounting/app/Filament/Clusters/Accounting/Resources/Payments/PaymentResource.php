@@ -41,7 +41,7 @@ use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PaymentResource extends Resource
 {
-    protected static ?string $model = Payment::class;
+    protected static ?string $model = \Modules\Payment\Models\Payment::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';
 
@@ -96,7 +96,7 @@ class PaymentResource extends Resource
                                 ->required()
                                 ->columnSpanFull(),
 
-                            TranslatableSelect::forModel('paid_to_from_partner_id', Partner::class, 'name')
+                            TranslatableSelect::forModel('paid_to_from_partner_id', \Modules\Foundation\Models\Partner::class, 'name')
                                 ->searchable()
                                 ->label(__('payment.form.partner'))
                                 ->searchableFields(['name', 'tax_id'])
@@ -145,7 +145,7 @@ class PaymentResource extends Resource
                                 ->searchable()
                                 ->required()
                                 ->columnSpanFull(),
-                            TranslatableSelect::forModel('currency_id', Currency::class, 'name')
+                            TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class, 'name')
                                 ->label(__('payment.form.currency_id'))
                                 ->searchableFields(['name', 'code'])
                                 ->searchable()
@@ -176,7 +176,7 @@ class PaymentResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->weight('medium')
-                    ->getStateUsing(function (Payment $record): string {
+                    ->getStateUsing(function (\Modules\Payment\Models\Payment $record): string {
                         if ($record->reference) {
                             return $record->reference;
                         }
@@ -184,8 +184,8 @@ class PaymentResource extends Resource
                         return 'DRAFT-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT);
                     })
                     ->badge()
-                    ->color(fn (Payment $record): string => $record->reference ? 'success' : 'warning')
-                    ->icon(fn (Payment $record): string => $record->reference ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square'),
+                    ->color(fn (\Modules\Payment\Models\Payment $record): string => $record->reference ? 'success' : 'warning')
+                    ->icon(fn (\Modules\Payment\Models\Payment $record): string => $record->reference ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square'),
 
                 // Partner (critical for identification)
                 TextColumn::make('partner.name')
@@ -285,16 +285,16 @@ class PaymentResource extends Resource
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make()
-                    ->action(function (Payment $record) {
+                    ->action(function (\Modules\Payment\Models\Payment $record) {
                         app(PaymentService::class)->delete($record);
                     })
-                    ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft),
+                    ->visible(fn (\Modules\Payment\Models\Payment $record): bool => $record->status === PaymentStatus::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->action(function ($records) {
-                            $records->each(fn (Payment $record) => app(PaymentService::class)->delete($record));
+                            $records->each(fn (\Modules\Payment\Models\Payment $record) => app(PaymentService::class)->delete($record));
                         }),
                 ]),
             ]);

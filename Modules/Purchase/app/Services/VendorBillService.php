@@ -36,15 +36,15 @@ use RuntimeException;
 class VendorBillService
 {
     public function __construct(
-        protected LockDateService $lockDateService,
+        protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         protected JournalEntryService $journalEntryService,
-        protected CreateStockMoveAction $createStockMoveAction,
+        protected \Modules\Inventory\Actions\Inventory\CreateStockMoveAction $createStockMoveAction,
         protected CurrencyConverterService $currencyConverter,
         protected ExchangeRateService $exchangeRateService,
         protected SequenceService $sequenceService
     ) {}
 
-    public function post(VendorBill $vendorBill, User $user): void
+    public function post(\Modules\Purchase\Models\VendorBill $vendorBill, User $user): void
     {
         if ($vendorBill->status !== VendorBillStatus::Draft) {
             return;
@@ -74,7 +74,7 @@ class VendorBillService
             // Create stock moves and inventory journal entries based on company's inventory accounting mode
             $company = $vendorBill->company;
             $storableLines = $vendorBill->lines()->with('product')->get()
-                ->filter(fn(VendorBillLine $l) => $l->product?->type === ProductType::Storable);
+                ->filter(fn(VendorBillLine $l) => $l->product?->type === \Modules\Product\Enums\Products\ProductType::Storable);
 
             if ($storableLines->isNotEmpty()) {
                 // Check the company's inventory accounting mode
@@ -115,13 +115,13 @@ class VendorBillService
             $vendorBill->update(['journal_entry_id' => $journalEntry->getKey()]);
         });
 
-        VendorBillConfirmed::dispatch($vendorBill, $user);
+        \Modules\Purchase\Events\VendorBillConfirmed::dispatch($vendorBill, $user);
     }
 
     /**
      * Creates a stock move with multiple product lines for vendor bill lines.
      */
-    private function createStockMoveForLines(VendorBill $vendorBill, $storableLines, User $user, StockPicking $picking): StockMove
+    private function createStockMoveForLines(\Modules\Purchase\Models\VendorBill $vendorBill, $storableLines, User $user, StockPicking $picking): StockMove
     {
         $company = $vendorBill->company;
 
@@ -138,7 +138,7 @@ class VendorBillService
                 from_location_id: $company->vendorLocation->getKey(),
                 to_location_id: $company->defaultStockLocation->getKey(),
                 description: $line->description,
-                source_type: VendorBill::class,
+                source_type: \Modules\Purchase\Models\VendorBill::class,
                 source_id: $vendorBill->getKey()
             );
         }
@@ -151,7 +151,7 @@ class VendorBillService
             move_date: $vendorBill->bill_date,
             reference: $vendorBill->bill_reference,
             description: "Stock receipt from vendor bill {$vendorBill->bill_reference}",
-            source_type: VendorBill::class,
+            source_type: \Modules\Purchase\Models\VendorBill::class,
             source_id: $vendorBill->getKey(),
             created_by_user_id: $user->id
         );
@@ -169,12 +169,12 @@ class VendorBillService
     /**
      * Delete a draft vendor bill.
      */
-    public function delete(VendorBill $vendorBill): bool
+    public function delete(\Modules\Purchase\Models\VendorBill $vendorBill): bool
     {
         $this->lockDateService->enforce(Company::findOrFail($vendorBill->company_id), Carbon::parse($vendorBill->bill_date));
 
         if ($vendorBill->status !== VendorBillStatus::Draft) {
-            throw new DeletionNotAllowedException(
+            throw new \Modules\Foundation\Exceptions\DeletionNotAllowedException(
                 'Cannot delete a posted vendor bill. Corrections must be made with a new reversal entry.'
             );
         }
@@ -189,7 +189,7 @@ class VendorBillService
     /**
      * Cancels a posted vendor bill by creating a reversing journal entry and a detailed audit log.
      */
-    public function cancel(VendorBill $vendorBill, User $user, string $reason): void
+    public function cancel(\Modules\Purchase\Models\VendorBill $vendorBill, User $user, string $reason): void
     {
         Gate::forUser($user)->authorize('cancel', $vendorBill);
 
@@ -205,7 +205,7 @@ class VendorBillService
 
             // Step 1: Create a detailed audit log *before* making changes.
             // This captures the state of the bill right before cancellation.
-            AuditLog::create([
+            \Modules\Foundation\Models\AuditLog::create([
                 'user_id' => $user->id,
                 'event_type' => 'cancellation', // A more specific event type
                 'auditable_type' => get_class($vendorBill),
@@ -230,7 +230,7 @@ class VendorBillService
         });
     }
 
-    public function confirm(VendorBill $vendorBill, User $user): void
+    public function confirm(\Modules\Purchase\Models\VendorBill $vendorBill, User $user): void
     {
         $this->post($vendorBill, $user);
     }
@@ -239,7 +239,7 @@ class VendorBillService
      * Process multi-currency amounts for a vendor bill.
      * Captures exchange rate and converts amounts to company base currency.
      */
-    protected function processMultiCurrencyAmounts(VendorBill $vendorBill): void
+    protected function processMultiCurrencyAmounts(\Modules\Purchase\Models\VendorBill $vendorBill): void
     {
         // Load necessary relationships
         $vendorBill->load(['company', 'currency', 'lines']);
@@ -312,7 +312,7 @@ class VendorBillService
      *
      * @param  \App\Models\VendorBillLine  $line
      */
-    protected function convertVendorBillLineAmounts($line, Currency $companyCurrency, float $exchangeRate): void
+    protected function convertVendorBillLineAmounts($line, \Modules\Foundation\Models\Currency $companyCurrency, float $exchangeRate): void
     {
         $unitPriceCompanyCurrency = $this->currencyConverter->convertWithRate(
             $line->unit_price,
@@ -342,7 +342,7 @@ class VendorBillService
         ]);
     }
 
-    public function resetToDraft(VendorBill $vendorBill, User $user, string $reason): void
+    public function resetToDraft(\Modules\Purchase\Models\VendorBill $vendorBill, User $user, string $reason): void
     {
         Gate::forUser($user)->authorize('resetToDraft', $vendorBill);
 
@@ -378,7 +378,7 @@ class VendorBillService
      *
      * @throws RuntimeException if validation fails
      */
-    private function validateVendorBillForPosting(VendorBill $vendorBill): void
+    private function validateVendorBillForPosting(\Modules\Purchase\Models\VendorBill $vendorBill): void
     {
         $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($vendorBill);
 

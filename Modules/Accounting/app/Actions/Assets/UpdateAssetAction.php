@@ -12,7 +12,7 @@ class UpdateAssetAction
         protected ComputeDepreciationScheduleAction $computeDepreciationScheduleAction
     ) {}
 
-    public function execute(Asset $asset, UpdateAssetDTO $dto): Asset
+    public function execute(\Modules\Accounting\Models\Asset $asset, UpdateAssetDTO $dto): \Modules\Accounting\Models\Asset
     {
         return DB::transaction(function () use ($asset, $dto) {
             $asset->update([

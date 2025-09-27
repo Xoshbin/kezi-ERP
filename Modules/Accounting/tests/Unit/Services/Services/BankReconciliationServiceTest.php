@@ -32,13 +32,13 @@ it('throws an exception if the company is missing default accounts', function ()
     // Arrange - Enable reconciliation so we can test the account configuration logic
     $this->company->update(['enable_reconciliation' => true]);
 
-    $payment = Payment::factory()->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $this->bankJournal->id,
         'status' => PaymentStatus::Confirmed,
     ]);
 
-    $service = app(BankReconciliationService::class);
+    $service = app(\Modules\Accounting\Services\BankReconciliationService::class);
 
     // Act & Assert
     expect(fn () => $service->reconcile([], [$payment->id], $this->user))
@@ -49,26 +49,26 @@ it('successfully reconciles a payment and a bank statement line', function () {
     // Arrange - Enable reconciliation and configure default accounts
     $this->company->update([
         'enable_reconciliation' => true,
-        'default_bank_account_id' => Account::factory()->create(['company_id' => $this->company->id])->id,
-        'default_outstanding_receipts_account_id' => Account::factory()->create(['company_id' => $this->company->id])->id,
+        'default_bank_account_id' => \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id])->id,
+        'default_outstanding_receipts_account_id' => \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id])->id,
     ]);
 
-    $currency = Currency::firstOrCreate(['code' => 'USD'], ['name' => 'US Dollar', 'symbol' => '$', 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => 2]);
+    $currency = \Modules\Foundation\Models\Currency::firstOrCreate(['code' => 'USD'], ['name' => 'US Dollar', 'symbol' => '$', 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => 2]);
 
-    $statement = BankStatement::factory()->create([
+    $statement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $this->bankJournal->id,
         'currency_id' => $currency->id,
     ]);
 
-    $statementLine = BankStatementLine::factory()->create([
+    $statementLine = \Modules\Accounting\Models\BankStatementLine::factory()->create([
         'bank_statement_id' => $statement->id,
         'company_id' => $this->company->id,
         'is_reconciled' => false,
         'amount' => Money::of(1000, 'USD'),
     ]);
 
-    $payment = Payment::factory()->create([
+    $payment = \Modules\Payment\Models\Payment::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $this->bankJournal->id,
         'currency_id' => $currency->id,
@@ -77,7 +77,7 @@ it('successfully reconciles a payment and a bank statement line', function () {
         'payment_type' => 'inbound',
     ]);
 
-    $service = app(BankReconciliationService::class);
+    $service = app(\Modules\Accounting\Services\BankReconciliationService::class);
 
     // Act
     $service->reconcile([$statementLine->id], [$payment->id], $this->user);
@@ -94,7 +94,7 @@ it('successfully reconciles a payment and a bank statement line', function () {
     ]);
 
     $this->assertDatabaseHas('journal_entries', [ // <-- Add $this->
-        'source_type' => Payment::class,
+        'source_type' => \Modules\Payment\Models\Payment::class,
         'source_id' => $payment->id,
         'description' => 'Reconciliation for Payment #'.$payment->id,
     ]);
@@ -102,7 +102,7 @@ it('successfully reconciles a payment and a bank statement line', function () {
 
 it('creates a write-off for a single bank statement line', function () {
     // 1. Create the bank account
-    $companyBankAccount = Account::factory()->create([
+    $companyBankAccount = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'bank_and_cash',
     ]);
@@ -116,21 +116,21 @@ it('creates a write-off for a single bank statement line', function () {
     ]);
 
     // 3. Create the expense account
-    $expenseAccount = Account::factory()->create([
+    $expenseAccount = \Modules\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'expense',
     ]);
 
     // 4. Create the bank statement
     $currency = $this->company->currency;
-    $statement = BankStatement::factory()->create([
+    $statement = \Modules\Accounting\Models\BankStatement::factory()->create([
         'company_id' => $this->company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $currency->id,
     ]);
 
     // 5. Create the bank statement line
-    $bankFeeLine = BankStatementLine::factory()->create([
+    $bankFeeLine = \Modules\Accounting\Models\BankStatementLine::factory()->create([
         'bank_statement_id' => $statement->id,
         'is_reconciled' => false,
         'amount' => Money::of(-50, $currency->code), // A $50 bank fee
@@ -141,7 +141,7 @@ it('creates a write-off for a single bank statement line', function () {
     $valueInDb = $bankFeeLine->fresh()->amount->getMinorAmount()->toInt();
     Log::info('1. Value immediately after creation: '.$valueInDb);
 
-    $service = app(BankReconciliationService::class);
+    $service = app(\Modules\Accounting\Services\BankReconciliationService::class);
     $description = 'Monthly Bank Service Fee';
 
     // Act

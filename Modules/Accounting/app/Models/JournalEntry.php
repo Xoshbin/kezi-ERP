@@ -128,8 +128,8 @@ class JournalEntry extends Model
      */
     protected $casts = [
         'entry_date' => 'date',
-        'total_debit' => BaseCurrencyMoneyCast::class, // Company base currency amounts
-        'total_credit' => BaseCurrencyMoneyCast::class, // Company base currency amounts
+        'total_debit' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class, // Company base currency amounts
+        'total_credit' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class, // Company base currency amounts
         'is_posted' => 'boolean', // Crucial flag for immutability [3].
         'state' => JournalEntryState::class, // Journal entry state for reversal tracking
     ];

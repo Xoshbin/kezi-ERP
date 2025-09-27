@@ -17,7 +17,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('creating an account with a duplicate code for the same company is prevented', function () {
     // Arrange: Create the first account with code '1000'.
-    Account::factory()->for($this->company)->create(['code' => '1000']);
+    \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['code' => '1000']);
 
     // Arrange: Prepare the data for the second account, which is a duplicate.
     $duplicateAccountData = [
@@ -28,7 +28,7 @@ test('creating an account with a duplicate code for the same company is prevente
     ];
 
     // Arrange: Get the service that contains your business rules.
-    $accountService = app(AccountService::class);
+    $accountService = app(\Modules\Accounting\Services\AccountService::class);
 
     // Assert: Expect that trying to create the duplicate account will fail
     // with a ValidationException. This proves your backend rule works.
@@ -38,14 +38,14 @@ test('creating an account with a duplicate code for the same company is prevente
 
 test('an account with existing transactions is marked as deprecated instead of being deleted', function () {
     // Arrange: Create an account and link a transaction to it.
-    $account = Account::factory()->for($this->company)->create();
+    $account = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
     $journal = Journal::factory()->for($this->company)->create();
     $currencyCode = $this->company->currency->code;
 
     // Create the journal entry using the proper Action
-    $balancingAccount = Account::factory()->for($this->company)->create();
+    $balancingAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
 
-    $createJournalEntryAction = app(CreateJournalEntryAction::class);
+    $createJournalEntryAction = app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class);
     $journalEntry = $createJournalEntryAction->execute(new CreateJournalEntryDTO(
         company_id: $this->company->id,
         journal_id: $journal->id,
@@ -92,8 +92,8 @@ test('an account with existing transactions is marked as deprecated instead of b
 
 test('a deprecated account cannot be used for new financial transactions', function () {
     // Arrange: Create the necessary accounts.
-    $deprecatedAccount = Account::factory()->for($this->company)->create(['is_deprecated' => true]);
-    $activeAccount = Account::factory()->for($this->company)->create();
+    $deprecatedAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['is_deprecated' => true]);
+    $activeAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create();
 
     // Arrange: Prepare the data for a journal entry that attempts to use the deprecated account.
     $currencyCode = $this->company->currency->code;
@@ -129,7 +129,7 @@ test('a deprecated account cannot be used for new financial transactions', funct
     );
 
     // Arrange: Instantiate the action that contains the business logic.
-    $createJournalEntryAction = app(CreateJournalEntryAction::class);
+    $createJournalEntryAction = app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class);
 
     // Assert: Expect the action to throw a specific, clear exception when it detects
     // the use of a deprecated account. This confirms the backend rule is enforced.

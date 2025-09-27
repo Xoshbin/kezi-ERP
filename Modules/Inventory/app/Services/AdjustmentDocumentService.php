@@ -16,7 +16,7 @@ class AdjustmentDocumentService
     /**
      * Post a draft credit note and create its reversing journal entry.
      */
-    public function post(AdjustmentDocument $creditNote, User $user): void
+    public function post(\Modules\Inventory\Models\AdjustmentDocument $creditNote, User $user): void
     {
         DB::transaction(function () use ($creditNote, $user) {
             // Update the credit note's status and save it.
@@ -31,7 +31,7 @@ class AdjustmentDocumentService
             $creditNote->journal_entry_id = $journalEntry->id;
             $creditNote->save();
 
-            AdjustmentDocumentPosted::dispatch($creditNote);
+            \Modules\Inventory\Events\AdjustmentDocumentPosted::dispatch($creditNote);
         });
     }
 }

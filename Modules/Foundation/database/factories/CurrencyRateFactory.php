@@ -21,7 +21,7 @@ class CurrencyRateFactory extends Factory
     {
         return [
             'company_id' => Company::factory(),
-            'currency_id' => Currency::factory()->createSafely(),
+            'currency_id' => \Modules\Foundation\Models\Currency::factory()->createSafely(),
             'rate' => $this->faker->randomFloat(6, 0.1, 10.0),
             'effective_date' => $this->faker->dateTimeBetween('-30 days', 'now')->format('Y-m-d'),
             'source' => $this->faker->randomElement(['manual', 'api', 'bank', 'central_bank']),
