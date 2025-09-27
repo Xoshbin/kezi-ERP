@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Modules\Accounting\Database\Factories;
 
 use App\Models\AnalyticAccountPlanPivot;
 use Illuminate\Database\Eloquent\Factories\Factory;

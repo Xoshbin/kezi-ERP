@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Modules\Foundation\Tests\Feature;
 
 use App\Enums\Accounting\AccountType;
 use App\Models\Account;

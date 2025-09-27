@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Modules\Product\Database\Factories;
 
 use App\Enums\Inventory\ValuationMethod;
 use App\Enums\Products\ProductType;

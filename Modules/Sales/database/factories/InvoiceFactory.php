@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Modules\Sales\Database\Factories;
 
 use App\Enums\Sales\InvoiceStatus;
 use App\Models\Company;

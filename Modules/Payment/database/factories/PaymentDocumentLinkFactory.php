@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Modules\Payment\Database\Factories;
 
 use App\Models\Invoice;
 use App\Models\Payment;

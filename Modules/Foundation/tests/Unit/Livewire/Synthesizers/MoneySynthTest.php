@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Livewire\Synthesizers;
+namespace Modules\Foundation\Tests\Unit\Livewire\Synthesizers;
 
 use App\Livewire\Synthesizers\MoneySynth;
 use Brick\Money\Money;

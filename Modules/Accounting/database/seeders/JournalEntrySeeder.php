@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Modules\Accounting\Database\Seeders;
 
 use App\Actions\Accounting\CreateJournalEntryAction;
 use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;

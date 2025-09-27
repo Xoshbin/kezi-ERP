@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Modules\Foundation\Database\Seeders;
 
 use App\Enums\Accounting\AccountType;
 use App\Enums\Partners\PartnerType;

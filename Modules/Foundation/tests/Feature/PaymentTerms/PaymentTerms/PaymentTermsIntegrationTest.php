@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\PaymentTerms;
+namespace Modules\Foundation\Tests\Feature\PaymentTerms;
 
 use App\Enums\PaymentTerms\PaymentTermType;
 use App\Models\Company;

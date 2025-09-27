@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Services\Reports;
+namespace Modules\Accounting\Tests\Feature\Services\Reports;
 
 use App\Enums\Accounting\AccountType;
 use App\Enums\Accounting\JournalType;

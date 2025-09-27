@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Filament\Reports;
+namespace Modules\Accounting\Tests\Feature\Filament\Reports;
 
 use App\Enums\Accounting\AccountType;
 use App\Enums\Accounting\JournalEntryState;

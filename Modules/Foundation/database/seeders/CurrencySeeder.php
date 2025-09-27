@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Modules\Foundation\Database\Seeders;
 
 use App\Models\Currency;
 use Illuminate\Database\Seeder;

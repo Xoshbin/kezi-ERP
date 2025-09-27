@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Services\Reports;
+namespace Modules\Accounting\Tests\Feature\Services\Reports;
 
 use App\Enums\Payments\PaymentStatus;
 use App\Enums\Purchases\VendorBillStatus;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Filament\Pages;
+namespace Modules\Accounting\Tests\Feature\Filament\Pages;
 
 use App\Filament\Clusters\Accounting\Pages\Reports\Dashboard;
 use App\Models\User;

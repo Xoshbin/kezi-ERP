@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Modules\HR\Database\Factories;
 
 use App\Models\Company;
 use App\Models\Currency;

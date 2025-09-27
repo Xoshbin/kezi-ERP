@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Casts;
+namespace Modules\Foundation\Tests\Feature\Casts;
 
 use App\Models\Asset;
 use App\Models\Company;

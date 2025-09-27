@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Adjustments;
+namespace Modules\Inventory\Tests\Feature\Adjustments;
 
 use App\Actions\Adjustments\CreateAdjustmentDocumentAction;
 use App\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;

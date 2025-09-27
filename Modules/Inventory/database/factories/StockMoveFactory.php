@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Modules\Inventory\Database\Factories;
 
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;

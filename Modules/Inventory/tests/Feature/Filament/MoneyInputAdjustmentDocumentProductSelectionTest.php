@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Filament;
+namespace Modules\Inventory\Tests\Feature\Filament;
 
 use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument;
 use App\Models\Account;

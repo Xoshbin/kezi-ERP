@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Inventory;
+namespace Modules\Inventory\Tests\Feature\Inventory;
 
 use App\Actions\Purchases\CreateVendorBillLineAction;
 use App\Actions\Sales\CreateInvoiceLineAction;
