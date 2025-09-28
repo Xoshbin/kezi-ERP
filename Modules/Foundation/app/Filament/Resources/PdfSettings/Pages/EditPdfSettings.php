@@ -1,12 +1,12 @@
 <?php
 
-namespace Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\Pages;
+namespace Modules\Foundation\Filament\Resources\PdfSettings\Pages;
 
 use App\Models\Company;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\PdfSettingsResource;
+use Modules\Foundation\Filament\Resources\PdfSettings\PdfSettingsResource;
 
 class EditPdfSettings extends EditRecord
 {

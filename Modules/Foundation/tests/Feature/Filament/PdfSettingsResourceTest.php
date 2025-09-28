@@ -4,9 +4,9 @@ use App\Models\User;
 use Livewire\Livewire;
 use App\Models\Company;
 use Filament\Facades\Filament;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\PdfSettingsResource;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\Pages\EditPdfSettings;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\Pages\ListPdfSettings;
+use Modules\Foundation\Filament\Resources\PdfSettings\PdfSettingsResource;
+use Modules\Foundation\Filament\Resources\PdfSettings\Pages\EditPdfSettings;
+use Modules\Foundation\Filament\Resources\PdfSettings\Pages\ListPdfSettings;
 
 
 

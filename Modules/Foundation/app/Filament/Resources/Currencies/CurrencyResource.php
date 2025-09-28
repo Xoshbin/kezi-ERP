@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies;
+namespace Modules\Foundation\Filament\Resources\Currencies;
 
 use BackedEnum;
 use Filament\Tables\Table;
@@ -16,12 +16,11 @@ use Modules\Foundation\Models\Currency;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\DateTimePicker;
-use Modules\Foundation\Support\NumberFormatter;
 use App\Filament\Clusters\Settings\SettingsCluster;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies\Pages\EditCurrency;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies\Pages\CreateCurrency;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies\Pages\ListCurrencies;
+use Modules\Foundation\Filament\Resources\Currencies\Pages\EditCurrency;
+use Modules\Foundation\Filament\Resources\Currencies\Pages\CreateCurrency;
+use Modules\Foundation\Filament\Resources\Currencies\Pages\ListCurrencies;
 
 class CurrencyResource extends Resource
 {

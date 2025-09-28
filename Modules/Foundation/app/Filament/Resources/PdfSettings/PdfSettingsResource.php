@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings;
+namespace Modules\Foundation\Filament\Resources\PdfSettings;
 
 use BackedEnum;
 use App\Models\Company;
@@ -18,8 +18,8 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\Pages\EditPdfSettings;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\Pages\ListPdfSettings;
+use Modules\Foundation\Filament\Resources\PdfSettings\Pages\EditPdfSettings;
+use Modules\Foundation\Filament\Resources\PdfSettings\Pages\ListPdfSettings;
 
 class PdfSettingsResource extends Resource
 {

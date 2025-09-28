@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts;
+namespace Modules\Accounting\Filament\Resources\Accounts;
 
 use BackedEnum;
 use Filament\Tables\Table;
@@ -18,10 +18,10 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use App\Filament\Clusters\Settings\SettingsCluster;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
-use Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts\Pages\EditAccount;
-use Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts\Pages\ListAccounts;
-use Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts\Pages\CreateAccount;
-use Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts\RelationManagers\JournalEntryLinesRelationManager;
+use Modules\Accounting\Filament\Resources\Accounts\Pages\EditAccount;
+use Modules\Accounting\Filament\Resources\Accounts\Pages\ListAccounts;
+use Modules\Accounting\Filament\Resources\Accounts\Pages\CreateAccount;
+use Modules\Accounting\Filament\Resources\Accounts\RelationManagers\JournalEntryLinesRelationManager;
 
 class AccountResource extends Resource
 {

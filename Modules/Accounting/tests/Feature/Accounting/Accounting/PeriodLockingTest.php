@@ -32,7 +32,7 @@ use Modules\Inventory\Actions\Adjustments\CreateAdjustmentDocumentAction;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use Modules\Inventory\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
-use Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates\Pages\ListLockDates;
+use Modules\Accounting\Filament\Resources\LockDates\Pages\ListLockDates;
 
 // This file now uses our standardized setup traits for a clean, consistent testing environment.
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);

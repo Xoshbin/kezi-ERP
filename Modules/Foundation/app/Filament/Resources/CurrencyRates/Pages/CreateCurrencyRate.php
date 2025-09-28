@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\Pages;
+namespace Modules\Foundation\Filament\Resources\CurrencyRates\Pages;
 
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\CurrencyRateResource;
+use Modules\Foundation\Filament\Resources\CurrencyRates\CurrencyRateResource;
 
 class CreateCurrencyRate extends CreateRecord
 {

@@ -1,13 +1,13 @@
 <?php
 
-namespace Modules\Accounting\Filament\Clusters\Settings\Resources\Taxes\Pages;
+namespace Modules\Accounting\Filament\Resources\Taxes\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
-use Modules\Accounting\Filament\Clusters\Settings\Resources\Taxes\TaxResource;
+use Modules\Accounting\Filament\Resources\Taxes\TaxResource;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
-=
+
 class EditTax extends EditRecord
 {
     use Translatable;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\Schemas;
+namespace Modules\Foundation\Filament\Resources\CurrencyRates\Schemas;
 
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;

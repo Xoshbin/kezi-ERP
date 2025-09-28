@@ -1,7 +1,7 @@
 @php use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\ProductResource; @endphp
-@php use Modules\Foundation\Filament\Clusters\Settings\Resources\Accounts\AccountResource; @endphp
-@php use Modules\Foundation\Filament\Clusters\Settings\Resources\Companies\CompanyResource; @endphp
-@php use Modules\Foundation\Filament\Clusters\Settings\Resources\Taxes\TaxResource; @endphp
+@php use Modules\Foundation\Filament\Resources\Accounts\AccountResource; @endphp
+@php use Modules\Foundation\Filament\Resources\Companies\CompanyResource; @endphp
+@php use Modules\Foundation\Filament\Resources\Taxes\TaxResource; @endphp
 <div>
     @if(!empty($preview['issues']))
         <div class="p-3 mb-3 rounded bg-[var(--color-danger-50)] text-[var(--color-danger-800)]">
