@@ -2,8 +2,7 @@
 
 namespace Modules\Accounting\Observers;
 
-use App\Models\JournalEntry;
-use App\Services\Accounting\LockDateService;
+use Modules\Accounting\Models\JournalEntry;
 
 class JournalEntryObserver
 {

@@ -2,26 +2,26 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\RelationManagers;
 
-use App\Actions\Reconciliation\MatchJournalItemsAction;
-use App\Enums\Reconciliation\ReconciliationType;
-use App\Exceptions\Reconciliation\ReconciliationException;
-use App\Models\Company;
-use App\Models\JournalEntryLine;
 use Exception;
+use App\Models\Company;
+use Filament\Tables\Table;
 use Filament\Actions\Action;
-use Filament\Actions\BulkAction;
+use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
+use Filament\Actions\BulkAction;
+use Illuminate\Support\Facades\DB;
 use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\JournalEntryLine;
+use App\Enums\Reconciliation\ReconciliationType;
+use App\Actions\Reconciliation\MatchJournalItemsAction;
+use Filament\Resources\RelationManagers\RelationManager;
+use App\Exceptions\Reconciliation\ReconciliationException;
 
 class UnreconciledEntriesRelationManager extends RelationManager
 {
@@ -74,7 +74,7 @@ class UnreconciledEntriesRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $this->modifyQuery($query))
+            ->modifyQueryUsing(fn(Builder $query) => $this->modifyQuery($query))
             ->columns([
                 TextColumn::make('journalEntry.entry_date')
                     ->label(__('partner.unreconciled_entries_relation_manager.entry_date'))
@@ -96,11 +96,11 @@ class UnreconciledEntriesRelationManager extends RelationManager
                     ->searchable(),
                 TextColumn::make('debit')
                     ->label(__('partner.unreconciled_entries_relation_manager.debit'))
-                    ->money(fn (JournalEntryLine $record) => $record->journalEntry->company->currency->code)
+                    ->money(fn(JournalEntryLine $record) => $record->journalEntry->company->currency->code)
                     ->alignEnd(),
                 TextColumn::make('credit')
                     ->label(__('partner.unreconciled_entries_relation_manager.credit'))
-                    ->money(fn (JournalEntryLine $record) => $record->journalEntry->company->currency->code)
+                    ->money(fn(JournalEntryLine $record) => $record->journalEntry->company->currency->code)
                     ->alignEnd(),
             ])
             ->filters([
@@ -111,7 +111,7 @@ class UnreconciledEntriesRelationManager extends RelationManager
                     ->label(__('partner.unreconciled_entries_relation_manager.reconcile_selected'))
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn () => $this->isReconciliationEnabled())
+                    ->visible(fn() => $this->isReconciliationEnabled())
                     ->requiresConfirmation()
                     ->modalHeading(__('partner.unreconciled_entries_relation_manager.reconcile_modal_heading'))
                     ->modalDescription(__('partner.unreconciled_entries_relation_manager.reconcile_modal_description'))
@@ -126,14 +126,14 @@ class UnreconciledEntriesRelationManager extends RelationManager
                     ->action(function (array $data) {
                         $this->reconcileSelectedEntries($data);
                     })
-                    ->disabled(fn () => ! $this->hasSelectedRecords()),
+                    ->disabled(fn() => ! $this->hasSelectedRecords()),
             ])
             ->toolbarActions([
                 BulkAction::make('reconcile')
                     ->label(__('partner.unreconciled_entries_relation_manager.reconcile'))
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn () => $this->isReconciliationEnabled())
+                    ->visible(fn() => $this->isReconciliationEnabled())
                     ->requiresConfirmation()
                     ->modalHeading(__('partner.unreconciled_entries_relation_manager.reconcile_modal_heading'))
                     ->modalDescription(__('partner.unreconciled_entries_relation_manager.reconcile_modal_description'))
@@ -234,7 +234,6 @@ class UnreconciledEntriesRelationManager extends RelationManager
 
             // Refresh the table to remove reconciled entries
             $this->resetTable();
-
         } catch (ReconciliationException $e) {
             Notification::make()
                 ->title(__('partner.unreconciled_entries_relation_manager.reconciliation_error'))

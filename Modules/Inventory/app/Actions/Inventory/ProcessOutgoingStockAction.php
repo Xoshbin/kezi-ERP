@@ -2,13 +2,16 @@
 
 namespace Modules\Inventory\Actions\Inventory;
 
-use App\Models\StockMove;
-use App\Services\Inventory\InventoryValuationService;
-use App\Services\Inventory\StockQuantService;
-use App\Services\Inventory\StockReservationService;
+
+
+
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Modules\Product\Models\Product;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Services\Inventory\StockQuantService;
+use Modules\Inventory\Services\Inventory\StockReservationService;
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
 
 class ProcessOutgoingStockAction
 {

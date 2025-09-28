@@ -1,9 +1,9 @@
 <?php
 
-use App\Models\Tax;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Tax;
 use Modules\Foundation\Models\Partner;
 use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;

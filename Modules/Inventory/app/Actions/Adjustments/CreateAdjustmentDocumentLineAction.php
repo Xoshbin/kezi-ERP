@@ -2,9 +2,12 @@
 
 namespace Modules\Inventory\Actions\Adjustments;
 
-use Brick\Math\RoundingMode;
 use Brick\Money\Money;
+use Brick\Math\RoundingMode;
+use Modules\Accounting\Models\Tax;
 use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Inventory\Models\AdjustmentDocumentLine;
+use Modules\Inventory\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
 
 class CreateAdjustmentDocumentLineAction
 {

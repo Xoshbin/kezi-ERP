@@ -1,18 +1,21 @@
 <?php
 
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\CurrencyRate;
-use Modules\Foundation\Models\Partner;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Product\Models\Product;
-use Modules\Purchase\Models\VendorBill;
+use Brick\Money\Money;
 use Modules\Sales\Models\Invoice;
+use Modules\Product\Models\Product;
 use Modules\Sales\Models\InvoiceLine;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Partner;
+use Modules\Foundation\Models\Currency;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Sales\Services\InvoiceService;
+use Modules\Foundation\Models\CurrencyRate;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Purchase\Services\VendorBillService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

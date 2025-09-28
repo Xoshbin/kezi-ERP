@@ -2,9 +2,9 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages;
 
-use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\AnalyticAccountResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\AnalyticAccountResource;
 
 class ListAnalyticAccounts extends ListRecords
 {

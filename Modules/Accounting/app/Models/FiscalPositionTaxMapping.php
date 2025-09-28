@@ -2,13 +2,16 @@
 
 namespace Modules\Accounting\Models;
 
-use Database\Factories\FiscalPositionTaxMappingFactory;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Modules\Accounting\Models\Tax;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Accounting\Models\FiscalPosition;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\FiscalPositionTaxMappingFactory;
 
 /**
  * Class FiscalPositionTaxMapping

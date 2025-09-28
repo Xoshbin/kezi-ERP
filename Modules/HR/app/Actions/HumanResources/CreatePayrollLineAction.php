@@ -4,6 +4,8 @@ namespace Modules\HR\Actions\HumanResources;
 
 use Brick\Money\Money;
 use Modules\HR\Models\Payroll;
+use Modules\HR\Models\PayrollLine;
+use Modules\HR\DataTransferObjects\HumanResources\PayrollLineDTO;
 
 class CreatePayrollLineAction
 {

@@ -15,22 +15,22 @@ enum SalesOrderStatus: string
     case Quotation = 'quotation';                   // Initial quotation/estimate
     case QuotationSent = 'quotation_sent';          // Quotation sent to customer
 
-        // Commitment phase
+    // Commitment phase
     case Draft = 'draft';                           // SO being prepared
     case Sent = 'sent';                             // SO sent to customer
     case Confirmed = 'confirmed';                   // SO confirmed by customer
 
-        // Fulfillment phase
+    // Fulfillment phase
     case ToDeliver = 'to_deliver';                  // Ready for delivery
     case PartiallyDelivered = 'partially_delivered'; // Some items delivered
     case FullyDelivered = 'fully_delivered';        // All items delivered
 
-        // Invoicing phase
+    // Invoicing phase
     case ToInvoice = 'to_invoice';                  // Ready for invoicing
     case PartiallyInvoiced = 'partially_invoiced';  // Some items invoiced
     case FullyInvoiced = 'fully_invoiced';          // All items invoiced
 
-        // Final states
+    // Final states
     case Done = 'done';                             // Completed (delivered & invoiced)
     case Cancelled = 'cancelled';                   // Cancelled
 

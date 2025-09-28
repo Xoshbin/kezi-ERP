@@ -2,13 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Invoice;
-use App\Models\Payment;
 use App\Models\User;
-use App\Models\VendorBill;
-use App\Services\InvoiceService;
-use App\Services\PaymentService;
-use App\Services\VendorBillService;
 use Exception;
 use Illuminate\Database\Seeder;
 

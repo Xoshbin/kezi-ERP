@@ -11,5 +11,6 @@ readonly class GeneralLedgerDTO
      */
     public function __construct(
         public Collection $accounts,
-    ) {}
+    ) {
+    }
 }

@@ -2,24 +2,35 @@
 
 namespace Modules\Sales\Models;
 
-use App\Casts\BaseCurrencyMoneyCast;
-use App\Casts\DocumentCurrencyMoneyCast;
-use App\Enums\PaymentInstallments\InstallmentStatus;
-use App\Enums\Sales\InvoiceStatus;
-use App\Observers\AuditLogObserver;
-use App\Traits\HasPaymentState;
-use Brick\Money\Money;
-use Database\Factories\InvoiceFactory;
+
 use Eloquent;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Brick\Money\Money;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Modules\Payment\Models\Payment;
+use Modules\Sales\Models\SalesOrder;
+use Modules\Sales\Models\InvoiceLine;
+use Modules\Foundation\Models\Partner;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Currency;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Foundation\Models\PaymentTerm;
+use Modules\Accounting\Models\JournalEntry;
+use Illuminate\Database\Eloquent\Collection;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Accounting\Models\FiscalPosition;
+use Modules\Payment\Models\PaymentInstallment;
+use Modules\Payment\Models\PaymentDocumentLink;
+use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Foundation\Observers\AuditLogObserver;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Modules\Payment\Enums\PaymentInstallments\InstallmentStatus;
 
 /**
  * Class Invoice
@@ -79,7 +90,8 @@ use Illuminate\Support\Carbon;
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class Invoice extends Model
 {
-    use HasFactory, \Modules\Foundation\Traits\HasPaymentState;
+    use HasFactory;
+    use \Modules\Foundation\Traits\HasPaymentState;
 
     /**
      * The table associated with the model.

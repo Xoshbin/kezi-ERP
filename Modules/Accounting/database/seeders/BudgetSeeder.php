@@ -2,12 +2,12 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
-use App\Models\Company;
 use Exception;
 use Illuminate\Database\Seeder;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\AnalyticPlan;
 use Modules\Accounting\Models\Budget;
+use App\Models\Company;
 
 class BudgetSeeder extends Seeder
 {

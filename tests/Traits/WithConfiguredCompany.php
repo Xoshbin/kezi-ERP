@@ -2,10 +2,7 @@
 
 namespace Tests\Traits;
 
-use App\Enums\Inventory\StockLocationType;
-use App\Enums\Partners\PartnerType;
-use App\Models\Account;
-use App\Models\Partner;
+
 use App\Models\StockLocation;
 use App\Models\User;
 use Filament\Facades\Filament;

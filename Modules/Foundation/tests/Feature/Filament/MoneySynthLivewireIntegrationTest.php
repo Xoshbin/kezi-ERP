@@ -2,16 +2,20 @@
 
 namespace Modules\Foundation\Tests\Feature\Filament;
 
-use App\Models\Company;
-use App\Models\User;
-use Filament\Facades\Filament;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\Partner;
-use Modules\Product\Models\Product;
 use Tests\TestCase;
+use App\Models\User;
+use Livewire\Livewire;
+use App\Models\Company;
+
+use Filament\Facades\Filament;
+use Modules\Product\Models\Product;
+
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Partner;
+use Modules\Foundation\Models\Currency;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Foundation\Livewire\Synthesizers\MoneySynth;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
 
 class MoneySynthLivewireIntegrationTest extends TestCase
 {

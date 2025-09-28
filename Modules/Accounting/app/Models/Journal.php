@@ -2,19 +2,23 @@
 
 namespace Modules\Accounting\Models;
 
-use App\Enums\Accounting\JournalType;
-use App\Observers\JournalObserver;
-use Database\Factories\JournalFactory;
 use Eloquent;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Database\Factories\JournalFactory;
+use Modules\Accounting\Models\Account;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Currency;
 use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Accounting\Models\JournalEntry;
+use Illuminate\Database\Eloquent\Collection;
+use Modules\Accounting\Observers\JournalObserver;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 /**
  * @property int $id
@@ -50,7 +54,8 @@ use Spatie\Translatable\HasTranslations;
 
 class Journal extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory;
+    use HasTranslations;
 
     /** @var array<int, string> */
     public array $translatable = ['name'];
@@ -203,7 +208,7 @@ class Journal extends Model
     public function scopeUniqueShortCode(
         Builder $query,
         string $shortCode,
-        int $companyId
+        int $companyId,
     ): Builder {
         return $query->where('short_code', $shortCode)->where('company_id', $companyId);
     }

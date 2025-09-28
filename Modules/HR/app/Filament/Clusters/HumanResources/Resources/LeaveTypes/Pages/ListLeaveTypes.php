@@ -2,9 +2,9 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\Pages;
 
-use App\Filament\Clusters\HumanResources\Resources\LeaveTypes\LeaveTypeResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\LeaveTypeResource;
 
 class ListLeaveTypes extends ListRecords
 {

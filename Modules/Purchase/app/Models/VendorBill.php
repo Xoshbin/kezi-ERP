@@ -3,15 +3,34 @@
 namespace Modules\Purchase\Models;
 
 use Eloquent;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Brick\Money\Money;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Modules\Payment\Models\Payment;
+use Modules\Foundation\Models\Partner;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Currency;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Foundation\Models\PaymentTerm;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Purchase\Models\VendorBillLine;
+use Illuminate\Database\Eloquent\Collection;
+use Modules\Payment\Models\PaymentInstallment;
+use Modules\Payment\Models\PaymentDocumentLink;
+use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Purchase\Models\VendorBillAttachment;
+use Modules\Foundation\Observers\AuditLogObserver;
+use Modules\Purchase\Observers\VendorBillObserver;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Modules\Payment\Enums\PaymentInstallments\InstallmentStatus;
 
 // As a fundamental principle of accounting data integrity,
 // 'posted' financial records, such as Vendor Bills, must be **immutable** [1-3].
@@ -73,7 +92,8 @@ use Illuminate\Support\Carbon;
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class, VendorBillObserver::class])]
 class VendorBill extends Model
 {
-    use HasFactory, \Modules\Foundation\Traits\HasPaymentState;
+    use HasFactory;
+    use \Modules\Foundation\Traits\HasPaymentState;
 
     /**
      * The database table associated with the model.

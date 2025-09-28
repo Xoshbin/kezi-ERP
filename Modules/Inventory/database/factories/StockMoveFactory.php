@@ -2,14 +2,18 @@
 
 namespace Modules\Inventory\Database\Factories;
 
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockMoveType;
-use App\Models\Company;
-use App\Models\StockLocation;
-use App\Models\StockMove;
+
+
 use App\Models\User;
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Company;
+
 use Illuminate\Database\Eloquent\Model;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockLocation;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+
 
 /**
  * @extends Factory<StockMove>

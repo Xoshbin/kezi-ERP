@@ -2,12 +2,13 @@
 
 namespace Modules\Inventory\DataTransferObjects\Inventory;
 
-use App\Enums\Inventory\CostSource;
+
 use Brick\Money\Money;
+use Modules\Inventory\Enums\Inventory\CostSource;
 
 /**
  * Data Transfer Object for cost preview results
- * 
+ *
  * Contains cost preview information for stock moves,
  * including unit cost, total cost, and source information.
  */
@@ -21,7 +22,7 @@ readonly class CostPreviewResult
         public ?CostSource $costSource = null,
         public string $costSourceReference = '',
         public array $warnings = [],
-        public array $suggestedActions = []
+        public array $suggestedActions = [],
     ) {}
 
     /**
@@ -106,11 +107,11 @@ readonly class CostPreviewResult
         }
 
         $description = "Unit cost: {$this->unitCost->getAmount()}";
-        
+
         if ($this->costSource) {
             $description .= " from {$this->costSource->label()}";
         }
-        
+
         if (!empty($this->costSourceReference)) {
             $description .= " ({$this->costSourceReference})";
         }
@@ -130,7 +131,7 @@ readonly class CostPreviewResult
         Money $totalCost,
         CostSource $costSource,
         string $costSourceReference = '',
-        array $warnings = []
+        array $warnings = [],
     ): self {
         return new self(
             isValid: true,
@@ -148,7 +149,7 @@ readonly class CostPreviewResult
      */
     public static function invalid(
         string $message,
-        array $suggestedActions = []
+        array $suggestedActions = [],
     ): self {
         return new self(
             isValid: false,

@@ -15,5 +15,6 @@ readonly class AdjustInventoryDTO
         public int $created_by_user_id,
         public ?string $reason = null,
         public ?string $reference = null,
-    ) {}
+    ) {
+    }
 }

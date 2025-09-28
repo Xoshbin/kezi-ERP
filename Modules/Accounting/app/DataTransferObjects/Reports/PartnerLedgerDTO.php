@@ -17,5 +17,6 @@ readonly class PartnerLedgerDTO
         public Money $openingBalance,
         public Collection $transactionLines,
         public Money $closingBalance,
-    ) {}
+    ) {
+    }
 }

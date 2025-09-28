@@ -20,5 +20,6 @@ class CreateJournalEntryDTO
         public readonly ?string $source_type = null,
         public readonly ?int $source_id = null,
         public readonly ?float $exchange_rate = null,
-    ) {}
+    ) {
+    }
 }

@@ -2,9 +2,13 @@
 
 namespace Modules\Inventory\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Company;
+use Modules\Product\Models\Product;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockLocation;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class StockReservation extends Model
 {
@@ -38,4 +42,3 @@ class StockReservation extends Model
         return $this->belongsTo(StockLocation::class, 'location_id');
     }
 }
-

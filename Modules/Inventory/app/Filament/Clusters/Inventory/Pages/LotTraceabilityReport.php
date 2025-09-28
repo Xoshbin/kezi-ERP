@@ -2,19 +2,22 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Pages;
 
-
-use BackedEnum;
 use Exception;
+use BackedEnum;
+use Filament\Pages\Page;
 use Filament\Actions\Action;
+use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
+use Modules\Inventory\Models\Lot;
+use Modules\Product\Models\Product;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
-use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
-use Modules\Product\Models\Product;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
+use Modules\Inventory\Services\Inventory\InventoryCSVExportService;
+use Modules\Inventory\Services\Inventory\InventoryReportingService;
 
 class LotTraceabilityReport extends Page implements HasForms
 {
@@ -198,7 +201,7 @@ class LotTraceabilityReport extends Page implements HasForms
                     try {
                         $csvService = app(InventoryCSVExportService::class);
                         $csvContent = $csvService->exportLotTraceabilityReport($this->reportData, [
-                            'include_metadata' => true
+                            'include_metadata' => true,
                         ]);
 
                         $filename = 'lot-traceability-' . ($this->reportData['lot_code'] ?? 'report') . '-' . now()->format('Y-m-d-H-i-s') . '.csv';

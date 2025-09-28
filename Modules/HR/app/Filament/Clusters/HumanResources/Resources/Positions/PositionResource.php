@@ -2,18 +2,18 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Positions;
 
-use App\Filament\Clusters\HumanResources\HumanResourcesCluster;
-use App\Filament\Clusters\HumanResources\Resources\Positions\Pages\CreatePosition;
-use App\Filament\Clusters\HumanResources\Resources\Positions\Pages\EditPosition;
-use App\Filament\Clusters\HumanResources\Resources\Positions\Pages\ListPositions;
-use App\Filament\Clusters\HumanResources\Resources\Positions\Schemas\PositionForm;
-use App\Filament\Clusters\HumanResources\Resources\Positions\Tables\PositionsTable;
-use App\Models\Position;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\HR\Filament\Clusters\HumanResources\HumanResourcesCluster;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\Pages\CreatePosition;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\Pages\EditPosition;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\Pages\ListPositions;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\Schemas\PositionForm;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\Tables\PositionsTable;
+use Modules\HR\Models\Position;
 
 class PositionResource extends Resource
 {

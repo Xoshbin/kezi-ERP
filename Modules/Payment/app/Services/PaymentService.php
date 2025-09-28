@@ -2,17 +2,27 @@
 
 namespace Modules\Payment\Services;
 
+use Exception;
 use App\Models\User;
 use Brick\Money\Money;
-use Exception;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
-use Modules\Foundation\Models\AuditLog;
-use Modules\Payment\Events\PaymentConfirmed;
-use Modules\Payment\Models\Payment;
-use Modules\Purchase\Models\VendorBill;
 use Modules\Sales\Models\Invoice;
+use Illuminate\Support\Facades\DB;
+use Modules\Payment\Models\Payment;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\AuditLog;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Services\InvoiceService;
+use Modules\Payment\Events\PaymentConfirmed;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Payment\Models\PaymentDocumentLink;
+use Modules\Purchase\Services\VendorBillService;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Accounting\Services\JournalEntryService;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Accounting\Services\ExchangeGainLossService;
+use Modules\Foundation\Services\CurrencyConverterService;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryForPaymentAction;
 
 class PaymentService
 {
@@ -22,7 +32,7 @@ class PaymentService
         protected InvoiceService $invoiceService,
         protected VendorBillService $vendorBillService,
         protected CurrencyConverterService $currencyConverter,
-        protected ExchangeGainLossService $exchangeGainLossService
+        protected ExchangeGainLossService $exchangeGainLossService,
     ) {}
 
     /**
@@ -125,7 +135,7 @@ class PaymentService
                 'event_type' => 'cancellation',
                 'auditable_type' => get_class($payment),
                 'auditable_id' => $payment->id,
-                'description' => 'Payment Cancelled: '.$reason,
+                'description' => 'Payment Cancelled: ' . $reason,
                 'old_values' => ['status' => $payment->status],
                 'new_values' => ['status' => PaymentStatus::Canceled],
                 'ip_address' => request()->ip(),
@@ -134,7 +144,7 @@ class PaymentService
             // Step 2: Create the reversal.
             $this->journalEntryService->createReversal(
                 $originalEntry,
-                'Cancellation of Payment #'.$payment->id.': '.$reason,
+                'Cancellation of Payment #' . $payment->id . ': ' . $reason,
                 $user
             );
 

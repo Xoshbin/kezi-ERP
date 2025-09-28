@@ -3,8 +3,11 @@
 namespace Modules\Foundation\Filament\Components;
 
 use Exception;
-use Filament\Schemas\Components\View;
 use Modules\Product\Models\Product;
+use Filament\Schemas\Components\View;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Services\Inventory\CostValidationService;
+use Modules\Inventory\Services\Inventory\InventoryMovementValidationService;
 
 /**
  * Custom Filament component for displaying cost previews in stock move forms
@@ -14,7 +17,6 @@ use Modules\Product\Models\Product;
  */
 class CostPreviewComponent
 {
-
     /**
      * Create a cost preview view component for a product line in stock move forms
      */

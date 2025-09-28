@@ -2,7 +2,6 @@
 
 namespace Modules\Accounting\Tests\Feature\Services\Reports;
 
-
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;

@@ -2,8 +2,8 @@
 
 namespace Modules\Accounting\DataTransferObjects\Assets;
 
-use App\Enums\Assets\DepreciationMethod;
 use Carbon\Carbon;
+use Modules\Accounting\Enums\Assets\DepreciationMethod;
 
 readonly class CreateAssetDTO
 {
@@ -21,5 +21,6 @@ readonly class CreateAssetDTO
         public int $currency_id,
         public ?string $source_type = null,
         public ?int $source_id = null,
-    ) {}
+    ) {
+    }
 }

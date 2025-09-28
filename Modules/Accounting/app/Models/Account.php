@@ -2,20 +2,26 @@
 
 namespace Modules\Accounting\Models;
 
-use App\Enums\Accounting\AccountType;
-use App\Observers\AccountObserver;
-use App\Observers\AuditLogObserver;
-use Database\Factories\AccountFactory;
 use Eloquent;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Modules\Accounting\Models\Tax;
+use Modules\Sales\Models\InvoiceLine;
+use Database\Factories\AccountFactory;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Currency;
 use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Purchase\Models\VendorBillLine;
+use Illuminate\Database\Eloquent\Collection;
+use Modules\Accounting\Models\JournalEntryLine;
+use Modules\Accounting\Observers\AccountObserver;
+use Modules\Foundation\Observers\AuditLogObserver;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Accounting\Enums\Accounting\AccountType;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 /**
  * Class Account
@@ -69,7 +75,8 @@ use Spatie\Translatable\HasTranslations;
 class Account extends Model
 {
     /** @use HasFactory<AccountFactory> */
-    use HasFactory, HasTranslations;
+    use HasFactory;
+    use HasTranslations;
 
     /** @var array<int, string> */
     public array $translatable = ['name'];

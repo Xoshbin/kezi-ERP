@@ -5,6 +5,9 @@ namespace Modules\Inventory\Services;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Inventory\Events\AdjustmentDocumentPosted;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
+
 
 // 1. Import the new action
 

@@ -2,7 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AuditLogs;
 
-
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;

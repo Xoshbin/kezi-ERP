@@ -2,9 +2,9 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages;
 
-use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\AnalyticAccountResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\AnalyticAccountResource;
 
 class EditAnalyticAccount extends EditRecord
 {

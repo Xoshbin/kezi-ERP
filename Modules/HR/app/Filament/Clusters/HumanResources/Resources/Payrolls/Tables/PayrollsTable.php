@@ -2,17 +2,18 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Tables;
 
-
 use Exception;
+use Filament\Tables\Table;
 use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use Modules\HR\Models\Payroll;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Support\Colors\Color;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use Modules\HR\Models\Payroll;
+use Modules\HR\Services\HumanResources\PayrollService;
+use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 
 class PayrollsTable
 {
@@ -45,15 +46,15 @@ class PayrollsTable
                     ->date()
                     ->sortable(),
 
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('gross_salary')
+                MoneyColumn::make('gross_salary')
                     ->label(__('payroll.fields.gross_salary'))
                     ->sortable(),
 
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_deductions')
+                MoneyColumn::make('total_deductions')
                     ->label(__('payroll.fields.total_deductions'))
                     ->sortable(),
 
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('net_salary')
+                MoneyColumn::make('net_salary')
                     ->label(__('payroll.fields.net_salary'))
                     ->sortable(),
 

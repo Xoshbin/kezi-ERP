@@ -3,6 +3,7 @@
 namespace Modules\Payment\Observers;
 
 use Modules\Payment\Models\Payment;
+use Modules\Payment\Enums\Payments\PaymentStatus;
 
 class PaymentObserver
 {

@@ -1,6 +1,5 @@
 <?php
 
-use App\Actions\Accounting\CreateJournalEntryAction;
 use App\Actions\Accounting\ReverseJournalEntryAction;
 use App\Actions\Accounting\UpdateJournalEntryAction;
 use App\Models\JournalEntry;

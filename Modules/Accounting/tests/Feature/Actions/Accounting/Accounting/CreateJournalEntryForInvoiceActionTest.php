@@ -1,11 +1,14 @@
 <?php
 
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Models\Account;
-use Modules\Product\Models\Product;
 use Modules\Sales\Models\Invoice;
+use Modules\Accounting\Models\Tax;
+use Modules\Product\Models\Product;
+use Modules\Accounting\Models\Account;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryForInvoiceAction;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

@@ -7,7 +7,7 @@ use Modules\Foundation\Models\PaymentTerm;
 use Modules\Foundation\Models\PaymentTermLine;
 
 /**
- * @extends Factory<\App\Models\PaymentTermLine>
+ * @extends Factory<\Modules\Foundation\Models\PaymentTermLine>
  */
 class PaymentTermLineFactory extends Factory
 {

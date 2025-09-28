@@ -24,5 +24,6 @@ readonly class PayrollLineDTO
         public ?int $analytic_account_id,
         public ?string $notes,
         public ?string $reference,
-    ) {}
+    ) {
+    }
 }

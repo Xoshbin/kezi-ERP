@@ -2,12 +2,12 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages;
 
-use App\Filament\Clusters\Accounting\Resources\Partners\PartnerResource;
-use App\Filament\Clusters\Accounting\Resources\Partners\Widgets\CustomerFinancialWidget;
-use App\Filament\Clusters\Accounting\Resources\Partners\Widgets\VendorFinancialWidget;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\PartnerResource;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Widgets\CustomerFinancialWidget;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Widgets\VendorFinancialWidget;
 
 class ViewPartner extends ViewRecord
 {

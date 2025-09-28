@@ -3,9 +3,10 @@
 namespace Modules\Foundation\Casts;
 
 use Exception;
+use InvalidArgumentException;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
-use InvalidArgumentException;
+use Modules\Foundation\Casts\MoneyCast;
 use Modules\Foundation\Models\Currency;
 
 /**

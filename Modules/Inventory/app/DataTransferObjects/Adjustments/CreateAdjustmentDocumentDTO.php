@@ -2,7 +2,7 @@
 
 namespace Modules\Inventory\DataTransferObjects\Adjustments;
 
-use App\Enums\Adjustments\AdjustmentDocumentType;
+
 
 class CreateAdjustmentDocumentDTO
 {

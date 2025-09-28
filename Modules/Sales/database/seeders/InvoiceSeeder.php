@@ -2,12 +2,17 @@
 
 namespace Modules\Sales\Database\Seeders;
 
-use App\Models\Company;
 use Brick\Money\Money;
+use App\Models\Company;
 use Illuminate\Database\Seeder;
-use Modules\Foundation\Models\Partner;
-use Modules\Product\Models\Product;
 use Modules\Sales\Models\Invoice;
+
+use Modules\Product\Models\Product;
+use Modules\Foundation\Models\Partner;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Foundation\Enums\Partners\PartnerType;
+use Modules\Sales\Actions\Sales\CreateInvoiceLineAction;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 
 class InvoiceSeeder extends Seeder
 {

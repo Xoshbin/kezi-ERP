@@ -2,13 +2,13 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Pages;
 
-use App\Filament\Clusters\Inventory\InventoryCluster;
-use App\Filament\Clusters\Inventory\Widgets\InventoryAgingChartWidget;
-use App\Filament\Clusters\Inventory\Widgets\InventoryStatsOverviewWidget;
-use App\Filament\Clusters\Inventory\Widgets\InventoryTurnoverChartWidget;
-use App\Filament\Clusters\Inventory\Widgets\InventoryValueChartWidget;
 use BackedEnum;
 use Filament\Pages\Page;
+use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
+use Modules\Inventory\Filament\Clusters\Inventory\Widgets\InventoryAgingChartWidget;
+use Modules\Inventory\Filament\Clusters\Inventory\Widgets\InventoryStatsOverviewWidget;
+use Modules\Inventory\Filament\Clusters\Inventory\Widgets\InventoryTurnoverChartWidget;
+use Modules\Inventory\Filament\Clusters\Inventory\Widgets\InventoryValueChartWidget;
 
 class InventoryOverview extends Page
 {

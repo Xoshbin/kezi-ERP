@@ -3,18 +3,30 @@
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources;
 
 use BackedEnum;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Forms;
-use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
-
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Resources\Resource;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Forms\Components\Select;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Filament\Tables\Filters\SelectFilter;
+use Modules\Inventory\Models\StockPicking;
+use Filament\Forms\Components\DateTimePicker;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\EditStockPicking;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ListStockPickings;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\CreateStockPicking;
 
 class StockPickingResource extends Resource
 {

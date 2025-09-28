@@ -87,7 +87,7 @@ class BuildVendorBillPostingPreviewAction
                         'account_code' => $inventoryAccount->code,
                         'debit_minor' => $line->subtotal->getMinorAmount()->toInt(),
                         'credit_minor' => 0,
-                        'description' => 'Inventory: '.$line->description,
+                        'description' => 'Inventory: ' . $line->description,
                         'product_id' => $line->product_id,
                     ];
                     $debitTotal = $debitTotal->plus($line->subtotal);
@@ -107,7 +107,7 @@ class BuildVendorBillPostingPreviewAction
                         'account_code' => $assetAccount instanceof Account ? $assetAccount->code : null,
                         'debit_minor' => $line->subtotal->getMinorAmount()->toInt(),
                         'credit_minor' => 0,
-                        'description' => 'Asset: '.$line->description,
+                        'description' => 'Asset: ' . $line->description,
                     ];
                     $debitTotal = $debitTotal->plus($line->subtotal);
                 }
@@ -140,7 +140,7 @@ class BuildVendorBillPostingPreviewAction
                         'account_code' => $taxAccount?->code,
                         'debit_minor' => $line->total_line_tax->getMinorAmount()->toInt(),
                         'credit_minor' => 0,
-                        'description' => 'Input tax: '.$line->description, // may be array via translations; view normalizes
+                        'description' => 'Input tax: ' . $line->description, // may be array via translations; view normalizes
                     ];
                     $debitTotal = $debitTotal->plus($line->total_line_tax);
                 }

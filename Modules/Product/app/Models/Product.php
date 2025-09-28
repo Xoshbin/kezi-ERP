@@ -2,20 +2,31 @@
 
 namespace Modules\Product\Models;
 
-use Brick\Money\Money;
-use Database\Factories\ProductFactory;
 use Eloquent;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Brick\Money\Money;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
-use Illuminate\Validation\ValidationException;
+use Modules\Sales\Models\InvoiceLine;
+use Modules\Accounting\Models\Account;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Inventory\Models\StockMove;
 use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Inventory\Models\ReorderingRule;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Validation\ValidationException;
+use Modules\Product\Observers\ProductObserver;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Inventory\Models\InventoryCostLayer;
+use Modules\Inventory\Models\StockMoveProductLine;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
  * @property int $id
@@ -66,7 +77,9 @@ use Spatie\Translatable\HasTranslations;
 #[ObservedBy([\Modules\Product\Observers\ProductObserver::class])]
 class Product extends Model
 {
-    use HasFactory, HasTranslations, SoftDeletes;
+    use HasFactory;
+    use HasTranslations;
+    use SoftDeletes;
 
     /** @var array<int, string> */
     public array $translatable = ['name', 'description'];
@@ -204,8 +217,6 @@ class Product extends Model
     {
         return $this->belongsTo(Account::class, 'default_stock_input_account_id');
     }
-
-
 
     /**
      * @return BelongsTo<Account, static>

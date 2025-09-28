@@ -2,11 +2,11 @@
 
 namespace Modules\Foundation\Database\Factories;
 
-use App\Models\Company;
-use App\Models\CurrencyRate;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Company;
 use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<CurrencyRate>

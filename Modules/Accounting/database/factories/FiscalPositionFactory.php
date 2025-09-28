@@ -2,9 +2,9 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use App\Models\Company;
-use App\Models\FiscalPosition;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Company;
+use Modules\Accounting\Models\FiscalPosition;
 
 /**
  * @extends Factory<FiscalPosition>

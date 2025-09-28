@@ -2,11 +2,19 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Brick\Money\Money;
 use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Inventory\Models\ReorderingRule;
+use Modules\Product\Enums\Products\ProductType;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Inventory\Models\ReplenishmentSuggestion;
+use Modules\Inventory\Enums\Inventory\ReorderingRoute;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Services\Inventory\ReorderingRuleService;
+use Modules\Inventory\Console\Commands\RunReorderingSchedulerCommand;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

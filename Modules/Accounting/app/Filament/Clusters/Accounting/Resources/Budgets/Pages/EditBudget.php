@@ -2,9 +2,9 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Budgets\Pages;
 
-use App\Filament\Clusters\Accounting\Resources\Budgets\BudgetResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Budgets\BudgetResource;
 
 class EditBudget extends EditRecord
 {

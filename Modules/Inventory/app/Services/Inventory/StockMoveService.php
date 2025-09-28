@@ -2,7 +2,15 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
+use Carbon\Carbon;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
 use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\UpdateStockMoveDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\ConfirmStockMoveDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\UpdateStockMoveWithProductLinesDTO;
 
 /**
  * Stock Move Service

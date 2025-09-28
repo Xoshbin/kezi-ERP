@@ -13,8 +13,17 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
+use Modules\Accounting\Actions\Accounting\BuildAdjustmentPostingPreviewAction;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\AdjustmentDocumentResource;
 use Modules\Foundation\Models\Currency;
+use Modules\Inventory\Actions\Adjustments\UpdateAdjustmentDocumentAction;
+use Modules\Inventory\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentDTO;
+use Modules\Inventory\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentLineDTO;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
 use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Inventory\Models\AdjustmentDocumentLine;
+use Modules\Inventory\Services\AdjustmentDocumentService;
 use Modules\Purchase\Models\VendorBill;
 use Modules\Sales\Models\Invoice;
 
@@ -64,9 +73,9 @@ class EditAdjustmentDocument extends EditRecord
                     }
                     $csv = '';
                     foreach ($rows as $row) {
-                        $csv .= implode(',', array_map(fn ($v) => '"'.str_replace('"', '""', (string) $v).'"', $row))."\n";
+                        $csv .= implode(',', array_map(fn ($v) => '"' . str_replace('"', '""', (string) $v) . '"', $row)) . "\n";
                     }
-                    $filename = 'adjustment-'.($record->reference_number ?: ('ADJ-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))).'-preview.csv';
+                    $filename = 'adjustment-' . ($record->reference_number ?: ('ADJ-' . str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))) . '-preview.csv';
 
                     return response()->streamDownload(function () use ($csv) {
                         echo $csv;
@@ -85,7 +94,7 @@ class EditAdjustmentDocument extends EditRecord
                         'preview' => $preview,
                         'adjustment' => $record,
                     ]);
-                    $filename = 'adjustment-'.($record->reference_number ?: ('ADJ-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))).'-preview.pdf';
+                    $filename = 'adjustment-' . ($record->reference_number ?: ('ADJ-' . str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))) . '-preview.pdf';
 
                     return response()->streamDownload(function () use ($pdf) {
                         echo $pdf->output();

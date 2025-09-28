@@ -2,15 +2,16 @@
 
 namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages;
 
-use App\Actions\Sales\CreateSalesOrderAction;
-use App\DataTransferObjects\Sales\CreateSalesOrderDTO;
-use App\DataTransferObjects\Sales\CreateSalesOrderLineDTO;
-use App\Filament\Clusters\Sales\Resources\SalesOrders\SalesOrderResource;
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Filament\Resources\Pages\CreateRecord;
+use Brick\Money\Money;
+
 use Illuminate\Database\Eloquent\Model;
 use Modules\Foundation\Models\Currency;
+use Filament\Resources\Pages\CreateRecord;
+use Modules\Sales\Actions\Sales\CreateSalesOrderAction;
+use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderDTO;
+use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderLineDTO;
+use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\SalesOrderResource;
 
 class CreateSalesOrder extends CreateRecord
 {

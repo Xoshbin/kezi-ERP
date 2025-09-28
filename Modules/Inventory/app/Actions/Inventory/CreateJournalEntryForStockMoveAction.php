@@ -2,17 +2,20 @@
 
 namespace Modules\Inventory\Actions\Inventory;
 
-use App\Enums\Inventory\StockMoveType;
-use App\Models\StockMove;
+
+
 use App\Models\User;
-use App\Services\Inventory\InventoryValuationService;
-use Illuminate\Support\Facades\DB;
 use RuntimeException;
+
+use Illuminate\Support\Facades\DB;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
 
 class CreateJournalEntryForStockMoveAction
 {
     public function __construct(
-        protected InventoryValuationService $inventoryValuationService
+        protected InventoryValuationService $inventoryValuationService,
     ) {}
 
     public function execute(StockMove $stockMove, User $user): void

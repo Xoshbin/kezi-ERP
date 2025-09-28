@@ -2,15 +2,22 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages;
 
-use App\Models\Company;
 use Carbon\Carbon;
+use RuntimeException;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
-use Filament\Notifications\Actions\Action as NotificationAction;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Database\Eloquent\Model;
-use RuntimeException;
+
+use Modules\Foundation\Filament\Actions\DocsAction;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Actions\Inventory\CreateStockMoveAction;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
 
 class CreateStockMove extends CreateRecord
 {
@@ -90,7 +97,7 @@ class CreateStockMove extends CreateRecord
     protected function getHeaderActions(): array
     {
         return [
-            \Modules\Foundation\App\Filament\Actions\DocsAction::make('stock-management'),
+            DocsAction::make('stock-management'),
         ];
     }
 }

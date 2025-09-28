@@ -2,10 +2,10 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Pages;
 
-use App\Filament\Clusters\HumanResources\Resources\Payrolls\PayrollResource;
-use App\Models\Company;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\PayrollResource;
+
 
 class CreatePayroll extends CreateRecord
 {

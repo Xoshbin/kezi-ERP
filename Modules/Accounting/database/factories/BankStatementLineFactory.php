@@ -2,10 +2,10 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use App\Models\BankStatement;
-use App\Models\BankStatementLine;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\BankStatementLine;
 
 /**
  * @extends Factory<BankStatementLine>

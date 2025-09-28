@@ -2,16 +2,20 @@
 
 namespace Modules\Accounting\Models;
 
-use App\Casts\DocumentCurrencyMoneyCast;
-use Brick\Money\Money;
-use Database\Factories\BankStatementFactory;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Brick\Money\Money;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Modules\Accounting\Models\Journal;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Currency;
+use Illuminate\Database\Eloquent\Builder;
+use Database\Factories\BankStatementFactory;
+use Modules\Accounting\Models\BankStatementLine;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
 
 /**
  * @property int $id

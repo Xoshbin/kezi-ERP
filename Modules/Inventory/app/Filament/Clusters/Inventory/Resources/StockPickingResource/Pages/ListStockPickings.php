@@ -2,9 +2,9 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages;
 
-use App\Filament\Clusters\Inventory\Resources\StockPickingResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource;
 
 class ListStockPickings extends ListRecords
 {

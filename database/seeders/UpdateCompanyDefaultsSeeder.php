@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Account;
 use App\Models\Company;
-use App\Models\Journal;
+
 use Exception;
 use Illuminate\Database\Seeder;
 
@@ -65,7 +65,7 @@ class UpdateCompanyDefaultsSeeder extends Seeder
         }
 
         if (! empty($missing)) {
-            throw new Exception('Failed to find the following required records: '.implode(', ', $missing).'. Please ensure all seeders have run successfully before this one.');
+            throw new Exception('Failed to find the following required records: ' . implode(', ', $missing) . '. Please ensure all seeders have run successfully before this one.');
         }
 
         // Update the company with the default IDs.

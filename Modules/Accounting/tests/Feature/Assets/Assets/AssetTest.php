@@ -1,10 +1,15 @@
 <?php
 
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Asset;
+use Modules\Accounting\Models\Account;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Accounting\Services\AssetService;
+use Modules\Accounting\Enums\Assets\AssetStatus;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Assets\DepreciationEntryStatus;
+use Modules\Foundation\Exceptions\DeletionNotAllowedException;
+use Modules\Accounting\Actions\Assets\PostDepreciationEntryAction;
 
 // Import the Money class
 
@@ -107,7 +112,7 @@ test('a confirmed asset cannot be deleted', function () {
 
     // Act & Assert: Attempting to delete should throw an exception.
     $assetService = app(\Modules\Accounting\Services\AssetService::class);
-    expect(fn () => $assetService->delete($asset))
+    expect(fn() => $assetService->delete($asset))
         ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a confirmed asset. Only draft assets can be deleted.');
 
     // Verify: The asset still exists.
@@ -133,7 +138,7 @@ test('an asset with depreciation entries cannot be deleted', function () {
 
     // Act & Assert: Attempting to delete should throw an exception.
     $assetService = app(\Modules\Accounting\Services\AssetService::class);
-    expect(fn () => $assetService->delete($asset))
+    expect(fn() => $assetService->delete($asset))
         ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete an asset with depreciation entries. Depreciation history must be preserved.');
 
     // Verify: The asset still exists.
@@ -165,7 +170,7 @@ test('an asset with journal entries cannot be deleted', function () {
 
     // Act & Assert: Attempting to delete should throw an exception.
     $assetService = app(\Modules\Accounting\Services\AssetService::class);
-    expect(fn () => $assetService->delete($asset))
+    expect(fn() => $assetService->delete($asset))
         ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete an asset with associated journal entries. Financial records must be preserved.');
 
     // Verify: The asset still exists.
@@ -182,7 +187,7 @@ test('asset observer prevents deletion of confirmed assets', function () {
     ]);
 
     // Act & Assert: Direct model deletion should be blocked by the observer.
-    expect(fn () => $asset->delete())
+    expect(fn() => $asset->delete())
         ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a confirmed asset. Only draft assets can be deleted.');
 
     // Verify: The asset still exists.
@@ -206,7 +211,7 @@ test('asset observer prevents deletion of assets with depreciation entries', fun
     ]);
 
     // Act & Assert: Direct model deletion should be blocked by the observer.
-    expect(fn () => $asset->delete())
+    expect(fn() => $asset->delete())
         ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete an asset with depreciation entries. Depreciation history must be preserved.');
 
     // Verify: The asset still exists.

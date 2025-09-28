@@ -2,9 +2,10 @@
 
 namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\RelationManagers;
 
-use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Resources\RelationManagers\RelationManager;
 
 class InvoicesRelationManager extends RelationManager
 {

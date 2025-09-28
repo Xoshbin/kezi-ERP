@@ -1,11 +1,20 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Payment\Models\Payment;
-use Modules\Purchase\Models\VendorBill;
 use Modules\Sales\Models\Invoice;
-use Tests\Traits\WithConfiguredCompany;
+use Modules\Payment\Models\Payment;
 use function Pest\Livewire\livewire;
+use Modules\Purchase\Models\VendorBill;
+use Tests\Traits\WithConfiguredCompany;
+
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

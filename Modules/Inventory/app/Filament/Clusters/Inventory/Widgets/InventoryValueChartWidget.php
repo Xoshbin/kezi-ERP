@@ -2,15 +2,14 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Widgets;
 
-use App\Services\Inventory\InventoryReportingService;
+
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Cache;
+use Modules\Inventory\Services\Inventory\InventoryReportingService;
 
 class InventoryValueChartWidget extends ChartWidget
 {
-
-
     protected static ?int $sort = 2;
 
     protected int | string | array $columnSpan = [

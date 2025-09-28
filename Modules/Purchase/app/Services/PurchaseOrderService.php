@@ -2,14 +2,16 @@
 
 namespace Modules\Purchase\Services;
 
-use App\Enums\Purchases\PurchaseOrderStatus;
-use App\Models\PurchaseOrder;
-use App\Models\PurchaseOrderLine;
+
 use App\Models\User;
-use App\Services\Accounting\LockDateService;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Illuminate\Support\Facades\DB;
+
+use Modules\Purchase\Models\PurchaseOrder;
+use Illuminate\Database\Eloquent\Collection;
+use Modules\Purchase\Models\PurchaseOrderLine;
+use Modules\Foundation\Services\SequenceService;
+use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
 
 /**
  * Service for managing Purchase Order operations
@@ -18,7 +20,7 @@ class PurchaseOrderService
 {
     public function __construct(
         protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
-        protected SequenceService $sequenceService
+        protected SequenceService $sequenceService,
     ) {}
 
     /**

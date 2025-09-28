@@ -2,24 +2,33 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources;
 
-use App\Filament\Clusters\Inventory\InventoryCluster;
-use App\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages;
-use App\Models\StockQuant;
 use BackedEnum;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Forms;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Resources\Resource;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Resources\Resource;
+use Filament\Tables\Filters\Filter;
+use Filament\Actions\BulkActionGroup;
+use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Grid;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Modules\Inventory\Models\StockQuant;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Utilities\Get;
+use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages\EditStockQuant;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages\ViewStockQuant;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages\ListStockQuants;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages\CreateStockQuant;
 
 class StockQuantResource extends Resource
 {

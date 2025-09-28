@@ -2,12 +2,13 @@
 
 namespace Modules\Inventory\DataTransferObjects\Inventory;
 
-use App\Enums\Inventory\CostSource;
+
 use Brick\Money\Money;
+use Modules\Inventory\Enums\Inventory\CostSource;
 
 /**
  * Data Transfer Object for cost determination results
- * 
+ *
  * Contains the determined cost along with metadata about how it was calculated,
  * providing transparency and audit trail for inventory valuation operations.
  */
@@ -18,9 +19,9 @@ readonly class CostDeterminationResult
         public CostSource $source,
         public string $reference = '',
         public array $warnings = [],
-        public array $attemptedSources = []
+        public array $attemptedSources = [],
     ) {}
-    
+
     /**
      * Check if the cost determination has any warnings
      */
@@ -28,7 +29,7 @@ readonly class CostDeterminationResult
     {
         return !empty($this->warnings);
     }
-    
+
     /**
      * Check if the cost source is considered reliable
      */
@@ -36,7 +37,7 @@ readonly class CostDeterminationResult
     {
         return $this->source->isReliable();
     }
-    
+
     /**
      * Check if the cost determination requires user attention
      */
@@ -44,21 +45,21 @@ readonly class CostDeterminationResult
     {
         return $this->source->requiresWarning() || $this->hasWarnings();
     }
-    
+
     /**
      * Get a formatted description of the cost determination
      */
     public function getDescription(): string
     {
         $description = "Cost {$this->cost->getAmount()} from {$this->source->label()}";
-        
+
         if (!empty($this->reference)) {
             $description .= " ({$this->reference})";
         }
-        
+
         return $description;
     }
-    
+
     /**
      * Get all warnings as a formatted string
      */
@@ -66,7 +67,7 @@ readonly class CostDeterminationResult
     {
         return implode('; ', $this->warnings);
     }
-    
+
     /**
      * Create a successful result
      */
@@ -75,11 +76,11 @@ readonly class CostDeterminationResult
         CostSource $source,
         string $reference = '',
         array $warnings = [],
-        array $attemptedSources = []
+        array $attemptedSources = [],
     ): self {
         return new self($cost, $source, $reference, $warnings, $attemptedSources);
     }
-    
+
     /**
      * Create a result with warnings
      */
@@ -88,7 +89,7 @@ readonly class CostDeterminationResult
         CostSource $source,
         array $warnings,
         string $reference = '',
-        array $attemptedSources = []
+        array $attemptedSources = [],
     ): self {
         return new self($cost, $source, $reference, $warnings, $attemptedSources);
     }

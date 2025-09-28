@@ -3,6 +3,7 @@
 namespace Modules\Accounting\Actions\Assets;
 
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Enums\Assets\AssetStatus;
 use Modules\Accounting\Models\Asset;
 
 class CreateAssetAction

@@ -2,12 +2,20 @@
 
 namespace Modules\Accounting\Services;
 
+use Carbon\Carbon;
 use App\Models\User;
 use Brick\Math\RoundingMode;
-use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Modules\Accounting\Models\Asset;
+use Modules\Accounting\Enums\Assets\AssetStatus;
 use Modules\Accounting\Models\DepreciationEntry;
+use Modules\Accounting\Actions\Assets\CreateAssetAction;
+use Modules\Accounting\Actions\Assets\UpdateAssetAction;
+use Modules\Accounting\Actions\Assets\DisposeAssetAction;
+use Modules\Accounting\Enums\Assets\DepreciationEntryStatus;
+use Modules\Accounting\DataTransferObjects\Assets\UpdateAssetDTO;
+use Modules\Accounting\Actions\Assets\PostDepreciationEntryAction;
+use Modules\Accounting\DataTransferObjects\Assets\DisposeAssetDTO;
 
 class AssetService
 {
@@ -15,7 +23,7 @@ class AssetService
         protected CreateAssetAction $createAssetAction,
         protected UpdateAssetAction $updateAssetAction,
         protected DisposeAssetAction $disposeAssetAction,
-        protected PostDepreciationEntryAction $postDepreciationEntryAction
+        protected PostDepreciationEntryAction $postDepreciationEntryAction,
     ) {}
 
     public function createAsset(\Modules\Accounting\DataTransferObjects\Assets\CreateAssetDTO $dto): Asset

@@ -19,6 +19,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
 use Modules\Inventory\Models\AdjustmentDocument;
 use Modules\Sales\Models\Invoice;
 
@@ -125,11 +128,11 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                     ->date()
                     ->sortable(),
 
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_amount')
+                MoneyColumn::make('total_amount')
                     ->label(__('invoice.adjustment_documents_relation_manager.total_amount'))
                     ->sortable(),
 
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_tax')
+                MoneyColumn::make('total_tax')
                     ->label(__('invoice.adjustment_documents_relation_manager.total_tax'))
                     ->sortable(),
 

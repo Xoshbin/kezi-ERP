@@ -1,9 +1,18 @@
 <?php
 
-use App\Models\Company;
+use App\Models\User;
+
 use Brick\Money\Money;
+use App\Models\Company;
 use Modules\Product\Models\Product;
 use Modules\Purchase\Models\VendorBill;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Inventory\Services\Inventory\UserFriendlyErrorService;
+use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
 
 beforeEach(function () {
     $this->company = Company::factory()->create();
@@ -42,7 +51,7 @@ it('converts InsufficientCostInformationException to user-friendly error data', 
         'explanation',
         'primary_solution',
         'next_steps',
-        'help_text'
+        'help_text',
     ]);
 
     expect($errorData['title'])->toBe(__('inventory_accounting.cost_validation_errors.title'));
@@ -84,7 +93,7 @@ it('provides detailed error information for modal dialogs', function () {
         'explanation',
         'solution',
         'steps',
-        'help_text'
+        'help_text',
     ]);
 
     expect($details['product_name'])->toBe($this->product->name);

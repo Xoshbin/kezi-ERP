@@ -2,10 +2,26 @@
 
 namespace Modules\Sales\Actions\Sales;
 
+
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Modules\Sales\Models\SalesOrder;
+use Modules\Inventory\Models\StockPicking;
+use Modules\Inventory\Models\StockLocation;
 use Illuminate\Validation\ValidationException;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Sales\Enums\Sales\SalesOrderStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Modules\Inventory\Enums\Inventory\StockLocationType;
+use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
+use Modules\Inventory\Services\Inventory\StockReservationService;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use Modules\Sales\DataTransferObjects\Sales\CreateDeliveryFromSalesOrderDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
 
 /**
  * Action for creating delivery orders from sales orders
@@ -13,7 +29,7 @@ use Illuminate\Validation\ValidationException;
 class CreateDeliveryFromSalesOrderAction
 {
     public function __construct(
-        protected \Modules\Inventory\Actions\Inventory\CreateStockMoveAction $createStockMoveAction
+        protected \Modules\Inventory\Actions\Inventory\CreateStockMoveAction $createStockMoveAction,
     ) {}
 
     /**
@@ -142,7 +158,7 @@ class CreateDeliveryFromSalesOrderAction
         User $user,
         StockLocation $sourceLocation,
         StockLocation $destinationLocation,
-        float $quantity
+        float $quantity,
     ) {
         $productLineDto = new CreateStockMoveProductLineDTO(
             product_id: $line->product_id,

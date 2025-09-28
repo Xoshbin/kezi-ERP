@@ -2,8 +2,8 @@
 
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\Pages;
 
-use App\Filament\Clusters\Settings\Resources\PdfSettings\PdfSettingsResource;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\PdfSettingsResource;
 
 class ListPdfSettings extends ListRecords
 {

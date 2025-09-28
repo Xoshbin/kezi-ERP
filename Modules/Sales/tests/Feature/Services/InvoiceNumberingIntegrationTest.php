@@ -2,6 +2,9 @@
 
 use Modules\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Sales\Services\InvoiceService;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Foundation\Enums\Settings\NumberingType;
 
 describe('Invoice Numbering Integration', function () {
     uses(WithConfiguredCompany::class);

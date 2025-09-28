@@ -2,12 +2,14 @@
 
 namespace Modules\Sales\Database\Factories;
 
-use App\Models\Company;
 use Brick\Money\Money;
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Modules\Foundation\Models\Partner;
+use App\Models\Company;
 use Modules\Sales\Models\Invoice;
+
 use Modules\Sales\Models\InvoiceLine;
+use Modules\Foundation\Models\Partner;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class InvoiceFactory extends Factory
 {

@@ -2,15 +2,36 @@
 
 namespace Modules\Purchase\Services;
 
-use Carbon\Carbon;
 use Exception;
+use Carbon\Carbon;
+use App\Models\User;
+use RuntimeException;
+use App\Models\Company;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Modules\Foundation\Models\AuditLog;
 use Modules\Foundation\Models\Currency;
-use Modules\Purchase\Events\VendorBillConfirmed;
+use Modules\Inventory\Models\StockMove;
 use Modules\Purchase\Models\VendorBill;
-use RuntimeException;
+use Modules\Inventory\Models\StockPicking;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Foundation\Services\SequenceService;
+use Modules\Purchase\Events\VendorBillConfirmed;
+use Modules\Accounting\Services\JournalEntryService;
+use Modules\Foundation\Services\ExchangeRateService;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Foundation\Services\CurrencyConverterService;
+use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use Modules\Accounting\Actions\Accounting\BuildVendorBillPostingPreviewAction;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryForVendorBillAction;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
 
 class VendorBillService
 {
@@ -20,7 +41,7 @@ class VendorBillService
         protected \Modules\Inventory\Actions\Inventory\CreateStockMoveAction $createStockMoveAction,
         protected CurrencyConverterService $currencyConverter,
         protected ExchangeRateService $exchangeRateService,
-        protected SequenceService $sequenceService
+        protected SequenceService $sequenceService,
     ) {}
 
     public function post(VendorBill $vendorBill, User $user): void
@@ -142,8 +163,6 @@ class VendorBillService
 
         return $stockMove;
     }
-
-
 
     /**
      * Delete a draft vendor bill.

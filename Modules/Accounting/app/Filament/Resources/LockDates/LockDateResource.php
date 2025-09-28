@@ -3,16 +3,21 @@
 namespace Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates;
 
 use BackedEnum;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Resources\Resource;
+use Filament\Actions\DeleteAction;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
 use Modules\Accounting\Models\LockDate;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\DatePicker;
+use App\Filament\Clusters\Settings\SettingsCluster;
+use Modules\Accounting\Enums\Accounting\LockDateType;
+use Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates\Pages\EditLockDate;
+use Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates\Pages\ListLockDates;
+use Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates\Pages\CreateLockDate;
 
 class LockDateResource extends Resource
 {
@@ -49,11 +54,11 @@ class LockDateResource extends Resource
                             ->label(__('lock_date.lock_type'))
                             ->options(
                                 collect(LockDateType::cases())
-                                    ->mapWithKeys(fn (LockDateType $type) => [$type->value => $type->label()])
+                                    ->mapWithKeys(fn(LockDateType $type) => [$type->value => $type->label()])
                             )
                             ->required()
-                            ->disabled(fn (?LockDate $record) => $record !== null && $record->lock_type === LockDateType::HardLock)
-                            ->dehydrated(fn (?LockDate $record) => $record === null),
+                            ->disabled(fn(?LockDate $record) => $record !== null && $record->lock_type === LockDateType::HardLock)
+                            ->dehydrated(fn(?LockDate $record) => $record === null),
                         DatePicker::make('locked_until')
                             ->label(__('lock_date.locked_until'))
                             ->required(),
@@ -72,9 +77,9 @@ class LockDateResource extends Resource
             ])
             ->recordActions([
                 EditAction::make()
-                    ->disabled(fn (LockDate $record) => $record->lock_type === LockDateType::HardLock),
+                    ->disabled(fn(LockDate $record) => $record->lock_type === LockDateType::HardLock),
                 DeleteAction::make()
-                    ->disabled(fn (LockDate $record) => $record->lock_type === LockDateType::HardLock),
+                    ->disabled(fn(LockDate $record) => $record->lock_type === LockDateType::HardLock),
             ])
             ->toolbarActions([]);
     }

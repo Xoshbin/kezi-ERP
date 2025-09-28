@@ -2,15 +2,12 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Widgets;
 
-use App\Models\Company;
-use App\Services\Reports\AgedPayableService;
-use App\Services\Reports\AgedReceivableService;
-use App\Support\NumberFormatter;
-use Carbon\Carbon;
 use Exception;
+use Carbon\Carbon;
+use App\Models\Company;
 use Filament\Facades\Filament;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
 class CashFlowWidget extends BaseWidget
 {
@@ -51,7 +48,6 @@ class CashFlowWidget extends BaseWidget
             // Net cash flow forecast (receivables - payables)
             $netCashFlowSoon = $receivablesDueSoon->minus($payablesDueSoon);
             $netCashFlow30Days = $receivablesDue30Days->minus($payablesDue30Days);
-
         } catch (Exception) {
             return [
                 Stat::make(__('dashboard.cash_flow.error'), __('dashboard.cash_flow.data_unavailable'))

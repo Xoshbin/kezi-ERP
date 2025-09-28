@@ -1,9 +1,14 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Models\Account;
 use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Purchase\Services\VendorBillService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Accounting\Enums\Accounting\JournalEntryState;
+use Modules\Purchase\Actions\Purchases\CreateVendorBillLineAction;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 
 // Import the Action
 // Import the DTO
@@ -52,6 +57,6 @@ test('cancelling a posted vendor bill creates a reversing journal entry and an a
         'auditable_id' => $vendorBill->id,
         'user_id' => $this->user->id,
         'event_type' => 'cancellation',
-        'description' => 'Vendor Bill Cancelled: '.$cancellationReason,
+        'description' => 'Vendor Bill Cancelled: ' . $cancellationReason,
     ]);
 });

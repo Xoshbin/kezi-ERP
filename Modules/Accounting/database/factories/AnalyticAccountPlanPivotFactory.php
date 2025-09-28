@@ -2,8 +2,8 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use App\Models\AnalyticAccountPlanPivot;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Accounting\Models\AnalyticAccountPlanPivot;
 
 /**
  * @extends Factory<AnalyticAccountPlanPivot>

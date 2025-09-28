@@ -2,9 +2,9 @@
 
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\Pages;
 
-use App\Filament\Clusters\Settings\Resources\CurrencyRates\CurrencyRateResource;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\CurrencyRateResource;
 
 class CreateCurrencyRate extends CreateRecord
 {

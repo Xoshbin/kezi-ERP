@@ -2,19 +2,25 @@
 
 namespace Modules\Accounting\Services;
 
+use Exception;
+use Carbon\Carbon;
 use App\Models\User;
 use Brick\Money\Money;
-use Carbon\Carbon;
-use Exception;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 use Modules\Foundation\Models\Currency;
+use Modules\Accounting\Models\JournalEntry;
+use Illuminate\Validation\ValidationException;
+use Modules\Foundation\Services\CurrencyConverterService;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
+use Modules\Accounting\Actions\Accounting\ReverseJournalEntryAction;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 
 class JournalEntryService
 {
     public function __construct(
         protected Accounting\LockDateService $lockDateService,
-        protected CurrencyConverterService   $currencyConverter
+        protected CurrencyConverterService   $currencyConverter,
     ) {}
 
     public function post(JournalEntry $journalEntry): bool

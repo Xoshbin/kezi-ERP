@@ -2,9 +2,9 @@
 
 namespace Modules\Inventory\Database\Factories;
 
-use App\Models\InventoryCostLayer;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Inventory\Models\InventoryCostLayer;
 use Modules\Product\Models\Product;
 
 /**

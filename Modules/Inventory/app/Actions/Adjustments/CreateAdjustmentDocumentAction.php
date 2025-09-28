@@ -2,21 +2,24 @@
 
 namespace Modules\Inventory\Actions\Adjustments;
 
-use App\Models\Company;
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
+use RuntimeException;
+use Brick\Money\Money;
 use InvalidArgumentException;
+use Illuminate\Support\Facades\DB;
+use App\Models\Company;
 use Modules\Foundation\Models\Currency;
 use Modules\Inventory\Models\AdjustmentDocument;
-use RuntimeException;
+use Modules\Inventory\Models\AdjustmentDocumentLine;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
+use Modules\Inventory\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
 
 class CreateAdjustmentDocumentAction
 {
     public function __construct(
         private readonly \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         private readonly CreateAdjustmentDocumentLineAction $createAdjustmentDocumentLineAction,
-        private readonly \Modules\Foundation\Services\CurrencyConverterService $currencyConverter
+        private readonly \Modules\Foundation\Services\CurrencyConverterService $currencyConverter,
     ) {}
 
     public function execute(CreateAdjustmentDocumentDTO $dto): AdjustmentDocument

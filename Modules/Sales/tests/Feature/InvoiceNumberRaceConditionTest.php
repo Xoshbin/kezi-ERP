@@ -2,17 +2,26 @@
 
 namespace Modules\Sales\Tests\Feature;
 
-use App\Models\Company;
+use Tests\TestCase;
 use App\Models\User;
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\Partner;
-use Modules\Foundation\Services\SequenceService;
+use App\Models\Company;
 use Modules\Sales\Models\Invoice;
-use Tests\TestCase;
+use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Models\Tax;
+
+use Modules\Accounting\Models\Account;
+
+use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Models\Partner;
+use Modules\Foundation\Models\Currency;
+use Modules\Sales\Services\InvoiceService;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Foundation\Services\SequenceService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Sales\Actions\Sales\CreateInvoiceAction;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 
 class InvoiceNumberRaceConditionTest extends TestCase
 {

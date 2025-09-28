@@ -4,7 +4,15 @@ namespace Modules\Inventory\Observers;
 
 use Illuminate\Support\Facades\Auth;
 use Modules\Foundation\Models\AuditLog;
+use Modules\Inventory\Models\StockMove;
 use Modules\Purchase\Models\VendorBill;
+
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Services\Inventory\StockQuantService;
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use Modules\Inventory\Actions\Inventory\CreateJournalEntryForStockMoveAction;
 
 class StockMoveObserver
 {
@@ -31,7 +39,7 @@ class StockMoveObserver
                         // Use consolidated approach for manual stock moves to create a single journal entry
                         $inventoryValuationService = app(InventoryValuationService::class);
                         $inventoryValuationService->createConsolidatedManualStockMoveJournalEntry($stockMove);
-                    } else if ($stockMove->source_type === VendorBill::class) {
+                    } elseif ($stockMove->source_type === VendorBill::class) {
                         // For stock moves linked to vendor bills, use consolidated approach
                         $inventoryValuationService = app(InventoryValuationService::class);
 
@@ -40,8 +48,6 @@ class StockMoveObserver
                             ->where('source_id', $stockMove->source_id)
                             ->where('reference', 'LIKE', 'STOCK-IN-%')
                             ->first();
-
-
 
                         if (!$existingJournalEntry) {
                             // Get all stock moves for the same vendor bill

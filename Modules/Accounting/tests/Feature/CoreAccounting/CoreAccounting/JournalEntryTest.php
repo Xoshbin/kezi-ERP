@@ -1,12 +1,24 @@
 <?php
 
+use App\Models\User;
+use RuntimeException;
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Validation\ValidationException;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\LockDate;
+use App\Models\Company;
 use Tests\Traits\MocksTime;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Models\LockDate;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Accounting\Models\JournalEntry;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Services\JournalEntryService;
+use Modules\Accounting\Enums\Accounting\LockDateType;
+use Modules\Accounting\Exceptions\PeriodIsLockedException;
+use Modules\Foundation\Exceptions\DeletionNotAllowedException;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
@@ -58,7 +70,7 @@ test('creating an unbalanced journal entry is prevented', function () {
         ],
     );
 
-    expect(fn () => (app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class))->execute($dto))
+    expect(fn() => (app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class))->execute($dto))
         ->toThrow(ValidationException::class);
 });
 
@@ -111,7 +123,7 @@ test('an unbalanced draft journal entry cannot be posted', function () {
         ],
     );
 
-    expect(fn () => (app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class))->execute($dto))
+    expect(fn() => (app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class))->execute($dto))
         ->toThrow(ValidationException::class);
 });
 
@@ -130,7 +142,7 @@ test('a posted journal entry is immutable and cannot be updated', function () {
 
     // Assert: Expect the model's internal 'updating' event listener to throw a RuntimeException.
     // This correctly tests the application's actual data integrity guard.
-    expect(fn () => $journalEntry->save())
+    expect(fn() => $journalEntry->save())
         ->toThrow(RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'.");
 
     // Assert: Double-check that the description was not changed in the database.
@@ -164,7 +176,7 @@ test('a posted journal entry cannot be deleted via the service', function () {
         'total_credit' => Money::of(0, $currencyCode),
     ]);
 
-    expect(fn () => $service->delete($journalEntry))
+    expect(fn() => $service->delete($journalEntry))
         ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a posted journal entry. Corrections must be made with a new reversal entry.');
 
     $this->assertModelExists($journalEntry);
@@ -184,7 +196,7 @@ test('a draft journal entry in a locked period cannot be deleted', function () {
         'total_credit' => Money::of(0, $currencyCode),
     ]);
 
-    expect(fn () => $service->delete($journalEntry))
+    expect(fn() => $service->delete($journalEntry))
         ->toThrow(\Modules\Accounting\Exceptions\PeriodIsLockedException::class);
 
     $this->assertModelExists($journalEntry);

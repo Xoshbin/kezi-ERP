@@ -2,7 +2,6 @@
 
 namespace Modules\Foundation\Console\Commands;
 
-use App\Services\ExchangeRateService;
 use Illuminate\Console\Command;
 
 class UpdateExchangeRates extends Command

@@ -17,5 +17,6 @@ readonly class TaxReportDTO
         public Money $totalOutputTax,
         public Money $totalInputTax,
         public Money $netTaxPayable,
-    ) {}
+    ) {
+    }
 }

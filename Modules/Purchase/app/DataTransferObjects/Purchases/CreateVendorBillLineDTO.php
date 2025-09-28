@@ -20,5 +20,6 @@ class CreateVendorBillLineDTO
         public readonly ?int $analytic_account_id,
         public readonly ?int $asset_category_id = null,
         public readonly ?string $currency = null,
-    ) {}
+    ) {
+    }
 }

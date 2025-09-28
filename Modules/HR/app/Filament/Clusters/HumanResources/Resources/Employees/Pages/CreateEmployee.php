@@ -2,8 +2,8 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Employees\Pages;
 
-use App\Filament\Clusters\HumanResources\Resources\Employees\EmployeeResource;
 use Filament\Resources\Pages\CreateRecord;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Employees\EmployeeResource;
 
 class CreateEmployee extends CreateRecord
 {

@@ -2,16 +2,21 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Modules\Accounting\Enums\Accounting\JournalEntryState;
 use Modules\Accounting\Models\BankStatementLine;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\User;
 
 class ReverseJournalEntryAction
 {
     public function __construct(
-        private readonly CreateJournalEntryAction $createJournalEntryAction
-    ) {}
+        private readonly CreateJournalEntryAction $createJournalEntryAction,
+    ) {
+    }
 
     public function execute(JournalEntry $journalEntry, string $reason, User $user): JournalEntry
     {
@@ -43,7 +48,7 @@ class ReverseJournalEntryAction
                 journal_id: $journalEntry->journal_id,
                 currency_id: $journalEntry->currency_id,
                 entry_date: now()->format('Y-m-d'),
-                reference: 'REV/'.$journalEntry->reference,
+                reference: 'REV/' . $journalEntry->reference,
                 description: $reason,
                 created_by_user_id: $user->id,
                 is_posted: true, // Reversing entries are posted immediately

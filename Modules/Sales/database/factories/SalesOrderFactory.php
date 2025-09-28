@@ -2,8 +2,8 @@
 
 namespace Modules\Sales\Database\Factories;
 
-use App\Models\SalesOrder;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Sales\Models\SalesOrder;
 
 /**
  * @extends Factory<SalesOrder>

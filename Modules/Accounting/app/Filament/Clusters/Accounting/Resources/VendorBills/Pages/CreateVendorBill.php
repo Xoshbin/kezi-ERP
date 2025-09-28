@@ -2,20 +2,27 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages;
 
-use Brick\Money\Money;
 use Exception;
+use Brick\Money\Money;
 use Filament\Actions\Action;
+use InvalidArgumentException;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Select;
-use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Filament\Forms\Components\Select;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
-use InvalidArgumentException;
 use Modules\Foundation\Models\Currency;
 use Modules\Purchase\Models\VendorBill;
+use Filament\Resources\Pages\CreateRecord;
+
+use Illuminate\Database\Eloquent\Collection;
+use Modules\Purchase\Models\VendorBillAttachment;
+use Modules\Foundation\Filament\Actions\DocsAction;
+use Modules\Purchase\Actions\Purchases\CreateVendorBillAction;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
 
 class CreateVendorBill extends CreateRecord
 {
@@ -83,7 +90,7 @@ class CreateVendorBill extends CreateRecord
         // Set exchange_rate_at_creation if provided
         if ($exchangeRate) {
             $vendorBill->update([
-                'exchange_rate_at_creation' => $exchangeRate
+                'exchange_rate_at_creation' => $exchangeRate,
             ]);
         }
 
@@ -126,7 +133,7 @@ class CreateVendorBill extends CreateRecord
     protected function getHeaderActions(): array
     {
         return [
-            \Modules\Foundation\App\Filament\Actions\DocsAction::make('vendor-bills'),
+            DocsAction::make('vendor-bills'),
             $this->getLoadFromPurchaseOrderAction(),
         ];
     }

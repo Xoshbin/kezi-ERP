@@ -1,9 +1,14 @@
 <?php
 
-
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
+use Tests\Traits\WithConfiguredCompany;
+
+use Modules\Accounting\Models\LoanAgreement;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\EditLoanAgreement;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ViewLoanAgreement;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\CreateLoanAgreement;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

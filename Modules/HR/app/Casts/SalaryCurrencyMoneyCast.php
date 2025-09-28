@@ -2,14 +2,15 @@
 
 namespace Modules\HR\Casts;
 
-use App\Models\Company;
 use Exception;
-use Filament\Facades\Filament;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Company;
 use InvalidArgumentException;
+use Filament\Facades\Filament;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Foundation\Casts\MoneyCast;
 use Modules\Foundation\Models\Currency;
+use Illuminate\Database\Eloquent\Collection;
+
 
 /**
  * SalaryCurrencyMoneyCast - Uses the currency_id field.
@@ -64,6 +65,6 @@ class SalaryCurrencyMoneyCast extends MoneyCast
             // Ignore tenant resolution errors
         }
 
-        throw new InvalidArgumentException('Could not resolve salary currency for model '.get_class($model).'. Please ensure the model has a valid currency_id or company relationship.');
+        throw new InvalidArgumentException('Could not resolve salary currency for model ' . get_class($model) . '. Please ensure the model has a valid currency_id or company relationship.');
     }
 }

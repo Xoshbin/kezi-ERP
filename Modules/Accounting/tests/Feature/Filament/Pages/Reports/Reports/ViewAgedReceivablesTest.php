@@ -2,13 +2,15 @@
 
 namespace Modules\Accounting\Tests\Feature\Filament\Pages\Reports;
 
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Brick\Money\Money;
 use Livewire\Livewire;
-use Modules\Foundation\Models\Partner;
 use Modules\Sales\Models\Invoice;
+use Modules\Foundation\Models\Partner;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports\ViewAgedReceivables;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

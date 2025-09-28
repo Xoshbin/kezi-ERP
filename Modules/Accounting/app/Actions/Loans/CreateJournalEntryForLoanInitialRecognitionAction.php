@@ -2,15 +2,17 @@
 
 namespace Modules\Accounting\Actions\Loans;
 
-use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use Modules\Accounting\Models\LoanAgreement;
+use Modules\Accounting\Models\User;
 use RuntimeException;
 
 class CreateJournalEntryForLoanInitialRecognitionAction
 {
-    public function __construct(private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJE) {}
+    public function __construct(private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJE)
+    {
+    }
 
     public function execute(LoanAgreement $loan, User $user, int $journalId, int $bankAccountId, int $loanAccountId): JournalEntry
     {

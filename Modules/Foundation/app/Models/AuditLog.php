@@ -2,14 +2,16 @@
 
 namespace Modules\Foundation\Models;
 
-use Database\Factories\AuditLogFactory;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
+use App\Models\User;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Database\Factories\AuditLogFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * @property int $id
@@ -56,7 +58,7 @@ class AuditLog extends Model
      *
      * @var string|null
      */
-    const UPDATED_AT = null; // <-- Add this line
+    public const UPDATED_AT = null; // <-- Add this line
 
     /**
      * The table associated with the model.

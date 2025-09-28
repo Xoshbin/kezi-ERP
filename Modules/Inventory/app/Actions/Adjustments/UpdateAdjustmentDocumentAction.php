@@ -4,11 +4,14 @@ namespace Modules\Inventory\Actions\Adjustments;
 
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
+use Modules\Inventory\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentDTO;
+use Modules\Inventory\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
 
 class UpdateAdjustmentDocumentAction
 {
     public function __construct(
-        private readonly CreateAdjustmentDocumentLineAction $createAdjustmentDocumentLineAction
+        private readonly CreateAdjustmentDocumentLineAction $createAdjustmentDocumentLineAction,
     ) {}
 
     public function execute(UpdateAdjustmentDocumentDTO $dto): AdjustmentDocument

@@ -2,15 +2,28 @@
 
 namespace Modules\Sales\Tests\Feature\Sales;
 
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Brick\Money\Money;
+use Modules\Sales\Models\Invoice;
+use Modules\Product\Models\Product;
+use Modules\Sales\Models\SalesOrder;
+use Modules\Sales\Models\InvoiceLine;
 use Modules\Accounting\Models\Account;
 use Modules\Foundation\Models\Partner;
-use Modules\Product\Models\Product;
-use Modules\Sales\Models\Invoice;
-use Modules\Sales\Models\InvoiceLine;
+use Modules\Inventory\Models\StockMove;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Sales\Services\InvoiceService;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Sales\Enums\Sales\SalesOrderStatus;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Foundation\Enums\Partners\PartnerType;
+use Modules\Sales\Actions\Sales\CreateSalesOrderAction;
+use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
+use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderDTO;
+use Modules\Sales\Actions\Sales\CreateInvoiceFromSalesOrderAction;
+use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderLineDTO;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

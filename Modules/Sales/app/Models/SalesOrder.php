@@ -2,18 +2,26 @@
 
 namespace Modules\Sales\Models;
 
-use App\Casts\BaseCurrencyMoneyCast;
-use App\Casts\DocumentCurrencyMoneyCast;
-use App\Enums\Sales\SalesOrderStatus;
-use App\Observers\AuditLogObserver;
+use App\Models\User;
 use Brick\Money\Money;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Modules\Sales\Models\Invoice;
+
+use Modules\Foundation\Models\Partner;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Currency;
+use Modules\Sales\Models\SalesOrderLine;
+use Modules\Inventory\Models\StockLocation;
+use Illuminate\Database\Eloquent\Collection;
+use Modules\Sales\Enums\Sales\SalesOrderStatus;
+use Modules\Foundation\Observers\AuditLogObserver;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
 
 /**
  * Sales Order Model

@@ -2,11 +2,15 @@
 
 namespace Modules\HR\Services\HumanResources;
 
-use App\Models\User;
-use Carbon\Carbon;
 use Exception;
-use Illuminate\Support\Facades\Gate;
+use Carbon\Carbon;
+use App\Models\User;
 use Modules\HR\Models\Employee;
+use Modules\HR\Models\Attendance;
+use Illuminate\Support\Facades\Gate;
+use Modules\HR\Actions\HumanResources\CreateAttendanceAction;
+use Modules\HR\DataTransferObjects\HumanResources\CreateAttendanceDTO;
+
 
 class AttendanceService
 {
@@ -71,15 +75,15 @@ class AttendanceService
         }
 
         // Calculate total hours
-        $clockIn = Carbon::parse($attendance->attendance_date.' '.$attendance->clock_in_time);
-        $clockOut = Carbon::parse($attendance->attendance_date.' '.$currentTime);
+        $clockIn = Carbon::parse($attendance->attendance_date . ' ' . $attendance->clock_in_time);
+        $clockOut = Carbon::parse($attendance->attendance_date . ' ' . $currentTime);
 
         $totalMinutes = $clockOut->diffInMinutes($clockIn);
 
         // Subtract break time if recorded
         if ($attendance->break_start_time && $attendance->break_end_time) {
-            $breakStart = Carbon::parse($attendance->attendance_date.' '.$attendance->break_start_time);
-            $breakEnd = Carbon::parse($attendance->attendance_date.' '.$attendance->break_end_time);
+            $breakStart = Carbon::parse($attendance->attendance_date . ' ' . $attendance->break_start_time);
+            $breakEnd = Carbon::parse($attendance->attendance_date . ' ' . $attendance->break_end_time);
             $breakMinutes = $breakEnd->diffInMinutes($breakStart);
             $totalMinutes -= $breakMinutes;
         }
@@ -149,8 +153,8 @@ class AttendanceService
         $currentTime = now()->format('H:i:s');
 
         // Calculate break hours
-        $breakStart = Carbon::parse($attendance->attendance_date.' '.$attendance->break_start_time);
-        $breakEnd = Carbon::parse($attendance->attendance_date.' '.$currentTime);
+        $breakStart = Carbon::parse($attendance->attendance_date . ' ' . $attendance->break_start_time);
+        $breakEnd = Carbon::parse($attendance->attendance_date . ' ' . $currentTime);
         $breakHours = round($breakEnd->diffInMinutes($breakStart) / 60, 2);
 
         $attendance->update([

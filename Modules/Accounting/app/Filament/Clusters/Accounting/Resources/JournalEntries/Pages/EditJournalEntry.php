@@ -9,6 +9,14 @@ use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Accounting\Actions\Accounting\UpdateJournalEntryAction;
+use Modules\Accounting\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\UpdateJournalEntryLineDTO;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\JournalEntryResource;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\JournalEntryLine;
+use Modules\Accounting\Services\JournalEntryService;
+use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Foundation\Models\Currency;
 
 /**
@@ -49,7 +57,7 @@ class EditJournalEntry extends EditRecord
                     $this->redirect(JournalEntryResource::getUrl('index'));
                 }),
 
-            \Modules\Foundation\App\Filament\Actions\DocsAction::make('opening-balances'),
+            DocsAction::make('opening-balances'),
         ];
     }
 

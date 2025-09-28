@@ -4,13 +4,21 @@ namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pag
 
 use Carbon\Carbon;
 use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
-use Filament\Notifications\Actions\Action as NotificationAction;
+use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteAction;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Inventory\Models\StockMove;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Filament\Actions\DocsAction;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Actions\Inventory\UpdateStockMoveWithProductLinesAction;
+use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\UpdateStockMoveWithProductLinesDTO;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
 
 class EditStockMove extends EditRecord
 {

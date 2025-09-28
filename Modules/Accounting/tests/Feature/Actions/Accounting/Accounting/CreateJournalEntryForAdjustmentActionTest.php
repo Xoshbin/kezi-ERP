@@ -1,10 +1,10 @@
 <?php
 
-use App\Actions\Accounting\CreateJournalEntryForAdjustmentAction;
-use App\Models\AdjustmentDocument;
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Inventory\Models\AdjustmentDocument;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryForAdjustmentAction;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

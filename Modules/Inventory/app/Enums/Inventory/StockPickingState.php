@@ -15,4 +15,3 @@ enum StockPickingState: string
         return __('enums.stock_picking_state.' . $this->value);
     }
 }
-

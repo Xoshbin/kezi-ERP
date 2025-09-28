@@ -3,9 +3,18 @@
 namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders;
 
 use BackedEnum;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Filament\Schemas\Schema;
+use Filament\Resources\Resource;
+use Modules\Sales\Models\SalesOrder;
+use Modules\Sales\Filament\Clusters\Sales\SalesCluster;
+use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\EditSalesOrder;
+use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\ViewSalesOrder;
+use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\ListSalesOrders;
+use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\CreateSalesOrder;
+use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Schemas\SalesOrderForm;
+use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Tables\SalesOrdersTable;
+use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\RelationManagers\InvoicesRelationManager;
 
 class SalesOrderResource extends Resource
 {

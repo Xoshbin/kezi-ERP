@@ -5,7 +5,9 @@ namespace Modules\Accounting\Database\Seeders;
 use App\Models\Company;
 use Illuminate\Database\Seeder;
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
 use Modules\Foundation\Models\Currency;
+use Modules\Accounting\Enums\Accounting\JournalType;
 
 class JournalSeeder extends Seeder
 {

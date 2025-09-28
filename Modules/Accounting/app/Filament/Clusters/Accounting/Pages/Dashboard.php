@@ -2,12 +2,12 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Pages;
 
-use App\Filament\Clusters\Accounting\Widgets\CashFlowWidget;
-use App\Filament\Clusters\Accounting\Widgets\FinancialStatsOverview;
-use App\Filament\Clusters\Accounting\Widgets\IncomeVsExpenseChart;
 use BackedEnum;
 use Filament\Facades\Filament;
 use Filament\Pages\Dashboard as BaseDashboard;
+use Modules\Accounting\Filament\Clusters\Accounting\Widgets\CashFlowWidget;
+use Modules\Accounting\Filament\Clusters\Accounting\Widgets\FinancialStatsOverview;
+use Modules\Accounting\Filament\Clusters\Accounting\Widgets\IncomeVsExpenseChart;
 
 class Dashboard extends BaseDashboard
 {

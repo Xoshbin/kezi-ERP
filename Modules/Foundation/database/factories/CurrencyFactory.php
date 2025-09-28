@@ -2,8 +2,8 @@
 
 namespace Modules\Foundation\Database\Factories;
 
-use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Foundation\Models\Currency;
 
 /**
  * @extends Factory<Currency>

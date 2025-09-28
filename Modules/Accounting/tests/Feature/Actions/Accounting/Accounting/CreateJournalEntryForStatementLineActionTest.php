@@ -1,16 +1,22 @@
 <?php
 
+use Exception;
+use Carbon\Carbon;
 use App\Models\User;
 use Brick\Money\Money;
-use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Company;
 use Illuminate\Support\Facades\DB;
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Models\Currency;
+use Tests\Traits\WithConfiguredCompany;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Models\CurrencyRate;
 use Modules\Accounting\Models\BankStatement;
 use Modules\Accounting\Models\BankStatementLine;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\CurrencyRate;
-use Tests\Traits\WithConfiguredCompany;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryForStatementLineAction;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -164,7 +170,6 @@ it('handles multi-currency scenarios correctly', function (string $currencyCode,
         'debit' => $expectedAmount,
         'credit' => 0,
     ]);
-
 })->with([
     'IQD' => ['IQD', 50000000, '50000.000'],
     'USD' => ['USD', 750000, '7500.00'],

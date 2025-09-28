@@ -2,19 +2,25 @@
 
 namespace Modules\Accounting\Models;
 
-use App\Casts\DocumentCurrencyMoneyCast;
-use App\Casts\OriginalCurrencyMoneyCast;
-use App\Observers\BankStatementLineObserver;
-use Brick\Money\Money;
-use Database\Factories\BankStatementLineFactory;
 use Eloquent;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Brick\Money\Money;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Modules\Payment\Models\Payment;
+use Modules\Foundation\Models\Partner;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Currency;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\BankStatement;
+use Database\Factories\BankStatementLineFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
+use Modules\Foundation\Casts\OriginalCurrencyMoneyCast;
+use Modules\Accounting\Observers\BankStatementLineObserver;
 
 /**
  * @property int $id

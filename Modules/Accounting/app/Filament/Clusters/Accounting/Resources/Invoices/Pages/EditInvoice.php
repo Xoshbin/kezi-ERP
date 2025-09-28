@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages;
 
+use App\Models\Company;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Brick\Money\Money;
 use Exception;
@@ -17,7 +18,24 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Modules\Accounting\Actions\Accounting\BuildInvoicePostingPreviewAction;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Widgets\SettlementSummaryWidget;
+use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Filament\Actions\DocsAction;
+use Modules\Foundation\Filament\Forms\Components\MoneyInput;
+use Modules\Payment\Actions\Payments\CreatePaymentAction;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Services\PaymentService;
+use Modules\Sales\Actions\Sales\UpdateInvoiceAction;
+use Modules\Sales\DataTransferObjects\Sales\UpdateInvoiceDTO;
+use Modules\Sales\DataTransferObjects\Sales\UpdateInvoiceLineDTO;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Modules\Sales\Models\Invoice;
+use Modules\Sales\Services\InvoiceService;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class EditInvoice extends EditRecord
@@ -86,9 +104,9 @@ class EditInvoice extends EditRecord
                     }
                     $csv = '';
                     foreach ($rows as $row) {
-                        $csv .= implode(',', array_map(fn ($v) => '"'.str_replace('"', '""', (string) $v).'"', $row))."\n";
+                        $csv .= implode(',', array_map(fn ($v) => '"' . str_replace('"', '""', (string) $v) . '"', $row)) . "\n";
                     }
-                    $filename = 'invoice-'.($record->invoice_number ?: ('DRAFT-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))).'-preview.csv';
+                    $filename = 'invoice-' . ($record->invoice_number ?: ('DRAFT-' . str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))) . '-preview.csv';
 
                     return response()->streamDownload(function () use ($csv): void {
                         echo $csv;
@@ -108,7 +126,7 @@ class EditInvoice extends EditRecord
                         'preview' => $preview,
                         'invoice' => $record,
                     ]);
-                    $filename = 'invoice-'.($record->invoice_number ?: ('DRAFT-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))).'-preview.pdf';
+                    $filename = 'invoice-' . ($record->invoice_number ?: ('DRAFT-' . str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))) . '-preview.pdf';
 
                     return response()->streamDownload(function () use ($pdf): void {
                         echo $pdf->output();
@@ -172,7 +190,7 @@ class EditInvoice extends EditRecord
                         ->label(__('payment.form.payment_date'))
                         ->default(now())
                         ->required(),
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('amount')
+                    MoneyInput::make('amount')
                         ->label(__('payment.form.amount'))
                         ->currencyField('currency_id')
                         ->default(fn (Invoice $record) => $record->getRemainingAmount())
@@ -229,8 +247,9 @@ class EditInvoice extends EditRecord
                             ->send();
                     }
                 })
-                ->visible(fn (Invoice $record) => $record->status === InvoiceStatus::Posted &&
-                    ! $record->getRemainingAmount()->isZero()
+                ->visible(
+                    fn (Invoice $record) => $record->status === InvoiceStatus::Posted &&
+                        ! $record->getRemainingAmount()->isZero()
                 ),
 
             // Actions\Action::make('resetToDraft')
@@ -260,7 +279,7 @@ class EditInvoice extends EditRecord
                     $this->redirect(InvoiceResource::getUrl('index'));
                 }),
 
-            \Modules\Foundation\App\Filament\Actions\DocsAction::make('customer-invoices'),
+            DocsAction::make('customer-invoices'),
         ];
     }
 
@@ -320,7 +339,7 @@ class EditInvoice extends EditRecord
         // Handle exchange_rate_at_creation separately since it's not in the DTO
         if (isset($data['exchange_rate_at_creation'])) {
             $updatedInvoice->update([
-                'exchange_rate_at_creation' => $data['exchange_rate_at_creation']
+                'exchange_rate_at_creation' => $data['exchange_rate_at_creation'],
             ]);
         }
 

@@ -39,5 +39,6 @@ readonly class CreateEmployeeDTO
         public ?string $bank_routing_number,
         public bool $is_active,
         public int $created_by_user_id,
-    ) {}
+    ) {
+    }
 }

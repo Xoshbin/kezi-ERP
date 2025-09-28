@@ -125,7 +125,7 @@ class AssetResource extends Resource
                                 ->default(1),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_currency'))
-                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg')),
+                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg')),
 
                     TextInput::make('current_exchange_rate')
                         ->label(__('asset.current_exchange_rate'))
@@ -150,7 +150,7 @@ class AssetResource extends Resource
                         ->label(__('asset.purchase_date'))
                         ->default(now())
                         ->required()
-                        ->rules([new NotInLockedPeriod])
+                        ->rules([new NotInLockedPeriod()])
                         ->columnSpan(1),
 
                     \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('purchase_value')
@@ -177,7 +177,7 @@ class AssetResource extends Resource
                         ->searchable()
                         ->options(
                             collect(DepreciationMethod::cases())
-                                ->mapWithKeys(fn(DepreciationMethod $method) => [$method->value => $method->label()])
+                                ->mapWithKeys(fn (DepreciationMethod $method) => [$method->value => $method->label()])
                         )
                         ->required()
                         ->columnSpan(1),
@@ -200,12 +200,12 @@ class AssetResource extends Resource
                                 ->required(),
                             Select::make('type')
                                 ->label(__('account.type'))
-                                ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()]))
+                                ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
                                 ->default(\Modules\Accounting\Enums\Accounting\AccountType::FixedAssets->value)
                                 ->required(),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
-                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg'))
+                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
                         ->required()
                         ->columnSpan(1),
 
@@ -227,12 +227,12 @@ class AssetResource extends Resource
                                 ->required(),
                             Select::make('type')
                                 ->label(__('account.type'))
-                                ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()]))
+                                ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
                                 ->default(\Modules\Accounting\Enums\Accounting\AccountType::Depreciation->value)
                                 ->required(),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
-                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg'))
+                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
                         ->required()
                         ->columnSpan(1),
 
@@ -254,12 +254,12 @@ class AssetResource extends Resource
                                 ->required(),
                             Select::make('type')
                                 ->label(__('account.type'))
-                                ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()]))
+                                ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
                                 ->default(\Modules\Accounting\Enums\Accounting\AccountType::FixedAssets->value)
                                 ->required(),
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
-                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg'))
+                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
                         ->required()
                         ->columnSpan(1),
                 ])
@@ -291,7 +291,7 @@ class AssetResource extends Resource
                 TextColumn::make('status')
                     ->label(__('asset.status'))
                     ->badge()
-                    ->formatStateUsing(fn(AssetStatus $state): string => $state->label())
+                    ->formatStateUsing(fn (AssetStatus $state): string => $state->label())
                     ->colors([
                         'gray' => AssetStatus::Draft,
                         'info' => AssetStatus::Confirmed,
@@ -314,7 +314,7 @@ class AssetResource extends Resource
 
                 TextColumn::make('depreciation_method')
                     ->label(__('asset.depreciation_method'))
-                    ->formatStateUsing(fn(DepreciationMethod $state): string => $state->label())
+                    ->formatStateUsing(fn (DepreciationMethod $state): string => $state->label())
                     ->badge()
                     ->toggleable(),
 

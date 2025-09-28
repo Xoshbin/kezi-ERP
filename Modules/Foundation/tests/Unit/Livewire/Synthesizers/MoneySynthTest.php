@@ -4,15 +4,16 @@ namespace Modules\Foundation\Tests\Unit\Livewire\Synthesizers;
 
 use Brick\Money\Money;
 use PHPUnit\Framework\TestCase;
+use Modules\Foundation\Livewire\Synthesizers\MoneySynth;
 
 class MoneySynthTest extends TestCase
 {
-    private \Modules\Foundation\App\Livewire\Synthesizers\MoneySynth $synthesizer;
+    private MoneySynth $synthesizer;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->synthesizer = new \Modules\Foundation\App\Livewire\Synthesizers\MoneySynth();
+        $this->synthesizer = new MoneySynth();
     }
 
     /** @test */
@@ -20,10 +21,10 @@ class MoneySynthTest extends TestCase
     {
         $money = Money::of(100, 'USD');
 
-        $this->assertTrue(\Modules\Foundation\App\Livewire\Synthesizers\MoneySynth::match($money));
-        $this->assertFalse(\Modules\Foundation\App\Livewire\Synthesizers\MoneySynth::match('100'));
-        $this->assertFalse(\Modules\Foundation\App\Livewire\Synthesizers\MoneySynth::match(100));
-        $this->assertFalse(\Modules\Foundation\App\Livewire\Synthesizers\MoneySynth::match([]));
+        $this->assertTrue(MoneySynth::match($money));
+        $this->assertFalse(MoneySynth::match('100'));
+        $this->assertFalse(MoneySynth::match(100));
+        $this->assertFalse(MoneySynth::match([]));
     }
 
     /** @test */
@@ -45,7 +46,7 @@ class MoneySynthTest extends TestCase
     {
         $payload = [
             'amount' => '123.45',
-            'currency' => 'EUR'
+            'currency' => 'EUR',
         ];
 
         $money = $this->synthesizer->hydrate($payload);

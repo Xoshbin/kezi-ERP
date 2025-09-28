@@ -1,12 +1,29 @@
 <?php
 
-use App\Enums\Inventory\StockMoveStatus;
-use App\Models\Company;
+
 use App\Models\User;
 use Livewire\Livewire;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\Partner;
+use App\Models\Company;
+
+
+use Modules\Inventory\Models\Lot;
 use Modules\Product\Models\Product;
+use Modules\Foundation\Models\Partner;
+use Modules\Foundation\Models\Currency;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Inventory\Models\StockPicking;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ListStockPickings;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\AssignPickingAction;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\CancelPickingAction;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ConfirmPickingAction;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\CreateBackorderAction;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ValidatePickingAction;
 
 beforeEach(function () {
     $this->actingAs(User::factory()->create());

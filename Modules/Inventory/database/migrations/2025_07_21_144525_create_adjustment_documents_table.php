@@ -1,12 +1,12 @@
 <?php
 
-use App\Enums\Adjustments\AdjustmentDocumentStatus;
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
+
+return new class() extends Migration {
     /**
      * In an accounting system, direct credit_notes tables are typically consolidated into a more general adjustment_documents table
      * to handle various types of financial adjustments,

@@ -2,15 +2,14 @@
 
 namespace Modules\Inventory\Rules\Inventory;
 
-use App\Models\Product;
-use App\Enums\Inventory\StockMoveType;
-use App\Services\Inventory\InventoryMovementValidationService;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Services\Inventory\InventoryMovementValidationService;
 
 /**
  * Validation rule for inventory movements
- * 
+ *
  * Ensures that inventory movements meet all business requirements
  * before being allowed to proceed.
  */
@@ -19,7 +18,7 @@ class ValidInventoryMovementRule implements ValidationRule
     public function __construct(
         private \Modules\Product\Models\Product $product,
         private StockMoveType $moveType,
-        private float $quantity
+        private float $quantity,
     ) {}
 
     /**
@@ -28,7 +27,7 @@ class ValidInventoryMovementRule implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $validationService = app(InventoryMovementValidationService::class);
-        
+
         $result = $validationService->validateMovement(
             $this->product,
             $this->moveType,
@@ -38,13 +37,13 @@ class ValidInventoryMovementRule implements ValidationRule
         if (!$result->isValid()) {
             $errors = $result->getErrors();
             $requirements = $result->getRequirements();
-            
+
             $message = 'Inventory movement validation failed: ' . implode(', ', $errors);
-            
+
             if (!empty($requirements)) {
                 $message .= ' Requirements: ' . implode(', ', array_values($requirements));
             }
-            
+
             $fail($message);
         }
     }

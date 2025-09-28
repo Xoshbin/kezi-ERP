@@ -2,11 +2,12 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\Pages;
 
-
 use App\Models\Company;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\Page;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
 use Modules\Accounting\Models\BankStatement;
+use Modules\Foundation\Filament\Actions\DocsAction;
 
 class BankReconciliation extends Page
 {
@@ -51,7 +52,7 @@ class BankReconciliation extends Page
     protected function getHeaderActions(): array
     {
         return [
-            \Modules\Foundation\App\Filament\Actions\DocsAction::make('bank-reconciliation'),
+            DocsAction::make('bank-reconciliation'),
         ];
     }
 }

@@ -2,18 +2,26 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages;
 
-use Brick\Money\Money;
 use Exception;
+use Brick\Money\Money;
 use Filament\Actions\Action;
+use InvalidArgumentException;
 use Filament\Actions\DeleteAction;
+use Modules\Payment\Models\Payment;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Currency;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
-use InvalidArgumentException;
-use Modules\Foundation\Models\Currency;
-use Modules\Payment\Models\Payment;
+use Modules\Payment\Services\PaymentService;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Foundation\Filament\Actions\DocsAction;
+use Modules\Payment\Actions\Payments\UpdatePaymentAction;
+use Modules\Payment\DataTransferObjects\Payments\UpdatePaymentDTO;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 
 class EditPayment extends EditRecord
 {
@@ -22,12 +30,12 @@ class EditPayment extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            \Modules\Foundation\App\Filament\Actions\DocsAction::make('payments'),
+            DocsAction::make('payments'),
             Action::make('confirm')
                 ->label(__('payment.edit.action.confirm.label'))
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft)
+                ->visible(fn(Payment $record): bool => $record->status === PaymentStatus::Draft)
                 ->action(function (Payment $record): void {
                     $this->save();
                     $service = app(PaymentService::class);
@@ -67,7 +75,7 @@ class EditPayment extends EditRecord
             //     // Only show this button for Confirmed payments
             //     ->visible(fn(Payment $record): bool => $record->status === PaymentStatus::Confirmed),
             DeleteAction::make()
-                ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft),
+                ->visible(fn(Payment $record): bool => $record->status === PaymentStatus::Draft),
         ];
     }
 

@@ -2,12 +2,26 @@
 
 namespace Modules\Inventory\Actions\Inventory;
 
-use App\Models\Company;
 use Brick\Money\Money;
-use Illuminate\Support\Facades\DB;
+use App\Models\Company;
 use InvalidArgumentException;
-use Modules\Accounting\Models\Account;
+use Illuminate\Support\Facades\DB;
+
 use Modules\Product\Models\Product;
+use Modules\Accounting\Models\Account;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockPicking;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Inventory\Models\StockMoveLine;
+use Modules\Accounting\Models\JournalEntryLine;
+use Modules\Inventory\Models\StockMoveValuation;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateInventoryAdjustmentDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
 
 class CreateInventoryAdjustmentAction
 {
@@ -98,7 +112,7 @@ class CreateInventoryAdjustmentAction
         CreateInventoryAdjustmentDTO $dto,
         $line,
         StockPicking $picking,
-        int $adjustmentLocationId
+        int $adjustmentLocationId,
     ): void {
         $adjustmentQty = $line->getAdjustmentQuantity();
 
@@ -119,7 +133,7 @@ class CreateInventoryAdjustmentAction
         $line,
         StockPicking $picking,
         int $adjustmentLocationId,
-        float $quantity
+        float $quantity,
     ): void {
         $product = Product::find($line->product_id);
         $productLineDto = new CreateStockMoveProductLineDTO(
@@ -181,7 +195,7 @@ class CreateInventoryAdjustmentAction
         $line,
         StockPicking $picking,
         int $adjustmentLocationId,
-        float $quantity
+        float $quantity,
     ): void {
         $product = Product::find($line->product_id);
         $productLineDto = new CreateStockMoveProductLineDTO(

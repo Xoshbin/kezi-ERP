@@ -2,6 +2,9 @@
 
 use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Purchase\Services\VendorBillService;
+use Modules\Foundation\Enums\Settings\NumberingType;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 
 describe('VendorBill Numbering Integration', function () {
     uses(WithConfiguredCompany::class);

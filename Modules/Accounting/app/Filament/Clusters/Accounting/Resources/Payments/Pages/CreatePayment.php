@@ -2,15 +2,17 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages;
 
-use Brick\Money\Money;
 use Exception;
+use Brick\Money\Money;
+use InvalidArgumentException;
 use Filament\Facades\Filament;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Currency;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
-use InvalidArgumentException;
-use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Filament\Actions\DocsAction;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 
 class CreatePayment extends CreateRecord
 {
@@ -19,7 +21,7 @@ class CreatePayment extends CreateRecord
     protected function getHeaderActions(): array
     {
         return [
-            \Modules\Foundation\App\Filament\Actions\DocsAction::make('payments'),
+            DocsAction::make('payments'),
         ];
     }
 

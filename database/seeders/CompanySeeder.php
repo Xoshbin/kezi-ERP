@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Enums\Inventory\StockLocationType;
+
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\StockLocation;

@@ -1,19 +1,25 @@
 <?php
 
 use Brick\Money\Money;
+use Modules\Payment\Models\Payment;
+use function Pest\Livewire\livewire;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Models\Partner;
+use Modules\Foundation\Models\Currency;
+use Tests\Traits\WithConfiguredCompany;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Payment\Enums\Payments\PaymentStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Enums\Accounting\JournalType;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\Pages\CreateBankStatement;
+use Modules\Accounting\Livewire\Accounting\SystemPaymentsTable;
+
+use Modules\Accounting\Livewire\Accounting\BankTransactionsTable;
 use Modules\Accounting\Livewire\Accounting\BankReconciliationMatcher;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\BankStatement;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\Partner;
-use Modules\Payment\Models\Payment;
-use Tests\Traits\WithConfiguredCompany;
-use function Pest\Livewire\livewire;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\Pages\EditBankStatement;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\Pages\ListBankStatements;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\Pages\CreateBankStatement;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

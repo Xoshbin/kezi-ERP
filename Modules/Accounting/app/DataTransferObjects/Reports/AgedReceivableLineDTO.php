@@ -15,5 +15,6 @@ readonly class AgedReceivableLineDTO
         public Money $bucket61_90,
         public Money $bucket90_plus,
         public Money $totalDue,
-    ) {}
+    ) {
+    }
 }

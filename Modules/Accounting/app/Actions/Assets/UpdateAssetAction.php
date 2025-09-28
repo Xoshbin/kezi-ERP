@@ -3,13 +3,15 @@
 namespace Modules\Accounting\Actions\Assets;
 
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\DataTransferObjects\Assets\UpdateAssetDTO;
 use Modules\Accounting\Models\Asset;
 
 class UpdateAssetAction
 {
     public function __construct(
-        protected ComputeDepreciationScheduleAction $computeDepreciationScheduleAction
-    ) {}
+        protected ComputeDepreciationScheduleAction $computeDepreciationScheduleAction,
+    ) {
+    }
 
     public function execute(Asset $asset, UpdateAssetDTO $dto): Asset
     {
