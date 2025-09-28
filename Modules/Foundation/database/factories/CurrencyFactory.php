@@ -10,6 +10,8 @@ use Modules\Foundation\Models\Currency;
  */
 class CurrencyFactory extends Factory
 {
+    protected $model = \Modules\Foundation\Models\Currency::class;
+
     /**
      * Define the model's default state.
      *
@@ -19,8 +21,8 @@ class CurrencyFactory extends Factory
     {
         $currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'SEK', 'NZD'];
 
-        // Use random selection instead of static counter to avoid parallel execution conflicts
-        $currencyCode = $this->faker->randomElement($currencies);
+        // Avoid relying on Faker providers; use native random selection for stability
+        $currencyCode = $currencies[array_rand($currencies)];
 
         return [
             'name' => $currencyCode . ' Currency',

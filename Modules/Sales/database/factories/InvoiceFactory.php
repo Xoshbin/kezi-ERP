@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class InvoiceFactory extends Factory
 {
+    protected $model = \Modules\Sales\Models\Invoice::class;
+
     public function definition(): array
     {
         return [

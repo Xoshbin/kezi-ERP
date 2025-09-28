@@ -24,9 +24,9 @@ class GenerateInvoicePdfAction
         ]);
 
         // Validate template exists
-        $templatePath = "pdfs.invoice.{$template}";
+        $templatePath = "sales::pdfs.invoice.{$template}";
         if (! View::exists($templatePath)) {
-            $templatePath = 'pdfs.invoice.classic'; // Fallback to classic template
+            $templatePath = 'sales::pdfs.invoice.classic'; // Fallback to classic template
         }
 
         // Configure PDF with proper settings for multi-language support
@@ -66,9 +66,9 @@ class GenerateInvoicePdfAction
             'currency',
         ]);
 
-        $templatePath = "pdfs.invoice.{$template}";
+        $templatePath = "sales::pdfs.invoice.{$template}";
         if (! View::exists($templatePath)) {
-            $templatePath = 'pdfs.invoice.classic';
+            $templatePath = 'sales::pdfs.invoice.classic';
         }
 
         $pdf = Pdf::loadView($templatePath, [

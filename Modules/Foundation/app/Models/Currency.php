@@ -21,6 +21,7 @@ use Modules\Foundation\Observers\CurrencyObserver;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Modules\Foundation\Database\Factories\CurrencyFactory;
 
 /**
  * Class Currency
@@ -68,6 +69,11 @@ class Currency extends Model
 {
     use HasFactory;
     use HasTranslations;
+
+    protected static function newFactory(): CurrencyFactory
+    {
+        return \Modules\Foundation\Database\Factories\CurrencyFactory::new();
+    }
 
     /** @var array<int, string> */
     public array $translatable = ['name'];

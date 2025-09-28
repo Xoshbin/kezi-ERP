@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class JournalEntryFactory extends Factory
 {
+    protected $model = \Modules\Accounting\Models\JournalEntry::class;
+
     /**
      * Define the model's default state.
      *

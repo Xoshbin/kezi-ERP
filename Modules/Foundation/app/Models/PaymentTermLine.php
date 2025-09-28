@@ -9,7 +9,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Foundation\Models\PaymentTerm;
-use Database\Factories\PaymentTermLineFactory;
+
 use Modules\Foundation\Observers\AuditLogObserver;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -53,8 +53,12 @@ use Modules\Foundation\Enums\PaymentTerms\PaymentTermType;
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class PaymentTermLine extends Model
 {
-    /** @use HasFactory<PaymentTermLineFactory> */
     use HasFactory;
+
+    protected static function newFactory(): \Modules\Foundation\Database\Factories\PaymentTermLineFactory
+    {
+        return \Modules\Foundation\Database\Factories\PaymentTermLineFactory::new();
+    }
 
     /**
      * The attributes that are mass assignable.

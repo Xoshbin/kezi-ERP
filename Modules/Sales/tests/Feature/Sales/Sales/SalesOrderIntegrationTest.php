@@ -25,7 +25,7 @@ use Modules\Sales\Actions\Sales\CreateInvoiceFromSalesOrderAction;
 use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderLineDTO;
 use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
 
-uses(RefreshDatabase::class, WithConfiguredCompany::class);
+uses(\Tests\TestCase::class, RefreshDatabase::class, WithConfiguredCompany::class);
 
 function createCustomer()
 {

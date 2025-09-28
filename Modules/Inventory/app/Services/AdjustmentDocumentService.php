@@ -9,6 +9,8 @@ use Modules\Inventory\Events\AdjustmentDocumentPosted;
 use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
 
 
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryForAdjustmentAction;
+
 // 1. Import the new action
 
 class AdjustmentDocumentService

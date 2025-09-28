@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class VendorBillLineFactory extends Factory
 {
+    protected $model = \Modules\Purchase\Models\VendorBillLine::class;
+
     /**
      * Define the model's default state.
      *

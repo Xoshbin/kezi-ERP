@@ -3,7 +3,7 @@
 namespace Modules\Accounting\Models;
 
 use App\Models\Company;
-use Database\Factories\LockDateFactory;
+use Modules\Accounting\Database\Factories\LockDateFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Accounting\Observers\LockDateObserver;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -34,5 +34,10 @@ class LockDate extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    protected static function newFactory(): LockDateFactory
+    {
+        return \Modules\Accounting\Database\Factories\LockDateFactory::new();
     }
 }

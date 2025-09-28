@@ -12,6 +12,10 @@ use Modules\Foundation\Models\Currency;
 use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Modules\Sales\Actions\Sales\GenerateInvoicePdfAction;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(Tests\TestCase::class, RefreshDatabase::class);
+
 
 beforeEach(function () {
     $this->user = User::factory()->create();

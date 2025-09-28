@@ -1,26 +1,29 @@
 <?php
 
-use App\Actions\Payments\CreatePaymentAction;
-use App\Actions\Purchases\CreateVendorBillAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
-use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\DataTransferObjects\Sales\CreateInvoiceDTO;
-use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use Modules\Payment\Actions\Payments\CreatePaymentAction;
+use Modules\Purchase\Actions\Purchases\CreateVendorBillAction;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 
 
 
 
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Sales\InvoiceStatus;
-use App\Models\Invoice;
-use App\Services\AdjustmentDocumentService;
-use App\Services\InvoiceService;
-
-use App\Services\VendorBillService;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Inventory\Services\AdjustmentDocumentService;
+use Modules\Sales\Services\InvoiceService;
+use Modules\Purchase\Services\VendorBillService;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
+use Modules\Payment\Services\PaymentService;
 use Brick\Money\Money;
 use Modules\Inventory\Models\AdjustmentDocument;
 use Tests\Traits\WithConfiguredCompany;

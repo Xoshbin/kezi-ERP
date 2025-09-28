@@ -12,7 +12,7 @@ use Modules\Accounting\Models\Account;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Purchase\Models\VendorBill;
 use Illuminate\Database\Eloquent\Builder;
-use Database\Factories\VendorBillLineFactory;
+use Modules\Purchase\Database\Factories\VendorBillLineFactory;
 use Modules\Accounting\Models\AnalyticAccount;
 use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -73,6 +73,11 @@ class VendorBillLine extends Model
 {
     /** @use HasFactory<VendorBillLineFactory> */
     use HasFactory;
+
+    protected static function newFactory(): VendorBillLineFactory
+    {
+        return \Modules\Purchase\Database\Factories\VendorBillLineFactory::new();
+    }
 
     /**
      * The database table associated with the model.

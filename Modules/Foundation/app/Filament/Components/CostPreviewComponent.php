@@ -22,7 +22,7 @@ class CostPreviewComponent
      */
     public static function forProductLine(string $productFieldName = 'product_id', string $quantityFieldName = 'quantity'): View
     {
-        return View::make('filament.components.cost-preview')
+        return View::make('foundation::filament.components.cost-preview')
             ->viewData(function ($get) use ($productFieldName, $quantityFieldName) {
                 $productId = $get($productFieldName);
                 $quantity = $get($quantityFieldName);
@@ -116,7 +116,7 @@ class CostPreviewComponent
      */
     public static function forStockMove(): View
     {
-        return View::make('filament.components.cost-summary')
+        return View::make('foundation::filament.components.cost-summary')
             ->viewData(function ($get) {
                 $productLines = $get('productLines') ?? [];
                 $moveType = $get('move_type');

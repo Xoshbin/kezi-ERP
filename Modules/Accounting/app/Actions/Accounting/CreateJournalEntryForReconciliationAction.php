@@ -7,15 +7,13 @@ use InvalidArgumentException;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Modules\Accounting\Models\JournalEntry;
-use Modules\Accounting\Models\User;
+use App\Models\User;
 use Modules\Payment\Models\Payment;
 use RuntimeException;
 
 class CreateJournalEntryForReconciliationAction
 {
-    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction)
-    {
-    }
+    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 
     public function execute(Payment $payment, User $user): JournalEntry
     {

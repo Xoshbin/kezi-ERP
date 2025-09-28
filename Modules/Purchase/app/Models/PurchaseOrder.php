@@ -372,4 +372,8 @@ class PurchaseOrder extends Model
             $this->save();
         }
     }
+    protected static function newFactory(): \Modules\Purchase\Database\Factories\PurchaseOrderFactory
+    {
+        return \Modules\Purchase\Database\Factories\PurchaseOrderFactory::new();
+    }
 }

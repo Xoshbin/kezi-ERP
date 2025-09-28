@@ -21,7 +21,11 @@ use Modules\Foundation\Exceptions\DeletionNotAllowedException;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillLineAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 
-uses(RefreshDatabase::class, WithConfiguredCompany::class);
+uses(\Tests\TestCase::class, RefreshDatabase::class, WithConfiguredCompany::class);
+
+beforeEach(function () {
+    $this->setupWithConfiguredCompany();
+});
 
 // ======================================================================
 // Test Case 1: Protecting Journal Entry Lines
@@ -175,8 +179,16 @@ test('a posted invoice with lines cannot be deleted', function () {
     ]);
 
     // Act: Confirm the invoice using the service.
-    $this->mock(JournalEntryService::class, function ($mock) {
-        $mock->shouldReceive('post')->once();
+    // The current architecture uses an Action to create the journal entry; mock it accordingly
+    $this->mock(\Modules\Accounting\Actions\Accounting\CreateJournalEntryForInvoiceAction::class, function ($mock) {
+        $mock->shouldReceive('execute')->once()->andReturn(
+            \Modules\Accounting\Models\JournalEntry::factory()->create([
+                'company_id' => test()->company->id,
+                'currency_id' => test()->company->currency_id,
+                'total_debit' => 0,
+                'total_credit' => 0,
+            ])
+        );
     });
     $this->mock(StockMoveService::class);
     app(InvoiceService::class)->confirm($invoice, $this->user);
