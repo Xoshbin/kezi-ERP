@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Company;
+use App\Models\Company;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Accounting\Models\JournalEntryLine;
 use Modules\Foundation\Models\Currency;
@@ -20,8 +20,7 @@ class CreateJournalEntryAction
     public function __construct(
         private readonly \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         private readonly \Modules\Foundation\Services\CurrencyConverterService $currencyConverter,
-    ) {
-    }
+    ) {}
 
     public function execute(CreateJournalEntryDTO $dto): JournalEntry
     {

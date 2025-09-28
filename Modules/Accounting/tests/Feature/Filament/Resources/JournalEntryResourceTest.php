@@ -1,7 +1,6 @@
 <?php
 
 use Carbon\Carbon;
-use RuntimeException;
 use Brick\Money\Money;
 use Filament\Actions\DeleteAction;
 use function Pest\Livewire\livewire;
@@ -417,7 +416,7 @@ it('can create and post capital injection journal entry using Filament interface
     $journalEntry->description = 'Attempted unauthorized update';
 
     expect(fn() => $journalEntry->save())
-        ->toThrow(RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'");
+        ->toThrow(\RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'");
 
     // Verify the description was not changed in the database
     $this->assertDatabaseHas('journal_entries', [
@@ -830,5 +829,5 @@ it('can create multi-currency capital injection journal entry in USD with proper
     // Verify immutability after posting
     $journalEntry->description = 'Attempted unauthorized update';
     expect(fn() => $journalEntry->save())
-        ->toThrow(RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'");
+        ->toThrow(\RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'");
 });

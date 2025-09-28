@@ -5,8 +5,10 @@ namespace Tests\Builders;
 
 
 use App\Models\Company;
-
-use App\Models\StockLocation;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Models\Journal;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Enums\Inventory\StockLocationType;
 
 class CompanyBuilder
 {

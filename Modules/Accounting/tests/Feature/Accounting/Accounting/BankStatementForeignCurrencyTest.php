@@ -1,8 +1,6 @@
 <?php
 
 use Brick\Money\Money;
-use InvalidArgumentException;
-use Modules\Accounting\Models\Journal;
 use Modules\Foundation\Models\Currency;
 use Tests\Traits\WithConfiguredCompany;
 use Modules\Accounting\Models\BankStatement;
@@ -110,7 +108,7 @@ describe('Bank Statement Foreign Currency Transactions', function () {
             partner_id: null,
             foreign_currency_id: $this->usdCurrency->id,
             amount_in_foreign_currency: null // Missing foreign amount
-        ))->toThrow(InvalidArgumentException::class, 'Foreign amount is required when a foreign currency is specified.');
+        ))->toThrow(\InvalidArgumentException::class, 'Foreign amount is required when a foreign currency is specified.');
 
         // Test case 2: Foreign amount provided but no foreign currency
         expect(fn() => new CreateBankStatementLineDTO(
@@ -120,7 +118,7 @@ describe('Bank Statement Foreign Currency Transactions', function () {
             partner_id: null,
             foreign_currency_id: null, // Missing foreign currency
             amount_in_foreign_currency: Money::of(100, 'USD')
-        ))->toThrow(InvalidArgumentException::class, 'Foreign currency is required when a foreign amount is specified.');
+        ))->toThrow(\InvalidArgumentException::class, 'Foreign currency is required when a foreign amount is specified.');
     });
 
     it('allows transactions without foreign currency (same currency as statement)', function () {

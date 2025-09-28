@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\User;
-use RuntimeException;
 use Brick\Money\Money;
 use App\Models\Company;
 use Illuminate\Support\Facades\Log;
@@ -44,7 +43,7 @@ it('throws an exception if the company is missing default accounts', function ()
 
     // Act & Assert
     expect(fn() => $service->reconcile([], [$payment->id], $this->user))
-        ->toThrow(RuntimeException::class, "Company '{$this->company->name}' is missing default bank or outstanding accounts configuration.");
+        ->toThrow(\RuntimeException::class, "Company '{$this->company->name}' is missing default bank or outstanding accounts configuration.");
 });
 
 it('successfully reconciles a payment and a bank statement line', function () {

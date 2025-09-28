@@ -1,6 +1,5 @@
 <?php
 
-use Exception;
 use Carbon\Carbon;
 use App\Models\User;
 use Brick\Money\Money;
@@ -88,11 +87,11 @@ it('rolls back the entire transaction if updating the statement line fails', fun
 
     // Mock the DB transaction to fail
     DB::shouldReceive('transaction')->once()->andReturnUsing(function ($callback) {
-        throw new Exception('DB error');
+        throw new \Exception('DB error');
     });
 
     // Act & Assert
-    $this->expectException(Exception::class);
+    $this->expectException(\Exception::class);
     $this->expectExceptionMessage('DB error');
 
     (app(CreateJournalEntryForStatementLineAction::class))->execute($dto);

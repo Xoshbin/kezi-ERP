@@ -1,7 +1,6 @@
 <?php
 
 use Carbon\Carbon;
-use RuntimeException;
 use Brick\Money\Money;
 use Modules\Payment\Models\Payment;
 use Modules\Accounting\Models\Account;
@@ -114,7 +113,7 @@ describe('BankReconciliationService', function () {
             [$bankLine->id],
             [$payment->id],
             $this->user
-        ))->toThrow(RuntimeException::class, 'Bank statement lines total does not match payments total');
+        ))->toThrow(\RuntimeException::class, 'Bank statement lines total does not match payments total');
     });
 
     it('handles outbound payments correctly in reconciliation', function () {
@@ -339,7 +338,7 @@ describe('Multi-Currency Bank Reconciliation', function () {
             [$bankLine->id],
             [$payment->id],
             $this->user
-        ))->toThrow(RuntimeException::class, 'Bank statement lines total does not match payments total');
+        ))->toThrow(\RuntimeException::class, 'Bank statement lines total does not match payments total');
     });
 
     it('handles multiple cross-currency payments correctly', function () {
