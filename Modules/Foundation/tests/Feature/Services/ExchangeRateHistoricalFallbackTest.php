@@ -1,7 +1,6 @@
 <?php
 
 use Carbon\Carbon;
-use ReflectionClass;
 use Brick\Money\Money;
 use Modules\Sales\Models\Invoice;
 use Modules\Product\Models\Product;
@@ -60,7 +59,7 @@ describe('Exchange Rate Historical Fallback', function () {
         $service = app(VendorBillService::class);
 
         // Use reflection to test the protected method
-        $reflection = new ReflectionClass($service);
+        $reflection = new \ReflectionClass($service);
         $method = $reflection->getMethod('processMultiCurrencyAmounts');
         $method->setAccessible(true);
 
@@ -92,7 +91,7 @@ describe('Exchange Rate Historical Fallback', function () {
         $service = app(InvoiceService::class);
 
         // Use reflection to test the protected method
-        $reflection = new ReflectionClass($service);
+        $reflection = new \ReflectionClass($service);
         $method = $reflection->getMethod('processMultiCurrencyAmounts');
         $method->setAccessible(true);
 
@@ -127,7 +126,7 @@ describe('Exchange Rate Historical Fallback', function () {
         $service = app(VendorBillService::class);
 
         // Use reflection to test the protected method
-        $reflection = new ReflectionClass($service);
+        $reflection = new \ReflectionClass($service);
         $method = $reflection->getMethod('processMultiCurrencyAmounts');
         $method->setAccessible(true);
 
@@ -158,7 +157,7 @@ describe('Exchange Rate Historical Fallback', function () {
         $service = app(VendorBillService::class);
 
         // Use reflection to test the protected method
-        $reflection = new ReflectionClass($service);
+        $reflection = new \ReflectionClass($service);
         $method = $reflection->getMethod('processMultiCurrencyAmounts');
         $method->setAccessible(true);
 

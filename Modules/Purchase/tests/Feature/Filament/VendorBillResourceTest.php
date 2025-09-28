@@ -1,7 +1,5 @@
 <?php
 
-use Exception;
-use RuntimeException;
 use Brick\Money\Money;
 use Modules\Product\Models\Product;
 use function Pest\Livewire\livewire;
@@ -80,7 +78,7 @@ describe('Vendor Bill Confirmation Business Rules', function () {
         // Assert that it throws a validation error with an appropriate message
         expect(function () use ($vendorBillService, $vendorBill) {
             $vendorBillService->confirm($vendorBill, $this->user);
-        })->toThrow(RuntimeException::class, __('vendor_bill.validation_no_line_items'));
+        })->toThrow(\RuntimeException::class, __('vendor_bill.validation_no_line_items'));
 
         // Verify the bill was NOT confirmed
         $vendorBill->refresh();
@@ -199,7 +197,7 @@ describe('Vendor Bill Confirmation Business Rules', function () {
 
         expect(function () use ($vendorBillService, $vendorBill) {
             $vendorBillService->confirm($vendorBill, $this->user);
-        })->toThrow(RuntimeException::class, __('vendor_bill.validation_zero_total_amount'));
+        })->toThrow(\RuntimeException::class, __('vendor_bill.validation_zero_total_amount'));
     });
 
     it('enables confirm action when vendor bill has valid line items', function () {
@@ -332,7 +330,7 @@ describe('Vendor Bill Confirmation Business Rules', function () {
             expect($vendorBill->journalEntry)->not->toBeNull();
         } catch (Exception $e) {
             // If service layer fails, we need to understand why
-            throw new Exception("Service layer confirmation failed: " . $e->getMessage());
+            throw new \Exception("Service layer confirmation failed: " . $e->getMessage());
         }
 
         // Create a fresh vendor bill for UI test (can't reset posted bills due to constraints)

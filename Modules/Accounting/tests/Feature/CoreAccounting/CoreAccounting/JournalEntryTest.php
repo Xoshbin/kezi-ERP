@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\User;
-use RuntimeException;
 use Brick\Money\Money;
 use App\Models\Company;
 use Tests\Traits\MocksTime;
@@ -143,7 +142,7 @@ test('a posted journal entry is immutable and cannot be updated', function () {
     // Assert: Expect the model's internal 'updating' event listener to throw a RuntimeException.
     // This correctly tests the application's actual data integrity guard.
     expect(fn() => $journalEntry->save())
-        ->toThrow(RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'.");
+        ->toThrow(\RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'.");
 
     // Assert: Double-check that the description was not changed in the database.
     $this->assertDatabaseHas('journal_entries', [
