@@ -18,6 +18,7 @@ use Modules\Accounting\Models\AnalyticAccount;
 use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Accounting\Database\Factories\JournalEntryLineFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Modules\Foundation\Casts\OriginalCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -70,6 +71,12 @@ class JournalEntryLine extends Model
 {
     /** @use HasFactory<JournalEntryLineFactory> */
     use HasFactory;
+
+    protected static function newFactory(): \Modules\Accounting\Database\Factories\JournalEntryLineFactory
+    {
+        return \Modules\Accounting\Database\Factories\JournalEntryLineFactory::new();
+    }
+
 
     /**
      * The database table associated with the model.

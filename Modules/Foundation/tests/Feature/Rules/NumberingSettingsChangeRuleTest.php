@@ -1,5 +1,6 @@
 <?php
 
+
 use Modules\Sales\Models\Invoice;
 use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;

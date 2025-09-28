@@ -57,7 +57,7 @@ describe('BankTransactionsTable Livewire Component', function () {
     it('can mount with bank statement', function () {
         Livewire::test(BankTransactionsTable::class, ['bankStatement' => $this->bankStatement])
             ->assertSet('bankStatement.id', $this->bankStatement->id)
-            ->assertViewIs('livewire.accounting.bank-transactions-table');
+            ->assertViewIs('accounting::livewire.accounting.bank-transactions-table');
     });
 
     it('displays only unreconciled bank statement lines', function () {

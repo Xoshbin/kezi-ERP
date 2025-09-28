@@ -1,4 +1,6 @@
 <x-filament-panels::page>
+    <h1 class="text-2xl font-bold mb-4">{{ $this->getHeading() }}</h1>
+
     <div class="space-y-6">
         {{-- Filters Form --}}
         {{ $this->form }}

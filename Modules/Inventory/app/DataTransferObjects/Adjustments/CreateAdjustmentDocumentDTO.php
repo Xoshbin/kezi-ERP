@@ -2,7 +2,7 @@
 
 namespace Modules\Inventory\DataTransferObjects\Adjustments;
 
-
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType as AdjustmentDocumentTypeEnum;
 
 class CreateAdjustmentDocumentDTO
 {
@@ -11,7 +11,7 @@ class CreateAdjustmentDocumentDTO
      */
     public function __construct(
         public readonly int $company_id,
-        public readonly AdjustmentDocumentType $type,
+        public readonly AdjustmentDocumentTypeEnum $type,
         public readonly string $date,
         public readonly string $reference_number,
         public readonly string $reason,

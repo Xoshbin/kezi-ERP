@@ -54,4 +54,8 @@ class InventoryCostLayer extends Model
     {
         return $this->morphTo();
     }
+    protected static function newFactory(): \Modules\Inventory\Database\Factories\InventoryCostLayerFactory
+    {
+        return \Modules\Inventory\Database\Factories\InventoryCostLayerFactory::new();
+    }
 }

@@ -467,4 +467,8 @@ class Employee extends Model
 
         return $prefix . $year . str_pad((string) $nextNumber, 4, '0', STR_PAD_LEFT);
     }
+    protected static function newFactory()
+    {
+        return \Modules\HR\Database\Factories\EmployeeFactory::new();
+    }
 }

@@ -14,6 +14,11 @@ use Illuminate\Database\Eloquent\Collection;
 use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Modules\Payment\Actions\Payments\CreatePaymentAction;
+
 class CreatePayment extends CreateRecord
 {
     protected static string $resource = PaymentResource::class;

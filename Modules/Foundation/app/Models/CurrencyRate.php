@@ -8,7 +8,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Foundation\Models\Currency;
 use Illuminate\Database\Eloquent\Builder;
-use Database\Factories\CurrencyRateFactory;
+use Modules\Foundation\Database\Factories\CurrencyRateFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -42,6 +42,12 @@ class CurrencyRate extends Model
 {
     /** @use HasFactory<CurrencyRateFactory> */
     use HasFactory;
+
+
+    protected static function newFactory(): \Modules\Foundation\Database\Factories\CurrencyRateFactory
+    {
+        return \Modules\Foundation\Database\Factories\CurrencyRateFactory::new();
+    }
 
     /**
      * The table associated with the model.

@@ -1,8 +1,8 @@
 <?php
 
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Sales\InvoiceStatus;
-use App\Models\Invoice;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
 
 describe('Company Numbering Settings', function () {

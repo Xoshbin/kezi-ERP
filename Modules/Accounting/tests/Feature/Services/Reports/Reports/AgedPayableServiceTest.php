@@ -9,6 +9,10 @@ use Modules\Foundation\Models\Partner;
 use Modules\Payment\Models\Payment;
 use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Payment\Models\PaymentDocumentLink;
+
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

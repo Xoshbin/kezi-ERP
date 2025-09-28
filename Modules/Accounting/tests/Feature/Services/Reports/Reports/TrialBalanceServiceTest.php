@@ -6,6 +6,9 @@ use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\JournalEntryLine;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

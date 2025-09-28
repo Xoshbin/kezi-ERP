@@ -27,7 +27,7 @@ class InventoryTurnoverReport extends Page implements HasForms
     use InteractsWithForms;
     protected static ?string $cluster = InventoryCluster::class;
 
-    protected string $view = 'filament.clusters.inventory.pages.inventory-turnover-report';
+    protected string $view = 'inventory::filament.clusters.inventory.pages.inventory-turnover-report';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
 

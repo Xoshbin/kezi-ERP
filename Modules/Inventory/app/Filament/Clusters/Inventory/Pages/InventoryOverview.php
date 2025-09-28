@@ -18,7 +18,7 @@ class InventoryOverview extends Page
 
     protected static ?int $navigationSort = 10;
 
-    protected string $view = 'filament.clusters.inventory.pages.inventory-overview';
+    protected string $view = 'inventory::filament.clusters.inventory.pages.inventory-overview';
 
     public static function getNavigationLabel(): string
     {

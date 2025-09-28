@@ -6,6 +6,7 @@ namespace Modules\Payment\Database\Factories;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Payment\Models\Payment;
+use Modules\Payment\Models\PaymentDocumentLink;
 use Modules\Purchase\Models\VendorBill;
 use Modules\Sales\Models\Invoice;
 
@@ -14,6 +15,7 @@ use Modules\Sales\Models\Invoice;
  */
 class PaymentDocumentLinkFactory extends Factory
 {
+    protected $model = PaymentDocumentLink::class;
     /**
      * Define the model's default state.
      *

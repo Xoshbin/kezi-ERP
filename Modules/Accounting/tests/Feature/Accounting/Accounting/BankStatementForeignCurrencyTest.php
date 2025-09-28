@@ -4,6 +4,7 @@ use Brick\Money\Money;
 use Modules\Foundation\Models\Currency;
 use Tests\Traits\WithConfiguredCompany;
 use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\Journal;
 use Modules\Accounting\Enums\Accounting\JournalType;
 use Modules\Accounting\Actions\Accounting\CreateBankStatementAction;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateBankStatementDTO;

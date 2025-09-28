@@ -29,7 +29,7 @@ class ReorderStatusReport extends Page implements HasForms
     use InteractsWithForms;
     protected static ?string $cluster = InventoryCluster::class;
 
-    protected string $view = 'filament.clusters.inventory.pages.reorder-status-report';
+    protected string $view = 'inventory::filament.clusters.inventory.pages.reorder-status-report';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-exclamation-triangle';
 

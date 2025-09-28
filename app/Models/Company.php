@@ -17,7 +17,7 @@ use Modules\Inventory\Models\StockLocation;
 use Modules\Accounting\Models\Journal;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Accounting\Models\Tax;
-use Modules\Purchase\Enums\Purchase\VendorBillStatus;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 
 /**
  * Class Company
