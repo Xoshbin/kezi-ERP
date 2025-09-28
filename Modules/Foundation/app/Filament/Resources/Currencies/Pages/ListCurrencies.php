@@ -1,12 +1,12 @@
 <?php
 
-namespace Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies\Pages;
+namespace Modules\Foundation\Filament\Resources\Currencies\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\ListRecords\Concerns\Translatable;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies\CurrencyResource;
+use Modules\Foundation\Filament\Resources\Currencies\CurrencyResource;
 
 class ListCurrencies extends ListRecords
 {

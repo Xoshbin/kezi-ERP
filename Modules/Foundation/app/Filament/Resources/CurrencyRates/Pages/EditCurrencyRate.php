@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\Pages;
+namespace Modules\Foundation\Filament\Resources\CurrencyRates\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\CurrencyRateResource;
+use Modules\Foundation\Filament\Resources\CurrencyRates\CurrencyRateResource;
 
 class EditCurrencyRate extends EditRecord
 {

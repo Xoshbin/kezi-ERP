@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Accounting\Filament\Clusters\Settings\Resources\Taxes;
+namespace Modules\Accounting\Filament\Resources\Taxes;
 
 use BackedEnum;
 use NumberFormatter;
@@ -23,9 +23,9 @@ use App\Filament\Clusters\Settings\SettingsCluster;
 use Modules\Accounting\Enums\Accounting\AccountType;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
-use Modules\Accounting\Filament\Clusters\Settings\Resources\Taxes\Pages\EditTax;
-use Modules\Accounting\Filament\Clusters\Settings\Resources\Taxes\Pages\CreateTax;
-use Modules\Accounting\Filament\Clusters\Settings\Resources\Taxes\Pages\ListTaxes;
+use Modules\Accounting\Filament\Resources\Taxes\Pages\EditTax;
+use Modules\Accounting\Filament\Resources\Taxes\Pages\CreateTax;
+use Modules\Accounting\Filament\Resources\Taxes\Pages\ListTaxes;
 
 class TaxResource extends Resource
 {

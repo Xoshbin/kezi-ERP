@@ -8,10 +8,10 @@ use Modules\Foundation\Models\CurrencyRate;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Filament\Clusters\Settings\SettingsCluster;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\CurrencyRateResource;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\EditCurrencyRate;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\ListCurrencyRates;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\CreateCurrencyRate;
+use Modules\Foundation\Filament\Resources\CurrencyRates\CurrencyRateResource;
+use Modules\Foundation\Filament\Resources\CurrencyRates\Pages\EditCurrencyRate;
+use Modules\Foundation\Filament\Resources\CurrencyRates\Pages\ListCurrencyRates;
+use Modules\Foundation\Filament\Resources\CurrencyRates\Pages\CreateCurrencyRate;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

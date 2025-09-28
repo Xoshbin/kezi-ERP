@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts\RelationManagers;
+namespace Modules\Accounting\Filament\Resources\Accounts\RelationManagers;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -53,7 +53,7 @@ class JournalEntryLinesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('description')
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['journalEntry.company.currency']))
+            ->modifyQueryUsing(fn(Builder $query) => $query->with(['journalEntry.company.currency']))
             ->columns([
                 TextColumn::make('journalEntry.reference')->label(__('account.journal_entry_lines.journal_entry')),
                 TextColumn::make('debit')->label(__('account.journal_entry_lines.debit')),

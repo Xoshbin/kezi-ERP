@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Foundation\Filament\Clusters\Settings\Resources\PaymentTermResource\Pages;
+namespace Modules\Foundation\Filament\Resources\PaymentTermResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
 use Modules\Foundation\Filament\Actions\DocsAction;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\PaymentTermResource;
+use Modules\Foundation\Filament\Resources\PaymentTermResource;
 
 class CreatePaymentTerm extends CreateRecord
 {

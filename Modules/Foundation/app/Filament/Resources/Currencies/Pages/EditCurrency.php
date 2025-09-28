@@ -1,12 +1,12 @@
 <?php
 
-namespace Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies\Pages;
+namespace Modules\Foundation\Filament\Resources\Currencies\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies\CurrencyResource;
+use Modules\Foundation\Filament\Resources\Currencies\CurrencyResource;
 
 class EditCurrency extends EditRecord
 {

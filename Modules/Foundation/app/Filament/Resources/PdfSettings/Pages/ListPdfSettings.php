@@ -1,9 +1,9 @@
 <?php
 
-namespace Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\Pages;
+namespace Modules\Foundation\Filament\Resources\PdfSettings\Pages;
 
 use Filament\Resources\Pages\ListRecords;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\PdfSettingsResource;
+use Modules\Foundation\Filament\Resources\PdfSettings\PdfSettingsResource;
 
 class ListPdfSettings extends ListRecords
 {
