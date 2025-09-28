@@ -14,6 +14,8 @@ use Modules\Inventory\Enums\Inventory\ValuationMethod;
  */
 class ProductFactory extends Factory
 {
+    protected $model = \Modules\Product\Models\Product::class;
+
     /**
      * Define the model's default state.
      *

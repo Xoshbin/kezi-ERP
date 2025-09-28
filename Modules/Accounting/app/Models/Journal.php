@@ -5,7 +5,7 @@ namespace Modules\Accounting\Models;
 use Eloquent;
 use App\Models\Company;
 use Illuminate\Support\Carbon;
-use Database\Factories\JournalFactory;
+
 use Modules\Accounting\Models\Account;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Foundation\Models\Currency;
@@ -56,6 +56,11 @@ class Journal extends Model
 {
     use HasFactory;
     use HasTranslations;
+
+    protected static function newFactory(): \Modules\Accounting\Database\Factories\JournalFactory
+    {
+        return \Modules\Accounting\Database\Factories\JournalFactory::new();
+    }
 
     /** @var array<int, string> */
     public array $translatable = ['name'];

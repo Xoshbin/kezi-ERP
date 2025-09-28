@@ -10,7 +10,7 @@ use App\Models\Company;
 use Illuminate\Support\Carbon;
 use Modules\Sales\Models\Invoice;
 
-use Database\Factories\PaymentFactory;
+
 use Modules\Accounting\Models\Journal;
 use Modules\Foundation\Models\Partner;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +24,7 @@ use Modules\Payment\Enums\Payments\PaymentType;
 use Modules\Payment\Models\PaymentDocumentLink;
 use Modules\Accounting\Models\BankStatementLine;
 use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\Enums\Payments\PaymentStatus;
 use Modules\Foundation\Observers\AuditLogObserver;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
@@ -258,5 +259,10 @@ class Payment extends Model
     {
         return $this->hasMany(JournalEntry::class, 'source_id')
             ->where('source_type', self::class);
+    }
+
+    protected static function newFactory(): \Modules\Payment\Database\Factories\PaymentFactory
+    {
+        return \Modules\Payment\Database\Factories\PaymentFactory::new();
     }
 }

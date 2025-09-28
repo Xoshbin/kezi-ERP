@@ -97,4 +97,9 @@ class StockMove extends Model
     {
         return $this->hasMany(StockMoveValuation::class);
     }
+
+    protected static function newFactory(): \Modules\Inventory\Database\Factories\StockMoveFactory
+    {
+        return \Modules\Inventory\Database\Factories\StockMoveFactory::new();
+    }
 }

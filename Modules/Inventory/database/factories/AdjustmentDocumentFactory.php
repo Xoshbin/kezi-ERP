@@ -17,6 +17,8 @@ use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
  */
 class AdjustmentDocumentFactory extends Factory
 {
+    protected $model = \Modules\Inventory\Models\AdjustmentDocument::class;
+
     /**
      * Define the model's default state.
      *

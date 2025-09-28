@@ -6,7 +6,8 @@ use Eloquent;
 use Brick\Money\Money;
 use App\Models\Company;
 use Illuminate\Support\Carbon;
-use Database\Factories\AssetFactory;
+use Modules\Accounting\Database\Factories\AssetFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Accounting\Models\Account;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Foundation\Models\Currency;
@@ -75,6 +76,11 @@ class Asset extends Model
 {
     /** @use HasFactory<AssetFactory> */
     use HasFactory;
+
+    protected static function newFactory(): Factory
+    {
+        return AssetFactory::new();
+    }
 
     /**
      * The table associated with the model.

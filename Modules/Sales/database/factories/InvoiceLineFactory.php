@@ -9,6 +9,8 @@ use Modules\Sales\Models\Invoice;
 
 class InvoiceLineFactory extends Factory
 {
+    protected $model = \Modules\Sales\Models\InvoiceLine::class;
+
     public function definition(): array
     {
         $quantity = $this->faker->numberBetween(1, 5);

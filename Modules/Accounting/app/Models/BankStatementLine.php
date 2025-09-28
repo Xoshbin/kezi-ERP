@@ -13,7 +13,7 @@ use Modules\Foundation\Models\Currency;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Accounting\Models\BankStatement;
-use Database\Factories\BankStatementLineFactory;
+use Modules\Accounting\Database\Factories\BankStatementLineFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -58,6 +58,11 @@ class BankStatementLine extends Model
 {
     /** @use HasFactory<BankStatementLineFactory> */
     use HasFactory;
+
+    protected static function newFactory(): \Modules\Accounting\Database\Factories\BankStatementLineFactory
+    {
+        return \Modules\Accounting\Database\Factories\BankStatementLineFactory::new();
+    }
 
     protected $fillable = [
         'company_id',

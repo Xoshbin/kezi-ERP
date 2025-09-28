@@ -12,7 +12,9 @@ use Modules\Foundation\Models\Partner;
 use Modules\Foundation\Models\Currency;
 use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
+uses(Tests\TestCase::class, RefreshDatabase::class);
 
 beforeEach(function () {
     $this->user = User::factory()->create();

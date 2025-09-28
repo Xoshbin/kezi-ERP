@@ -12,6 +12,8 @@ use Modules\Accounting\Models\BankStatementLine;
  */
 class BankStatementLineFactory extends Factory
 {
+    protected $model = \Modules\Accounting\Models\BankStatementLine::class;
+
     /**
      * Define the model's default state.
      *

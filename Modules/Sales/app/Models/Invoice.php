@@ -397,4 +397,8 @@ class Invoice extends Model
         $this->total_tax = $totalTax;
         $this->total_amount = $subtotal->plus($totalTax);
     }
+    protected static function newFactory(): \Modules\Sales\Database\Factories\InvoiceFactory
+    {
+        return \Modules\Sales\Database\Factories\InvoiceFactory::new();
+    }
 }

@@ -13,7 +13,7 @@ use Modules\Product\Models\Product;
 use Modules\Accounting\Models\Account;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Database\Factories\InvoiceLineFactory;
+use Modules\Sales\Database\Factories\InvoiceLineFactory;
 use Modules\Accounting\Models\AnalyticAccount;
 use Modules\Sales\Observers\InvoiceLineObserver;
 use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
@@ -66,6 +66,11 @@ class InvoiceLine extends Model
     // Leveraging Laravel's HasFactory trait for simplified model factory creation in testing/seeding [5, 6].
     /** @use HasFactory<InvoiceLineFactory> */
     use HasFactory;
+
+    protected static function newFactory(): \Modules\Sales\Database\Factories\InvoiceLineFactory
+    {
+        return \Modules\Sales\Database\Factories\InvoiceLineFactory::new();
+    }
 
     /**
      * The table associated with the model.

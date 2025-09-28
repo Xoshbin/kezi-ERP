@@ -14,6 +14,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Inventory\Models\StockLocation;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\Tax;
+use Modules\Purchase\Enums\Purchase\VendorBillStatus;
 
 /**
  * Class Company

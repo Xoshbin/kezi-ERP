@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class PartnerFactory extends Factory
 {
+    protected $model = \Modules\Foundation\Models\Partner::class;
+
     /**
      * Define the model's default state.
      *

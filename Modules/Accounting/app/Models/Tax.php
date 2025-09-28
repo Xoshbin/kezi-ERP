@@ -5,7 +5,7 @@ namespace Modules\Accounting\Models;
 use Eloquent;
 use App\Models\Company;
 use Illuminate\Support\Carbon;
-use Database\Factories\TaxFactory;
+
 use Modules\Sales\Models\InvoiceLine;
 use Modules\Accounting\Models\Account;
 use Illuminate\Database\Eloquent\Model;
@@ -61,6 +61,11 @@ class Tax extends Model
 {
     use HasFactory;
     use HasTranslations;
+
+    protected static function newFactory(): \Modules\Accounting\Database\Factories\TaxFactory
+    {
+        return \Modules\Accounting\Database\Factories\TaxFactory::new();
+    }
 
     /** @var array<int, string> */
     public array $translatable = ['name', 'label_on_invoices'];

@@ -112,4 +112,8 @@ class StockMoveProductLine extends Model
     {
         return $this->getRemainingQuantity() <= 0;
     }
+    protected static function newFactory(): \Modules\Inventory\Database\Factories\StockMoveProductLineFactory
+    {
+        return \Modules\Inventory\Database\Factories\StockMoveProductLineFactory::new();
+    }
 }

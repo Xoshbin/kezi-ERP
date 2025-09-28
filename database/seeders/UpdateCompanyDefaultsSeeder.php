@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Account;
 use App\Models\Company;
 
+use Modules\Accounting\Models\Journal;
 use Exception;
 use Illuminate\Database\Seeder;
 
