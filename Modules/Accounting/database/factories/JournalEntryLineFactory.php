@@ -9,6 +9,13 @@ use Modules\Accounting\Models\JournalEntry;
 
 class JournalEntryLineFactory extends Factory
 {
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var class-string<\Modules\Accounting\Models\JournalEntryLine>
+     */
+    protected $model = \Modules\Accounting\Models\JournalEntryLine::class;
+
     public function definition(): array
     {
         $isDebit = $this->faker->boolean;

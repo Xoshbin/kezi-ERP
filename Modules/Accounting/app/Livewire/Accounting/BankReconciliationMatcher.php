@@ -148,6 +148,6 @@ class BankReconciliationMatcher extends Component
 
     public function render(): View
     {
-        return view('livewire.accounting.bank-reconciliation-matcher');
+        return view('accounting::livewire.accounting.bank-reconciliation-matcher');
     }
 }

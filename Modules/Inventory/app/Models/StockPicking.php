@@ -59,4 +59,9 @@ class StockPicking extends Model
     {
         return $this->hasMany(StockMove::class, 'picking_id');
     }
+
+    protected static function newFactory(): \Modules\Inventory\Database\Factories\StockPickingFactory
+    {
+        return \Modules\Inventory\Database\Factories\StockPickingFactory::new();
+    }
 }

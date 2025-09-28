@@ -22,7 +22,7 @@ class ViewGeneralLedger extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
-    protected string $view = 'filament.pages.reports.view-general-ledger';
+    protected string $view = 'accounting::filament.pages.reports.view-general-ledger';
 
     public static function shouldRegisterNavigation(): bool
     {
@@ -96,7 +96,7 @@ class ViewGeneralLedger extends Page
                                     'searchFields' => ['name', 'code'],
                                     'labelField' => 'name',
                                     'searchLocales' => $searchLocales,
-                                    'queryModifier' => fn ($query) => $query->where('company_id', $tenant?->getKey()),
+                                    'queryModifier' => fn($query) => $query->where('company_id', $tenant?->getKey()),
                                     'limit' => 50,
                                 ]);
 
@@ -160,7 +160,7 @@ class ViewGeneralLedger extends Page
 
         // Convert to array format that Livewire can handle
         $this->reportData = [
-            'accounts' => $report->accounts->map(fn ($account) => [
+            'accounts' => $report->accounts->map(fn($account) => [
                 'accountId' => $account->accountId,
                 'accountCode' => $account->accountCode,
                 'accountName' => $account->accountName,
@@ -168,7 +168,7 @@ class ViewGeneralLedger extends Page
                 'openingBalanceAmount' => $account->openingBalance->getAmount()->toFloat(),
                 'closingBalance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($account->closingBalance),
                 'closingBalanceAmount' => $account->closingBalance->getAmount()->toFloat(),
-                'transactionLines' => $account->transactionLines->map(fn ($line) => [
+                'transactionLines' => $account->transactionLines->map(fn($line) => [
                     'journalEntryId' => $line->journalEntryId,
                     'date' => $line->date->format('Y-m-d'),
                     'reference' => $line->reference,

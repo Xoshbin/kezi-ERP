@@ -23,6 +23,10 @@ use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use Modules\Inventory\DataTransferObjects\Inventory\CreateInventoryAdjustmentDTO;
 use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
 
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use Modules\Inventory\Services\Inventory\StockQuantService;
+use Modules\Inventory\Services\Inventory\StockMoveService;
+
 class CreateInventoryAdjustmentAction
 {
     public function __construct(

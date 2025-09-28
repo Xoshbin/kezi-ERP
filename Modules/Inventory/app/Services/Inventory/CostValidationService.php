@@ -9,6 +9,8 @@ use Modules\Inventory\Services\Inventory\ProductCostAnalysisService;
 use Modules\Inventory\DataTransferObjects\Inventory\CostPreviewResult;
 use Modules\Inventory\DataTransferObjects\Inventory\CostValidationResult;
 
+use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
+
 /**
  * Service for validating cost availability and providing cost previews
  *
@@ -149,7 +151,7 @@ class CostValidationService
     public function getSuggestedActions(Product $product): array
     {
         // Use the new analysis service for context-aware suggestions
-        $analysisService = app(\App\Services\Inventory\ProductCostAnalysisService::class);
+        $analysisService = app(\Modules\Inventory\Services\Inventory\ProductCostAnalysisService::class);
         return $analysisService->getContextualCostSuggestions($product);
     }
 }

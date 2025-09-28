@@ -12,13 +12,13 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
-use Modules\Accounting\Models\Company;
+use App\Models\Company;
 
 class ViewTaxReport extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
-    protected string $view = 'filament.pages.reports.view-tax-report';
+    protected string $view = 'accounting::filament.pages.reports.view-tax-report';
 
     public static function shouldRegisterNavigation(): bool
     {

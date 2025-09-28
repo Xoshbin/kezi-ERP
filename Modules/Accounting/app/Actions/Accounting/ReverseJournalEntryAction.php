@@ -9,14 +9,13 @@ use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Modules\Accounting\Enums\Accounting\JournalEntryState;
 use Modules\Accounting\Models\BankStatementLine;
 use Modules\Accounting\Models\JournalEntry;
-use Modules\Accounting\Models\User;
+use App\Models\User;
 
 class ReverseJournalEntryAction
 {
     public function __construct(
         private readonly CreateJournalEntryAction $createJournalEntryAction,
-    ) {
-    }
+    ) {}
 
     public function execute(JournalEntry $journalEntry, string $reason, User $user): JournalEntry
     {

@@ -21,7 +21,7 @@ class ViewPartnerLedger extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
-    protected string $view = 'filament.pages.reports.view-partner-ledger';
+    protected string $view = 'accounting::filament.pages.reports.view-partner-ledger';
 
     public static function shouldRegisterNavigation(): bool
     {
@@ -148,7 +148,7 @@ class ViewPartnerLedger extends Page
             'openingBalanceAmount' => $report->openingBalance->getAmount()->toFloat(),
             'closingBalance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->closingBalance),
             'closingBalanceAmount' => $report->closingBalance->getAmount()->toFloat(),
-            'transactionLines' => $report->transactionLines->map(fn ($line) => [
+            'transactionLines' => $report->transactionLines->map(fn($line) => [
                 'date' => $line->date->format('Y-m-d'),
                 'reference' => $line->reference,
                 'transactionType' => $line->transactionType,

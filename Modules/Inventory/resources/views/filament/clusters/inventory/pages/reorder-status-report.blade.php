@@ -1,4 +1,6 @@
 <x-filament-panels::page>
+    <h1 class="text-2xl font-bold mb-4">{{ $this->getHeading() }}</h1>
+
     <div class="space-y-6">
         {{-- Filters Form --}}
         {{ $this->form }}
@@ -119,7 +121,7 @@
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                         {{ __('inventory_reports.reorder.table.title') }}
                     </h3>
-                    
+
                     <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                         <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-600">
                             <thead class="bg-gray-50 dark:bg-gray-800">

@@ -19,7 +19,7 @@ class ViewProfitAndLoss extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
 
-    protected string $view = 'filament.pages.reports.view-profit-and-loss';
+    protected string $view = 'accounting::filament.pages.reports.view-profit-and-loss';
 
     public static function shouldRegisterNavigation(): bool
     {
@@ -109,14 +109,14 @@ class ViewProfitAndLoss extends Page
 
         // Convert to array format that Livewire can handle
         $this->reportData = [
-            'revenueLines' => $report->revenueLines->map(fn ($line) => [
+            'revenueLines' => $report->revenueLines->map(fn($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
                 'balance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
-            'expenseLines' => $report->expenseLines->map(fn ($line) => [
+            'expenseLines' => $report->expenseLines->map(fn($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,

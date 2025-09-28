@@ -5,7 +5,7 @@ namespace Modules\Accounting\Tests\Feature\Filament\Pages;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports\Dashboard;
-use Modules\Accounting\Models\User;
+use App\Models\User;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

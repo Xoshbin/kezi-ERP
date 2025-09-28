@@ -3,6 +3,7 @@
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Foundation\Models\Currency;
+use App\Models\Company;
 
 use Modules\HR\Models\Employee;
 use Modules\HR\Models\Payroll;
