@@ -1,9 +1,9 @@
 <?php
 
-namespace Modules\Foundation\Filament\Clusters\Settings\Resources\NumberingSettingsResource\Pages;
+namespace Modules\Foundation\Filament\Resources\NumberingSettingsResource\Pages;
 
 use Filament\Resources\Pages\ListRecords;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\NumberingSettingsResource;
+use Modules\Foundation\Filament\Resources\NumberingSettingsResource;
 
 class ListNumberingSettings extends ListRecords
 {

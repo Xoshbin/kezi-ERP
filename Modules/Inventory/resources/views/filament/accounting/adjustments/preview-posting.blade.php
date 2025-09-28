@@ -1,5 +1,5 @@
-@php use Modules\Foundation\Filament\Clusters\Settings\Resources\Accounts\AccountResource; @endphp
-@php use Modules\Foundation\Filament\Clusters\Settings\Resources\Companies\CompanyResource; @endphp
+@php use Modules\Foundation\Filament\Resources\Accounts\AccountResource; @endphp
+@php use Modules\Foundation\Filament\Resources\Companies\CompanyResource; @endphp
 <div>
     @if(!empty($preview['issues']))
         <div class="p-3 mb-3 rounded bg-[var(--color-danger-50)] text-[var(--color-danger-800)]">

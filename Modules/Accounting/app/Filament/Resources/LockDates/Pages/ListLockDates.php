@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates\Pages;
+namespace Modules\Accounting\Filament\Resources\LockDates\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates\LockDateResource;
+use Modules\Accounting\Filament\Resources\LockDates\LockDateResource;
 
 class ListLockDates extends ListRecords
 {

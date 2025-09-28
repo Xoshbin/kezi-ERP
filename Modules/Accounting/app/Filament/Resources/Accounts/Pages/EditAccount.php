@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts\Pages;
+namespace Modules\Accounting\Filament\Resources\Accounts\Pages;
 
 use Exception;
 use Filament\Actions\DeleteAction;
@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\Pages\EditRecord;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
-use Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts\AccountResource;
+use Modules\Accounting\Filament\Resources\Accounts\AccountResource;
 
 class EditAccount extends EditRecord
 {

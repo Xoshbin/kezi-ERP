@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates;
+namespace Modules\Accounting\Filament\Resources\LockDates;
 
 use BackedEnum;
 use Filament\Tables\Table;
@@ -15,9 +15,9 @@ use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\DatePicker;
 use App\Filament\Clusters\Settings\SettingsCluster;
 use Modules\Accounting\Enums\Accounting\LockDateType;
-use Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates\Pages\EditLockDate;
-use Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates\Pages\ListLockDates;
-use Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates\Pages\CreateLockDate;
+use Modules\Accounting\Filament\Resources\LockDates\Pages\EditLockDate;
+use Modules\Accounting\Filament\Resources\LockDates\Pages\ListLockDates;
+use Modules\Accounting\Filament\Resources\LockDates\Pages\CreateLockDate;
 
 class LockDateResource extends Resource
 {

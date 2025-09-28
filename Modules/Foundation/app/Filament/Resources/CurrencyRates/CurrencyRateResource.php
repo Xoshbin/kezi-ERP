@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates;
+namespace Modules\Foundation\Filament\Resources\CurrencyRates;
 
 use BackedEnum;
 use Filament\Tables\Table;
@@ -10,11 +10,11 @@ use Filament\Support\Icons\Heroicon;
 use Modules\Foundation\Models\CurrencyRate;
 use App\Filament\Clusters\Settings\SettingsCluster;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\EditCurrencyRate;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\ListCurrencyRates;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\Pages\CreateCurrencyRate;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\Schemas\CurrencyRateForm;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\Tables\CurrencyRatesTable;
+use Modules\Foundation\Filament\Resources\CurrencyRates\Pages\EditCurrencyRate;
+use Modules\Foundation\Filament\Resources\CurrencyRates\Pages\ListCurrencyRates;
+use Modules\Foundation\Filament\Resources\CurrencyRates\Pages\CreateCurrencyRate;
+use Modules\Foundation\Filament\Resources\CurrencyRates\Schemas\CurrencyRateForm;
+use Modules\Foundation\Filament\Resources\CurrencyRates\Tables\CurrencyRatesTable;
 
 class CurrencyRateResource extends Resource
 {
