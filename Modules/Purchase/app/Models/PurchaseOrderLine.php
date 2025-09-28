@@ -228,4 +228,9 @@ class PurchaseOrderLine extends Model
 
         return $this->getUnitPriceInCompanyCurrency()->multipliedBy($this->quantity);
     }
+
+    protected static function newFactory(): \Modules\Purchase\Database\Factories\PurchaseOrderLineFactory
+    {
+        return \Modules\Purchase\Database\Factories\PurchaseOrderLineFactory::new();
+    }
 }

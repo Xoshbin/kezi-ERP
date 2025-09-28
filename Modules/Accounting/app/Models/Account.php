@@ -7,7 +7,7 @@ use App\Models\Company;
 use Illuminate\Support\Carbon;
 use Modules\Accounting\Models\Tax;
 use Modules\Sales\Models\InvoiceLine;
-use Database\Factories\AccountFactory;
+
 use Illuminate\Database\Eloquent\Model;
 use Modules\Foundation\Models\Currency;
 use Spatie\Translatable\HasTranslations;
@@ -74,8 +74,12 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 #[ObservedBy([\Modules\Accounting\Observers\AccountObserver::class, \Modules\Foundation\Observers\AuditLogObserver::class])] // (to log when accounts are created or deprecated)
 class Account extends Model
 {
-    /** @use HasFactory<AccountFactory> */
     use HasFactory;
+
+    protected static function newFactory(): \Modules\Accounting\Database\Factories\AccountFactory
+    {
+        return \Modules\Accounting\Database\Factories\AccountFactory::new();
+    }
     use HasTranslations;
 
     /** @var array<int, string> */

@@ -81,6 +81,11 @@ class Product extends Model
     use HasTranslations;
     use SoftDeletes;
 
+    protected static function newFactory(): \Modules\Product\Database\Factories\ProductFactory
+    {
+        return \Modules\Product\Database\Factories\ProductFactory::new();
+    }
+
     /** @var array<int, string> */
     public array $translatable = ['name', 'description'];
 

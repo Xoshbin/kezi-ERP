@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Enums\Inventory\InventoryAccountingMode;
+use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CompanyFactory extends Factory
@@ -10,7 +10,7 @@ class CompanyFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->company,
+            'name' => $this->faker->company(),
             'address' => $this->faker->address,
             'tax_id' => $this->faker->unique()->numerify('##########'),
             // Let Laravel handle creation unless specified otherwise in the test.
@@ -35,7 +35,7 @@ class CompanyFactory extends Factory
      */
     public function withReconciliationEnabled(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn() => [
             'enable_reconciliation' => true,
         ]);
     }

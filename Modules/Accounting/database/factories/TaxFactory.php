@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class TaxFactory extends Factory
 {
+    protected $model = \Modules\Accounting\Models\Tax::class;
+
     /**
      * Define the model's default state.
      *

@@ -4,32 +4,39 @@
 
 
 
-use App\Enums\Sales\InvoiceStatus;
-use App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument;
-use App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\CreateBankStatement;
-use App\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice;
-use App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
-use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
-use App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
-use App\Filament\Clusters\Accounting\Resources\Partners\Pages\CreatePartner;
-use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
-use App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
-use App\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
-use App\Filament\Clusters\Settings\Resources\Accounts\Pages\CreateAccount;
+use Modules\Accounting\Models\Journal;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+
+use Illuminate\Support\Facades\Hash;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\Pages\CreateBankStatement;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages\CreatePartner;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
+use Modules\Accounting\Filament\Resources\Accounts\Pages\CreateAccount;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Invoice;
 
-use App\Models\JournalEntry;
+use Modules\Accounting\Models\JournalEntry;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\User;
-use App\Services\AdjustmentDocumentService;
+use Modules\Inventory\Services\AdjustmentDocumentService;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Exceptions\PeriodIsLockedException;
 use Modules\Accounting\Models\Asset;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
 
 use function Pest\Livewire\livewire;
 
@@ -279,7 +286,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($vendorBillJE)->not->toBeNull();
     expect($vendorBillJE->is_posted)->toBeTrue();
     expect($vendorBillJE->hash)->not->toBeNull();
-    expect($vendorBillJE->source_type)->toBe('App\Models\VendorBill');
+    expect($vendorBillJE->source_type)->toBe(\Modules\Purchase\Models\VendorBill::class);
     expect($vendorBillJE->source_id)->toBe($vendorBill->id);
 
     $vendorBillLines = $vendorBillJE->lines;
@@ -298,7 +305,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($liabilityLine->credit->getAmount()->toInt())->toBe(3000000);
 
     // Verify that an asset was created from the vendor bill
-    $createdAssets = Asset::where('source_type', 'App\Models\VendorBill')
+    $createdAssets = Asset::where('source_type', \Modules\Purchase\Models\VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->get();
     expect($createdAssets)->toHaveCount(1);
@@ -362,7 +369,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($invoiceJE)->not->toBeNull();
     expect($invoiceJE->is_posted)->toBeTrue();
     expect($invoiceJE->hash)->not->toBeNull();
-    expect($invoiceJE->source_type)->toBe('App\Models\Invoice');
+    expect($invoiceJE->source_type)->toBe(\Modules\Sales\Models\Invoice::class);
     expect($invoiceJE->source_id)->toBe($invoice->id);
 
     $invoiceLines = $invoiceJE->lines;
@@ -470,7 +477,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Verify the credit note journal entry
     $creditNoteJE = $creditNote->journalEntry;
     expect($creditNoteJE->is_posted)->toBeTrue();
-    expect($creditNoteJE->source_type)->toBe('App\Models\AdjustmentDocument');
+    expect($creditNoteJE->source_type)->toBe(\Modules\Inventory\Models\AdjustmentDocument::class);
     expect($creditNoteJE->source_id)->toBe($creditNote->id);
 
     // Step 10: Bank Reconciliation

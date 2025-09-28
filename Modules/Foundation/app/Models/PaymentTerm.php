@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Modules\Purchase\Models\VendorBill;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Builder;
-use Database\Factories\PaymentTermFactory;
+
 use Illuminate\Database\Eloquent\Collection;
 use Modules\Foundation\Models\PaymentTermLine;
 use Modules\Foundation\Observers\AuditLogObserver;
@@ -62,9 +62,13 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class PaymentTerm extends Model
 {
-    /** @use HasFactory<PaymentTermFactory> */
     use HasFactory;
     use HasTranslations;
+
+    protected static function newFactory(): \Modules\Foundation\Database\Factories\PaymentTermFactory
+    {
+        return \Modules\Foundation\Database\Factories\PaymentTermFactory::new();
+    }
 
     /** @var array<int, string> */
     public array $translatable = ['name', 'description'];

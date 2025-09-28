@@ -12,6 +12,8 @@ use Modules\Accounting\Enums\Accounting\JournalType;
  */
 class JournalFactory extends Factory
 {
+    protected $model = \Modules\Accounting\Models\Journal::class;
+
     /**
      * Define the model's default state.
      *
@@ -21,7 +23,7 @@ class JournalFactory extends Factory
     {
         return [
             'company_id' => Company::factory(),
-            'name' => $this->faker->company,
+            'name' => $this->faker->words(2, true),
             'type' => JournalType::Miscellaneous,
             'short_code' => $this->faker->unique()->bothify('???'),
             'currency_id' => function (array $attributes) {

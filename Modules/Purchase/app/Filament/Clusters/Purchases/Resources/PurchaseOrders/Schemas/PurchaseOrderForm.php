@@ -24,6 +24,8 @@ use Modules\Product\Enums\Products\ProductType;
 use Modules\Accounting\Enums\Accounting\TaxType;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Modules\Purchase\Models\PurchaseOrder;
+
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
@@ -265,7 +267,7 @@ class PurchaseOrderForm
                                     })
                                     ->columnSpan(2),
 
-                                \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('unit_price')
+                                \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('unit_price')
                                     ->label(__('purchase_orders.fields.unit_price'))
                                     ->currencyField('../../currency_id')
                                     ->required()
@@ -342,13 +344,13 @@ class PurchaseOrderForm
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('total_tax')
+                                \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('total_tax')
                                     ->label(__('purchase_orders.fields.total_tax'))
                                     ->currencyField('currency_id')
                                     ->disabled()
                                     ->dehydrated(false),
 
-                                \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('total_amount')
+                                \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('total_amount')
                                     ->label(__('purchase_orders.fields.total_amount'))
                                     ->currencyField('currency_id')
                                     ->disabled()

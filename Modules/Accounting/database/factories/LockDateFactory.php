@@ -11,6 +11,8 @@ use Modules\Accounting\Models\LockDate;
  */
 class LockDateFactory extends Factory
 {
+    protected $model = \Modules\Accounting\Models\LockDate::class;
+
     /**
      * Define the model's default state.
      *

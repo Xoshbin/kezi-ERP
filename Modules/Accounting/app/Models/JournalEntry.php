@@ -13,7 +13,8 @@ use Modules\Accounting\Models\Journal;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Foundation\Models\Currency;
 use Illuminate\Database\Eloquent\Builder;
-use Database\Factories\JournalEntryFactory;
+use Modules\Accounting\Database\Factories\JournalEntryFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Collection;
 use Modules\Accounting\Models\JournalEntryLine;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -84,6 +85,11 @@ class JournalEntry extends Model
 {
     /** @use HasFactory<JournalEntryFactory> */
     use HasFactory;
+
+    protected static function newFactory(): Factory
+    {
+        return JournalEntryFactory::new();
+    }
 
     /**
      * The database table associated with the model.

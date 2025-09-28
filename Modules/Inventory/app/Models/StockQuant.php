@@ -87,4 +87,9 @@ class StockQuant extends Model
     {
         return $query->whereRaw('quantity > reserved_quantity');
     }
+
+    protected static function newFactory(): \Modules\Inventory\Database\Factories\StockQuantFactory
+    {
+        return \Modules\Inventory\Database\Factories\StockQuantFactory::new();
+    }
 }

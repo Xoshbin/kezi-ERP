@@ -8,14 +8,12 @@ use Modules\Accounting\Models\Asset;
 use Modules\Sales\Models\InvoiceLine;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Journal;
-use Illuminate\Database\Eloquent\Model;
 use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
 use Modules\Accounting\Models\JournalEntry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Foundation\Exceptions\DeletionNotAllowedException;
 
-uses(RefreshDatabase::class, WithConfiguredCompany::class);
+uses(\Tests\TestCase::class, RefreshDatabase::class, WithConfiguredCompany::class);
 
 // ======================================================================
 // Test Case 1: Comprehensive Company Deletion Prevention

@@ -10,7 +10,7 @@ use Modules\Accounting\Models\Journal;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Foundation\Models\Currency;
 use Illuminate\Database\Eloquent\Builder;
-use Database\Factories\BankStatementFactory;
+
 use Modules\Accounting\Models\BankStatementLine;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -89,5 +89,10 @@ class BankStatement extends Model
     public function bankStatementLines(): HasMany
     {
         return $this->hasMany(BankStatementLine::class);
+    }
+
+    protected static function newFactory(): \Modules\Accounting\Database\Factories\BankStatementFactory
+    {
+        return \Modules\Accounting\Database\Factories\BankStatementFactory::new();
     }
 }

@@ -16,7 +16,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Enums\Accounting\JournalType;
 use Modules\Accounting\Services\BankReconciliationService;
 
-uses(RefreshDatabase::class, WithConfiguredCompany::class);
+uses(Tests\TestCase::class, RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();

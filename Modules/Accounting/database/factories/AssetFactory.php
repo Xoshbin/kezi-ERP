@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class AssetFactory extends Factory
 {
+    protected $model = \Modules\Accounting\Models\Asset::class;
+
     /**
      * Define the model's default state.
      *

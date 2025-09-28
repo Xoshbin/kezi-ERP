@@ -10,7 +10,7 @@ use Modules\Foundation\Models\Currency;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Accounting\Models\AnalyticPlan;
 use Illuminate\Database\Eloquent\Collection;
-use Database\Factories\AnalyticAccountFactory;
+
 use Modules\Accounting\Models\JournalEntryLine;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -50,8 +50,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  */
 class AnalyticAccount extends Model
 {
-    /** @use HasFactory<AnalyticAccountFactory> */
     use HasFactory;
+
+    protected static function newFactory(): \Modules\Accounting\Database\Factories\AnalyticAccountFactory
+    {
+        return \Modules\Accounting\Database\Factories\AnalyticAccountFactory::new();
+    }
 
     /**
      * The table associated with the model.

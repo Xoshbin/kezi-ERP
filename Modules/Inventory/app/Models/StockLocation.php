@@ -6,7 +6,7 @@ namespace Modules\Inventory\Models;
 use App\Models\Company;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Database\Factories\StockLocationFactory;
+
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,8 +14,12 @@ use Modules\Inventory\Enums\Inventory\StockLocationType;
 
 class StockLocation extends Model
 {
-    /** @use HasFactory<StockLocationFactory> */
     use HasFactory;
+
+    protected static function newFactory(): \Modules\Inventory\Database\Factories\StockLocationFactory
+    {
+        return \Modules\Inventory\Database\Factories\StockLocationFactory::new();
+    }
 
     protected $fillable = [
         'company_id',

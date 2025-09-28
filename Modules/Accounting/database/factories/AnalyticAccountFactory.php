@@ -12,6 +12,8 @@ use Modules\Foundation\Models\Currency;
  */
 class AnalyticAccountFactory extends Factory
 {
+    protected $model = \Modules\Accounting\Models\AnalyticAccount::class;
+
     /**
      * Define the model's default state.
      *

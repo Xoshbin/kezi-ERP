@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Modules\Accounting\Models\BankStatement;
 use Modules\Inventory\Models\AdjustmentDocument;
 
+use Modules\Purchase\Models\PurchaseOrder;
+
 /**
  * DocumentCurrencyMoneyCast - Uses the document's stated currency.
  *

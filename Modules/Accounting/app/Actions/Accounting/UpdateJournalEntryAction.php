@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 use Modules\Accounting\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
-use Modules\Accounting\Models\Company;
+use App\Models\Company;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Accounting\Models\JournalEntryLine;
 use Modules\Foundation\Models\Currency;
@@ -19,8 +19,7 @@ class UpdateJournalEntryAction
 {
     public function __construct(
         protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
-    ) {
-    }
+    ) {}
 
     public function execute(UpdateJournalEntryDTO $dto): JournalEntry
     {

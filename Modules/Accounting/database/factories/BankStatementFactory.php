@@ -14,6 +14,8 @@ use Modules\Foundation\Models\Currency;
  */
 class BankStatementFactory extends Factory
 {
+    protected $model = \Modules\Accounting\Models\BankStatement::class;
+
     /**
      * Define the model's default state.
      *

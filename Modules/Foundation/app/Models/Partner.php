@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Modules\Foundation\Database\Factories\PartnerFactory;
 
 /**
  * Class Partner
@@ -92,6 +93,11 @@ class Partner extends Model
     use HasFactory;
     use SoftDeletes;
     use HasCustomFields;
+
+    protected static function newFactory(): PartnerFactory
+    {
+        return \Modules\Foundation\Database\Factories\PartnerFactory::new();
+    }
 
     /**
      * The attributes that are mass assignable.

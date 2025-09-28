@@ -31,6 +31,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Modules\Payment\Enums\PaymentInstallments\InstallmentStatus;
+use Modules\Purchase\Database\Factories\VendorBillFactory;
 
 // As a fundamental principle of accounting data integrity,
 // 'posted' financial records, such as Vendor Bills, must be **immutable** [1-3].
@@ -94,6 +95,11 @@ class VendorBill extends Model
 {
     use HasFactory;
     use \Modules\Foundation\Traits\HasPaymentState;
+
+    protected static function newFactory(): VendorBillFactory
+    {
+        return \Modules\Purchase\Database\Factories\VendorBillFactory::new();
+    }
 
     /**
      * The database table associated with the model.

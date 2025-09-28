@@ -14,7 +14,7 @@ use Modules\Purchase\Models\VendorBill;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Accounting\Models\JournalEntry;
 use Illuminate\Database\Eloquent\Collection;
-use Database\Factories\AdjustmentDocumentFactory;
+use Modules\Inventory\Database\Factories\AdjustmentDocumentFactory;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
 use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
+
 
 /**
  * @property int $id
@@ -73,6 +75,11 @@ class AdjustmentDocument extends Model
 {
     /** @use HasFactory<AdjustmentDocumentFactory> */
     use HasFactory;
+
+    protected static function newFactory(): \Modules\Inventory\Database\Factories\AdjustmentDocumentFactory
+    {
+        return \Modules\Inventory\Database\Factories\AdjustmentDocumentFactory::new();
+    }
 
     /**
      * The table associated with the model.

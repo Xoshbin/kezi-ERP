@@ -102,4 +102,9 @@ class Lot extends Model
     {
         return $query->orderByRaw('expiration_date IS NULL, expiration_date ASC');
     }
+
+    protected static function newFactory(): \Modules\Inventory\Database\Factories\LotFactory
+    {
+        return \Modules\Inventory\Database\Factories\LotFactory::new();
+    }
 }
