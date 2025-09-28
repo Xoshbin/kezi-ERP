@@ -2,11 +2,11 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\Pages;
 
-use App\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;
 
 class EditPosition extends EditRecord
 {

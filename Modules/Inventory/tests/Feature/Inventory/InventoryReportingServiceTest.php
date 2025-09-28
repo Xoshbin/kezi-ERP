@@ -2,12 +2,24 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Models\Account;
+use Brick\Money\Money;
+use Modules\Inventory\Models\Lot;
 use Modules\Product\Models\Product;
+use Modules\Accounting\Models\Account;
+use Modules\Inventory\Models\StockMove;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Inventory\Models\ReorderingRule;
+use Modules\Product\Enums\Products\ProductType;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\ReorderingRoute;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Services\Inventory\StockQuantService;
+use Modules\Inventory\Services\Inventory\InventoryReportingService;
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -166,15 +178,13 @@ it('correctly ages inventory by receipt date', function () {
     // Set test now to current date for ageing calculation
     Carbon::setTestNow($currentDate);
 
-
-
     // Act
     $ageingReport = $this->reportingService->ageing([
         'buckets' => [
             ['min' => 0, 'max' => 30, 'label' => '0-30 days'],
             ['min' => 31, 'max' => 60, 'label' => '31-60 days'],
             ['min' => 61, 'max' => 90, 'label' => '61-90 days'],
-        ]
+        ],
     ]);
 
     // Assert

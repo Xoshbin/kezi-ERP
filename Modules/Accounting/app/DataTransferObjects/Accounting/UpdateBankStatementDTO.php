@@ -19,5 +19,6 @@ class UpdateBankStatementDTO
         public readonly Money $starting_balance,
         public readonly Money $ending_balance,
         public readonly array $lines,
-    ) {}
+    ) {
+    }
 }

@@ -30,7 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             // For regular web requests, redirect back with error
             return redirect()->back()->withErrors([
-                'cost_validation' => $e->getUserFriendlyMessage()
+                'cost_validation' => $e->getUserFriendlyMessage(),
             ])->withInput();
         });
     })->create();

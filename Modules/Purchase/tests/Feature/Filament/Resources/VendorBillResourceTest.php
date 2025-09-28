@@ -2,15 +2,23 @@
 
 use Brick\Money\Money;
 use Filament\Actions\DeleteAction;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Product\Models\Product;
+use function Pest\Livewire\livewire;
 use Modules\Accounting\Models\Account;
 use Modules\Foundation\Models\Partner;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Product\Models\Product;
 use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
-use function Pest\Livewire\livewire;
+use Modules\Product\Enums\Products\ProductType;
 
+use Modules\Purchase\Services\VendorBillService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ListVendorBills;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -552,7 +560,6 @@ it('shows error and keeps draft when storable product lacks inventory account', 
     expect($vendorBill->posted_at)->toBeNull();
     expect($vendorBill->journalEntry)->toBeNull();
 });
-
 
 it('records stock moves and inventory/AP postings for storable products and updates AVCO', function () {
     // Arrange: vendor and accounts

@@ -2,9 +2,9 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Pages;
 
-use App\Filament\Clusters\HumanResources\Resources\Payrolls\PayrollResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\PayrollResource;
 
 class ListPayrolls extends ListRecords
 {

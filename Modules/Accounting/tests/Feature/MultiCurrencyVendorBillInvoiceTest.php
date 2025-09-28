@@ -2,15 +2,25 @@
 
 namespace Modules\Accounting\Tests\Feature;
 
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\CurrencyRate;
-use Modules\Foundation\Models\Partner;
+use Brick\Money\Money;
 use Modules\Product\Models\Product;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Partner;
+use Modules\Foundation\Models\Currency;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Sales\Services\InvoiceService;
+use Modules\Foundation\Models\CurrencyRate;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Purchase\Services\VendorBillService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Foundation\Enums\Partners\PartnerType;
+use Modules\Sales\Actions\Sales\CreateInvoiceAction;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
+use Modules\Purchase\Actions\Purchases\CreateVendorBillAction;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

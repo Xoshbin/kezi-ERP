@@ -2,7 +2,7 @@
 
 namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Tables;
 
-use App\Enums\Sales\SalesOrderStatus;
+
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;

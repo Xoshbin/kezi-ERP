@@ -2,17 +2,20 @@
 
 namespace Modules\Accounting\Models;
 
-use App\Enums\Reconciliation\ReconciliationType;
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Database\Factories\ReconciliationFactory;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use RuntimeException;
+use Brick\Money\Money;
+use App\Models\Company;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
+use Database\Factories\ReconciliationFactory;
+use Modules\Accounting\Models\JournalEntryLine;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Modules\Accounting\Enums\Reconciliation\ReconciliationType;
 
 /**
  * Class Reconciliation
@@ -82,8 +85,8 @@ class Reconciliation extends Model
 
             if (! empty($unauthorizedChanges)) {
                 throw new RuntimeException(
-                    'Reconciliation records are immutable. Only description can be updated. '.
-                    'Attempted to change: '.implode(', ', $unauthorizedChanges)
+                    'Reconciliation records are immutable. Only description can be updated. ' .
+                        'Attempted to change: ' . implode(', ', $unauthorizedChanges)
                 );
             }
         });
@@ -91,8 +94,8 @@ class Reconciliation extends Model
         // Prevent deletion of reconciliation records
         static::deleting(function (Reconciliation $reconciliation) {
             throw new RuntimeException(
-                'Reconciliation records cannot be deleted to maintain audit trail integrity. '.
-                'Create a reversal reconciliation instead.'
+                'Reconciliation records cannot be deleted to maintain audit trail integrity. ' .
+                    'Create a reversal reconciliation instead.'
             );
         });
     }

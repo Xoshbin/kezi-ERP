@@ -3,18 +3,22 @@
 namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Schemas;
 
 use Filament\Actions\Action;
+use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\DatePicker;
+use Modules\Accounting\Models\Tax;
+use Modules\Product\Models\Product;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\Auth;
-use Modules\Product\Models\Product;
+use Filament\Forms\Components\DatePicker;
+use Modules\Sales\Enums\Sales\SalesOrderStatus;
+use Modules\Accounting\Enums\Accounting\TaxType;
+use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class SalesOrderForm

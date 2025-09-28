@@ -2,23 +2,43 @@
 
 namespace Modules\Accounting\Models;
 
-use App\Casts\DocumentCurrencyMoneyCast;
-use App\Enums\Loans\LoanStatus;
-use App\Enums\Loans\LoanType;
-use App\Enums\Loans\ScheduleMethod;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+use App\Models\Company;
+use Modules\Foundation\Models\Partner;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Foundation\Models\Currency;
+use Modules\Accounting\Models\LoanFeeLine;
+use Modules\Accounting\Enums\Loans\LoanType;
+use Modules\Accounting\Models\LoanRateChange;
+use Modules\Accounting\Enums\Loans\LoanStatus;
+use Modules\Accounting\Models\LoanScheduleEntry;
+use Modules\Accounting\Enums\Loans\ScheduleMethod;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
 
 class LoanAgreement extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'company_id', 'partner_id', 'name', 'loan_date', 'start_date', 'maturity_date', 'duration_months',
-        'currency_id', 'principal_amount', 'outstanding_principal', 'loan_type', 'status', 'schedule_method',
-        'interest_rate', 'eir_enabled', 'eir_rate',
+        'company_id',
+        'partner_id',
+        'name',
+        'loan_date',
+        'start_date',
+        'maturity_date',
+        'duration_months',
+        'currency_id',
+        'principal_amount',
+        'outstanding_principal',
+        'loan_type',
+        'status',
+        'schedule_method',
+        'interest_rate',
+        'eir_enabled',
+        'eir_rate',
     ];
 
     protected $casts = [

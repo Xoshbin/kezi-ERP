@@ -2,9 +2,13 @@
 
 namespace Modules\HR\Models;
 
-use App\Casts\BaseCurrencyMoneyCast;
-use App\Casts\PayrollCurrencyMoneyCast;
+use App\Models\Company;
+use Modules\HR\Models\Payroll;
+use Modules\Accounting\Models\Account;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Accounting\Models\AnalyticAccount;
+use Modules\HR\Casts\PayrollCurrencyMoneyCast;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PayrollLine extends Model

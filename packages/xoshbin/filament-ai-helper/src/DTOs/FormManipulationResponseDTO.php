@@ -11,7 +11,8 @@ class FormManipulationResponseDTO
         public string $explanation,
         public array $warnings = [],
         public ?string $error = null
-    ) {}
+    ) {
+    }
 
     public function toArray(): array
     {

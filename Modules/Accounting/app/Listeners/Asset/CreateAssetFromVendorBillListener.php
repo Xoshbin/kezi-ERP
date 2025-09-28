@@ -2,16 +2,14 @@
 
 namespace Modules\Accounting\Listeners\Asset;
 
-use App\Actions\Assets\CreateAssetAction;
-use App\DataTransferObjects\Assets\CreateAssetDTO;
-use App\Enums\Assets\DepreciationMethod;
-use App\Events\VendorBillConfirmed;
-use App\Models\AssetCategory;
-use App\Models\Company;
-use App\Models\VendorBillLine;
 use Exception;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Models\Company;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Accounting\Models\AssetCategory;
+use Modules\Accounting\Enums\Assets\DepreciationMethod;
+use Modules\Accounting\Actions\Assets\CreateAssetAction;
 
 class CreateAssetFromVendorBillListener implements ShouldQueue
 {
@@ -32,8 +30,7 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                 $category = \Modules\Accounting\Models\AssetCategory::find($line->asset_category_id);
             } elseif ($line->expenseAccount->can_create_assets) {
                 // Implicit asset via account; map into a temporary category-like structure using company defaults
-                $category = new class($company, $line)
-                {
+                $category = new class($company, $line) {
                     public int $asset_account_id;
 
                     public int $depreciation_expense_account_id;
@@ -95,7 +92,6 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                 );
 
                 $this->createAssetAction->execute($assetDTO);
-
             } catch (Exception $e) {
                 Log::error('Failed to create asset from vendor bill line.', [
                     'vendor_bill_id' => $vendorBill->id,

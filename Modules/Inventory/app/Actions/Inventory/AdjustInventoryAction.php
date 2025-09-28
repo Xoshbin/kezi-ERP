@@ -2,9 +2,9 @@
 
 namespace Modules\Inventory\Actions\Inventory;
 
-use App\DataTransferObjects\Inventory\AdjustInventoryDTO;
-use App\Services\Inventory\InventoryValuationService;
 use Illuminate\Support\Facades\DB;
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use Modules\Inventory\DataTransferObjects\Inventory\AdjustInventoryDTO;
 
 class AdjustInventoryAction
 {

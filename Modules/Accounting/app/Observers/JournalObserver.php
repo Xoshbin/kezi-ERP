@@ -2,7 +2,7 @@
 
 namespace Modules\Accounting\Observers;
 
-use App\Models\Journal;
+use Modules\Accounting\Models\Journal;
 
 class JournalObserver
 {

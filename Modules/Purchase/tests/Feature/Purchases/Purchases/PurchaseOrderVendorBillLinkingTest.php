@@ -3,12 +3,18 @@
 namespace Modules\Purchase\Tests\Feature\Purchases;
 
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Validation\ValidationException;
-use Modules\Accounting\Models\Account;
 use Modules\Product\Models\Product;
+use Modules\Accounting\Models\Account;
 use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Purchase\Models\PurchaseOrder;
+use Illuminate\Validation\ValidationException;
+use Modules\Product\Enums\Products\ProductType;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Modules\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

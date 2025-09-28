@@ -2,14 +2,23 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
+use Tests\TestCase;
+use ReflectionClass;
 use App\Models\Company;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Inventory\Models\Lot;
+
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Modules\Product\Models\Product;
-use ReflectionClass;
-use Tests\TestCase;
+use Illuminate\Support\Facades\Cache;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Product\Enums\Products\ProductType;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Inventory\Models\StockMoveProductLine;
+use Modules\Inventory\Services\Inventory\InventoryQueryOptimizationService;
+use Modules\Inventory\Services\Inventory\InventoryPerformanceMonitoringService;
 
 class InventoryPerformanceOptimizationTest extends TestCase
 {
@@ -165,8 +174,6 @@ class InventoryPerformanceOptimizationTest extends TestCase
             'lot_code' => 'LOT002',
         ]);
 
-
-
         $availability = $this->optimizationService->getOptimizedLotAvailability(
             $this->company,
             $this->product->id,
@@ -271,7 +278,7 @@ class InventoryPerformanceOptimizationTest extends TestCase
                 'table_analysis',
                 'query_performance',
                 'optimization_recommendations',
-                'next_steps'
+                'next_steps',
             ])
             ->and($report['overall_health'])->toBeIn(['excellent', 'good', 'fair', 'poor', 'unknown'])
             ->and($report['table_analysis'])->toBeArray()

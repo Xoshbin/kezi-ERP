@@ -2,16 +2,21 @@
 
 namespace Modules\Accounting\Services;
 
-use App\Models\Company;
-use Brick\Money\Money;
-use Carbon\Carbon;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
-use Modules\Foundation\Models\Currency;
-use Modules\Payment\Models\Payment;
-use Modules\Purchase\Models\VendorBill;
+use Carbon\Carbon;
+use Brick\Money\Money;
+use App\Models\Company;
 use Modules\Sales\Models\Invoice;
+use Illuminate\Support\Collection;
+use Modules\Payment\Models\Payment;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Currency;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Services\CurrencyConverterService;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 
 /**
  * ExchangeGainLossService
@@ -27,7 +32,7 @@ class ExchangeGainLossService
 
     public function __construct(
         CurrencyConverterService $currencyConverter,
-        JournalEntryService $journalEntryService
+        JournalEntryService $journalEntryService,
     ) {
         $this->currencyConverter = $currencyConverter;
         $this->journalEntryService = $journalEntryService;
@@ -89,7 +94,7 @@ class ExchangeGainLossService
     public function performPeriodEndRevaluation(
         Company $company,
         Carbon $revaluationDate,
-        array $accountIds = []
+        array $accountIds = [],
     ): Collection {
         $journalEntries = collect();
 
@@ -139,7 +144,7 @@ class ExchangeGainLossService
         Money $amount,
         float $documentRate,
         float $paymentRate,
-        string $baseCurrencyCode
+        string $baseCurrencyCode,
     ): Money {
         // Convert amount using both rates and find the difference
         $documentValue = $this->currencyConverter->convertWithRate(
@@ -166,7 +171,7 @@ class ExchangeGainLossService
         Money $balance,
         Currency $currency,
         Company $company,
-        Carbon $revaluationDate
+        Carbon $revaluationDate,
     ): Money {
         $currentRate = $this->currencyConverter->getExchangeRate($currency, $revaluationDate, $company);
 
@@ -196,7 +201,7 @@ class ExchangeGainLossService
         Company $company,
         Money $exchangeDifference,
         Payment $payment,
-        Model $document
+        Model $document,
     ): JournalEntry {
         $isGain = $exchangeDifference->isPositive();
         $gainLossAccount = $company->default_gain_loss_account_id;
@@ -265,7 +270,7 @@ class ExchangeGainLossService
             currency_id: $company->currency_id,
             entry_date: $payment->payment_date->toDateString(),
             reference: "EX-GAIN-LOSS-{$payment->getKey()}",
-            description: 'Realized exchange '.($isGain ? 'gain' : 'loss')." on payment #{$payment->getKey()}",
+            description: 'Realized exchange ' . ($isGain ? 'gain' : 'loss') . " on payment #{$payment->getKey()}",
             created_by_user_id: $payment->created_by_user_id ?? $payment->user_id ?? optional($payment->company->users()->first())->getKey() ?? 1,
             is_posted: true,
             lines: $lineDTOs,
@@ -337,7 +342,7 @@ class ExchangeGainLossService
         \Modules\Accounting\Models\Account $account,
         Currency $currency,
         Money $unrealizedGainLoss,
-        Carbon $revaluationDate
+        Carbon $revaluationDate,
     ): ?JournalEntry {
         // Implementation would create journal entry for unrealized gain/loss
         // This is a placeholder

@@ -1,18 +1,28 @@
 <?php
 
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Brick\Money\Money;
 use Livewire\Livewire;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\CurrencyRate;
-use Modules\Foundation\Models\Partner;
-use Modules\Product\Models\Product;
-use Modules\Purchase\Models\VendorBill;
 use Modules\Sales\Models\Invoice;
+use Modules\Product\Models\Product;
 use Modules\Sales\Models\InvoiceLine;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Partner;
+use Modules\Foundation\Models\Currency;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Sales\Services\InvoiceService;
+use Modules\Foundation\Models\CurrencyRate;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Purchase\Services\VendorBillService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Actions\Purchases\CreateVendorBillAction;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -257,7 +267,7 @@ describe('Service Behavior with Manual Exchange Rates', function () {
         // Create vendor bill using the proper action to ensure consistency
         $expenseAccount = Account::factory()->create([
             'company_id' => $this->company->id,
-            'type' => 'expense'
+            'type' => 'expense',
         ]);
 
         $vendorBillDto = new CreateVendorBillDTO(

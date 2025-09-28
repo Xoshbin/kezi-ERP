@@ -2,14 +2,19 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\Models\User;
 use Brick\Money\Money;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Modules\Accounting\Models\DepreciationEntry;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\User;
 use RuntimeException;
 
 class CreateJournalEntryForDepreciationAction
 {
-    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
+    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction)
+    {
+    }
 
     public function execute(DepreciationEntry $entry, User $user): JournalEntry
     {
@@ -31,7 +36,7 @@ class CreateJournalEntryForDepreciationAction
                 account_id: $asset->depreciation_expense_account_id,
                 debit: $entry->amount,
                 credit: Money::of(0, $currencyCode),
-                description: 'Depreciation Expense for '.$asset->name,
+                description: 'Depreciation Expense for ' . $asset->name,
                 partner_id: null,
                 analytic_account_id: null,
             ),
@@ -40,7 +45,7 @@ class CreateJournalEntryForDepreciationAction
                 account_id: $asset->accumulated_depreciation_account_id,
                 debit: Money::of(0, $currencyCode),
                 credit: $entry->amount,
-                description: 'Accumulated Depreciation for '.$asset->name,
+                description: 'Accumulated Depreciation for ' . $asset->name,
                 partner_id: null,
                 analytic_account_id: null,
             ),
@@ -52,8 +57,8 @@ class CreateJournalEntryForDepreciationAction
             journal_id: $journalId,
             currency_id: $company->currency_id,
             entry_date: $entry->depreciation_date,
-            reference: 'DEPR/'.$asset->name.'/'.$entry->depreciation_date->format('Y-m'),
-            description: 'Depreciation for '.$asset->name,
+            reference: 'DEPR/' . $asset->name . '/' . $entry->depreciation_date->format('Y-m'),
+            description: 'Depreciation for ' . $asset->name,
             source_type: DepreciationEntry::class,
             source_id: $entry->id,
             created_by_user_id: $user->id,

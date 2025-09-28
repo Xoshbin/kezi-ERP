@@ -2,12 +2,17 @@
 
 namespace Modules\HR\Services\HumanResources;
 
-use App\Models\Company;
-use App\Models\User;
 use Exception;
+use App\Models\User;
+use App\Models\Company;
+
+use Modules\HR\Models\Employee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Modules\HR\Models\Employee;
+use Modules\HR\DataTransferObjects\HumanResources\CreateEmployeeDTO;
+use Modules\HR\Actions\HumanResources\CreateEmploymentContractAction;
+use Modules\HR\DataTransferObjects\HumanResources\CreateEmploymentContractDTO;
+
 
 class EmployeeService
 {
@@ -161,11 +166,11 @@ class EmployeeService
             'by_department' => $employees->with('department')
                 ->get()
                 ->groupBy('department.name')
-                ->map(fn ($group) => $group->count())
+                ->map(fn($group) => $group->count())
                 ->toArray(),
             'by_employee_type' => $employees->get()
                 ->groupBy('employee_type')
-                ->map(fn ($group) => $group->count())
+                ->map(fn($group) => $group->count())
                 ->toArray(),
         ];
     }

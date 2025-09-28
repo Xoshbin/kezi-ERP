@@ -2,9 +2,9 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages;
 
-use App\Filament\Clusters\Inventory\Resources\StockQuantResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource;
 
 class ViewStockQuant extends ViewRecord
 {

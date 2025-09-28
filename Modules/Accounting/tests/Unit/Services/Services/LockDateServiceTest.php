@@ -2,20 +2,20 @@
 
 namespace Modules\Accounting\Tests\Unit\Services;
 
-use App\Enums\Accounting\LockDateType;
-use App\Exceptions\PeriodIsLockedException;
-use App\Models\Company;
-use App\Models\LockDate;
-use App\Services\Accounting\LockDateService;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Modules\Accounting\Models\Company;
+use Modules\Accounting\Models\LockDate;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Accounting\LockDateType;
+use Modules\Accounting\Exceptions\PeriodIsLockedException;
+use Modules\Accounting\Services\Accounting\LockDateService;
 
 uses(TestCase::class, RefreshDatabase::class);
 
 beforeEach(function () {
     $this->company = Company::factory()->create();
-    $this->service = new LockDateService;
+    $this->service = new LockDateService();
 });
 
 test('it does not throw an exception if the period is not locked', function () {

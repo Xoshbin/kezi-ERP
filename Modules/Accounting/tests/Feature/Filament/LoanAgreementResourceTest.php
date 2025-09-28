@@ -1,9 +1,17 @@
 <?php
 
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
+use Tests\Traits\WithConfiguredCompany;
+
+use Modules\Accounting\Enums\Loans\LoanType;
+use Modules\Accounting\Models\LoanAgreement;
+use Modules\Accounting\Enums\Loans\LoanStatus;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Loans\ScheduleMethod;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ViewLoanAgreement;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\CreateLoanAgreement;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

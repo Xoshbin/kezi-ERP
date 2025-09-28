@@ -2,9 +2,9 @@
 
 namespace Modules\Accounting\Policies;
 
-use App\Enums\Accounting\JournalEntryState;
-use App\Models\JournalEntry;
 use App\Models\User;
+use App\Enums\Accounting\JournalEntryState;
+use Modules\Accounting\Models\JournalEntry;
 
 class JournalEntryPolicy
 {

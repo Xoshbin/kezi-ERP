@@ -5,6 +5,7 @@ namespace Modules\Sales\Policies;
 use App\Models\User;
 use Modules\Sales\Models\Invoice;
 
+
 class InvoicePolicy
 {
     /**

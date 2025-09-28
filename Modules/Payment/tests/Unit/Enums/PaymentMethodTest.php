@@ -2,8 +2,9 @@
 
 namespace Modules\Payment\Tests\Unit\Enums;
 
-use App\Enums\Payments\PaymentMethod;
+
 use Tests\TestCase;
+use Modules\Payment\Enums\Payments\PaymentMethod;
 
 class PaymentMethodTest extends TestCase
 {
@@ -22,7 +23,7 @@ class PaymentMethodTest extends TestCase
             'online_payment',
         ];
 
-        $actualValues = array_map(fn (PaymentMethod $method) => $method->value, PaymentMethod::cases());
+        $actualValues = array_map(fn(PaymentMethod $method) => $method->value, PaymentMethod::cases());
 
         $this->assertEquals($expectedValues, $actualValues);
     }
@@ -50,8 +51,16 @@ class PaymentMethodTest extends TestCase
     public function test_payment_method_colors_are_valid(): void
     {
         $validColors = [
-            'gray', 'blue', 'green', 'purple', 'yellow',
-            'indigo', 'cyan', 'emerald', 'orange', 'red',
+            'gray',
+            'blue',
+            'green',
+            'purple',
+            'yellow',
+            'indigo',
+            'cyan',
+            'emerald',
+            'orange',
+            'red',
         ];
 
         foreach (PaymentMethod::cases() as $method) {

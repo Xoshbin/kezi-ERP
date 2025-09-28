@@ -2,7 +2,7 @@
 
 namespace Modules\Accounting\DataTransferObjects\Accounting;
 
-use App\Models\JournalEntry;
+use Modules\Accounting\Models\JournalEntry;
 
 class UpdateJournalEntryDTO
 {
@@ -18,5 +18,6 @@ class UpdateJournalEntryDTO
         public readonly ?string $description,
         public readonly bool $is_posted,
         public readonly array $lines,
-    ) {}
+    ) {
+    }
 }

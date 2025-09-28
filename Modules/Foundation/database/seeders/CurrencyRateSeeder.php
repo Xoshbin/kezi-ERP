@@ -2,8 +2,8 @@
 
 namespace Modules\Foundation\Database\Seeders;
 
-use App\Models\Company;
 use Carbon\Carbon;
+use App\Models\Company;
 use Illuminate\Database\Seeder;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;

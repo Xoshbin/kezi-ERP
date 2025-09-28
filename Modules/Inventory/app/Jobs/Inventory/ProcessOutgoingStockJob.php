@@ -2,24 +2,27 @@
 
 namespace Modules\Inventory\Jobs\Inventory;
 
-use App\Actions\Inventory\ProcessOutgoingStockAction;
-use App\Models\StockMove;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Queue\SerializesModels;
+use Modules\Inventory\Models\StockMove;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Modules\Inventory\Actions\Inventory\ProcessOutgoingStockAction;
 
 class ProcessOutgoingStockJob implements ShouldBeUnique, ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
      */
     public function __construct(
-        public readonly StockMove $stockMove
+        public readonly StockMove $stockMove,
     ) {}
 
     /**

@@ -2,9 +2,9 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Pages;
 
-use App\Filament\Clusters\HumanResources\Resources\Payrolls\PayrollResource;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\PayrollResource;
 
 class ViewPayroll extends ViewRecord
 {

@@ -2,12 +2,15 @@
 
 namespace Modules\Inventory\Database\Seeders;
 
-use App\Models\Company;
 use Brick\Money\Money;
+use App\Models\Company;
 use Illuminate\Database\Seeder;
+use Modules\Sales\Models\Invoice;
+
 use Modules\Accounting\Models\Account;
 use Modules\Inventory\Models\AdjustmentDocument;
-use Modules\Sales\Models\Invoice;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
 
 class AdjustmentDocumentSeeder extends Seeder
 {
@@ -51,7 +54,7 @@ class AdjustmentDocumentSeeder extends Seeder
             'original_invoice_id' => $originalInvoice->id,
             'type' => AdjustmentDocumentType::CreditNote,
             'date' => now(),
-            'reference_number' => 'CN-'.now()->format('Ymd').'-001',
+            'reference_number' => 'CN-' . now()->format('Ymd') . '-001',
             'reason' => 'Goodwill discount for new client.',
             'subtotal' => $creditNoteAmount,
             'total_amount' => $creditNoteAmount,

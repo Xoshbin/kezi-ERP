@@ -2,8 +2,8 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages;
 
-use App\Filament\Clusters\Accounting\Resources\AnalyticAccounts\AnalyticAccountResource;
 use Filament\Resources\Pages\CreateRecord;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\AnalyticAccountResource;
 
 class CreateAnalyticAccount extends CreateRecord
 {

@@ -2,13 +2,19 @@
 
 namespace Modules\Inventory\Models;
 
-use App\Casts\BaseCurrencyMoneyCast;
-use App\Enums\Inventory\CostSource;
-use App\Enums\Inventory\ValuationMethod;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+
+use App\Models\Company;
+use Modules\Product\Models\Product;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Inventory\Models\StockMove;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Inventory\Enums\Inventory\CostSource;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
 
 class StockMoveValuation extends Model
 {

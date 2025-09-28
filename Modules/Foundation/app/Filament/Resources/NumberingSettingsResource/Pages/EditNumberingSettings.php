@@ -2,7 +2,6 @@
 
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\NumberingSettingsResource\Pages;
 
-use App\Filament\Clusters\Settings\Resources\NumberingSettingsResource;
 use App\Models\Company;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -27,7 +26,7 @@ class EditNumberingSettings extends EditRecord
 
             Notification::make()
                 ->title(__('numbering.settings.cannot_change_title'))
-                ->body(__('numbering.settings.cannot_change_message').' ('.implode(', ', $errors).')')
+                ->body(__('numbering.settings.cannot_change_message') . ' (' . implode(', ', $errors) . ')')
                 ->danger()
                 ->send();
 

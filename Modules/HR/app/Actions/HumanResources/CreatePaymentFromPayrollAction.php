@@ -5,12 +5,18 @@ namespace Modules\HR\Actions\HumanResources;
 use App\Models\User;
 use InvalidArgumentException;
 use Modules\HR\Models\Payroll;
-use Modules\Payment\Models\Payment;
+use Modules\Accounting\Models\Journal;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\Actions\Payments\CreatePaymentAction;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+
+
 
 class CreatePaymentFromPayrollAction
 {
     public function __construct(
-        private readonly CreatePaymentAction $createPaymentAction
+        private readonly CreatePaymentAction $createPaymentAction,
     ) {}
 
     /**

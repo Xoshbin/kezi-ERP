@@ -2,11 +2,11 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
-use App\Models\Company;
-use App\Models\Journal;
 use Brick\Money\Money;
 use Illuminate\Database\Seeder;
 use Modules\Accounting\Models\BankStatement;
+use App\Models\Company;
+use Modules\Accounting\Models\Journal;
 use Modules\Foundation\Models\Partner;
 use Modules\Payment\Models\Payment;
 

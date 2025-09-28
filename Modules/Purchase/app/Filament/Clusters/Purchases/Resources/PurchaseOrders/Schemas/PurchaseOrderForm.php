@@ -4,22 +4,27 @@ namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\
 
 use Brick\Money\Money;
 use Filament\Actions\Action;
+use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\DatePicker;
+use Modules\Accounting\Models\Tax;
+use Modules\Product\Models\Product;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\Auth;
 use Modules\Accounting\Models\Account;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Textarea;
 use Modules\Foundation\Models\Currency;
-use Modules\Product\Models\Product;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\DatePicker;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Accounting\Enums\Accounting\TaxType;
+use Filament\Forms\Components\Repeater\TableColumn;
+use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PurchaseOrderForm
@@ -367,7 +372,6 @@ class PurchaseOrderForm
                             ->columnSpanFull(),
                     ])
                     ->collapsible(),
-
 
             ]);
     }

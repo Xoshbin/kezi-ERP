@@ -2,18 +2,25 @@
 
 namespace Modules\Inventory\Models;
 
-use App\Casts\BaseCurrencyMoneyCast;
-use App\Casts\DocumentCurrencyMoneyCast;
-use App\Observers\AdjustmentDocumentLineObserver;
-use Brick\Math\RoundingMode;
+
 use Brick\Money\Money;
-use Database\Factories\AdjustmentDocumentLineFactory;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Company;
+use Brick\Math\RoundingMode;
+use Modules\Accounting\Models\Tax;
+use Modules\Product\Models\Product;
+use Modules\Accounting\Models\Account;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Foundation\Models\Currency;
+use Modules\Inventory\Models\AdjustmentDocument;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Modules\Inventory\Models\AdjustmentDocumentLine;
+use Database\Factories\AdjustmentDocumentLineFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
+use Modules\Inventory\Observers\AdjustmentDocumentLineObserver;
 
 /**
  * @property-read AdjustmentDocument $adjustmentDocument

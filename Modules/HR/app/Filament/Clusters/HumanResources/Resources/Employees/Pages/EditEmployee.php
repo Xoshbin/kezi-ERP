@@ -2,11 +2,11 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Employees\Pages;
 
-use App\Filament\Clusters\HumanResources\Resources\Employees\EmployeeResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Employees\EmployeeResource;
 
 class EditEmployee extends EditRecord
 {

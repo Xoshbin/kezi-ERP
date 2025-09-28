@@ -2,10 +2,10 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages;
 
-use App\Filament\Actions\DocsAction;
-use App\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Foundation\Filament\Actions\DocsAction;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 
 class ListPayments extends ListRecords
 {

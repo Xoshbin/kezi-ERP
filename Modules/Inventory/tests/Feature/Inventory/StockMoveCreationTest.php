@@ -1,8 +1,18 @@
 <?php
 
-use App\Models\Company;
+
+
 use App\Models\User;
+use App\Models\Company;
 use Modules\Product\Models\Product;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Models\StockMoveProductLine;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Services\Inventory\StockMoveService;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
 
 beforeEach(function () {
     $this->company = Company::factory()->create();

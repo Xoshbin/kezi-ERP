@@ -2,15 +2,18 @@
 
 namespace Modules\Purchase\Tests\Feature;
 
-use App\Models\Company;
+use Tests\TestCase;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Company;
 use Illuminate\Http\UploadedFile;
+use Modules\Foundation\Models\Partner;
+
+
 use Illuminate\Support\Facades\Storage;
 use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\Partner;
 use Modules\Purchase\Models\VendorBill;
-use Tests\TestCase;
+use Modules\Purchase\Models\VendorBillAttachment;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class VendorBillAttachmentTest extends TestCase
 {

@@ -2,11 +2,11 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\RelationManagers;
 
-use App\Filament\Tables\Columns\MoneyColumn;
-use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Table;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Filament\Resources\RelationManagers\RelationManager;
+use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 
 class ScheduleEntriesRelationManager extends RelationManager
 {

@@ -2,13 +2,16 @@
 
 namespace Modules\HR\Actions\HumanResources;
 
-use App\Models\Company;
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
-use Modules\Foundation\Models\Currency;
 use RuntimeException;
+use Brick\Money\Money;
+use App\Models\Company;
+use InvalidArgumentException;
+
+use Illuminate\Support\Facades\DB;
+use Modules\Foundation\Models\Currency;
+use Modules\HR\Models\EmploymentContract;
+use Modules\HR\DataTransferObjects\HumanResources\CreateEmploymentContractDTO;
 
 class CreateEmploymentContractAction
 {

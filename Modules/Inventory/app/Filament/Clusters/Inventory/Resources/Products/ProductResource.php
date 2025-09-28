@@ -3,39 +3,51 @@
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\Products;
 
 use BackedEnum;
+use Filament\Tables\Table;
 use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
-use Filament\Actions\ViewAction;
+use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Resources\Resource;
+use Filament\Actions\DeleteAction;
+use Modules\Product\Models\Product;
+use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Schema;
+use Filament\Actions\DeleteBulkAction;
+use Modules\Accounting\Models\Account;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Filters\TrashedFilter;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Schemas\Components\Utilities\Get;
+use Modules\Product\Enums\Products\ProductType;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
-use Modules\Accounting\Models\Account;
-use Modules\Product\Models\Product;
+use Modules\Accounting\Enums\Accounting\AccountType;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
+use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\EditProduct;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\ListProducts;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMovesRelationManager;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers\ReorderingRulesRelationManager;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers\InventoryCostLayersRelationManager;
 
-// use App\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMovesRelationManager;
+// use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMovesRelationManager;
 
 class ProductResource extends Resource
 {
@@ -103,7 +115,7 @@ class ProductResource extends Resource
                 ->icon('heroicon-o-currency-dollar')
                 ->schema([
                     Hidden::make('currency_id'),
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('unit_price')
+                    MoneyInput::make('unit_price')
                         ->nullable()
                         ->label(__('product.unit_price'))
                         ->currencyField('currency_id'),
@@ -201,7 +213,7 @@ class ProductResource extends Resource
                             ->live()
                             ->visible(fn(Get $get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
                             ->helperText(__('product.inventory_valuation_method_help')),
-                        \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('average_cost')
+                        MoneyInput::make('average_cost')
                             ->label(__('product.average_cost'))
                             ->currencyField('currency_id')
                             ->disabled()
@@ -407,7 +419,7 @@ class ProductResource extends Resource
                         \Modules\Product\Enums\Products\ProductType::Storable => 'warning',
                         \Modules\Product\Enums\Products\ProductType::Consumable => 'info',
                     }),
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('unit_price')
+                MoneyColumn::make('unit_price')
                     ->label(__('product.unit_price'))
                     ->sortable(),
                 TextColumn::make('inventory_valuation_method')
@@ -423,7 +435,7 @@ class ProductResource extends Resource
                     })
                     ->visible(fn() => request()->has('inventory_view'))
                     ->toggleable(isToggledHiddenByDefault: true),
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('average_cost')
+                MoneyColumn::make('average_cost')
                     ->label(__('product.average_cost'))
                     ->sortable()
                     ->visible(fn() => request()->has('inventory_view'))

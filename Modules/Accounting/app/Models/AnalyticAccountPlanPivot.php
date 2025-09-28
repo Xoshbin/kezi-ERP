@@ -3,10 +3,13 @@
 namespace Modules\Accounting\Models;
 
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Accounting\Models\AnalyticPlan;
+use Modules\Accounting\Models\AnalyticAccount;
+use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Class AnalyticAccountPlanPivot

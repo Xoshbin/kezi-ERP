@@ -2,18 +2,24 @@
 
 namespace Modules\Purchase\Models;
 
-use App\Casts\BaseCurrencyMoneyCast;
-use App\Casts\DocumentCurrencyMoneyCast;
-use App\Observers\VendorBillLineObserver;
-use Brick\Money\Money;
-use Database\Factories\VendorBillLineFactory;
 use Eloquent;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Brick\Money\Money;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Modules\Accounting\Models\Tax;
+use Modules\Product\Models\Product;
+use Modules\Accounting\Models\Account;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Purchase\Models\VendorBill;
+use Illuminate\Database\Eloquent\Builder;
+use Database\Factories\VendorBillLineFactory;
+use Modules\Accounting\Models\AnalyticAccount;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Purchase\Observers\VendorBillLineObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
 
 // As a fundamental principle of accounting, financial line items,
 // much like their parent documents (Vendor Bills), are part of the immutable

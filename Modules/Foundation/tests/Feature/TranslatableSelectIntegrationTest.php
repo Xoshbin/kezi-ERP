@@ -1,11 +1,16 @@
 <?php
 
 use App\Models\Company;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Models\Account;
 use Modules\Product\Models\Product;
-use Tests\Traits\WithConfiguredCompany;
+
 use function Pest\Livewire\livewire;
+use Modules\Accounting\Models\Account;
+
+use Tests\Traits\WithConfiguredCompany;
+use Modules\Product\Enums\Products\ProductType;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Accounting\AccountType;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

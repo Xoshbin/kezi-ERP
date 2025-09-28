@@ -2,8 +2,11 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use Illuminate\Support\Facades\DB;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Inventory\Models\StockMoveProductLine;
 
 /**
  * Stock Quantity Service

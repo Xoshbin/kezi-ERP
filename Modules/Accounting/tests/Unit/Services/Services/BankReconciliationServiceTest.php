@@ -1,18 +1,21 @@
 <?php
 
-use App\Models\Company;
 use App\Models\User;
+use RuntimeException;
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Company;
 use Illuminate\Support\Facades\Log;
-use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Payment\Models\Payment;
 use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\BankStatement;
-use Modules\Accounting\Models\BankStatementLine;
 use Modules\Accounting\Models\Journal;
 use Modules\Foundation\Models\Currency;
+use Illuminate\Foundation\Testing\TestCase;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\BankStatementLine;
 use Modules\Payment\Enums\Payments\PaymentStatus;
-use Modules\Payment\Models\Payment;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Services\BankReconciliationService;
 
 uses(Tests\TestCase::class, RefreshDatabase::class);
 
@@ -40,7 +43,7 @@ it('throws an exception if the company is missing default accounts', function ()
     $service = app(\Modules\Accounting\Services\BankReconciliationService::class);
 
     // Act & Assert
-    expect(fn () => $service->reconcile([], [$payment->id], $this->user))
+    expect(fn() => $service->reconcile([], [$payment->id], $this->user))
         ->toThrow(RuntimeException::class, "Company '{$this->company->name}' is missing default bank or outstanding accounts configuration.");
 });
 
@@ -95,7 +98,7 @@ it('successfully reconciles a payment and a bank statement line', function () {
     $this->assertDatabaseHas('journal_entries', [ // <-- Add $this->
         'source_type' => Payment::class,
         'source_id' => $payment->id,
-        'description' => 'Reconciliation for Payment #'.$payment->id,
+        'description' => 'Reconciliation for Payment #' . $payment->id,
     ]);
 });
 
@@ -138,7 +141,7 @@ it('creates a write-off for a single bank statement line', function () {
     // We use fresh() to ensure we are reading from the database.
     // getMinorAmount() gives the raw integer value (e.g., -5000).
     $valueInDb = $bankFeeLine->fresh()->amount->getMinorAmount()->toInt();
-    Log::info('1. Value immediately after creation: '.$valueInDb);
+    Log::info('1. Value immediately after creation: ' . $valueInDb);
 
     $service = app(\Modules\Accounting\Services\BankReconciliationService::class);
     $description = 'Monthly Bank Service Fee';

@@ -2,12 +2,14 @@
 
 namespace Modules\Foundation\Tests\Feature;
 
+use Tests\TestCase;
 use App\Models\Company;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Illuminate\Support\Facades\DB;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\Sequence;
-use Tests\TestCase;
+use Modules\Foundation\Services\SequenceService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class SequenceServiceTest extends TestCase
 {

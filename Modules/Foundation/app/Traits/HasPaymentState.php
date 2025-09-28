@@ -2,14 +2,14 @@
 
 namespace Modules\Foundation\Traits;
 
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Shared\PaymentState;
-use App\Models\PaymentDocumentLink;
-use App\Services\CurrencyConverterService;
-use Brick\Money\Money;
 use Exception;
-use Illuminate\Database\Eloquent\Collection;
+use Brick\Money\Money;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Collection;
+use Modules\Foundation\Enums\Shared\PaymentState;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Foundation\Models\PaymentDocumentLink;
+use Modules\Foundation\Services\CurrencyConverterService;
 
 /**
  * Trait HasPaymentState
@@ -88,7 +88,7 @@ trait HasPaymentState
                     $totalPaidInDocumentCurrency = $totalPaidInDocumentCurrency->plus($convertedAmount);
                 } catch (Exception $e) {
                     // If conversion fails, log and skip this payment
-                    Log::warning("Failed to convert payment amount for payment {$payment->id}: ".$e->getMessage());
+                    Log::warning("Failed to convert payment amount for payment {$payment->id}: " . $e->getMessage());
 
                     continue;
                 }

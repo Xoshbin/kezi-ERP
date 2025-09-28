@@ -2,27 +2,30 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
-use Filament\Actions\DetachAction;
-use Filament\Actions\DetachBulkAction;
+use Filament\Tables\Table;
+use Filament\Schemas\Schema;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\DatePicker;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DetachAction;
+use Modules\Payment\Models\Payment;
+use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
+use Filament\Actions\DetachBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Payment\Models\Payment;
 use Modules\Purchase\Models\VendorBill;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Filters\TernaryFilter;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Filament\Resources\RelationManagers\RelationManager;
+use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 
 class PaymentsRelationManager extends RelationManager
 {
@@ -130,28 +133,28 @@ class PaymentsRelationManager extends RelationManager
                     ->searchable()
                     ->placeholder(__('vendor_bill.payments_relation_manager.no_reference')),
 
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('amount')
+                MoneyColumn::make('amount')
                     ->label(__('vendor_bill.payments_relation_manager.amount'))
                     ->sortable(),
 
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('pivot.amount_applied')
+                MoneyColumn::make('pivot.amount_applied')
                     ->label(__('vendor_bill.payments_relation_manager.amount_applied'))
                     ->sortable(),
 
                 TextColumn::make('payment_type')
                     ->label(__('vendor_bill.payments_relation_manager.payment_type'))
-                    ->formatStateUsing(fn (PaymentType $state): string => $state->label())
+                    ->formatStateUsing(fn(PaymentType $state): string => $state->label())
                     ->badge()
-                    ->color(fn (PaymentType $state): string => match ($state) {
+                    ->color(fn(PaymentType $state): string => match ($state) {
                         PaymentType::Inbound => 'success',
                         PaymentType::Outbound => 'danger',
                     }),
 
                 TextColumn::make('status')
                     ->label(__('vendor_bill.payments_relation_manager.status'))
-                    ->formatStateUsing(fn (PaymentStatus $state): string => $state->label())
+                    ->formatStateUsing(fn(PaymentStatus $state): string => $state->label())
                     ->badge()
-                    ->color(fn (PaymentStatus $state): string => match ($state) {
+                    ->color(fn(PaymentStatus $state): string => match ($state) {
                         PaymentStatus::Draft => 'gray',
                         PaymentStatus::Confirmed => 'warning',
                         PaymentStatus::Reconciled => 'success',
@@ -189,7 +192,7 @@ class PaymentsRelationManager extends RelationManager
 
                 IconColumn::make('is_reconciled')
                     ->label(__('vendor_bill.payments_relation_manager.reconciliation_status'))
-                    ->getStateUsing(fn (Payment $record): bool => $record->status === PaymentStatus::Reconciled)
+                    ->getStateUsing(fn(Payment $record): bool => $record->status === PaymentStatus::Reconciled)
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
@@ -226,8 +229,8 @@ class PaymentsRelationManager extends RelationManager
                     ->trueLabel(__('vendor_bill.payments_relation_manager.filter_reconciled'))
                     ->falseLabel(__('vendor_bill.payments_relation_manager.filter_not_reconciled'))
                     ->queries(
-                        true: fn (Builder $query) => $query->where('status', PaymentStatus::Reconciled),
-                        false: fn (Builder $query) => $query->where('status', '!=', PaymentStatus::Reconciled),
+                        true: fn(Builder $query) => $query->where('status', PaymentStatus::Reconciled),
+                        false: fn(Builder $query) => $query->where('status', '!=', PaymentStatus::Reconciled),
                     ),
             ])
             ->headerActions([
@@ -245,7 +248,7 @@ class PaymentsRelationManager extends RelationManager
                 EditAction::make(),
                 DetachAction::make()
                     ->label(__('vendor_bill.payments_relation_manager.detach'))
-                    ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft),
+                    ->visible(fn(Payment $record): bool => $record->status === PaymentStatus::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

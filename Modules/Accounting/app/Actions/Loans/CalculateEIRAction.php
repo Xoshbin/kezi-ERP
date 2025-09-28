@@ -13,7 +13,9 @@ use RuntimeException;
 
 class CalculateEIRAction
 {
-    public function __construct(private readonly \Modules\Accounting\Services\Loans\EIRSolverService $eir) {}
+    public function __construct(private readonly \Modules\Accounting\Services\Loans\EIRSolverService $eir)
+    {
+    }
 
     public function execute(LoanAgreement $loan): void
     {

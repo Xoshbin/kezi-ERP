@@ -2,12 +2,26 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Product\Models\Product;
-use Modules\Purchase\Models\VendorBill;
 use Tests\TestCase;
+use Brick\Money\Money;
+use Modules\Product\Models\Product;
+use Modules\Inventory\Models\StockMove;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Inventory\Models\InventoryCostLayer;
+use Modules\Inventory\Models\StockMoveValuation;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Inventory\Models\StockMoveProductLine;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
 
 /**
  * Integration test for manual inventory recording mode
@@ -21,7 +35,8 @@ use Tests\Traits\WithConfiguredCompany;
  */
 class ManualInventoryRecordingIntegrationTest extends TestCase
 {
-    use RefreshDatabase, WithConfiguredCompany;
+    use RefreshDatabase;
+    use WithConfiguredCompany;
 
     // Properties set up by WithConfiguredCompany trait
     protected $company;

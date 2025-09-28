@@ -2,14 +2,14 @@
 
 namespace Modules\Accounting\Services\Reports;
 
-use App\DataTransferObjects\Reports\AgedReceivableDTO;
-use App\DataTransferObjects\Reports\AgedReceivableLineDTO;
-use App\Enums\Sales\InvoiceStatus;
-use App\Models\Company;
-use Brick\Money\Money;
 use Carbon\Carbon;
+use Brick\Money\Money;
+use App\Models\Company;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Accounting\DataTransferObjects\Reports\AgedReceivableDTO;
+use Modules\Accounting\DataTransferObjects\Reports\AgedReceivableLineDTO;
 
 class AgedReceivableService
 {
@@ -127,12 +127,12 @@ class AgedReceivableService
     {
         $zero = Money::zero($currency);
 
-        $totalCurrent = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->current), $zero);
-        $totalBucket1_30 = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->bucket1_30), $zero);
-        $totalBucket31_60 = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->bucket31_60), $zero);
-        $totalBucket61_90 = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->bucket61_90), $zero);
-        $totalBucket90_plus = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->bucket90_plus), $zero);
-        $grandTotalDue = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->totalDue), $zero);
+        $totalCurrent = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->current), $zero);
+        $totalBucket1_30 = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->bucket1_30), $zero);
+        $totalBucket31_60 = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->bucket31_60), $zero);
+        $totalBucket61_90 = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->bucket61_90), $zero);
+        $totalBucket90_plus = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->bucket90_plus), $zero);
+        $grandTotalDue = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->totalDue), $zero);
 
         return new AgedReceivableDTO(
             $reportLines,

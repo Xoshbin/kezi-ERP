@@ -2,8 +2,8 @@
 
 namespace Modules\Accounting\Observers;
 
-use App\Models\JournalEntry;
-use App\Models\JournalEntryLine;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\JournalEntryLine;
 
 class JournalEntryLineObserver
 {

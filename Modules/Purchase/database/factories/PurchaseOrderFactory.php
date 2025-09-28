@@ -2,11 +2,15 @@
 
 namespace Modules\Purchase\Database\Factories;
 
-use App\Models\Company;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Modules\Foundation\Models\Currency;
+use App\Models\Company;
 use Modules\Foundation\Models\Partner;
+
+use Modules\Foundation\Models\Currency;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Inventory\Models\StockLocation;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
 
 /**
  * @extends Factory<PurchaseOrder>

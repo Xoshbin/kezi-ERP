@@ -1,13 +1,14 @@
 <?php
 
-use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentStatus;
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+
+return new class() extends Migration {
     /**
      * Run the migrations.
      */

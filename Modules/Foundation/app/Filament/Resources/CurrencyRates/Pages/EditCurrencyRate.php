@@ -2,9 +2,9 @@
 
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\Pages;
 
-use App\Filament\Clusters\Settings\Resources\CurrencyRates\CurrencyRateResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\CurrencyRates\CurrencyRateResource;
 
 class EditCurrencyRate extends EditRecord
 {

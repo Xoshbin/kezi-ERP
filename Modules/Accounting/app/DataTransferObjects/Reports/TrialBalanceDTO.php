@@ -15,5 +15,6 @@ readonly class TrialBalanceDTO
         public Money $totalDebit,
         public Money $totalCredit,
         public bool $isBalanced,
-    ) {}
+    ) {
+    }
 }

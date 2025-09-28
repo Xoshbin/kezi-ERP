@@ -2,13 +2,15 @@
 
 namespace Modules\Foundation\Models;
 
-use Database\Factories\CurrencyRateFactory;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Currency;
+use Illuminate\Database\Eloquent\Builder;
+use Database\Factories\CurrencyRateFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class CurrencyRate

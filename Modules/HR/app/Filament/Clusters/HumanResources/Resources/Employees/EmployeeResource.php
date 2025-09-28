@@ -3,13 +3,19 @@
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Employees;
 
 use BackedEnum;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Filament\Schemas\Schema;
+use Modules\HR\Models\Employee;
+use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
-use Modules\HR\Models\Employee;
+use Modules\HR\Filament\Clusters\HumanResources\HumanResourcesCluster;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Employees\Pages\EditEmployee;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Employees\Pages\ListEmployees;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Employees\Pages\CreateEmployee;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Employees\Schemas\EmployeeForm;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Employees\Tables\EmployeesTable;
 
 class EmployeeResource extends Resource
 {

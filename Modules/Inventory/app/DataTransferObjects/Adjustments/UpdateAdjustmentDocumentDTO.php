@@ -3,6 +3,7 @@
 namespace Modules\Inventory\DataTransferObjects\Adjustments;
 
 use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
 
 class UpdateAdjustmentDocumentDTO
 {

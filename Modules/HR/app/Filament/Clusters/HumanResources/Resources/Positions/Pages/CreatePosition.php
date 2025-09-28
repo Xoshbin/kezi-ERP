@@ -2,8 +2,6 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\Pages;
 
-use App\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;
-use App\Models\Company;
 use Exception;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
@@ -11,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;
+
 
 class CreatePosition extends CreateRecord
 {

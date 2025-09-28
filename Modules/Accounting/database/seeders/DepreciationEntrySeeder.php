@@ -2,15 +2,15 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
-use App\Models\Journal;
-use App\Models\JournalEntry;
-use App\Models\JournalEntryLine;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Asset;
 use Modules\Accounting\Models\DepreciationEntry;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\JournalEntryLine;
 
 class DepreciationEntrySeeder extends Seeder
 {

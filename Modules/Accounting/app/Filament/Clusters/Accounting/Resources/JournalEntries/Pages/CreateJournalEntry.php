@@ -11,6 +11,10 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\JournalEntryResource;
+use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Foundation\Models\Currency;
 use PDOException;
 
@@ -69,7 +73,7 @@ class CreateJournalEntry extends CreateRecord
             // SQLite error code 19 for UNIQUE constraint failed
             $errorCode = $e->errorInfo[1] ?? null;
             $isDuplicateEntry = ($errorCode === 1062 && str_contains($e->getMessage(), 'reference_unique')) ||
-                               ($errorCode === 19 && str_contains($e->getMessage(), 'UNIQUE constraint failed') && str_contains($e->getMessage(), 'reference'));
+                ($errorCode === 19 && str_contains($e->getMessage(), 'UNIQUE constraint failed') && str_contains($e->getMessage(), 'reference'));
 
             if ($isDuplicateEntry) {
                 throw ValidationException::withMessages([
@@ -95,7 +99,7 @@ class CreateJournalEntry extends CreateRecord
     protected function getHeaderActions(): array
     {
         return [
-            \Modules\Foundation\App\Filament\Actions\DocsAction::make('opening-balances'),
+            DocsAction::make('opening-balances'),
         ];
     }
 }

@@ -9,13 +9,18 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
+use Modules\Accounting\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
+use Modules\Accounting\Models\Company;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\JournalEntryLine;
 use Modules\Foundation\Models\Currency;
 
 class UpdateJournalEntryAction
 {
     public function __construct(
         protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
-    ) {}
+    ) {
+    }
 
     public function execute(UpdateJournalEntryDTO $dto): JournalEntry
     {
@@ -71,7 +76,7 @@ class UpdateJournalEntryAction
             // Create the new lines from the DTO
             if (! empty($dto->lines)) {
                 foreach ($dto->lines as $lineDto) {
-                    $line = new JournalEntryLine;
+                    $line = new JournalEntryLine();
 
                     // First, establish the relationship. This makes the parent's context (like currency)
                     // available to the line model *before* any attributes are set. This is the key

@@ -2,16 +2,16 @@
 
 namespace Modules\Accounting\Services\Reports;
 
-use App\DataTransferObjects\Reports\ProfitAndLossStatementDTO;
-use App\DataTransferObjects\Reports\ReportLineDTO;
-use App\Enums\Accounting\AccountType;
-use App\Enums\Accounting\JournalEntryState;
-use App\Models\Company;
-use Brick\Money\Money;
 use Carbon\Carbon;
+use Brick\Money\Money;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Modules\Accounting\Models\Account;
+use App\Models\Company;
+use Modules\Accounting\Enums\Accounting\AccountType;
+use Modules\Accounting\Enums\Accounting\JournalEntryState;
+use Modules\Accounting\DataTransferObjects\Reports\ReportLineDTO;
+use Modules\Accounting\DataTransferObjects\Reports\ProfitAndLossStatementDTO;
 
 class ProfitAndLossStatementService
 {
@@ -112,12 +112,12 @@ class ProfitAndLossStatementService
             });
 
         $totalRevenue = $revenueLines->reduce(
-            fn (Money $carry, ReportLineDTO $line) => $carry->plus($line->balance),
+            fn(Money $carry, ReportLineDTO $line) => $carry->plus($line->balance),
             $zero
         );
 
         $totalExpenses = $expenseLines->reduce(
-            fn (Money $carry, ReportLineDTO $line) => $carry->plus($line->balance),
+            fn(Money $carry, ReportLineDTO $line) => $carry->plus($line->balance),
             $zero
         );
 

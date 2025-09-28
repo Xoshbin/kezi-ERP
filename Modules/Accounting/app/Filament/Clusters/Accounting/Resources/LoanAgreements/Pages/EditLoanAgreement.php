@@ -2,11 +2,11 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages;
 
-use App\Filament\Actions\DocsAction;
-use App\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Modules\Foundation\Filament\Actions\DocsAction;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
 
 class EditLoanAgreement extends EditRecord
 {

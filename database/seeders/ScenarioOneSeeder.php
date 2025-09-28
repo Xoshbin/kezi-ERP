@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Invoice;
-use App\Models\VendorBill;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -38,7 +36,7 @@ class ScenarioOneSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        (new UserSeeder)->run();
+        (new UserSeeder())->run();
 
         // Step 1.3: Create User (Soran)
         $user = DB::table('users')->insertGetId([

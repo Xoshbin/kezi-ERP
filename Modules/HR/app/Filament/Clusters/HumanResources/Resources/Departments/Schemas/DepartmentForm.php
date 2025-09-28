@@ -2,12 +2,12 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Departments\Schemas;
 
-use App\Models\Department;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Modules\HR\Models\Department;
 use Modules\HR\Models\Employee;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 

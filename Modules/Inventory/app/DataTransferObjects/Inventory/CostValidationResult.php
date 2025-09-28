@@ -2,9 +2,11 @@
 
 namespace Modules\Inventory\DataTransferObjects\Inventory;
 
+use Modules\Inventory\DataTransferObjects\Inventory\CostDeterminationResult;
+
 /**
  * Data Transfer Object for cost validation results
- * 
+ *
  * Contains the result of cost availability validation,
  * including success/failure status and guidance for resolution.
  */
@@ -15,7 +17,7 @@ readonly class CostValidationResult
         public string $message,
         public ?CostDeterminationResult $costResult = null,
         public array $suggestedActions = [],
-        public array $attemptedSources = []
+        public array $attemptedSources = [],
     ) {}
 
     /**
@@ -63,7 +65,7 @@ readonly class CostValidationResult
      */
     public static function success(
         string $message,
-        ?CostDeterminationResult $costResult = null
+        ?CostDeterminationResult $costResult = null,
     ): self {
         return new self(
             isValid: true,
@@ -78,7 +80,7 @@ readonly class CostValidationResult
     public static function failure(
         string $message,
         array $suggestedActions = [],
-        array $attemptedSources = []
+        array $attemptedSources = [],
     ): self {
         return new self(
             isValid: false,

@@ -10,7 +10,8 @@ use Tests\Traits\WithConfiguredCompany;
 
 class PurchaseOrderLineItemsBrowserTest extends DuskTestCase
 {
-    use DatabaseMigrations, WithConfiguredCompany;
+    use DatabaseMigrations;
+    use WithConfiguredCompany;
 
     protected $vendor;
     protected $product;

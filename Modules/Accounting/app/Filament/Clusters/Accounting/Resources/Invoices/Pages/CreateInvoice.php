@@ -9,7 +9,11 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
+use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Foundation\Models\Currency;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 
 class CreateInvoice extends CreateRecord
 {
@@ -62,7 +66,7 @@ class CreateInvoice extends CreateRecord
         // Set exchange_rate_at_creation if provided
         if ($exchangeRate) {
             $invoice->update([
-                'exchange_rate_at_creation' => $exchangeRate
+                'exchange_rate_at_creation' => $exchangeRate,
             ]);
         }
 
@@ -72,7 +76,7 @@ class CreateInvoice extends CreateRecord
     protected function getHeaderActions(): array
     {
         return [
-            \Modules\Foundation\App\Filament\Actions\DocsAction::make('customer-invoices'),
+            DocsAction::make('customer-invoices'),
         ];
     }
 }

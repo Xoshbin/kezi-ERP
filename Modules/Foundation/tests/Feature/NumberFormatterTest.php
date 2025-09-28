@@ -1,7 +1,7 @@
 <?php
 
-use App\Support\NumberFormatter;
 use Brick\Money\Money;
+use Modules\Foundation\Support\NumberFormatter;
 
 it('formats money with English locale by default', function () {
     $money = Money::of(1234.56, 'USD');

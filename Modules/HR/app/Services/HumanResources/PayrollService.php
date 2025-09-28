@@ -2,17 +2,24 @@
 
 namespace Modules\HR\Services\HumanResources;
 
-use App\Models\User;
-use Brick\Math\RoundingMode;
-use Brick\Money\Money;
-use Carbon\Carbon;
 use Exception;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
+use Carbon\Carbon;
+use App\Models\User;
+use Brick\Money\Money;
+use Brick\Math\RoundingMode;
 use InvalidArgumentException;
-use Modules\HR\Models\Employee;
 use Modules\HR\Models\Payroll;
+use Modules\HR\Models\Employee;
+use Illuminate\Support\Facades\DB;
+
 use Modules\Payment\Models\Payment;
+use Illuminate\Support\Facades\Gate;
+use Modules\HR\Models\EmploymentContract;
+use Modules\HR\Actions\HumanResources\ProcessPayrollAction;
+use Modules\HR\DataTransferObjects\HumanResources\PayrollLineDTO;
+use Modules\HR\DataTransferObjects\HumanResources\ProcessPayrollDTO;
+use Modules\HR\Actions\HumanResources\CreatePaymentFromPayrollAction;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryForPayrollAction;
 
 class PayrollService
 {

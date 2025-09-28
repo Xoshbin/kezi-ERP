@@ -2,7 +2,6 @@
 
 namespace Modules\Accounting\DataTransferObjects\Reports;
 
-use App\Enums\Accounting\AccountType;
 use Brick\Money\Money;
 
 readonly class TrialBalanceLineDTO
@@ -14,5 +13,6 @@ readonly class TrialBalanceLineDTO
         public \Modules\Accounting\Enums\Accounting\AccountType $accountType,
         public Money $debit,
         public Money $credit,
-    ) {}
+    ) {
+    }
 }

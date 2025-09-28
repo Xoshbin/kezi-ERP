@@ -2,9 +2,7 @@
 
 use App\Enums\Purchases\VendorBillStatus;
 use App\Enums\Sales\InvoiceStatus;
-use App\Enums\Settings\NumberingType;
 use App\Models\Invoice;
-use App\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
 
 describe('Company Numbering Settings', function () {

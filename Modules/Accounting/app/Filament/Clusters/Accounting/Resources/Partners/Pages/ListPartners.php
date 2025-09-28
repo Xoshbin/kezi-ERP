@@ -2,9 +2,9 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages;
 
-use App\Filament\Clusters\Accounting\Resources\Partners\PartnerResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\PartnerResource;
 
 class ListPartners extends ListRecords
 {

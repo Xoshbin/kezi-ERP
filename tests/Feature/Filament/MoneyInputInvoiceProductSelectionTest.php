@@ -3,10 +3,7 @@
 namespace Tests\Feature\Filament;
 
 use App\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice;
-use App\Models\Account;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Partner;
 use App\Models\Product;
 use App\Models\User;
 use Brick\Money\Money;

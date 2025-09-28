@@ -2,19 +2,22 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\RelationManagers;
 
-use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Table;
+use Filament\Schemas\Schema;
+use Modules\Payment\Models\Payment;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Payment\Models\Payment;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Accounting\Models\JournalEntry;
+use Filament\Resources\RelationManagers\RelationManager;
+use Modules\Accounting\Enums\Accounting\JournalEntryState;
+use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 
 class JournalEntriesRelationManager extends RelationManager
 {
@@ -93,12 +96,12 @@ class JournalEntriesRelationManager extends RelationManager
                     ->label(__('payment.journal_entries_relation_manager.journal'))
                     ->toggleable(),
 
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_debit')
+                MoneyColumn::make('total_debit')
                     ->label(__('payment.journal_entries_relation_manager.total_debit'))
                     ->sortable()
                     ->toggleable(),
 
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_credit')
+                MoneyColumn::make('total_credit')
                     ->label(__('payment.journal_entries_relation_manager.total_credit'))
                     ->sortable()
                     ->toggleable(),
@@ -106,7 +109,7 @@ class JournalEntriesRelationManager extends RelationManager
                 TextColumn::make('state')
                     ->label(__('payment.journal_entries_relation_manager.state'))
                     ->badge()
-                    ->color(fn (JournalEntryState $state): string => match ($state) {
+                    ->color(fn(JournalEntryState $state): string => match ($state) {
                         JournalEntryState::Posted => 'success',
                         JournalEntryState::Reversed => 'danger',
                         default => 'gray',
@@ -120,19 +123,19 @@ class JournalEntriesRelationManager extends RelationManager
                         }
 
                         return match ($state) {
-                            'App\Models\Payment' => __('payment.journal_entries_relation_manager.source_payment'),
-                            'App\Models\BankStatementLine' => __('payment.journal_entries_relation_manager.source_reconciliation'),
-                            'App\Models\Invoice' => __('payment.journal_entries_relation_manager.source_invoice'),
-                            'App\Models\VendorBill' => __('payment.journal_entries_relation_manager.source_vendor_bill'),
+                            'Modules\Accounting\Models\Payment' => __('payment.journal_entries_relation_manager.source_payment'),
+                            'Modules\Accounting\Models\BankStatementLine' => __('payment.journal_entries_relation_manager.source_reconciliation'),
+                            'Modules\Accounting\Models\Invoice' => __('payment.journal_entries_relation_manager.source_invoice'),
+                            'Modules\Accounting\Models\VendorBill' => __('payment.journal_entries_relation_manager.source_vendor_bill'),
                             default => class_basename($state),
                         };
                     })
                     ->badge()
-                    ->color(fn (?string $state): string => match ($state) {
-                        'App\Models\Payment' => 'primary',
-                        'App\Models\BankStatementLine' => 'warning',
-                        'App\Models\Invoice' => 'info',
-                        'App\Models\VendorBill' => 'secondary',
+                    ->color(fn(?string $state): string => match ($state) {
+                        'Modules\Accounting\Models\Payment' => 'primary',
+                        'Modules\Accounting\Models\BankStatementLine' => 'warning',
+                        'Modules\Accounting\Models\Invoice' => 'info',
+                        'Modules\Accounting\Models\VendorBill' => 'secondary',
                         default => 'gray',
                     })
                     ->toggleable(),
@@ -151,10 +154,10 @@ class JournalEntriesRelationManager extends RelationManager
                 SelectFilter::make('source_type')
                     ->label(__('payment.journal_entries_relation_manager.filter_source_type'))
                     ->options([
-                        'App\Models\Payment' => __('payment.journal_entries_relation_manager.source_payment'),
-                        'App\Models\BankStatementLine' => __('payment.journal_entries_relation_manager.source_reconciliation'),
-                        'App\Models\Invoice' => __('payment.journal_entries_relation_manager.source_invoice'),
-                        'App\Models\VendorBill' => __('payment.journal_entries_relation_manager.source_vendor_bill'),
+                        'Modules\Accounting\Models\Payment' => __('payment.journal_entries_relation_manager.source_payment'),
+                        'Modules\Accounting\Models\BankStatementLine' => __('payment.journal_entries_relation_manager.source_reconciliation'),
+                        'Modules\Accounting\Models\Invoice' => __('payment.journal_entries_relation_manager.source_invoice'),
+                        'Modules\Accounting\Models\VendorBill' => __('payment.journal_entries_relation_manager.source_vendor_bill'),
                     ]),
             ])
             ->recordActions([

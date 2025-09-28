@@ -10,6 +10,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Accounting\Enums\Assets\DepreciationEntryStatus;
 use Modules\Accounting\Models\DepreciationEntry;
 
 class DepreciationEntryRelationManager extends RelationManager

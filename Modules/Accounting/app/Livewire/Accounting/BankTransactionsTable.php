@@ -2,28 +2,29 @@
 
 namespace Modules\Accounting\Livewire\Accounting;
 
-use Brick\Money\Money;
 use Exception;
+use Brick\Money\Money;
+use Livewire\Component;
+use Filament\Tables\Table;
 use Filament\Actions\Action;
-use Filament\Actions\Concerns\InteractsWithActions;
-use Filament\Actions\Contracts\HasActions;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Support\Contracts\TranslatableContentDriver;
+use Modules\Accounting\Models\Account;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
-use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
-use Filament\Tables\Table;
-use Illuminate\Contracts\View\View;
+use Filament\Actions\Contracts\HasActions;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
-use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\BankStatement;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Tables\Concerns\InteractsWithTable;
 use Modules\Accounting\Models\BankStatementLine;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Support\Contracts\TranslatableContentDriver;
+use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 
 class BankTransactionsTable extends Component implements HasActions, HasForms, HasTable
 {
@@ -62,7 +63,7 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
                     ->label(__('bank_statement.description'))
                     ->searchable()
                     ->limit(50),
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('amount')
+                MoneyColumn::make('amount')
                     ->label(__('bank_statement.amount'))
                     ->sortable(),
             ])
@@ -118,7 +119,7 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
     public function toggleBankLine(int $lineId): void
     {
         if (in_array($lineId, $this->selectedBankLines)) {
-            $this->selectedBankLines = array_filter($this->selectedBankLines, fn ($id) => $id !== $lineId);
+            $this->selectedBankLines = array_filter($this->selectedBankLines, fn($id) => $id !== $lineId);
         } else {
             $this->selectedBankLines[] = $lineId;
         }

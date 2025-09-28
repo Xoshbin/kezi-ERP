@@ -2,14 +2,15 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\Schemas;
 
-
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Modules\HR\Models\Department;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Textarea;
 use Modules\Foundation\Models\Currency;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PositionForm
@@ -103,12 +104,12 @@ class PositionForm
                         ->live()
                         ->columnSpan(3),
 
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('min_salary')
+                    MoneyInput::make('min_salary')
                         ->label(__('position.min_salary'))
                         ->currencyField('currency_id')
                         ->columnSpan(1),
 
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('max_salary')
+                    MoneyInput::make('max_salary')
                         ->label(__('position.max_salary'))
                         ->currencyField('currency_id')
                         ->columnSpan(1),

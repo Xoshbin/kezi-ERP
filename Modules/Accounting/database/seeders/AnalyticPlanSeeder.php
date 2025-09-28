@@ -2,10 +2,10 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
-use App\Models\AnalyticPlan;
-use App\Models\Company;
 use Exception;
+use App\Models\Company;
 use Illuminate\Database\Seeder;
+use Modules\Accounting\Models\AnalyticPlan;
 
 class AnalyticPlanSeeder extends Seeder
 {

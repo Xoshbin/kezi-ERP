@@ -1,10 +1,12 @@
 <?php
 
-use App\Models\Company;
 use App\Models\User;
-use Filament\Facades\Filament;
 use Livewire\Livewire;
+use App\Models\Company;
+use Filament\Facades\Filament;
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Enums\Accounting\AccountType;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
 
 beforeEach(function () {
     $this->user = User::factory()->create();

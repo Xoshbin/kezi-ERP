@@ -2,10 +2,14 @@
 
 namespace Modules\Inventory\Models;
 
-use App\Enums\Inventory\ReorderingRoute;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Company;
+use Modules\Product\Models\Product;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Models\ReorderingRule;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Inventory\Enums\Inventory\ReorderingRoute;
 
 class ReplenishmentSuggestion extends Model
 {

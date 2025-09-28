@@ -2,16 +2,24 @@
 
 namespace Modules\Foundation\Tests\Feature\General;
 
+use RuntimeException;
 use Brick\Money\Money;
-use Illuminate\Database\QueryException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Sales\Models\Invoice;
+use Modules\Product\Models\Product;
 use Modules\Accounting\Models\Account;
 use Modules\Foundation\Models\Partner;
-use Modules\Product\Models\Product;
+use Illuminate\Database\QueryException;
 use Modules\Purchase\Models\VendorBill;
-use Modules\Sales\Models\Invoice;
-use RuntimeException;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Sales\Services\InvoiceService;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Services\JournalEntryService;
+use Modules\Inventory\Services\Inventory\StockMoveService;
+use Modules\Foundation\Exceptions\DeletionNotAllowedException;
+use Modules\Purchase\Actions\Purchases\CreateVendorBillLineAction;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -47,7 +55,7 @@ test('a journal entry line cannot be deleted from a posted journal entry', funct
     ]);
 
     // Act & Assert: Attempting to delete the line directly should throw a RuntimeException.
-    expect(fn () => $lineToDelete->delete())
+    expect(fn() => $lineToDelete->delete())
         ->toThrow(
             RuntimeException::class,
             'Cannot delete a journal entry line because its parent journal entry is already posted.'
@@ -76,7 +84,7 @@ test('a partner linked to a posted invoice cannot be deleted', function () {
     ]);
 
     // Act & Assert: Attempting to delete the partner should be blocked by our observer.
-    expect(fn () => $customer->delete())
+    expect(fn() => $customer->delete())
         ->toThrow(
             \Modules\Foundation\Exceptions\DeletionNotAllowedException::class,
             'Cannot delete a partner with associated financial documents (invoices, bills, or payments).'
@@ -118,7 +126,7 @@ test('a product linked to a posted vendor bill line cannot be deleted', function
     // --- END OF FIX ---
 
     // Assert: Attempting to delete the product should be blocked by the ProductObserver.
-    expect(fn () => $product->delete())
+    expect(fn() => $product->delete())
         ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a product that has been used in transactions.');
 
     // Verify: The product must not have been soft-deleted.

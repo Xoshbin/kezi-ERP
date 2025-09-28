@@ -2,11 +2,11 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages;
 
-use App\Filament\Clusters\Accounting\Resources\Partners\PartnerResource;
-use App\Filament\Clusters\Accounting\Resources\Partners\Widgets\VendorFinancialWidget;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\PartnerResource;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Widgets\VendorFinancialWidget;
 
 class EditPartner extends EditRecord
 {

@@ -2,9 +2,9 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use App\Models\AnalyticAccount;
-use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Accounting\Models\AnalyticAccount;
+use App\Models\Company;
 use Modules\Foundation\Models\Currency;
 
 /**

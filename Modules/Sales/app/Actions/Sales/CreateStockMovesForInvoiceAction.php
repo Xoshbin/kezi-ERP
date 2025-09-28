@@ -2,18 +2,32 @@
 
 namespace Modules\Sales\Actions\Sales;
 
-use App\Models\User;
 use Exception;
+use App\Models\User;
+use Modules\Sales\Models\Invoice;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
-use Modules\Sales\Models\Invoice;
 use Modules\Sales\Models\InvoiceLine;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockPicking;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Modules\Inventory\Enums\Inventory\StockLocationType;
+use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
+use Modules\Inventory\Services\Inventory\StockReservationService;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use Modules\Sales\DataTransferObjects\Sales\CreateStockMovesForInvoiceDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
+
 
 class CreateStockMovesForInvoiceAction
 {
     public function __construct(
-        protected \Modules\Inventory\Actions\Inventory\CreateStockMoveAction $createStockMoveAction
+        protected \Modules\Inventory\Actions\Inventory\CreateStockMoveAction $createStockMoveAction,
     ) {}
 
     /**
@@ -113,7 +127,7 @@ class CreateStockMovesForInvoiceAction
         InvoiceLine $line,
         User $user,
         StockLocation $warehouseLocation,
-        StockLocation $customerLocation
+        StockLocation $customerLocation,
     ): StockMove {
         if (! $line->product_id) {
             throw new Exception('Invoice line must have a product to create stock move');

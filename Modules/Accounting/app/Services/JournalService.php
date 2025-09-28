@@ -2,9 +2,9 @@
 
 namespace Modules\Accounting\Services;
 
-use App\Models\Journal;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Modules\Accounting\Models\Journal;
 
 class JournalService
 {

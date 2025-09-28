@@ -1,7 +1,7 @@
 <?php
 
-use App\Enums\Settings\NumberingType;
 use Carbon\Carbon;
+use Modules\Foundation\Enums\Settings\NumberingType;
 
 describe('NumberingType Enum', function () {
     it('can format numbers with simple type', function () {

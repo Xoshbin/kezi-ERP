@@ -4,6 +4,8 @@ namespace Modules\Payment\DataTransferObjects\Payments;
 
 use Brick\Money\Money;
 use Modules\Payment\Models\Payment;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Enums\Payments\PaymentMethod;
 
 class UpdatePaymentDTO
 {
@@ -22,6 +24,6 @@ class UpdatePaymentDTO
         public readonly ?Money $amount,
         public readonly array $document_links,
         public readonly ?string $reference,
-        public readonly int $updated_by_user_id
+        public readonly int $updated_by_user_id,
     ) {}
 }

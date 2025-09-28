@@ -2,10 +2,10 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages;
 
-use App\Filament\Clusters\Inventory\Resources\StockPickingResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource;
 
 class EditStockPicking extends EditRecord
 {

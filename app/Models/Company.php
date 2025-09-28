@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\Purchases\VendorBillStatus;
-use App\Enums\Settings\NumberingType;
 use App\Observers\CompanyObserver;
 use Carbon\Carbon;
 use Database\Factories\CompanyFactory;

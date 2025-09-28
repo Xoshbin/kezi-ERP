@@ -2,9 +2,9 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AuditLogs\Pages;
 
-use App\Filament\Clusters\Accounting\Resources\AuditLogs\AuditLogResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AuditLogs\AuditLogResource;
 
 class EditAuditLog extends EditRecord
 {

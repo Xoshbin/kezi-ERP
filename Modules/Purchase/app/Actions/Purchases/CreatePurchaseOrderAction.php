@@ -2,11 +2,12 @@
 
 namespace Modules\Purchase\Actions\Purchases;
 
-use App\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
 use App\Models\Company;
-use App\Models\PurchaseOrder;
-use App\Services\Accounting\LockDateService;
 use Illuminate\Support\Facades\DB;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
+
+
 
 /**
  * Action for creating a new Purchase Order
@@ -15,7 +16,7 @@ class CreatePurchaseOrderAction
 {
     public function __construct(
         protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
-        protected CreatePurchaseOrderLineAction $createLineAction
+        protected CreatePurchaseOrderLineAction $createLineAction,
     ) {}
 
     /**
@@ -24,7 +25,7 @@ class CreatePurchaseOrderAction
     public function execute(CreatePurchaseOrderDTO $dto): PurchaseOrder
     {
         $this->lockDateService->enforce(
-            Company::findOrFail($dto->company_id), 
+            Company::findOrFail($dto->company_id),
             $dto->po_date
         );
 

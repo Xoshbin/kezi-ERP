@@ -150,7 +150,7 @@ class ExchangeRateService
      */
     public function getHistoricalRates(Currency $currency, Carbon $startDate, Carbon $endDate)
     {
-        /** @var Collection<int, \App\Models\CurrencyRate> */
+        /** @var Collection<int, \Modules\Foundation\Models\CurrencyRate> */
         return $currency->rates()
             ->whereBetween('effective_date', [$startDate->toDateString(), $endDate->toDateString()])
             ->orderBy('effective_date', 'asc')

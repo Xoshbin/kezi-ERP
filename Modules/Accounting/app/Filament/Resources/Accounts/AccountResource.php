@@ -3,20 +3,25 @@
 namespace Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts;
 
 use BackedEnum;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
+use Filament\Tables\Table;
 use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Resources\Resource;
+use Filament\Actions\BulkActionGroup;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Actions\DeleteBulkAction;
+use Modules\Accounting\Models\Account;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use App\Filament\Clusters\Settings\SettingsCluster;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
-use Modules\Accounting\Models\Account;
+use Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts\Pages\EditAccount;
+use Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts\Pages\ListAccounts;
+use Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts\Pages\CreateAccount;
+use Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts\RelationManagers\JournalEntryLinesRelationManager;
 
 class AccountResource extends Resource
 {
@@ -60,7 +65,7 @@ class AccountResource extends Resource
                             ->required()
                             ->options(
                                 collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())
-                                    ->mapWithKeys(fn (\Modules\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
+                                    ->mapWithKeys(fn(\Modules\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
                             )
                             ->searchable(),
                         Toggle::make('is_deprecated')

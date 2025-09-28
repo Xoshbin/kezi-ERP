@@ -1,8 +1,10 @@
 <?php
 
-use Modules\Purchase\Models\VendorBill;
 use Modules\Sales\Models\Invoice;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 
 describe('NumberingSettingsChangeRule', function () {
     uses(WithConfiguredCompany::class);

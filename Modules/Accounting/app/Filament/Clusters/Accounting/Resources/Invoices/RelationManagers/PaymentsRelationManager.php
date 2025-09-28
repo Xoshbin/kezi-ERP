@@ -2,8 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers;
 
-
-use App\Filament\Tables\Columns\MoneyColumn;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DetachAction;
@@ -23,6 +21,9 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Payment\Enums\Payments\PaymentType;
 use Modules\Payment\Models\Payment;
 use Modules\Sales\Models\Invoice;
 
@@ -132,11 +133,11 @@ class PaymentsRelationManager extends RelationManager
                     ->searchable()
                     ->placeholder(__('invoice.payments_relation_manager.no_reference')),
 
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('amount')
+                MoneyColumn::make('amount')
                     ->label(__('invoice.payments_relation_manager.amount'))
                     ->sortable(),
 
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('pivot.amount_applied')
+                MoneyColumn::make('pivot.amount_applied')
                     ->label(__('invoice.payments_relation_manager.amount_applied'))
                     ->sortable(),
 

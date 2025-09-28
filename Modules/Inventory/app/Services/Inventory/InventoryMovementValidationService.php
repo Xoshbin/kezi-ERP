@@ -3,6 +3,9 @@
 namespace Modules\Inventory\Services\Inventory;
 
 use Modules\Product\Models\Product;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\DataTransferObjects\Inventory\InventoryMovementValidationResult;
 
 /**
  * Service for validating inventory movements before execution
@@ -13,7 +16,7 @@ use Modules\Product\Models\Product;
 class InventoryMovementValidationService
 {
     public function __construct(
-        private ProductCostAnalysisService $costAnalysisService
+        private ProductCostAnalysisService $costAnalysisService,
     ) {}
 
     /**
@@ -27,7 +30,7 @@ class InventoryMovementValidationService
     public function validateMovement(
         Product $product,
         StockMoveType $moveType,
-        float $quantity
+        float $quantity,
     ): InventoryMovementValidationResult {
 
         $errors = [];

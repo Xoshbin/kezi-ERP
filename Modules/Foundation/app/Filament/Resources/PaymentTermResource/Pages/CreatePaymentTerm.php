@@ -2,9 +2,9 @@
 
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\PaymentTermResource\Pages;
 
-use App\Filament\Actions\DocsAction;
-use App\Filament\Clusters\Settings\Resources\PaymentTermResource;
 use Filament\Resources\Pages\CreateRecord;
+use Modules\Foundation\Filament\Actions\DocsAction;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\PaymentTermResource;
 
 class CreatePaymentTerm extends CreateRecord
 {

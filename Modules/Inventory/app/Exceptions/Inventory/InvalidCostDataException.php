@@ -19,7 +19,7 @@ class InvalidCostDataException extends Exception
         public readonly string $costSource,
         public readonly ?Money $invalidCost = null,
         public readonly string $reason = '',
-        string $message = null
+        string $message = null,
     ) {
         $defaultMessage = "Invalid cost data for product '{$product->name}' (ID: {$product->id}) from source '{$costSource}'.";
 

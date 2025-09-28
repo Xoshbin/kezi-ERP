@@ -2,8 +2,8 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\Pages;
 
-use App\Filament\Clusters\Inventory\Resources\StockLocations\StockLocationResource;
 use Filament\Resources\Pages\CreateRecord;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\StockLocationResource;
 
 class CreateStockLocation extends CreateRecord
 {

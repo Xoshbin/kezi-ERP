@@ -2,19 +2,14 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Widgets;
 
-use App\DataTransferObjects\Reports\BalanceSheetDTO;
-use App\Models\Company;
-use App\Services\Reports\AgedPayableService;
-use App\Services\Reports\AgedReceivableService;
-use App\Services\Reports\BalanceSheetService;
-use App\Services\Reports\ProfitAndLossStatementService;
-use App\Support\NumberFormatter;
-use Brick\Money\Money;
-use Carbon\Carbon;
 use Exception;
+use Carbon\Carbon;
+use Brick\Money\Money;
+use App\Models\Company;
 use Filament\Facades\Filament;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use Modules\Accounting\DataTransferObjects\Reports\BalanceSheetDTO;
 
 class FinancialStatsOverview extends BaseWidget
 {
@@ -59,9 +54,7 @@ class FinancialStatsOverview extends BaseWidget
             $cashBalance = $this->calculateCashBalance($bsDto);
 
             // 6. Gross Profit Margin (if we have revenue)
-            $grossProfitMargin = $totalRevenue->isZero() ? 0 :
-                ($totalRevenue->minus($plDto->totalExpenses))->getAmount()->toFloat() / $totalRevenue->getAmount()->toFloat() * 100;
-
+            $grossProfitMargin = $totalRevenue->isZero() ? 0 : ($totalRevenue->minus($plDto->totalExpenses))->getAmount()->toFloat() / $totalRevenue->getAmount()->toFloat() * 100;
         } catch (Exception) {
             // Fallback to zero values if services fail
             return [
@@ -120,8 +113,10 @@ class FinancialStatsOverview extends BaseWidget
         // Sum all bank and cash accounts from assets
         foreach ($balanceSheetDto->assetLines as $line) {
             // Assuming cash accounts have specific naming or we can identify them
-            if (str_contains(strtolower($line->accountName), 'cash') ||
-                str_contains(strtolower($line->accountName), 'bank')) {
+            if (
+                str_contains(strtolower($line->accountName), 'cash') ||
+                str_contains(strtolower($line->accountName), 'bank')
+            ) {
                 $cashBalance = $cashBalance->plus($line->balance);
             }
         }

@@ -2,9 +2,12 @@
 
 namespace Modules\Inventory\Console\Commands;
 
-use App\Models\Company;
 use Exception;
+use App\Models\Company;
 use Illuminate\Console\Command;
+use Modules\Inventory\Services\Inventory\InventoryQueryOptimizationService;
+use Modules\Inventory\Services\Inventory\InventoryPerformanceMonitoringService;
+
 
 class InventoryPerformanceAnalysis extends Command
 {
@@ -26,7 +29,7 @@ class InventoryPerformanceAnalysis extends Command
      */
     public function handle(
         InventoryPerformanceMonitoringService $monitoringService,
-        InventoryQueryOptimizationService $optimizationService
+        InventoryQueryOptimizationService $optimizationService,
     ): int {
         $this->info('🔍 Starting Inventory Performance Analysis...');
         $this->newLine();
@@ -85,7 +88,7 @@ class InventoryPerformanceAnalysis extends Command
     private function displayResults(array $report): void
     {
         // Overall health
-        $healthColor = match($report['overall_health']) {
+        $healthColor = match ($report['overall_health']) {
             'excellent' => 'green',
             'good' => 'cyan',
             'fair' => 'yellow',
@@ -109,7 +112,7 @@ class InventoryPerformanceAnalysis extends Command
                 $tableName,
                 number_format($data['size_mb'], 2),
                 number_format($data['rows']),
-                "<fg={$statusColor}>{$status}</fg>"
+                "<fg={$statusColor}>{$status}</fg>",
             ];
         }
 
@@ -124,7 +127,7 @@ class InventoryPerformanceAnalysis extends Command
         foreach ($report['query_performance'] as $queryType => $data) {
             if (isset($data['execution_time_ms'])) {
                 $rating = $data['performance_rating'];
-                $ratingColor = match($rating) {
+                $ratingColor = match ($rating) {
                     'excellent' => 'green',
                     'good' => 'cyan',
                     'fair' => 'yellow',
@@ -138,7 +141,7 @@ class InventoryPerformanceAnalysis extends Command
                     ucwords(str_replace('_', ' ', $queryType)),
                     number_format($data['execution_time_ms'], 2),
                     "<fg={$ratingColor}>" . strtoupper($rating) . '</fg>',
-                    $status
+                    $status,
                 ];
             }
         }
@@ -197,7 +200,7 @@ class InventoryPerformanceAnalysis extends Command
 
             $this->line(
                 "{$priorityIcon} <fg={$priorityColor}>[" . strtoupper($rec['priority']) . "]</fg> " .
-                "<fg=cyan>{$rec['category']}</fg>: {$rec['recommendation']}"
+                    "<fg=cyan>{$rec['category']}</fg>: {$rec['recommendation']}"
             );
         }
 
@@ -238,7 +241,7 @@ class InventoryPerformanceAnalysis extends Command
                         $report['optimization_recommendations'],
                         fn($r) => $r['priority'] === 'high'
                     )),
-                ]
+                ],
             ];
 
             $content = json_encode($exportData, JSON_PRETTY_PRINT);

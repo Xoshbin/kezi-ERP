@@ -4,7 +4,7 @@ namespace Modules\Inventory\DataTransferObjects\Inventory;
 
 /**
  * Data Transfer Object for inventory movement validation results
- * 
+ *
  * Contains comprehensive validation information including errors,
  * warnings, and requirements for inventory movements.
  */
@@ -15,8 +15,9 @@ readonly class InventoryMovementValidationResult
         public string $status, // 'success', 'warning', 'failed'
         public array $errors = [],
         public array $warnings = [],
-        public array $requirements = []
-    ) {}
+        public array $requirements = [],
+    ) {
+    }
 
     /**
      * Check if the validation passed
@@ -103,7 +104,7 @@ readonly class InventoryMovementValidationResult
     public static function failed(
         array $errors,
         array $warnings = [],
-        array $requirements = []
+        array $requirements = [],
     ): self {
         return new self(
             isValid: false,
@@ -130,12 +131,12 @@ readonly class InventoryMovementValidationResult
 
         $errorCount = count($this->errors);
         $warningCount = count($this->warnings);
-        
+
         $summary = "Validation failed with {$errorCount} error(s)";
         if ($warningCount > 0) {
             $summary .= " and {$warningCount} warning(s)";
         }
-        
+
         return $summary;
     }
 

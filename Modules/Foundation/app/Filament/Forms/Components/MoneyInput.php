@@ -2,14 +2,14 @@
 
 namespace Modules\Foundation\Filament\Forms\Components;
 
-use Brick\Math\Exception\RoundingNecessaryException;
-use Brick\Math\RoundingMode;
 use Brick\Money\Money;
+use Brick\Math\RoundingMode;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Foundation\Models\Currency;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Utilities\Get;
+use Brick\Math\Exception\RoundingNecessaryException;
 
 class MoneyInput extends TextInput
 {
@@ -39,7 +39,7 @@ class MoneyInput extends TextInput
 
                 return $state;
             })
-            ->dehydrateStateUsing(fn ($state) => $state)
+            ->dehydrateStateUsing(fn($state) => $state)
 
             // Pass the `Get` helper to your closures
             ->prefix(function (MoneyInput $component, Get $get) {

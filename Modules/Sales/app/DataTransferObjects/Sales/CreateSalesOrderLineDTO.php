@@ -27,5 +27,6 @@ readonly class CreateSalesOrderLineDTO
         public ?int $tax_id = null,
         public ?Carbon $expected_delivery_date = null,
         public ?string $notes = null,
-    ) {}
+    ) {
+    }
 }

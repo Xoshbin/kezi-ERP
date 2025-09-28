@@ -2,8 +2,10 @@
 
 namespace Modules\Purchase\Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Product\Models\Product;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Models\PurchaseOrderLine;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<PurchaseOrderLine>

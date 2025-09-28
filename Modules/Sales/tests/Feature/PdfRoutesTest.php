@@ -1,10 +1,14 @@
 <?php
 
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\Partner;
+use App\Models\User;
+use App\Models\Company;
 use Modules\Sales\Models\Invoice;
 use Modules\Sales\Models\InvoiceLine;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Partner;
+use Modules\Foundation\Models\Currency;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Foundation\Enums\Partners\PartnerType;
 
 beforeEach(function () {
     $this->user = User::factory()->create();

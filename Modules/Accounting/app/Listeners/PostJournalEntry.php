@@ -2,9 +2,12 @@
 
 namespace Modules\Accounting\Listeners;
 
+use Illuminate\Bus\Dispatcher;
+use Modules\Sales\Events\InvoiceConfirmed;
 use Modules\Payment\Events\PaymentConfirmed;
 use Modules\Purchase\Events\VendorBillConfirmed;
-use Modules\Sales\Events\InvoiceConfirmed;
+use Modules\Accounting\Services\JournalEntryService;
+use Modules\Inventory\Events\AdjustmentDocumentPosted;
 
 class PostJournalEntry
 {

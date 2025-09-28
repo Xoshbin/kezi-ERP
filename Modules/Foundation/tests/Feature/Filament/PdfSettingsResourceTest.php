@@ -1,12 +1,14 @@
 <?php
 
-use App\Models\Company;
 use App\Models\User;
-use Filament\Facades\Filament;
 use Livewire\Livewire;
+use App\Models\Company;
+use Filament\Facades\Filament;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\PdfSettingsResource;
 use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\Pages\EditPdfSettings;
 use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\Pages\ListPdfSettings;
-use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\PdfSettingsResource;
+
+
 
 beforeEach(function () {
     $this->user = User::factory()->create();

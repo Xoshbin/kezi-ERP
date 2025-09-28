@@ -3,8 +3,12 @@
 namespace Modules\Inventory\Database\Factories;
 
 use App\Models\Company;
-use Illuminate\Database\Eloquent\Factories\Factory;
+
 use Modules\Product\Models\Product;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Models\ReorderingRule;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Inventory\Enums\Inventory\ReorderingRoute;
 
 /**
  * @extends Factory<ReorderingRule>
@@ -39,7 +43,7 @@ class ReorderingRuleFactory extends Factory
      */
     public function minMax(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'route' => ReorderingRoute::MinMax,
             'min_qty' => $this->faker->numberBetween(5, 20),
             'max_qty' => $this->faker->numberBetween(50, 100),
@@ -51,7 +55,7 @@ class ReorderingRuleFactory extends Factory
      */
     public function mto(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'route' => ReorderingRoute::MTO,
             'min_qty' => 0,
             'max_qty' => 0,
@@ -64,7 +68,7 @@ class ReorderingRuleFactory extends Factory
      */
     public function inactive(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'active' => false,
         ]);
     }

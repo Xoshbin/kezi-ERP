@@ -6,6 +6,7 @@ use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Enums\Loans\ScheduleMethod;
 use Modules\Accounting\Models\LoanAgreement;
 use Modules\Accounting\Models\LoanRateChange;
 use Modules\Accounting\Models\LoanScheduleEntry;
@@ -13,7 +14,9 @@ use RuntimeException;
 
 class ComputeLoanScheduleAction
 {
-    public function __construct(private readonly \Modules\Accounting\Services\Loans\InterestCalculatorService $interestCalc) {}
+    public function __construct(private readonly \Modules\Accounting\Services\Loans\InterestCalculatorService $interestCalc)
+    {
+    }
 
     public function execute(LoanAgreement $loan): void
     {
@@ -68,7 +71,7 @@ class ComputeLoanScheduleAction
 
                 $balance = $balance->minus($principalComponent);
 
-                $entry = new LoanScheduleEntry;
+                $entry = new LoanScheduleEntry();
                 $entry->loan()->associate($loan);
                 $entry->sequence = $i;
                 $entry->due_date = $date->copy()->addMonths($i);

@@ -2,13 +2,17 @@
 
 namespace Modules\Accounting\Services\Reports;
 
-use App\Models\Company;
-use Brick\Money\Money;
 use Carbon\Carbon;
+use Brick\Money\Money;
+use InvalidArgumentException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
+use App\Models\Company;
 use Modules\Foundation\Models\Partner;
+use Modules\Accounting\Models\JournalEntryLine;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\DataTransferObjects\Reports\PartnerLedgerDTO;
+use Modules\Accounting\DataTransferObjects\Reports\PartnerLedgerTransactionLineDTO;
 
 class PartnerLedgerService
 {
@@ -54,7 +58,7 @@ class PartnerLedgerService
         $openingBalance = $this->calculatePartnerBalance($receivableOpeningBalance, $payableOpeningBalance);
 
         $runningBalance = $openingBalance;
-        $transactionLines = new Collection;
+        $transactionLines = new Collection();
 
         foreach ($allTransactions as $line) {
             $debit = $line->debit;
@@ -104,7 +108,7 @@ class PartnerLedgerService
     private function getTransactionsForAccount(int $accountId, Carbon $startDate, Carbon $endDate): Collection
     {
         return JournalEntryLine::query()
-            ->with(['journalEntry' => fn ($q) => $q->with('journal')]) // Eager load for type lookup
+            ->with(['journalEntry' => fn($q) => $q->with('journal')]) // Eager load for type lookup
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
             ->where('journal_entry_lines.account_id', $accountId)
             ->where('journal_entries.state', 'posted')

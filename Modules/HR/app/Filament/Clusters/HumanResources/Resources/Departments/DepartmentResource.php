@@ -2,18 +2,18 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Departments;
 
-use App\Filament\Clusters\HumanResources\HumanResourcesCluster;
-use App\Filament\Clusters\HumanResources\Resources\Departments\Pages\CreateDepartment;
-use App\Filament\Clusters\HumanResources\Resources\Departments\Pages\EditDepartment;
-use App\Filament\Clusters\HumanResources\Resources\Departments\Pages\ListDepartments;
-use App\Filament\Clusters\HumanResources\Resources\Departments\Schemas\DepartmentForm;
-use App\Filament\Clusters\HumanResources\Resources\Departments\Tables\DepartmentsTable;
-use App\Models\Department;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\HR\Filament\Clusters\HumanResources\HumanResourcesCluster;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Departments\Pages\CreateDepartment;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Departments\Pages\EditDepartment;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Departments\Pages\ListDepartments;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Departments\Schemas\DepartmentForm;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Departments\Tables\DepartmentsTable;
+use Modules\HR\Models\Department;
 
 class DepartmentResource extends Resource
 {

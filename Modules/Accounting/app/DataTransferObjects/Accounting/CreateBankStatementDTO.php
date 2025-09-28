@@ -18,5 +18,6 @@ class CreateBankStatementDTO
         public readonly Money $starting_balance,
         public readonly Money $ending_balance,
         public readonly array $lines,
-    ) {}
+    ) {
+    }
 }

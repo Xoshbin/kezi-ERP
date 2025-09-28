@@ -1,11 +1,21 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Asset;
-use Modules\Foundation\Exceptions\DeletionNotAllowedException;
-use Modules\Foundation\Exceptions\UpdateNotAllowedException;
+use Modules\Accounting\Models\Account;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Accounting\Enums\Assets\AssetStatus;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Assets\DepreciationMethod;
+use Modules\Accounting\Actions\Assets\CreateAssetAction;
+use Modules\Accounting\Actions\Assets\UpdateAssetAction;
+use Modules\Accounting\Actions\Assets\DisposeAssetAction;
+use Modules\Accounting\Enums\Assets\DepreciationEntryStatus;
+use Modules\Foundation\Exceptions\UpdateNotAllowedException;
+use Modules\Foundation\Exceptions\DeletionNotAllowedException;
+use Modules\Accounting\DataTransferObjects\Assets\UpdateAssetDTO;
+use Modules\Accounting\Actions\Assets\PostDepreciationEntryAction;
+use Modules\Accounting\DataTransferObjects\Assets\DisposeAssetDTO;
+use Modules\Accounting\Actions\Assets\ComputeDepreciationScheduleAction;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -34,7 +44,7 @@ test('asset can be created manually and confirmed', function () {
     );
 
     // Act
-    $asset = (new CreateAssetAction)->execute($assetDTO);
+    $asset = (new CreateAssetAction())->execute($assetDTO);
 
     // Assert
     $this->assertDatabaseHas('assets', [
@@ -69,7 +79,7 @@ test('confirming asset generates initial journal entry', function () {
         accumulated_depreciation_account_id: $this->accumulatedDepreciationAccount->id,
         currency_id: $this->company->currency_id
     );
-    $asset = (new CreateAssetAction)->execute($assetDTO);
+    $asset = (new CreateAssetAction())->execute($assetDTO);
 
     // Act
     $asset->status = AssetStatus::Confirmed;
@@ -113,12 +123,12 @@ test('depreciation calculation generates correct draft entries', function () {
         accumulated_depreciation_account_id: $this->accumulatedDepreciationAccount->id,
         currency_id: $this->company->currency_id
     );
-    $asset = (new CreateAssetAction)->execute($assetDTO);
+    $asset = (new CreateAssetAction())->execute($assetDTO);
     $asset->status = AssetStatus::Confirmed;
     $asset->save();
 
     // Act
-    (new ComputeDepreciationScheduleAction)->execute($asset->fresh());
+    (new ComputeDepreciationScheduleAction())->execute($asset->fresh());
 
     // Assert
     $this->assertDatabaseCount('depreciation_entries', 120); // 10 years * 12 months
@@ -146,10 +156,10 @@ test('automated depreciation job posts correct journal entries periodically', fu
         accumulated_depreciation_account_id: $this->accumulatedDepreciationAccount->id,
         currency_id: $this->company->currency_id
     );
-    $asset = (new CreateAssetAction)->execute($assetDTO);
+    $asset = (new CreateAssetAction())->execute($assetDTO);
     $asset->status = AssetStatus::Confirmed;
     $asset->save();
-    (new ComputeDepreciationScheduleAction)->execute($asset->fresh());
+    (new ComputeDepreciationScheduleAction())->execute($asset->fresh());
 
     // Act
     $this->artisan('app:process-depreciations');
@@ -194,10 +204,10 @@ test('posted depreciation entries are immutable and hashed', function () {
         accumulated_depreciation_account_id: $this->accumulatedDepreciationAccount->id,
         currency_id: $this->company->currency_id
     );
-    $asset = (new CreateAssetAction)->execute($assetDTO);
+    $asset = (new CreateAssetAction())->execute($assetDTO);
     $asset->status = AssetStatus::Confirmed;
     $asset->save();
-    (new ComputeDepreciationScheduleAction)->execute($asset->fresh());
+    (new ComputeDepreciationScheduleAction())->execute($asset->fresh());
     $this->artisan('app:process-depreciations');
 
     $depreciationEntry = $asset->depreciationEntries()->where('status', DepreciationEntryStatus::Posted)->first();
@@ -230,9 +240,9 @@ test('asset modification recomputes future depreciation schedule', function () {
         accumulated_depreciation_account_id: $this->accumulatedDepreciationAccount->id,
         currency_id: $this->company->currency_id
     );
-    $asset = (new CreateAssetAction)->execute($assetDTO);
+    $asset = (new CreateAssetAction())->execute($assetDTO);
     $asset->update(['status' => AssetStatus::Confirmed]);
-    (new ComputeDepreciationScheduleAction)->execute($asset);
+    (new ComputeDepreciationScheduleAction())->execute($asset);
 
     // Arrange: Simulate posting the first 12 depreciation entries.
     $asset->depreciationEntries()->where('status', 'draft')->take(12)->get()->each(function ($entry) {
@@ -294,10 +304,10 @@ test('asset disposal correctly generates final journal entries', function () {
         accumulated_depreciation_account_id: $this->accumulatedDepreciationAccount->id,
         currency_id: $this->company->currency_id
     );
-    $asset = (new CreateAssetAction)->execute($assetDTO);
+    $asset = (new CreateAssetAction())->execute($assetDTO);
     $asset->status = AssetStatus::Confirmed;
     $asset->save();
-    (new ComputeDepreciationScheduleAction)->execute($asset->fresh());
+    (new ComputeDepreciationScheduleAction())->execute($asset->fresh());
 
     // Post 5 years of depreciation
     $entriesToPost = $asset->depreciationEntries()->where('status', 'draft')->orderBy('depreciation_date')->take(60)->get();
@@ -330,12 +340,12 @@ test('asset disposal correctly generates final journal entries', function () {
     // Get the disposal journal entry specifically by its reference pattern
     // This ensures we're testing the disposal entry, not a depreciation entry
     $journalEntry = $asset->journalEntries()
-        ->where('reference', 'DISPOSAL/'.$asset->id)
+        ->where('reference', 'DISPOSAL/' . $asset->id)
         ->first();
     $this->assertModelExists($journalEntry);
 
     // Additional assertions to ensure we have the correct journal entry
-    $this->assertEquals('DISPOSAL/'.$asset->id, $journalEntry->reference);
+    $this->assertEquals('DISPOSAL/' . $asset->id, $journalEntry->reference);
     $this->assertTrue($journalEntry->is_posted);
 
     // Verify the journal entry has exactly 4 lines (accumulated depreciation, cash, asset, gain/loss)

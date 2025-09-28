@@ -2,15 +2,15 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Employees\Schemas;
 
-use App\Models\Department;
-use App\Models\Position;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Modules\HR\Models\Department;
 use Modules\HR\Models\Employee;
+use Modules\HR\Models\Position;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class EmployeeForm

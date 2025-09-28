@@ -4,9 +4,10 @@ namespace Modules\Inventory\Services\Inventory;
 
 use App\Models\Company;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+
 use Modules\Product\Models\Product;
+use Illuminate\Support\Facades\Cache;
 
 class InventoryQueryOptimizationService
 {
@@ -32,7 +33,7 @@ class InventoryQueryOptimizationService
                     'p.name as product_name',
                     DB::raw('SUM(CASE WHEN sm.move_type = "incoming" THEN smpl.quantity ELSE -smpl.quantity END) as total_quantity'),
                     DB::raw('0 as total_reserved'), // Simplified - no reservations in current schema
-                    DB::raw('SUM(CASE WHEN sm.move_type = "incoming" THEN smpl.quantity ELSE -smpl.quantity END) as available_quantity')
+                    DB::raw('SUM(CASE WHEN sm.move_type = "incoming" THEN smpl.quantity ELSE -smpl.quantity END) as available_quantity'),
                 ])
                 ->where('sm.company_id', $company->id)
                 ->where('sm.status', 'done')
@@ -63,7 +64,7 @@ class InventoryQueryOptimizationService
                     'l.expiration_date',
                     DB::raw('50 as quantity'), // Mock data for testing
                     DB::raw('5 as reserved_quantity'), // Mock data for testing
-                    DB::raw('45 as available_quantity') // Mock data for testing
+                    DB::raw('45 as available_quantity'), // Mock data for testing
                 ])
                 ->where('p.company_id', $company->id)
                 ->where('l.product_id', $productId)
@@ -103,7 +104,7 @@ class InventoryQueryOptimizationService
                     'fl.name as from_location_name',
                     'tl.name as to_location_name',
                     'smpl.source_type',
-                    'smpl.source_id'
+                    'smpl.source_id',
                 ])
                 ->where('sm.company_id', $company->id);
 
@@ -154,7 +155,7 @@ class InventoryQueryOptimizationService
                     'p.inventory_valuation_method',
                     DB::raw('SUM(smv.quantity) as total_quantity'),
                     DB::raw('SUM(smv.cost_impact) as total_value'),
-                    DB::raw('AVG(smv.cost_impact / NULLIF(smv.quantity, 0)) as avg_unit_cost')
+                    DB::raw('AVG(smv.cost_impact / NULLIF(smv.quantity, 0)) as avg_unit_cost'),
                 ])
                 ->where('sm.company_id', $company->id)
                 ->where('sm.move_date', '<=', $asOfDate)
@@ -186,7 +187,7 @@ class InventoryQueryOptimizationService
                     'icl.remaining_quantity',
                     'icl.cost_per_unit',
                     DB::raw('30 as age_in_days'), // Simplified for testing
-                    DB::raw('(icl.remaining_quantity * icl.cost_per_unit) as layer_value')
+                    DB::raw('(icl.remaining_quantity * icl.cost_per_unit) as layer_value'),
                 ])
                 ->where('p.company_id', $company->id)
                 ->where('icl.remaining_quantity', '>', 0)
@@ -212,7 +213,7 @@ class InventoryQueryOptimizationService
                     DB::raw('SUM(CASE WHEN sm.move_type = "outgoing" THEN smv.cost_impact ELSE 0 END) as cogs'),
                     DB::raw('AVG(CASE WHEN sm.move_type = "incoming" THEN smv.cost_impact ELSE NULL END) as avg_inventory_value'),
                     DB::raw('COUNT(CASE WHEN sm.move_type = "outgoing" THEN 1 END) as outgoing_moves'),
-                    DB::raw('COUNT(CASE WHEN sm.move_type = "incoming" THEN 1 END) as incoming_moves')
+                    DB::raw('COUNT(CASE WHEN sm.move_type = "incoming" THEN 1 END) as incoming_moves'),
                 ])
                 ->where('sm.company_id', $company->id)
                 ->where('sm.move_date', '>=', $dateFrom)

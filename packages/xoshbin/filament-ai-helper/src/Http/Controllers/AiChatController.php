@@ -22,7 +22,8 @@ class AiChatController extends Controller
         private readonly FillFormAction $fillFormAction,
         private readonly UpdateFormAction $updateFormAction,
         private readonly FormSchemaExtractor $formSchemaExtractor
-    ) {}
+    ) {
+    }
 
     /**
      * Handle chat message and return AI response

@@ -2,11 +2,12 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Widgets;
 
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use Brick\Money\Money;
 use Illuminate\Support\Facades\Cache;
+use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use Modules\Inventory\Services\Inventory\InventoryReportingService;
 
 class InventoryStatsOverviewWidget extends BaseWidget
 {
@@ -45,7 +46,7 @@ class InventoryStatsOverviewWidget extends BaseWidget
             $aging = $reportingService->ageing([
                 'include_expiration' => true,
                 'expiration_warning_days' => 30,
-                ...$filters
+                ...$filters,
             ]);
             $expiringLotsCount = count($aging['expiring_soon'] ?? []);
 

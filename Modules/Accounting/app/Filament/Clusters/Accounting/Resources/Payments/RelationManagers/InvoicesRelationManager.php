@@ -2,20 +2,20 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\RelationManagers;
 
-use App\Enums\Sales\InvoiceStatus;
-use App\Filament\Tables\Columns\MoneyColumn;
-use Filament\Actions\BulkActionGroup;
+use Filament\Tables\Table;
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\DatePicker;
+use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Schema;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Filament\Resources\RelationManagers\RelationManager;
+use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 
 class InvoicesRelationManager extends RelationManager
 {
@@ -73,9 +73,9 @@ class InvoicesRelationManager extends RelationManager
 
                 TextColumn::make('status')
                     ->label(__('payment.relation_manager.invoices.column.status'))
-                    ->formatStateUsing(fn (InvoiceStatus $state): string => $state->label())
+                    ->formatStateUsing(fn(InvoiceStatus $state): string => $state->label())
                     ->badge()
-                    ->color(fn (InvoiceStatus $state): string => match ($state) {
+                    ->color(fn(InvoiceStatus $state): string => match ($state) {
                         InvoiceStatus::Draft => 'warning',
                         InvoiceStatus::Posted => 'success',
                         InvoiceStatus::Paid => 'info',

@@ -2,13 +2,14 @@
 
 namespace Modules\Purchase\Database\Factories;
 
-use App\Models\Company;
-use App\Models\JournalEntry;
-use App\Models\VendorBill;
-use App\Models\VendorBillLine;
 use Brick\Money\Money;
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Company;
 use Modules\Foundation\Models\Partner;
+
+use Modules\Purchase\Models\VendorBill;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Purchase\Models\VendorBillLine;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<VendorBill>
@@ -43,7 +44,7 @@ class VendorBillFactory extends Factory
 
     public function draft(): self
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'draft',
             'posted_at' => null,
             'journal_entry_id' => null,

@@ -3,32 +3,45 @@
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners;
 
 use BackedEnum;
+use Filament\Tables\Table;
 use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use Filament\Schemas\Schema;
+use Filament\Facades\Filament;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Facades\Filament;
+use Filament\Resources\Resource;
+use Modules\Accounting\Models\Tax;
+use Filament\Tables\Filters\Filter;
+use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Actions\DeleteBulkAction;
 use Modules\Accounting\Models\Account;
 use Modules\Foundation\Models\Partner;
-use Xoshbin\CustomFields\Filament\Forms\Components\CustomFieldsComponent;
-use Xoshbin\CustomFields\Filament\Tables\CustomFieldTableColumns;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Filters\TernaryFilter;
+use Modules\Foundation\Enums\Partners\PartnerType;
+use Modules\Accounting\Enums\Accounting\AccountType;
+use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
+use Xoshbin\CustomFields\Filament\Forms\Components\CustomFieldsComponent;
+use Xoshbin\CustomFields\Filament\Tables\Components\CustomFieldTableColumns;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages\EditPartner;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages\ViewPartner;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages\ListPartners;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages\CreatePartner;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\InvoicesRelationManager;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\PaymentsRelationManager;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\VendorBillsRelationManager;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\UnreconciledEntriesRelationManager;
 
 class PartnerResource extends Resource
 {
@@ -84,7 +97,7 @@ class PartnerResource extends Resource
                                     ->searchable()
                                     ->options(
                                         collect(\Modules\Foundation\Enums\Partners\PartnerType::cases())
-                                            ->mapWithKeys(fn (\Modules\Foundation\Enums\Partners\PartnerType $type) => [$type->value => $type->label()])
+                                            ->mapWithKeys(fn(\Modules\Foundation\Enums\Partners\PartnerType $type) => [$type->value => $type->label()])
                                     )
                                     ->prefixIcon('heroicon-m-tag'),
                                 TranslatableSelect::forModel('tax_id', Tax::class, 'name')
@@ -280,9 +293,9 @@ class PartnerResource extends Resource
                 // Type (critical for categorization)
                 TextColumn::make('type')
                     ->label(__('partner.type'))
-                    ->formatStateUsing(fn (\Modules\Foundation\Enums\Partners\PartnerType $state): string => $state->label())
+                    ->formatStateUsing(fn(\Modules\Foundation\Enums\Partners\PartnerType $state): string => $state->label())
                     ->badge()
-                    ->color(fn (\Modules\Foundation\Enums\Partners\PartnerType $state): string => match ($state) {
+                    ->color(fn(\Modules\Foundation\Enums\Partners\PartnerType $state): string => match ($state) {
                         \Modules\Foundation\Enums\Partners\PartnerType::Customer => 'success',
                         \Modules\Foundation\Enums\Partners\PartnerType::Vendor => 'info',
                         \Modules\Foundation\Enums\Partners\PartnerType::Both => 'warning',
@@ -298,14 +311,14 @@ class PartnerResource extends Resource
                 // Status (important for active/inactive)
                 TextColumn::make('is_active')
                     ->label(__('partner.status'))
-                    ->formatStateUsing(fn (bool $state): string => $state ? __('partner.active') : __('partner.inactive'))
+                    ->formatStateUsing(fn(bool $state): string => $state ? __('partner.active') : __('partner.inactive'))
                     ->badge()
-                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
-                    ->icon(fn (bool $state): string => $state ? 'heroicon-m-check-circle' : 'heroicon-m-x-circle')
+                    ->color(fn(bool $state): string => $state ? 'success' : 'danger')
+                    ->icon(fn(bool $state): string => $state ? 'heroicon-m-check-circle' : 'heroicon-m-x-circle')
                     ->sortable(),
 
                 // Financial Information - Customer Balances
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('customer_balance')
+                MoneyColumn::make('customer_balance')
                     ->label(__('partner.customer_outstanding'))
                     ->getStateUsing(function (Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Customer, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
@@ -324,7 +337,7 @@ class PartnerResource extends Resource
                     })
                     ->sortable(false),
 
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('customer_overdue')
+                MoneyColumn::make('customer_overdue')
                     ->label(__('partner.customer_overdue'))
                     ->getStateUsing(function (Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Customer, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
@@ -344,7 +357,7 @@ class PartnerResource extends Resource
                     ->sortable(false),
 
                 // Financial Information - Vendor Balances
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('vendor_balance')
+                MoneyColumn::make('vendor_balance')
                     ->label(__('partner.vendor_outstanding'))
                     ->getStateUsing(function (Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
@@ -363,7 +376,7 @@ class PartnerResource extends Resource
                     })
                     ->sortable(false),
 
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('vendor_overdue')
+                MoneyColumn::make('vendor_overdue')
                     ->label(__('partner.vendor_overdue'))
                     ->getStateUsing(function (Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
@@ -385,7 +398,8 @@ class PartnerResource extends Resource
                 // Last Activity
                 TextColumn::make('last_activity')
                     ->label(__('partner.last_activity'))
-                    ->getStateUsing(fn (Partner $record): string => $record->getLastTransactionDate()?->format('M j, Y') ?? __('partner.no_activity')
+                    ->getStateUsing(
+                        fn(Partner $record): string => $record->getLastTransactionDate()?->format('M j, Y') ?? __('partner.no_activity')
                     )
                     ->sortable(false)
                     ->toggleable(),
@@ -453,42 +467,44 @@ class PartnerResource extends Resource
 
                 Filter::make('has_overdue')
                     ->label(__('partner.has_overdue_amounts'))
-                    ->query(fn (Builder $query): Builder => $query->whereHas('invoices', function ($q) {
-                        $q->whereIn('status', ['posted', 'paid'])
-                            ->where('due_date', '<', now())
-                            ->whereRaw('total_amount > (
+                    ->query(
+                        fn(Builder $query): Builder => $query->whereHas('invoices', function ($q) {
+                            $q->whereIn('status', ['posted', 'paid'])
+                                ->where('due_date', '<', now())
+                                ->whereRaw('total_amount > (
                                   SELECT COALESCE(SUM(amount_applied), 0)
                                   FROM payment_document_links
                                   WHERE invoice_id = invoices.id
                               )');
-                    })->orWhereHas('vendorBills', function ($q) {
-                        $q->whereIn('status', ['posted', 'paid'])
-                            ->where('due_date', '<', now())
-                            ->whereRaw('total_amount > (
+                        })->orWhereHas('vendorBills', function ($q) {
+                            $q->whereIn('status', ['posted', 'paid'])
+                                ->where('due_date', '<', now())
+                                ->whereRaw('total_amount > (
                                   SELECT COALESCE(SUM(amount_applied), 0)
                                   FROM payment_document_links
                                   WHERE vendor_bill_id = vendor_bills.id
                               )');
-                    })
+                        })
                     ),
 
                 Filter::make('has_outstanding_balance')
                     ->label(__('partner.has_outstanding_balance'))
-                    ->query(fn (Builder $query): Builder => $query->whereHas('invoices', function ($q) {
-                        $q->whereIn('status', ['posted', 'paid'])
-                            ->whereRaw('total_amount > (
+                    ->query(
+                        fn(Builder $query): Builder => $query->whereHas('invoices', function ($q) {
+                            $q->whereIn('status', ['posted', 'paid'])
+                                ->whereRaw('total_amount > (
                                   SELECT COALESCE(SUM(amount_applied), 0)
                                   FROM payment_document_links
                                   WHERE invoice_id = invoices.id
                               )');
-                    })->orWhereHas('vendorBills', function ($q) {
-                        $q->whereIn('status', ['posted', 'paid'])
-                            ->whereRaw('total_amount > (
+                        })->orWhereHas('vendorBills', function ($q) {
+                            $q->whereIn('status', ['posted', 'paid'])
+                                ->whereRaw('total_amount > (
                                   SELECT COALESCE(SUM(amount_applied), 0)
                                   FROM payment_document_links
                                   WHERE vendor_bill_id = vendor_bills.id
                               )');
-                    })
+                        })
                     ),
 
                 TernaryFilter::make('is_active')

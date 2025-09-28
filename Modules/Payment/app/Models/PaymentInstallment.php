@@ -2,22 +2,25 @@
 
 namespace Modules\Payment\Models;
 
-use App\Casts\DocumentCurrencyMoneyCast;
-use App\Enums\PaymentInstallments\InstallmentStatus;
-use App\Observers\AuditLogObserver;
-use Brick\Math\RoundingMode;
-use Brick\Money\Money;
-use Database\Factories\PaymentInstallmentFactory;
+
 use Eloquent;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Brick\Money\Money;
+use App\Models\Company;
+use Brick\Math\RoundingMode;
+use Illuminate\Support\Carbon;
+use Modules\Payment\Models\Payment;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Database\Factories\PaymentInstallmentFactory;
+use Modules\Foundation\Observers\AuditLogObserver;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Modules\Payment\Enums\PaymentInstallments\InstallmentStatus;
 
 /**
  * Class PaymentInstallment

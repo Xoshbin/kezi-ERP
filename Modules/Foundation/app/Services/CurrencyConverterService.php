@@ -2,10 +2,10 @@
 
 namespace Modules\Foundation\Services;
 
-use App\Models\Company;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use InvalidArgumentException;
+use App\Models\Company;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
 
@@ -176,7 +176,7 @@ class CurrencyConverterService
         Money $currentAmount,
         float $originalRate,
         float $currentRate,
-        string $baseCurrencyCode
+        string $baseCurrencyCode,
     ): Money {
         // Calculate what the original amount would be worth at current rate
         $currentValueInBaseCurrency = $this->convertWithRate(

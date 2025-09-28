@@ -2,8 +2,8 @@
 
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\NumberingSettingsResource\Pages;
 
-use App\Filament\Clusters\Settings\Resources\NumberingSettingsResource;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\NumberingSettingsResource;
 
 class ListNumberingSettings extends ListRecords
 {

@@ -1,7 +1,8 @@
 <?php
 
-use App\Models\Company;
 use Carbon\Carbon;
+
+use App\Models\Company;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
 

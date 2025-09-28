@@ -3,13 +3,17 @@
 namespace Modules\Foundation\Tests\Feature\Casts;
 
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Company;
+use Modules\Sales\Models\Invoice;
 use Modules\Accounting\Models\Asset;
-use Modules\Accounting\Models\DepreciationEntry;
+use Modules\Sales\Models\InvoiceLine;
 use Modules\Foundation\Models\Currency;
 use Modules\Purchase\Models\VendorBill;
-use Modules\Sales\Models\Invoice;
-use Modules\Sales\Models\InvoiceLine;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Accounting\Models\JournalEntryLine;
+use Modules\Accounting\Models\DepreciationEntry;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
@@ -33,7 +37,7 @@ it('correctly casts money fields on various related models', function (
     string $moneyField,
     string $currencyCode,
     $inputValue,
-    int $expectedMinor
+    int $expectedMinor,
 ) {
     // Arrange: Create the currency and the parent document (e.g., Invoice, VendorBill).
     $currency = Currency::factory()->create([
@@ -99,5 +103,4 @@ it('correctly casts money fields on various related models', function (
     $hydratedModel = $model->fresh();
     expect($hydratedModel->{$moneyField})->toBeInstanceOf(Money::class)
         ->and($hydratedModel->{$moneyField}->getMinorAmount()->toInt())->toBe($expectedMinor);
-
 })->with('money_cast_scenarios');

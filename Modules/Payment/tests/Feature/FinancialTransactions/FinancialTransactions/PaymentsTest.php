@@ -1,12 +1,20 @@
 <?php
 
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Models\Account;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Sales\Models\Invoice;
 use Tests\Traits\MocksTime;
+use Modules\Sales\Models\Invoice;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Payment\Services\PaymentService;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Payment\Actions\Payments\CreatePaymentAction;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 

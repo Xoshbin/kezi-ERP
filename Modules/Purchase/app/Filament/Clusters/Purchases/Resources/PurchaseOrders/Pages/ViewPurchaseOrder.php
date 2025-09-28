@@ -2,21 +2,22 @@
 
 namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages;
 
-use App\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
-use App\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
-use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\PurchaseOrderResource;
-use App\Filament\Clusters\Purchases\Resources\PurchaseOrders\Schemas\PurchaseOrderInfolist;
-use App\Models\PurchaseOrder;
-use App\Services\SequenceService;
-use Carbon\Carbon;
+
+
 use Exception;
+use Carbon\Carbon;
 use Filament\Actions\Action;
-use Filament\Actions\EditAction;
+use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
+use Filament\Actions\EditAction;
+use Illuminate\Support\Facades\Auth;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\Auth;
+use Modules\Foundation\Services\SequenceService;
+use Modules\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
+use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\PurchaseOrderResource;
+use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Schemas\PurchaseOrderInfolist;
 
 class ViewPurchaseOrder extends ViewRecord
 {
@@ -76,7 +77,7 @@ class ViewPurchaseOrder extends ViewRecord
 
                     $this->redirect(route('filament.jmeryar.accounting.resources.vendor-bills.edit', [
                         'tenant' => Filament::getTenant(),
-                        'record' => $vendorBill->id
+                        'record' => $vendorBill->id,
                     ]));
                 } catch (Exception $e) {
                     Notification::make()

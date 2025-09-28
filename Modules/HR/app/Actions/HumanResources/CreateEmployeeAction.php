@@ -2,11 +2,12 @@
 
 namespace Modules\HR\Actions\HumanResources;
 
-use App\Models\Company;
-use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
-use Modules\HR\Models\Employee;
 use RuntimeException;
+use InvalidArgumentException;
+use App\Models\Company;
+use Modules\HR\Models\Employee;
+use Illuminate\Support\Facades\DB;
+use Modules\HR\DataTransferObjects\HumanResources\CreateEmployeeDTO;
 
 class CreateEmployeeAction
 {

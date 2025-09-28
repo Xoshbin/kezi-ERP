@@ -1,7 +1,7 @@
 <?php
 
-use App\Services\Loans\InterestCalculatorService;
 use Brick\Money\Money;
+use Modules\Accounting\Services\Loans\InterestCalculatorService;
 
 it('computes annuity payment correctly for monthly schedule', function () {
     /** @var InterestCalculatorService $svc */

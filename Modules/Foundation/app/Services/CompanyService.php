@@ -2,9 +2,9 @@
 
 namespace Modules\Foundation\Services;
 
-use App\Models\Company;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Models\Company;
 
 class CompanyService
 {

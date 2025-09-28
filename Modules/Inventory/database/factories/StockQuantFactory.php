@@ -3,8 +3,12 @@
 namespace Modules\Inventory\Database\Factories;
 
 use App\Models\Company;
-use Illuminate\Database\Eloquent\Factories\Factory;
+
+use Modules\Inventory\Models\Lot;
 use Modules\Product\Models\Product;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Inventory\Models\StockLocation;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<StockQuant>
@@ -38,7 +42,7 @@ class StockQuantFactory extends Factory
      */
     public function withLot(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'lot_id' => Lot::factory(),
         ]);
     }
@@ -48,7 +52,7 @@ class StockQuantFactory extends Factory
      */
     public function empty(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'quantity' => 0,
             'reserved_quantity' => 0,
         ]);
@@ -73,7 +77,7 @@ class StockQuantFactory extends Factory
      */
     public function withQuantities(float $quantity, float $reserved = 0): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'quantity' => $quantity,
             'reserved_quantity' => $reserved,
         ]);

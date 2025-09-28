@@ -2,15 +2,14 @@
 
 namespace Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts\Pages;
 
-use App\Filament\Clusters\Settings\Resources\Accounts\AccountResource;
-use App\Services\AccountService;
 use Exception;
 use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\EditRecord;
+use Modules\Accounting\Models\Account;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Resources\Pages\EditRecord;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
-use Modules\Accounting\Models\Account;
+use Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts\AccountResource;
 
 class EditAccount extends EditRecord
 {
@@ -27,7 +26,7 @@ class EditAccount extends EditRecord
                     if (! $record instanceof Account) {
                         throw new Exception('Invalid record type');
                     }
-                    $accountService = new \Modules\Accounting\Services\AccountService;
+                    $accountService = new \Modules\Accounting\Services\AccountService();
                     $accountService->delete($record);
                     $this->redirect(AccountResource::getUrl('index'));
                 }),
@@ -40,7 +39,7 @@ class EditAccount extends EditRecord
             throw new Exception('Invalid record type');
         }
 
-        $accountService = new \Modules\Accounting\Services\AccountService;
+        $accountService = new \Modules\Accounting\Services\AccountService();
 
         return $accountService->update($record, $data);
     }

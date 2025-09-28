@@ -3,6 +3,11 @@
 namespace Modules\Inventory\Services\Inventory;
 
 use Modules\Product\Models\Product;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Services\Inventory\ProductCostAnalysisService;
+use Modules\Inventory\DataTransferObjects\Inventory\CostPreviewResult;
+use Modules\Inventory\DataTransferObjects\Inventory\CostValidationResult;
 
 /**
  * Service for validating cost availability and providing cost previews
@@ -13,7 +18,7 @@ use Modules\Product\Models\Product;
 class CostValidationService
 {
     public function __construct(
-        protected InventoryValuationService $inventoryValuationService
+        protected InventoryValuationService $inventoryValuationService,
     ) {}
 
     /**
@@ -29,7 +34,7 @@ class CostValidationService
         Product $product,
         StockMoveType $moveType,
         ?StockMove $stockMove = null,
-        bool $allowFallbacks = false
+        bool $allowFallbacks = false,
     ): CostValidationResult {
 
         // Only validate for incoming moves (outgoing moves use different logic)
@@ -81,7 +86,7 @@ class CostValidationService
         float $quantity,
         StockMoveType $moveType,
         ?StockMove $stockMove = null,
-        bool $allowFallbacks = false
+        bool $allowFallbacks = false,
     ): CostPreviewResult {
 
         $validation = $this->validateCostAvailability($product, $moveType, $stockMove, $allowFallbacks);

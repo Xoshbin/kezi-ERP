@@ -2,16 +2,15 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Widgets;
 
-use App\Enums\Inventory\StockMoveType;
-use App\Models\StockMove;
+
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Cache;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
 
 class InventoryTurnoverChartWidget extends ChartWidget
 {
-
-
     protected static ?int $sort = 3;
 
     protected int | string | array $columnSpan = [

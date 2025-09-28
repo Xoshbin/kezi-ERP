@@ -2,7 +2,7 @@
 
 namespace Modules\Payment\Database\Factories;
 
-use App\Models\PaymentDocumentLink;
+
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Payment\Models\Payment;

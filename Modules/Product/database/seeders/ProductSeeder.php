@@ -4,8 +4,13 @@ namespace Modules\Product\Database\Seeders;
 
 use App\Models\Company;
 use Illuminate\Database\Seeder;
-use Modules\Accounting\Models\Account;
 use Modules\Product\Models\Product;
+use Modules\Accounting\Models\Account;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Models\ReorderingRule;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Inventory\Enums\Inventory\ReorderingRoute;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
 
 class ProductSeeder extends Seeder
 {

@@ -2,8 +2,8 @@
 
 namespace Modules\Foundation\Services;
 
-use App\Models\Company;
 use Carbon\Carbon;
+use App\Models\Company;
 use Modules\Foundation\Models\Sequence;
 
 /**
@@ -139,7 +139,7 @@ class SequenceService
         Company $company,
         string $documentType,
         string $prefix,
-        int $padding = 5
+        int $padding = 5,
     ): string {
         $sequence = Sequence::getOrCreateSequence(
             companyId: $company->id,

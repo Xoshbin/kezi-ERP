@@ -2,9 +2,9 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\Pages;
 
-use App\Filament\Clusters\Inventory\Resources\StockLocations\StockLocationResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\StockLocationResource;
 
 class ListStockLocations extends ListRecords
 {

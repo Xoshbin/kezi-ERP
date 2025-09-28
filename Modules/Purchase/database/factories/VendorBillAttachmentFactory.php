@@ -2,10 +2,10 @@
 
 namespace Modules\Purchase\Database\Factories;
 
-use App\Models\User;
-use App\Models\VendorBillAttachment;
 use Illuminate\Database\Eloquent\Factories\Factory;
+
 use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Models\VendorBillAttachment;
 
 /**
  * @extends Factory<VendorBillAttachment>
@@ -39,7 +39,7 @@ class VendorBillAttachmentFactory extends Factory
                 return VendorBill::find($attributes['vendor_bill_id'])->company_id;
             },
             'file_name' => $fileType['name'],
-            'file_path' => 'vendor-bill-attachments/'.$this->faker->uuid().'/'.$fileType['name'],
+            'file_path' => 'vendor-bill-attachments/' . $this->faker->uuid() . '/' . $fileType['name'],
             'file_size' => $this->faker->numberBetween(1024, 10 * 1024 * 1024), // 1KB to 10MB
             'mime_type' => $fileType['mime'],
             'uploaded_by_user_id' => User::factory(),

@@ -2,9 +2,9 @@
 
 namespace Modules\Inventory\Observers;
 
-use App\Models\AdjustmentDocumentLine;
 use Brick\Money\Money;
 use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Inventory\Models\AdjustmentDocumentLine;
 
 class AdjustmentDocumentLineObserver
 {

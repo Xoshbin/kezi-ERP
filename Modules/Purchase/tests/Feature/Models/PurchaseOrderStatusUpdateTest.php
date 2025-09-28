@@ -1,8 +1,11 @@
 <?php
 
-use Modules\Foundation\Models\Partner;
 use Modules\Product\Models\Product;
+use Modules\Foundation\Models\Partner;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Models\PurchaseOrderLine;
+use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
 
 uses(WithConfiguredCompany::class);
 

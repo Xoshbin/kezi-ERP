@@ -2,24 +2,26 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Pages;
 
-use App\Filament\Clusters\Inventory\InventoryCluster;
-use App\Models\StockLocation;
-use App\Services\Inventory\InventoryCSVExportService;
-use App\Services\Inventory\InventoryReportingService;
-use BackedEnum;
+
+
 use Exception;
-use Filament\Actions\Action;
-use Filament\Facades\Filament;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
-use Filament\Notifications\Notification;
+use BackedEnum;
 use Filament\Pages\Page;
-use Filament\Schemas\Components\Section;
+use Filament\Actions\Action;
 use Filament\Schemas\Schema;
+use Filament\Facades\Filament;
 use Modules\Product\Models\Product;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Section;
+use Modules\Inventory\Models\StockLocation;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
+use Modules\Inventory\Services\Inventory\InventoryCSVExportService;
+use Modules\Inventory\Services\Inventory\InventoryReportingService;
 
 class InventoryAgingReport extends Page implements HasForms
 {
@@ -221,7 +223,7 @@ class InventoryAgingReport extends Page implements HasForms
                     try {
                         $csvService = app(InventoryCSVExportService::class);
                         $csvContent = $csvService->exportAgingReport($this->reportData, [
-                            'include_metadata' => true
+                            'include_metadata' => true,
                         ]);
 
                         $filename = 'inventory-aging-' . now()->format('Y-m-d-H-i-s') . '.csv';

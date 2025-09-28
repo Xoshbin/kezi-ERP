@@ -3,6 +3,9 @@
 namespace Modules\Inventory\Services\Inventory;
 
 use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 
 /**
  * Service for analyzing product cost information and providing contextual guidance
