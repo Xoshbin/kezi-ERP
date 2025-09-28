@@ -16,5 +16,6 @@ readonly class CreateInventoryAdjustmentDTO
         public string $reason,
         public array $lines,
         public int $created_by_user_id,
-    ) {}
+    ) {
+    }
 }

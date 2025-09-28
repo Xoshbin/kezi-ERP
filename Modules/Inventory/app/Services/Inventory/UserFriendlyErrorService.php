@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Services\Inventory;
 
 use Modules\Product\Models\Product;
+use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
 
 /**
  * Service for converting technical inventory exceptions into user-friendly error messages
@@ -14,7 +15,7 @@ use Modules\Product\Models\Product;
 class UserFriendlyErrorService
 {
     public function __construct(
-        protected ProductCostAnalysisService $costAnalysisService
+        protected ProductCostAnalysisService $costAnalysisService,
     ) {}
 
     /**
@@ -31,7 +32,7 @@ class UserFriendlyErrorService
         return [
             'title' => __('inventory_accounting.cost_validation_errors.title'),
             'message' => __('inventory_accounting.cost_validation_errors.message', [
-                'product_name' => $product->name
+                'product_name' => $product->name,
             ]),
             'explanation' => $this->getValuationMethodExplanation($product),
             'primary_solution' => $this->getPrimarySolution($product, $vendorBillAnalysis),
@@ -116,7 +117,7 @@ class UserFriendlyErrorService
         $vendorBillAnalysis = $this->costAnalysisService->analyzeVendorBillStatus($product);
 
         $baseMessage = __('Cannot process inventory movement for ":product_name".', [
-            'product_name' => $product->name
+            'product_name' => $product->name,
         ]);
 
         if (!$vendorBillAnalysis['has_vendor_bills']) {

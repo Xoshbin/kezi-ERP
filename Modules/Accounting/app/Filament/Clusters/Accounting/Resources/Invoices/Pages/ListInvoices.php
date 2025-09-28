@@ -2,10 +2,10 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages;
 
-use App\Filament\Actions\DocsAction;
-use App\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
+use Modules\Foundation\Filament\Actions\DocsAction;
 
 class ListInvoices extends ListRecords
 {

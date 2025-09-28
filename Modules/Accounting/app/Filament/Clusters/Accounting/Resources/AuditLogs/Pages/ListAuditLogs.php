@@ -2,9 +2,9 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AuditLogs\Pages;
 
-use App\Filament\Clusters\Accounting\Resources\AuditLogs\AuditLogResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AuditLogs\AuditLogResource;
 
 class ListAuditLogs extends ListRecords
 {

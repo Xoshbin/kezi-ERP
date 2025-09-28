@@ -2,20 +2,29 @@
 
 namespace Modules\Inventory\Tests\Feature\Adjustments;
 
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+use App\Models\User;
+use Brick\Money\Money;
+use Modules\Accounting\Models\Tax;
+use Modules\Product\Models\Product;
 use Modules\Accounting\Models\Account;
 use Modules\Foundation\Models\Currency;
+use Tests\Traits\WithConfiguredCompany;
 use Modules\Foundation\Models\CurrencyRate;
 use Modules\Inventory\Models\AdjustmentDocument;
-use Modules\Product\Models\Product;
-use Tests\TestCase;
-use Tests\Traits\WithConfiguredCompany;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Inventory\Models\AdjustmentDocumentLine;
+use Modules\Inventory\Services\AdjustmentDocumentService;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Modules\Inventory\Actions\Adjustments\CreateAdjustmentDocumentAction;
+use Modules\Inventory\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
+use Modules\Inventory\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
 
 class AdjustmentDocumentMultiCurrencyTest extends TestCase
 {
-    use RefreshDatabase, WithConfiguredCompany;
+    use RefreshDatabase;
+    use WithConfiguredCompany;
 
     protected Company $company;
 
@@ -199,10 +208,14 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
 
         // Should fallback to rate 1.0 and use original amounts
         $this->assertEquals(1.0, $adjustmentDocument->exchange_rate_at_creation);
-        $this->assertEquals($adjustmentDocument->subtotal->getMinorAmount()->toInt(),
-            $adjustmentDocument->subtotal_company_currency->getMinorAmount()->toInt());
-        $this->assertEquals($adjustmentDocument->total_amount->getMinorAmount()->toInt(),
-            $adjustmentDocument->total_amount_company_currency->getMinorAmount()->toInt());
+        $this->assertEquals(
+            $adjustmentDocument->subtotal->getMinorAmount()->toInt(),
+            $adjustmentDocument->subtotal_company_currency->getMinorAmount()->toInt()
+        );
+        $this->assertEquals(
+            $adjustmentDocument->total_amount->getMinorAmount()->toInt(),
+            $adjustmentDocument->total_amount_company_currency->getMinorAmount()->toInt()
+        );
     }
 
     /** @test */
@@ -300,7 +313,9 @@ class AdjustmentDocumentMultiCurrencyTest extends TestCase
         $this->assertTrue($totalDebit->isEqualTo($totalCredit));
 
         // Verify that the journal entry total matches the adjustment document total converted to base currency
-        $this->assertEquals($adjustmentDocument->total_amount_company_currency->getMinorAmount()->toInt(),
-            $totalDebit->getMinorAmount()->toInt());
+        $this->assertEquals(
+            $adjustmentDocument->total_amount_company_currency->getMinorAmount()->toInt(),
+            $totalDebit->getMinorAmount()->toInt()
+        );
     }
 }

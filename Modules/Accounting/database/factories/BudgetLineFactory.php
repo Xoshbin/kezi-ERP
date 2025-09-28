@@ -2,9 +2,9 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use App\Models\Budget;
-use App\Models\BudgetLine;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Accounting\Models\Budget;
+use Modules\Accounting\Models\BudgetLine;
 
 /**
  * @extends Factory<BudgetLine>

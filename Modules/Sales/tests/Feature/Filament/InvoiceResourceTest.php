@@ -1,14 +1,19 @@
 <?php
 
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Sales\Models\Invoice;
+use Modules\Product\Models\Product;
+use function Pest\Livewire\livewire;
 use Modules\Accounting\Models\Account;
 use Modules\Foundation\Models\Partner;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Product\Models\Product;
-use Modules\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
-use function Pest\Livewire\livewire;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+
+use Modules\Product\Enums\Products\ProductType;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -150,20 +155,20 @@ it('can confirm an invoice', function () {
  * the feature is woking and passing tests */
 // it('can reset an invoice to draft', function () {
 //     // Create accounts for the journal entry
-//     $receivableAccount = \App\Models\Account::factory()->create([
+//     $receivableAccount = \Modules\Sales\Models\Account::factory()->create([
 //         'company_id' => $this->company->id,
 //         'type' => 'receivable',
 //         'name' => 'Accounts Receivable',
 //     ]);
 
-//     $salesAccount = \App\Models\Account::factory()->create([
+//     $salesAccount = \Modules\Sales\Models\Account::factory()->create([
 //         'company_id' => $this->company->id,
 //         'type' => 'income',
 //         'name' => 'Sales Revenue',
 //     ]);
 
 //     // Create a proper journal entry with lines for the invoice
-//     $journalEntry = \App\Models\JournalEntry::factory()->create([
+//     $journalEntry = \Modules\Sales\Models\JournalEntry::factory()->create([
 //         'company_id' => $this->company->id,
 //         'is_posted' => true,
 //     ]);
@@ -203,8 +208,6 @@ it('can confirm an invoice', function () {
 //     $invoice->refresh();
 //     expect($invoice->status)->toBe(InvoiceStatus::Draft);
 // });
-
-
 
 describe('Invoice Confirmation Business Rules', function () {
     it('prevents confirming invoice without line items via UI', function () {

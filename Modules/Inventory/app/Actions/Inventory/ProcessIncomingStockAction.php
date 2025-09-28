@@ -2,11 +2,16 @@
 
 namespace Modules\Inventory\Actions\Inventory;
 
-use Brick\Money\Money;
 use Exception;
+use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use Modules\Product\Models\Product;
+use Modules\Inventory\Models\StockMove;
 use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Inventory\Models\StockMoveProductLine;
+use Modules\Inventory\Services\Inventory\StockQuantService;
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
 
 class ProcessIncomingStockAction
 {

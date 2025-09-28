@@ -1,6 +1,7 @@
 <?php
 
-use App\Services\Loans\EIRSolverService;
+use Modules\Accounting\Services\Loans\EIRSolverService;
+
 
 it('solves IRR for simple cashflows', function () {
     /** @var EIRSolverService $svc */

@@ -37,7 +37,6 @@ class BuildInvoicePostingPreviewAction
         $company = $invoice->company;
         $currencyCode = $invoice->currency->code;
 
-
         // Validate business rules similar to vendor bills
         if ($invoice->invoiceLines->isEmpty()) {
             $msg = __('invoice.validation_no_line_items');

@@ -9,7 +9,12 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\AdjustmentDocumentResource;
 use Modules\Foundation\Models\Currency;
+use Modules\Inventory\Actions\Adjustments\CreateAdjustmentDocumentAction;
+use Modules\Inventory\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
+use Modules\Inventory\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
 use Modules\Purchase\Models\VendorBill;
 use Modules\Sales\Models\Invoice;
 

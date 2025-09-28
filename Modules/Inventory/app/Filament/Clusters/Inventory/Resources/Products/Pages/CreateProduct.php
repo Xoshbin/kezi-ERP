@@ -2,14 +2,14 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages;
 
-use App\Filament\Clusters\Inventory\Resources\Products\ProductResource;
-use App\Models\Company;
 use Exception;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\ProductResource;
+
 
 class CreateProduct extends CreateRecord
 {

@@ -12,5 +12,6 @@ readonly class CreateStockMoveProductLineDTO
         public ?string $description = null,
         public ?string $source_type = null,
         public ?int $source_id = null,
-    ) {}
+    ) {
+    }
 }

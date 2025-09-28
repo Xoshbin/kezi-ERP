@@ -2,9 +2,9 @@
 
 namespace Modules\Inventory\Console\Commands;
 
-use App\Services\Inventory\ReorderingRuleService;
 use Exception;
 use Illuminate\Console\Command;
+use Modules\Inventory\Services\Inventory\ReorderingRuleService;
 
 class RunReorderingSchedulerCommand extends Command
 {
@@ -55,7 +55,6 @@ class RunReorderingSchedulerCommand extends Command
             $this->info('Reordering scheduler completed successfully.');
 
             return Command::SUCCESS;
-
         } catch (Exception $e) {
             $this->error('Reordering scheduler failed: ' . $e->getMessage());
 

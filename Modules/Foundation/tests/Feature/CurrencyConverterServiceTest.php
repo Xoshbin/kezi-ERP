@@ -1,10 +1,13 @@
 <?php
 
-use App\Models\Company;
-use Brick\Money\Money;
 use Carbon\Carbon;
+use Brick\Money\Money;
+
+use App\Models\Company;
+use InvalidArgumentException;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
+use Modules\Foundation\Services\CurrencyConverterService;
 
 test('can convert between same currency', function () {
     $company = Company::factory()->create();
@@ -104,7 +107,7 @@ test('throws exception when no exchange rate found', function () {
     $amount = Money::of(100, 'EUR');
     $service = app(\Modules\Foundation\Services\CurrencyConverterService::class);
 
-    expect(fn () => $service->convertToBaseCurrency($amount, $foreignCurrency, $baseCurrency, Carbon::today(), $company))
+    expect(fn() => $service->convertToBaseCurrency($amount, $foreignCurrency, $baseCurrency, Carbon::today(), $company))
         ->toThrow(InvalidArgumentException::class, 'No exchange rate found');
 });
 

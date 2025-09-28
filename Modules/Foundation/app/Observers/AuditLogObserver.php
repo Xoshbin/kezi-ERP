@@ -2,10 +2,10 @@
 
 namespace Modules\Foundation\Observers;
 
-use App\Models\Company;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Foundation\Models\AuditLog;
+use App\Models\Company;
 
 class AuditLogObserver
 {

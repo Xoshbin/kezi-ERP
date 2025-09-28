@@ -2,7 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports;
 
-
 use App\Models\Company;
 use BackedEnum;
 use Carbon\Carbon;
@@ -15,6 +14,7 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Foundation\Models\Partner;
 
 class ViewPartnerLedger extends Page
@@ -83,7 +83,7 @@ class ViewPartnerLedger extends Page
                                         $hasAccounts = $partner->receivable_account_id && $partner->payable_account_id;
                                         $suffix = $hasAccounts ? '' : ' (⚠️ Missing Accounts)';
 
-                                        return [$partner->id => $partner->name.$suffix];
+                                        return [$partner->id => $partner->name . $suffix];
                                     });
                             })
                             ->placeholder(__('reports.select_partner'))

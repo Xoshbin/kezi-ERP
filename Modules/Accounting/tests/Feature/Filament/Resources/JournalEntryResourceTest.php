@@ -1,15 +1,23 @@
 <?php
 
-use Brick\Money\Money;
 use Carbon\Carbon;
+use RuntimeException;
+use Brick\Money\Money;
 use Filament\Actions\DeleteAction;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Exceptions\DeletionNotAllowedException;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\CurrencyRate;
-use Tests\Traits\WithConfiguredCompany;
 use function Pest\Livewire\livewire;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Models\Currency;
+use Tests\Traits\WithConfiguredCompany;
+
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Models\CurrencyRate;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Services\JournalEntryService;
+use Modules\Foundation\Exceptions\DeletionNotAllowedException;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\ListJournalEntries;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -327,7 +335,7 @@ it('can create and post capital injection journal entry using Filament interface
     ]);
 
     // Use a unique reference to avoid duplicate entry issues
-    $uniqueReference = 'Capital Investment Test '.now()->timestamp;
+    $uniqueReference = 'Capital Investment Test ' . now()->timestamp;
 
     // Act: Create the capital injection journal entry using Filament form
     livewire(CreateJournalEntry::class)
@@ -408,7 +416,7 @@ it('can create and post capital injection journal entry using Filament interface
     // Verify immutability: Attempt to update posted entry should throw exception
     $journalEntry->description = 'Attempted unauthorized update';
 
-    expect(fn () => $journalEntry->save())
+    expect(fn() => $journalEntry->save())
         ->toThrow(RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'");
 
     // Verify the description was not changed in the database
@@ -419,7 +427,7 @@ it('can create and post capital injection journal entry using Filament interface
 
     // Verify deletion is prevented for posted entries
     $journalEntryService = app(JournalEntryService::class);
-    expect(fn () => $journalEntryService->delete($journalEntry))
+    expect(fn() => $journalEntryService->delete($journalEntry))
         ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a posted journal entry');
 
     // Verify the accounting equation: Assets = Liabilities + Equity
@@ -696,7 +704,7 @@ it('can create multi-currency capital injection journal entry in USD with proper
         'short_code' => 'MISC',
     ]);
 
-    $uniqueReference = 'CAPITAL-001-'.now()->timestamp;
+    $uniqueReference = 'CAPITAL-001-' . now()->timestamp;
 
     // Act: Create the capital injection journal entry using Filament form
     // User enters amounts in USD as described in the scenario
@@ -821,6 +829,6 @@ it('can create multi-currency capital injection journal entry in USD with proper
 
     // Verify immutability after posting
     $journalEntry->description = 'Attempted unauthorized update';
-    expect(fn () => $journalEntry->save())
+    expect(fn() => $journalEntry->save())
         ->toThrow(RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'");
 });

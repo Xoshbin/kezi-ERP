@@ -2,9 +2,10 @@
 
 namespace Modules\Foundation\Database\Factories;
 
-use App\Models\AuditLog;
 use App\Models\User;
+use Modules\Foundation\Models\AuditLog;
 use Illuminate\Database\Eloquent\Factories\Factory;
+
 
 /**
  * @extends Factory<AuditLog>
@@ -21,7 +22,7 @@ class AuditLogFactory extends Factory
         return [
             'user_id' => User::factory()->create()->id,
             'event_type' => $this->faker->randomElement(['created', 'updated', 'deleted']),
-            'auditable_type' => $this->faker->randomElement(['App\Models\Post', 'App\Models\User', 'App\Models\Order']),
+            'auditable_type' => $this->faker->randomElement(['Modules\Foundation\Models\Post', 'Modules\Foundation\Models\User', 'Modules\Foundation\Models\Order']),
             'auditable_id' => $this->faker->numberBetween(1, 1000),
             'old_values' => json_encode(['field' => $this->faker->word]),
             'new_values' => json_encode(['field' => $this->faker->word]),

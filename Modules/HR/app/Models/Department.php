@@ -2,12 +2,16 @@
 
 namespace Modules\HR\Models;
 
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\User;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Modules\HR\Models\Employee;
+use Modules\HR\Models\Position;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Class Department
@@ -170,7 +174,7 @@ class Department extends Model
      */
     public function getAllDescendants(): Collection
     {
-        $descendants = new Collection;
+        $descendants = new Collection();
 
         foreach ($this->childDepartments as $child) {
             $descendants->push($child);
@@ -187,7 +191,7 @@ class Department extends Model
      */
     public function getAllAncestors(): Collection
     {
-        $ancestors = new Collection;
+        $ancestors = new Collection();
         $current = $this->parentDepartment;
 
         while ($current) {

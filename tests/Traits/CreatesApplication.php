@@ -2,17 +2,15 @@
 
 namespace Tests\Traits;
 
-use App\Models\Account;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Journal;
+
 use Illuminate\Contracts\Console\Kernel;
 
 trait CreatesApplication
 {
     public function createApplication()
     {
-        $app = require __DIR__.'/../../bootstrap/app.php';
+        $app = require __DIR__ . '/../../bootstrap/app.php';
 
         $app->make(Kernel::class)->bootstrap();
 
@@ -35,7 +33,7 @@ trait CreatesApplication
             'default_outstanding_receipts_account_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => 'current_assets', 'name' => 'Outstanding Receipts']),
         ];
 
-        $accountIds = collect($accounts)->mapWithKeys(fn ($account, $key) => [$key => $account->id])->all();
+        $accountIds = collect($accounts)->mapWithKeys(fn($account, $key) => [$key => $account->id])->all();
 
         // Now, create journals and link them to the *already created* default accounts.
         $journals = [
@@ -62,7 +60,7 @@ trait CreatesApplication
                 'default_credit_account_id' => $accounts['default_bank_account_id']->id,
             ]),
         ];
-        $journalIds = collect($journals)->mapWithKeys(fn ($journal, $key) => [$key => $journal->id])->all();
+        $journalIds = collect($journals)->mapWithKeys(fn($journal, $key) => [$key => $journal->id])->all();
 
         // Update the company with all IDs in a single, atomic operation.
         $company->update(array_merge($accountIds, $journalIds));

@@ -2,8 +2,8 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages;
 
-use App\Filament\Clusters\Inventory\Resources\StockPickingResource;
 use Filament\Resources\Pages\CreateRecord;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource;
 
 class CreateStockPicking extends CreateRecord
 {

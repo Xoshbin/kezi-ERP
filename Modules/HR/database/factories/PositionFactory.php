@@ -2,12 +2,13 @@
 
 namespace Modules\HR\Database\Factories;
 
-use App\Models\Company;
-use App\Models\Department;
-use App\Models\Position;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Foundation\Models\Currency;
+use App\Models\Company;
+
+use Modules\HR\Models\Department;
+use Modules\HR\Models\Position;
 
 /**
  * @extends Factory<Position>
@@ -61,14 +62,14 @@ class PositionFactory extends Factory
 
     public function withDepartment(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'department_id' => Department::factory(),
         ]);
     }
 
     public function inactive(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'is_active' => false,
         ]);
     }

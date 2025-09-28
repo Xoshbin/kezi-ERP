@@ -2,10 +2,10 @@
 
 namespace Modules\Accounting\Tests\Feature\Filament\Pages;
 
-use App\Filament\Clusters\Accounting\Pages\Reports\Dashboard;
-use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports\Dashboard;
+use Modules\Accounting\Models\User;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

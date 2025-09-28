@@ -2,9 +2,9 @@
 
 namespace Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates\Pages;
 
-use App\Filament\Clusters\Settings\Resources\LockDates\LockDateResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates\LockDateResource;
 
 class ListLockDates extends ListRecords
 {

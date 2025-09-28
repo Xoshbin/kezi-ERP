@@ -17,5 +17,6 @@ readonly class ProfitAndLossStatementDTO
         public Collection $expenseLines,
         public Money $totalExpenses,
         public Money $netIncome,
-    ) {}
+    ) {
+    }
 }

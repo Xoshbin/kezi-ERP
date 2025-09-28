@@ -2,9 +2,9 @@
 
 namespace Modules\Purchase\Observers;
 
-use App\Models\VendorBillLine;
 use Brick\Money\Money;
 use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Models\VendorBillLine;
 
 class VendorBillLineObserver
 {

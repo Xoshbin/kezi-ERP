@@ -2,17 +2,36 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
+use Exception;
+use Carbon\Carbon;
+use RuntimeException;
+use Brick\Money\Money;
 use App\Models\Company;
 use Brick\Math\RoundingMode;
-use Brick\Money\Money;
-use Carbon\Carbon;
-use Exception;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+
 use Modules\Product\Models\Product;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Inventory\Models\StockMove;
 use Modules\Purchase\Models\VendorBill;
-use RuntimeException;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Accounting\Models\JournalEntryLine;
+use Modules\Inventory\Models\InventoryCostLayer;
+use Modules\Inventory\Models\StockMoveValuation;
+use Modules\Inventory\Enums\Inventory\CostSource;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Accounting\Enums\Accounting\JournalEntryState;
+use Modules\Inventory\Services\Inventory\StockQuantService;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
+use Modules\Inventory\DataTransferObjects\Inventory\AdjustInventoryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\CostDeterminationResult;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
 
 /**
  * Inventory Valuation Service
@@ -49,7 +68,7 @@ class InventoryValuationService
     public function __construct(
         protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         protected StockQuantService $stockQuantService,
-        protected \Modules\Foundation\Services\CurrencyConverterService $currencyConverter
+        protected \Modules\Foundation\Services\CurrencyConverterService $currencyConverter,
     ) {}
 
     /**
@@ -1007,14 +1026,14 @@ class InventoryValuationService
     public function calculateIncomingCostPerUnitEnhanced(
         Product $product,
         StockMove $stockMove,
-        bool $allowFallbacks = false
+        bool $allowFallbacks = false,
     ): CostDeterminationResult {
         $companyCurrency = $product->company->currency;
         $attemptedSources = [];
         $warnings = [];
 
         // 1. Try vendor bill cost (highest priority)
-        if ($stockMove->source_type === 'App\Models\VendorBill') {
+        if ($stockMove->source_type === 'Modules\Inventory\Models\VendorBill') {
             $attemptedSources[] = 'vendor_bill';
             $vendorBill = VendorBill::find($stockMove->source_id);
             if ($vendorBill) {

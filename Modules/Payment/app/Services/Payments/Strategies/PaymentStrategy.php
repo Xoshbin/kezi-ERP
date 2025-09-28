@@ -3,6 +3,8 @@
 namespace Modules\Payment\Services\Payments\Strategies;
 
 use Modules\Payment\Models\Payment;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Modules\Payment\DataTransferObjects\Payments\UpdatePaymentDTO;
 
 interface PaymentStrategy
 {

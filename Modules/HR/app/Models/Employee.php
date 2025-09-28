@@ -2,16 +2,25 @@
 
 namespace Modules\HR\Models;
 
-use App\Observers\AuditLogObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\User;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Modules\HR\Models\Payroll;
+use Modules\HR\Models\Position;
+use Modules\HR\Models\LeaveType;
+use Modules\HR\Models\Attendance;
+use Modules\HR\Models\Department;
+use Modules\HR\Models\LeaveRequest;
+use Illuminate\Database\Eloquent\Model;
+use Modules\HR\Models\EmploymentContract;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Modules\Foundation\Observers\AuditLogObserver;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 /**
  * Class Employee
@@ -73,7 +82,8 @@ use Illuminate\Support\Carbon;
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class Employee extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -281,7 +291,7 @@ class Employee extends Model
      */
     public function getFullNameAttribute(): string
     {
-        return trim($this->first_name.' '.$this->last_name);
+        return trim($this->first_name . ' ' . $this->last_name);
     }
 
     /**
@@ -289,7 +299,7 @@ class Employee extends Model
      */
     public function getDisplayNameAttribute(): string
     {
-        return $this->full_name.' ('.$this->employee_number.')';
+        return $this->full_name . ' (' . $this->employee_number . ')';
     }
 
     /**
@@ -314,8 +324,8 @@ class Employee extends Model
     public function isActive(): bool
     {
         return $this->employment_status === 'active' &&
-               $this->is_active &&
-               is_null($this->termination_date);
+            $this->is_active &&
+            is_null($this->termination_date);
     }
 
     /**
@@ -339,7 +349,7 @@ class Employee extends Model
      */
     public function getAllSubordinates(): Collection
     {
-        $subordinates = new Collection;
+        $subordinates = new Collection();
 
         foreach ($this->directReports as $directReport) {
             $subordinates->push($directReport);
@@ -444,7 +454,7 @@ class Employee extends Model
 
         // Get the next sequential number for this year
         $lastEmployee = static::where('company_id', $company->id)
-            ->where('employee_number', 'like', $prefix.$year.'%')
+            ->where('employee_number', 'like', $prefix . $year . '%')
             ->orderBy('employee_number', 'desc')
             ->first();
 
@@ -455,6 +465,6 @@ class Employee extends Model
             $nextNumber = 1;
         }
 
-        return $prefix.$year.str_pad((string) $nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix . $year . str_pad((string) $nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

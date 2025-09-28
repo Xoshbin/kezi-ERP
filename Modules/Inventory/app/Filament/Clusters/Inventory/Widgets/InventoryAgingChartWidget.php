@@ -2,14 +2,13 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Widgets;
 
-use App\Services\Inventory\InventoryReportingService;
+
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Cache;
+use Modules\Inventory\Services\Inventory\InventoryReportingService;
 
 class InventoryAgingChartWidget extends ChartWidget
 {
-
-
     protected static ?int $sort = 4;
 
     protected int | string | array $columnSpan = [
@@ -47,7 +46,7 @@ class InventoryAgingChartWidget extends ChartWidget
                     ['min' => 181, 'max' => 365, 'label' => '181-365 days'],
                     ['min' => 366, 'max' => 9999, 'label' => '365+ days'],
                 ],
-                ...$filters
+                ...$filters,
             ]);
 
             $labels = [];

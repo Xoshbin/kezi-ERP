@@ -18,5 +18,6 @@ readonly class AgedPayableDTO
         public Money $totalBucket61_90,
         public Money $totalBucket90_plus,
         public Money $grandTotalDue,
-    ) {}
+    ) {
+    }
 }

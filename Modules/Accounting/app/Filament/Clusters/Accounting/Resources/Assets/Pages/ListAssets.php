@@ -2,9 +2,9 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages;
 
-use App\Filament\Clusters\Accounting\Resources\Assets\AssetResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\AssetResource;
 
 class ListAssets extends ListRecords
 {

@@ -4,7 +4,7 @@ namespace Modules\Inventory\Enums\Inventory;
 
 /**
  * Enum representing the source of cost information for inventory valuation
- * 
+ *
  * This enum tracks where the cost per unit was determined from,
  * providing transparency and audit trail for cost calculations.
  */
@@ -16,7 +16,7 @@ enum CostSource: string
     case UnitPrice = 'unit_price';
     case Manual = 'manual';
     case CompanyDefault = 'company_default';
-    
+
     /**
      * Get the translated label for the cost source
      */
@@ -24,7 +24,7 @@ enum CostSource: string
     {
         return __('enums.cost_source.' . $this->value);
     }
-    
+
     /**
      * Get a description of what this cost source represents
      */
@@ -39,7 +39,7 @@ enum CostSource: string
             self::CompanyDefault => __('Cost from company default settings'),
         };
     }
-    
+
     /**
      * Get the priority/reliability of this cost source (lower = more reliable)
      */
@@ -54,7 +54,7 @@ enum CostSource: string
             self::CompanyDefault => 6,  // Least reliable - generic fallback
         };
     }
-    
+
     /**
      * Check if this cost source is considered reliable for accounting purposes
      */
@@ -62,7 +62,7 @@ enum CostSource: string
     {
         return $this->priority() <= 3;
     }
-    
+
     /**
      * Check if this cost source requires special approval or warnings
      */

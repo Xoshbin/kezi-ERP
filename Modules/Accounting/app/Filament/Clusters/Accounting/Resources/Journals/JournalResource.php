@@ -16,7 +16,14 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Journals\Pages\CreateJournal;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Journals\Pages\EditJournal;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Journals\Pages\ListJournals;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Journals\RelationManagers\JournalEntriesRelationManager;
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
 use Modules\Foundation\Models\Currency;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 

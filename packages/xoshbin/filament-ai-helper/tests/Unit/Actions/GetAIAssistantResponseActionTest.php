@@ -143,7 +143,7 @@ it('builds correct system prompt with locale', function () {
 });
 
 it('includes context data in prompt when model exists', function () {
-    $model = new InvoiceModel;
+    $model = new InvoiceModel();
     $model->id = 1;
     $model->number = 'INV-001';
     $model->total = 1000;
@@ -253,7 +253,7 @@ it('falls back to default task instructions for unknown model types', function (
 });
 
 it('generates welcome message with record context', function () {
-    $model = new InvoiceModel;
+    $model = new InvoiceModel();
     $model->id = 1;
     $model->number = 'INV-001';
 
@@ -311,7 +311,7 @@ it('returns empty welcome message when disabled', function () {
 it('truncates context data when too long', function () {
     config(['filament-ai-helper.assistant.max_context_length' => 50]);
 
-    $model = new InvoiceModel;
+    $model = new InvoiceModel();
     $model->id = 1;
     $model->number = 'INV-001';
     $model->description = str_repeat('Very long description ', 100); // Make it very long

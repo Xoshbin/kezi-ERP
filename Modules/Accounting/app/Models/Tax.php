@@ -2,18 +2,22 @@
 
 namespace Modules\Accounting\Models;
 
-use App\Enums\Accounting\TaxType;
-use App\Observers\TaxObserver;
-use Database\Factories\TaxFactory;
 use Eloquent;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Database\Factories\TaxFactory;
+use Modules\Sales\Models\InvoiceLine;
+use Modules\Accounting\Models\Account;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Accounting\Observers\TaxObserver;
+use Modules\Accounting\Enums\Accounting\TaxType;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 // The SoftDeletes trait is intentionally omitted for the Tax model.
 // As per accounting principles, tax records, once used, should not be physically deleted.
@@ -55,7 +59,8 @@ use Spatie\Translatable\HasTranslations;
 
 class Tax extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory;
+    use HasTranslations;
 
     /** @var array<int, string> */
     public array $translatable = ['name', 'label_on_invoices'];

@@ -2,11 +2,11 @@
 
 namespace Modules\Sales\Actions\Sales;
 
-use App\DataTransferObjects\Sales\CreateSalesOrderDTO;
 use App\Models\Company;
-use App\Models\SalesOrder;
-use App\Services\Accounting\LockDateService;
 use Illuminate\Support\Facades\DB;
+
+use Modules\Sales\Models\SalesOrder;
+use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderDTO;
 
 /**
  * Action for creating a new Sales Order
@@ -15,7 +15,7 @@ class CreateSalesOrderAction
 {
     public function __construct(
         protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
-        protected CreateSalesOrderLineAction $createLineAction
+        protected CreateSalesOrderLineAction $createLineAction,
     ) {}
 
     /**
@@ -24,7 +24,7 @@ class CreateSalesOrderAction
     public function execute(CreateSalesOrderDTO $dto): SalesOrder
     {
         $this->lockDateService->enforce(
-            Company::findOrFail($dto->company_id), 
+            Company::findOrFail($dto->company_id),
             $dto->so_date
         );
 

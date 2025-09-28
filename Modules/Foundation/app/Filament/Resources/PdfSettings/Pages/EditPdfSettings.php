@@ -2,11 +2,11 @@
 
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\Pages;
 
-use App\Filament\Clusters\Settings\Resources\PdfSettings\PdfSettingsResource;
 use App\Models\Company;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\PdfSettings\PdfSettingsResource;
 
 class EditPdfSettings extends EditRecord
 {

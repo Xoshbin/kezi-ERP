@@ -1,11 +1,29 @@
 <?php
 
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Models\Account;
 use Modules\Product\Models\Product;
+use Modules\Accounting\Models\Account;
+use Modules\Inventory\Models\StockMove;
 use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Inventory\Models\InventoryCostLayer;
+use Modules\Inventory\Models\StockMoveValuation;
+use Modules\Inventory\Enums\Inventory\CostSource;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Inventory\Enums\Inventory\StockLocationType;
+use Modules\Inventory\Actions\Inventory\CreateStockMoveAction;
+use Modules\Inventory\Services\Inventory\CostValidationService;
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

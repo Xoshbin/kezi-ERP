@@ -2,9 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages;
 
-use App\DataTransferObjects\Assets\UpdateAssetDTO;
-use App\Filament\Clusters\Accounting\Resources\Assets\AssetResource;
-use App\Services\AssetService;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -12,6 +9,8 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\DataTransferObjects\Assets\UpdateAssetDTO;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\AssetResource;
 use Modules\Accounting\Models\Asset;
 
 class EditAsset extends EditRecord

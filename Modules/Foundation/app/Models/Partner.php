@@ -2,19 +2,30 @@
 
 namespace Modules\Foundation\Models;
 
-use Brick\Money\Money;
 use Eloquent;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Carbon;
 use RuntimeException;
+use Brick\Money\Money;
+use App\Models\Company;
+use Illuminate\Support\Carbon;
+use Modules\Sales\Models\Invoice;
+use Modules\Payment\Models\Payment;
+use Modules\Accounting\Models\Account;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Purchase\Models\VendorBill;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Foundation\Models\PaymentTerm;
+use Illuminate\Database\Eloquent\Collection;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Accounting\Models\JournalEntryLine;
 use Xoshbin\CustomFields\Traits\HasCustomFields;
+use Modules\Foundation\Observers\PartnerObserver;
+use Modules\Foundation\Enums\Partners\PartnerType;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 /**
  * Class Partner
@@ -78,7 +89,9 @@ use Xoshbin\CustomFields\Traits\HasCustomFields;
 #[ObservedBy([\Modules\Foundation\Observers\PartnerObserver::class])]
 class Partner extends Model
 {
-    use HasFactory, SoftDeletes, HasCustomFields;
+    use HasFactory;
+    use SoftDeletes;
+    use HasCustomFields;
 
     /**
      * The attributes that are mass assignable.
@@ -395,7 +408,7 @@ class Partner extends Model
     public function hasOverdueAmounts(): bool
     {
         return ! $this->getCustomerOverdueBalance()->isZero() ||
-               ! $this->getVendorOverdueBalance()->isZero();
+            ! $this->getVendorOverdueBalance()->isZero();
     }
 
     /**

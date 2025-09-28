@@ -2,11 +2,11 @@
 
 namespace Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts\Pages;
 
-use App\Filament\Clusters\Settings\Resources\Accounts\AccountResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\ListRecords\Concerns\Translatable;
+use Modules\Accounting\Filament\Clusters\Settings\Resources\Accounts\AccountResource;
 
 class ListAccounts extends ListRecords
 {
@@ -19,7 +19,7 @@ class ListAccounts extends ListRecords
         return [
             LocaleSwitcher::make(),
             CreateAction::make()
-                ->label(__('filament.actions.create').' '.__('account.label')),
+                ->label(__('filament.actions.create') . ' ' . __('account.label')),
         ];
     }
 }

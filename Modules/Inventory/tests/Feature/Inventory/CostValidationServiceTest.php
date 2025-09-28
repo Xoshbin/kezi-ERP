@@ -1,10 +1,17 @@
 <?php
 
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Models\Account;
 use Modules\Product\Models\Product;
+use Modules\Accounting\Models\Account;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Inventory\Enums\Inventory\CostSource;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Services\Inventory\CostValidationService;
+use Modules\Inventory\DataTransferObjects\Inventory\CostPreviewResult;
+use Modules\Inventory\DataTransferObjects\Inventory\CostValidationResult;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

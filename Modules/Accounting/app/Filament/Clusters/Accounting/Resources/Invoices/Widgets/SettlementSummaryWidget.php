@@ -6,7 +6,9 @@ use Brick\Money\Money;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Modules\Sales\Models\Invoice;
+use NumberFormatter;
 
 class SettlementSummaryWidget extends BaseWidget
 {
@@ -75,7 +77,7 @@ class SettlementSummaryWidget extends BaseWidget
             $money->getCurrency()->getCurrencyCode()
         );
 
-        return $result ?: $money->getCurrency()->getCurrencyCode().' 0.00';
+        return $result ?: $money->getCurrency()->getCurrencyCode() . ' 0.00';
     }
 
     protected function getColumns(): int

@@ -2,31 +2,32 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations;
 
-use App\Enums\Inventory\StockLocationType;
-use App\Filament\Clusters\Inventory\InventoryCluster;
-use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\CreateStockLocation;
-use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\EditStockLocation;
-use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\ListStockLocations;
-use App\Filament\Clusters\Inventory\Resources\StockLocations\Pages\ViewStockLocation;
-use App\Models\StockLocation;
+
 use BackedEnum;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
+use Filament\Tables\Table;
+use Filament\Schemas\Schema;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
-use Filament\Tables\Table;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Enums\Inventory\StockLocationType;
+use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\Pages\EditStockLocation;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\Pages\ViewStockLocation;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\Pages\ListStockLocations;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\Pages\CreateStockLocation;
 
 class StockLocationResource extends Resource
 {
@@ -73,7 +74,7 @@ class StockLocationResource extends Resource
                             ->required()
                             ->options(
                                 collect(StockLocationType::cases())
-                                    ->mapWithKeys(fn (StockLocationType $type) => [$type->value => $type->label()])
+                                    ->mapWithKeys(fn(StockLocationType $type) => [$type->value => $type->label()])
                             )
                             ->searchable(),
                         Select::make('parent_id')
@@ -114,8 +115,8 @@ class StockLocationResource extends Resource
                 TextColumn::make('type')
                     ->label(__('stock_location.type'))
                     ->badge()
-                    ->formatStateUsing(fn (StockLocationType $state): string => $state->label())
-                    ->color(fn (StockLocationType $state): string => match ($state) {
+                    ->formatStateUsing(fn(StockLocationType $state): string => $state->label())
+                    ->color(fn(StockLocationType $state): string => match ($state) {
                         StockLocationType::Internal => 'primary',
                         StockLocationType::Customer => 'success',
                         StockLocationType::Vendor => 'warning',
@@ -159,7 +160,7 @@ class StockLocationResource extends Resource
                     ->label(__('stock_location.type'))
                     ->options(
                         collect(StockLocationType::cases())
-                            ->mapWithKeys(fn (StockLocationType $type) => [$type->value => $type->label()])
+                            ->mapWithKeys(fn(StockLocationType $type) => [$type->value => $type->label()])
                     )
                     ->multiple(),
                 TernaryFilter::make('is_active')

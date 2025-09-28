@@ -2,11 +2,14 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Modules\Accounting\Models\AssetCategory;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\User;
 use Modules\Purchase\Models\VendorBill;
 use RuntimeException;
 
@@ -14,8 +17,9 @@ class CreateJournalEntryForVendorBillAction
 {
     public function __construct(
         private readonly CreateJournalEntryAction $createJournalEntryAction,
-        private readonly \Modules\Foundation\Services\CurrencyConverterService $currencyConverter
-    ) {}
+        private readonly \Modules\Foundation\Services\CurrencyConverterService $currencyConverter,
+    ) {
+    }
 
     public function execute(VendorBill $vendorBill, User $user): JournalEntry
     {

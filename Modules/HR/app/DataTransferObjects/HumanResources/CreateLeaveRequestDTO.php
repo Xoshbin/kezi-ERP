@@ -19,5 +19,6 @@ readonly class CreateLeaveRequestDTO
         /** @var array<int, string>|null */
         public ?array $attachments,
         public int $requested_by_user_id,
-    ) {}
+    ) {
+    }
 }

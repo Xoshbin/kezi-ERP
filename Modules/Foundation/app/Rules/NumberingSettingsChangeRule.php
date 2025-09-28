@@ -2,15 +2,15 @@
 
 namespace Modules\Foundation\Rules;
 
-use App\Models\Company;
 use Closure;
+use App\Models\Company;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Translation\PotentiallyTranslatedString;
 
 class NumberingSettingsChangeRule implements ValidationRule
 {
     public function __construct(
-        protected Company $company
+        protected Company $company,
     ) {}
 
     /**
@@ -22,7 +22,7 @@ class NumberingSettingsChangeRule implements ValidationRule
     {
         if (! $this->company->canChangeNumberingSettings()) {
             $errors = $this->company->getNumberingChangeValidationErrors();
-            $fail(__('numbering.validation.cannot_change_posted_exist').' ('.implode(', ', $errors).')');
+            $fail(__('numbering.validation.cannot_change_posted_exist') . ' (' . implode(', ', $errors) . ')');
         }
     }
 }

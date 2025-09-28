@@ -27,7 +27,8 @@ readonly class CreatePurchaseOrderLineDTO
         public ?int $tax_id = null,
         public ?Carbon $expected_delivery_date = null,
         public ?string $notes = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Create from array data

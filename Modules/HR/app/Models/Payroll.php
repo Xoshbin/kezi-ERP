@@ -2,17 +2,24 @@
 
 namespace Modules\HR\Models;
 
-use App\Casts\DocumentCurrencyMoneyCast;
-use App\Observers\AuditLogObserver;
-use App\Observers\PayrollObserver;
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
+use Brick\Money\Money;
+use App\Models\Company;
+use Modules\HR\Models\Employee;
+use Modules\HR\Models\PayrollLine;
+use Modules\Payment\Models\Payment;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Foundation\Models\Currency;
+use Modules\HR\Observers\PayrollObserver;
+use Modules\Accounting\Models\JournalEntry;
+use Illuminate\Database\Eloquent\Collection;
+use Modules\Foundation\Observers\AuditLogObserver;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
 
 /**
  * Class Payroll
@@ -258,6 +265,6 @@ class Payroll extends Model
      */
     public function getEmployeeFullNameAttribute(): string
     {
-        return $this->employee->first_name.' '.$this->employee->last_name;
+        return $this->employee->first_name . ' ' . $this->employee->last_name;
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages;
 
-use App\Filament\Clusters\Inventory\Resources\Products\ProductResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\ProductResource;
 
 class ListProducts extends ListRecords
 {

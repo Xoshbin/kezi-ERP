@@ -140,7 +140,7 @@ enum PurchaseOrderStatus: string
             self::Sent,
             self::Confirmed,
             self::ToReceive,
-            self::PartiallyReceived
+            self::PartiallyReceived,
         ]);
     }
 
@@ -154,7 +154,7 @@ enum PurchaseOrderStatus: string
             self::ToReceive,
             self::PartiallyReceived,
             self::ToBill,
-            self::PartiallyBilled
+            self::PartiallyBilled,
         ]);
     }
 
@@ -170,7 +170,7 @@ enum PurchaseOrderStatus: string
             self::PartiallyReceived,   // Some goods received - can create bill
             self::FullyReceived,       // All goods received - can create bill
             self::ToBill,              // Ready to bill - can create bill
-            self::PartiallyBilled      // Some bills created - can create more bills
+            self::PartiallyBilled,      // Some bills created - can create more bills
         ]);
     }
 

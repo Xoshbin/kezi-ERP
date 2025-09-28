@@ -2,20 +2,27 @@
 
 namespace Modules\Inventory\Models;
 
-use App\Casts\BaseCurrencyMoneyCast;
-use App\Casts\DocumentCurrencyMoneyCast;
-use App\Enums\Adjustments\AdjustmentDocumentStatus;
-use App\Enums\Adjustments\AdjustmentDocumentType;
-use Brick\Money\Money;
-use Database\Factories\AdjustmentDocumentFactory;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+
+use Brick\Money\Money;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Modules\Sales\Models\Invoice;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Currency;
+use Modules\Purchase\Models\VendorBill;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Accounting\Models\JournalEntry;
+use Illuminate\Database\Eloquent\Collection;
+use Database\Factories\AdjustmentDocumentFactory;
+
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Modules\Inventory\Models\AdjustmentDocumentLine;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
 
 /**
  * @property int $id
@@ -266,12 +273,12 @@ class AdjustmentDocument extends Model
         $lines = $this->lines;
 
         $totalTax = $lines->reduce(
-            fn (Money $carry, AdjustmentDocumentLine $line) => $carry->plus($line->total_line_tax ?? $zero),
+            fn(Money $carry, AdjustmentDocumentLine $line) => $carry->plus($line->total_line_tax ?? $zero),
             $zero
         );
 
         $subtotal = $lines->reduce(
-            fn (Money $carry, AdjustmentDocumentLine $line) => $carry->plus($line->subtotal ?? $zero),
+            fn(Money $carry, AdjustmentDocumentLine $line) => $carry->plus($line->subtotal ?? $zero),
             $zero
         );
 

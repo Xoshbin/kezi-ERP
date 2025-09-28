@@ -2,17 +2,19 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Brick\Money\Money;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 
 class CreateJournalEntryForStatementLineAction
 {
-    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
+    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction)
+    {
+    }
 
     public function execute(CreateJournalEntryForStatementLineDTO $dto): void
     {

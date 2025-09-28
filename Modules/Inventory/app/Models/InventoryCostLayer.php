@@ -2,11 +2,12 @@
 
 namespace Modules\Inventory\Models;
 
-use App\Casts\BaseCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Product\Models\Product;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class InventoryCostLayer extends Model
 {

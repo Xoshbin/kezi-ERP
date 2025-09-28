@@ -2,10 +2,10 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\Pages;
 
-use App\Filament\Clusters\Inventory\Resources\StockLocations\StockLocationResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\StockLocationResource;
 
 class EditStockLocation extends EditRecord
 {

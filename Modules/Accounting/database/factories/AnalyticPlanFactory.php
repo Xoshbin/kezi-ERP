@@ -2,8 +2,8 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use App\Models\AnalyticPlan;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Accounting\Models\AnalyticPlan;
 
 /**
  * @extends Factory<AnalyticPlan>

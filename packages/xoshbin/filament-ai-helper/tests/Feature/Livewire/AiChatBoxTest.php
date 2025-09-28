@@ -17,7 +17,7 @@ class TestInvoice extends Model
     public static function find($id)
     {
         if ($id === 1) {
-            $model = new static;
+            $model = new static();
             $model->id = 1;
             $model->number = 'INV-001';
             $model->total = 1000;

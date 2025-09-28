@@ -3,15 +3,17 @@
 namespace Modules\Foundation\Casts;
 
 use Brick\Money\Money;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
-use Modules\Accounting\Models\BankStatement;
-use Modules\Foundation\Models\Currency;
-use Modules\Inventory\Models\AdjustmentDocument;
-use Modules\Payment\Models\Payment;
-use Modules\Purchase\Models\VendorBill;
 use Modules\Sales\Models\Invoice;
+use Modules\Payment\Models\Payment;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Casts\MoneyCast;
+use Modules\Foundation\Models\Currency;
+use Modules\Purchase\Models\VendorBill;
+
+use Illuminate\Database\Eloquent\Collection;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Inventory\Models\AdjustmentDocument;
 
 /**
  * DocumentCurrencyMoneyCast - Uses the document's stated currency.

@@ -2,21 +2,22 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers;
 
-use Filament\Actions\CreateAction;
-use Filament\Actions\DeleteAction;
+use Filament\Tables\Table;
+use Filament\Schemas\Schema;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Grid;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Modules\Product\Models\Product;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Product\Models\Product;
+use Filament\Forms\Components\TextInput;
+use Modules\Inventory\Enums\Inventory\ReorderingRoute;
+use Filament\Resources\RelationManagers\RelationManager;
 
 class ReorderingRulesRelationManager extends RelationManager
 {
@@ -42,7 +43,7 @@ class ReorderingRulesRelationManager extends RelationManager
                         ->label(__('reordering_rule.fields.route'))
                         ->options(
                             collect(ReorderingRoute::cases())
-                                ->mapWithKeys(fn (ReorderingRoute $route) => [$route->value => $route->label()])
+                                ->mapWithKeys(fn(ReorderingRoute $route) => [$route->value => $route->label()])
                         )
                         ->default(ReorderingRoute::MinMax->value)
                         ->required(),
@@ -102,7 +103,7 @@ class ReorderingRulesRelationManager extends RelationManager
                     ->searchable(),
                 TextColumn::make('route')
                     ->label(__('reordering_rule.fields.route'))
-                    ->formatStateUsing(fn (ReorderingRoute $state): string => $state->label())
+                    ->formatStateUsing(fn(ReorderingRoute $state): string => $state->label())
                     ->sortable(),
                 TextColumn::make('min_qty')
                     ->label(__('reordering_rule.fields.min_qty'))

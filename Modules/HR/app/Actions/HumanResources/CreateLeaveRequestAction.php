@@ -2,10 +2,10 @@
 
 namespace Modules\HR\Actions\HumanResources;
 
-use App\DataTransferObjects\HumanResources\CreateLeaveRequestDTO;
-use App\Models\LeaveRequest;
-use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use Illuminate\Support\Facades\DB;
+use Modules\HR\Models\LeaveRequest;
+use Modules\HR\DataTransferObjects\HumanResources\CreateLeaveRequestDTO;
 
 class CreateLeaveRequestAction
 {
@@ -52,7 +52,7 @@ class CreateLeaveRequestAction
 
         // Get the next sequential number for this year
         $lastRequest = LeaveRequest::where('company_id', $companyId)
-            ->where('request_number', 'like', $prefix.$year.'%')
+            ->where('request_number', 'like', $prefix . $year . '%')
             ->orderBy('request_number', 'desc')
             ->first();
 
@@ -63,6 +63,6 @@ class CreateLeaveRequestAction
             $nextNumber = 1;
         }
 
-        return $prefix.$year.str_pad((string) $nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix . $year . str_pad((string) $nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

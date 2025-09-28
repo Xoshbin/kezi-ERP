@@ -8,8 +8,13 @@ use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
+use Modules\Accounting\Actions\Accounting\UpdateBankStatementAction;
+use Modules\Accounting\DataTransferObjects\Accounting\UpdateBankStatementDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\UpdateBankStatementLineDTO;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
 use Modules\Accounting\Models\BankStatement;
 use Modules\Accounting\Models\BankStatementLine;
+use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Foundation\Models\Currency;
 
 class EditBankStatement extends EditRecord
@@ -25,7 +30,7 @@ class EditBankStatement extends EditRecord
     {
         return [
             DeleteAction::make(),
-            \Modules\Foundation\App\Filament\Actions\DocsAction::make('bank-statements'),
+            DocsAction::make('bank-statements'),
         ];
     }
 

@@ -2,7 +2,6 @@
 
 namespace Modules\Inventory\Events;
 
-use App\Models\AdjustmentDocument;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -11,7 +10,9 @@ use Illuminate\Queue\SerializesModels;
 
 class AdjustmentDocumentPosted
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     /**
      * Create a new event instance.

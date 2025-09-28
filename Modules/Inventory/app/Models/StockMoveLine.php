@@ -2,9 +2,12 @@
 
 namespace Modules\Inventory\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Company;
+use Modules\Inventory\Models\Lot;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Inventory\Models\StockMoveProductLine;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class StockMoveLine extends Model
 {

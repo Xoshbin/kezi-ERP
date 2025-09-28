@@ -1,10 +1,19 @@
 <?php
 
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Product\Enums\Products\ProductType;
 use Modules\Product\Models\Product;
+use Modules\Inventory\Models\StockMove;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Product\Enums\Products\ProductType;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Actions\Inventory\CreateStockMoveAction;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use Modules\Inventory\Actions\Inventory\UpdateStockMoveWithProductLinesAction;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\UpdateStockMoveWithProductLinesDTO;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

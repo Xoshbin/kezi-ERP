@@ -2,13 +2,14 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Schemas;
 
-use Filament\Forms\Components\DatePicker;
+use Filament\Schemas\Schema;
+use Modules\HR\Models\Employee;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 use Modules\Foundation\Models\Currency;
-use Modules\HR\Models\Employee;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\DatePicker;
+use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PayrollForm
@@ -23,20 +24,21 @@ class PayrollForm
                     Select::make('employee_id')
                         ->label(__('payroll.fields.employee'))
                         ->relationship('employee', 'first_name')
-                        ->getOptionLabelFromRecordUsing(fn (Employee $record): string => $record->full_name.' ('.$record->employee_number.')')
-                        ->getSearchResultsUsing(fn (string $search): array => Employee::where('is_active', true)
-                            ->where('employment_status', 'active')
-                            ->where(function ($query) use ($search) {
-                                $query->where('first_name', 'like', "%{$search}%")
-                                    ->orWhere('last_name', 'like', "%{$search}%")
-                                    ->orWhere('employee_number', 'like', "%{$search}%");
-                            })
-                            ->limit(50)
-                            ->get()
-                            ->mapWithKeys(fn (Employee $employee): array => [
-                                $employee->id => $employee->full_name.' ('.$employee->employee_number.')',
-                            ])
-                            ->toArray()
+                        ->getOptionLabelFromRecordUsing(fn(Employee $record): string => $record->full_name . ' (' . $record->employee_number . ')')
+                        ->getSearchResultsUsing(
+                            fn(string $search): array => Employee::where('is_active', true)
+                                ->where('employment_status', 'active')
+                                ->where(function ($query) use ($search) {
+                                    $query->where('first_name', 'like', "%{$search}%")
+                                        ->orWhere('last_name', 'like', "%{$search}%")
+                                        ->orWhere('employee_number', 'like', "%{$search}%");
+                                })
+                                ->limit(50)
+                                ->get()
+                                ->mapWithKeys(fn(Employee $employee): array => [
+                                    $employee->id => $employee->full_name . ' (' . $employee->employee_number . ')',
+                                ])
+                                ->toArray()
                         )
                         ->required()
                         ->searchable()
@@ -57,7 +59,7 @@ class PayrollForm
                             return "{$currencyName} ({$record->code})";
                         })
                         ->required()
-                        ->default(fn () => Currency::where('code', 'IQD')->first()?->id)
+                        ->default(fn() => Currency::where('code', 'IQD')->first()?->id)
                         ->columnSpan(1),
 
                     DatePicker::make('period_start_date')
@@ -96,49 +98,49 @@ class PayrollForm
                 ->description(__('payroll.sections.salary_components_description'))
                 ->icon('heroicon-o-currency-dollar')
                 ->schema([
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('base_salary')
+                    MoneyInput::make('base_salary')
                         ->label(__('payroll.fields.base_salary'))
                         ->currencyField('currency_id')
                         ->required()
                         ->columnSpan(2),
 
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('overtime_amount')
+                    MoneyInput::make('overtime_amount')
                         ->label(__('payroll.fields.overtime_amount'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('housing_allowance')
+                    MoneyInput::make('housing_allowance')
                         ->label(__('payroll.fields.housing_allowance'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('transport_allowance')
+                    MoneyInput::make('transport_allowance')
                         ->label(__('payroll.fields.transport_allowance'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('meal_allowance')
+                    MoneyInput::make('meal_allowance')
                         ->label(__('payroll.fields.meal_allowance'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('other_allowances')
+                    MoneyInput::make('other_allowances')
                         ->label(__('payroll.fields.other_allowances'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('bonus')
+                    MoneyInput::make('bonus')
                         ->label(__('payroll.fields.bonus'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('commission')
+                    MoneyInput::make('commission')
                         ->label(__('payroll.fields.commission'))
                         ->currencyField('currency_id')
                         ->default(0)
@@ -151,31 +153,31 @@ class PayrollForm
                 ->description(__('payroll.sections.deductions_description'))
                 ->icon('heroicon-o-minus-circle')
                 ->schema([
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('income_tax')
+                    MoneyInput::make('income_tax')
                         ->label(__('payroll.fields.income_tax'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('social_security')
+                    MoneyInput::make('social_security')
                         ->label(__('payroll.fields.social_security'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('health_insurance')
+                    MoneyInput::make('health_insurance')
                         ->label(__('payroll.fields.health_insurance'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('pension_contribution')
+                    MoneyInput::make('pension_contribution')
                         ->label(__('payroll.fields.pension_contribution'))
                         ->currencyField('currency_id')
                         ->default(0)
                         ->columnSpan(1),
 
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('other_deductions')
+                    MoneyInput::make('other_deductions')
                         ->label(__('payroll.fields.other_deductions'))
                         ->currencyField('currency_id')
                         ->default(0)

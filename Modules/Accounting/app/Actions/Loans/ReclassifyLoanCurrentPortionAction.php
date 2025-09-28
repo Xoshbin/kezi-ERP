@@ -7,13 +7,19 @@ use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Modules\Accounting\Enums\Loans\LoanType;
+use Modules\Accounting\Models\JournalEntry;
 use Modules\Accounting\Models\LoanAgreement;
 use Modules\Accounting\Models\LoanScheduleEntry;
 use RuntimeException;
 
 class ReclassifyLoanCurrentPortionAction
 {
-    public function __construct(private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJE) {}
+    public function __construct(private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJE)
+    {
+    }
 
     public function execute(
         LoanAgreement $loan,
@@ -22,7 +28,7 @@ class ReclassifyLoanCurrentPortionAction
         int $longTermAccountId,
         int $shortTermAccountId,
         int $months,
-        string $asOfDate
+        string $asOfDate,
     ): JournalEntry {
         return DB::transaction(function () use ($loan, $user, $journalId, $longTermAccountId, $shortTermAccountId, $months, $asOfDate) {
             $loan->loadMissing('currency', 'company', 'scheduleEntries');
@@ -100,7 +106,7 @@ class ReclassifyLoanCurrentPortionAction
                 journal_id: $journalId,
                 currency_id: $loan->currency_id,
                 entry_date: $asOf->toDateString(),
-                reference: 'LOAN-RECLASS/'.$loan->id.'/'.$months,
+                reference: 'LOAN-RECLASS/' . $loan->id . '/' . $months,
                 description: 'Reclassify loan current portion',
                 created_by_user_id: $user->id,
                 is_posted: true,

@@ -1,15 +1,18 @@
 <?php
 
-use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use Filament\Facades\Filament;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\BankStatement;
-use Modules\Foundation\Models\Partner;
+use App\Models\Company;
+use Filament\Facades\Filament;
 use Modules\Payment\Models\Payment;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Models\Partner;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Livewire\Accounting\SystemPaymentsTable;
 
 uses(RefreshDatabase::class);
 

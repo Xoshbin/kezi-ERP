@@ -2,10 +2,11 @@
 
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\PaymentTermResource\Pages;
 
-use App\Filament\Actions\DocsAction;
-use App\Filament\Clusters\Settings\Resources\PaymentTermResource;
 use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Modules\Foundation\Filament\Actions\DocsAction;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\PaymentTermResource;
 
 class EditPaymentTerm extends EditRecord
 {

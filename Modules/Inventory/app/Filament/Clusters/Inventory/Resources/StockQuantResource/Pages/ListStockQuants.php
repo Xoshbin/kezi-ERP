@@ -2,9 +2,9 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages;
 
-use App\Filament\Clusters\Inventory\Resources\StockQuantResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource;
 
 class ListStockQuants extends ListRecords
 {

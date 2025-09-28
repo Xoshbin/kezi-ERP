@@ -2,17 +2,21 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\User;
 use Modules\Sales\Models\Invoice;
 use RuntimeException;
 
 class CreateJournalEntryForInvoiceAction
 {
     public function __construct(
-        private readonly CreateJournalEntryAction $createJournalEntryAction
-    ) {}
+        private readonly CreateJournalEntryAction $createJournalEntryAction,
+    ) {
+    }
 
     public function execute(Invoice $invoice, User $user): JournalEntry
     {

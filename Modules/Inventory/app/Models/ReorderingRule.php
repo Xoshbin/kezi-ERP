@@ -2,11 +2,15 @@
 
 namespace Modules\Inventory\Models;
 
-use App\Enums\Inventory\ReorderingRoute;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Company;
+use Modules\Product\Models\Product;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Inventory\Models\StockLocation;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Inventory\Models\ReplenishmentSuggestion;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Inventory\Enums\Inventory\ReorderingRoute;
 
 class ReorderingRule extends Model
 {
@@ -86,7 +90,7 @@ class ReorderingRule extends Model
         }
 
         $neededQty = $this->max_qty - $currentQty;
-        
+
         if ($neededQty <= 0) {
             return 0;
         }

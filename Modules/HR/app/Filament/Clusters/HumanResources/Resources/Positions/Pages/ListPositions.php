@@ -2,9 +2,9 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\Pages;
 
-use App\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;
 
 class ListPositions extends ListRecords
 {

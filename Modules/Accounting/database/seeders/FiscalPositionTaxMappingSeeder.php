@@ -2,10 +2,10 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
-use App\Models\Tax;
 use Illuminate\Database\Seeder;
 use Modules\Accounting\Models\FiscalPosition;
 use Modules\Accounting\Models\FiscalPositionTaxMapping;
+use Modules\Accounting\Models\Tax;
 use RuntimeException;
 
 class FiscalPositionTaxMappingSeeder extends Seeder

@@ -2,11 +2,11 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports;
 
-use App\Filament\Clusters\Accounting\AccountingCluster;
 use BackedEnum;
 use Filament\Facades\Filament;
 use Filament\Pages\Page;
 use Illuminate\Contracts\Support\Htmlable;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 
 class ViewReports extends Page
 {

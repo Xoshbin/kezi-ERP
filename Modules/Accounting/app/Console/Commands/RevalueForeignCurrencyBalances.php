@@ -3,7 +3,6 @@
 namespace Modules\Accounting\Console\Commands;
 
 use App\Models\Company;
-use App\Services\ExchangeGainLossService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 

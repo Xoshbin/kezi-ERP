@@ -2,8 +2,8 @@
 
 namespace Modules\Accounting\DataTransferObjects\Assets;
 
-use App\Enums\Assets\DepreciationMethod;
 use Carbon\Carbon;
+use Modules\Accounting\Enums\Assets\DepreciationMethod;
 
 readonly class UpdateAssetDTO
 {
@@ -18,5 +18,6 @@ readonly class UpdateAssetDTO
         public int $depreciation_expense_account_id,
         public int $accumulated_depreciation_account_id,
         public int $currency_id,
-    ) {}
+    ) {
+    }
 }

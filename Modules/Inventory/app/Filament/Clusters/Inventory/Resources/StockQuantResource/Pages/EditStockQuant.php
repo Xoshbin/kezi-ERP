@@ -2,9 +2,9 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages;
 
-use App\Filament\Clusters\Inventory\Resources\StockQuantResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource;
 
 class EditStockQuant extends EditRecord
 {

@@ -4,21 +4,27 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreemen
 
 use App\Models\Company;
 use Filament\Actions\Action;
+use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Group;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
-use Illuminate\Database\Eloquent\Collection;
-use Modules\Accounting\Models\LoanAgreement;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\CurrencyRate;
 use Modules\Foundation\Models\Partner;
+use Modules\Foundation\Models\Currency;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\DatePicker;
+use Modules\Foundation\Models\CurrencyRate;
+use Filament\Forms\Components\ToggleButtons;
+use Illuminate\Database\Eloquent\Collection;
+use Modules\Accounting\Enums\Loans\LoanType;
+use Modules\Accounting\Models\LoanAgreement;
+use Modules\Accounting\Enums\Loans\LoanStatus;
+use Modules\Accounting\Rules\NotInLockedPeriod;
+use Modules\Accounting\Enums\Loans\ScheduleMethod;
+use Modules\Foundation\Enums\Partners\PartnerType;
+use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class LoanAgreementForm
@@ -37,15 +43,15 @@ class LoanAgreementForm
                         ->preload()
                         ->columnSpanFull()
                         ->createOptionForm([
-                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
+                            Hidden::make('company_id')->default(fn() => Filament::getTenant()?->getKey()),
                             TextInput::make('name')->label(__('partner.name') ?: 'Name')->required(),
                             Select::make('type')->label(__('partner.type') ?: 'Type')->options(\Modules\Foundation\Enums\Partners\PartnerType::class)->required(),
                             TextInput::make('email')->label(__('partner.email') ?: 'Email')->email(),
                             TextInput::make('contact_person')->label(__('partner.contact_person') ?: 'Contact Person'),
                         ])
-                        ->createOptionUsing(fn (array $data) => Partner::create($data)->getKey())
+                        ->createOptionUsing(fn(array $data) => Partner::create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_partner') ?: 'Create Partner')
-                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg')),
+                        ->createOptionAction(fn(Action $action) => $action->modalWidth('lg')),
 
                     Group::make()
                         ->schema([
@@ -56,7 +62,7 @@ class LoanAgreementForm
 
                             ToggleButtons::make('loan_type')
                                 ->label(__('loan.form.loan_type') ?: 'Loan Type')
-                                ->options(collect(LoanType::cases())->mapWithKeys(fn (LoanType $t) => [$t->value => ucfirst($t->value)])->toArray())
+                                ->options(collect(LoanType::cases())->mapWithKeys(fn(LoanType $t) => [$t->value => ucfirst($t->value)])->toArray())
                                 ->colors([
                                     LoanType::Receivable->value => 'success',
                                     LoanType::Payable->value => 'danger',
@@ -74,7 +80,7 @@ class LoanAgreementForm
                                     DatePicker::make('loan_date')
                                         ->label(__('loan.form.loan_date') ?: 'Loan Date')
                                         ->default(now())
-                                        ->rules([new NotInLockedPeriod])
+                                        ->rules([new NotInLockedPeriod()])
                                         ->required()
                                         ->columnSpan(3),
                                     DatePicker::make('start_date')
@@ -160,18 +166,18 @@ class LoanAgreementForm
                                 })
                                 ->columnSpanFull(),
 
-                            \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('principal_amount')
+                            MoneyInput::make('principal_amount')
                                 ->label(__('loan.form.principal_amount') ?: 'Principal Amount')
                                 ->currencyField('currency_id')
                                 ->required()
                                 ->columnSpanFull(),
 
-                            \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('outstanding_principal')
+                            MoneyInput::make('outstanding_principal')
                                 ->label(__('loan.form.outstanding_principal') ?: 'Outstanding Principal')
                                 ->currencyField('currency_id')
                                 ->disabled()
                                 ->dehydrated(false)
-                                ->visible(fn (?LoanAgreement $record) => $record && $record->outstanding_principal)
+                                ->visible(fn(?LoanAgreement $record) => $record && $record->outstanding_principal)
                                 ->columnSpanFull(),
                         ])
                         ->columns(12)
@@ -207,7 +213,7 @@ class LoanAgreementForm
                         ->label(__('loan.form.eir_rate') ?: 'EIR periodic rate')
                         ->numeric()
                         ->suffix('%')
-                        ->disabled(fn (callable $get) => ! $get('eir_enabled'))
+                        ->disabled(fn(callable $get) => ! $get('eir_enabled'))
                         ->columnSpan(2),
 
                     Select::make('status')

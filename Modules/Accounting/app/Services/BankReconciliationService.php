@@ -2,24 +2,31 @@
 
 namespace Modules\Accounting\Services;
 
-use App\Models\Company;
-use App\Models\User;
-use Brick\Money\Money;
 use Exception;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\BankStatementLine;
-use Modules\Payment\Models\Payment;
+use App\Models\User;
 use RuntimeException;
+use Brick\Money\Money;
+use App\Models\Company;
+use InvalidArgumentException;
+use Illuminate\Support\Facades\DB;
+use Modules\Payment\Models\Payment;
+use Modules\Accounting\Models\Account;
+use Illuminate\Database\Eloquent\Collection;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Accounting\Models\BankStatementLine;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Foundation\Services\CurrencyConverterService;
+use Modules\Accounting\Exceptions\Reconciliation\ReconciliationDisabledException;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryForStatementLineAction;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryForReconciliationAction;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
 
 // 1. Import the new action
 
 class BankReconciliationService
 {
     public function __construct(
-        private CurrencyConverterService $currencyConverter
+        private CurrencyConverterService $currencyConverter,
     ) {}
 
     public function reconcilePayment(Payment $payment, BankStatementLine $statementLine, User $user): void
@@ -213,7 +220,7 @@ class BankReconciliationService
     private function validateReconciliationEnabled(Company $company): void
     {
         if (! $company->enable_reconciliation) {
-            throw new ReconciliationDisabledException;
+            throw new ReconciliationDisabledException();
         }
     }
 }

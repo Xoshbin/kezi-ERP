@@ -2,7 +2,6 @@
 
 namespace Modules\Accounting\Livewire\Accounting;
 
-use App\Models\Company;
 use Brick\Money\Money;
 use Exception;
 use Filament\Facades\Filament;
@@ -13,6 +12,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\Company;
 
 class BankReconciliationMatcher extends Component
 {

@@ -3,9 +3,14 @@
 namespace Modules\Sales\Actions\Sales;
 
 use Brick\Money\Money;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 use Modules\Sales\Models\Invoice;
+use Illuminate\Support\Facades\DB;
+use Modules\Sales\Models\SalesOrder;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Illuminate\Validation\ValidationException;
+use Modules\Sales\Enums\Sales\SalesOrderStatus;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
 
 /**
  * Action for creating a customer invoice from a sales order
@@ -14,7 +19,7 @@ class CreateInvoiceFromSalesOrderAction
 {
     public function __construct(
         private readonly \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
-        private readonly CreateInvoiceLineAction $createInvoiceLineAction
+        private readonly CreateInvoiceLineAction $createInvoiceLineAction,
     ) {}
 
     /**

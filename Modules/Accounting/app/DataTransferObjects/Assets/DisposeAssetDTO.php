@@ -10,5 +10,6 @@ readonly class DisposeAssetDTO
         public Carbon $disposal_date,
         public int $disposal_value,
         public int $gain_loss_account_id,
-    ) {}
+    ) {
+    }
 }

@@ -2,14 +2,14 @@
 
 namespace Modules\Accounting\Services\Reports;
 
-use App\DataTransferObjects\Reports\TrialBalanceDTO;
-use App\DataTransferObjects\Reports\TrialBalanceLineDTO;
-use App\Enums\Accounting\AccountType;
-use App\Models\Company;
-use Brick\Money\Money;
 use Carbon\Carbon;
+use Brick\Money\Money;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use App\Models\Company;
+use Modules\Accounting\Enums\Accounting\AccountType;
+use Modules\Accounting\DataTransferObjects\Reports\TrialBalanceDTO;
+use Modules\Accounting\DataTransferObjects\Reports\TrialBalanceLineDTO;
 
 class TrialBalanceService
 {

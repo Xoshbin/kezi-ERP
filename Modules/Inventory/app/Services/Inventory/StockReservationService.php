@@ -2,12 +2,12 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use App\Models\Lot;
-use App\Models\StockMove;
-use App\Models\StockMoveLine;
-use App\Models\StockQuant;
-use App\Models\StockReservation;
 use Illuminate\Support\Facades\DB;
+use Modules\Inventory\Models\Lot;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveLine;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Inventory\Models\StockReservation;
 
 /**
  * Stock Reservation Service
@@ -44,7 +44,9 @@ class StockReservationService
      *
      * @param StockQuantService $stockQuantService Service for managing stock quantities
      */
-    public function __construct(private readonly StockQuantService $stockQuantService) {}
+    public function __construct(private readonly StockQuantService $stockQuantService)
+    {
+    }
 
     /**
      * Reserve stock for a move using FEFO allocation strategy

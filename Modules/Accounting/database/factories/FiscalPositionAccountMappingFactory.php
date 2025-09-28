@@ -2,8 +2,8 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use App\Models\FiscalPositionAccountMapping;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Accounting\Models\FiscalPositionAccountMapping;
 
 /**
  * @extends Factory<FiscalPositionAccountMapping>

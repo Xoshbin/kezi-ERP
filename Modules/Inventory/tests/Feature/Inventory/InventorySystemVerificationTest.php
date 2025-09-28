@@ -2,13 +2,22 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Models\Account;
+use Brick\Money\Money;
 use Modules\Product\Models\Product;
+use Modules\Accounting\Models\Account;
+use Modules\Inventory\Models\StockMove;
 use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Product\Enums\Products\ProductType;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Services\Inventory\StockQuantService;
+use Modules\Inventory\Services\Inventory\InventoryReportingService;
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -23,7 +32,7 @@ beforeEach(function () {
     // Create COGS account for testing
     $this->cogsAccount = Account::factory()->for($this->company)->create([
         'name' => 'Cost of Goods Sold',
-        'type' => 'expense'
+        'type' => 'expense',
     ]);
 
     // Set up warehouse location alias

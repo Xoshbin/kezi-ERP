@@ -2,13 +2,14 @@
 
 namespace Modules\Accounting\Models;
 
-use App\Enums\Accounting\LockDateType;
-use App\Observers\LockDateObserver;
+use App\Models\Company;
 use Database\Factories\LockDateFactory;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Accounting\Observers\LockDateObserver;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Accounting\Enums\Accounting\LockDateType;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 #[ObservedBy([LockDateObserver::class])]
 class LockDate extends Model

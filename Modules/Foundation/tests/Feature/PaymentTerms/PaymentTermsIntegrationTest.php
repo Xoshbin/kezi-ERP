@@ -2,14 +2,17 @@
 
 namespace Modules\Foundation\Tests\Feature\PaymentTerms;
 
-use App\Models\Company;
+use Tests\TestCase;
 use App\Models\User;
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+
 use Modules\Foundation\Models\PaymentTerm;
 use Modules\Foundation\Models\PaymentTermLine;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Foundation\Enums\PaymentTerms\PaymentTermType;
 
 class PaymentTermsIntegrationTest extends TestCase
 {

@@ -2,10 +2,12 @@
 
 namespace Modules\Product\Database\Factories;
 
-use App\Models\Company;
 use Brick\Money\Money;
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Company;
 use Modules\Accounting\Models\Account;
+use Modules\Product\Enums\Products\ProductType;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
 
 /**
  * @extends Factory<Product>

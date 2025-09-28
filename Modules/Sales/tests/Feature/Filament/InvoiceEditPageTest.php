@@ -1,14 +1,18 @@
 <?php
 
-use App\Models\Company;
 use App\Models\User;
-use Filament\Facades\Filament;
 use Livewire\Livewire;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\Partner;
+use App\Models\Company;
+use Filament\Facades\Filament;
 use Modules\Sales\Models\Invoice;
+
 use Modules\Sales\Models\InvoiceLine;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Partner;
+use Modules\Foundation\Models\Currency;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
+
 
 beforeEach(function () {
     $this->user = User::factory()->create();

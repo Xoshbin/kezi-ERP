@@ -2,6 +2,10 @@
 
 namespace Modules\Inventory\Listeners\Inventory;
 
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
+use Modules\Inventory\Jobs\Inventory\ProcessIncomingStockJob;
+use Modules\Inventory\Jobs\Inventory\ProcessOutgoingStockJob;
 
 class HandleStockMoveConfirmation
 {

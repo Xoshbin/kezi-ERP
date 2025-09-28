@@ -2,10 +2,11 @@
 
 namespace Modules\Foundation\Casts;
 
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Casts\MoneyCast;
 use Modules\Foundation\Models\Currency;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * OriginalCurrencyMoneyCast - Uses the original transaction currency.

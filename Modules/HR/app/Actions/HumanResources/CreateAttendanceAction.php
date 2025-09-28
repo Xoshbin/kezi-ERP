@@ -2,11 +2,11 @@
 
 namespace Modules\HR\Actions\HumanResources;
 
-use App\DataTransferObjects\HumanResources\CreateAttendanceDTO;
-use App\Models\Attendance;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use Modules\HR\Models\Attendance;
+use Illuminate\Support\Facades\DB;
+use Modules\HR\DataTransferObjects\HumanResources\CreateAttendanceDTO;
 
 class CreateAttendanceAction
 {
@@ -20,15 +20,15 @@ class CreateAttendanceAction
             $breakHours = null;
 
             if ($createAttendanceDTO->clock_in_time && $createAttendanceDTO->clock_out_time) {
-                $clockIn = Carbon::parse($createAttendanceDTO->attendance_date.' '.$createAttendanceDTO->clock_in_time);
-                $clockOut = Carbon::parse($createAttendanceDTO->attendance_date.' '.$createAttendanceDTO->clock_out_time);
+                $clockIn = Carbon::parse($createAttendanceDTO->attendance_date . ' ' . $createAttendanceDTO->clock_in_time);
+                $clockOut = Carbon::parse($createAttendanceDTO->attendance_date . ' ' . $createAttendanceDTO->clock_out_time);
 
                 $totalMinutes = $clockOut->diffInMinutes($clockIn);
 
                 // Calculate break time if provided
                 if ($createAttendanceDTO->break_start_time && $createAttendanceDTO->break_end_time) {
-                    $breakStart = Carbon::parse($createAttendanceDTO->attendance_date.' '.$createAttendanceDTO->break_start_time);
-                    $breakEnd = Carbon::parse($createAttendanceDTO->attendance_date.' '.$createAttendanceDTO->break_end_time);
+                    $breakStart = Carbon::parse($createAttendanceDTO->attendance_date . ' ' . $createAttendanceDTO->break_start_time);
+                    $breakEnd = Carbon::parse($createAttendanceDTO->attendance_date . ' ' . $createAttendanceDTO->break_end_time);
                     $breakMinutes = $breakEnd->diffInMinutes($breakStart);
                     $breakHours = round($breakMinutes / 60, 2);
                     $totalMinutes -= $breakMinutes;

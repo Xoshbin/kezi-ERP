@@ -61,7 +61,8 @@ class AiChatBox extends Component
     protected function initializeChat(): void
     {
         if (empty($this->modelClass) || empty($this->modelId)) {
-            $this->addMessage('assistant',
+            $this->addMessage(
+                'assistant',
                 "Hello! I'm AccounTech Pro, your AI accounting assistant. ".
                 'I can help you with accounting questions and analysis. '.
                 'How can I assist you today?'
@@ -79,7 +80,8 @@ class AiChatBox extends Component
                 $this->addMessage('assistant', $welcomeMessage);
             }
         } catch (Exception $e) {
-            $this->addMessage('assistant',
+            $this->addMessage(
+                'assistant',
                 "Hello! I'm AccounTech Pro, your AI accounting assistant. ".
                 'How can I help you analyze this record?'
             );

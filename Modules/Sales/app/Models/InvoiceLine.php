@@ -2,18 +2,25 @@
 
 namespace Modules\Sales\Models;
 
-use App\Casts\BaseCurrencyMoneyCast;
-use App\Casts\DocumentCurrencyMoneyCast;
-use App\Observers\InvoiceLineObserver;
-use Brick\Money\Money;
-use Database\Factories\InvoiceLineFactory;
+
 use Eloquent;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Brick\Money\Money;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Modules\Sales\Models\Invoice;
+use Modules\Accounting\Models\Tax;
+use Modules\Product\Models\Product;
+use Modules\Accounting\Models\Account;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Database\Factories\InvoiceLineFactory;
+use Modules\Accounting\Models\AnalyticAccount;
+use Modules\Sales\Observers\InvoiceLineObserver;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
 
 /**
  * @property int $id

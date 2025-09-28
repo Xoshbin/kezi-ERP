@@ -2,12 +2,12 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
-use App\Models\AnalyticAccount;
-use App\Models\AnalyticPlan;
-use App\Models\Company;
 use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\Company;
 use Illuminate\Database\Seeder;
+use Modules\Accounting\Models\AnalyticPlan;
+use Modules\Accounting\Models\AnalyticAccount;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AnalyticAccountSeeder extends Seeder
 {

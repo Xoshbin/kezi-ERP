@@ -2,30 +2,30 @@
 
 namespace Modules\Accounting\Filament\Clusters\Settings\Resources\Taxes;
 
-use App\Enums\Accounting\AccountType;
-use App\Enums\Accounting\TaxType;
-use App\Filament\Clusters\Settings\Resources\Taxes\Pages\CreateTax;
-use App\Filament\Clusters\Settings\Resources\Taxes\Pages\EditTax;
-use App\Filament\Clusters\Settings\Resources\Taxes\Pages\ListTaxes;
-use App\Filament\Clusters\Settings\SettingsCluster;
-use App\Models\Tax;
-use App\Support\NumberFormatter;
 use BackedEnum;
+use NumberFormatter;
+use Filament\Tables\Table;
 use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Resources\Resource;
+use Modules\Accounting\Models\Tax;
+use Filament\Actions\BulkActionGroup;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Modules\Accounting\Enums\Accounting\TaxType;
+use App\Filament\Clusters\Settings\SettingsCluster;
+use Modules\Accounting\Enums\Accounting\AccountType;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\Accounting\Filament\Clusters\Settings\Resources\Taxes\Pages\EditTax;
+use Modules\Accounting\Filament\Clusters\Settings\Resources\Taxes\Pages\CreateTax;
+use Modules\Accounting\Filament\Clusters\Settings\Resources\Taxes\Pages\ListTaxes;
 
 class TaxResource extends Resource
 {

@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Modules\Sales\Models\Invoice;
 
 class AgingAnalysisWidget extends BaseWidget

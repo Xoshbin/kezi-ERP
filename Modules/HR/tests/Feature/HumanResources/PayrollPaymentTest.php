@@ -2,21 +2,22 @@
 
 namespace Modules\HR\Tests\Feature\HumanResources;
 
-use App\Models\Company;
-use App\Models\User;
 use Brick\Money\Money;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use InvalidArgumentException;
 use Modules\Accounting\Models\Account;
+
 use Modules\HR\Models\Employee;
+
 use Modules\Payment\Models\Payment;
 use Tests\TestCase;
 use Tests\Traits\WithConfiguredCompany;
 
 class PayrollPaymentTest extends TestCase
 {
-    use RefreshDatabase, WithConfiguredCompany;
+    use RefreshDatabase;
+    use WithConfiguredCompany;
 
     private User $user;
 
@@ -226,7 +227,7 @@ class PayrollPaymentTest extends TestCase
         $this->assertTrue($payroll->isPaid());
 
         // Test employee full name attribute
-        $expectedName = $this->employee->first_name.' '.$this->employee->last_name;
+        $expectedName = $this->employee->first_name . ' ' . $this->employee->last_name;
         $this->assertEquals($expectedName, $payroll->employee_full_name);
     }
 }

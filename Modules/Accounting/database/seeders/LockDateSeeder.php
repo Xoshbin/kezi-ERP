@@ -2,10 +2,10 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
-use App\Models\Company;
-use App\Models\LockDate;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use App\Models\Company;
+use Modules\Accounting\Models\LockDate;
 
 class LockDateSeeder extends Seeder
 {
@@ -29,7 +29,7 @@ class LockDateSeeder extends Seeder
             LockDate::create([
                 'company_id' => $company->id,
                 'lock_date' => $date,
-                'description' => 'Lock date for '.$date->format('F Y'),
+                'description' => 'Lock date for ' . $date->format('F Y'),
                 'status' => 'active',
             ]);
         }
@@ -39,7 +39,7 @@ class LockDateSeeder extends Seeder
         LockDate::create([
             'company_id' => $company->id,
             'lock_date' => $currentMonthDate,
-            'description' => 'Placeholder lock date for '.$currentMonthDate->format('F Y'),
+            'description' => 'Placeholder lock date for ' . $currentMonthDate->format('F Y'),
             'status' => 'pending',
         ]);
     }

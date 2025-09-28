@@ -2,18 +2,19 @@
 
 namespace Modules\Foundation\Models;
 
-use App\Enums\PaymentTerms\PaymentTermType;
-use App\Observers\AuditLogObserver;
-use Brick\Math\RoundingMode;
-use Brick\Money\Money;
-use Database\Factories\PaymentTermLineFactory;
 use Eloquent;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Brick\Money\Money;
+use Brick\Math\RoundingMode;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Foundation\Models\PaymentTerm;
+use Database\Factories\PaymentTermLineFactory;
+use Modules\Foundation\Observers\AuditLogObserver;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Modules\Foundation\Enums\PaymentTerms\PaymentTermType;
 
 /**
  * Class PaymentTermLine
@@ -187,7 +188,7 @@ class PaymentTermLine extends Model
         };
 
         if ($this->discount_percentage && $this->discount_days) {
-            $description .= ' '.__('payment_terms.with_discount', [
+            $description .= ' ' . __('payment_terms.with_discount', [
                 'percentage' => $this->discount_percentage,
                 'days' => $this->discount_days,
             ]);

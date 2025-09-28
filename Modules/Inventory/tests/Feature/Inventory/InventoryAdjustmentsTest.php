@@ -2,14 +2,29 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Brick\Money\Money;
 use InvalidArgumentException;
-use Modules\Accounting\Models\Account;
-use Modules\Product\Enums\Products\ProductType;
+use Modules\Inventory\Models\Lot;
 use Modules\Product\Models\Product;
+use Modules\Accounting\Models\Account;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Inventory\Models\StockPicking;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Inventory\Models\StockMoveLine;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Inventory\Models\InventoryCostLayer;
+use Modules\Inventory\Models\StockMoveValuation;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Accounting\Enums\Accounting\JournalEntryState;
+use Modules\Inventory\Actions\Inventory\CreateInventoryAdjustmentAction;
+use Modules\Inventory\DataTransferObjects\Inventory\InventoryAdjustmentLineDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateInventoryAdjustmentDTO;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

@@ -1,15 +1,18 @@
 <?php
 
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Sales\Models\Invoice;
+use Modules\Product\Models\Product;
 use Illuminate\Support\Facades\Event;
 use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\LockDate;
 use Modules\Foundation\Models\Partner;
-use Modules\Product\Models\Product;
-use Modules\Sales\Events\InvoiceConfirmed;
-use Modules\Sales\Models\Invoice;
+use Modules\Accounting\Models\LockDate;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Sales\Events\InvoiceConfirmed;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
+use Modules\Sales\DataTransferObjects\Sales\UpdateInvoiceDTO;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

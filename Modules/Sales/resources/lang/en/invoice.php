@@ -82,7 +82,6 @@ return [
     'invoice_reset_to_draft' => 'Invoice reset to draft',
     'error_resetting_invoice' => 'Error resetting invoice',
 
-
     // Validation Messages
     'validation_no_line_items' => 'Cannot confirm invoice without line items',
     'validation_zero_total_amount' => 'Cannot confirm invoice with zero total amount',

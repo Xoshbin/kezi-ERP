@@ -3,6 +3,7 @@
 namespace Modules\Accounting\Observers;
 
 use Modules\Accounting\Models\DepreciationEntry;
+use Modules\Accounting\Enums\Assets\DepreciationEntryStatus;
 
 class DepreciationEntryObserver
 {

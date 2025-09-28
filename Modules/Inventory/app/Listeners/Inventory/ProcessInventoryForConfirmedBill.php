@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Listeners\Inventory;
 
 use Modules\Purchase\Events\VendorBillConfirmed;
+use Modules\Inventory\Actions\Inventory\UpdateProductInventoryStatsAction;
 
 class ProcessInventoryForConfirmedBill
 {

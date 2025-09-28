@@ -4,6 +4,8 @@ namespace Modules\Inventory\Exceptions\Inventory;
 
 use Exception;
 use Modules\Product\Models\Product;
+use Modules\Inventory\Services\Inventory\UserFriendlyErrorService;
+use Modules\Inventory\Services\Inventory\ProductCostAnalysisService;
 
 /**
  * Exception thrown when insufficient cost information is available for inventory operations
@@ -17,7 +19,7 @@ class InsufficientCostInformationException extends Exception
         public readonly Product $product,
         public readonly array $suggestedActions = [],
         public readonly array $attemptedSources = [],
-        ?string $message = null
+        ?string $message = null,
     ) {
         // Use the new analysis service for better error messages
         $analysisService = app(ProductCostAnalysisService::class);

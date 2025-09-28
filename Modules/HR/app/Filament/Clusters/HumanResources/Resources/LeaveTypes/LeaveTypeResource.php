@@ -2,18 +2,18 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes;
 
-use App\Filament\Clusters\HumanResources\HumanResourcesCluster;
-use App\Filament\Clusters\HumanResources\Resources\LeaveTypes\Pages\CreateLeaveType;
-use App\Filament\Clusters\HumanResources\Resources\LeaveTypes\Pages\EditLeaveType;
-use App\Filament\Clusters\HumanResources\Resources\LeaveTypes\Pages\ListLeaveTypes;
-use App\Filament\Clusters\HumanResources\Resources\LeaveTypes\Schemas\LeaveTypeForm;
-use App\Filament\Clusters\HumanResources\Resources\LeaveTypes\Tables\LeaveTypesTable;
-use App\Models\LeaveType;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\HR\Filament\Clusters\HumanResources\HumanResourcesCluster;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\Pages\CreateLeaveType;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\Pages\EditLeaveType;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\Pages\ListLeaveTypes;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\Schemas\LeaveTypeForm;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\Tables\LeaveTypesTable;
+use Modules\HR\Models\LeaveType;
 
 class LeaveTypeResource extends Resource
 {

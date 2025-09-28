@@ -2,9 +2,9 @@
 
 namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages;
 
-use App\Filament\Clusters\Sales\Resources\SalesOrders\SalesOrderResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\SalesOrderResource;
 
 class ListSalesOrders extends ListRecords
 {

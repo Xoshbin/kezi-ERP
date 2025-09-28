@@ -13,4 +13,3 @@ enum StockPickingType: string
         return __('enums.stock_picking_type.' . $this->value);
     }
 }
-

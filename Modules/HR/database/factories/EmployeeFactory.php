@@ -3,9 +3,10 @@
 namespace Modules\HR\Database\Factories;
 
 use App\Models\Company;
-use App\Models\Department;
-use App\Models\Employee;
-use App\Models\Position;
+
+use Modules\HR\Models\Employee;
+use Modules\HR\Models\Position;
+use Modules\HR\Models\Department;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -50,7 +51,7 @@ class EmployeeFactory extends Factory
             'termination_date' => null,
             'employment_status' => 'active',
             'employee_type' => $this->faker->randomElement(['full_time', 'part_time', 'contract', 'intern']),
-            'bank_name' => $this->faker->company.' Bank',
+            'bank_name' => $this->faker->company . ' Bank',
             'bank_account_number' => $this->faker->bankAccountNumber,
             'bank_routing_number' => $this->faker->numerify('###'),
             'is_active' => true,
@@ -59,7 +60,7 @@ class EmployeeFactory extends Factory
 
     public function terminated(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'employment_status' => 'terminated',
             'termination_date' => $this->faker->date('Y-m-d', 'now'),
             'is_active' => false,
@@ -68,14 +69,14 @@ class EmployeeFactory extends Factory
 
     public function withDepartment(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'department_id' => Department::factory(),
         ]);
     }
 
     public function withPosition(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'position_id' => Position::factory(),
         ]);
     }

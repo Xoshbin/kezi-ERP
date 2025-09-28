@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -20,7 +19,7 @@ return new class extends Migration
                 ->onDelete('cascade');
 
             // Polymorphic relationship to the model instance that has custom field values
-            $table->string('customizable_type'); // e.g., 'App\Models\Partner'
+            $table->string('customizable_type'); // e.g., 'Modules\Foundation\Models\Partner'
             $table->unsignedBigInteger('customizable_id'); // ID of the specific model instance
 
             // The field key from the definition

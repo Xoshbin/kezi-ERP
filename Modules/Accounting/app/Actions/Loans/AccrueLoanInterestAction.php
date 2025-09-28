@@ -2,16 +2,18 @@
 
 namespace Modules\Accounting\Actions\Loans;
 
-use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use Modules\Accounting\Models\LoanAgreement;
 use Modules\Accounting\Models\LoanScheduleEntry;
+use Modules\Accounting\Models\User;
 use RuntimeException;
 
 class AccrueLoanInterestAction
 {
-    public function __construct(private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJE) {}
+    public function __construct(private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJE)
+    {
+    }
 
     /**
      * Accrue interest for a given schedule sequence (monthly end by default).

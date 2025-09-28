@@ -2,15 +2,24 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
+use Carbon\Carbon;
+use RuntimeException;
+use Brick\Money\Money;
 use App\Models\Company;
 use Brick\Math\RoundingMode;
-use Brick\Money\Money;
-use Carbon\Carbon;
 use Filament\Facades\Filament;
-use Illuminate\Database\Eloquent\Builder;
+
+use Modules\Inventory\Models\Lot;
 use Illuminate\Support\Collection;
 use Modules\Product\Models\Product;
-use RuntimeException;
+use Modules\Inventory\Models\StockMove;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Inventory\Models\ReorderingRule;
+use Modules\Accounting\Models\JournalEntryLine;
+use Modules\Inventory\Models\InventoryCostLayer;
+use Modules\Inventory\Models\StockMoveValuation;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
 
 /**
  * Inventory Reporting Service
@@ -53,7 +62,7 @@ class InventoryReportingService
      */
     public function __construct(
         private readonly StockQuantService $stockQuantService,
-        private readonly ReorderingRuleService $reorderingRuleService
+        private readonly ReorderingRuleService $reorderingRuleService,
     ) {}
 
     /**
@@ -322,7 +331,9 @@ class InventoryReportingService
                 $totalValue = $totalValue->plus($layerValue);
                 $remainingQuantityForValue -= min($remainingQuantityForValue, $layer->remaining_quantity);
 
-                if ($remainingQuantityForValue <= 0) break;
+                if ($remainingQuantityForValue <= 0) {
+                    break;
+                }
             }
         }
 
@@ -430,7 +441,7 @@ class InventoryReportingService
         Carbon $asOfDate,
         Collection $valuations,
         Collection $costLayers,
-        array $filters
+        array $filters,
     ): array {
         $productValuations = $valuations->where('product_id', $product->id);
         $productCostLayers = $costLayers->where('product_id', $product->id);

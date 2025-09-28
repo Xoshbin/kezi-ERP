@@ -2,10 +2,15 @@
 
 namespace Modules\Accounting\Tests\Feature\Accounting;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Models\Account;
 use Modules\Foundation\Models\Partner;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Purchase\Services\VendorBillService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Actions\Purchases\CreateVendorBillAction;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -39,7 +44,6 @@ beforeEach(function () {
     ]);
     $this->company->setAttribute('default_depreciation_expense_account_id', $this->depreciationExpenseAccount->id);
     $this->company->setAttribute('default_accumulated_depreciation_account_id', $this->accumulatedDepreciationAccount->id);
-
 });
 
 test('it creates an asset when a vendor bill line uses an asset creation account', function () {

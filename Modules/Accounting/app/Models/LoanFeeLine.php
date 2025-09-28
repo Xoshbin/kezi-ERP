@@ -2,18 +2,23 @@
 
 namespace Modules\Accounting\Models;
 
-use App\Casts\DocumentCurrencyMoneyCast;
-use App\Enums\Loans\FeeType;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Accounting\Enums\Loans\FeeType;
+use Modules\Accounting\Models\LoanAgreement;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
 
 class LoanFeeLine extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'loan_id', 'date', 'type', 'amount', 'capitalize',
+        'loan_id',
+        'date',
+        'type',
+        'amount',
+        'capitalize',
     ];
 
     protected $casts = [

@@ -2,9 +2,13 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use Carbon\Carbon;
 use Exception;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Inventory\Models\ReorderingRule;
+use Modules\Inventory\Models\ReplenishmentSuggestion;
+use Modules\Inventory\Enums\Inventory\ReorderingRoute;
 
 /**
  * Reordering Rule Service
@@ -45,7 +49,7 @@ class ReorderingRuleService
      * @param StockQuantService $stockQuantService Service for stock quantity operations
      */
     public function __construct(
-        private readonly StockQuantService $stockQuantService
+        private readonly StockQuantService $stockQuantService,
     ) {}
 
     /**

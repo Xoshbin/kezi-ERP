@@ -2,11 +2,17 @@
 
 namespace Modules\Purchase\Observers;
 
-use Brick\Math\RoundingMode;
-use Brick\Money\Money;
-use Illuminate\Support\Facades\DB;
-use Modules\Purchase\Models\VendorBill;
 use RuntimeException;
+use Brick\Money\Money;
+use Brick\Math\RoundingMode;
+use Illuminate\Support\Facades\DB;
+use Modules\Inventory\Models\StockMove;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Purchase\Services\VendorBillService;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 
 class VendorBillObserver
 {

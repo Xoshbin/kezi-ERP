@@ -2,6 +2,8 @@
 
 namespace Modules\HR\DataTransferObjects\HumanResources;
 
+use App\Models\Company;
+
 readonly class CreateAttendanceDTO
 {
     public function __construct(

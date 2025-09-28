@@ -2,15 +2,19 @@
 
 namespace Modules\Accounting\Models;
 
-use App\Casts\BaseCurrencyMoneyCast;
-use Brick\Money\Money;
-use Database\Factories\BudgetLineFactory;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Brick\Money\Money;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Modules\Accounting\Models\Budget;
+use Modules\Accounting\Models\Account;
+use Illuminate\Database\Eloquent\Model;
+use Database\Factories\BudgetLineFactory;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Accounting\Models\AnalyticAccount;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class BudgetLine

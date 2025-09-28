@@ -2,15 +2,16 @@
 
 namespace Modules\Payment\Database\Seeders;
 
-use App\Models\Company;
-use App\Models\Journal;
-use App\Models\PaymentDocumentLink;
 use Brick\Money\Money;
+
+use App\Models\Company;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Date;
-use Modules\Payment\Models\Payment;
-use Modules\Purchase\Models\VendorBill;
 use Modules\Sales\Models\Invoice;
+use Modules\Payment\Models\Payment;
+use Illuminate\Support\Facades\Date;
+use Modules\Accounting\Models\Journal;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Payment\Models\PaymentDocumentLink;
 
 class PaymentSeeder extends Seeder
 {
@@ -31,7 +32,7 @@ class PaymentSeeder extends Seeder
             paymentType: 'outbound',
             // FIXED: Convert the BigDecimal object to a string
             amount: (string) $billToFullyPay->total_amount->getAmount(),
-            reference: 'Full payment for bill '.$billToFullyPay->bill_reference,
+            reference: 'Full payment for bill ' . $billToFullyPay->bill_reference,
             vendorBill: $billToFullyPay
         );
 
@@ -43,7 +44,7 @@ class PaymentSeeder extends Seeder
             partner: $invoiceToPartiallyPay->customer,
             paymentType: 'inbound',
             amount: 2000000, // This is a simple numeric value, so it's fine.
-            reference: 'Partial payment for invoice '.$invoiceToPartiallyPay->invoice_number,
+            reference: 'Partial payment for invoice ' . $invoiceToPartiallyPay->invoice_number,
             invoice: $invoiceToPartiallyPay
         );
 
@@ -56,7 +57,7 @@ class PaymentSeeder extends Seeder
             partner: $billToPartiallyPayTwice->vendor,
             paymentType: 'outbound',
             amount: 4000000,
-            reference: 'Part 1 payment for bill '.$billToPartiallyPayTwice->bill_reference,
+            reference: 'Part 1 payment for bill ' . $billToPartiallyPayTwice->bill_reference,
             vendorBill: $billToPartiallyPayTwice
         );
         // Second partial payment
@@ -66,7 +67,7 @@ class PaymentSeeder extends Seeder
             partner: $billToPartiallyPayTwice->vendor,
             paymentType: 'outbound',
             amount: 3500000,
-            reference: 'Part 2 payment for bill '.$billToPartiallyPayTwice->bill_reference,
+            reference: 'Part 2 payment for bill ' . $billToPartiallyPayTwice->bill_reference,
             vendorBill: $billToPartiallyPayTwice
         );
 
@@ -79,7 +80,7 @@ class PaymentSeeder extends Seeder
             partner: $invoiceToFullyPayTwice->customer,
             paymentType: 'inbound',
             amount: 1000000,
-            reference: 'Part 1 payment for invoice '.$invoiceToFullyPayTwice->invoice_number,
+            reference: 'Part 1 payment for invoice ' . $invoiceToFullyPayTwice->invoice_number,
             invoice: $invoiceToFullyPayTwice
         );
         // Second and final payment
@@ -93,7 +94,7 @@ class PaymentSeeder extends Seeder
             partner: $invoiceToFullyPayTwice->customer,
             paymentType: 'inbound',
             amount: (string) $remainingAmount->getAmount(),
-            reference: 'Final payment for invoice '.$invoiceToFullyPayTwice->invoice_number,
+            reference: 'Final payment for invoice ' . $invoiceToFullyPayTwice->invoice_number,
             invoice: $invoiceToFullyPayTwice
         );
     }

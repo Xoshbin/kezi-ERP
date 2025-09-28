@@ -3,31 +3,42 @@
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves;
 
 use BackedEnum;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
+use Filament\Tables\Table;
+use Filament\Schemas\Schema;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Modules\Product\Models\Product;
-use Modules\Purchase\Models\VendorBill;
 use Modules\Sales\Models\Invoice;
+use Filament\Actions\DeleteAction;
+use Filament\Tables\Filters\Filter;
+use Modules\Product\Models\Product;
+use Filament\Actions\BulkActionGroup;
+use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Grid;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Modules\Inventory\Models\StockMove;
+use Modules\Purchase\Models\VendorBill;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Inventory\Models\StockLocation;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\RepeatableEntry;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
+use Modules\Foundation\Filament\Components\CostPreviewComponent;
+use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\EditStockMove;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ViewStockMove;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ListStockMoves;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\CreateStockMove;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Actions\ConfirmStockMoveAction;
 
 class StockMoveResource extends Resource
 {
@@ -95,7 +106,7 @@ class StockMoveResource extends Resource
                             ]),
 
                             // Cost Preview Component
-                            \Modules\Foundation\App\Filament\Components\CostPreviewComponent::forProductLine('product_id', 'quantity'),
+                            CostPreviewComponent::forProductLine('product_id', 'quantity'),
                             Grid::make(2)->schema([
                                 TranslatableSelect::forModel('from_location_id', StockLocation::class)
                                     ->label(__('stock_move.from_location'))
@@ -165,7 +176,7 @@ class StockMoveResource extends Resource
                 ->description(__('Estimated cost impact of this stock movement'))
                 ->icon('heroicon-o-currency-dollar')
                 ->schema([
-                    \Modules\Foundation\App\Filament\Components\CostPreviewComponent::forStockMove(),
+                    CostPreviewComponent::forStockMove(),
                 ])
                 ->visible(fn(callable $get) => $get('move_type') === StockMoveType::Incoming->value),
 

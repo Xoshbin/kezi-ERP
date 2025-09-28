@@ -2,10 +2,10 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages;
 
-use App\Filament\Clusters\Accounting\Resources\Partners\PartnerResource;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\PartnerResource;
 
 class CreatePartner extends CreateRecord
 {

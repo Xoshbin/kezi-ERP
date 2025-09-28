@@ -2,13 +2,16 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\Models\Company;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Company;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\JournalEntryLine;
 use Modules\Foundation\Models\Currency;
 use RuntimeException;
 
@@ -16,8 +19,9 @@ class CreateJournalEntryAction
 {
     public function __construct(
         private readonly \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
-        private readonly \Modules\Foundation\Services\CurrencyConverterService $currencyConverter
-    ) {}
+        private readonly \Modules\Foundation\Services\CurrencyConverterService $currencyConverter,
+    ) {
+    }
 
     public function execute(CreateJournalEntryDTO $dto): JournalEntry
     {
@@ -71,8 +75,6 @@ class CreateJournalEntryAction
                         $exchangeRate = 1.0;
                     }
                 }
-
-
 
                 $debitBaseCurrency = $this->currencyConverter->convertWithRate(
                     $line->debit,
@@ -137,7 +139,7 @@ class CreateJournalEntryAction
             $journalEntry->load('currency');
 
             foreach ($dto->lines as $lineDto) {
-                $line = new JournalEntryLine;
+                $line = new JournalEntryLine();
 
                 // First, establish the relationship. This makes the parent's context (like currency)
                 // available to the line model *before* any attributes are set. This is the key

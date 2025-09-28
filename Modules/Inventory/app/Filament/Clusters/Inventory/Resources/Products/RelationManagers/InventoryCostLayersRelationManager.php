@@ -2,17 +2,18 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers;
 
-use App\Filament\Tables\Columns\MoneyColumn;
-use App\Models\InventoryCostLayer;
-use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Placeholder;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
+
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Schemas\Schema;
+use Filament\Actions\ViewAction;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Placeholder;
+use Modules\Inventory\Models\InventoryCostLayer;
+use Filament\Resources\RelationManagers\RelationManager;
+use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 
 class InventoryCostLayersRelationManager extends RelationManager
 {
@@ -51,7 +52,7 @@ class InventoryCostLayersRelationManager extends RelationManager
                     ->label(__('inventory_cost_layer.remaining_quantity'))
                     ->numeric(decimalPlaces: 4)
                     ->sortable()
-                    ->color(fn (float $state): string => $state > 0 ? 'success' : 'gray'),
+                    ->color(fn(float $state): string => $state > 0 ? 'success' : 'gray'),
                 MoneyColumn::make('cost_per_unit')
                     ->label(__('inventory_cost_layer.cost_per_unit'))
                     ->sortable(),
@@ -79,7 +80,7 @@ class InventoryCostLayersRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('source_type')
                     ->label(__('inventory_cost_layer.source'))
-                    ->formatStateUsing(fn (?string $state): string => $state ? class_basename($state) : '-')
+                    ->formatStateUsing(fn(?string $state): string => $state ? class_basename($state) : '-')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label(__('inventory_cost_layer.created_at'))
@@ -91,11 +92,11 @@ class InventoryCostLayersRelationManager extends RelationManager
             ->filters([
                 Filter::make('has_remaining_quantity')
                     ->label(__('inventory_cost_layer.has_remaining_quantity'))
-                    ->query(fn (Builder $query): Builder => $query->where('remaining_quantity', '>', 0))
+                    ->query(fn(Builder $query): Builder => $query->where('remaining_quantity', '>', 0))
                     ->toggle(),
                 Filter::make('fully_consumed')
                     ->label(__('inventory_cost_layer.fully_consumed'))
-                    ->query(fn (Builder $query): Builder => $query->where('remaining_quantity', '=', 0))
+                    ->query(fn(Builder $query): Builder => $query->where('remaining_quantity', '=', 0))
                     ->toggle(),
             ])
             ->headerActions([

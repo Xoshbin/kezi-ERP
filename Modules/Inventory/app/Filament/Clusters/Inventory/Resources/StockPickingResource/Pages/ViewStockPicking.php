@@ -2,12 +2,20 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages;
 
-use Filament\Actions\EditAction;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Resources\Pages\ViewRecord;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Schemas\Components\Grid;
+use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Section;
+use Modules\Inventory\Models\StockPicking;
+use Filament\Infolists\Components\TextEntry;
+use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\AssignPickingAction;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\CancelPickingAction;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ConfirmPickingAction;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\CreateBackorderAction;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ValidatePickingAction;
 
 class ViewStockPicking extends ViewRecord
 {

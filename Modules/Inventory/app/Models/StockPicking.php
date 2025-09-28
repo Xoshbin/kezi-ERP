@@ -2,12 +2,16 @@
 
 namespace Modules\Inventory\Models;
 
-use App\Enums\Inventory\StockPickingState;
-use App\Enums\Inventory\StockPickingType;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+use App\Models\Company;
+use Modules\Foundation\Models\Partner;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Inventory\Models\StockMove;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Modules\Inventory\Enums\Inventory\StockPickingState;
 
 class StockPicking extends Model
 {
@@ -56,4 +60,3 @@ class StockPicking extends Model
         return $this->hasMany(StockMove::class, 'picking_id');
     }
 }
-

@@ -2,7 +2,7 @@
 
 namespace Modules\Accounting\Observers;
 
-use App\Models\Tax;
+use Modules\Accounting\Models\Tax;
 
 class TaxObserver
 {

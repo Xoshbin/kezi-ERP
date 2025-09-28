@@ -2,15 +2,18 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions;
 
-use App\Enums\Inventory\StockMoveStatus;
-use App\Enums\Inventory\StockPickingState;
-use App\Models\StockPicking;
-use App\Services\Inventory\StockReservationService;
+
 use DB;
+
 use Exception;
 use Filament\Actions\Action;
-use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
+
+use Modules\Inventory\Models\StockPicking;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Services\Inventory\StockReservationService;
 
 class CancelPickingAction extends Action
 {
@@ -70,7 +73,6 @@ class CancelPickingAction extends Action
 
             // Refresh the page to show updated state
             $this->getLivewire()->redirect(request()->url());
-
         } catch (Exception $e) {
             Notification::make()
                 ->title(__('Error'))

@@ -1,9 +1,11 @@
 <?php
 
-
 use Carbon\Carbon;
+use App\Models\Company;
 use Modules\Foundation\Models\Sequence;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Foundation\Services\SequenceService;
+use Modules\Foundation\Enums\Settings\NumberingType;
 
 describe('SequenceService', function () {
     uses(WithConfiguredCompany::class);

@@ -2,17 +2,23 @@
 
 namespace Modules\Payment\Models;
 
-use App\Casts\DocumentCurrencyMoneyCast;
-use Brick\Money\Money;
-use Database\Factories\PaymentDocumentLinkFactory;
+
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOneThrough;
-use Illuminate\Support\Carbon;
+use Brick\Money\Money;
+use App\Models\Company;
 use InvalidArgumentException;
+use Illuminate\Support\Carbon;
+use Modules\Sales\Models\Invoice;
+use Modules\Payment\Models\Payment;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Models\Currency;
+use Modules\Purchase\Models\VendorBill;
+use Illuminate\Database\Eloquent\Builder;
+use Database\Factories\PaymentDocumentLinkFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 /**
  * @property int $id

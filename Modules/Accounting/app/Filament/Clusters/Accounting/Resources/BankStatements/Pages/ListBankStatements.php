@@ -2,10 +2,10 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\Pages;
 
-use App\Filament\Actions\DocsAction;
-use App\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
+use Modules\Foundation\Filament\Actions\DocsAction;
 
 class ListBankStatements extends ListRecords
 {

@@ -2,10 +2,14 @@
 
 namespace Modules\Inventory\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Company;
+use Modules\Product\Models\Product;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Inventory\Models\StockMoveLine;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Lot extends Model
 {
@@ -87,7 +91,7 @@ class Lot extends Model
     {
         return $query->where(function ($q) {
             $q->whereNull('expiration_date')
-              ->orWhere('expiration_date', '>', now());
+                ->orWhere('expiration_date', '>', now());
         });
     }
 

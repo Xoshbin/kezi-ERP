@@ -13,5 +13,6 @@ readonly class CreateJournalEntryForStatementLineDTO
         public Account $writeOffAccount,
         public User $user,
         public string $description,
-    ) {}
+    ) {
+    }
 }

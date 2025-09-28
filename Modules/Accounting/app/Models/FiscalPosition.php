@@ -2,16 +2,19 @@
 
 namespace Modules\Accounting\Models;
 
-use Database\Factories\FiscalPositionFactory;
 use Eloquent;
+use App\Models\Company;
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Database\Factories\FiscalPositionFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
-use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Accounting\Models\FiscalPositionTaxMapping;
+use Modules\Accounting\Models\FiscalPositionAccountMapping;
 
 /**
  * Class FiscalPosition
@@ -43,7 +46,8 @@ use Spatie\Translatable\HasTranslations;
  */
 class FiscalPosition extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory;
+    use HasTranslations;
 
     /** @var array<int, string> */
     public array $translatable = ['name'];

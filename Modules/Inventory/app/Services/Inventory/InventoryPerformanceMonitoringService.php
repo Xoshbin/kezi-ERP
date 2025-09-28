@@ -45,7 +45,7 @@ class InventoryPerformanceMonitoringService
             'stock_move_lines',
             'lots',
             'inventory_cost_layers',
-            'stock_move_valuations'
+            'stock_move_valuations',
         ];
 
         $sizes = [];
@@ -90,7 +90,7 @@ class InventoryPerformanceMonitoringService
                 'table' => 'stock_quants',
                 'issue' => 'High table scan ratio',
                 'recommendation' => 'Consider adding composite indexes for frequent WHERE clauses',
-                'priority' => 'high'
+                'priority' => 'high',
             ];
         }
 
@@ -101,7 +101,7 @@ class InventoryPerformanceMonitoringService
                 'table' => 'stock_moves',
                 'issue' => 'Slow date range queries',
                 'recommendation' => 'Add index on (company_id, move_date, status)',
-                'priority' => 'medium'
+                'priority' => 'medium',
             ];
         }
 
@@ -112,7 +112,7 @@ class InventoryPerformanceMonitoringService
                 'table' => 'lots',
                 'issue' => 'Slow expiration date queries',
                 'recommendation' => 'Add index on (company_id, active, expiration_date)',
-                'priority' => 'high'
+                'priority' => 'high',
             ];
         }
 
@@ -146,13 +146,13 @@ class InventoryPerformanceMonitoringService
             return [
                 'index_count' => $indexCount,
                 'needs_optimization' => $indexCount < 3, // Arbitrary threshold
-                'indexes' => $indexStats
+                'indexes' => $indexStats,
             ];
         } catch (Exception $e) {
             return [
                 'index_count' => 0,
                 'needs_optimization' => true,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ];
         }
     }
@@ -200,12 +200,12 @@ class InventoryPerformanceMonitoringService
                 'execution_time_ms' => round($executionTime, 2),
                 'result_count' => $result->count(),
                 'performance_rating' => $this->rateQueryPerformance($executionTime),
-                'recommendations' => $this->getFEFORecommendations($executionTime)
+                'recommendations' => $this->getFEFORecommendations($executionTime),
             ];
         } catch (Exception $e) {
             return [
                 'error' => $e->getMessage(),
-                'performance_rating' => 'error'
+                'performance_rating' => 'error',
             ];
         }
     }
@@ -230,12 +230,12 @@ class InventoryPerformanceMonitoringService
             return [
                 'execution_time_ms' => round($executionTime, 2),
                 'performance_rating' => $this->rateQueryPerformance($executionTime),
-                'recommendations' => $this->getReservationRecommendations($executionTime)
+                'recommendations' => $this->getReservationRecommendations($executionTime),
             ];
         } catch (Exception $e) {
             return [
                 'error' => $e->getMessage(),
-                'performance_rating' => 'error'
+                'performance_rating' => 'error',
             ];
         }
     }
@@ -261,12 +261,12 @@ class InventoryPerformanceMonitoringService
             return [
                 'execution_time_ms' => round($executionTime, 2),
                 'performance_rating' => $this->rateQueryPerformance($executionTime),
-                'recommendations' => $this->getValuationRecommendations($executionTime)
+                'recommendations' => $this->getValuationRecommendations($executionTime),
             ];
         } catch (Exception $e) {
             return [
                 'error' => $e->getMessage(),
-                'performance_rating' => 'error'
+                'performance_rating' => 'error',
             ];
         }
     }
@@ -298,12 +298,12 @@ class InventoryPerformanceMonitoringService
                 'execution_time_ms' => round($executionTime, 2),
                 'result_count' => $result->count(),
                 'performance_rating' => $this->rateQueryPerformance($executionTime),
-                'recommendations' => $this->getReportingRecommendations($executionTime)
+                'recommendations' => $this->getReportingRecommendations($executionTime),
             ];
         } catch (Exception $e) {
             return [
                 'error' => $e->getMessage(),
-                'performance_rating' => 'error'
+                'performance_rating' => 'error',
             ];
         }
     }
@@ -428,8 +428,8 @@ class InventoryPerformanceMonitoringService
             }
         }
 
-        $excellentCount = count(array_filter($scores, fn($s) => $s === 'excellent'));
-        $goodCount = count(array_filter($scores, fn($s) => $s === 'good'));
+        $excellentCount = count(array_filter($scores, fn ($s) => $s === 'excellent'));
+        $goodCount = count(array_filter($scores, fn ($s) => $s === 'good'));
         $totalCount = count($scores);
 
         if ($totalCount === 0) {
@@ -463,7 +463,7 @@ class InventoryPerformanceMonitoringService
                     $recommendations[] = [
                         'category' => $patternName,
                         'recommendation' => $rec,
-                        'priority' => $pattern['performance_rating'] === 'poor' ? 'high' : 'medium'
+                        'priority' => $pattern['performance_rating'] === 'poor' ? 'high' : 'medium',
                     ];
                 }
             }

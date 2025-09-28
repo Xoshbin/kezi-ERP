@@ -2,18 +2,25 @@
 
 namespace Modules\Foundation\Models;
 
-use App\Observers\CurrencyObserver;
-use Database\Factories\CurrencyFactory;
 use Eloquent;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Modules\Sales\Models\Invoice;
+use Modules\Payment\Models\Payment;
+use Modules\Accounting\Models\Journal;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Purchase\Models\VendorBill;
 use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Models\CurrencyRate;
+use Illuminate\Database\Eloquent\Collection;
+use Modules\Accounting\Models\AnalyticAccount;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Modules\Foundation\Observers\CurrencyObserver;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 /**
  * Class Currency
@@ -59,7 +66,8 @@ use Spatie\Translatable\HasTranslations;
 #[ObservedBy([\Modules\Foundation\Observers\CurrencyObserver::class])]
 class Currency extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory;
+    use HasTranslations;
 
     /** @var array<int, string> */
     public array $translatable = ['name'];

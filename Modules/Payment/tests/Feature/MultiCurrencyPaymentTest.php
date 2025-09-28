@@ -1,13 +1,22 @@
 <?php
 
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\CurrencyRate;
-use Modules\Purchase\Models\VendorBill;
+use Brick\Money\Money;
 use Modules\Sales\Models\Invoice;
+use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Models\Currency;
+use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Foundation\Models\CurrencyRate;
+use Modules\Payment\Services\PaymentService;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Payment\Actions\Payments\CreatePaymentAction;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -295,7 +304,6 @@ describe('VendorBill Payment Tests', function () {
             amount: null,
             document_links: [$documentLinkDTO],
             reference: 'USD Payment for USD Vendor Bill'
-
         );
 
         // Act: Create and confirm payment
@@ -338,7 +346,6 @@ describe('Payment Document Link Tests', function () {
             amount: null,
             document_links: [$documentLinkDTO],
             reference: 'Test Payment Document Link'
-
         );
 
         // Act: Create payment
@@ -383,7 +390,6 @@ describe('Payment Document Link Tests', function () {
             amount: null,
             document_links: [$documentLinkDTO],
             reference: 'Partial USD Payment'
-
         );
 
         // Act: Create and confirm payment

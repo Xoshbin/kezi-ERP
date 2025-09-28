@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries;
 
+use App\Models\Company;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -20,7 +21,16 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\ListJournalEntries;
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Filament\Forms\Components\MoneyInput;
+use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\Partner;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
@@ -122,17 +132,17 @@ class JournalEntryResource extends Resource
                                 ->searchableFields(['name', 'code'])
                                 ->searchable()
                                 ->preload()
-                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->getTranslatedLabel('name').' ('.$record->code.')')
-                                ->rules([new \Modules\Accounting\Rules\ActiveAccount])
+                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->getTranslatedLabel('name') . ' (' . $record->code . ')')
+                                ->rules([new \Modules\Accounting\Rules\ActiveAccount()])
                                 ->required()
                                 ->columnSpan(3),
-                            \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('debit')
+                            MoneyInput::make('debit')
                                 ->label(__('journal_entry.debit'))
                                 ->required()
                                 ->currencyField('../../company.currency_id')
                                 ->live(onBlur: true)
                                 ->columnSpan(3),
-                            \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('credit')
+                            MoneyInput::make('credit')
                                 ->label(__('journal_entry.credit'))
                                 ->required()
                                 ->currencyField('../../company.currency_id')
@@ -161,15 +171,15 @@ class JournalEntryResource extends Resource
 
             Section::make(__('journal_entry.company_currency_totals'))
                 ->schema([
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('total_debit')
+                    MoneyInput::make('total_debit')
                         ->label(__('journal_entry.total_debit'))
                         ->currencyField('../../company.currency_id')
                         ->readOnly(),
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('total_credit')
+                    MoneyInput::make('total_credit')
                         ->label(__('journal_entry.total_credit'))
                         ->currencyField('../../company.currency_id')
                         ->readOnly(),
-                    \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('balance')
+                    MoneyInput::make('balance')
                         ->label(__('journal_entry.balance'))
                         ->currencyField('../../company.currency_id')
                         ->readOnly(),
@@ -221,13 +231,13 @@ class JournalEntryResource extends Resource
                     ->toggleable(),
 
                 // Total Debit (critical financial information)
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_debit')
+                MoneyColumn::make('total_debit')
                     ->label(__('journal_entry.total_debit'))
                     ->sortable()
                     ->weight('bold'),
 
                 // Total Credit (critical financial information)
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_credit')
+                MoneyColumn::make('total_credit')
                     ->label(__('journal_entry.total_credit'))
                     ->sortable()
                     ->weight('bold'),

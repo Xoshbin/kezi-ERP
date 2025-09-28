@@ -2,16 +2,19 @@
 
 namespace Modules\Inventory\Tests\Feature\Filament;
 
-use App\Models\Company;
+use Tests\TestCase;
 use App\Models\User;
 use Brick\Money\Money;
-use Filament\Facades\Filament;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use App\Models\Company;
+use Filament\Facades\Filament;
+
+
+use Modules\Product\Models\Product;
 use Modules\Accounting\Models\Account;
 use Modules\Foundation\Models\Currency;
-use Modules\Product\Models\Product;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument;
 
 class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
 {

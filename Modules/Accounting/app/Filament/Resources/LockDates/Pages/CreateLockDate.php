@@ -2,8 +2,8 @@
 
 namespace Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates\Pages;
 
-use App\Filament\Clusters\Settings\Resources\LockDates\LockDateResource;
 use Filament\Resources\Pages\CreateRecord;
+use Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates\LockDateResource;
 
 class CreateLockDate extends CreateRecord
 {

@@ -9,6 +9,11 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
+use Modules\Accounting\Actions\Accounting\CreateBankStatementAction;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateBankStatementDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateBankStatementLineDTO;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
+use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Foundation\Models\Currency;
 
 class CreateBankStatement extends CreateRecord
@@ -90,7 +95,7 @@ class CreateBankStatement extends CreateRecord
     protected function getHeaderActions(): array
     {
         return [
-            \Modules\Foundation\App\Filament\Actions\DocsAction::make('bank-statements'),
+            DocsAction::make('bank-statements'),
         ];
     }
 }

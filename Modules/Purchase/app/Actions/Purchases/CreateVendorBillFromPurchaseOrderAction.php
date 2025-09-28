@@ -2,13 +2,17 @@
 
 namespace Modules\Purchase\Actions\Purchases;
 
-use Illuminate\Validation\ValidationException;
 use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Models\PurchaseOrder;
+use Illuminate\Validation\ValidationException;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
 
 class CreateVendorBillFromPurchaseOrderAction
 {
     public function __construct(
-        protected CreateVendorBillAction $createVendorBillAction
+        protected CreateVendorBillAction $createVendorBillAction,
     ) {}
 
     public function execute(CreateVendorBillFromPurchaseOrderDTO $dto): VendorBill
@@ -49,7 +53,7 @@ class CreateVendorBillFromPurchaseOrderAction
 
     private function transformPurchaseOrderToVendorBillDTO(
         PurchaseOrder $purchaseOrder,
-        CreateVendorBillFromPurchaseOrderDTO $dto
+        CreateVendorBillFromPurchaseOrderDTO $dto,
     ): CreateVendorBillDTO {
         // Transform PO lines to VendorBill lines
         $vendorBillLines = [];

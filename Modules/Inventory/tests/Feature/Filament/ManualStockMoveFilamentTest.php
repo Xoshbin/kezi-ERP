@@ -2,13 +2,27 @@
 
 namespace Modules\Inventory\Tests\Feature\Filament;
 
+use Tests\TestCase;
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Modules\Product\Models\Product;
+use Modules\Inventory\Models\StockMove;
 use Modules\Purchase\Models\VendorBill;
-use Tests\TestCase;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Product\Enums\Products\ProductType;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Inventory\Models\StockMoveProductLine;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\EditStockMove;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\CreateStockMove;
 
 /**
  * Filament/Livewire integration test for manual stock move creation and processing
@@ -19,7 +33,8 @@ use Tests\Traits\WithConfiguredCompany;
  */
 class ManualStockMoveFilamentTest extends TestCase
 {
-    use RefreshDatabase, WithConfiguredCompany;
+    use RefreshDatabase;
+    use WithConfiguredCompany;
 
     // Properties set up by WithConfiguredCompany trait
     protected $company;

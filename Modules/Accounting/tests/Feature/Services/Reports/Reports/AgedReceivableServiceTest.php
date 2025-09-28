@@ -2,13 +2,17 @@
 
 namespace Modules\Accounting\Tests\Feature\Services\Reports;
 
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Foundation\Models\Partner;
-use Modules\Payment\Models\Payment;
+use Brick\Money\Money;
 use Modules\Sales\Models\Invoice;
+use Modules\Payment\Models\Payment;
+use Modules\Foundation\Models\Partner;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Payment\Models\PaymentDocumentLink;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Services\Reports\AgedReceivableService;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

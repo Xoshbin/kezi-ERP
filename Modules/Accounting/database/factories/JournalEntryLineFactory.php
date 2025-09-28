@@ -2,10 +2,10 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use App\Models\JournalEntry;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\JournalEntry;
 
 class JournalEntryLineFactory extends Factory
 {

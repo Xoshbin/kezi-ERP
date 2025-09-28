@@ -2,10 +2,11 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use App\Models\Company;
 use Brick\Money\Money;
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Company;
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Enums\Assets\AssetStatus;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<Asset>

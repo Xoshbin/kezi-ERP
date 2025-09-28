@@ -36,5 +36,6 @@ readonly class CreateSalesOrderDTO
         public ?string $terms_and_conditions = null,
         public ?int $delivery_location_id = null,
         public array $lines = [],
-    ) {}
+    ) {
+    }
 }

@@ -2,9 +2,9 @@
 
 namespace Modules\Accounting\Filament\Clusters\Settings\Resources\Taxes\Pages;
 
-use App\Filament\Clusters\Settings\Resources\Taxes\TaxResource;
 use Filament\Resources\Pages\CreateRecord;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
+use Modules\Accounting\Filament\Clusters\Settings\Resources\Taxes\TaxResource;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
 
 class CreateTax extends CreateRecord

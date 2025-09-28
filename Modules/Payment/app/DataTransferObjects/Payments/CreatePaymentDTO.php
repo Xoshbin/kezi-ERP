@@ -2,9 +2,11 @@
 
 namespace Modules\Payment\DataTransferObjects\Payments;
 
-use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentType;
+
+
 use Brick\Money\Money;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Enums\Payments\PaymentMethod;
 
 class CreatePaymentDTO
 {

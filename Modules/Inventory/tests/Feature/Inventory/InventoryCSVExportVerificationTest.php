@@ -2,12 +2,19 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Storage;
+use Brick\Money\Money;
+use Modules\Inventory\Models\Lot;
 use Modules\Product\Models\Product;
+use Illuminate\Support\Facades\Storage;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Inventory\Models\InventoryCostLayer;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Services\Inventory\InventoryCSVExportService;
+use Modules\Inventory\Services\Inventory\InventoryReportingService;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -57,7 +64,7 @@ describe('Inventory CSV Export Verification', function () {
                 ['min' => 31, 'max' => 60, 'label' => '31-60 days'],
                 ['min' => 61, 'max' => 90, 'label' => '61-90 days'],
             ],
-            'company_id' => test()->company->id
+            'company_id' => test()->company->id,
         ]);
 
         // Generate CSV content
@@ -76,7 +83,7 @@ describe('Inventory CSV Export Verification', function () {
         $turnover = $this->reportingService->turnover([
             'start_date' => Carbon::now()->subDays(30),
             'end_date' => Carbon::now(),
-            'company_id' => test()->company->id
+            'company_id' => test()->company->id,
         ]);
 
         // Generate CSV content

@@ -2,14 +2,19 @@
 
 namespace Modules\Accounting\Tests\Feature\Accounting;
 
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Validation\ValidationException;
+use Brick\Money\Money;
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
 use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\CurrencyRate;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Foundation\Models\CurrencyRate;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Accounting\AccountType;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -153,6 +158,6 @@ test('it blocks posting to a currency-locked account with the wrong currency', f
     );
 
     // Act & Assert: Expect a ValidationException to be thrown by the Action
-    expect(fn () => resolve(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class)->execute($dto))
+    expect(fn() => resolve(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class)->execute($dto))
         ->toThrow(ValidationException::class);
 });

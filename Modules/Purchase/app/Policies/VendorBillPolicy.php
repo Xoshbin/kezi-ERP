@@ -2,7 +2,7 @@
 
 namespace Modules\Purchase\Policies;
 
-use App\Models\User;
+
 use Modules\Purchase\Models\VendorBill;
 
 class VendorBillPolicy

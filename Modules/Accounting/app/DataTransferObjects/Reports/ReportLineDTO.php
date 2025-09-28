@@ -11,5 +11,6 @@ readonly class ReportLineDTO
         public string $accountCode,
         public string $accountName,
         public Money $balance,
-    ) {}
+    ) {
+    }
 }

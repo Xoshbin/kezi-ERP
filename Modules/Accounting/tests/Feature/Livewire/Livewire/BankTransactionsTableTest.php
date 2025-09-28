@@ -2,13 +2,15 @@
 
 use App\Models\User;
 use Brick\Money\Money;
-use Filament\Facades\Filament;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Filament\Facades\Filament;
+use Tests\Builders\CompanyBuilder;
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
 use Modules\Accounting\Models\BankStatement;
 use Modules\Accounting\Models\BankStatementLine;
-use Tests\Builders\CompanyBuilder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Livewire\Accounting\BankTransactionsTable;
 
 uses(RefreshDatabase::class);
 

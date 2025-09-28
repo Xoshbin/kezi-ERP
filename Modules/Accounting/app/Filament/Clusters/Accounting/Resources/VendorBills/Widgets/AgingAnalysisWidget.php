@@ -2,13 +2,16 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Widgets;
 
-use Brick\Math\RoundingMode;
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use Brick\Money\Money;
+use Brick\Math\RoundingMode;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Purchase\Models\VendorBill;
+use Filament\Widgets\StatsOverviewWidget\Stat;
+use Modules\Foundation\Support\NumberFormatter;
+use Modules\Foundation\Enums\Shared\PaymentState;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
 class AgingAnalysisWidget extends BaseWidget
 {

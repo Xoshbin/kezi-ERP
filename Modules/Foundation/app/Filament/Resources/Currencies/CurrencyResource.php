@@ -3,20 +3,25 @@
 namespace Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies;
 
 use BackedEnum;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
+use Filament\Tables\Table;
 use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Resources\Resource;
+use Filament\Actions\BulkActionGroup;
+use Filament\Forms\Components\Toggle;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Modules\Foundation\Models\Currency;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\DateTimePicker;
+use Modules\Foundation\Support\NumberFormatter;
+use App\Filament\Clusters\Settings\SettingsCluster;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies\Pages\EditCurrency;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies\Pages\CreateCurrency;
+use Modules\Foundation\Filament\Clusters\Settings\Resources\Currencies\Pages\ListCurrencies;
 
 class CurrencyResource extends Resource
 {
@@ -90,7 +95,7 @@ class CurrencyResource extends Resource
                     ->searchable(),
                 TextColumn::make('exchange_rate')
                     ->label(__('currency.exchange_rate'))
-                    ->formatStateUsing(fn ($state) => \Modules\Foundation\Support\NumberFormatter::formatNumber($state, 4))
+                    ->formatStateUsing(fn($state) => \Modules\Foundation\Support\NumberFormatter::formatNumber($state, 4))
                     ->sortable(),
                 IconColumn::make('is_active')
                     ->label(__('currency.is_active'))

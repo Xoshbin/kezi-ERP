@@ -2,19 +2,24 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
-use App\Models\User;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\User;
+use Modules\Payment\Enums\Payments\PaymentType;
 use Modules\Payment\Models\Payment;
 use RuntimeException;
 
 class CreateJournalEntryForPaymentAction
 {
     public function __construct(
-        private readonly CreateJournalEntryAction $createJournalEntryAction
-    ) {}
+        private readonly CreateJournalEntryAction $createJournalEntryAction,
+    ) {
+    }
 
     public function execute(Payment $payment, User $user): JournalEntry
     {
@@ -164,8 +169,8 @@ class CreateJournalEntryForPaymentAction
             journal_id: $payment->journal_id,
             currency_id: $baseCurrency->id, // Journal Entry is always in the company's base currency
             entry_date: $payment->payment_date,
-            reference: 'Payment #'.$payment->id,
-            description: 'Payment from/to '.($payment->partner->name ?? 'N/A'),
+            reference: 'Payment #' . $payment->id,
+            description: 'Payment from/to ' . ($payment->partner->name ?? 'N/A'),
             created_by_user_id: $user->id,
             is_posted: true, // Journal entries for payments are posted immediately.
             lines: $lines,

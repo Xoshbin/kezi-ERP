@@ -22,5 +22,6 @@ readonly class BalanceSheetDTO
         public Money $currentYearEarnings, // Net income for the current period
         public Money $totalEquity,
         public Money $totalLiabilitiesAndEquity,
-    ) {}
+    ) {
+    }
 }

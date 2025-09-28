@@ -19,6 +19,7 @@ readonly class UpdateVendorBillDTO
         public string $accounting_date,
         public ?string $due_date,
         public array $lines,
-        public int $updated_by_user_id
-    ) {}
+        public int $updated_by_user_id,
+    ) {
+    }
 }

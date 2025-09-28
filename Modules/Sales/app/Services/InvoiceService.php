@@ -2,18 +2,29 @@
 
 namespace Modules\Sales\Services;
 
-use App\Models\Company;
-use App\Models\User;
-use Carbon\Carbon;
 use Exception;
+use Carbon\Carbon;
+use App\Models\User;
+use RuntimeException;
+use App\Models\Company;
+use Modules\Sales\Models\Invoice;
 use Illuminate\Support\Facades\DB;
+
 use Illuminate\Support\Facades\Gate;
+use Modules\Sales\Models\InvoiceLine;
+
 use Modules\Foundation\Models\AuditLog;
 use Modules\Foundation\Models\Currency;
 use Modules\Sales\Events\InvoiceConfirmed;
-use Modules\Sales\Models\Invoice;
-use Modules\Sales\Models\InvoiceLine;
-use RuntimeException;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Foundation\Services\SequenceService;
+use Modules\Accounting\Services\JournalEntryService;
+use Modules\Foundation\Services\ExchangeRateService;
+use Modules\Foundation\Services\CurrencyConverterService;
+use Modules\Sales\Actions\Sales\CreateStockMovesForInvoiceAction;
+use Modules\Sales\DataTransferObjects\Sales\CreateStockMovesForInvoiceDTO;
+use Modules\Accounting\Actions\Accounting\BuildInvoicePostingPreviewAction;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryForInvoiceAction;
 
 // Add this import
 
@@ -26,7 +37,7 @@ class InvoiceService
         protected CreateStockMovesForInvoiceAction $createStockMovesForInvoiceAction,
         protected SequenceService $sequenceService,
         protected CurrencyConverterService $currencyConverter,
-        protected ExchangeRateService $exchangeRateService
+        protected ExchangeRateService $exchangeRateService,
     ) {}
 
     public function delete(Invoice $invoice): bool

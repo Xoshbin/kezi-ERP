@@ -2,17 +2,37 @@
 
 namespace Modules\Accounting\Tests\Feature\Accounting;
 
-use Brick\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Validator;
+use Brick\Money\Money;
 use Livewire\Livewire;
-use Modules\Accounting\Models\LockDate;
-use Modules\Foundation\Models\Partner;
-use Modules\Sales\Models\Invoice;
 use Tests\Traits\MocksTime;
+use Modules\Sales\Models\Invoice;
+use Illuminate\Support\Facades\Cache;
+use Modules\Foundation\Models\Partner;
+use Modules\Accounting\Models\LockDate;
 use Tests\Traits\WithConfiguredCompany;
+use Illuminate\Support\Facades\Validator;
+use Modules\Accounting\Rules\NotInLockedPeriod;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Sales\Actions\Sales\CreateInvoiceAction;
+use Modules\Accounting\Enums\Accounting\LockDateType;
+use Modules\Payment\Actions\Payments\CreatePaymentAction;
+use Modules\Accounting\Exceptions\PeriodIsLockedException;
+use Modules\Accounting\Services\Accounting\LockDateService;
+use Modules\Foundation\Exceptions\UpdateNotAllowedException;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
+use Modules\Purchase\Actions\Purchases\CreateVendorBillAction;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use Modules\Inventory\Actions\Adjustments\CreateAdjustmentDocumentAction;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use Modules\Inventory\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
+use Modules\Accounting\Filament\Clusters\Settings\Resources\LockDates\Pages\ListLockDates;
 
 // This file now uses our standardized setup traits for a clean, consistent testing environment.
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
@@ -62,7 +82,7 @@ describe('LockDate Service', function () {
         ]);
         $service = app(\Modules\Accounting\Services\Accounting\LockDateService::class);
         $date = Carbon::parse('2025-12-15');
-        $cacheKey = "lock_date_{$this->company->id}_".LockDateType::AllUsers->value;
+        $cacheKey = "lock_date_{$this->company->id}_" . LockDateType::AllUsers->value;
 
         Cache::forget($cacheKey);
         expect(Cache::has($cacheKey))->toBeFalse();

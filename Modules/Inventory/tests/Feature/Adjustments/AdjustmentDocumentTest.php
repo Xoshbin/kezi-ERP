@@ -1,11 +1,16 @@
 <?php
 
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
-use Modules\Inventory\Events\AdjustmentDocumentPosted;
-use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Accounting\Models\Journal;
 use Tests\Traits\WithConfiguredCompany;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Inventory\Models\AdjustmentDocument;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Inventory\Events\AdjustmentDocumentPosted;
+use Modules\Inventory\Services\AdjustmentDocumentService;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
 
 // Import the Money class
 

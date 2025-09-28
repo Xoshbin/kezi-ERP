@@ -2,18 +2,21 @@
 
 namespace Modules\Accounting\Models;
 
-use App\Casts\BaseCurrencyMoneyCast;
-use App\Enums\Assets\DepreciationEntryStatus;
-use App\Observers\DepreciationEntryObserver;
-use Brick\Money\Money;
-use Database\Factories\DepreciationEntryFactory;
 use Eloquent;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Brick\Money\Money;
+use App\Models\Company;
 use Illuminate\Support\Carbon;
+use Modules\Accounting\Models\Asset;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Accounting\Models\JournalEntry;
+use Database\Factories\DepreciationEntryFactory;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Modules\Accounting\Observers\DepreciationEntryObserver;
+use Modules\Accounting\Enums\Assets\DepreciationEntryStatus;
 
 /**
  * Class DepreciationEntry

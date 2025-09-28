@@ -2,8 +2,8 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AuditLogs\Pages;
 
-use App\Filament\Clusters\Accounting\Resources\AuditLogs\AuditLogResource;
 use Filament\Resources\Pages\CreateRecord;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AuditLogs\AuditLogResource;
 
 class CreateAuditLog extends CreateRecord
 {

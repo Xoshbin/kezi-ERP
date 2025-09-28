@@ -2,13 +2,15 @@
 
 namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\RelationManagers;
 
-use Filament\Actions\CreateAction;
-use Filament\Facades\Filament;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Facades\Filament;
+use Filament\Actions\CreateAction;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Filament\Resources\RelationManagers\RelationManager;
+use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 
 class VendorBillsRelationManager extends RelationManager
 {

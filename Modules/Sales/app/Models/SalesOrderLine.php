@@ -2,15 +2,18 @@
 
 namespace Modules\Sales\Models;
 
-use App\Casts\BaseCurrencyMoneyCast;
-use App\Casts\DocumentCurrencyMoneyCast;
-use App\Observers\AuditLogObserver;
 use Brick\Money\Money;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Modules\Accounting\Models\Tax;
+use Modules\Product\Models\Product;
+use Modules\Sales\Models\SalesOrder;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Observers\AuditLogObserver;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
 
 /**
  * Sales Order Line Model
@@ -176,7 +179,7 @@ class SalesOrderLine extends Model
         if ($this->quantity == 0) {
             return 0;
         }
-        
+
         return ($this->quantity_delivered / $this->quantity) * 100;
     }
 
@@ -188,7 +191,7 @@ class SalesOrderLine extends Model
         if ($this->quantity == 0) {
             return 0;
         }
-        
+
         return ($this->quantity_invoiced / $this->quantity) * 100;
     }
 

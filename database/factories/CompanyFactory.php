@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Enums\Inventory\InventoryAccountingMode;
-use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CompanyFactory extends Factory
@@ -36,7 +35,7 @@ class CompanyFactory extends Factory
      */
     public function withReconciliationEnabled(): static
     {
-        return $this->state(fn() => [
+        return $this->state(fn () => [
             'enable_reconciliation' => true,
         ]);
     }

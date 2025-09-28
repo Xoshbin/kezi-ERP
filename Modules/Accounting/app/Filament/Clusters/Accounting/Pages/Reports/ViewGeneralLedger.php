@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports;
 
+use App\Models\Company;
 use BackedEnum;
 use Carbon\Carbon;
 use Filament\Actions\Action;
@@ -12,6 +13,7 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Models\Account;
 use Xoshbin\TranslatableSelect\Services\LocaleResolver;
 use Xoshbin\TranslatableSelect\Services\TranslatableSearchService;
@@ -103,7 +105,7 @@ class ViewGeneralLedger extends Page
                                 foreach ($results as $id => $name) {
                                     $account = Account::find($id);
                                     if ($account) {
-                                        $formattedResults[$id] = $account->code.' - '.$name;
+                                        $formattedResults[$id] = $account->code . ' - ' . $name;
                                     }
                                 }
 
