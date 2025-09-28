@@ -69,7 +69,7 @@ describe('BankReconciliationMatcher Livewire Component', function () {
     it('can mount with bank statement ID', function () {
         Livewire::test(\Modules\Accounting\Livewire\Accounting\BankReconciliationMatcher::class, ['bankStatementId' => $this->bankStatement->id])
             ->assertSet('bankStatementId', $this->bankStatement->id)
-            ->assertViewIs('livewire.accounting.bank-reconciliation-matcher');
+            ->assertViewIs('accounting::livewire.accounting.bank-reconciliation-matcher');
     });
 
     it('displays unreconciled bank statement lines', function () {

@@ -53,7 +53,7 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
             ->columns([
                 ViewColumn::make('select')
                     ->label('')
-                    ->view('components.bank-reconciliation-checkbox')
+                    ->view('accounting::components.bank-reconciliation-checkbox')
                     ->width('50px'),
                 TextColumn::make('date')
                     ->label(__('bank_statement.date'))
@@ -153,6 +153,6 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
 
     public function render(): View
     {
-        return view('livewire.accounting.bank-transactions-table');
+        return view('accounting::livewire.accounting.bank-transactions-table');
     }
 }

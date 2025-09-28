@@ -12,9 +12,7 @@ use Modules\Accounting\Models\BankStatement;
 use Modules\Payment\Enums\Payments\PaymentType;
 use Modules\Accounting\Models\BankStatementLine;
 use Modules\Payment\Enums\Payments\PaymentStatus;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Enums\Accounting\JournalType;
-use Modules\Accounting\Services\BankReconciliationService;
 
 uses(Tests\TestCase::class, RefreshDatabase::class, WithConfiguredCompany::class);
 

@@ -54,19 +54,19 @@ class SystemPaymentsTable extends Component implements HasActions, HasForms, Has
             )
             ->columns([
                 ViewColumn::make('select')
-                    ->label(__('bank_statement.select'))
-                    ->view('components.payment-reconciliation-checkbox')
+                    ->label(__('accounting::bank_statement.select'))
+                    ->view('accounting::components.payment-reconciliation-checkbox')
                     ->width('80px'),
                 TextColumn::make('partner.name')
-                    ->label(__('bank_statement.partner'))
+                    ->label(__('accounting::bank_statement.partner'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('payment_date')
-                    ->label(__('bank_statement.payment_date'))
+                    ->label(__('accounting::bank_statement.payment_date'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('payment_type')
-                    ->label(__('bank_statement.type'))
+                    ->label(__('accounting::bank_statement.type'))
                     ->formatStateUsing(fn($state) => $state->label())
                     ->badge()
                     ->color(fn($state) => match ($state->value) {
@@ -75,23 +75,23 @@ class SystemPaymentsTable extends Component implements HasActions, HasForms, Has
                         default => 'gray',
                     }),
                 MoneyColumn::make('amount')
-                    ->label(__('bank_statement.amount'))
+                    ->label(__('accounting::bank_statement.amount'))
                     ->sortable(),
                 TextColumn::make('currency.code')
-                    ->label(__('bank_statement.currency'))
+                    ->label(__('accounting::bank_statement.currency'))
                     ->badge()
                     ->color(fn($record) => $record->currency_id === $this->bankStatement->currency_id ? 'success' : 'warning')
                     ->tooltip(fn($record) => $record->currency_id === $this->bankStatement->currency_id
-                        ? __('bank_statement.same_currency_as_statement')
-                        : __('bank_statement.different_currency_conversion_required')),
+                        ? __('accounting::bank_statement.same_currency_as_statement')
+                        : __('accounting::bank_statement.different_currency_conversion_required')),
             ])
             ->filters([
                 SelectFilter::make('currency_compatibility')
-                    ->label(__('bank_statement.currency_filter'))
+                    ->label(__('accounting::bank_statement.currency_filter'))
                     ->options([
-                        'same' => __('bank_statement.same_currency_only'),
-                        'different' => __('bank_statement.different_currency_only'),
-                        'all' => __('bank_statement.all_currencies'),
+                        'same' => __('accounting::bank_statement.same_currency_only'),
+                        'different' => __('accounting::bank_statement.different_currency_only'),
+                        'all' => __('accounting::bank_statement.all_currencies'),
                     ])
                     ->default('all')
                     ->query(function ($query, array $data) {
@@ -112,8 +112,8 @@ class SystemPaymentsTable extends Component implements HasActions, HasForms, Has
             ])
             ->paginated([10, 25, 50])
             ->defaultSort('payment_date', 'desc')
-            ->emptyStateHeading(__('bank_statement.no_unreconciled_payments'))
-            ->emptyStateDescription(__('bank_statement.no_unreconciled_payments_description'));
+            ->emptyStateHeading(__('accounting::bank_statement.no_unreconciled_payments'))
+            ->emptyStateDescription(__('accounting::bank_statement.no_unreconciled_payments_description'));
     }
 
     public function togglePayment(int $paymentId): void
@@ -179,6 +179,6 @@ class SystemPaymentsTable extends Component implements HasActions, HasForms, Has
 
     public function render(): View
     {
-        return view('livewire.accounting.system-payments-table');
+        return view('accounting::livewire.accounting.system-payments-table');
     }
 }

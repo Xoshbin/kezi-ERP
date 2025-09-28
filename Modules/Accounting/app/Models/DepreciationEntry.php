@@ -10,7 +10,7 @@ use Modules\Accounting\Models\Asset;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Accounting\Models\JournalEntry;
-use Database\Factories\DepreciationEntryFactory;
+use Modules\Accounting\Database\Factories\DepreciationEntryFactory;
 use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -52,6 +52,12 @@ class DepreciationEntry extends Model
 {
     /** @use HasFactory<DepreciationEntryFactory> */
     use HasFactory;
+
+
+    protected static function newFactory(): \Modules\Accounting\Database\Factories\DepreciationEntryFactory
+    {
+        return \Modules\Accounting\Database\Factories\DepreciationEntryFactory::new();
+    }
 
     /**
      * The table associated with the model.

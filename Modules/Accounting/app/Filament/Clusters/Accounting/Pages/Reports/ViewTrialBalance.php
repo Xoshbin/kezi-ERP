@@ -18,7 +18,7 @@ class ViewTrialBalance extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-scale';
 
-    protected string $view = 'filament.pages.reports.view-trial-balance';
+    protected string $view = 'accounting::filament.pages.reports.view-trial-balance';
 
     public static function shouldRegisterNavigation(): bool
     {
@@ -101,7 +101,7 @@ class ViewTrialBalance extends Page
         $this->reportData = [
             'companyName' => $company->name,
             'asOfDate' => $this->asOfDate,
-            'reportLines' => $report->reportLines->map(fn ($line) => [
+            'reportLines' => $report->reportLines->map(fn($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,

@@ -14,6 +14,13 @@ use Modules\Accounting\Enums\Assets\DepreciationEntryStatus;
 class DepreciationEntryFactory extends Factory
 {
     /**
+     * The name of the factory's corresponding model.
+     *
+     * @var class-string<\Modules\Accounting\Models\DepreciationEntry>
+     */
+    protected $model = \Modules\Accounting\Models\DepreciationEntry::class;
+
+    /**
      * Define the model's default state.
      *
      * @return array<string, mixed>

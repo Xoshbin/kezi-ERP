@@ -6,14 +6,12 @@ use Illuminate\Support\Facades\DB;
 use Modules\Accounting\Actions\Accounting\CreateJournalEntryForDepreciationAction;
 use Modules\Accounting\Enums\Assets\DepreciationEntryStatus;
 use Modules\Accounting\Models\DepreciationEntry;
-use Modules\Accounting\Models\User;
+use App\Models\User;
 use RuntimeException;
 
 class PostDepreciationEntryAction
 {
-    public function __construct(protected CreateJournalEntryForDepreciationAction $createJournalEntry)
-    {
-    }
+    public function __construct(protected CreateJournalEntryForDepreciationAction $createJournalEntry) {}
 
     public function execute(DepreciationEntry $depreciationEntry, User $user): DepreciationEntry
     {

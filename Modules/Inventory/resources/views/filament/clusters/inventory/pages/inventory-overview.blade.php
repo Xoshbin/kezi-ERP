@@ -1,4 +1,6 @@
 <x-filament-panels::page>
+    <h1 class="text-2xl font-bold mb-4">{{ $this->getHeading() }}</h1>
+
     <div class="space-y-6">
         {{-- Header Stats --}}
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">

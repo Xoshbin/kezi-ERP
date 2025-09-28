@@ -1,4 +1,6 @@
 <x-filament-panels::page>
+    <h1 class="text-2xl font-bold mb-4">{{ $this->getHeading() }}</h1>
+
     <div class="space-y-6">
         {{-- Filters Form --}}
         {{ $this->form }}
@@ -89,7 +91,7 @@
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                         {{ __('inventory_reports.turnover.period_info.title') }}
                     </h3>
-                    
+
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                         <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -129,13 +131,13 @@
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                         {{ __('inventory_reports.turnover.analysis.title') }}
                     </h3>
-                    
-                    <div class="p-6 rounded-lg border-2 
+
+                    <div class="p-6 rounded-lg border-2
                         @if($turnoverAnalysis['color'] === 'success') border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20
                         @elseif($turnoverAnalysis['color'] === 'info') border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20
                         @elseif($turnoverAnalysis['color'] === 'warning') border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-900/20
                         @else border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 @endif">
-                        
+
                         <div class="flex items-center space-x-3">
                             <div class="flex-shrink-0">
                                 @if($turnoverAnalysis['color'] === 'success')
@@ -149,14 +151,14 @@
                                 @endif
                             </div>
                             <div>
-                                <h4 class="text-lg font-semibold 
+                                <h4 class="text-lg font-semibold
                                     @if($turnoverAnalysis['color'] === 'success') text-green-900 dark:text-green-100
                                     @elseif($turnoverAnalysis['color'] === 'info') text-blue-900 dark:text-blue-100
                                     @elseif($turnoverAnalysis['color'] === 'warning') text-yellow-900 dark:text-yellow-100
                                     @else text-red-900 dark:text-red-100 @endif">
                                     {{ $turnoverAnalysis['description'] }}
                                 </h4>
-                                <p class="text-sm 
+                                <p class="text-sm
                                     @if($turnoverAnalysis['color'] === 'success') text-green-700 dark:text-green-300
                                     @elseif($turnoverAnalysis['color'] === 'info') text-blue-700 dark:text-blue-300
                                     @elseif($turnoverAnalysis['color'] === 'warning') text-yellow-700 dark:text-yellow-300

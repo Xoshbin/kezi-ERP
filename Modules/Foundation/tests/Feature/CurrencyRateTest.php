@@ -6,6 +6,9 @@ use App\Models\Company;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
 
+
+
+
 test('currency rate can be created', function () {
     $company = Company::factory()->create();
     $currency = Currency::factory()->create();

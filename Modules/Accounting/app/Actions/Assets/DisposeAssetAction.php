@@ -10,15 +10,14 @@ use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Modules\Accounting\DataTransferObjects\Assets\DisposeAssetDTO;
 use Modules\Accounting\Enums\Assets\AssetStatus;
 use Modules\Accounting\Models\Asset;
-use Modules\Accounting\Models\User;
+use App\Models\User;
 use RuntimeException;
 
 class DisposeAssetAction
 {
     public function __construct(
         private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJournalEntryAction,
-    ) {
-    }
+    ) {}
 
     public function execute(Asset $asset, DisposeAssetDTO $dto, User $user): Asset
     {

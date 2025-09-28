@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Modules\Foundation\Models\Currency;
 use Modules\Purchase\Models\VendorBill;
 use Illuminate\Database\Eloquent\Builder;
-use Database\Factories\PaymentDocumentLinkFactory;
+
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
@@ -193,5 +193,9 @@ class PaymentDocumentLink extends Model
                 throw new InvalidArgumentException('A PaymentDocumentLink must be associated with either an invoice or a vendor bill.');
             }
         });
+    }
+    protected static function newFactory(): \Modules\Payment\Database\Factories\PaymentDocumentLinkFactory
+    {
+        return \Modules\Payment\Database\Factories\PaymentDocumentLinkFactory::new();
     }
 }

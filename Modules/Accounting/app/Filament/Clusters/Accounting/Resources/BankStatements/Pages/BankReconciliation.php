@@ -13,7 +13,7 @@ class BankReconciliation extends Page
 {
     protected static string $resource = BankStatementResource::class;
 
-    protected string $view = 'filament.resources.bank-statement-resource.pages.bank-reconciliation';
+    protected string $view = 'accounting::filament.resources.bank-statement-resource.pages.bank-reconciliation';
 
     // We can pass the bank statement ID to the Livewire component
     public int $record;

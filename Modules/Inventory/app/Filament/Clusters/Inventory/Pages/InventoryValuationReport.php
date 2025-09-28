@@ -27,7 +27,7 @@ class InventoryValuationReport extends Page implements HasForms
 
     protected static ?string $cluster = InventoryCluster::class;
 
-    protected string $view = 'filament.clusters.inventory.pages.inventory-valuation-report';
+    protected string $view = 'inventory::filament.clusters.inventory.pages.inventory-valuation-report';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 

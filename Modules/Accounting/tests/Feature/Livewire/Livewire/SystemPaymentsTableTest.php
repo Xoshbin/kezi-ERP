@@ -60,7 +60,7 @@ describe('SystemPaymentsTable Livewire Component', function () {
     it('can mount with bank statement', function () {
         Livewire::test(SystemPaymentsTable::class, ['bankStatement' => $this->bankStatement])
             ->assertSet('bankStatement.id', $this->bankStatement->id)
-            ->assertViewIs('livewire.accounting.system-payments-table');
+            ->assertViewIs('accounting::livewire.accounting.system-payments-table');
     });
 
     it('displays only unreconciled confirmed payments', function () {

@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
+use Modules\Accounting\Database\Factories\LoanAgreementFactory;
 
 class LoanAgreement extends Model
 {
@@ -80,5 +81,9 @@ class LoanAgreement extends Model
     public function rateChanges(): HasMany
     {
         return $this->hasMany(LoanRateChange::class, 'loan_id');
+    }
+    protected static function newFactory()
+    {
+        return LoanAgreementFactory::new();
     }
 }

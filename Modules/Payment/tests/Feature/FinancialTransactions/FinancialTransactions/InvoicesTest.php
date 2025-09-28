@@ -14,6 +14,13 @@ use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
 use Modules\Sales\DataTransferObjects\Sales\UpdateInvoiceDTO;
 use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 
+use Modules\Sales\Services\InvoiceService;
+use Modules\Sales\Actions\Sales\UpdateInvoiceAction;
+use Modules\Sales\Actions\Sales\CreateInvoiceLineAction;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Accounting\Enums\Accounting\LockDateType;
+
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 test('a draft invoice can be confirmed, which posts it and dispatches an event', function () {

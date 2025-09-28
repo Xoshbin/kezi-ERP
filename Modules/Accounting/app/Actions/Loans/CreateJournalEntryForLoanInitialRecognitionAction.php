@@ -5,14 +5,16 @@ namespace Modules\Accounting\Actions\Loans;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use Modules\Accounting\Models\LoanAgreement;
-use Modules\Accounting\Models\User;
+use App\Models\User;
+use Modules\Accounting\Enums\Loans\LoanType;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use RuntimeException;
 
 class CreateJournalEntryForLoanInitialRecognitionAction
 {
-    public function __construct(private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJE)
-    {
-    }
+    public function __construct(private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJE) {}
 
     public function execute(LoanAgreement $loan, User $user, int $journalId, int $bankAccountId, int $loanAccountId): JournalEntry
     {
@@ -78,7 +80,7 @@ class CreateJournalEntryForLoanInitialRecognitionAction
                 journal_id: $journalId,
                 currency_id: (int) $loan->getAttribute('currency_id'),
                 entry_date: $loan->loan_date,
-                reference: 'LOAN/'.(string) $loan->getAttribute('id'),
+                reference: 'LOAN/' . (string) $loan->getAttribute('id'),
                 description: 'Initial recognition of loan',
                 created_by_user_id: (int) $user->getAttribute('id'),
                 is_posted: true,

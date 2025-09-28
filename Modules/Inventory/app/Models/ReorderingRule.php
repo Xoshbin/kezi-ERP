@@ -138,4 +138,9 @@ class ReorderingRule extends Model
 
         return "Stock replenishment suggested";
     }
+
+    protected static function newFactory(): \Modules\Inventory\Database\Factories\ReorderingRuleFactory
+    {
+        return \Modules\Inventory\Database\Factories\ReorderingRuleFactory::new();
+    }
 }

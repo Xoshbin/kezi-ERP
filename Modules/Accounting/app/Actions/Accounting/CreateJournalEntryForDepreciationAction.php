@@ -7,14 +7,12 @@ use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Modules\Accounting\Models\DepreciationEntry;
 use Modules\Accounting\Models\JournalEntry;
-use Modules\Accounting\Models\User;
+use App\Models\User;
 use RuntimeException;
 
 class CreateJournalEntryForDepreciationAction
 {
-    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction)
-    {
-    }
+    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 
     public function execute(DepreciationEntry $entry, User $user): JournalEntry
     {
