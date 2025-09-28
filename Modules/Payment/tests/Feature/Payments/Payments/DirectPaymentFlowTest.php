@@ -1,7 +1,6 @@
 <?php
 
 use Brick\Money\Money;
-use InvalidArgumentException;
 use Modules\Accounting\Models\Journal;
 
 
@@ -172,5 +171,5 @@ test('settlement payments still work as before', function () {
 
     // Act & Assert: Without document links and without partner, should throw specific error
     expect(fn() => app(CreatePaymentAction::class)->execute($paymentDTO, $this->user))
-        ->toThrow(InvalidArgumentException::class, 'Payments without document links must specify a partner.');
+        ->toThrow(\InvalidArgumentException::class, 'Payments without document links must specify a partner.');
 });

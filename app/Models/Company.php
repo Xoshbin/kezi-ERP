@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Inventory\Models\StockLocation;
 
 /**
  * Class Company
@@ -154,7 +155,7 @@ class Company extends Model
         'enable_reconciliation' => 'boolean',
         'pdf_settings' => 'json',
         'numbering_settings' => 'json',
-        'inventory_accounting_mode' => \App\Enums\Inventory\InventoryAccountingMode::class,
+        'inventory_accounting_mode' => \Modules\Inventory\Enums\Inventory\InventoryAccountingMode::class,
     ];
 
     /*

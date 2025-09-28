@@ -1,7 +1,6 @@
 <?php
 
 use Carbon\Carbon;
-use ReflectionClass;
 
 use Brick\Money\Money;
 use App\Models\Company;
@@ -20,7 +19,7 @@ test('refactored services have multi-currency dependencies', function () {
     $journalEntryService = app(JournalEntryService::class);
 
     // Verify InvoiceService has the new dependencies
-    $reflection = new ReflectionClass($invoiceService);
+    $reflection = new \ReflectionClass($invoiceService);
     $properties = $reflection->getProperties();
     $propertyNames = array_map(fn($prop) => $prop->getName(), $properties);
 
@@ -28,7 +27,7 @@ test('refactored services have multi-currency dependencies', function () {
     expect($propertyNames)->toContain('exchangeRateService');
 
     // Verify VendorBillService has the new dependencies
-    $reflection = new ReflectionClass($vendorBillService);
+    $reflection = new \ReflectionClass($vendorBillService);
     $properties = $reflection->getProperties();
     $propertyNames = array_map(fn($prop) => $prop->getName(), $properties);
 
@@ -36,7 +35,7 @@ test('refactored services have multi-currency dependencies', function () {
     expect($propertyNames)->toContain('exchangeRateService');
 
     // Verify PaymentService has the new dependencies
-    $reflection = new ReflectionClass($paymentService);
+    $reflection = new \ReflectionClass($paymentService);
     $properties = $reflection->getProperties();
     $propertyNames = array_map(fn($prop) => $prop->getName(), $properties);
 
@@ -44,7 +43,7 @@ test('refactored services have multi-currency dependencies', function () {
     expect($propertyNames)->toContain('exchangeGainLossService');
 
     // Verify JournalEntryService has the new dependencies
-    $reflection = new ReflectionClass($journalEntryService);
+    $reflection = new \ReflectionClass($journalEntryService);
     $properties = $reflection->getProperties();
     $propertyNames = array_map(fn($prop) => $prop->getName(), $properties);
 
@@ -62,7 +61,7 @@ test('multi-currency services integration works correctly', function () {
     $invoiceService = app(InvoiceService::class);
 
     // Verify the service has the new dependencies
-    $reflection = new ReflectionClass($invoiceService);
+    $reflection = new \ReflectionClass($invoiceService);
     $properties = $reflection->getProperties();
     $propertyNames = array_map(fn($prop) => $prop->getName(), $properties);
 

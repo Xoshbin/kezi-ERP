@@ -2,7 +2,6 @@
 
 use Brick\Money\Money;
 use Livewire\Livewire;
-use InvalidArgumentException;
 use Filament\Facades\Filament;
 use Modules\Accounting\Models\Tax;
 use Modules\Product\Models\Product;
@@ -272,5 +271,5 @@ test('cannot confirm purchase order without line items', function () {
     // Attempt to confirm the purchase order should fail
     expect(function () use ($purchaseOrder) {
         app(PurchaseOrderService::class)->confirm($purchaseOrder, $this->user);
-    })->toThrow(InvalidArgumentException::class, 'Cannot confirm purchase order without any lines.');
+    })->toThrow(\InvalidArgumentException::class, 'Cannot confirm purchase order without any lines.');
 });

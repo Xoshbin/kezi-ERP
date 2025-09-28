@@ -4,7 +4,6 @@ use Carbon\Carbon;
 use Brick\Money\Money;
 
 use App\Models\Company;
-use InvalidArgumentException;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
 use Modules\Foundation\Services\CurrencyConverterService;
@@ -108,7 +107,7 @@ test('throws exception when no exchange rate found', function () {
     $service = app(\Modules\Foundation\Services\CurrencyConverterService::class);
 
     expect(fn() => $service->convertToBaseCurrency($amount, $foreignCurrency, $baseCurrency, Carbon::today(), $company))
-        ->toThrow(InvalidArgumentException::class, 'No exchange rate found');
+        ->toThrow(\InvalidArgumentException::class, 'No exchange rate found');
 });
 
 test('can convert with specific rate', function () {

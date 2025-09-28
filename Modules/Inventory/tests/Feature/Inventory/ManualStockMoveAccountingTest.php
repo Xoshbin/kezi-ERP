@@ -1,6 +1,5 @@
 <?php
 
-use RuntimeException;
 use Brick\Money\Money;
 use Modules\Product\Models\Product;
 use Modules\Accounting\Models\Account;
@@ -176,5 +175,5 @@ it('throws exception for manual outgoing stock moves when product has no cost in
 
     // Act & Assert: Should throw RuntimeException for COGS calculation (outgoing moves still use old logic)
     expect(fn() => app(\Modules\Inventory\Actions\Inventory\CreateStockMoveAction::class)->execute($dto))
-        ->toThrow(RuntimeException::class, 'Cannot calculate COGS for product');
+        ->toThrow(\RuntimeException::class, 'Cannot calculate COGS for product');
 });

@@ -1,6 +1,5 @@
 <?php
 
-use RuntimeException;
 use Brick\Money\Money;
 use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
@@ -63,9 +62,9 @@ it('prevents negative quantities and over-reservation', function () {
 
     // Cannot reserve more than available
     expect(fn() => $this->service->reserve($this->company->id, $this->product->id, $this->stockLocation->id, 6))
-        ->toThrow(RuntimeException::class);
+        ->toThrow(\RuntimeException::class);
 
     // Cannot adjust below zero
     expect(fn() => $this->service->adjust($this->company->id, $this->product->id, $this->stockLocation->id, -10))
-        ->toThrow(RuntimeException::class);
+        ->toThrow(\RuntimeException::class);
 });

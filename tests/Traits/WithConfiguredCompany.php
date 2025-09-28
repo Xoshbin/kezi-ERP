@@ -3,7 +3,8 @@
 namespace Tests\Traits;
 
 
-use App\Models\StockLocation;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Enums\Inventory\StockLocationType;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Tests\Builders\CompanyBuilder;
