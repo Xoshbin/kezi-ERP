@@ -9,6 +9,7 @@ use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 use App\DataTransferObjects\Sales\CreateInvoiceDTO;
 use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 use App\Enums\Partners\PartnerType;
+use App\Enums\Products\ProductType;
 use App\Models\Account;
 use App\Models\Currency;
 use App\Models\CurrencyRate;
@@ -61,10 +62,11 @@ beforeEach(function () {
     $this->inventoryAccount = Account::factory()->for($this->company)->create(['type' => 'current_assets']);
     $this->stockInputAccount = Account::factory()->for($this->company)->create(['type' => 'current_assets']);
 
-    // Create test product with inventory accounts
+    // Create test product as service (non-storable) to avoid inventory complications
     $this->product = Product::factory()->for($this->company)->create([
-        'default_inventory_account_id' => $this->inventoryAccount->id,
-        'default_stock_input_account_id' => $this->stockInputAccount->id,
+        'type' => ProductType::Service, // Use service type to avoid inventory movements
+        'expense_account_id' => $this->expenseAccount->id,
+        'income_account_id' => $this->incomeAccount->id,
     ]);
 });
 

@@ -51,7 +51,11 @@ return [
     // Exchange Rate Fields
     'current_exchange_rate' => 'سعر الصرف الحالي',
     'exchange_rate_helper' => 'هذا هو سعر الصرف الحالي للعملة المحددة',
+    'exchange_rate_helper_with_current' => 'السعر الحالي: :rate. اتركه فارغاً لاستخدام السعر الحالي، أو أدخل سعراً مخصصاً.',
+    'exchange_rate' => 'سعر الصرف',
     'exchange_rate_at_creation' => 'سعر الصرف عند الإنشاء',
+    'exchange_rate_locked_helper' => 'سعر الصرف مقفل لفواتير الموردين غير المسودة',
+    'exchange_rate_manual_helper' => 'حدد سعر صرف مخصص أو اتركه فارغاً لاستخدام السعر الحالي عند الترحيل',
     'total_amount_company_currency' => 'المبلغ الإجمالي (عملة الشركة)',
     'total_tax_company_currency' => 'إجمالي الضريبة (عملة الشركة)',
 
@@ -59,6 +63,12 @@ return [
     'confirm' => 'تأكيد',
     'reset_to_draft' => 'إعادة إلى المسودة',
     'confirm_bill' => 'تأكيد الفاتورة',
+    'load_from_purchase_order' => 'تحميل من أمر الشراء',
+    'create_from_purchase_order' => 'إنشاء فاتورة من أمر الشراء',
+
+    // Fields
+    'purchase_order' => 'أمر الشراء',
+    'no_purchase_order' => 'لا يوجد أمر شراء',
 
     // Notifications
     'notification_confirm_success' => 'تم تأكيد فاتورة المورد بنجاح',
@@ -69,6 +79,10 @@ return [
     'notification_confirm_bill_error' => 'خطأ في تأكيد الفاتورة',
     'notification_bill_reset_success' => 'تم إعادة الفاتورة إلى المسودة',
     'notification_reset_bill_error' => 'خطأ في إعادة الفاتورة',
+
+    // Validation Messages
+    'validation_no_line_items' => 'لا يمكن تأكيد فاتورة المورد بدون بنود',
+    'validation_zero_total_amount' => 'لا يمكن تأكيد فاتورة المورد بمبلغ إجمالي صفر',
 
     // Payments Relation Manager
     'payments_relation_manager' => [

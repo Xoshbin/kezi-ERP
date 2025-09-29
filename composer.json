@@ -12,12 +12,14 @@
         "php": "^8.3",
         "barryvdh/laravel-dompdf": "^3.1",
         "brick/money": "^0.10.1",
+        "dutchcodingcompany/filament-developer-logins": "^2.0",
         "filament/filament": "^4.0",
         "lara-zeus/spatie-translatable": "^1.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "xoshbin/pertuk": "^0.0.4",
-        "xoshbin/translatable-select": "dev-main"
+        "xoshbin/filament-custom-fields": "dev-main",
+        "xoshbin/filament-translatable-select": "dev-main",
+        "xoshbin/pertuk": "^0.0.4"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.6",

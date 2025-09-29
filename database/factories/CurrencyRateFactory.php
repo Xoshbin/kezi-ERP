@@ -21,7 +21,7 @@ class CurrencyRateFactory extends Factory
     {
         return [
             'company_id' => Company::factory(),
-            'currency_id' => Currency::factory(),
+            'currency_id' => Currency::factory()->createSafely(),
             'rate' => $this->faker->randomFloat(6, 0.1, 10.0),
             'effective_date' => $this->faker->dateTimeBetween('-30 days', 'now')->format('Y-m-d'),
             'source' => $this->faker->randomElement(['manual', 'api', 'bank', 'central_bank']),
@@ -33,7 +33,7 @@ class CurrencyRateFactory extends Factory
      */
     public function today(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'effective_date' => Carbon::today(),
         ]);
     }
@@ -43,7 +43,7 @@ class CurrencyRateFactory extends Factory
      */
     public function forDate(Carbon $date): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'effective_date' => $date,
         ]);
     }
@@ -53,7 +53,7 @@ class CurrencyRateFactory extends Factory
      */
     public function fromApi(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'source' => 'api',
         ]);
     }
@@ -63,7 +63,7 @@ class CurrencyRateFactory extends Factory
      */
     public function manual(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'source' => 'manual',
         ]);
     }

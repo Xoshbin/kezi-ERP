@@ -51,7 +51,11 @@ return [
     // Exchange Rate Fields
     'current_exchange_rate' => 'Current Exchange Rate',
     'exchange_rate_helper' => 'This is the current exchange rate for the selected currency',
+    'exchange_rate_helper_with_current' => 'Current rate: :rate. Leave empty to use current rate, or enter a custom rate.',
+    'exchange_rate' => 'Exchange Rate',
     'exchange_rate_at_creation' => 'Exchange Rate at Creation',
+    'exchange_rate_locked_helper' => 'Exchange rate is locked for non-draft vendor bills',
+    'exchange_rate_manual_helper' => 'Set a custom exchange rate or leave empty to use the current rate when posting',
     'total_amount_company_currency' => 'Total Amount (Company Currency)',
     'total_tax_company_currency' => 'Total Tax (Company Currency)',
 
@@ -59,6 +63,12 @@ return [
     'confirm' => 'Confirm',
     'reset_to_draft' => 'Reset to Draft',
     'confirm_bill' => 'Confirm Bill',
+    'load_from_purchase_order' => 'Load from Purchase Order',
+    'create_from_purchase_order' => 'Create Bill from PO',
+
+    // Fields
+    'purchase_order' => 'Purchase Order',
+    'no_purchase_order' => 'No PO',
 
     // Notifications
     'notification_confirm_success' => 'Vendor bill confirmed successfully',
@@ -69,6 +79,10 @@ return [
     'notification_confirm_bill_error' => 'Error confirming bill',
     'notification_bill_reset_success' => 'Bill reset to draft',
     'notification_reset_bill_error' => 'Error resetting bill',
+
+    // Validation Messages
+    'validation_no_line_items' => 'Cannot confirm vendor bill without line items',
+    'validation_zero_total_amount' => 'Cannot confirm vendor bill with zero total amount',
 
     // Payments Relation Manager
     'payments_relation_manager' => [
