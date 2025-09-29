@@ -56,15 +56,15 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
                     ->view('accounting::components.bank-reconciliation-checkbox')
                     ->width('50px'),
                 TextColumn::make('date')
-                    ->label(__('bank_statement.date'))
+                    ->label(__('accounting::bank_statement.date'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('description')
-                    ->label(__('bank_statement.description'))
+                    ->label(__('accounting::bank_statement.description'))
                     ->searchable()
                     ->limit(50),
                 MoneyColumn::make('amount')
-                    ->label(__('bank_statement.amount'))
+                    ->label(__('accounting::bank_statement.amount'))
                     ->sortable(),
             ])
             ->recordActions([
@@ -112,8 +112,8 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
             ])
             ->paginated([10, 25, 50])
             ->defaultSort('date', 'desc')
-            ->emptyStateHeading(__('bank_statement.no_bank_statement_lines'))
-            ->emptyStateDescription(__('bank_statement.no_bank_statement_lines_description'));
+            ->emptyStateHeading(__('accounting::bank_statement.no_bank_statement_lines'))
+            ->emptyStateDescription(__('accounting::bank_statement.no_bank_statement_lines_description'));
     }
 
     public function toggleBankLine(int $lineId): void

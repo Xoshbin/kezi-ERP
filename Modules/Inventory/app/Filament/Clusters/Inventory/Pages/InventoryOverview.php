@@ -22,22 +22,22 @@ class InventoryOverview extends Page
 
     public static function getNavigationLabel(): string
     {
-        return __('inventory_dashboard.navigation_label');
+        return __('inventory::inventory_dashboard.navigation_label');
     }
 
     public function getTitle(): string
     {
-        return __('inventory_dashboard.heading');
+        return __('inventory::inventory_dashboard.heading');
     }
 
     public function getHeading(): string
     {
-        return __('inventory_dashboard.heading');
+        return __('inventory::inventory_dashboard.heading');
     }
 
     public function getSubheading(): ?string
     {
-        return __('inventory_dashboard.subheading');
+        return __('inventory::inventory_dashboard.subheading');
     }
 
     protected function getHeaderWidgets(): array

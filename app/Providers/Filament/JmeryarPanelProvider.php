@@ -24,12 +24,15 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
 use Xoshbin\CustomFields\CustomFieldsPlugin;
 use Xoshbin\JmeryarTheme\JmeryarTheme;
+use Modules\Foundation\Filament\Resources\CurrencyRates\CurrencyRateResource;
+use Modules\Foundation\Filament\Resources\PdfSettings\PdfSettingsResource;
 
 class JmeryarPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        return $panel
+        // Base panel configuration
+        $panel = $panel
             ->default()
             ->id('jmeryar')
             ->path('jmeryar')
@@ -39,6 +42,7 @@ class JmeryarPanelProvider extends PanelProvider
             ])
             ->topNavigation()
             ->maxContentWidth('full')
+            // App-level discovery
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
@@ -84,5 +88,31 @@ class JmeryarPanelProvider extends PanelProvider
                 //     ->modalWidth('2xl')
                 //     ->enabled(fn () => (bool) config('filament-ai-helper.enabled', true) && !empty(config('filament-ai-helper.gemini.api_key'))),
             ]);
+
+        // Dynamically discover Filament classes from enabled Modules
+        $modulesBase = base_path('Modules');
+        foreach (glob($modulesBase . '/*/app/Filament/Resources', GLOB_ONLYDIR) as $resourcesDir) {
+            $moduleName = basename(dirname(dirname($resourcesDir))); // Modules/{Module}/app/Filament/Resources
+            $namespace = 'Modules\\' . $moduleName . '\\Filament\\Resources';
+            $panel = $panel->discoverResources(in: $resourcesDir, for: $namespace);
+        }
+        foreach (glob($modulesBase . '/*/app/Filament/Pages', GLOB_ONLYDIR) as $pagesDir) {
+            $moduleName = basename(dirname(dirname($pagesDir)));
+            $namespace = 'Modules\\' . $moduleName . '\\Filament\\Pages';
+            $panel = $panel->discoverPages(in: $pagesDir, for: $namespace);
+        }
+        foreach (glob($modulesBase . '/*/app/Filament/Widgets', GLOB_ONLYDIR) as $widgetsDir) {
+            $moduleName = basename(dirname(dirname($widgetsDir)));
+            $namespace = 'Modules\\' . $moduleName . '\\Filament\\Widgets';
+            $panel = $panel->discoverWidgets(in: $widgetsDir, for: $namespace);
+        }
+
+        // Explicitly register critical Foundation resources to ensure routes exist during tests
+        $panel = $panel->resources([
+            CurrencyRateResource::class,
+            PdfSettingsResource::class,
+        ]);
+
+        return $panel;
     }
 }

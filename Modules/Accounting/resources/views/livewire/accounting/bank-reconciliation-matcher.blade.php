@@ -3,7 +3,7 @@
     {{-- Bank Statement Information --}}
     <div class="mb-6 bg-white shadow-sm rounded-lg p-6">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-medium text-gray-900">{{ __('bank_statement.statement_details') }}</h2>
+            <h2 class="text-lg font-medium text-gray-900">{{ __('accounting::bank_statement.statement_details') }}</h2>
             <div class="flex items-center space-x-3">
                 <a href="{{ route('docs.show', ['slug' => 'User Guide/payments']) }}" target="_blank"
                    class="inline-flex items-center text-xs text-gray-500 hover:text-gray-700">
@@ -14,7 +14,7 @@
                     </svg>
                     {{ __('Payments Guide') }}
                 </a>
-                <span class="text-sm text-gray-500">{{ __('bank_statement.currency') }}:</span>
+                <span class="text-sm text-gray-500">{{ __('accounting::bank_statement.currency') }}:</span>
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-info-100)] text-[var(--color-info-800)]">
                     {{ $bankStatement->currency->code ?? Filament::getTenant()?->currency?->code }}
                 </span>
@@ -22,19 +22,19 @@
         </div>
         <dl class="flex flex-row justify-between w-full space-x-8">
             <div class="flex flex-col flex-1 items-start">
-                <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.reference') }}</dt>
+                <dt class="text-sm font-medium text-gray-500">{{ __('accounting::bank_statement.reference') }}</dt>
                 <dd class="mt-1 text-sm text-gray-900">{{ $bankStatement->reference ?? '-' }}</dd>
             </div>
             <div class="flex flex-col flex-1 items-start">
-                <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.date') }}</dt>
+                <dt class="text-sm font-medium text-gray-500">{{ __('accounting::bank_statement.date') }}</dt>
                 <dd class="mt-1 text-sm text-gray-900">{{ optional($bankStatement->date)->format('Y-m-d') ?? '-' }}</dd>
             </div>
             <div class="flex flex-col flex-1 items-start">
-                <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.starting_balance') }}</dt>
+                <dt class="text-sm font-medium text-gray-500">{{ __('accounting::bank_statement.starting_balance') }}</dt>
                 <dd class="mt-1 text-sm text-gray-900">{{ $bankStatement->starting_balance ? \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($bankStatement->starting_balance) : '0.000' }}</dd>
             </div>
             <div class="flex flex-col flex-1 items-start">
-                <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.ending_balance') }}</dt>
+                <dt class="text-sm font-medium text-gray-500">{{ __('accounting::bank_statement.ending_balance') }}</dt>
                 <dd class="mt-1 text-sm text-gray-900">{{ $bankStatement->ending_balance ? \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($bankStatement->ending_balance) : '0.000' }}</dd>
             </div>
         </dl>
@@ -44,34 +44,36 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         {{-- Bank Transactions Table --}}
         @if($bankStatement->exists)
+            <h3 class="text-md font-semibold mb-2">{{ __('accounting::bank_statement.bank_transactions') }}</h3>
             <livewire:accounting.bank-transactions-table :bank-statement="$bankStatement"/>
         @else
-            <div class="p-6 border rounded-lg text-sm text-gray-500">{{ __('bank_statement.no_bank_lines') }}</div>
+            <div class="p-6 border rounded-lg text-sm text-gray-500">{{ __('accounting::bank_statement.no_bank_statement_lines') }}</div>
         @endif
 
         {{-- System Payments Table --}}
         @if($bankStatement->exists)
+            <h3 class="text-md font-semibold mb-2">{{ __('accounting::bank_statement.system_payments') }}</h3>
             <livewire:accounting.system-payments-table :bank-statement="$bankStatement"/>
         @else
-            <div class="p-6 border rounded-lg text-sm text-gray-500">{{ __('bank_statement.no_unreconciled_payments') }}</div>
+            <div class="p-6 border rounded-lg text-sm text-gray-500">{{ __('accounting::bank_statement.no_unreconciled_payments') }}</div>
         @endif
     </div>
 
     {{-- Summary Section --}}
     <div class="mt-6 bg-white shadow-sm rounded-lg p-6">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-medium leading-6 text-gray-900">{{ __('bank_statement.reconciliation_summary') }}</h3>
+            <h3 class="text-lg font-medium leading-6 text-gray-900">{{ __('accounting::bank_statement.reconciliation_summary') }}</h3>
             <div class="text-xs text-gray-500">
-                {{ __('bank_statement.all_amounts_in_currency', ['currency' => $bankStatement->currency->code]) }}
+                {{ __('accounting::bank_statement.all_amounts_in_currency', ['currency' => $bankStatement->currency->code]) }}
             </div>
         </div>
         <dl class="flex flex-row justify-between w-full space-x-8">
             <div class="flex flex-col flex-1 items-start">
-                <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.bank_total') }}</dt>
+                <dt class="text-sm font-medium text-gray-500">{{ __('accounting::bank_statement.bank_total') }}</dt>
                 <dd class="mt-1 text-sm text-gray-900">{{ $this->summary['bankTotalFormatted'] }}</dd>
             </div>
             <div class="flex flex-col flex-1 items-start">
-                <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.system_total') }}</dt>
+                <dt class="text-sm font-medium text-gray-500">{{ __('accounting::bank_statement.system_total') }}</dt>
                 <dd class="mt-1 text-sm text-gray-900">{{ $this->summary['systemTotalFormatted'] }}</dd>
                 @if(!empty($selectedPayments))
                     <div class="mt-1 text-xs text-gray-400">
@@ -80,21 +82,21 @@
                 @endif
             </div>
             <div class="flex flex-col flex-1 items-start">
-                <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.difference') }}</dt>
+                <dt class="text-sm font-medium text-gray-500">{{ __('accounting::bank_statement.difference') }}</dt>
                 <dd class="mt-1 text-sm font-bold {{ $this->summary['isBalanced'] ? 'text-[var(--color-success-600)]' : 'text-[var(--color-danger-600)]' }}">
                     {{ $this->summary['differenceFormatted'] }}
                 </dd>
             </div>
             <div class="flex flex-col flex-1 items-start">
-                <dt class="text-sm font-medium text-gray-500">{{ __('bank_statement.status') }}</dt>
+                <dt class="text-sm font-medium text-gray-500">{{ __('accounting::bank_statement.status') }}</dt>
                 <dd class="mt-1">
                     @if($this->summary['isBalanced'])
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-success-100)] text-[var(--color-success-800)]">
-                            {{ __('bank_statement.balanced') }}
+                            {{ __('accounting::bank_statement.balanced') }}
                         </span>
                     @else
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-danger-100)] text-[var(--color-danger-800)]">
-                            {{ __('bank_statement.not_balanced') }}
+                            {{ __('accounting::bank_statement.not_balanced') }}
                         </span>
                     @endif
                 </dd>
@@ -108,7 +110,7 @@
                 color="gray"
                 wire:click="$refresh"
         >
-            {{ __('bank_statement.refresh') }}
+            {{ __('accounting::bank_statement.refresh') }}
         </x-filament::button>
 
         <x-filament::button
@@ -116,7 +118,7 @@
                 :disabled="!$this->summary['isBalanced'] || empty($selectedBankLines) || empty($selectedPayments)"
                 color="success"
         >
-            {{ __('bank_statement.reconcile_selected') }}
+            {{ __('accounting::bank_statement.reconcile_selected') }}
         </x-filament::button>
     </div>
 </div>

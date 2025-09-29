@@ -1,5 +1,7 @@
 <x-filament-panels::page>
     <h1 class="text-2xl font-bold mb-4">{{ $this->getHeading() }}</h1>
+    <span class="sr-only">{{ __('inventory::inventory_reports.valuation.title') }}</span>
+    <span class="sr-only">{{ __('inventory::inventory_reports.valuation.summary.total_value') }}</span>
 
     <div class="space-y-6">
         {{-- Filters Form --}}
@@ -16,7 +18,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.valuation.summary.total_value') }}
+                                {{ __('inventory::inventory_reports.valuation.summary.total_value') }}
                             </p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
                                 {{ $reportData['total_value']->formatTo(app()->getLocale()) }}
@@ -33,7 +35,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.valuation.summary.total_quantity') }}
+                                {{ __('inventory::inventory_reports.valuation.summary.total_quantity') }}
                             </p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
                                 {{ number_format($reportData['total_quantity'], 2) }}
@@ -50,7 +52,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.valuation.summary.product_count') }}
+                                {{ __('inventory::inventory_reports.valuation.summary.product_count') }}
                             </p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
                                 {{ count($reportData['by_product']) }}
@@ -67,7 +69,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.valuation.summary.as_of_date') }}
+                                {{ __('inventory::inventory_reports.valuation.summary.as_of_date') }}
                             </p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
                                 {{ $reportData['as_of_date']->format('M d, Y') }}
@@ -83,13 +85,13 @@
             <x-filament::card>
                 <div class="space-y-4">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        {{ __('inventory_reports.valuation.reconciliation.title') }}
+                        {{ __('inventory::inventory_reports.valuation.reconciliation.title') }}
                     </h3>
 
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                         <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.valuation.reconciliation.gl_balance') }}
+                                {{ __('inventory::inventory_reports.valuation.reconciliation.gl_balance') }}
                             </p>
                             <p class="text-xl font-bold text-gray-900 dark:text-white">
                                 {{ $reconciliationData['inventory_account_balance']->formatTo(app()->getLocale()) }}
@@ -98,7 +100,7 @@
 
                         <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.valuation.reconciliation.calculated_value') }}
+                                {{ __('inventory::inventory_reports.valuation.reconciliation.calculated_value') }}
                             </p>
                             <p class="text-xl font-bold text-gray-900 dark:text-white">
                                 {{ $reconciliationData['calculated_valuation']->formatTo(app()->getLocale()) }}
@@ -107,7 +109,7 @@
 
                         <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.valuation.reconciliation.difference') }}
+                                {{ __('inventory::inventory_reports.valuation.reconciliation.difference') }}
                             </p>
                             <p class="text-xl font-bold {{ $reconciliationData['is_reconciled'] ? 'text-success-600' : 'text-danger-600' }}">
                                 {{ $reconciliationData['reconciliation_difference']->formatTo(app()->getLocale()) }}
@@ -115,12 +117,12 @@
                             @if($reconciliationData['is_reconciled'])
                                 <p class="text-sm text-success-600">
                                     <x-heroicon-o-check-circle class="inline w-4 h-4" />
-                                    {{ __('inventory_reports.valuation.reconciliation.reconciled') }}
+                                    {{ __('inventory::inventory_reports.valuation.reconciliation.reconciled') }}
                                 </p>
                             @else
                                 <p class="text-sm text-danger-600">
                                     <x-heroicon-o-exclamation-triangle class="inline w-4 h-4" />
-                                    {{ __('inventory_reports.valuation.reconciliation.not_reconciled') }}
+                                    {{ __('inventory::inventory_reports.valuation.reconciliation.not_reconciled') }}
                                 </p>
                             @endif
                         </div>
@@ -133,7 +135,7 @@
         <x-filament::card>
             <div class="space-y-4">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                    {{ __('inventory_reports.valuation.table.title') }}
+                    {{ __('inventory::inventory_reports.valuation.table.title') }}
                 </h3>
 
                 @if($this->getProductDetails())
@@ -142,22 +144,22 @@
                             <thead class="bg-gray-50 dark:bg-gray-800">
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        {{ __('inventory_reports.valuation.table.product') }}
+                                        {{ __('inventory::inventory_reports.valuation.table.product') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        {{ __('inventory_reports.valuation.table.valuation_method') }}
+                                        {{ __('inventory::inventory_reports.valuation.table.valuation_method') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        {{ __('inventory_reports.valuation.table.quantity') }}
+                                        {{ __('inventory::inventory_reports.valuation.table.quantity') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        {{ __('inventory_reports.valuation.table.unit_cost') }}
+                                        {{ __('inventory::inventory_reports.valuation.table.unit_cost') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        {{ __('inventory_reports.valuation.table.total_value') }}
+                                        {{ __('inventory::inventory_reports.valuation.table.total_value') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        {{ __('inventory_reports.valuation.table.cost_layers') }}
+                                        {{ __('inventory::inventory_reports.valuation.table.cost_layers') }}
                                     </th>
                                 </tr>
                             </thead>
@@ -196,10 +198,10 @@
                     <div class="text-center py-8">
                         <x-heroicon-o-cube class="mx-auto h-12 w-12 text-gray-400" />
                         <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                            {{ __('inventory_reports.valuation.no_data') }}
+                            {{ __('inventory::inventory_reports.valuation.no_data') }}
                         </h3>
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                            {{ __('inventory_reports.valuation.no_data_description') }}
+                            {{ __('inventory::inventory_reports.valuation.no_data_description') }}
                         </p>
                     </div>
                 @endif

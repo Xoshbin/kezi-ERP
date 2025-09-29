@@ -16,7 +16,7 @@ use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\InvoiceRe
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice;
 
-uses(Tests\TestCase::class, RefreshDatabase::class, WithConfiguredCompany::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();

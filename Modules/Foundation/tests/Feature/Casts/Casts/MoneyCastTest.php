@@ -13,6 +13,7 @@ use Modules\Accounting\Models\JournalEntry;
 use Modules\Purchase\Models\VendorBillLine;
 use Modules\Accounting\Models\JournalEntryLine;
 use Modules\Accounting\Models\DepreciationEntry;
+use Modules\Accounting\Enums\Assets\DepreciationEntryStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);

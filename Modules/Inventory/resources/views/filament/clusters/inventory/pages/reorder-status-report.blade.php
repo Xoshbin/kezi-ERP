@@ -16,7 +16,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.reorder.summary.critical') }}
+                                {{ __('inventory::inventory_reports.reorder.summary.critical') }}
                             </p>
                             <p class="text-2xl font-bold text-danger-600 dark:text-danger-400">
                                 {{ count($reordersByStatus['critical']) }}
@@ -33,7 +33,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.reorder.summary.low_stock') }}
+                                {{ __('inventory::inventory_reports.reorder.summary.low_stock') }}
                             </p>
                             <p class="text-2xl font-bold text-warning-600 dark:text-warning-400">
                                 {{ count($reordersByStatus['low']) }}
@@ -50,7 +50,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.reorder.summary.suggested') }}
+                                {{ __('inventory::inventory_reports.reorder.summary.suggested') }}
                             </p>
                             <p class="text-2xl font-bold text-info-600 dark:text-info-400">
                                 {{ count($reordersByStatus['suggested']) }}
@@ -67,7 +67,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.reorder.summary.overstock') }}
+                                {{ __('inventory::inventory_reports.reorder.summary.overstock') }}
                             </p>
                             <p class="text-2xl font-bold text-purple-600 dark:text-purple-400">
                                 {{ count($reordersByStatus['overstock']) }}
@@ -84,7 +84,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.reorder.summary.suggested_value') }}
+                                {{ __('inventory::inventory_reports.reorder.summary.suggested_value') }}
                             </p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
                                 {{ $totalSuggestedValue->formatTo(app()->getLocale()) }}
@@ -103,10 +103,10 @@
                         <x-heroicon-o-exclamation-triangle class="w-6 h-6 text-red-600" />
                         <div>
                             <h4 class="text-lg font-semibold text-red-900 dark:text-red-100">
-                                {{ __('inventory_reports.reorder.alerts.critical_title') }}
+                                {{ __('inventory::inventory_reports.reorder.alerts.critical_title') }}
                             </h4>
                             <p class="text-sm text-red-700 dark:text-red-300">
-                                {{ __('inventory_reports.reorder.alerts.critical_description', ['count' => count($reordersByStatus['critical'])]) }}
+                                {{ __('inventory::inventory_reports.reorder.alerts.critical_description', ['count' => count($reordersByStatus['critical'])]) }}
                             </p>
                         </div>
                     </div>
@@ -119,7 +119,7 @@
             <x-filament::card>
                 <div class="space-y-4">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        {{ __('inventory_reports.reorder.table.title') }}
+                        {{ __('inventory::inventory_reports.reorder.table.title') }}
                     </h3>
 
                     <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
@@ -127,28 +127,28 @@
                             <thead class="bg-gray-50 dark:bg-gray-800">
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        {{ __('inventory_reports.reorder.table.product') }}
+                                        {{ __('inventory::inventory_reports.reorder.table.product') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        {{ __('inventory_reports.reorder.table.location') }}
+                                        {{ __('inventory::inventory_reports.reorder.table.location') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        {{ __('inventory_reports.reorder.table.current_quantity') }}
+                                        {{ __('inventory::inventory_reports.reorder.table.current_quantity') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        {{ __('inventory_reports.reorder.table.min_quantity') }}
+                                        {{ __('inventory::inventory_reports.reorder.table.min_quantity') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        {{ __('inventory_reports.reorder.table.max_quantity') }}
+                                        {{ __('inventory::inventory_reports.reorder.table.max_quantity') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        {{ __('inventory_reports.reorder.table.suggested_quantity') }}
+                                        {{ __('inventory::inventory_reports.reorder.table.suggested_quantity') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        {{ __('inventory_reports.reorder.table.status') }}
+                                        {{ __('inventory::inventory_reports.reorder.table.status') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        {{ __('inventory_reports.reorder.table.estimated_cost') }}
+                                        {{ __('inventory::inventory_reports.reorder.table.estimated_cost') }}
                                     </th>
                                 </tr>
                             </thead>
@@ -223,10 +223,10 @@
                 <div class="text-center py-8">
                     <x-heroicon-o-exclamation-triangle class="mx-auto h-12 w-12 text-gray-400" />
                     <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                        {{ __('inventory_reports.reorder.no_data') }}
+                        {{ __('inventory::inventory_reports.reorder.no_data') }}
                     </h3>
                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        {{ __('inventory_reports.reorder.no_data_description') }}
+                        {{ __('inventory::inventory_reports.reorder.no_data_description') }}
                     </p>
                 </div>
             </x-filament::card>

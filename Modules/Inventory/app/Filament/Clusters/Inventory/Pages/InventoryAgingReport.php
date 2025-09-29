@@ -45,17 +45,17 @@ class InventoryAgingReport extends Page implements HasForms
 
     public static function getNavigationLabel(): string
     {
-        return __('inventory_reports.aging.navigation_label');
+        return __('inventory::inventory_reports.aging.navigation_label');
     }
 
     public function getTitle(): string
     {
-        return __('inventory_reports.aging.title');
+        return __('inventory::inventory_reports.aging.title');
     }
 
     public function getHeading(): string
     {
-        return __('inventory_reports.aging.heading');
+        return __('inventory::inventory_reports.aging.heading');
     }
 
     public function mount(): void
@@ -72,10 +72,10 @@ class InventoryAgingReport extends Page implements HasForms
     {
         return $schema
             ->components([
-                Section::make(__('inventory_reports.aging.filters.title'))
+                Section::make(__('inventory::inventory_reports.aging.filters.title'))
                     ->schema([
                         Select::make('product_ids')
-                            ->label(__('inventory_reports.aging.filters.products'))
+                            ->label(__('inventory::inventory_reports.aging.filters.products'))
                             ->options(function () {
                                 return Product::query()
                                     ->where('company_id', Filament::getTenant()?->getKey())
@@ -101,13 +101,13 @@ class InventoryAgingReport extends Page implements HasForms
                             ->afterStateUpdated(fn() => $this->generateReport()),
 
                         Toggle::make('include_expiration')
-                            ->label(__('inventory_reports.aging.filters.include_expiration'))
+                            ->label(__('inventory::inventory_reports.aging.filters.include_expiration'))
                             ->default(true)
                             ->live()
                             ->afterStateUpdated(fn() => $this->generateReport()),
 
                         TextInput::make('expiration_warning_days')
-                            ->label(__('inventory_reports.aging.filters.expiration_warning_days'))
+                            ->label(__('inventory::inventory_reports.aging.filters.expiration_warning_days'))
                             ->numeric()
                             ->default(30)
                             ->minValue(1)
@@ -204,17 +204,17 @@ class InventoryAgingReport extends Page implements HasForms
     {
         return [
             Action::make('export')
-                ->label(__('inventory_reports.aging.actions.export'))
+                ->label(__('inventory::inventory_reports.aging.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->disabled(fn() => !$this->reportData)
                 ->requiresConfirmation()
-                ->modalHeading(__('inventory_reports.aging.export_confirmation'))
-                ->modalDescription(__('inventory_reports.aging.export_description'))
-                ->modalSubmitActionLabel(__('inventory_reports.aging.actions.export'))
+                ->modalHeading(__('inventory::inventory_reports.aging.export_confirmation'))
+                ->modalDescription(__('inventory::inventory_reports.aging.export_description'))
+                ->modalSubmitActionLabel(__('inventory::inventory_reports.aging.actions.export'))
                 ->action(function () {
                     if (!$this->reportData) {
                         Notification::make()
-                            ->title(__('inventory_reports.aging.no_data_to_export'))
+                            ->title(__('inventory::inventory_reports.aging.no_data_to_export'))
                             ->danger()
                             ->send();
                         return;
@@ -229,7 +229,7 @@ class InventoryAgingReport extends Page implements HasForms
                         $filename = 'inventory-aging-' . now()->format('Y-m-d-H-i-s') . '.csv';
 
                         Notification::make()
-                            ->title(__('inventory_reports.aging.export_started'))
+                            ->title(__('inventory::inventory_reports.aging.export_started'))
                             ->success()
                             ->send();
 
@@ -240,7 +240,7 @@ class InventoryAgingReport extends Page implements HasForms
                         ]);
                     } catch (Exception $e) {
                         Notification::make()
-                            ->title(__('inventory_reports.aging.export_failed'))
+                            ->title(__('inventory::inventory_reports.aging.export_failed'))
                             ->body($e->getMessage())
                             ->danger()
                             ->send();
@@ -248,7 +248,7 @@ class InventoryAgingReport extends Page implements HasForms
                 }),
 
             Action::make('refresh')
-                ->label(__('inventory_reports.aging.actions.refresh'))
+                ->label(__('inventory::inventory_reports.aging.actions.refresh'))
                 ->icon('heroicon-o-arrow-path')
                 ->action('generateReport'),
         ];

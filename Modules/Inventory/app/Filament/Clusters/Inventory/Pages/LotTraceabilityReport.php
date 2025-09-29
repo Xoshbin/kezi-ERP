@@ -45,17 +45,17 @@ class LotTraceabilityReport extends Page implements HasForms
 
     public static function getNavigationLabel(): string
     {
-        return __('inventory_reports.lot_trace.navigation_label');
+        return __('inventory::inventory_reports.lot_trace.navigation_label');
     }
 
     public function getTitle(): string
     {
-        return __('inventory_reports.lot_trace.title');
+        return __('inventory::inventory_reports.lot_trace.title');
     }
 
     public function getHeading(): string
     {
-        return __('inventory_reports.lot_trace.heading');
+        return __('inventory::inventory_reports.lot_trace.heading');
     }
 
     public function mount(): void
@@ -67,10 +67,10 @@ class LotTraceabilityReport extends Page implements HasForms
     {
         return $schema
             ->components([
-                Section::make(__('inventory_reports.lot_trace.filters.title'))
+                Section::make(__('inventory::inventory_reports.lot_trace.filters.title'))
                     ->schema([
                         Select::make('product_id')
-                            ->label(__('inventory_reports.lot_trace.filters.product'))
+                            ->label(__('inventory::inventory_reports.lot_trace.filters.product'))
                             ->options(function () {
                                 return Product::query()
                                     ->where('company_id', Filament::getTenant()?->getKey())
@@ -87,7 +87,7 @@ class LotTraceabilityReport extends Page implements HasForms
                             }),
 
                         Select::make('lot_id')
-                            ->label(__('inventory_reports.lot_trace.filters.lot'))
+                            ->label(__('inventory::inventory_reports.lot_trace.filters.lot'))
                             ->options(function ($get) {
                                 $productId = $get('product_id');
                                 if (!$productId) {
@@ -186,13 +186,13 @@ class LotTraceabilityReport extends Page implements HasForms
     {
         return [
             Action::make('export')
-                ->label(__('inventory_reports.lot_trace.actions.export'))
+                ->label(__('inventory::inventory_reports.lot_trace.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->disabled(fn() => !$this->reportData)
                 ->action(function () {
                     if (!$this->reportData) {
                         Notification::make()
-                            ->title(__('inventory_reports.lot_trace.no_data_to_export'))
+                            ->title(__('inventory::inventory_reports.lot_trace.no_data_to_export'))
                             ->danger()
                             ->send();
                         return;
@@ -207,7 +207,7 @@ class LotTraceabilityReport extends Page implements HasForms
                         $filename = 'lot-traceability-' . ($this->reportData['lot_code'] ?? 'report') . '-' . now()->format('Y-m-d-H-i-s') . '.csv';
 
                         Notification::make()
-                            ->title(__('inventory_reports.lot_trace.export_started'))
+                            ->title(__('inventory::inventory_reports.lot_trace.export_started'))
                             ->success()
                             ->send();
 
@@ -218,7 +218,7 @@ class LotTraceabilityReport extends Page implements HasForms
                         ]);
                     } catch (Exception $e) {
                         Notification::make()
-                            ->title(__('inventory_reports.lot_trace.export_failed'))
+                            ->title(__('inventory::inventory_reports.lot_trace.export_failed'))
                             ->body($e->getMessage())
                             ->danger()
                             ->send();
@@ -226,7 +226,7 @@ class LotTraceabilityReport extends Page implements HasForms
                 }),
 
             Action::make('refresh')
-                ->label(__('inventory_reports.lot_trace.actions.refresh'))
+                ->label(__('inventory::inventory_reports.lot_trace.actions.refresh'))
                 ->icon('heroicon-o-arrow-path')
                 ->action('generateReport')
                 ->disabled(fn() => !$this->selectedProduct || !$this->selectedLot),

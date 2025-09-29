@@ -19,7 +19,7 @@ class FiscalPositionFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id' => Company::factory()->create()->id,
+            'company_id' => Company::factory(),
             'name' => $this->faker->company,
             'country' => $this->faker->country,
         ];

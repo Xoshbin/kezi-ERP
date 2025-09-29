@@ -25,9 +25,11 @@ class JournalEntryFactory extends Factory
     {
         return [
             'company_id' => Company::factory(),
-            'journal_id' => function (array $attributes) {
-                return Journal::factory()->for(Company::find($attributes['company_id']))->create()->id;
-            },
+            'journal_id' => Journal::factory()->state(function (array $attributes) {
+                return [
+                    'company_id' => $attributes['company_id'] ?? null,
+                ];
+            }),
             'currency_id' => function (array $attributes) {
                 return Company::find($attributes['company_id'])->currency_id;
             },

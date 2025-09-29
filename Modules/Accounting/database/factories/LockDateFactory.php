@@ -21,9 +21,9 @@ class LockDateFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id' => Company::factory()->create()->id,
-            'lock_type' => $this->faker->randomElement(['tax_return_date', 'everything_date']),
-            'locked_until' => $this->faker->dateTimeBetween('now', '+1 year'),
+            'company_id' => Company::factory(),
+            'lock_type' => 'tax_return_date',
+            'locked_until' => now()->addDays(30),
         ];
     }
 }

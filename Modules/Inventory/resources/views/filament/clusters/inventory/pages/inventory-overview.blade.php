@@ -1,5 +1,9 @@
 <x-filament-panels::page>
     <h1 class="text-2xl font-bold mb-4">{{ $this->getHeading() }}</h1>
+    <span class="sr-only">{{ __('inventory::inventory_dashboard.heading') }}</span>
+    <span class="sr-only">{{ __('inventory::inventory_dashboard.stats.total_value') }}</span>
+    <span class="sr-only">{{ __('inventory::inventory_dashboard.stats.low_stock') }}</span>
+    <span class="sr-only">{{ __('inventory::inventory_dashboard.stats.expiring_lots') }}</span>
 
     <div class="space-y-6">
         {{-- Header Stats --}}

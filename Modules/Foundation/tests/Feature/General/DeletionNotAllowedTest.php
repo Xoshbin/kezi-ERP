@@ -13,7 +13,7 @@ use Tests\Traits\WithConfiguredCompany;
 use Modules\Accounting\Models\JournalEntry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(\Tests\TestCase::class, RefreshDatabase::class, WithConfiguredCompany::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 // ======================================================================
 // Test Case 1: Comprehensive Company Deletion Prevention

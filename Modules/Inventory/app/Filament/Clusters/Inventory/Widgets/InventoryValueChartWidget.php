@@ -24,12 +24,12 @@ class InventoryValueChartWidget extends ChartWidget
 
     public function getHeading(): ?string
     {
-        return __('inventory_dashboard.charts.inventory_value.title');
+        return __('inventory::inventory_dashboard.charts.inventory_value.title');
     }
 
     public function getDescription(): ?string
     {
-        return __('inventory_dashboard.charts.inventory_value.description');
+        return __('inventory::inventory_dashboard.charts.inventory_value.description');
     }
 
     protected function getData(): array
@@ -61,7 +61,7 @@ class InventoryValueChartWidget extends ChartWidget
             return [
                 'datasets' => [
                     [
-                        'label' => __('inventory_dashboard.charts.inventory_value.dataset_label'),
+                        'label' => __('inventory::inventory_dashboard.charts.inventory_value.dataset_label'),
                         'data' => $inventoryValues,
                         'borderColor' => '#10b981',
                         'backgroundColor' => 'rgba(16, 185, 129, 0.1)',

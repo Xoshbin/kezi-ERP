@@ -7,6 +7,9 @@ use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
 
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+
 
 
 test('currency rate can be created', function () {

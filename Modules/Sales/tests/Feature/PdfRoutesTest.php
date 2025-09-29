@@ -10,6 +10,10 @@ use Modules\Foundation\Models\Currency;
 use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Modules\Foundation\Enums\Partners\PartnerType;
 
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->company = Company::factory()->create();

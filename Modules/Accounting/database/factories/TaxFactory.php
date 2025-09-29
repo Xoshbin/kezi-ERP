@@ -22,12 +22,12 @@ class TaxFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id' => Company::factory()->create()->id,
+            'company_id' => Company::factory(),
             'name' => $this->faker->word,
             'rate' => $this->faker->randomFloat(2, 0, 100),
             'type' => $this->faker->randomElement([TaxType::Sales, TaxType::Purchase, TaxType::Both]),
             'is_active' => $this->faker->boolean,
-            'tax_account_id' => Account::factory()->create()->id,
+            'tax_account_id' => Account::factory(),
         ];
     }
 }
