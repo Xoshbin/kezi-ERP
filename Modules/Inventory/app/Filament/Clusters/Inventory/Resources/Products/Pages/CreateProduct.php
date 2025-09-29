@@ -17,6 +17,12 @@ class CreateProduct extends CreateRecord
 
     protected static string $resource = ProductResource::class;
 
+    public function getTitle(): string
+    {
+        // Ensure Arabic label appears on the page title for localization test
+        return __('product.label');
+    }
+
     protected function getHeaderActions(): array
     {
         return [

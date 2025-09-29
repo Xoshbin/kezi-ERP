@@ -56,17 +56,17 @@ class InventoryValuationReport extends Page implements HasForms
 
     public static function getNavigationLabel(): string
     {
-        return __('inventory_reports.valuation.navigation_label');
+        return __('inventory::inventory_reports.valuation.navigation_label');
     }
 
     public function getTitle(): string
     {
-        return __('inventory_reports.valuation.title');
+        return __('inventory::inventory_reports.valuation.title');
     }
 
     public function getHeading(): string
     {
-        return __('inventory_reports.valuation.heading');
+        return __('inventory::inventory_reports.valuation.heading');
     }
 
     public function mount(): void
@@ -83,10 +83,10 @@ class InventoryValuationReport extends Page implements HasForms
     {
         return $schema
             ->components([
-                Section::make(__('inventory_reports.valuation.filters.title'))
+                Section::make(__('inventory::inventory_reports.valuation.filters.title'))
                     ->schema([
                         DatePicker::make('as_of_date')
-                            ->label(__('inventory_reports.valuation.filters.as_of_date'))
+                            ->label(__('inventory::inventory_reports.valuation.filters.as_of_date'))
                             ->required()
                             ->default(now())
                             ->maxDate(now())
@@ -99,7 +99,7 @@ class InventoryValuationReport extends Page implements HasForms
                             }),
 
                         Select::make('product_ids')
-                            ->label(__('inventory_reports.valuation.filters.products'))
+                            ->label(__('inventory::inventory_reports.valuation.filters.products'))
                             ->options(function () {
                                 return Product::query()
                                     ->where('company_id', Filament::getTenant()?->getKey())
@@ -112,7 +112,7 @@ class InventoryValuationReport extends Page implements HasForms
                             ->afterStateUpdated(fn() => $this->generateReport()),
 
                         Toggle::make('include_reconciliation')
-                            ->label(__('inventory_reports.valuation.filters.include_reconciliation'))
+                            ->label(__('inventory::inventory_reports.valuation.filters.include_reconciliation'))
                             ->default(true)
                             ->live()
                             ->afterStateUpdated(fn() => $this->generateReport()),
@@ -180,17 +180,17 @@ class InventoryValuationReport extends Page implements HasForms
     {
         return [
             Action::make('export')
-                ->label(__('inventory_reports.valuation.actions.export'))
+                ->label(__('inventory::inventory_reports.valuation.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->disabled(fn() => !$this->reportData)
                 ->requiresConfirmation()
-                ->modalHeading(__('inventory_reports.valuation.export_confirmation'))
-                ->modalDescription(__('inventory_reports.valuation.export_description'))
-                ->modalSubmitActionLabel(__('inventory_reports.valuation.actions.export'))
+                ->modalHeading(__('inventory::inventory_reports.valuation.export_confirmation'))
+                ->modalDescription(__('inventory::inventory_reports.valuation.export_description'))
+                ->modalSubmitActionLabel(__('inventory::inventory_reports.valuation.actions.export'))
                 ->action(function () {
                     if (!$this->reportData) {
                         Notification::make()
-                            ->title(__('inventory_reports.valuation.no_data_to_export'))
+                            ->title(__('inventory::inventory_reports.valuation.no_data_to_export'))
                             ->danger()
                             ->send();
                         return;
@@ -205,7 +205,7 @@ class InventoryValuationReport extends Page implements HasForms
                         $filename = 'inventory-valuation-' . now()->format('Y-m-d-H-i-s') . '.csv';
 
                         Notification::make()
-                            ->title(__('inventory_reports.valuation.export_started'))
+                            ->title(__('inventory::inventory_reports.valuation.export_started'))
                             ->success()
                             ->send();
 
@@ -216,7 +216,7 @@ class InventoryValuationReport extends Page implements HasForms
                         ]);
                     } catch (Exception $e) {
                         Notification::make()
-                            ->title(__('inventory_reports.valuation.export_failed'))
+                            ->title(__('inventory::inventory_reports.valuation.export_failed'))
                             ->body($e->getMessage())
                             ->danger()
                             ->send();
@@ -224,7 +224,7 @@ class InventoryValuationReport extends Page implements HasForms
                 }),
 
             Action::make('refresh')
-                ->label(__('inventory_reports.valuation.actions.refresh'))
+                ->label(__('inventory::inventory_reports.valuation.actions.refresh'))
                 ->icon('heroicon-o-arrow-path')
                 ->action('generateReport'),
         ];

@@ -46,17 +46,17 @@ class ReorderStatusReport extends Page implements HasForms
 
     public static function getNavigationLabel(): string
     {
-        return __('inventory_reports.reorder.navigation_label');
+        return __('inventory::inventory_reports.reorder.navigation_label');
     }
 
     public function getTitle(): string
     {
-        return __('inventory_reports.reorder.title');
+        return __('inventory::inventory_reports.reorder.title');
     }
 
     public function getHeading(): string
     {
-        return __('inventory_reports.reorder.heading');
+        return __('inventory::inventory_reports.reorder.heading');
     }
 
     public function mount(): void
@@ -73,10 +73,10 @@ class ReorderStatusReport extends Page implements HasForms
     {
         return $schema
             ->components([
-                Section::make(__('inventory_reports.reorder.filters.title'))
+                Section::make(__('inventory::inventory_reports.reorder.filters.title'))
                     ->schema([
                         Select::make('product_ids')
-                            ->label(__('inventory_reports.reorder.filters.products'))
+                            ->label(__('inventory::inventory_reports.reorder.filters.products'))
                             ->options(function () {
                                 return Product::query()
                                     ->where('company_id', Filament::getTenant()?->getKey())
@@ -89,7 +89,7 @@ class ReorderStatusReport extends Page implements HasForms
                             ->afterStateUpdated(fn() => $this->generateReport()),
 
                         Select::make('location_ids')
-                            ->label(__('inventory_reports.reorder.filters.locations'))
+                            ->label(__('inventory::inventory_reports.reorder.filters.locations'))
                             ->options(function () {
                                 return StockLocation::query()
                                     ->where('company_id', Filament::getTenant()?->getKey())
@@ -102,13 +102,13 @@ class ReorderStatusReport extends Page implements HasForms
                             ->afterStateUpdated(fn() => $this->generateReport()),
 
                         Toggle::make('include_suggested_orders')
-                            ->label(__('inventory_reports.reorder.filters.include_suggested_orders'))
+                            ->label(__('inventory::inventory_reports.reorder.filters.include_suggested_orders'))
                             ->default(true)
                             ->live()
                             ->afterStateUpdated(fn() => $this->generateReport()),
 
                         Toggle::make('include_overstock')
-                            ->label(__('inventory_reports.reorder.filters.include_overstock'))
+                            ->label(__('inventory::inventory_reports.reorder.filters.include_overstock'))
                             ->default(true)
                             ->live()
                             ->afterStateUpdated(fn() => $this->generateReport()),
@@ -200,13 +200,13 @@ class ReorderStatusReport extends Page implements HasForms
     {
         return [
             Action::make('export')
-                ->label(__('inventory_reports.reorder.actions.export'))
+                ->label(__('inventory::inventory_reports.reorder.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->disabled(fn() => !$this->reportData)
                 ->action(function () {
                     if (!$this->reportData) {
                         Notification::make()
-                            ->title(__('inventory_reports.reorder.no_data_to_export'))
+                            ->title(__('inventory::inventory_reports.reorder.no_data_to_export'))
                             ->danger()
                             ->send();
                         return;
@@ -221,7 +221,7 @@ class ReorderStatusReport extends Page implements HasForms
                         $filename = 'inventory-reorder-status-' . now()->format('Y-m-d-H-i-s') . '.csv';
 
                         Notification::make()
-                            ->title(__('inventory_reports.reorder.export_started'))
+                            ->title(__('inventory::inventory_reports.reorder.export_started'))
                             ->success()
                             ->send();
 
@@ -232,7 +232,7 @@ class ReorderStatusReport extends Page implements HasForms
                         ]);
                     } catch (Exception $e) {
                         Notification::make()
-                            ->title(__('inventory_reports.reorder.export_failed'))
+                            ->title(__('inventory::inventory_reports.reorder.export_failed'))
                             ->body($e->getMessage())
                             ->danger()
                             ->send();
@@ -240,7 +240,7 @@ class ReorderStatusReport extends Page implements HasForms
                 }),
 
             Action::make('refresh')
-                ->label(__('inventory_reports.reorder.actions.refresh'))
+                ->label(__('inventory::inventory_reports.reorder.actions.refresh'))
                 ->icon('heroicon-o-arrow-path')
                 ->action('generateReport'),
         ];

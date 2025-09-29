@@ -61,8 +61,8 @@ class InventoryStatsOverviewWidget extends BaseWidget
 
     private function createTotalValueStat(Money $totalValue): Stat
     {
-        return Stat::make(__('inventory_dashboard.stats.total_value'), $totalValue->formatTo('en_US'))
-            ->description(__('inventory_dashboard.stats.total_value_description'))
+        return Stat::make(__('inventory::inventory_dashboard.stats.total_value'), $totalValue->formatTo('en_US'))
+            ->description(__('inventory::inventory_dashboard.stats.total_value_description'))
             ->descriptionIcon('heroicon-m-currency-dollar')
             ->color('success')
             ->chart($this->getValueTrendChart());
@@ -82,8 +82,8 @@ class InventoryStatsOverviewWidget extends BaseWidget
             default => 'heroicon-m-arrow-trending-down'
         };
 
-        return Stat::make(__('inventory_dashboard.stats.turnover_ratio'), number_format($turnoverRatio, 2) . 'x')
-            ->description(__('inventory_dashboard.stats.turnover_description'))
+        return Stat::make(__('inventory::inventory_dashboard.stats.turnover_ratio'), number_format($turnoverRatio, 2) . 'x')
+            ->description(__('inventory::inventory_dashboard.stats.turnover_description'))
             ->descriptionIcon($icon)
             ->color($color);
     }
@@ -93,8 +93,8 @@ class InventoryStatsOverviewWidget extends BaseWidget
         $color = $lowStockCount > 0 ? 'danger' : 'success';
         $icon = $lowStockCount > 0 ? 'heroicon-m-exclamation-triangle' : 'heroicon-m-check-circle';
 
-        return Stat::make(__('inventory_dashboard.stats.low_stock'), $lowStockCount)
-            ->description(__('inventory_dashboard.stats.low_stock_description'))
+        return Stat::make(__('inventory::inventory_dashboard.stats.low_stock'), $lowStockCount)
+            ->description(__('inventory::inventory_dashboard.stats.low_stock_description'))
             ->descriptionIcon($icon)
             ->color($color);
     }
@@ -104,8 +104,8 @@ class InventoryStatsOverviewWidget extends BaseWidget
         $color = $expiringLotsCount > 0 ? 'warning' : 'success';
         $icon = $expiringLotsCount > 0 ? 'heroicon-m-clock' : 'heroicon-m-check-circle';
 
-        return Stat::make(__('inventory_dashboard.stats.expiring_lots'), $expiringLotsCount)
-            ->description(__('inventory_dashboard.stats.expiring_lots_description'))
+        return Stat::make(__('inventory::inventory_dashboard.stats.expiring_lots'), $expiringLotsCount)
+            ->description(__('inventory::inventory_dashboard.stats.expiring_lots_description'))
             ->descriptionIcon($icon)
             ->color($color);
     }

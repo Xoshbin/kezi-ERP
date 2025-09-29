@@ -11,14 +11,14 @@
             <x-filament::card>
                 <div class="space-y-4">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        {{ __('inventory_reports.lot_trace.summary.title') }}
+                        {{ __('inventory::inventory_reports.lot_trace.summary.title') }}
                     </h3>
 
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
                         {{-- Lot Code --}}
                         <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.lot_trace.summary.lot_code') }}
+                                {{ __('inventory::inventory_reports.lot_trace.summary.lot_code') }}
                             </p>
                             <p class="text-lg font-bold text-gray-900 dark:text-white">
                                 {{ $reportData['lot_code'] }}
@@ -28,7 +28,7 @@
                         {{-- Product --}}
                         <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.lot_trace.summary.product') }}
+                                {{ __('inventory::inventory_reports.lot_trace.summary.product') }}
                             </p>
                             <p class="text-lg font-bold text-gray-900 dark:text-white">
                                 {{ $reportData['product_name'] }}
@@ -38,13 +38,13 @@
                         {{-- Expiration Date --}}
                         <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.lot_trace.summary.expiration_date') }}
+                                {{ __('inventory::inventory_reports.lot_trace.summary.expiration_date') }}
                             </p>
                             <p class="text-lg font-bold text-gray-900 dark:text-white">
                                 @if($reportData['expiration_date'])
                                     {{ Carbon::parse($reportData['expiration_date'])->format('M d, Y') }}
                                 @else
-                                    {{ __('inventory_reports.lot_trace.no_expiration') }}
+                                    {{ __('inventory::inventory_reports.lot_trace.no_expiration') }}
                                 @endif
                             </p>
                         </div>
@@ -52,7 +52,7 @@
                         {{-- Current Quantity --}}
                         <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.lot_trace.summary.current_quantity') }}
+                                {{ __('inventory::inventory_reports.lot_trace.summary.current_quantity') }}
                             </p>
                             <p class="text-lg font-bold text-gray-900 dark:text-white">
                                 {{ number_format($reportData['current_quantity'], 4) }}
@@ -62,7 +62,7 @@
                         {{-- Total Value --}}
                         <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.lot_trace.summary.total_value') }}
+                                {{ __('inventory::inventory_reports.lot_trace.summary.total_value') }}
                             </p>
                             <p class="text-lg font-bold text-gray-900 dark:text-white">
                                 {{ $reportData['total_value']->formatTo(app()->getLocale()) }}
@@ -84,13 +84,13 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.lot_trace.movements.incoming') }}
+                                {{ __('inventory::inventory_reports.lot_trace.movements.incoming') }}
                             </p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
                                 {{ number_format($totalIncoming, 2) }}
                             </p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">
-                                {{ count($movementsByType['incoming']) }} {{ __('inventory_reports.lot_trace.movements.count') }}
+                                {{ count($movementsByType['incoming']) }} {{ __('inventory::inventory_reports.lot_trace.movements.count') }}
                             </p>
                         </div>
                     </div>
@@ -104,7 +104,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.lot_trace.movements.outgoing') }}
+                                {{ __('inventory::inventory_reports.lot_trace.movements.outgoing') }}
                             </p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
                                 {{ number_format($totalOutgoing, 2) }}
@@ -124,7 +124,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.lot_trace.movements.internal') }}
+                                {{ __('inventory::inventory_reports.lot_trace.movements.internal') }}
                             </p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
                                 {{ number_format($totalInternal, 2) }}
@@ -143,7 +143,7 @@
             <x-filament::card>
                 <div class="space-y-4">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        {{ __('inventory_reports.lot_trace.movements.title') }}
+                        {{ __('inventory::inventory_reports.lot_trace.movements.title') }}
                     </h3>
 
                     <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
@@ -152,35 +152,35 @@
                             <tr>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.lot_trace.movements.date') }}
+                                    {{ __('inventory::inventory_reports.lot_trace.movements.date') }}
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.lot_trace.movements.type') }}
+                                    {{ __('inventory::inventory_reports.lot_trace.movements.type') }}
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.lot_trace.movements.quantity') }}
+                                    {{ __('inventory::inventory_reports.lot_trace.movements.quantity') }}
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.lot_trace.movements.from_location') }}
+                                    {{ __('inventory::inventory_reports.lot_trace.movements.from_location') }}
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.lot_trace.movements.to_location') }}
+                                    {{ __('inventory::inventory_reports.lot_trace.movements.to_location') }}
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.lot_trace.movements.reference') }}
+                                    {{ __('inventory::inventory_reports.lot_trace.movements.reference') }}
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.lot_trace.movements.valuation_amount') }}
+                                    {{ __('inventory::inventory_reports.lot_trace.movements.valuation_amount') }}
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.lot_trace.movements.journal_entry') }}
+                                    {{ __('inventory::inventory_reports.lot_trace.movements.journal_entry') }}
                                 </th>
                             </tr>
                             </thead>
@@ -250,10 +250,10 @@
                 <div class="text-center py-8">
                     <x-heroicon-o-magnifying-glass class="mx-auto h-12 w-12 text-gray-400"/>
                     <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                        {{ __('inventory_reports.lot_trace.no_selection') }}
+                        {{ __('inventory::inventory_reports.lot_trace.no_selection') }}
                     </h3>
                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        {{ __('inventory_reports.lot_trace.no_selection_description') }}
+                        {{ __('inventory::inventory_reports.lot_trace.no_selection_description') }}
                     </p>
                 </div>
             </x-filament::card>
@@ -265,10 +265,10 @@
                 <div class="text-center py-8">
                     <x-heroicon-o-exclamation-triangle class="mx-auto h-12 w-12 text-gray-400"/>
                     <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                        {{ __('inventory_reports.lot_trace.no_movements') }}
+                        {{ __('inventory::inventory_reports.lot_trace.no_movements') }}
                     </h3>
                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        {{ __('inventory_reports.lot_trace.no_movements_description') }}
+                        {{ __('inventory::inventory_reports.lot_trace.no_movements_description') }}
                     </p>
                 </div>
             </x-filament::card>

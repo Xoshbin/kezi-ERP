@@ -21,7 +21,7 @@ use Modules\Foundation\Exceptions\DeletionNotAllowedException;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillLineAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 
-uses(\Tests\TestCase::class, RefreshDatabase::class, WithConfiguredCompany::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();

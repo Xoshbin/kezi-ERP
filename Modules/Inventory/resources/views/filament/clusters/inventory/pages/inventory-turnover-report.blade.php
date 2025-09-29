@@ -16,7 +16,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.turnover.summary.total_cogs') }}
+                                {{ __('inventory::inventory_reports.turnover.summary.total_cogs') }}
                             </p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
                                 {{ $reportData['total_cogs']->formatTo(app()->getLocale()) }}
@@ -33,7 +33,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.turnover.summary.average_inventory') }}
+                                {{ __('inventory::inventory_reports.turnover.summary.average_inventory') }}
                             </p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
                                 {{ $reportData['average_inventory_value']->formatTo(app()->getLocale()) }}
@@ -50,13 +50,13 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.turnover.summary.turnover_ratio') }}
+                                {{ __('inventory::inventory_reports.turnover.summary.turnover_ratio') }}
                             </p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
                                 {{ number_format($reportData['inventory_turnover_ratio'], 2) }}x
                             </p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.turnover.annualized') }}: {{ number_format($annualizedTurnover, 2) }}x
+                                {{ __('inventory::inventory_reports.turnover.annualized') }}: {{ number_format($annualizedTurnover, 2) }}x
                             </p>
                         </div>
                     </div>
@@ -70,13 +70,13 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.turnover.summary.days_sales_inventory') }}
+                                {{ __('inventory::inventory_reports.turnover.summary.days_sales_inventory') }}
                             </p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
                                 {{ number_format($reportData['days_sales_inventory'], 0) }}
                             </p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.turnover.days') }}
+                                {{ __('inventory::inventory_reports.turnover.days') }}
                             </p>
                         </div>
                     </div>
@@ -89,13 +89,13 @@
             <x-filament::card>
                 <div class="space-y-4">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        {{ __('inventory_reports.turnover.period_info.title') }}
+                        {{ __('inventory::inventory_reports.turnover.period_info.title') }}
                     </h3>
 
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                         <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.turnover.period_info.start_date') }}
+                                {{ __('inventory::inventory_reports.turnover.period_info.start_date') }}
                             </p>
                             <p class="text-lg font-bold text-gray-900 dark:text-white">
                                 {{ $reportData['period_start']->format('M d, Y') }}
@@ -104,7 +104,7 @@
 
                         <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.turnover.period_info.end_date') }}
+                                {{ __('inventory::inventory_reports.turnover.period_info.end_date') }}
                             </p>
                             <p class="text-lg font-bold text-gray-900 dark:text-white">
                                 {{ $reportData['period_end']->format('M d, Y') }}
@@ -113,7 +113,7 @@
 
                         <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.turnover.period_info.period_length') }}
+                                {{ __('inventory::inventory_reports.turnover.period_info.period_length') }}
                             </p>
                             <p class="text-lg font-bold text-gray-900 dark:text-white">
                                 {{ $periodLength }} {{ __('inventory_reports.turnover.days') }}
@@ -129,7 +129,7 @@
             <x-filament::card>
                 <div class="space-y-4">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        {{ __('inventory_reports.turnover.analysis.title') }}
+                        {{ __('inventory::inventory_reports.turnover.analysis.title') }}
                     </h3>
 
                     <div class="p-6 rounded-lg border-2
@@ -163,7 +163,7 @@
                                     @elseif($turnoverAnalysis['color'] === 'info') text-blue-700 dark:text-blue-300
                                     @elseif($turnoverAnalysis['color'] === 'warning') text-yellow-700 dark:text-yellow-300
                                     @else text-red-700 dark:text-red-300 @endif">
-                                    {{ __('inventory_reports.turnover.analysis.ratio_explanation', ['ratio' => number_format($reportData['inventory_turnover_ratio'], 2)]) }}
+                                    {{ __('inventory::inventory_reports.turnover.analysis.ratio_explanation', ['ratio' => number_format($reportData['inventory_turnover_ratio'], 2)]) }}
                                 </p>
                             </div>
                         </div>
@@ -175,11 +175,11 @@
                             <div class="flex items-center space-x-2">
                                 <x-heroicon-o-check-circle class="w-5 h-5 text-green-600" />
                                 <span class="text-sm font-medium text-green-900 dark:text-green-100">
-                                    {{ __('inventory_reports.turnover.analysis.excellent') }}
+                                    {{ __('inventory::inventory_reports.turnover.analysis.excellent') }}
                                 </span>
                             </div>
                             <p class="text-xs text-green-700 dark:text-green-300 mt-1">
-                                {{ __('inventory_reports.turnover.benchmarks.excellent') }}
+                                {{ __('inventory::inventory_reports.turnover.benchmarks.excellent') }}
                             </p>
                         </div>
 
@@ -187,11 +187,11 @@
                             <div class="flex items-center space-x-2">
                                 <x-heroicon-o-information-circle class="w-5 h-5 text-blue-600" />
                                 <span class="text-sm font-medium text-blue-900 dark:text-blue-100">
-                                    {{ __('inventory_reports.turnover.analysis.good') }}
+                                    {{ __('inventory::inventory_reports.turnover.analysis.good') }}
                                 </span>
                             </div>
                             <p class="text-xs text-blue-700 dark:text-blue-300 mt-1">
-                                {{ __('inventory_reports.turnover.benchmarks.good') }}
+                                {{ __('inventory::inventory_reports.turnover.benchmarks.good') }}
                             </p>
                         </div>
 
@@ -199,11 +199,11 @@
                             <div class="flex items-center space-x-2">
                                 <x-heroicon-o-exclamation-triangle class="w-5 h-5 text-yellow-600" />
                                 <span class="text-sm font-medium text-yellow-900 dark:text-yellow-100">
-                                    {{ __('inventory_reports.turnover.analysis.average') }}
+                                    {{ __('inventory::inventory_reports.turnover.analysis.average') }}
                                 </span>
                             </div>
                             <p class="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
-                                {{ __('inventory_reports.turnover.benchmarks.average') }}
+                                {{ __('inventory::inventory_reports.turnover.benchmarks.average') }}
                             </p>
                         </div>
 
@@ -211,11 +211,11 @@
                             <div class="flex items-center space-x-2">
                                 <x-heroicon-o-x-circle class="w-5 h-5 text-red-600" />
                                 <span class="text-sm font-medium text-red-900 dark:text-red-100">
-                                    {{ __('inventory_reports.turnover.analysis.poor') }}
+                                    {{ __('inventory::inventory_reports.turnover.analysis.poor') }}
                                 </span>
                             </div>
                             <p class="text-xs text-red-700 dark:text-red-300 mt-1">
-                                {{ __('inventory_reports.turnover.benchmarks.poor') }}
+                                {{ __('inventory::inventory_reports.turnover.benchmarks.poor') }}
                             </p>
                         </div>
                     </div>
@@ -229,10 +229,10 @@
                 <div class="text-center py-8">
                     <x-heroicon-o-arrow-path class="mx-auto h-12 w-12 text-gray-400" />
                     <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                        {{ __('inventory_reports.turnover.no_data') }}
+                        {{ __('inventory::inventory_reports.turnover.no_data') }}
                     </h3>
                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        {{ __('inventory_reports.turnover.no_data_description') }}
+                        {{ __('inventory::inventory_reports.turnover.no_data_description') }}
                     </p>
                 </div>
             </x-filament::card>

@@ -20,7 +20,7 @@ class AuditLogFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory()->create()->id,
+            'user_id' => User::factory(),
             'event_type' => $this->faker->randomElement(['created', 'updated', 'deleted']),
             'auditable_type' => $this->faker->randomElement(['Modules\Foundation\Models\Post', 'Modules\Foundation\Models\User', 'Modules\Foundation\Models\Order']),
             'auditable_id' => $this->faker->numberBetween(1, 1000),

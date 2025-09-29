@@ -6,6 +6,10 @@ use Modules\Sales\Services\InvoiceService;
 use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Modules\Foundation\Enums\Settings\NumberingType;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
+
 describe('Invoice Numbering Integration', function () {
     uses(WithConfiguredCompany::class);
 

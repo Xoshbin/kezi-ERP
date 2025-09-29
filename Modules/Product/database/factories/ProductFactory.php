@@ -24,7 +24,7 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id' => fn() => Company::factory()->create()->id,
+            'company_id' => Company::factory(),
             'name' => $this->faker->word(),
             'sku' => strtoupper($this->faker->unique()->bothify('SKU-####')),
             'description' => $this->faker->sentence(),
@@ -32,7 +32,7 @@ class ProductFactory extends Factory
             'type' => \Modules\Product\Enums\Products\ProductType::Service, // Default to Service to avoid inventory complications in tests
             'inventory_valuation_method' => ValuationMethod::AVCO,
             'income_account_id' => function (array $attributes) {
-                return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
+                return Account::factory()->state(['company_id' => $attributes['company_id']])->create()->id;
             },
             'expense_account_id' => function (array $attributes) {
                 return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
@@ -47,7 +47,7 @@ class ProductFactory extends Factory
             },
             'default_stock_input_account_id' => function (array $attributes) {
                 // Ensure storable products have a stock input account by default
-                return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
+                return Account::factory()->state(['company_id' => $attributes['company_id']])->create()->id;
             },
             'average_cost' => Money::of($this->faker->randomFloat(2, 50, 500), 'USD'), // Default positive average cost
             'is_active' => $this->faker->boolean(),
