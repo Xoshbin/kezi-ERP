@@ -7,6 +7,9 @@ use App\Models\Company;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
 use Modules\Foundation\Services\CurrencyConverterService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+
 
 test('can convert between same currency', function () {
     $company = Company::factory()->create();

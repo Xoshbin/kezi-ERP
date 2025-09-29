@@ -54,27 +54,27 @@ class BankStatementResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('bank_statement.bank_statement');
+        return __('accounting::bank_statement.bank_statement');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('bank_statement.bank_statements');
+        return __('accounting::bank_statement.bank_statements');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('bank_statement.bank_statements');
+        return __('accounting::bank_statement.bank_statements');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make(__('bank_statement.statement_information'))
-                ->description(__('bank_statement.statement_information_description'))
+            Section::make(__('accounting::bank_statement.statement_information'))
+                ->description(__('accounting::bank_statement.statement_information_description'))
                 ->schema([
                     TranslatableSelect::forModel('currency_id', Currency::class, 'name')
-                        ->label(__('bank_statement.currency'))
+                        ->label(__('accounting::bank_statement.currency'))
                         ->searchable()
                         ->preload()
                         ->required()
@@ -110,7 +110,7 @@ class BankStatementResource extends Resource
                         ])
                         ->createOptionModalHeading(__('common.modal_title_create_currency')),
                     Select::make('journal_id')
-                        ->label(__('bank_statement.bank_journal'))
+                        ->label(__('accounting::bank_statement.bank_journal'))
                         ->options(function (): array {
                             $tenant = Filament::getTenant();
                             if (! $tenant) {
@@ -156,21 +156,21 @@ class BankStatementResource extends Resource
                             };
                         }),
                     TextInput::make('reference')
-                        ->label(__('bank_statement.reference'))
+                        ->label(__('accounting::bank_statement.reference'))
                         ->required()
                         ->maxLength(255)
                         ->columnSpan(2),
                     DatePicker::make('date')
-                        ->label(__('bank_statement.date'))
+                        ->label(__('accounting::bank_statement.date'))
                         ->required()
                         ->columnSpan(2),
                     MoneyInput::make('starting_balance')
-                        ->label(__('bank_statement.starting_balance'))
+                        ->label(__('accounting::bank_statement.starting_balance'))
                         ->currencyField('currency_id')
                         ->required()
                         ->columnSpan(2),
                     MoneyInput::make('ending_balance')
-                        ->label(__('bank_statement.ending_balance'))
+                        ->label(__('accounting::bank_statement.ending_balance'))
                         ->currencyField('currency_id')
                         ->required()
                         ->columnSpan(2),
@@ -178,40 +178,40 @@ class BankStatementResource extends Resource
                 ->columns(4)
                 ->columnSpanFull(),
 
-            Section::make(__('bank_statement.statement_lines'))
-                ->description(__('bank_statement.statement_lines_description'))
+            Section::make(__('accounting::bank_statement.statement_lines'))
+                ->description(__('accounting::bank_statement.statement_lines_description'))
                 ->schema([
                     Repeater::make('bankStatementLines')
-                        ->label(__('bank_statement.statement_lines'))
+                        ->label(__('accounting::bank_statement.statement_lines'))
                         ->table([
-                            TableColumn::make(__('bank_statement.line_date'))->width('15%'),
-                            TableColumn::make(__('bank_statement.description'))->width('20%'),
-                            TableColumn::make(__('bank_statement.partner'))->width('20%'),
-                            TableColumn::make(__('bank_statement.amount'))->width('15%'),
-                            TableColumn::make(__('bank_statement.foreign_currency'))->width('20%'),
-                            TableColumn::make(__('bank_statement.amount_in_foreign_currency'))->width('10%'),
+                            TableColumn::make(__('accounting::bank_statement.line_date'))->width('15%'),
+                            TableColumn::make(__('accounting::bank_statement.description'))->width('20%'),
+                            TableColumn::make(__('accounting::bank_statement.partner'))->width('20%'),
+                            TableColumn::make(__('accounting::bank_statement.amount'))->width('15%'),
+                            TableColumn::make(__('accounting::bank_statement.foreign_currency'))->width('20%'),
+                            TableColumn::make(__('accounting::bank_statement.amount_in_foreign_currency'))->width('10%'),
                         ])
                         ->live()
                         ->reorderable(true)
                         ->minItems(1)
                         ->schema([
                             DatePicker::make('date')
-                                ->label(__('bank_statement.line_date'))
+                                ->label(__('accounting::bank_statement.line_date'))
                                 ->required()
                                 ->columnSpan(2),
                             TextInput::make('description')
-                                ->label(__('bank_statement.description'))
+                                ->label(__('accounting::bank_statement.description'))
                                 ->required()
                                 ->maxLength(255)
                                 ->columnSpan(4),
                             TranslatableSelect::forModel('partner_id', Partner::class, 'name')
-                                ->label(__('bank_statement.partner'))
+                                ->label(__('accounting::bank_statement.partner'))
                                 ->searchable()
                                 ->searchableFields(['name', 'email', 'contact_person'])
                                 ->preload()
                                 ->columnSpan(3),
                             MoneyInput::make('amount')
-                                ->label(__('bank_statement.amount'))
+                                ->label(__('accounting::bank_statement.amount'))
                                 ->prefix(function ($get) {
                                     // Try multiple path strategies to get the currency
                                     $currencyId = $get('../../../currency_id')
@@ -233,10 +233,10 @@ class BankStatementResource extends Resource
                                 ->live()
                                 ->reactive()
                                 ->required()
-                                ->helperText(__('bank_statement.amount_in_statement_currency'))
+                                ->helperText(__('accounting::bank_statement.amount_in_statement_currency'))
                                 ->columnSpan(3),
                             TranslatableSelect::forModel('foreign_currency_id', Currency::class, 'name')
-                                ->label(__('bank_statement.foreign_currency'))
+                                ->label(__('accounting::bank_statement.foreign_currency'))
                                 ->searchable()
                                 ->preload()
                                 ->live()
@@ -255,17 +255,17 @@ class BankStatementResource extends Resource
                                             return [$currency->id => "{$name} ({$currency->code})"];
                                         });
                                 })
-                                ->helperText(__('bank_statement.foreign_currency_help'))
+                                ->helperText(__('accounting::bank_statement.foreign_currency_help'))
                                 ->columnSpan(3),
                             MoneyInput::make('amount_in_foreign_currency')
-                                ->label(__('bank_statement.amount_in_foreign_currency'))
+                                ->label(__('accounting::bank_statement.amount_in_foreign_currency'))
                                 ->currencyField('foreign_currency_id')
-                                ->visible(fn ($get) => $get('foreign_currency_id'))
-                                ->helperText(__('bank_statement.original_transaction_amount'))
+                                ->visible(fn($get) => $get('foreign_currency_id'))
+                                ->helperText(__('accounting::bank_statement.original_transaction_amount'))
                                 ->columnSpan(3),
                         ])
                         ->columns(18)
-                        ->addActionLabel(__('bank_statement.add_transaction_line'))
+                        ->addActionLabel(__('accounting::bank_statement.add_transaction_line'))
                         ->defaultItems(1),
                 ])
                 ->columnSpanFull(),
@@ -278,7 +278,7 @@ class BankStatementResource extends Resource
             ->columns([
                 // Reference (most important for identification)
                 TextColumn::make('reference')
-                    ->label(__('bank_statement.reference'))
+                    ->label(__('accounting::bank_statement.reference'))
                     ->searchable()
                     ->sortable()
                     ->weight('bold')
@@ -286,42 +286,42 @@ class BankStatementResource extends Resource
 
                 // Bank Journal (critical for identification)
                 TextColumn::make('journal.name')
-                    ->label(__('bank_statement.bank_journal'))
+                    ->label(__('accounting::bank_statement.bank_journal'))
                     ->searchable()
                     ->sortable()
                     ->weight('medium'),
 
                 // Date (important for chronological sorting)
                 TextColumn::make('date')
-                    ->label(__('bank_statement.date'))
+                    ->label(__('accounting::bank_statement.date'))
                     ->date()
                     ->sortable(),
 
                 // Currency (important for multi-currency)
                 TextColumn::make('currency.code')
-                    ->label(__('bank_statement.currency'))
+                    ->label(__('accounting::bank_statement.currency'))
                     ->badge()
                     ->sortable(),
 
                 // Starting Balance (critical financial information)
                 MoneyColumn::make('starting_balance')
-                    ->label(__('bank_statement.starting_balance'))
+                    ->label(__('accounting::bank_statement.starting_balance'))
                     ->sortable()
                     ->weight('medium'),
 
                 // Ending Balance (critical financial information)
                 MoneyColumn::make('ending_balance')
-                    ->label(__('bank_statement.ending_balance'))
+                    ->label(__('accounting::bank_statement.ending_balance'))
                     ->sortable()
                     ->weight('bold')
                     ->size('lg'),
                 TextColumn::make('created_at')
-                    ->label(__('bank_statement.created_at'))
+                    ->label(__('accounting::bank_statement.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label(__('bank_statement.updated_at'))
+                    ->label(__('accounting::bank_statement.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -332,11 +332,11 @@ class BankStatementResource extends Resource
             ->recordActions([
                 EditAction::make(),
                 Action::make('reconcile')
-                    ->label(__('bank_statement.reconcile'))
+                    ->label(__('accounting::bank_statement.reconcile'))
                     ->icon('heroicon-o-scale')
                     ->color('success')
-                    ->url(fn (BankStatement $record): string => static::getUrl('reconcile', ['record' => $record]))
-                    ->visible(fn (): bool => Filament::getTenant()->enable_reconciliation ?? false),
+                    ->url(fn(BankStatement $record): string => static::getUrl('reconcile', ['record' => $record]))
+                    ->visible(fn(): bool => Filament::getTenant()->enable_reconciliation ?? false),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

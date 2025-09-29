@@ -13,7 +13,7 @@ use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Purcha
 use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\EditPurchaseOrder;
 use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\CreatePurchaseOrder;
 
-uses(Tests\TestCase::class, RefreshDatabase::class, WithConfiguredCompany::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();

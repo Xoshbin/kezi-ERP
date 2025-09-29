@@ -20,12 +20,12 @@ class InventoryTurnoverChartWidget extends ChartWidget
 
     public function getHeading(): ?string
     {
-        return __('inventory_dashboard.charts.turnover.title');
+        return __('inventory::inventory_dashboard.charts.turnover.title');
     }
 
     public function getDescription(): ?string
     {
-        return __('inventory_dashboard.charts.turnover.description');
+        return __('inventory::inventory_dashboard.charts.turnover.description');
     }
 
     protected function getData(): array
@@ -74,14 +74,14 @@ class InventoryTurnoverChartWidget extends ChartWidget
             return [
                 'datasets' => [
                     [
-                        'label' => __('inventory_dashboard.charts.turnover.receipts_label'),
+                        'label' => __('inventory::inventory_dashboard.charts.turnover.receipts_label'),
                         'data' => $receipts,
                         'backgroundColor' => '#10b981',
                         'borderColor' => '#10b981',
                         'borderWidth' => 2,
                     ],
                     [
-                        'label' => __('inventory_dashboard.charts.turnover.deliveries_label'),
+                        'label' => __('inventory::inventory_dashboard.charts.turnover.deliveries_label'),
                         'data' => $deliveries,
                         'backgroundColor' => '#f59e0b',
                         'borderColor' => '#f59e0b',

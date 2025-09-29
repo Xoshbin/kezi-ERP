@@ -8,7 +8,7 @@ use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 describe('VendorBill Numbering Integration', function () {
-    uses(Tests\TestCase::class, RefreshDatabase::class, WithConfiguredCompany::class);
+    uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
     beforeEach(function () {
         $this->setupWithConfiguredCompany();

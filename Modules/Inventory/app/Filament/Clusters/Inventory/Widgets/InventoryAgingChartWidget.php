@@ -23,12 +23,12 @@ class InventoryAgingChartWidget extends ChartWidget
 
     public function getHeading(): ?string
     {
-        return __('inventory_dashboard.charts.aging.title');
+        return __('inventory::inventory_dashboard.charts.aging.title');
     }
 
     public function getDescription(): ?string
     {
-        return __('inventory_dashboard.charts.aging.description');
+        return __('inventory::inventory_dashboard.charts.aging.description');
     }
 
     protected function getData(): array
@@ -70,7 +70,7 @@ class InventoryAgingChartWidget extends ChartWidget
             return [
                 'datasets' => [
                     [
-                        'label' => __('inventory_dashboard.charts.aging.quantity_label'),
+                        'label' => __('inventory::inventory_dashboard.charts.aging.quantity_label'),
                         'data' => $quantities,
                         'backgroundColor' => $colors,
                         'borderColor' => $colors,

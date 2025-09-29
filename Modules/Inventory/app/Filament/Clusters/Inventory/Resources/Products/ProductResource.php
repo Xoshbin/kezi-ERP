@@ -71,9 +71,19 @@ class ProductResource extends Resource
         return __('product.plural_label');
     }
 
-    public static function getNavigationLabel(): string
+    public static function getLabel(): ?string
+    {
+        return __('product.label');
+    }
+
+    public static function getPluralLabel(): ?string
     {
         return __('product.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('product.label');
     }
 
     public static function form(Schema $schema): Schema

@@ -16,7 +16,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Enums\Accounting\JournalType;
 use Modules\Accounting\Services\BankReconciliationService;
 
-uses(Tests\TestCase::class, RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 // Setup a default company, user, and journal for all tests
 beforeEach(function () {

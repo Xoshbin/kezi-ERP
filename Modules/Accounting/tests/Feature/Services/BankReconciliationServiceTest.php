@@ -15,7 +15,7 @@ use Modules\Payment\Enums\Payments\PaymentStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Enums\Accounting\JournalType;
 
-uses(Tests\TestCase::class, RefreshDatabase::class, WithConfiguredCompany::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();

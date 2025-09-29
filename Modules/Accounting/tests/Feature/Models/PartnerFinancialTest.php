@@ -1,5 +1,9 @@
 <?php
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+
 use Brick\Money\Money;
 use App\Models\Company;
 use Illuminate\Support\Carbon;

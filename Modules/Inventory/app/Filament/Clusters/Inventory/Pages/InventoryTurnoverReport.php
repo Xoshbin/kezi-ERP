@@ -44,17 +44,17 @@ class InventoryTurnoverReport extends Page implements HasForms
 
     public static function getNavigationLabel(): string
     {
-        return __('inventory_reports.turnover.navigation_label');
+        return __('inventory::inventory_reports.turnover.navigation_label');
     }
 
     public function getTitle(): string
     {
-        return __('inventory_reports.turnover.title');
+        return __('inventory::inventory_reports.turnover.title');
     }
 
     public function getHeading(): string
     {
-        return __('inventory_reports.turnover.heading');
+        return __('inventory::inventory_reports.turnover.heading');
     }
 
     public function mount(): void
@@ -71,10 +71,10 @@ class InventoryTurnoverReport extends Page implements HasForms
     {
         return $schema
             ->components([
-                Section::make(__('inventory_reports.turnover.filters.title'))
+                Section::make(__('inventory::inventory_reports.turnover.filters.title'))
                     ->schema([
                         DatePicker::make('start_date')
-                            ->label(__('inventory_reports.turnover.filters.start_date'))
+                            ->label(__('inventory::inventory_reports.turnover.filters.start_date'))
                             ->required()
                             ->default(now()->startOfYear())
                             ->maxDate(now())
@@ -82,7 +82,7 @@ class InventoryTurnoverReport extends Page implements HasForms
                             ->afterStateUpdated(fn() => $this->generateReport()),
 
                         DatePicker::make('end_date')
-                            ->label(__('inventory_reports.turnover.filters.end_date'))
+                            ->label(__('inventory::inventory_reports.turnover.filters.end_date'))
                             ->required()
                             ->default(now())
                             ->maxDate(now())
@@ -90,7 +90,7 @@ class InventoryTurnoverReport extends Page implements HasForms
                             ->afterStateUpdated(fn() => $this->generateReport()),
 
                         Select::make('product_ids')
-                            ->label(__('inventory_reports.turnover.filters.products'))
+                            ->label(__('inventory::inventory_reports.turnover.filters.products'))
                             ->options(function () {
                                 return Product::query()
                                     ->where('company_id', Filament::getTenant()?->getKey())
@@ -192,7 +192,7 @@ class InventoryTurnoverReport extends Page implements HasForms
     {
         return [
             Action::make('export')
-                ->label(__('inventory_reports.turnover.actions.export'))
+                ->label(__('inventory::inventory_reports.turnover.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->disabled(fn() => !$this->reportData)
                 ->action(function () {
@@ -213,7 +213,7 @@ class InventoryTurnoverReport extends Page implements HasForms
                         $filename = 'inventory-turnover-' . now()->format('Y-m-d-H-i-s') . '.csv';
 
                         Notification::make()
-                            ->title(__('inventory_reports.turnover.export_started'))
+                            ->title(__('inventory::inventory_reports.turnover.export_started'))
                             ->success()
                             ->send();
 
@@ -224,7 +224,7 @@ class InventoryTurnoverReport extends Page implements HasForms
                         ]);
                     } catch (Exception $e) {
                         Notification::make()
-                            ->title(__('inventory_reports.turnover.export_failed'))
+                            ->title(__('inventory::inventory_reports.turnover.export_failed'))
                             ->body($e->getMessage())
                             ->danger()
                             ->send();
@@ -232,7 +232,7 @@ class InventoryTurnoverReport extends Page implements HasForms
                 }),
 
             Action::make('refresh')
-                ->label(__('inventory_reports.turnover.actions.refresh'))
+                ->label(__('inventory::inventory_reports.turnover.actions.refresh'))
                 ->icon('heroicon-o-arrow-path')
                 ->action('generateReport'),
         ];
