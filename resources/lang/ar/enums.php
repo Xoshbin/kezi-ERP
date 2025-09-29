@@ -78,6 +78,15 @@ return [
         'standard_price' => 'السعر المعياري',
     ],
 
+    'cost_source' => [
+        'vendor_bill' => 'فاتورة المورد',
+        'average_cost' => 'متوسط التكلفة',
+        'cost_layer' => 'طبقة التكلفة',
+        'unit_price' => 'سعر الوحدة',
+        'manual' => 'إدخال يدوي',
+        'company_default' => 'افتراضي الشركة',
+    ],
+
     'partner_type' => [
         'customer' => 'عميل',
         'vendor' => 'مورد',
@@ -175,5 +184,14 @@ return [
     'budget_status' => [
         'draft' => 'مسودة',
         'finalized' => 'نهائي',
+    ],
+
+    'custom_field_type' => [
+        'text' => 'نص',
+        'textarea' => 'منطقة نص',
+        'number' => 'رقم',
+        'boolean' => 'نعم/لا',
+        'date' => 'تاريخ',
+        'select' => 'اختيار',
     ],
 ];

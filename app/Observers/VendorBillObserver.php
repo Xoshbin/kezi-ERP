@@ -4,7 +4,6 @@ namespace App\Observers;
 
 use App\Enums\Inventory\StockMoveStatus;
 use App\Enums\Inventory\StockMoveType;
-use App\Enums\Products\ProductType;
 use App\Enums\Purchases\VendorBillStatus;
 use App\Models\StockMove;
 use App\Models\VendorBill;
@@ -21,14 +20,10 @@ class VendorBillObserver
     public function updated(VendorBill $vendorBill): void
     {
         // Only trigger when the status is first changed to 'posted'.
+        // Business logic for creating stock moves now lives in VendorBillService::post().
+        // Observers must not create moves or update valuation; keep side effects only.
         if ($vendorBill->wasChanged('status') && $vendorBill->status === VendorBillStatus::Posted) {
-
-            foreach ($vendorBill->lines as $line) {
-                // Only process lines with storable products.
-                if ($line->product?->type === ProductType::Storable) {
-                    $this->processStorableProductLine($vendorBill, $line);
-                }
-            }
+            // No-op by design
         }
     }
 
@@ -37,6 +32,9 @@ class VendorBillObserver
         if (! $line->product) {
             return;
         }
+
+        // Load tax relationship to check if it should be capitalized
+        $line->load('tax');
 
         $product = $line->product;
         $company = $vendorBill->company->fresh();
@@ -84,6 +82,24 @@ class VendorBillObserver
                     $costCurrency
                 );
             }
+        }
+
+        // Include capitalized tax in the unit cost if tax is non-recoverable
+        if ($line->tax_id && $line->total_line_tax->isPositive() && $line->tax && !$line->tax->is_recoverable) {
+            // Convert tax to company currency if needed
+            $taxInCompanyCurrency = $line->total_line_tax_company_currency ?? $line->total_line_tax;
+            if (!$line->total_line_tax_company_currency && $vendorBill->currency_id !== $company->currency_id) {
+                $exchangeRate = $vendorBill->exchange_rate_at_creation ?? 1.0;
+                $taxInCompanyCurrency = Money::of(
+                    $line->total_line_tax->getAmount()->toFloat() * $exchangeRate,
+                    $costCurrency
+                );
+            }
+
+            // Add tax to unit price for cost calculation
+            $unitPriceInCompanyCurrency = $unitPriceInCompanyCurrency->plus(
+                $taxInCompanyCurrency->dividedBy($line->quantity)
+            );
         }
 
         $purchaseValue = $unitPriceInCompanyCurrency->multipliedBy($line->quantity);

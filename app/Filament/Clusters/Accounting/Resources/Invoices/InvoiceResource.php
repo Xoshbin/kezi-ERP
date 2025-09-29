@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Accounting\Resources\Invoices;
 use App\Actions\Payments\CreatePaymentAction;
 use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use App\DataTransferObjects\Payments\CreatePaymentDTO;
+use App\Enums\Accounting\TaxType;
 use App\Enums\Partners\PartnerType;
 use App\Enums\Payments\PaymentMethod;
 use App\Enums\Payments\PaymentType;
@@ -27,6 +28,8 @@ use App\Models\FiscalPosition;
 use App\Models\Invoice;
 use App\Models\Journal;
 use App\Models\Product;
+use App\Enums\Products\ProductType;
+use App\Enums\Accounting\AccountType;
 use App\Models\Tax;
 use App\Rules\NotInLockedPeriod;
 use App\Services\InvoiceService;
@@ -145,23 +148,9 @@ class InvoiceResource extends Resource
                             return $tenant instanceof Company ? $tenant->currency_id : null;
                         })
                         ->afterStateUpdated(function (callable $set, $state) {
+                            // Clear any manually set exchange rate when currency changes
                             if ($state) {
-                                $currency = Currency::find($state);
-                                // Ensure we have a single Currency model, not a collection
-                                if ($currency instanceof Collection) {
-                                    $currency = $currency->first();
-                                }
-                                $company = Filament::getTenant();
-
-                                if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
-                                    // Get latest exchange rate for this company
-                                    $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
-                                    if ($latestRate) {
-                                        $set('current_exchange_rate', $latestRate);
-                                    }
-                                } else {
-                                    $set('current_exchange_rate', 1.0);
-                                }
+                                $set('exchange_rate_at_creation', null);
                             }
                         })
                         ->createOptionForm([
@@ -193,18 +182,60 @@ class InvoiceResource extends Resource
                                 ->modalWidth('lg');
                         }),
 
-                    TextInput::make('current_exchange_rate')
-                        ->label(__('invoice.current_exchange_rate'))
+                    TextInput::make('exchange_rate_at_creation')
+                        ->label(__('invoice.exchange_rate'))
                         ->numeric()
-                        ->disabled()
-                        ->dehydrated(false)
+                        ->step(0.000001)
+                        ->minValue(0.000001)
+                        ->columnSpan(1)
                         ->visible(function (callable $get) {
                             $currencyId = $get('currency_id');
                             $company = Filament::getTenant();
 
                             return $currencyId && $company instanceof Company && $currencyId != $company->currency_id;
                         })
-                        ->helperText(__('invoice.exchange_rate_helper')),
+                        ->disabled(function (?Invoice $record) {
+                            return $record && $record->status !== InvoiceStatus::Draft;
+                        })
+                        ->helperText(function (callable $get, ?Invoice $record) {
+                            // If document is not draft, show locked message
+                            if ($record && $record->status !== InvoiceStatus::Draft) {
+                                return __('invoice.exchange_rate_locked_helper');
+                            }
+
+                            // Show current exchange rate as helper text
+                            $currencyId = $get('currency_id');
+                            $company = Filament::getTenant();
+
+                            if ($currencyId && $company instanceof Company && $currencyId != $company->currency_id) {
+                                $currency = \App\Models\Currency::find($currencyId);
+                                if ($currency) {
+                                    $latestRate = \App\Models\CurrencyRate::getLatestRate($currency->id, $company->id);
+                                    if ($latestRate) {
+                                        return __('invoice.exchange_rate_helper_with_current', ['rate' => number_format($latestRate, 6)]);
+                                    }
+                                }
+                            }
+
+                            return __('invoice.exchange_rate_manual_helper');
+                        })
+                        ->placeholder(function (callable $get) {
+                            // Show current rate as placeholder when creating new records
+                            $currencyId = $get('currency_id');
+                            $company = Filament::getTenant();
+
+                            if ($currencyId && $company instanceof Company && $currencyId != $company->currency_id) {
+                                $currency = \App\Models\Currency::find($currencyId);
+                                if ($currency) {
+                                    $latestRate = \App\Models\CurrencyRate::getLatestRate($currency->id, $company->id);
+                                    if ($latestRate) {
+                                        return number_format($latestRate, 6);
+                                    }
+                                }
+                            }
+
+                            return null;
+                        }),
                 ])
                 ->columns(4)
                 ->columnSpanFull(),
@@ -268,12 +299,20 @@ class InvoiceResource extends Resource
                                         }
                                         if ($product) {
                                             $set('description', $product->description);
-                                            $set('unit_price', $product->unit_price);
+                                            // Convert Money object to string for MoneyInput component
+                                            $unitPrice = $product->unit_price;
+                                            if ($unitPrice instanceof \Brick\Money\Money) {
+                                                $set('unit_price', $unitPrice->getAmount()->__toString());
+                                            } else {
+                                                $set('unit_price', $unitPrice);
+                                            }
                                             $set('income_account_id', $product->income_account_id);
                                         }
                                     }
                                 })
                                 ->createOptionForm([
+                                    Hidden::make('company_id')
+                                        ->default(fn () => Filament::getTenant()?->getKey()),
                                     TextInput::make('name')
                                         ->label(__('product.name'))
                                         ->required()
@@ -281,9 +320,53 @@ class InvoiceResource extends Resource
                                     TextInput::make('sku')
                                         ->label(__('product.sku'))
                                         ->maxLength(255),
+                                    Select::make('type')
+                                        ->label(__('product.type'))
+                                        ->required()
+                                        ->live()
+                                        ->options(
+                                            collect(ProductType::cases())
+                                                ->mapWithKeys(fn (ProductType $type) => [$type->value => $type->label()])
+                                        ),
                                     Textarea::make('description')
                                         ->label(__('product.description'))
                                         ->columnSpanFull(),
+                                    TranslatableSelect::make('default_inventory_account_id')
+                                        ->relationship('inventoryAccount', 'name')
+                                        ->label(__('product.default_inventory_account'))
+                                        ->searchable()
+                                        ->preload()
+                                        ->searchableFields(['name'])
+                                        ->visible(fn ($get) => $get('type') === ProductType::Storable->value)
+                                        ->required(fn ($get) => $get('type') === ProductType::Storable->value)
+                                        ->rules(['required_if:type,'.ProductType::Storable->value])
+                                        ->createOptionForm([
+                                            Hidden::make('company_id')
+                                                ->default(fn () => Filament::getTenant()?->getKey()),
+                                            TextInput::make('code')
+                                                ->label(__('account.code'))
+                                                ->required()
+                                                ->maxLength(255),
+                                            TextInput::make('name')
+                                                ->label(__('account.name'))
+                                                ->required()
+                                                ->maxLength(255),
+                                            Select::make('type')
+                                                ->label(__('account.type'))
+                                                ->required()
+                                                ->options(
+                                                    collect(AccountType::cases())
+                                                        ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                                                )
+                                                ->searchable(),
+                                            Toggle::make('is_deprecated')
+                                                ->label(__('account.is_deprecated'))
+                                                ->default(false),
+                                        ])
+                                        ->createOptionModalHeading(__('common.modal_title_create_account'))
+                                        ->createOptionAction(function (Action $action) {
+                                            return $action->modalWidth('lg');
+                                        }),
                                     MoneyInput::make('unit_price')
                                         ->label(__('product.unit_price'))
                                         ->currencyField('../../currency_id'),
@@ -316,16 +399,24 @@ class InvoiceResource extends Resource
                                 ->columnSpan(3),
                             TranslatableSelect::forModel('tax_id', Tax::class, 'name')
                                 ->label(__('invoice.tax'))
+                                ->options(function () {
+                                    return Tax::where('company_id', Filament::getTenant()?->getKey())
+                                        ->where('is_active', true)
+                                        ->pluck('name', 'id');
+                                })
                                 ->searchable()
                                 ->preload()
                                 ->createOptionForm([
-                                    Select::make('company_id')
-                                        ->relationship('company', 'name')
-                                        ->label(__('tax.company'))
-                                        ->required(),
+                                    Hidden::make('company_id')
+                                        ->default(fn() => Filament::getTenant()?->getKey()),
                                     Select::make('tax_account_id')
-                                        ->relationship('taxAccount', 'name')
+                                        ->options(function () {
+                                            return Account::where('company_id', Filament::getTenant()?->getKey())
+                                                ->where('is_deprecated', false)
+                                                ->pluck('name', 'id');
+                                        })
                                         ->label(__('tax.tax_account'))
+                                        ->searchable()
                                         ->required(),
                                     TextInput::make('name')
                                         ->label(__('tax.name'))
@@ -334,9 +425,19 @@ class InvoiceResource extends Resource
                                     TextInput::make('rate')
                                         ->label(__('tax.rate'))
                                         ->required()
-                                        ->numeric()
-                                        ->suffix('%'),
+                                        ->numeric(),
+                                    Select::make('type')
+                                        ->label(__('tax.type'))
+                                        ->options(collect(TaxType::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()]))
+                                        ->required(),
+                                    Toggle::make('is_active')
+                                        ->label(__('tax.is_active'))
+                                        ->default(true),
                                 ])
+                                ->createOptionUsing(function (array $data): int {
+                                    $tax = Tax::create($data);
+                                    return $tax->getKey();
+                                })
                                 ->createOptionModalHeading(__('common.modal_title_create_tax'))
                                 ->createOptionAction(function (Action $action) {
                                     return $action

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('rate'); // e.g., 0.15000 for 15%
             $table->string('type'); // 'sales', 'purchase', 'both'
             $table->boolean('is_active')->default(true);
+            $table->boolean('is_recoverable')->default(true); // Whether tax can be deducted as input tax or should be capitalized
             $table->json('label_on_invoices')->nullable();
             $table->timestamps();
         });

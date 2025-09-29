@@ -55,6 +55,19 @@ return [
     'created_at' => 'تاريخ الإنشاء',
     'updated_at' => 'تاريخ التحديث',
 
+    // Exchange Rate Fields
+    'current_exchange_rate' => 'سعر الصرف الحالي',
+    'exchange_rate_helper' => 'هذا هو سعر الصرف الحالي للعملة المحددة',
+    'exchange_rate_helper_with_current' => 'السعر الحالي: :rate. اتركه فارغاً لاستخدام السعر الحالي، أو أدخل سعراً مخصصاً.',
+    'exchange_rate' => 'سعر الصرف',
+    'exchange_rate_at_creation' => 'سعر الصرف عند الإنشاء',
+    'exchange_rate_locked_helper' => 'سعر الصرف مقفل للفواتير غير المسودة',
+    'exchange_rate_manual_helper' => 'حدد سعر صرف مخصص أو اتركه فارغاً لاستخدام السعر الحالي عند الترحيل',
+    'total_amount_company_currency' => 'المبلغ الإجمالي (عملة الشركة)',
+    'total_tax_company_currency' => 'إجمالي الضريبة (عملة الشركة)',
+    'payment_term' => 'شروط الدفع',
+    'reference' => 'المرجع',
+
     // Actions
     'confirm' => 'تأكيد',
     'confirm_invoice' => 'تأكيد الفاتورة',
@@ -68,6 +81,11 @@ return [
     'error_resetting_invoice_to_draft' => 'خطأ في إعادة الفاتورة إلى المسودة',
     'invoice_reset_to_draft' => 'تم إعادة الفاتورة إلى المسودة',
     'error_resetting_invoice' => 'خطأ في إعادة الفاتورة',
+
+
+    // Validation Messages
+    'validation_no_line_items' => 'لا يمكن تأكيد الفاتورة بدون بنود',
+    'validation_zero_total_amount' => 'لا يمكن تأكيد الفاتورة بمبلغ إجمالي صفر',
 
     // Payments Relation Manager
     'payments_relation_manager' => [

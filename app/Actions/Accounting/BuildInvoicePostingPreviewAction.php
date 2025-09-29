@@ -37,6 +37,20 @@ class BuildInvoicePostingPreviewAction
         $company = $invoice->company;
         $currencyCode = $invoice->currency->code;
 
+
+        // Validate business rules similar to vendor bills
+        if ($invoice->invoiceLines->isEmpty()) {
+            $msg = __('invoice.validation_no_line_items');
+            $errors[] = $msg;
+            $issues[] = ['type' => 'no_line_items', 'message' => $msg];
+        }
+
+        if ($invoice->total_amount->isZero()) {
+            $msg = __('invoice.validation_zero_total_amount');
+            $errors[] = $msg;
+            $issues[] = ['type' => 'zero_total_amount', 'message' => $msg];
+        }
+
         $arAccountId = $invoice->customer->receivable_account_id ?? $company->default_accounts_receivable_id;
         if (! $arAccountId) {
             $msg = 'Company default Accounts Receivable account is not configured.';

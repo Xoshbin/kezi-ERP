@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class StockMovesRelationManager extends RelationManager
 {
-    protected static string $relationship = 'stockMoves';
+    protected static string $relationship = 'stockMoveProductLines';
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
@@ -61,14 +61,14 @@ class StockMovesRelationManager extends RelationManager
                         ->required()
                         ->options(
                             collect(StockMoveType::cases())
-                                ->mapWithKeys(fn (StockMoveType $type) => [$type->value => $type->label()])
+                                ->mapWithKeys(fn(StockMoveType $type) => [$type->value => $type->label()])
                         ),
                     Select::make('status')
                         ->label(__('stock_move.status'))
                         ->required()
                         ->options(
                             collect(StockMoveStatus::cases())
-                                ->mapWithKeys(fn (StockMoveStatus $status) => [$status->value => $status->label()])
+                                ->mapWithKeys(fn(StockMoveStatus $status) => [$status->value => $status->label()])
                         )
                         ->default(StockMoveStatus::Draft->value),
                 ]),
@@ -110,8 +110,8 @@ class StockMovesRelationManager extends RelationManager
                 TextColumn::make('move_type')
                     ->label(__('stock_move.move_type'))
                     ->badge()
-                    ->formatStateUsing(fn (StockMoveType $state): string => $state->label())
-                    ->color(fn (StockMoveType $state): string => match ($state) {
+                    ->formatStateUsing(fn(StockMoveType $state): string => $state->label())
+                    ->color(fn(StockMoveType $state): string => match ($state) {
                         StockMoveType::Incoming => 'success',
                         StockMoveType::Outgoing => 'danger',
                         StockMoveType::InternalTransfer => 'info',
@@ -120,8 +120,8 @@ class StockMovesRelationManager extends RelationManager
                 TextColumn::make('status')
                     ->label(__('stock_move.status'))
                     ->badge()
-                    ->formatStateUsing(fn (StockMoveStatus $state): string => $state->label())
-                    ->color(fn (StockMoveStatus $state): string => match ($state) {
+                    ->formatStateUsing(fn(StockMoveStatus $state): string => $state->label())
+                    ->color(fn(StockMoveStatus $state): string => match ($state) {
                         StockMoveStatus::Draft => 'gray',
                         StockMoveStatus::Confirmed => 'warning',
                         StockMoveStatus::Done => 'success',
@@ -129,7 +129,7 @@ class StockMovesRelationManager extends RelationManager
                     }),
                 TextColumn::make('source_type')
                     ->label(__('stock_move.source'))
-                    ->formatStateUsing(fn (?string $state): string => $state ? class_basename($state) : '-')
+                    ->formatStateUsing(fn(?string $state): string => $state ? class_basename($state) : '-')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label(__('stock_move.created_at'))
@@ -143,13 +143,13 @@ class StockMovesRelationManager extends RelationManager
                     ->label(__('stock_move.move_type'))
                     ->options(
                         collect(StockMoveType::cases())
-                            ->mapWithKeys(fn (StockMoveType $type) => [$type->value => $type->label()])
+                            ->mapWithKeys(fn(StockMoveType $type) => [$type->value => $type->label()])
                     ),
                 SelectFilter::make('status')
                     ->label(__('stock_move.status'))
                     ->options(
                         collect(StockMoveStatus::cases())
-                            ->mapWithKeys(fn (StockMoveStatus $status) => [$status->value => $status->label()])
+                            ->mapWithKeys(fn(StockMoveStatus $status) => [$status->value => $status->label()])
                     ),
             ])
             ->headerActions([
@@ -170,10 +170,10 @@ class StockMovesRelationManager extends RelationManager
                     ->icon('heroicon-o-eye'),
                 EditAction::make()
                     ->icon('heroicon-o-pencil-square')
-                    ->visible(fn (StockMove $record): bool => $record->status === StockMoveStatus::Draft),
+                    ->visible(fn(StockMove $record): bool => $record->status === StockMoveStatus::Draft),
                 DeleteAction::make()
                     ->icon('heroicon-o-trash')
-                    ->visible(fn (StockMove $record): bool => $record->status === StockMoveStatus::Draft),
+                    ->visible(fn(StockMove $record): bool => $record->status === StockMoveStatus::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

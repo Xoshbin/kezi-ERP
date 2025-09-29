@@ -13,6 +13,8 @@ use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\Invoice
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\PaymentsRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\UnreconciledEntriesRelationManager;
 use App\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\VendorBillsRelationManager;
+use Xoshbin\CustomFields\Filament\Forms\Components\CustomFieldsComponent;
+use Xoshbin\CustomFields\Filament\Tables\CustomFieldTableColumns;
 use App\Filament\Tables\Columns\MoneyColumn;
 use App\Models\Account;
 use App\Models\Partner;
@@ -270,6 +272,9 @@ class PartnerResource extends Resource
                     ])
                     ->columnSpanFull()
                     ->collapsible(),
+
+                // Custom Fields Section
+                CustomFieldsComponent::make(Partner::class),
             ]);
     }
 
@@ -397,6 +402,9 @@ class PartnerResource extends Resource
                     )
                     ->sortable(false)
                     ->toggleable(),
+
+                // Custom Fields (dynamic columns)
+                ...CustomFieldTableColumns::make(Partner::class),
 
                 // Contact Information (toggleable)
                 TextColumn::make('contact_person')

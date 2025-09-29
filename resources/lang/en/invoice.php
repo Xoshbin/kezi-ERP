@@ -55,6 +55,19 @@ return [
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
 
+    // Exchange Rate Fields
+    'current_exchange_rate' => 'Current Exchange Rate',
+    'exchange_rate_helper' => 'This is the current exchange rate for the selected currency',
+    'exchange_rate_helper_with_current' => 'Current rate: :rate. Leave empty to use current rate, or enter a custom rate.',
+    'exchange_rate' => 'Exchange Rate',
+    'exchange_rate_at_creation' => 'Exchange Rate at Creation',
+    'exchange_rate_locked_helper' => 'Exchange rate is locked for non-draft invoices',
+    'exchange_rate_manual_helper' => 'Set a custom exchange rate or leave empty to use the current rate when posting',
+    'total_amount_company_currency' => 'Total Amount (Company Currency)',
+    'total_tax_company_currency' => 'Total Tax (Company Currency)',
+    'payment_term' => 'Payment Term',
+    'reference' => 'Reference',
+
     // Actions
     'confirm' => 'Confirm',
     'confirm_invoice' => 'Confirm Invoice',
@@ -68,6 +81,11 @@ return [
     'error_resetting_invoice_to_draft' => 'Error resetting invoice to draft',
     'invoice_reset_to_draft' => 'Invoice reset to draft',
     'error_resetting_invoice' => 'Error resetting invoice',
+
+
+    // Validation Messages
+    'validation_no_line_items' => 'Cannot confirm invoice without line items',
+    'validation_zero_total_amount' => 'Cannot confirm invoice with zero total amount',
 
     // Payments Relation Manager
     'payments_relation_manager' => [

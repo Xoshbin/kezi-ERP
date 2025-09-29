@@ -23,6 +23,7 @@ it('can create a product with explicit inventory valuation method', function () 
     // Create the accounts needed for the product
     $incomeAccount = Account::factory()->for($this->company)->create();
     $expenseAccount = Account::factory()->for($this->company)->create();
+    $inventoryAccount = Account::factory()->for($this->company)->create();
 
     // This reproduces the exact scenario from the error message but with explicit valuation method
     $product = Product::create([
@@ -33,6 +34,7 @@ it('can create a product with explicit inventory valuation method', function () 
         'unit_price' => Money::of(100000, $this->company->currency->code),
         'income_account_id' => $incomeAccount->id,
         'expense_account_id' => $expenseAccount->id,
+        'default_inventory_account_id' => $inventoryAccount->id,
         'inventory_valuation_method' => ValuationMethod::AVCO, // Explicitly set
         'is_active' => true,
         'company_id' => $this->company->id,
@@ -80,6 +82,7 @@ it('can create a product through Filament interface with default valuation metho
             'unit_price' => 100000,
             'income_account_id' => $incomeAccount->id,
             'expense_account_id' => $expenseAccount->id,
+            'default_inventory_account_id' => $expenseAccount->id,
             // Note: Not explicitly setting inventory_valuation_method
             // The form should use the default from the ProductResource
         ])

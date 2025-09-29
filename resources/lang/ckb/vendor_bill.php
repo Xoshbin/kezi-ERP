@@ -51,7 +51,11 @@ return [
     // Exchange Rate Fields
     'current_exchange_rate' => 'نرخی ئاڵوگۆڕی ئێستا',
     'exchange_rate_helper' => 'ئەمە نرخی ئاڵوگۆڕی ئێستایە بۆ پارە هەڵبژێردراوەکە',
+    'exchange_rate_helper_with_current' => 'نرخی ئێستا: :rate. بەتاڵی بهێڵەوە بۆ بەکارهێنانی نرخی ئێستا، یان نرخی تایبەت بنووسە.',
+    'exchange_rate' => 'نرخی ئاڵوگۆڕ',
     'exchange_rate_at_creation' => 'نرخی ئاڵوگۆڕ لە کاتی دروستکردن',
+    'exchange_rate_locked_helper' => 'نرخی ئاڵوگۆڕ قوفڵکراوە بۆ پسووڵە نا-ڕەشنووسەکانی فرۆشیار',
+    'exchange_rate_manual_helper' => 'نرخی ئاڵوگۆڕی تایبەت دابنێ یان بەتاڵی بهێڵەوە بۆ بەکارهێنانی نرخی ئێستا لە کاتی ناردن',
     'total_amount_company_currency' => 'کۆی گشتی (پارەی کۆمپانیا)',
     'total_tax_company_currency' => 'کۆی باج (پارەی کۆمپانیا)',
 
@@ -69,6 +73,10 @@ return [
     'notification_confirm_bill_error' => 'هەڵە لە پشتڕاستکردنەوەی پسووڵە',
     'notification_bill_reset_success' => 'پسووڵە گەڕێندرایەوە بۆ ڕەشنووس',
     'notification_reset_bill_error' => 'هەڵە لە گەڕاندنەوەی پسووڵە',
+
+    // Validation Messages
+    'validation_no_line_items' => 'ناتوانرێت پسووڵەی فرۆشیار بەبێ بڕگەکان پشتڕاست بکرێتەوە',
+    'validation_zero_total_amount' => 'ناتوانرێت پسووڵەی فرۆشیار بە کۆی گشتی سفر پشتڕاست بکرێتەوە',
 
     // Payments Relation Manager
     'payments_relation_manager' => [
