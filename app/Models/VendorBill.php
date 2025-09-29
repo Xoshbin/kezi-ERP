@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\PurchaseOrder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -32,6 +33,7 @@ use Illuminate\Support\Carbon;
  * @property int $company_id
  * @property int $vendor_id
  * @property int $currency_id
+ * @property int|null $purchase_order_id
  * @property int|null $journal_entry_id
  * @property string $bill_reference
  * @property Carbon $bill_date
@@ -49,6 +51,7 @@ use Illuminate\Support\Carbon;
  * @property-read JournalEntry|null $journalEntry
  * @property-read Collection<int, VendorBillLine> $lines
  * @property-read int|null $lines_count
+ * @property-read PurchaseOrder|null $purchaseOrder
  * @property-read Partner $vendor
  *
  * @method static VendorBillFactory factory($count = null, $state = [])
@@ -97,6 +100,7 @@ class VendorBill extends Model
     protected $fillable = [
         'company_id',           // Foreign key to the Company model for multi-company support .
         'vendor_id',            // Foreign key to the Partner model, representing the supplier .
+        'purchase_order_id',    // Foreign key to the PurchaseOrder model, linking bill to originating PO .
         'bill_date',            // The date the vendor bill was issued by the supplier .
         'accounting_date',      // The date the bill is recognized in the company's books .
         'due_date',             // The date by which the payment is due .
@@ -157,12 +161,12 @@ class VendorBill extends Model
         $zero = Money::of(0, $currencyCode);
 
         $totalTax = $this->lines->reduce(
-            fn (Money $carry, VendorBillLine $line) => $carry->plus($line->total_line_tax ?? $zero),
+            fn(Money $carry, VendorBillLine $line) => $carry->plus($line->total_line_tax ?? $zero),
             $zero
         );
 
         $subtotal = $this->lines->reduce(
-            fn (Money $carry, VendorBillLine $line) => $carry->plus($line->subtotal ?? $zero),
+            fn(Money $carry, VendorBillLine $line) => $carry->plus($line->subtotal ?? $zero),
             $zero
         );
 
@@ -207,6 +211,19 @@ class VendorBill extends Model
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class, 'currency_id');
+    }
+
+    /**
+     * Get the Purchase Order associated with the Vendor Bill.
+     * Defines a **BelongsTo** relationship to the PurchaseOrder model,
+     * linking the bill to its originating purchase order for audit trail .
+     */
+    /**
+     * @return BelongsTo<PurchaseOrder, static>
+     */
+    public function purchaseOrder(): BelongsTo
+    {
+        return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id');
     }
 
     /**

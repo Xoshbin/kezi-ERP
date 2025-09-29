@@ -139,6 +139,7 @@ class EditInvoice extends EditRecord
                 ->color('success')
                 ->requiresConfirmation()
                 ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft)
+                ->disabled(fn (Invoice $record): bool => $record->invoiceLines->isEmpty() || $record->total_amount->isZero())
                 ->action(function (Invoice $record): void {
                     $this->save();
                     $service = app(InvoiceService::class);
@@ -331,7 +332,16 @@ class EditInvoice extends EditRecord
             fiscal_position_id: $data['fiscal_position_id'] ?? null
         );
 
-        return app(UpdateInvoiceAction::class)->execute($invoiceDTO);
+        $updatedInvoice = app(UpdateInvoiceAction::class)->execute($invoiceDTO);
+
+        // Handle exchange_rate_at_creation separately since it's not in the DTO
+        if (isset($data['exchange_rate_at_creation'])) {
+            $updatedInvoice->update([
+                'exchange_rate_at_creation' => $data['exchange_rate_at_creation']
+            ]);
+        }
+
+        return $updatedInvoice;
     }
 
     protected function getHeaderWidgets(): array

@@ -30,14 +30,11 @@ test('a draft invoice can be confirmed, which posts it and dispatches an event',
     // Arrange: Ensure events are being listened for.
     Event::fake();
 
-    // Arrange: Create a draft invoice with all required data.
-    $currencyCode = $this->company->currency->code;
-    $invoice = Invoice::factory()->create([
+    // Arrange: Create a draft invoice with at least one line to satisfy business rules.
+    $invoice = Invoice::factory()->withLines(1)->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
-        'status' => 'draft',
-        'total_amount' => Money::of(0, $currencyCode),
-        'total_tax' => Money::of(0, $currencyCode),
+        'status' => InvoiceStatus::Draft,
     ]);
 
     // Act: Call the confirm method on the service.
@@ -46,7 +43,7 @@ test('a draft invoice can be confirmed, which posts it and dispatches an event',
     // Assert: The invoice's status is now 'posted'.
     $this->assertDatabaseHas('invoices', [
         'id' => $invoice->id,
-        'status' => 'posted',
+        'status' => InvoiceStatus::Posted,
     ]);
 
     // Assert: An event was dispatched to notify other parts of the system.
@@ -61,7 +58,9 @@ test('confirming an invoice generates the correct journal entry', function () {
     $currencyCode = $this->company->currency->code;
 
     // THE FIX: Ensure the product is created with a default income account.
+    // Use Service type to avoid inventory complexity in this test
     $product = Product::factory()->for($this->company)->create([
+        'type' => \App\Enums\Products\ProductType::Service,
         'income_account_id' => $productSalesAccount->id,
         'unit_price' => Money::of(100, $currencyCode),
     ]);
@@ -113,7 +112,7 @@ test('a posted invoice cannot be updated', function () {
     );
 
     // Assert: Expect the Action to throw the exception because the invoice is posted.
-    expect(fn () => app(\App\Actions\Sales\UpdateInvoiceAction::class)->execute($updateDto))
+    expect(fn() => app(\App\Actions\Sales\UpdateInvoiceAction::class)->execute($updateDto))
         ->toThrow(UpdateNotAllowedException::class, 'Cannot modify a non-draft invoice.');
 
     // Assert: Double-check that the customer_id was not changed in the database.
@@ -135,7 +134,7 @@ test('a posted invoice cannot be deleted', function () {
     ]);
 
     // Assert: Expect the service's delete method to throw our specific exception.
-    expect(fn () => (app(InvoiceService::class))->delete($invoice))
+    expect(fn() => (app(InvoiceService::class))->delete($invoice))
         ->toThrow(DeletionNotAllowedException::class, 'Cannot delete a posted invoice.');
 
     // Assert: As a final check, confirm the model still exists.
@@ -209,7 +208,7 @@ test('an invoice cannot be created or posted in a locked period', function () {
     }
     */
     // With the above (assumed) change to CreateInvoiceAction, this test will pass.
-    expect(fn () => (app(CreateInvoiceAction::class))->execute($invoiceDto))
+    expect(fn() => (app(CreateInvoiceAction::class))->execute($invoiceDto))
         ->toThrow(PeriodIsLockedException::class);
 
     // Arrange: Create a draft invoice with a date in the future (not locked).
@@ -223,6 +222,6 @@ test('an invoice cannot be created or posted in a locked period', function () {
     $draftInvoice->invoice_date = now()->subMonth()->toDateString();
 
     // Assert: Expect that trying to CONFIRM an invoice in a locked period also fails.
-    expect(fn () => (app(InvoiceService::class))->confirm($draftInvoice, $this->user))
+    expect(fn() => (app(InvoiceService::class))->confirm($draftInvoice, $this->user))
         ->toThrow(PeriodIsLockedException::class);
 });

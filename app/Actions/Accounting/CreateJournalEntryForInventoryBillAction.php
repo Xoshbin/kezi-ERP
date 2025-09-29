@@ -95,13 +95,14 @@ class CreateJournalEntryForInventoryBillAction
                 journal_id: $company->default_purchase_journal_id,
                 currency_id: $currency->id,
                 entry_date: $vendorBill->accounting_date,
-                reference: 'BILL/'.$vendorBill->bill_reference,
-                description: 'Inventory purchase (AP recognition) for Bill '.$vendorBill->bill_reference,
+                reference: 'BILL/' . $vendorBill->bill_reference,
+                description: 'Inventory purchase (AP recognition) for Bill ' . $vendorBill->bill_reference,
                 source_type: VendorBill::class,
                 source_id: $vendorBill->id,
                 created_by_user_id: $user->id,
                 is_posted: true,
                 lines: $lineDTOs,
+                exchange_rate: $vendorBill->exchange_rate_at_creation,
             );
 
             return $this->createJournalEntryAction->execute($journalEntryDTO);

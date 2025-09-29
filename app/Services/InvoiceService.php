@@ -14,10 +14,12 @@ use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\User; // Add this import
 use App\Services\Accounting\LockDateService;
+use App\Actions\Accounting\BuildInvoicePostingPreviewAction;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use RuntimeException;
 
 class InvoiceService
 {
@@ -54,6 +56,9 @@ class InvoiceService
 
         $this->lockDateService->enforce(Company::findOrFail($invoice->company_id), Carbon::parse($invoice->invoice_date));
 
+        // Validate business rules before posting
+        $this->validateInvoiceForPosting($invoice);
+
         DB::transaction(function () use ($invoice, $user) {
             // Process multi-currency amounts before posting
             $this->processMultiCurrencyAmounts($invoice);
@@ -67,10 +72,15 @@ class InvoiceService
 
             $invoice->save();
 
-            // Create stock moves for storable products
-            $this->createStockMovesForInvoiceAction->execute(
-                new CreateStockMovesForInvoiceDTO($invoice, $user)
-            );
+            // Create stock moves for storable products only if:
+            // Invoice is not linked to a sales order (sales orders handle their own deliveries)
+            // Note: Unlike vendor bills, invoices always create stock moves regardless of inventory mode
+            // for proper lot tracking, FEFO allocation, and inventory management
+            if (!$invoice->sales_order_id) {
+                $this->createStockMovesForInvoiceAction->execute(
+                    new CreateStockMovesForInvoiceDTO($invoice, $user)
+                );
+            }
 
             InvoiceConfirmed::dispatch($invoice);
         });
@@ -97,7 +107,7 @@ class InvoiceService
                 'event_type' => 'reset_to_draft',
                 'auditable_type' => get_class($invoice),
                 'auditable_id' => $invoice->id,
-                'description' => 'Invoice Reset to Draft: '.$reason,
+                'description' => 'Invoice Reset to Draft: ' . $reason,
                 'old_values' => ['status' => $invoice->status],
                 'new_values' => ['status' => InvoiceStatus::Draft],
                 'ip_address' => request()->ip(),
@@ -106,7 +116,7 @@ class InvoiceService
             // Step 2: Use the service to create the reversing journal entry.
             $this->journalEntryService->createReversal(
                 $originalEntry,
-                'Reset to Draft of Invoice '.$invoice->invoice_number.': '.$reason,
+                'Reset to Draft of Invoice ' . $invoice->invoice_number . ': ' . $reason,
                 $user
             );
 
@@ -158,7 +168,7 @@ class InvoiceService
                 'event_type' => 'cancellation',
                 'auditable_type' => get_class($invoice),
                 'auditable_id' => $invoice->id,
-                'description' => 'Invoice Cancelled: '.$reason,
+                'description' => 'Invoice Cancelled: ' . $reason,
                 'old_values' => ['status' => $invoice->status],
                 'new_values' => ['status' => InvoiceStatus::Cancelled],
                 'ip_address' => request()->ip(),
@@ -167,7 +177,7 @@ class InvoiceService
             // Step 2: Use the service to create the reversing journal entry.
             $this->journalEntryService->createReversal(
                 $originalEntry,
-                'Cancellation of Invoice '.$invoice->invoice_number.': '.$reason,
+                'Cancellation of Invoice ' . $invoice->invoice_number . ': ' . $reason,
                 $user
             );
 
@@ -188,47 +198,57 @@ class InvoiceService
 
         // If invoice is in company base currency, set rate to 1.0
         if ($invoice->currency_id === $invoice->company->currency_id) {
-            $invoice->exchange_rate_at_creation = 1.0;
-            $invoice->total_amount_company_currency = $invoice->total_amount;
-            $invoice->total_tax_company_currency = $invoice->total_tax;
+            $invoice->update([
+                'exchange_rate_at_creation' => 1.0,
+                'total_amount_company_currency' => $invoice->total_amount,
+                'total_tax_company_currency' => $invoice->total_tax,
+            ]);
 
             return;
         }
 
-        // Get exchange rate for the invoice date
-        $exchangeRate = $this->currencyConverter->getExchangeRate($invoice->currency, $invoice->invoice_date, $invoice->company);
+        // Use manually set exchange rate if available, otherwise get from currency converter
+        $exchangeRate = $invoice->exchange_rate_at_creation;
 
-        // If no exchange rate is found, skip multi-currency processing for backward compatibility
         if (! $exchangeRate) {
-            $invoice->exchange_rate_at_creation = 1.0;
-            $invoice->total_amount_company_currency = $invoice->total_amount;
-            $invoice->total_tax_company_currency = $invoice->total_tax;
+            // Get exchange rate for the invoice date
+            $exchangeRate = $this->currencyConverter->getExchangeRate($invoice->currency, $invoice->invoice_date, $invoice->company);
 
-            return;
+            // If no exchange rate is found, try to get the latest available rate as fallback
+            if (! $exchangeRate) {
+                $exchangeRate = $this->currencyConverter->getLatestExchangeRate($invoice->currency, $invoice->company);
+
+                // If still no rate found, skip multi-currency processing for backward compatibility
+                if (! $exchangeRate) {
+                    $invoice->exchange_rate_at_creation = 1.0;
+                    $invoice->total_amount_company_currency = $invoice->total_amount;
+                    $invoice->total_tax_company_currency = $invoice->total_tax;
+
+                    return;
+                }
+            }
         }
 
-        // Convert amounts to company currency
+        // Convert amounts to company currency using the exchange rate
         $companyCurrency = $invoice->company->currency;
 
-        $totalAmountCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+        $totalAmountCompanyCurrency = $this->currencyConverter->convertWithRate(
             $invoice->total_amount,
-            $invoice->currency,
-            $companyCurrency,
-            $invoice->invoice_date,
-            $invoice->company
+            $exchangeRate,
+            $companyCurrency->code,
+            false
         );
 
-        $totalTaxCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+        $totalTaxCompanyCurrency = $this->currencyConverter->convertWithRate(
             $invoice->total_tax,
-            $invoice->currency,
-            $companyCurrency,
-            $invoice->invoice_date,
-            $invoice->company
+            $exchangeRate,
+            $companyCurrency->code,
+            false
         );
 
         // Convert invoice line amounts
         foreach ($invoice->invoiceLines as $line) {
-            $this->convertInvoiceLineAmounts($line, $companyCurrency, $invoice->company);
+            $this->convertInvoiceLineAmounts($line, $companyCurrency, $exchangeRate);
         }
 
         // Update invoice with converted amounts
@@ -244,30 +264,27 @@ class InvoiceService
      *
      * @param  \App\Models\InvoiceLine  $line
      */
-    protected function convertInvoiceLineAmounts($line, Currency $companyCurrency, Company $company): void
+    protected function convertInvoiceLineAmounts($line, Currency $companyCurrency, float $exchangeRate): void
     {
-        $unitPriceCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+        $unitPriceCompanyCurrency = $this->currencyConverter->convertWithRate(
             $line->unit_price,
-            $line->invoice->currency,
-            $companyCurrency,
-            $line->invoice->invoice_date,
-            $company
+            $exchangeRate,
+            $companyCurrency->code,
+            false
         );
 
-        $subtotalCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+        $subtotalCompanyCurrency = $this->currencyConverter->convertWithRate(
             $line->subtotal,
-            $line->invoice->currency,
-            $companyCurrency,
-            $line->invoice->invoice_date,
-            $company
+            $exchangeRate,
+            $companyCurrency->code,
+            false
         );
 
-        $totalLineTaxCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+        $totalLineTaxCompanyCurrency = $this->currencyConverter->convertWithRate(
             $line->total_line_tax,
-            $line->invoice->currency,
-            $companyCurrency,
-            $line->invoice->invoice_date,
-            $company
+            $exchangeRate,
+            $companyCurrency->code,
+            false
         );
 
         $line->update([
@@ -275,5 +292,36 @@ class InvoiceService
             'subtotal_company_currency' => $subtotalCompanyCurrency,
             'total_line_tax_company_currency' => $totalLineTaxCompanyCurrency,
         ]);
+    }
+
+    /**
+     * Validate invoice before posting to ensure all required data is present.
+     *
+     * @throws RuntimeException if validation fails
+     */
+    private function validateInvoiceForPosting(Invoice $invoice): void
+    {
+        $preview = app(BuildInvoicePostingPreviewAction::class)->execute($invoice);
+
+        if (! empty($preview['errors'])) {
+            // Priority order for error handling
+            $errorPriority = [
+                'no_line_items',
+                'zero_total_amount',
+                'income_account_missing',
+                'tax_account_missing',
+            ];
+
+            foreach ($errorPriority as $errorType) {
+                foreach ($preview['issues'] as $issue) {
+                    if (($issue['type'] ?? null) === $errorType) {
+                        throw new RuntimeException($issue['message']);
+                    }
+                }
+            }
+
+            // Fallback to first error message if none matched priority
+            throw new RuntimeException($preview['errors'][0]);
+        }
     }
 }

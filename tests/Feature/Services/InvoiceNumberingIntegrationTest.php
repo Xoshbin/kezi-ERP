@@ -15,8 +15,8 @@ describe('Invoice Numbering Integration', function () {
     });
 
     it('auto-generates invoice numbers when posting invoices', function () {
-        // Create a draft invoice
-        $invoice = Invoice::factory()->create([
+        // Create a draft invoice with at least one line
+        $invoice = Invoice::factory()->withLines(1)->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Draft,
         ]);
@@ -44,8 +44,8 @@ describe('Invoice Numbering Integration', function () {
         ];
         $this->company->save();
 
-        // Create a draft invoice
-        $invoice = Invoice::factory()->create([
+        // Create a draft invoice with at least one line
+        $invoice = Invoice::factory()->withLines(1)->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Draft,
             'invoice_date' => '2025-06-15',
@@ -65,7 +65,7 @@ describe('Invoice Numbering Integration', function () {
         $invoices = [];
 
         for ($i = 0; $i < 3; $i++) {
-            $invoice = Invoice::factory()->create([
+            $invoice = Invoice::factory()->withLines(1)->create([
                 'company_id' => $this->company->id,
                 'status' => InvoiceStatus::Draft,
             ]);
@@ -91,8 +91,8 @@ describe('Invoice Numbering Integration', function () {
         ];
         $this->company->save();
 
-        // Create invoice with specific date
-        $invoice = Invoice::factory()->create([
+        // Create invoice with specific date and at least one line
+        $invoice = Invoice::factory()->withLines(1)->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Draft,
             'invoice_date' => '2025-12-25',

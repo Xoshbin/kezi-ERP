@@ -34,4 +34,22 @@ return [
     // Timestamps
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
+
+    // Cost Preview
+    'Select product and quantity to see cost preview' => 'Select product and quantity to see cost preview',
+    'Product not found' => 'Product not found',
+    'Error calculating cost preview' => 'Error calculating cost preview',
+    'Unit Cost' => 'Unit Cost',
+    'Total Cost' => 'Total Cost',
+    'Cost Source' => 'Cost Source',
+    'Warnings' => 'Warnings',
+    'Cost Information Unavailable' => 'Cost Information Unavailable',
+    'Suggested Actions' => 'Suggested Actions',
+
+    // Cost Summary
+    'Add product lines to see cost summary' => 'Add product lines to see cost summary',
+    'Error calculating cost summary' => 'Error calculating cost summary',
+    'Total Estimated Cost' => 'Total Estimated Cost',
+    'Cost Issues Detected' => 'Cost Issues Detected',
+    'Some products have cost determination issues. Please review individual product lines.' => 'Some products have cost determination issues. Please review individual product lines.',
 ];

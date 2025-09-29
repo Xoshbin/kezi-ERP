@@ -6,10 +6,13 @@ use App\Actions\Purchases\CreateVendorBillLineAction;
 use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 use App\Enums\Partners\PartnerType;
 use App\Models\Company;
+use App\Models\Currency;
 use App\Models\Partner;
 use App\Models\Product;
+use App\Models\Tax;
 use App\Models\VendorBill;
 use Brick\Money\Money;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 class VendorBillSeeder extends Seeder
@@ -17,53 +20,79 @@ class VendorBillSeeder extends Seeder
     public function run(): void
     {
         $company = Company::where('name', 'Jmeryar Solutions')->firstOrFail();
+        $usdCurrency = Currency::where('code', 'USD')->firstOrFail();
+        $tax = Tax::where('company_id', $company->id)->where('rate', 5)->firstOrFail();
 
-        $currencyCode = $company->currency->code;
+        // --- Fetch Products (assuming they are created by ProductSeeder) ---
+        $gpuProduct = Product::where('company_id', $company->id)->where('sku', 'GPU-RTX4090')->firstOrFail();
+        $ramProduct = Product::where('company_id', $company->id)->where('sku', 'RAM-DDR5-32GB')->firstOrFail();
+        $ssdProduct = Product::where('company_id', $company->id)->where('sku', 'SSD-2TB-NVME')->firstOrFail();
 
-        // --- Fetch Products ---
-        $routerProduct = Product::where('sku', 'PROD-ROUTER-01')->firstOrFail();
-        $cableProduct = Product::where('sku', 'PROD-CABLE-01')->firstOrFail();
-        $switchProduct = Product::where('sku', 'PROD-SWITCH-01')->firstOrFail();
-
-        // --- Fetch Vendors ---
-        $vendor1 = Partner::firstOrCreate(['name' => 'Paykar Tech Supplies', 'company_id' => $company->id], ['type' => PartnerType::Vendor]);
-        $vendor2 = Partner::firstOrCreate(['name' => 'Hiwa Computer Center', 'company_id' => $company->id], ['type' => PartnerType::Vendor]);
+        // --- Fetch/Create Vendor ---
+        $vendor = Partner::firstOrCreate(
+            ['name' => 'TechGlobal Suppliers', 'company_id' => $company->id],
+            ['type' => PartnerType::Vendor]
+        );
 
         $createLineAction = resolve(CreateVendorBillLineAction::class);
 
-        // === BILL 1: From Paykar Tech (Total: 10,800,000) ===
-        $bill1 = VendorBill::updateOrCreate(
-            ['company_id' => $company->id, 'vendor_id' => $vendor1->id, 'bill_reference' => 'PK-INV-2025-001'],
+        // === Multi-Currency BILL: USD Purchase ===
+        $bill = VendorBill::updateOrCreate(
+            ['company_id' => $company->id, 'vendor_id' => $vendor->id, 'bill_reference' => 'VB-2025-001'],
             [
-                'bill_date' => now()->subDays(10),
-                'accounting_date' => now()->subDays(10),
-                'due_date' => now()->addDays(20),
+                'bill_date' => Carbon::parse('2025-01-15'),
+                'accounting_date' => Carbon::parse('2025-01-15'),
+                'due_date' => Carbon::parse('2025-01-15')->addDays(30),
                 'status' => 'draft',
-                'currency_id' => $company->currency_id,
-                'total_amount' => Money::of(0, $currencyCode), // Will be updated by observer
-                'total_tax' => Money::of(0, $currencyCode),
+                'currency_id' => $usdCurrency->id,
+                'exchange_rate_at_creation' => 1310,
+                'total_amount' => Money::of(0, $usdCurrency->code), // Observer will update
+                'total_tax' => Money::of(0, $usdCurrency->code),
             ]
         );
-        if ($bill1->wasRecentlyCreated) {
-            $createLineAction->execute($bill1, new CreateVendorBillLineDTO(product_id: $routerProduct->id, description: $routerProduct->name, quantity: 10, unit_price: '1000000', expense_account_id: $routerProduct->expense_account_id, tax_id: null, analytic_account_id: null));
-            $createLineAction->execute($bill1, new CreateVendorBillLineDTO(product_id: $cableProduct->id, description: $cableProduct->name, quantity: 20, unit_price: '40000', expense_account_id: $cableProduct->expense_account_id, tax_id: null, analytic_account_id: null));
-        }
 
-        // === BILL 2: From Hiwa Computer (Total: 16,000,000) ===
-        $bill2 = VendorBill::updateOrCreate(
-            ['company_id' => $company->id, 'vendor_id' => $vendor2->id, 'bill_reference' => 'HC-INV-2025-002'],
-            [
-                'bill_date' => now()->subDays(5),
-                'accounting_date' => now()->subDays(5),
-                'due_date' => now()->addDays(25),
-                'status' => 'draft',
-                'currency_id' => $company->currency_id,
-                'total_amount' => Money::of(0, $currencyCode), // Will be updated by observer
-                'total_tax' => Money::of(0, $currencyCode),
-            ]
-        );
-        if ($bill2->wasRecentlyCreated) {
-            $createLineAction->execute($bill2, new CreateVendorBillLineDTO(product_id: $switchProduct->id, description: $switchProduct->name, quantity: 5, unit_price: '3200000', expense_account_id: $switchProduct->expense_account_id, tax_id: null, analytic_account_id: null));
+        if ($bill->wasRecentlyCreated) {
+            // 1) GPU-RTX4090: 10 units @ $1,900 USD
+            $createLineAction->execute(
+                $bill,
+                new CreateVendorBillLineDTO(
+                    product_id: $gpuProduct->id,
+                    description: $gpuProduct->name,
+                    quantity: 10,
+                    unit_price: Money::of('1900', $usdCurrency->code),
+                    expense_account_id: $gpuProduct->expense_account_id,
+                    tax_id: $tax->id,
+                    analytic_account_id: null
+                )
+            );
+
+            // 2) RAM-DDR5-32GB: 50 units @ $305 USD
+            $createLineAction->execute(
+                $bill,
+                new CreateVendorBillLineDTO(
+                    product_id: $ramProduct->id,
+                    description: $ramProduct->name,
+                    quantity: 50,
+                    unit_price: Money::of('305', $usdCurrency->code),
+                    expense_account_id: $ramProduct->expense_account_id,
+                    tax_id: $tax->id,
+                    analytic_account_id: null
+                )
+            );
+
+            // 3) SSD-2TB-NVME: 30 units @ $229 USD
+            $createLineAction->execute(
+                $bill,
+                new CreateVendorBillLineDTO(
+                    product_id: $ssdProduct->id,
+                    description: $ssdProduct->name,
+                    quantity: 30,
+                    unit_price: Money::of('229', $usdCurrency->code),
+                    expense_account_id: $ssdProduct->expense_account_id,
+                    tax_id: $tax->id,
+                    analytic_account_id: null
+                )
+            );
         }
     }
 }

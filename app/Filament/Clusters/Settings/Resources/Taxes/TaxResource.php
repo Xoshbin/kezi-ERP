@@ -70,13 +70,13 @@ class TaxResource extends Resource
                                 TextInput::make('code')->label(__('account.code'))->required(),
                                 TextInput::make('name')->label(__('account.name'))->required(),
                                 Select::make('type')->label(__('account.type'))
-                                    ->options(collect(AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
+                                    ->options(collect(AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()]))
                                     ->required(),
                                 Toggle::make('is_deprecated')->label(__('account.is_deprecated'))->default(false),
                                 Toggle::make('allow_reconciliation')->label(__('account.allow_reconciliation'))->default(false),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_account'))
-                            ->createOptionAction(fn (Action $a) => $a->name('create-account-option')->modalWidth('lg'))
+                            ->createOptionAction(fn(Action $a) => $a->name('create-account-option')->modalWidth('lg'))
                             ->required(),
 
                         TextInput::make('name')
@@ -89,11 +89,15 @@ class TaxResource extends Resource
                             ->numeric(),
                         Select::make('type')
                             ->label(__('tax.type'))
-                            ->options(collect(TaxType::cases())->mapWithKeys(fn ($c) => [$c->value => $c->label()]))
+                            ->options(collect(TaxType::cases())->mapWithKeys(fn($c) => [$c->value => $c->label()]))
                             ->required(),
                         Toggle::make('is_active')
                             ->label(__('tax.is_active'))
                             ->required(),
+                        Toggle::make('is_recoverable')
+                            ->label(__('tax.is_recoverable'))
+                            ->helperText(__('tax.is_recoverable_help'))
+                            ->default(true),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -112,13 +116,16 @@ class TaxResource extends Resource
                     ->searchable(),
                 TextColumn::make('rate')
                     ->label(__('tax.rate'))
-                    ->formatStateUsing(fn ($state) => NumberFormatter::formatPercentage($state / 100))
+                    ->formatStateUsing(fn($state) => NumberFormatter::formatPercentage($state / 100))
                     ->sortable(),
                 TextColumn::make('type')
                     ->label(__('tax.type'))
                     ->searchable(),
                 IconColumn::make('is_active')
                     ->label(__('tax.is_active'))
+                    ->boolean(),
+                IconColumn::make('is_recoverable')
+                    ->label(__('tax.is_recoverable'))
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->label(__('tax.created_at'))
