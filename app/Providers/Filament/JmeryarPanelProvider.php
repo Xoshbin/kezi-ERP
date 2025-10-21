@@ -66,6 +66,7 @@ class JmeryarPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->brandName('')
             ->globalSearch(false)
             ->viteTheme('resources/js/filament/jmeryar/theme.js')
             ->tenant(Company::class)
