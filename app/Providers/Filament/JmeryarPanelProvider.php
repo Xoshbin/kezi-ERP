@@ -24,6 +24,7 @@ use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use CraftForge\FilamentLanguageSwitcher\FilamentLanguageSwitcherPlugin;
 use DutchCodingCompany\FilamentDeveloperLogins\FilamentDeveloperLoginsPlugin;
 
 class JmeryarPanelProvider extends PanelProvider
@@ -70,6 +71,13 @@ class JmeryarPanelProvider extends PanelProvider
             ->tenantProfile(EditCompanyProfile::class)
             ->plugins([
                 // JmeryarTheme::make(),
+                FilamentLanguageSwitcherPlugin::make()
+                ->locales([
+                    ['code' => 'ckb', 'name' => 'کوردی'],
+                    ['code' => 'en', 'name' => 'English'],
+                    ['code' => 'ar', 'name' => 'العربية'],
+                ])
+                ->showFlags(false),
                 CustomFieldsPlugin::make(),
                 SpatieTranslatablePlugin::make()
                     ->defaultLocales(['en', 'ckb', 'ar']),
