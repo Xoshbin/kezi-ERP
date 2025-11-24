@@ -23,7 +23,7 @@ class TaxFactory extends Factory
         return [
             'company_id' => Company::factory()->create()->id,
             'name' => $this->faker->word,
-            'rate' => $this->faker->randomFloat(2, 0, 100),
+            'rate' => $this->faker->randomFloat(4, 0, 0.5), // 0% to 50%
             'type' => $this->faker->randomElement([TaxType::Sales, TaxType::Purchase, TaxType::Both]),
             'is_active' => $this->faker->boolean,
             'tax_account_id' => Account::factory()->create()->id,
