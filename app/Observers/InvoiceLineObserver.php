@@ -8,6 +8,45 @@ use Brick\Money\Money;
 class InvoiceLineObserver
 {
     /**
+     * Handle the InvoiceLine "saving" event.
+     * Calculate subtotal and tax amounts before saving.
+     */
+    public function saving(InvoiceLine $invoiceLine): void
+    {
+        // Ensure invoice is loaded for currency context
+        if (! $invoiceLine->relationLoaded('invoice')) {
+            $invoiceLine->load('invoice.currency');
+        }
+
+        // Calculate Subtotal: Quantity * Unit Price
+        if ($invoiceLine->quantity !== null && $invoiceLine->unit_price) {
+            $quantity = $invoiceLine->quantity;
+            // Unit Price is Money object
+            $invoiceLine->subtotal = $invoiceLine->unit_price->multipliedBy($quantity, \Brick\Math\RoundingMode::HALF_UP);
+        }
+
+        // Calculate Tax: Subtotal * Rate
+        if ($invoiceLine->subtotal) {
+            // Initialize total_line_tax to 0 if not set
+            if (! isset($invoiceLine->total_line_tax)) {
+                 $invoiceLine->total_line_tax = Money::of(0, $invoiceLine->invoice->currency->code);
+            }
+
+            if ($invoiceLine->tax_id) {
+                if (! $invoiceLine->relationLoaded('tax')) {
+                    $invoiceLine->load('tax');
+                }
+
+                if ($invoiceLine->tax) {
+                    // Tax rate is stored as decimal (e.g. 0.1500)
+                    $rate = $invoiceLine->tax->rate;
+                    $invoiceLine->total_line_tax = $invoiceLine->subtotal->multipliedBy($rate, \Brick\Math\RoundingMode::HALF_UP);
+                }
+            }
+        }
+    }
+
+    /**
      * Handle the InvoiceLine "saved" event.
      * This is triggered on both creation and update.
      */

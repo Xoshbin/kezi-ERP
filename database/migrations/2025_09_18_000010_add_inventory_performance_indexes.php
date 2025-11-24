@@ -23,12 +23,10 @@ return new class extends Migration
         };
 
         // Add performance indexes for stock_moves table
-        $addIndexSafely('stock_moves', ['from_location_id', 'status'], 'idx_moves_from_location_status');
-        $addIndexSafely('stock_moves', ['to_location_id', 'status'], 'idx_moves_to_location_status');
+        // Note: Removed indices dependent on columns not present in stock_moves table (product_id, from_location_id, etc.)
+        // These columns reside in stock_move_product_lines.
         $addIndexSafely('stock_moves', ['move_type', 'status'], 'idx_moves_type_status');
         $addIndexSafely('stock_moves', ['company_id', 'move_date'], 'idx_moves_company_date');
-        $addIndexSafely('stock_moves', ['product_id', 'move_date'], 'idx_moves_product_date');
-        $addIndexSafely('stock_moves', ['company_id', 'product_id', 'move_date'], 'idx_moves_company_product_date');
 
         // Add performance indexes for stock_move_valuations table
         if (Schema::hasTable('stock_move_valuations')) {
@@ -64,11 +62,7 @@ return new class extends Migration
         }
 
         // Drop indexes for stock_moves table
-        $dropIndexSafely('stock_moves', 'idx_moves_from_location_status');
-        $dropIndexSafely('stock_moves', 'idx_moves_to_location_status');
         $dropIndexSafely('stock_moves', 'idx_moves_type_status');
         $dropIndexSafely('stock_moves', 'idx_moves_company_date');
-        $dropIndexSafely('stock_moves', 'idx_moves_product_date');
-        $dropIndexSafely('stock_moves', 'idx_moves_company_product_date');
     }
 };

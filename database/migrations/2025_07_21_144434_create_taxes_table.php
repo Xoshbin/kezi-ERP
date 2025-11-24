@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('company_id')->constrained('companies');
             $table->foreignId('tax_account_id')->constrained('accounts');
             $table->json('name');
-            $table->unsignedBigInteger('rate'); // e.g., 0.15000 for 15%
+            $table->decimal('rate', 10, 4); // e.g., 0.1500 for 15%
             $table->string('type'); // 'sales', 'purchase', 'both'
             $table->boolean('is_active')->default(true);
             $table->boolean('is_recoverable')->default(true); // Whether tax can be deducted as input tax or should be capitalized
