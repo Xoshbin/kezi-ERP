@@ -51,14 +51,14 @@ class EditInvoice extends EditRecord
                     ->label(__('View PDF'))
                     ->icon('heroicon-o-document-text')
                     ->color('info')
-                    ->url(fn (Invoice $record) => route('invoices.pdf', $record))
+                    ->url(fn(Invoice $record) => route('invoices.pdf', $record))
                     ->openUrlInNewTab(),
 
                 Action::make('downloadPdf')
                     ->label(__('Download PDF'))
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('success')
-                    ->url(fn (Invoice $record) => route('invoices.pdf.download', $record)),
+                    ->url(fn(Invoice $record) => route('invoices.pdf.download', $record)),
             ])
                 ->label(__('PDF'))
                 ->icon('heroicon-o-document-text')
@@ -69,7 +69,7 @@ class EditInvoice extends EditRecord
                 ->label(__('Preview Posting'))
                 ->icon('heroicon-o-eye')
                 ->color('info')
-                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft)
+                ->visible(fn(Invoice $record): bool => $record->status === InvoiceStatus::Draft)
                 ->requiresConfirmation()
                 ->modalHeading(__('Posting Preview'))
                 ->modalSubmitAction(false)
@@ -88,7 +88,7 @@ class EditInvoice extends EditRecord
                 ->label(__('Export Preview (CSV)'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('gray')
-                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->visible(fn(Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && !app()->environment('production'))
                 ->action(function (Invoice $record): StreamedResponse {
                     $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
                     $rows = [];
@@ -104,7 +104,7 @@ class EditInvoice extends EditRecord
                     }
                     $csv = '';
                     foreach ($rows as $row) {
-                        $csv .= implode(',', array_map(fn ($v) => '"' . str_replace('"', '""', (string) $v) . '"', $row)) . "\n";
+                        $csv .= implode(',', array_map(fn($v) => '"' . str_replace('"', '""', (string) $v) . '"', $row)) . "\n";
                     }
                     $filename = 'invoice-' . ($record->invoice_number ?: ('DRAFT-' . str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))) . '-preview.csv';
 
@@ -119,7 +119,7 @@ class EditInvoice extends EditRecord
                 ->label(__('Export Preview (PDF)'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
-                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->visible(fn(Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && !app()->environment('production'))
                 ->action(function (Invoice $record): StreamedResponse {
                     $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
                     $pdf = Pdf::loadView('filament/accounting/invoices/preview-posting-pdf', [
@@ -139,18 +139,19 @@ class EditInvoice extends EditRecord
                 ->label(__('invoice.confirm_invoice'))
                 ->color('success')
                 ->requiresConfirmation()
-                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft)
-                ->disabled(fn (Invoice $record): bool => $record->invoiceLines->isEmpty() || $record->total_amount->isZero())
+                ->visible(fn(Invoice $record): bool => $record->status === InvoiceStatus::Draft)
+                ->disabled(fn(Invoice $record): bool => $record->invoiceLines->isEmpty() || $record->total_amount->isZero())
                 ->action(function (Invoice $record): void {
                     $this->save();
                     $service = app(InvoiceService::class);
                     try {
                         $user = Auth::user();
-                        if (! $user) {
+                        if (!$user) {
                             throw new Exception('User must be authenticated to confirm invoice');
                         }
                         $service->confirm($record, $user);
                         Notification::make()->title(__('invoice.invoice_confirmed_successfully'))->success()->send();
+                        $this->redirect(InvoiceResource::getUrl('edit', ['record' => $record]));
                     } catch (Exception $e) {
                         Notification::make()->title(__('invoice.error_confirming_invoice'))->body($e->getMessage())->danger()->send();
                     }
@@ -167,7 +168,7 @@ class EditInvoice extends EditRecord
                         ->label(__('payment.form.journal_id'))
                         ->options(function (): array {
                             $tenant = Filament::getTenant();
-                            if (! $tenant instanceof Company) {
+                            if (!$tenant instanceof Company) {
                                 return [];
                             }
 
@@ -178,7 +179,7 @@ class EditInvoice extends EditRecord
                         ->required()
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
-                            if (! $tenant instanceof Company) {
+                            if (!$tenant instanceof Company) {
                                 return null;
                             }
 
@@ -193,13 +194,13 @@ class EditInvoice extends EditRecord
                     MoneyInput::make('amount')
                         ->label(__('payment.form.amount'))
                         ->currencyField('currency_id')
-                        ->default(fn (Invoice $record) => $record->getRemainingAmount())
+                        ->default(fn(Invoice $record) => $record->getRemainingAmount())
                         ->required(),
                     TextInput::make('reference')
                         ->label(__('payment.form.reference'))
                         ->placeholder(__('Optional reference')),
                     Hidden::make('currency_id')
-                        ->default(fn (Invoice $record) => $record->currency_id),
+                        ->default(fn(Invoice $record) => $record->currency_id),
                 ])
                 ->action(function (Invoice $record, array $data) {
                     try {
@@ -229,7 +230,7 @@ class EditInvoice extends EditRecord
 
                         // Create and confirm payment
                         $user = Auth::user();
-                        if (! $user) {
+                        if (!$user) {
                             throw new Exception('User must be authenticated to create payment');
                         }
                         $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
@@ -248,8 +249,8 @@ class EditInvoice extends EditRecord
                     }
                 })
                 ->visible(
-                    fn (Invoice $record) => $record->status === InvoiceStatus::Posted &&
-                        ! $record->getRemainingAmount()->isZero()
+                    fn(Invoice $record) => $record->status === InvoiceStatus::Posted &&
+                    !$record->getRemainingAmount()->isZero()
                 ),
 
             // Actions\Action::make('resetToDraft')
@@ -272,7 +273,7 @@ class EditInvoice extends EditRecord
 
             DeleteAction::make()
                 ->action(function (Model $record) {
-                    if (! $record instanceof Invoice) {
+                    if (!$record instanceof Invoice) {
                         throw new Exception('Invalid record type');
                     }
                     app(InvoiceService::class)->delete($record);
@@ -286,7 +287,7 @@ class EditInvoice extends EditRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $record = $this->getRecord();
-        if (! $record instanceof Invoice) {
+        if (!$record instanceof Invoice) {
             return $data;
         }
         $record->loadMissing('invoiceLines', 'currency');
@@ -307,7 +308,7 @@ class EditInvoice extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        if (! $record instanceof Invoice) {
+        if (!$record instanceof Invoice) {
             // Filament guarantees the record is an Invoice, but add guard for Larastan
             $record = Invoice::findOrFail((int) $record->getKey());
         }
@@ -349,7 +350,7 @@ class EditInvoice extends EditRecord
     protected function getHeaderWidgets(): array
     {
         return [
-            // InvoiceResource\Widgets\AgingAnalysisWidget::class,
+                // InvoiceResource\Widgets\AgingAnalysisWidget::class,
             SettlementSummaryWidget::class,
         ];
     }
