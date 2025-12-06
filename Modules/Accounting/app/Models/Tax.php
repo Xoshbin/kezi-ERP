@@ -161,12 +161,12 @@ class Tax extends Model
      */
     public function getRatePercentageAttribute(): float
     {
-        return (float) $this->rate * 100; // 1500 → 15.00%
+        return (float) $this->rate * 100; // 0.15 -> 15.00%
     }
 
     public function getRateFractionAttribute(): float
     {
-        return $this->rate / 100; // 1500 → 15.00%
+        return (float) $this->rate; // 0.15 -> 0.15
     }
 
     /**
