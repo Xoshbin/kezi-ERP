@@ -12,20 +12,19 @@
         "php": "^8.3",
         "barryvdh/laravel-dompdf": "^3.1",
         "brick/money": "^0.10.1",
-        "coolsam/modules": "^5.0",
+        "craft-forge/filament-language-switcher": "^1.0",
         "dutchcodingcompany/filament-developer-logins": "^2.0",
         "filament/filament": "^4.0",
         "lara-zeus/spatie-translatable": "^1.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "nwidart/laravel-modules": "^12.0",
+        "pxlrbt/filament-environment-indicator": "^3.2",
         "xoshbin/filament-custom-fields": "dev-main",
         "xoshbin/filament-translatable-select": "dev-main",
         "xoshbin/pertuk": "^0.0.4"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.6",
-        "driftingly/rector-laravel": "*",
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.0",
         "laravel/boost": "^1.1",
@@ -37,8 +36,7 @@
         "pestphp/pest": "^4.0",
         "pestphp/pest-plugin-browser": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0",
-        "pestphp/pest-plugin-livewire": "^4.0",
-        "rector/rector": "*"
+        "pestphp/pest-plugin-livewire": "^4.0"
     },
     "autoload": {
         "psr-4": {
@@ -83,11 +81,6 @@
     "extra": {
         "laravel": {
             "dont-discover": []
-        },
-        "merge-plugin": {
-            "include": [
-                "Modules/*/composer.json"
-            ]
         }
     },
     "config": {
