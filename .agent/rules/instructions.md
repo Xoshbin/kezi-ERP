@@ -1,5 +1,5 @@
 ---
-applyTo: "**"
+trigger: always_on
 ---
 
 Making correct and standard double entry accounting like odoo (but better) is our fist objecive

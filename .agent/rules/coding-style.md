@@ -1,4 +1,6 @@
-# Coding Style & Architectural Standards
+---
+trigger: always_on
+---
 
 This document outlines the official coding styles, architectural patterns, and best practices for this application. [cite: 2312] Adherence to these standards is mandatory to ensure consistency, maintainability, and robustness. [cite: 2313]
 
@@ -153,18 +155,4 @@ The application follows a strict layered architecture to separate concerns. [cit
 
 ### 5.2. Safe Aggregation of Money Objects
 
-**Rule:** When calculating totals, you **MUST** use the arithmetic methods provided by `Brick\Money\Money` objects (e.g., `plus()`). Direct casting of the `Money` object or its amount to a `float` for summation is strictly forbidden and will cause a fatal `ErrorException`. [cite: 2392]
-
-**Rationale:** The `getAmount()` method on a `Money` object returns a `Brick\Math\BigDecimal` object, not a primitive type. Attempting to cast this will crash the application. [cite: 2392]
-
-## 6\. Internationalization (I18n)
-
-**Rule:** All user-facing strings (UI, exceptions, notifications) **MUST** be translatable using Laravel's localization features. [cite: 2390]
-
-**Rationale:** To ensure the application can be adapted for different languages and regions, which is critical for markets like Iraq with multiple official languages. [cite: 2391, 2392]
-
-**Implementation:**
-
-  **PHP Code:** Use the `__()` helper function. [cite: 2394]
-  **Blade Templates:** Use the `@lang()` directive. [cite: 2395]
-  **No Hardcoded Strings:** User-facing text **MUST NOT** be hardcoded. [cite: 2400]
+**Rule:** When calculating totals, you **MUST** use the arithmetic methods provided by `Brick\Money\Money` objects (e.g., `plus()`). Direct casting of the `Money` object or its amount to a `float` for summation is strictly forbidden and w
