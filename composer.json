@@ -21,6 +21,8 @@
         "pxlrbt/filament-environment-indicator": "^3.2",
         "xoshbin/filament-custom-fields": "dev-main",
         "xoshbin/filament-translatable-select": "dev-main",
+        "coolsam/modules": "^5.0",
+        "nwidart/laravel-modules": "^11.0",
         "xoshbin/pertuk": "^0.0.4"
     },
     "require-dev": {
@@ -81,6 +83,11 @@
     "extra": {
         "laravel": {
             "dont-discover": []
+        },
+        "merge-plugin": {
+            "include": [
+                "Modules/*/composer.json"
+            ]
         }
     },
     "config": {
