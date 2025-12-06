@@ -27,6 +27,7 @@ use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 use CraftForge\FilamentLanguageSwitcher\FilamentLanguageSwitcherPlugin;
 use DutchCodingCompany\FilamentDeveloperLogins\FilamentDeveloperLoginsPlugin;
+use Coolsam\Modules\ModulesPlugin;
 
 class JmeryarPanelProvider extends PanelProvider
 {
@@ -74,13 +75,14 @@ class JmeryarPanelProvider extends PanelProvider
             ->tenantProfile(EditCompanyProfile::class)
             ->plugins([
                 // JmeryarTheme::make(),
+                ModulesPlugin::make(),
                 FilamentLanguageSwitcherPlugin::make()
-                ->locales([
-                    ['code' => 'ckb', 'name' => 'کوردی'],
-                    ['code' => 'en', 'name' => 'English'],
-                    ['code' => 'ar', 'name' => 'العربية'],
-                ])
-                ->showFlags(false),
+                    ->locales([
+                        ['code' => 'ckb', 'name' => 'کوردی'],
+                        ['code' => 'en', 'name' => 'English'],
+                        ['code' => 'ar', 'name' => 'العربية'],
+                    ])
+                    ->showFlags(false),
                 EnvironmentIndicatorPlugin::make()
                     ->showBadge(false)
                     ->showBorder(true),
