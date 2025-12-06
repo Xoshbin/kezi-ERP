@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 ### 🧠 **Purpose**
 
 This document outlines the coding and architectural principles for building a **headless accounting application for Iraq**. It's inspired by Odoo's robust accounting rules but adapted for a market without widespread digital banking.

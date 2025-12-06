@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # Copilot Instructions - JMeryar ERP System
 
 ## Project Overview
