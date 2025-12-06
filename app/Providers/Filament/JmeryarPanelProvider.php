@@ -44,6 +44,7 @@ class JmeryarPanelProvider extends PanelProvider
             ->topNavigation()
             ->maxContentWidth('full')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
+            ->discoverResources(in: base_path('Modules/Foundation/app/Filament/Resources'), for: 'Modules\\Foundation\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Dashboard::class,
