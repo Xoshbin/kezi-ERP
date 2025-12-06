@@ -2,37 +2,37 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\Tenancy\EditCompanyProfile;
-use App\Filament\Pages\Tenancy\RegisterCompany;
-use App\Models\Company;
-use Coolsam\Modules\ModulesPlugin;
-use DutchCodingCompany\FilamentDeveloperLogins\FilamentDeveloperLoginsPlugin;
-use Filament\Http\Middleware\Authenticate;
-use Filament\Http\Middleware\AuthenticateSession;
-use Filament\Http\Middleware\DisableBladeIconComponents;
-use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
+use Filament\Widgets;
+use App\Models\Company;
 use Filament\PanelProvider;
+use Filament\Pages\Dashboard;
 use Filament\Support\Colors\Color;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
-use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
-use Xoshbin\CustomFields\CustomFieldsPlugin;
 use Xoshbin\JmeryarTheme\JmeryarTheme;
-use Modules\Foundation\Filament\Resources\CurrencyRates\CurrencyRateResource;
-use Modules\Foundation\Filament\Resources\PdfSettings\PdfSettingsResource;
+use Filament\Http\Middleware\Authenticate;
+use Xoshbin\CustomFields\CustomFieldsPlugin;
+use App\Filament\Pages\Tenancy\RegisterCompany;
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Filament\Http\Middleware\AuthenticateSession;
+use App\Filament\Pages\Tenancy\EditCompanyProfile;
+use Xoshbin\FilamentAiHelper\FilamentAiHelperPlugin;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Http\Middleware\DisableBladeIconComponents;
+use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
+use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
+use CraftForge\FilamentLanguageSwitcher\FilamentLanguageSwitcherPlugin;
+use DutchCodingCompany\FilamentDeveloperLogins\FilamentDeveloperLoginsPlugin;
 
 class JmeryarPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        // Base panel configuration
-        $panel = $panel
+        return $panel
             ->default()
             ->id('jmeryar')
             ->path('jmeryar')
@@ -42,7 +42,6 @@ class JmeryarPanelProvider extends PanelProvider
             ])
             ->topNavigation()
             ->maxContentWidth('full')
-            // App-level discovery
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
@@ -67,13 +66,24 @@ class JmeryarPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->brandName('')
+            ->globalSearch(false)
             ->viteTheme('resources/js/filament/jmeryar/theme.js')
             ->tenant(Company::class)
             ->tenantRegistration(RegisterCompany::class)
             ->tenantProfile(EditCompanyProfile::class)
             ->plugins([
-                ModulesPlugin::make(),
                 // JmeryarTheme::make(),
+                FilamentLanguageSwitcherPlugin::make()
+                ->locales([
+                    ['code' => 'ckb', 'name' => 'کوردی'],
+                    ['code' => 'en', 'name' => 'English'],
+                    ['code' => 'ar', 'name' => 'العربية'],
+                ])
+                ->showFlags(false),
+                EnvironmentIndicatorPlugin::make()
+                    ->showBadge(false)
+                    ->showBorder(true),
                 CustomFieldsPlugin::make(),
                 SpatieTranslatablePlugin::make()
                     ->defaultLocales(['en', 'ckb', 'ar']),
@@ -81,38 +91,12 @@ class JmeryarPanelProvider extends PanelProvider
                     ->enabled(app()->environment('local'))
                     ->users([
                         'Admin' => 'admin@jmeryar.com',
-                    ]),
+                    ])
                 // FilamentAiHelperPlugin::make()
                 //     ->buttonLabel('AccounTech Pro')
                 //     ->buttonIcon('heroicon-o-sparkles')
                 //     ->modalWidth('2xl')
                 //     ->enabled(fn () => (bool) config('filament-ai-helper.enabled', true) && !empty(config('filament-ai-helper.gemini.api_key'))),
             ]);
-
-        // Dynamically discover Filament classes from enabled Modules
-        $modulesBase = base_path('Modules');
-        foreach (glob($modulesBase . '/*/app/Filament/Resources', GLOB_ONLYDIR) as $resourcesDir) {
-            $moduleName = basename(dirname(dirname($resourcesDir))); // Modules/{Module}/app/Filament/Resources
-            $namespace = 'Modules\\' . $moduleName . '\\Filament\\Resources';
-            $panel = $panel->discoverResources(in: $resourcesDir, for: $namespace);
-        }
-        foreach (glob($modulesBase . '/*/app/Filament/Pages', GLOB_ONLYDIR) as $pagesDir) {
-            $moduleName = basename(dirname(dirname($pagesDir)));
-            $namespace = 'Modules\\' . $moduleName . '\\Filament\\Pages';
-            $panel = $panel->discoverPages(in: $pagesDir, for: $namespace);
-        }
-        foreach (glob($modulesBase . '/*/app/Filament/Widgets', GLOB_ONLYDIR) as $widgetsDir) {
-            $moduleName = basename(dirname(dirname($widgetsDir)));
-            $namespace = 'Modules\\' . $moduleName . '\\Filament\\Widgets';
-            $panel = $panel->discoverWidgets(in: $widgetsDir, for: $namespace);
-        }
-
-        // Explicitly register critical Foundation resources to ensure routes exist during tests
-        $panel = $panel->resources([
-            CurrencyRateResource::class,
-            PdfSettingsResource::class,
-        ]);
-
-        return $panel;
     }
 }
