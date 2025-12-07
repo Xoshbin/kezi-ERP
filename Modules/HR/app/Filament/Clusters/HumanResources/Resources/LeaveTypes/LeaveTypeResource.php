@@ -29,17 +29,17 @@ class LeaveTypeResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('leave_type.navigation_label');
+        return __('hr::leave_type.navigation_label');
     }
 
     public static function getModelLabel(): string
     {
-        return __('leave_type.navigation_label');
+        return __('hr::leave_type.navigation_label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('leave_type.navigation_label');
+        return __('hr::leave_type.navigation_label');
     }
 
     public static function form(Schema $schema): Schema

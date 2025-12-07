@@ -41,27 +41,27 @@ enum PurchaseOrderStatus: string
     {
         return match ($this) {
             // Pre-commitment phase
-            self::RFQ => __('purchase_orders.status.rfq'),
-            self::RFQSent => __('purchase_orders.status.rfq_sent'),
+            self::RFQ => __('purchase::purchase_orders.status.rfq'),
+            self::RFQSent => __('purchase::purchase_orders.status.rfq_sent'),
 
             // Commitment phase
-            self::Draft => __('purchase_orders.status.draft'),
-            self::Sent => __('purchase_orders.status.sent'),
-            self::Confirmed => __('purchase_orders.status.confirmed'),
+            self::Draft => __('purchase::purchase_orders.status.draft'),
+            self::Sent => __('purchase::purchase_orders.status.sent'),
+            self::Confirmed => __('purchase::purchase_orders.status.confirmed'),
 
             // Fulfillment phase
-            self::ToReceive => __('purchase_orders.status.to_receive'),
-            self::PartiallyReceived => __('purchase_orders.status.partially_received'),
-            self::FullyReceived => __('purchase_orders.status.fully_received'),
+            self::ToReceive => __('purchase::purchase_orders.status.to_receive'),
+            self::PartiallyReceived => __('purchase::purchase_orders.status.partially_received'),
+            self::FullyReceived => __('purchase::purchase_orders.status.fully_received'),
 
             // Billing phase
-            self::ToBill => __('purchase_orders.status.to_bill'),
-            self::PartiallyBilled => __('purchase_orders.status.partially_billed'),
-            self::FullyBilled => __('purchase_orders.status.fully_billed'),
+            self::ToBill => __('purchase::purchase_orders.status.to_bill'),
+            self::PartiallyBilled => __('purchase::purchase_orders.status.partially_billed'),
+            self::FullyBilled => __('purchase::purchase_orders.status.fully_billed'),
 
             // Final states
-            self::Done => __('purchase_orders.status.done'),
-            self::Cancelled => __('purchase_orders.status.cancelled'),
+            self::Done => __('purchase::purchase_orders.status.done'),
+            self::Cancelled => __('purchase::purchase_orders.status.cancelled'),
         };
     }
 

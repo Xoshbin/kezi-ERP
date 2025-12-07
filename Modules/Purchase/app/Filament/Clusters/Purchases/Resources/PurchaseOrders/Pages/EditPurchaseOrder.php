@@ -28,7 +28,7 @@ class EditPurchaseOrder extends EditRecord
     {
         return [
             Action::make('send_rfq')
-                ->label(__('purchase_orders.actions.send_rfq'))
+                ->label(__('purchase::purchase_orders.actions.send_rfq'))
                 ->icon('heroicon-o-paper-airplane')
                 ->color('blue')
                 ->visible(fn() => $this->record->status === PurchaseOrderStatus::RFQ)
@@ -37,7 +37,7 @@ class EditPurchaseOrder extends EditRecord
                     app(PurchaseOrderService::class)->sendRFQ($this->record, Auth::user());
 
                     Notification::make()
-                        ->title(__('purchase_orders.notifications.rfq_sent'))
+                        ->title(__('purchase::purchase_orders.notifications.rfq_sent'))
                         ->success()
                         ->send();
 
@@ -45,7 +45,7 @@ class EditPurchaseOrder extends EditRecord
                 }),
 
             Action::make('send')
-                ->label(__('purchase_orders.actions.send'))
+                ->label(__('purchase::purchase_orders.actions.send'))
                 ->icon('heroicon-o-paper-airplane')
                 ->color('blue')
                 ->visible(fn() => $this->record->status === PurchaseOrderStatus::Draft)
@@ -54,7 +54,7 @@ class EditPurchaseOrder extends EditRecord
                     app(PurchaseOrderService::class)->send($this->record, Auth::user());
 
                     Notification::make()
-                        ->title(__('purchase_orders.notifications.sent'))
+                        ->title(__('purchase::purchase_orders.notifications.sent'))
                         ->success()
                         ->send();
 
@@ -62,7 +62,7 @@ class EditPurchaseOrder extends EditRecord
                 }),
 
             Action::make('confirm')
-                ->label(__('purchase_orders.actions.confirm'))
+                ->label(__('purchase::purchase_orders.actions.confirm'))
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
                 ->visible(fn() => $this->record->canBeConfirmed())
@@ -71,7 +71,7 @@ class EditPurchaseOrder extends EditRecord
                     app(PurchaseOrderService::class)->confirm($this->record, Auth::user());
 
                     Notification::make()
-                        ->title(__('purchase_orders.notifications.confirmed'))
+                        ->title(__('purchase::purchase_orders.notifications.confirmed'))
                         ->success()
                         ->send();
 
@@ -79,19 +79,19 @@ class EditPurchaseOrder extends EditRecord
                 }),
 
             Action::make('ready_to_receive')
-                ->label(__('purchase_orders.actions.ready_to_receive'))
+                ->label(__('purchase::purchase_orders.actions.ready_to_receive'))
                 ->icon('heroicon-o-truck')
                 ->color('blue')
                 ->visible(fn() => $this->record->status === PurchaseOrderStatus::Confirmed)
                 ->requiresConfirmation()
-                ->modalHeading(__('purchase_orders.actions.ready_to_receive_confirmation_title'))
-                ->modalDescription(__('purchase_orders.actions.ready_to_receive_confirmation_description'))
+                ->modalHeading(__('purchase::purchase_orders.actions.ready_to_receive_confirmation_title'))
+                ->modalDescription(__('purchase::purchase_orders.actions.ready_to_receive_confirmation_description'))
                 ->action(function () {
                     $this->record->status = PurchaseOrderStatus::ToReceive;
                     $this->record->save();
 
                     Notification::make()
-                        ->title(__('purchase_orders.notifications.ready_to_receive'))
+                        ->title(__('purchase::purchase_orders.notifications.ready_to_receive'))
                         ->success()
                         ->send();
 
@@ -99,13 +99,13 @@ class EditPurchaseOrder extends EditRecord
                 }),
 
             Action::make('create_bill')
-                ->label(__('purchase_orders.actions.create_bill'))
+                ->label(__('purchase::purchase_orders.actions.create_bill'))
                 ->icon('heroicon-o-document-plus')
                 ->color('success')
                 ->visible(fn() => $this->record->canCreateBill())
                 ->requiresConfirmation()
-                ->modalHeading(__('purchase_orders.actions.create_bill_confirmation_title'))
-                ->modalDescription(__('purchase_orders.actions.create_bill_confirmation_description'))
+                ->modalHeading(__('purchase::purchase_orders.actions.create_bill_confirmation_title'))
+                ->modalDescription(__('purchase::purchase_orders.actions.create_bill_confirmation_description'))
                 ->action(function () {
                     try {
                         // Generate a unique bill reference
@@ -130,8 +130,8 @@ class EditPurchaseOrder extends EditRecord
                         $vendorBill = app(CreateVendorBillFromPurchaseOrderAction::class)->execute($dto);
 
                         Notification::make()
-                            ->title(__('purchase_orders.notifications.bill_created_successfully'))
-                            ->body(__('purchase_orders.notifications.bill_created_body', ['reference' => $vendorBill->bill_reference]))
+                            ->title(__('purchase::purchase_orders.notifications.bill_created_successfully'))
+                            ->body(__('purchase::purchase_orders.notifications.bill_created_body', ['reference' => $vendorBill->bill_reference]))
                             ->success()
                             ->send();
 
@@ -142,7 +142,7 @@ class EditPurchaseOrder extends EditRecord
                         ]));
                     } catch (Exception $e) {
                         Notification::make()
-                            ->title(__('purchase_orders.notifications.bill_creation_failed'))
+                            ->title(__('purchase::purchase_orders.notifications.bill_creation_failed'))
                             ->body($e->getMessage())
                             ->danger()
                             ->send();
@@ -150,7 +150,7 @@ class EditPurchaseOrder extends EditRecord
                 }),
 
             Action::make('mark_done')
-                ->label(__('purchase_orders.actions.mark_done'))
+                ->label(__('purchase::purchase_orders.actions.mark_done'))
                 ->icon('heroicon-o-archive-box')
                 ->color('gray')
                 ->visible(fn() => $this->record->status === PurchaseOrderStatus::FullyBilled)
@@ -159,7 +159,7 @@ class EditPurchaseOrder extends EditRecord
                     app(PurchaseOrderService::class)->markAsDone($this->record, Auth::user());
 
                     Notification::make()
-                        ->title(__('purchase_orders.notifications.marked_done'))
+                        ->title(__('purchase::purchase_orders.notifications.marked_done'))
                         ->success()
                         ->send();
 
@@ -167,7 +167,7 @@ class EditPurchaseOrder extends EditRecord
                 }),
 
             Action::make('cancel')
-                ->label(__('purchase_orders.actions.cancel'))
+                ->label(__('purchase::purchase_orders.actions.cancel'))
                 ->icon('heroicon-o-x-circle')
                 ->color('danger')
                 ->visible(fn() => $this->record->canBeCancelled())
@@ -176,7 +176,7 @@ class EditPurchaseOrder extends EditRecord
                     app(PurchaseOrderService::class)->cancel($this->record, Auth::user());
 
                     Notification::make()
-                        ->title(__('purchase_orders.notifications.cancelled'))
+                        ->title(__('purchase::purchase_orders.notifications.cancelled'))
                         ->success()
                         ->send();
 

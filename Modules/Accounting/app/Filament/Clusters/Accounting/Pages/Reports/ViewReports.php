@@ -20,22 +20,22 @@ class ViewReports extends Page
 
     public static function getNavigationLabel(): string
     {
-        return __('reports.reports');
+        return __('accounting::reports.reports');
     }
 
     public function getTitle(): string|Htmlable
     {
-        return __('reports.financial_reports');
+        return __('accounting::reports.financial_reports');
     }
 
     public function getHeading(): string|Htmlable
     {
-        return __('reports.financial_reports');
+        return __('accounting::reports.financial_reports');
     }
 
     public function getSubheading(): ?string
     {
-        return __('reports.select_report_description');
+        return __('accounting::reports.select_report_description');
     }
 
     /**
@@ -49,86 +49,86 @@ class ViewReports extends Page
 
         return [
             'financial_statements' => [
-                'title' => __('reports.financial_statements'),
-                'description' => __('reports.financial_statements_description'),
+                'title' => __('accounting::reports.financial_statements'),
+                'description' => __('accounting::reports.financial_statements_description'),
                 'icon' => 'heroicon-o-chart-bar',
                 'reports' => [
                     [
-                        'name' => __('reports.profit_and_loss'),
-                        'description' => __('reports.profit_and_loss_description'),
+                        'name' => __('accounting::reports.profit_and_loss'),
+                        'description' => __('accounting::reports.profit_and_loss_description'),
                         'icon' => 'heroicon-o-chart-bar',
                         'url' => $baseUrl . '/view-profit-and-loss',
-                        'button_text' => __('reports.view_profit_loss'),
+                        'button_text' => __('accounting::reports.view_profit_loss'),
                     ],
                     [
-                        'name' => __('reports.balance_sheet'),
-                        'description' => __('reports.balance_sheet_description'),
+                        'name' => __('accounting::reports.balance_sheet'),
+                        'description' => __('accounting::reports.balance_sheet_description'),
                         'icon' => 'heroicon-o-scale',
                         'url' => $baseUrl . '/view-balance-sheet',
-                        'button_text' => __('reports.view_balance_sheet'),
+                        'button_text' => __('accounting::reports.view_balance_sheet'),
                     ],
                     [
-                        'name' => __('reports.trial_balance'),
-                        'description' => __('reports.trial_balance_description'),
+                        'name' => __('accounting::reports.trial_balance'),
+                        'description' => __('accounting::reports.trial_balance_description'),
                         'icon' => 'heroicon-o-scale',
                         'url' => $baseUrl . '/view-trial-balance',
-                        'button_text' => __('reports.view_trial_balance'),
+                        'button_text' => __('accounting::reports.view_trial_balance'),
                     ],
                 ],
             ],
             'detailed_reports' => [
-                'title' => __('reports.detailed_reports'),
-                'description' => __('reports.detailed_reports_description'),
+                'title' => __('accounting::reports.detailed_reports'),
+                'description' => __('accounting::reports.detailed_reports_description'),
                 'icon' => 'heroicon-o-document-text',
                 'reports' => [
                     [
-                        'name' => __('reports.general_ledger'),
-                        'description' => __('reports.general_ledger_description'),
+                        'name' => __('accounting::reports.general_ledger'),
+                        'description' => __('accounting::reports.general_ledger_description'),
                         'icon' => 'heroicon-o-document-text',
                         'url' => $baseUrl . '/view-general-ledger',
-                        'button_text' => __('reports.view_general_ledger'),
+                        'button_text' => __('accounting::reports.view_general_ledger'),
                     ],
                     [
-                        'name' => __('reports.partner_ledger'),
-                        'description' => __('reports.partner_ledger_description'),
+                        'name' => __('accounting::reports.partner_ledger'),
+                        'description' => __('accounting::reports.partner_ledger_description'),
                         'icon' => 'heroicon-o-document-text',
                         'url' => $baseUrl . '/view-partner-ledger',
-                        'button_text' => __('reports.view_partner_ledger'),
+                        'button_text' => __('accounting::reports.view_partner_ledger'),
                     ],
                 ],
             ],
             'aging_reports' => [
-                'title' => __('reports.aging_reports'),
-                'description' => __('reports.aging_reports_description'),
+                'title' => __('accounting::reports.aging_reports'),
+                'description' => __('accounting::reports.aging_reports_description'),
                 'icon' => 'heroicon-o-clock',
                 'reports' => [
                     [
-                        'name' => __('reports.aged_receivables'),
-                        'description' => __('reports.aged_receivables_description'),
+                        'name' => __('accounting::reports.aged_receivables'),
+                        'description' => __('accounting::reports.aged_receivables_description'),
                         'icon' => 'heroicon-o-clock',
                         'url' => $baseUrl . '/view-aged-receivables',
-                        'button_text' => __('reports.view_aged_receivables'),
+                        'button_text' => __('accounting::reports.view_aged_receivables'),
                     ],
                     [
-                        'name' => __('reports.aged_payables'),
-                        'description' => __('reports.aged_payables_description'),
+                        'name' => __('accounting::reports.aged_payables'),
+                        'description' => __('accounting::reports.aged_payables_description'),
                         'icon' => 'heroicon-o-clock',
                         'url' => $baseUrl . '/view-aged-payables',
-                        'button_text' => __('reports.view_aged_payables'),
+                        'button_text' => __('accounting::reports.view_aged_payables'),
                     ],
                 ],
             ],
             'tax_reports' => [
-                'title' => __('reports.tax_reports'),
-                'description' => __('reports.tax_reports_description'),
+                'title' => __('accounting::reports.tax_reports'),
+                'description' => __('accounting::reports.tax_reports_description'),
                 'icon' => 'heroicon-o-document-text',
                 'reports' => [
                     [
-                        'name' => __('reports.tax_report'),
-                        'description' => __('reports.tax_report_description'),
+                        'name' => __('accounting::reports.tax_report'),
+                        'description' => __('accounting::reports.tax_report_description'),
                         'icon' => 'heroicon-o-document-text',
                         'url' => $baseUrl . '/view-tax-report',
-                        'button_text' => __('reports.view_tax_report'),
+                        'button_text' => __('accounting::reports.view_tax_report'),
                     ],
                 ],
             ],

@@ -20,7 +20,7 @@ class VendorBillsRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('vendor_bill.plural_label');
+        return __('purchase::vendor_bill.plural_label');
     }
 
     public function table(Table $table): Table
@@ -29,7 +29,7 @@ class VendorBillsRelationManager extends RelationManager
             ->recordTitleAttribute('bill_reference')
             ->columns([
                 TextColumn::make('reference')
-                    ->label(__('vendor_bill.reference'))
+                    ->label(__('purchase::vendor_bill.reference'))
                     ->getStateUsing(function (VendorBill $record): string {
                         if ($record->bill_reference) {
                             return $record->bill_reference;
@@ -51,7 +51,7 @@ class VendorBillsRelationManager extends RelationManager
 
                 TextColumn::make('status')
                     ->badge()
-                    ->label(__('vendor_bill.status'))
+                    ->label(__('purchase::vendor_bill.status'))
                     ->colors([
                         'success' => VendorBillStatus::Posted,
                         'danger' => VendorBillStatus::Cancelled,
@@ -64,34 +64,34 @@ class VendorBillsRelationManager extends RelationManager
                     ]),
 
                 TextColumn::make('bill_date')
-                    ->label(__('vendor_bill.bill_date'))
+                    ->label(__('purchase::vendor_bill.bill_date'))
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('due_date')
-                    ->label(__('vendor_bill.due_date'))
+                    ->label(__('purchase::vendor_bill.due_date'))
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('paymentState')
-                    ->label(__('vendor_bill.payment_state'))
+                    ->label(__('purchase::vendor_bill.payment_state'))
                     ->formatStateUsing(fn(\Modules\Foundation\Enums\Shared\PaymentState $state): string => $state->label())
                     ->badge()
                     ->color(fn(\Modules\Foundation\Enums\Shared\PaymentState $state): string => $state->color()),
 
                 MoneyColumn::make('total_amount')
-                    ->label(__('vendor_bill.total_amount'))
+                    ->label(__('purchase::vendor_bill.total_amount'))
                     ->sortable(),
 
                 TextColumn::make('created_at')
-                    ->label(__('vendor_bill.created_at'))
+                    ->label(__('purchase::vendor_bill.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label(__('vendor_bill.actions.create_from_purchase_order'))
+                    ->label(__('purchase::vendor_bill.actions.create_from_purchase_order'))
                     ->icon('heroicon-o-document-plus')
                     ->url(
                         fn(): string =>

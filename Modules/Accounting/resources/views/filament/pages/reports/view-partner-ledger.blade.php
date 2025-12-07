@@ -10,12 +10,12 @@
             <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
                 <div class="mb-6">
                     <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-                        {{ __('reports.partner_ledger') }}
+                        {{ __('accounting::reports.partner_ledger') }}
                     </h2>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
                         {{ $reportData['partnerName'] }} -
-                        {{ __('reports.period') }}: {{ Carbon\Carbon::parse($startDate)->format('M j, Y') }}
-                        {{ __('reports.to') }} {{ Carbon\Carbon::parse($endDate)->format('M j, Y') }}
+                        {{ __('accounting::reports.period') }}: {{ Carbon\Carbon::parse($startDate)->format('M j, Y') }}
+                        {{ __('accounting::reports.to') }} {{ Carbon\Carbon::parse($endDate)->format('M j, Y') }}
                     </p>
                 </div>
 
@@ -23,7 +23,7 @@
                 <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                     <div class="flex justify-between items-center">
                         <span class="text-sm font-medium text-blue-800 dark:text-blue-200">
-                            {{ __('reports.opening_balance') }}
+                            {{ __('accounting::reports.opening_balance') }}
                         </span>
                         <span class="text-sm font-bold text-blue-900 dark:text-blue-100 {{ $reportData['openingBalanceAmount'] < 0 ? 'text-red-600 dark:text-red-400' : '' }}">
                             {{ $reportData['openingBalance'] }}
@@ -38,22 +38,22 @@
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        {{ __('reports.date') }}
+                                        {{ __('accounting::reports.date') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        {{ __('reports.reference') }}
+                                        {{ __('accounting::reports.reference') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        {{ __('reports.type') }}
+                                        {{ __('accounting::reports.type') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        {{ __('reports.debit') }}
+                                        {{ __('accounting::reports.debit') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        {{ __('reports.credit') }}
+                                        {{ __('accounting::reports.credit') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        {{ __('reports.balance') }}
+                                        {{ __('accounting::reports.balance') }}
                                     </th>
                                 </tr>
                             </thead>
@@ -103,7 +103,7 @@
                     <div class="mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                         <div class="flex justify-between items-center">
                             <span class="text-sm font-medium text-green-800 dark:text-green-200">
-                                {{ __('reports.closing_balance') }}
+                                {{ __('accounting::reports.closing_balance') }}
                             </span>
                             <span class="text-lg font-bold {{ $reportData['closingBalanceAmount'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-green-900 dark:text-green-100' }}">
                                 {{ $reportData['closingBalance'] }}
@@ -111,15 +111,15 @@
                         </div>
                         @if($reportData['closingBalanceAmount'] > 0)
                             <p class="text-xs text-green-700 dark:text-green-300 mt-1">
-                                {{ __('reports.customer_owes_us') }}
+                                {{ __('accounting::reports.customer_owes_us') }}
                             </p>
                         @elseif($reportData['closingBalanceAmount'] < 0)
                             <p class="text-xs text-red-700 dark:text-red-300 mt-1">
-                                {{ __('reports.we_owe_vendor') }}
+                                {{ __('accounting::reports.we_owe_vendor') }}
                             </p>
                         @else
                             <p class="text-xs text-green-700 dark:text-green-300 mt-1">
-                                {{ __('reports.account_balanced') }}
+                                {{ __('accounting::reports.account_balanced') }}
                             </p>
                         @endif
                     </div>
@@ -129,8 +129,8 @@
                             <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            <h3 class="text-lg font-medium mb-2">{{ __('reports.no_transactions') }}</h3>
-                            <p class="text-sm">{{ __('reports.no_transactions_found_for_period') }}</p>
+                            <h3 class="text-lg font-medium mb-2">{{ __('accounting::reports.no_transactions') }}</h3>
+                            <p class="text-sm">{{ __('accounting::reports.no_transactions_found_for_period') }}</p>
                         </div>
                     </div>
                 @endif
@@ -143,10 +143,10 @@
                     </svg>
                 </div>
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                    {{ __('reports.no_report_generated') }}
+                    {{ __('accounting::reports.no_report_generated') }}
                 </h3>
                 <p class="text-gray-600 dark:text-gray-400">
-                    {{ __('reports.select_partner_and_generate') }}
+                    {{ __('accounting::reports.select_partner_and_generate') }}
                 </p>
             </div>
         @endif

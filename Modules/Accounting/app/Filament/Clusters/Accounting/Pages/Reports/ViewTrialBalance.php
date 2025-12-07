@@ -34,17 +34,17 @@ class ViewTrialBalance extends Page
 
     public static function getNavigationLabel(): string
     {
-        return __('reports.trial_balance');
+        return __('accounting::reports.trial_balance');
     }
 
     public function getTitle(): string|Htmlable
     {
-        return __('reports.trial_balance_report');
+        return __('accounting::reports.trial_balance_report');
     }
 
     public function getHeading(): string|Htmlable
     {
-        return __('reports.trial_balance_report');
+        return __('accounting::reports.trial_balance_report');
     }
 
     public function mount(): void
@@ -59,10 +59,10 @@ class ViewTrialBalance extends Page
     {
         return $schema
             ->components([
-                Section::make(__('reports.report_parameters'))
+                Section::make(__('accounting::reports.report_parameters'))
                     ->schema([
                         DatePicker::make('asOfDate')
-                            ->label(__('reports.as_of_date'))
+                            ->label(__('accounting::reports.as_of_date'))
                             ->required()
                             ->default(Carbon::now()),
                     ]),
@@ -73,7 +73,7 @@ class ViewTrialBalance extends Page
     {
         return [
             Action::make('generate')
-                ->label(__('reports.generate_report'))
+                ->label(__('accounting::reports.generate_report'))
                 ->icon('heroicon-o-play')
                 ->color('primary')
                 ->action('generateReport'),

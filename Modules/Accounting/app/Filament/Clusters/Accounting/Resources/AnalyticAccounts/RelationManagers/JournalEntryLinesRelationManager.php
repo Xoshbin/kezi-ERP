@@ -22,7 +22,7 @@ class JournalEntryLinesRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('analytic_account.relation_managers.journal_entry_lines.title');
+        return __('accounting::analytic_account.relation_managers.journal_entry_lines.title');
     }
 
     public function form(Schema $schema): Schema
@@ -31,18 +31,18 @@ class JournalEntryLinesRelationManager extends RelationManager
             ->components([
                 Select::make('journal_entry_id')
                     ->relationship('journalEntry', 'reference')
-                    ->label(__('analytic_account.journal_entry'))
+                    ->label(__('accounting::analytic_account.journal_entry'))
                     ->required(),
                 TextInput::make('debit')
-                    ->label(__('analytic_account.debit'))
+                    ->label(__('accounting::analytic_account.debit'))
                     ->required()
                     ->numeric(),
                 TextInput::make('credit')
-                    ->label(__('analytic_account.credit'))
+                    ->label(__('accounting::analytic_account.credit'))
                     ->required()
                     ->numeric(),
                 TextInput::make('description')
-                    ->label(__('analytic_account.description'))
+                    ->label(__('accounting::analytic_account.description'))
                     ->maxLength(255),
             ]);
     }
@@ -54,13 +54,13 @@ class JournalEntryLinesRelationManager extends RelationManager
             ->modifyQueryUsing(fn (Builder $query) => $query->with(['journalEntry.company.currency']))
             ->columns([
                 TextColumn::make('journalEntry.reference')
-                    ->label(__('analytic_account.journal_entry')),
+                    ->label(__('accounting::analytic_account.journal_entry')),
                 TextColumn::make('debit')
-                    ->label(__('analytic_account.debit')),
+                    ->label(__('accounting::analytic_account.debit')),
                 TextColumn::make('credit')
-                    ->label(__('analytic_account.credit')),
+                    ->label(__('accounting::analytic_account.credit')),
                 TextColumn::make('description')
-                    ->label(__('analytic_account.description')),
+                    ->label(__('accounting::analytic_account.description')),
             ])
             ->filters([
                 //

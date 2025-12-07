@@ -20,7 +20,7 @@ class AnalyticPlansRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('analytic_account.relation_managers.analytic_plans.title');
+        return __('accounting::analytic_account.relation_managers.analytic_plans.title');
     }
 
     public function form(Schema $schema): Schema
@@ -28,7 +28,7 @@ class AnalyticPlansRelationManager extends RelationManager
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->label(__('analytic_account.name'))
+                    ->label(__('accounting::analytic_account.name'))
                     ->required()
                     ->maxLength(255),
             ]);
@@ -40,7 +40,7 @@ class AnalyticPlansRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
-                    ->label(__('analytic_account.name')),
+                    ->label(__('accounting::analytic_account.name')),
             ])
             ->filters([
                 //

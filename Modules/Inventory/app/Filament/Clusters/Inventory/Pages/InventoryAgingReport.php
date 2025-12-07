@@ -88,7 +88,7 @@ class InventoryAgingReport extends Page implements HasForms
                             ->afterStateUpdated(fn() => $this->generateReport()),
 
                         Select::make('location_ids')
-                            ->label(__('inventory_reports.aging.filters.locations'))
+                            ->label(__('inventory::inventory_reports.aging.filters.locations'))
                             ->options(function () {
                                 return StockLocation::query()
                                     ->where('company_id', Filament::getTenant()?->getKey())

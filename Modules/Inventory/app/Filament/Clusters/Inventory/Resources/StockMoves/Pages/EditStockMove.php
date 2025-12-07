@@ -41,7 +41,7 @@ class EditStockMove extends EditRecord
         $record = $this->getRecord();
         $reference = $record->reference ?? $record->id ?? '';
 
-        return __('stock_move.edit_title', ['reference' => $reference]);
+        return __('inventory::stock_move.edit_title', ['reference' => $reference]);
     }
 
     protected function getRedirectUrl(): string
@@ -108,7 +108,7 @@ class EditStockMove extends EditRecord
         } catch (InsufficientCostInformationException $e) {
             // Show user-friendly error notification
             Notification::make()
-                ->title(__('inventory_accounting.cost_validation_errors.title'))
+                ->title(__('inventory::inventory_accounting.cost_validation_errors.title'))
                 ->body($e->getUserFriendlyMessage())
                 ->danger()
                 ->persistent()

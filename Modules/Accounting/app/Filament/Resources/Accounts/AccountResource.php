@@ -37,31 +37,31 @@ class AccountResource extends Resource
 
     public static function getPluralModelLabel(): string
     {
-        return __('account.plural_label');
+        return __('accounting::account.plural_label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('account.plural_label');
+        return __('accounting::account.plural_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make(__('account.basic_information'))
-                    ->description(__('account.basic_information_description'))
+                Section::make(__('accounting::account.basic_information'))
+                    ->description(__('accounting::account.basic_information_description'))
                     ->schema([
                         TextInput::make('code')
-                            ->label(__('account.code'))
+                            ->label(__('accounting::account.code'))
                             ->required()
                             ->maxLength(255),
                         TextInput::make('name')
-                            ->label(__('account.name'))
+                            ->label(__('accounting::account.name'))
                             ->required()
                             ->maxLength(255),
                         Select::make('type')
-                            ->label(__('account.type'))
+                            ->label(__('accounting::account.type'))
                             ->required()
                             ->options(
                                 collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())
@@ -69,11 +69,11 @@ class AccountResource extends Resource
                             )
                             ->searchable(),
                         Toggle::make('is_deprecated')
-                            ->label(__('account.is_deprecated'))
+                            ->label(__('accounting::account.is_deprecated'))
                             ->required(),
                         Toggle::make('allow_reconciliation')
-                            ->label(__('account.allow_reconciliation'))
-                            ->helperText(__('account.allow_reconciliation_help'))
+                            ->label(__('accounting::account.allow_reconciliation'))
+                            ->helperText(__('accounting::account.allow_reconciliation_help'))
                             ->default(false),
                     ])
                     ->columns(2)
@@ -86,27 +86,27 @@ class AccountResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('code')
-                    ->label(__('account.code'))
+                    ->label(__('accounting::account.code'))
                     ->searchable(),
                 TextColumn::make('name')
-                    ->label(__('account.name'))
+                    ->label(__('accounting::account.name'))
                     ->searchable(),
                 TextColumn::make('type')
-                    ->label(__('account.type'))
+                    ->label(__('accounting::account.type'))
                     ->searchable(),
                 IconColumn::make('is_deprecated')
-                    ->label(__('account.is_deprecated'))
+                    ->label(__('accounting::account.is_deprecated'))
                     ->boolean(),
                 IconColumn::make('allow_reconciliation')
-                    ->label(__('account.allow_reconciliation'))
+                    ->label(__('accounting::account.allow_reconciliation'))
                     ->boolean(),
                 TextColumn::make('created_at')
-                    ->label(__('account.created_at'))
+                    ->label(__('accounting::account.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label(__('account.updated_at'))
+                    ->label(__('accounting::account.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

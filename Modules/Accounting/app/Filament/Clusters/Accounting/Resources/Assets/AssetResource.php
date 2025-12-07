@@ -50,33 +50,33 @@ class AssetResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('asset.label');
+        return __('accounting::asset.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('asset.plural_label');
+        return __('accounting::asset.plural_label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('asset.plural_label');
+        return __('accounting::asset.plural_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make(__('asset.asset_currency_info'))
-                ->description(__('asset.asset_currency_info_description'))
+            Section::make(__('accounting::asset.asset_currency_info'))
+                ->description(__('accounting::asset.asset_currency_info_description'))
                 ->schema([
                     TextInput::make('name')
-                        ->label(__('asset.name'))
+                        ->label(__('accounting::asset.name'))
                         ->required()
                         ->maxLength(255)
                         ->columnSpan(2),
 
                     TranslatableSelect::forModel('currency_id', Currency::class)
-                        ->label(__('asset.currency'))
+                        ->label(__('accounting::asset.currency'))
                         ->required()
                         ->searchable()
                         ->preload()
@@ -128,7 +128,7 @@ class AssetResource extends Resource
                         ->createOptionAction(fn (Action $action) => $action->modalWidth('lg')),
 
                     TextInput::make('current_exchange_rate')
-                        ->label(__('asset.current_exchange_rate'))
+                        ->label(__('accounting::asset.current_exchange_rate'))
                         ->numeric()
                         ->disabled()
                         ->dehydrated(false)
@@ -138,42 +138,42 @@ class AssetResource extends Resource
 
                             return $currencyId && $company instanceof Company && $currencyId != $company->currency_id;
                         })
-                        ->helperText(__('asset.exchange_rate_helper')),
+                        ->helperText(__('accounting::asset.exchange_rate_helper')),
                 ])
                 ->columns(4)
                 ->columnSpanFull(),
 
-            Section::make(__('asset.asset_details'))
-                ->description(__('asset.asset_details_description'))
+            Section::make(__('accounting::asset.asset_details'))
+                ->description(__('accounting::asset.asset_details_description'))
                 ->schema([
                     DatePicker::make('purchase_date')
-                        ->label(__('asset.purchase_date'))
+                        ->label(__('accounting::asset.purchase_date'))
                         ->default(now())
                         ->required()
                         ->rules([new NotInLockedPeriod()])
                         ->columnSpan(1),
 
                     \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('purchase_value')
-                        ->label(__('asset.purchase_value'))
+                        ->label(__('accounting::asset.purchase_value'))
                         ->currencyField('../../company.currency_id')
                         ->required()
                         ->columnSpan(1),
 
                     \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('salvage_value')
-                        ->label(__('asset.salvage_value'))
+                        ->label(__('accounting::asset.salvage_value'))
                         ->currencyField('../../company.currency_id')
                         ->default(0)
                         ->required()
                         ->columnSpan(1),
 
                     TextInput::make('useful_life_years')
-                        ->label(__('asset.useful_life_years'))
+                        ->label(__('accounting::asset.useful_life_years'))
                         ->required()
                         ->numeric()
                         ->columnSpan(1),
 
                     Select::make('depreciation_method')
-                        ->label(__('asset.depreciation_method'))
+                        ->label(__('accounting::asset.depreciation_method'))
                         ->searchable()
                         ->options(
                             collect(DepreciationMethod::cases())
@@ -183,23 +183,23 @@ class AssetResource extends Resource
                         ->columnSpan(1),
 
                     TranslatableSelect::forModel('asset_account_id', Account::class)
-                        ->label(__('asset.asset_account'))
+                        ->label(__('accounting::asset.asset_account'))
                         ->searchableFields(['name', 'code'])
                         ->searchable()
                         ->preload()
                         ->createOptionForm([
                             Select::make('company_id')
                                 ->relationship('company', 'name')
-                                ->label(__('account.company'))
+                                ->label(__('accounting::account.company'))
                                 ->required(),
                             TextInput::make('code')
-                                ->label(__('account.code'))
+                                ->label(__('accounting::account.code'))
                                 ->required(),
                             TextInput::make('name')
-                                ->label(__('account.name'))
+                                ->label(__('accounting::account.name'))
                                 ->required(),
                             Select::make('type')
-                                ->label(__('account.type'))
+                                ->label(__('accounting::account.type'))
                                 ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
                                 ->default(\Modules\Accounting\Enums\Accounting\AccountType::FixedAssets->value)
                                 ->required(),
@@ -210,23 +210,23 @@ class AssetResource extends Resource
                         ->columnSpan(1),
 
                     TranslatableSelect::forModel('depreciation_expense_account_id', Account::class)
-                        ->label(__('asset.depreciation_expense_account'))
+                        ->label(__('accounting::asset.depreciation_expense_account'))
                         ->searchableFields(['name', 'code'])
                         ->searchable()
                         ->preload()
                         ->createOptionForm([
                             Select::make('company_id')
                                 ->relationship('company', 'name')
-                                ->label(__('account.company'))
+                                ->label(__('accounting::account.company'))
                                 ->required(),
                             TextInput::make('code')
-                                ->label(__('account.code'))
+                                ->label(__('accounting::account.code'))
                                 ->required(),
                             TextInput::make('name')
-                                ->label(__('account.name'))
+                                ->label(__('accounting::account.name'))
                                 ->required(),
                             Select::make('type')
-                                ->label(__('account.type'))
+                                ->label(__('accounting::account.type'))
                                 ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
                                 ->default(\Modules\Accounting\Enums\Accounting\AccountType::Depreciation->value)
                                 ->required(),
@@ -237,23 +237,23 @@ class AssetResource extends Resource
                         ->columnSpan(1),
 
                     TranslatableSelect::forModel('accumulated_depreciation_account_id', Account::class)
-                        ->label(__('asset.accumulated_depreciation_account'))
+                        ->label(__('accounting::asset.accumulated_depreciation_account'))
                         ->searchableFields(['name', 'code'])
                         ->searchable()
                         ->preload()
                         ->createOptionForm([
                             Select::make('company_id')
                                 ->relationship('company', 'name')
-                                ->label(__('account.company'))
+                                ->label(__('accounting::account.company'))
                                 ->required(),
                             TextInput::make('code')
-                                ->label(__('account.code'))
+                                ->label(__('accounting::account.code'))
                                 ->required(),
                             TextInput::make('name')
-                                ->label(__('account.name'))
+                                ->label(__('accounting::account.name'))
                                 ->required(),
                             Select::make('type')
-                                ->label(__('account.type'))
+                                ->label(__('accounting::account.type'))
                                 ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
                                 ->default(\Modules\Accounting\Enums\Accounting\AccountType::FixedAssets->value)
                                 ->required(),
@@ -282,14 +282,14 @@ class AssetResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label(__('asset.name'))
+                    ->label(__('accounting::asset.name'))
                     ->searchable()
                     ->sortable()
                     ->weight('bold')
                     ->size('lg'),
 
                 TextColumn::make('status')
-                    ->label(__('asset.status'))
+                    ->label(__('accounting::asset.status'))
                     ->badge()
                     ->formatStateUsing(fn (AssetStatus $state): string => $state->label())
                     ->colors([
@@ -302,45 +302,45 @@ class AssetResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('purchase_date')
-                    ->label(__('asset.purchase_date'))
+                    ->label(__('accounting::asset.purchase_date'))
                     ->date()
                     ->sortable(),
 
                 \Modules\Foundation\Filament\Tables\Columns\MoneyColumn::make('purchase_value')
-                    ->label(__('asset.purchase_value'))
+                    ->label(__('accounting::asset.purchase_value'))
                     ->sortable()
                     ->weight('bold')
                     ->size('lg'),
 
                 TextColumn::make('depreciation_method')
-                    ->label(__('asset.depreciation_method'))
+                    ->label(__('accounting::asset.depreciation_method'))
                     ->formatStateUsing(fn (DepreciationMethod $state): string => $state->label())
                     ->badge()
                     ->toggleable(),
 
                 TextColumn::make('useful_life_years')
-                    ->label(__('asset.useful_life'))
-                    ->suffix(' ' . __('asset.years'))
+                    ->label(__('accounting::asset.useful_life'))
+                    ->suffix(' ' . __('accounting::asset.years'))
                     ->toggleable(),
 
                 TextColumn::make('currency.code')
-                    ->label(__('asset.currency'))
+                    ->label(__('accounting::asset.currency'))
                     ->badge()
                     ->toggleable(),
 
                 TextColumn::make('company.name')
-                    ->label(__('asset.company'))
+                    ->label(__('accounting::asset.company'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 
                 TextColumn::make('created_at')
-                    ->label(__('asset.created_at'))
+                    ->label(__('accounting::asset.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
-                    ->label(__('asset.updated_at'))
+                    ->label(__('accounting::asset.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

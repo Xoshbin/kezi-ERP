@@ -41,62 +41,62 @@ class TaxResource extends Resource
 
     public static function getLabel(): string
     {
-        return __('tax.label');
+        return __('accounting::tax.label');
     }
 
     public static function getPluralLabel(): string
     {
-        return __('tax.plural_label');
+        return __('accounting::tax.plural_label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('tax.plural_label');
+        return __('accounting::tax.plural_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make(__('tax.basic_information'))
+                Section::make(__('accounting::tax.basic_information'))
                     ->schema([
                         TranslatableSelect::make('tax_account_id')
                             ->searchable()
                             ->preload()
                             ->relationship('taxAccount', 'name')
-                            ->label(__('tax.tax_account'))
+                            ->label(__('accounting::tax.tax_account'))
                             ->createOptionForm([
                                 Select::make('company_id')->relationship('company', 'name')->label(__('company.name'))->required(),
-                                TextInput::make('code')->label(__('account.code'))->required(),
-                                TextInput::make('name')->label(__('account.name'))->required(),
-                                Select::make('type')->label(__('account.type'))
+                                TextInput::make('code')->label(__('accounting::account.code'))->required(),
+                                TextInput::make('name')->label(__('accounting::account.name'))->required(),
+                                Select::make('type')->label(__('accounting::account.type'))
                                     ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()]))
                                     ->required(),
-                                Toggle::make('is_deprecated')->label(__('account.is_deprecated'))->default(false),
-                                Toggle::make('allow_reconciliation')->label(__('account.allow_reconciliation'))->default(false),
+                                Toggle::make('is_deprecated')->label(__('accounting::account.is_deprecated'))->default(false),
+                                Toggle::make('allow_reconciliation')->label(__('accounting::account.allow_reconciliation'))->default(false),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_account'))
                             ->createOptionAction(fn(Action $a) => $a->name('create-account-option')->modalWidth('lg'))
                             ->required(),
 
                         TextInput::make('name')
-                            ->label(__('tax.name'))
+                            ->label(__('accounting::tax.name'))
                             ->required()
                             ->maxLength(255),
                         TextInput::make('rate')
-                            ->label(__('tax.rate'))
+                            ->label(__('accounting::tax.rate'))
                             ->required()
                             ->numeric(),
                         Select::make('type')
-                            ->label(__('tax.type'))
+                            ->label(__('accounting::tax.type'))
                             ->options(collect(TaxType::cases())->mapWithKeys(fn($c) => [$c->value => $c->label()]))
                             ->required(),
                         Toggle::make('is_active')
-                            ->label(__('tax.is_active'))
+                            ->label(__('accounting::tax.is_active'))
                             ->required(),
                         Toggle::make('is_recoverable')
-                            ->label(__('tax.is_recoverable'))
-                            ->helperText(__('tax.is_recoverable_help'))
+                            ->label(__('accounting::tax.is_recoverable'))
+                            ->helperText(__('accounting::tax.is_recoverable_help'))
                             ->default(true),
                     ])
                     ->columns(2)
@@ -109,31 +109,31 @@ class TaxResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('taxAccount.name')
-                    ->label(__('tax.tax_account'))
+                    ->label(__('accounting::tax.tax_account'))
                     ->sortable(),
                 TextColumn::make('name')
-                    ->label(__('tax.name'))
+                    ->label(__('accounting::tax.name'))
                     ->searchable(),
                 TextColumn::make('rate')
-                    ->label(__('tax.rate'))
+                    ->label(__('accounting::tax.rate'))
                     ->formatStateUsing(fn($state) => \Modules\Foundation\Support\NumberFormatter::formatPercentage($state / 100))
                     ->sortable(),
                 TextColumn::make('type')
-                    ->label(__('tax.type'))
+                    ->label(__('accounting::tax.type'))
                     ->searchable(),
                 IconColumn::make('is_active')
-                    ->label(__('tax.is_active'))
+                    ->label(__('accounting::tax.is_active'))
                     ->boolean(),
                 IconColumn::make('is_recoverable')
-                    ->label(__('tax.is_recoverable'))
+                    ->label(__('accounting::tax.is_recoverable'))
                     ->boolean(),
                 TextColumn::make('created_at')
-                    ->label(__('tax.created_at'))
+                    ->label(__('accounting::tax.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label(__('tax.updated_at'))
+                    ->label(__('accounting::tax.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

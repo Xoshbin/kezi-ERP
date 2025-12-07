@@ -26,13 +26,13 @@ enum NumberingType: string
     public function label(): string
     {
         return match ($this) {
-            self::SIMPLE => __('numbering.types.simple'),
-            self::YEAR_PREFIX => __('numbering.types.year_prefix'),
-            self::YEAR_SUFFIX => __('numbering.types.year_suffix'),
-            self::YEAR_MONTH => __('numbering.types.year_month'),
-            self::SLASH_SEPARATED => __('numbering.types.slash_separated'),
-            self::SLASH_YEAR_MONTH => __('numbering.types.slash_year_month'),
-            self::DOT_SEPARATED => __('numbering.types.dot_separated'),
+            self::SIMPLE => __('foundation::numbering.types.simple'),
+            self::YEAR_PREFIX => __('foundation::numbering.types.year_prefix'),
+            self::YEAR_SUFFIX => __('foundation::numbering.types.year_suffix'),
+            self::YEAR_MONTH => __('foundation::numbering.types.year_month'),
+            self::SLASH_SEPARATED => __('foundation::numbering.types.slash_separated'),
+            self::SLASH_YEAR_MONTH => __('foundation::numbering.types.slash_year_month'),
+            self::DOT_SEPARATED => __('foundation::numbering.types.dot_separated'),
         };
     }
 
@@ -42,13 +42,13 @@ enum NumberingType: string
     public function description(): string
     {
         return match ($this) {
-            self::SIMPLE => __('numbering.descriptions.simple'),
-            self::YEAR_PREFIX => __('numbering.descriptions.year_prefix'),
-            self::YEAR_SUFFIX => __('numbering.descriptions.year_suffix'),
-            self::YEAR_MONTH => __('numbering.descriptions.year_month'),
-            self::SLASH_SEPARATED => __('numbering.descriptions.slash_separated'),
-            self::SLASH_YEAR_MONTH => __('numbering.descriptions.slash_year_month'),
-            self::DOT_SEPARATED => __('numbering.descriptions.dot_separated'),
+            self::SIMPLE => __('foundation::numbering.descriptions.simple'),
+            self::YEAR_PREFIX => __('foundation::numbering.descriptions.year_prefix'),
+            self::YEAR_SUFFIX => __('foundation::numbering.descriptions.year_suffix'),
+            self::YEAR_MONTH => __('foundation::numbering.descriptions.year_month'),
+            self::SLASH_SEPARATED => __('foundation::numbering.descriptions.slash_separated'),
+            self::SLASH_YEAR_MONTH => __('foundation::numbering.descriptions.slash_year_month'),
+            self::DOT_SEPARATED => __('foundation::numbering.descriptions.dot_separated'),
         };
     }
 

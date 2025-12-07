@@ -19,30 +19,30 @@ class EmployeeForm
     {
 
         return $schema->components([
-            Section::make(__('employee.basic_information'))
-                ->description(__('employee.basic_information_description'))
+            Section::make(__('hr::employee.basic_information'))
+                ->description(__('hr::employee.basic_information_description'))
                 ->schema([
                     TextInput::make('employee_number')
-                        ->label(__('employee.employee_number'))
+                        ->label(__('hr::employee.employee_number'))
                         ->required()
                         ->unique(ignoreRecord: true)
                         ->maxLength(50)
                         ->columnSpan(1),
 
                     TextInput::make('first_name')
-                        ->label(__('employee.first_name'))
+                        ->label(__('hr::employee.first_name'))
                         ->required()
                         ->maxLength(255)
                         ->columnSpan(1),
 
                     TextInput::make('last_name')
-                        ->label(__('employee.last_name'))
+                        ->label(__('hr::employee.last_name'))
                         ->required()
                         ->maxLength(255)
                         ->columnSpan(1),
 
                     TextInput::make('email')
-                        ->label(__('employee.email'))
+                        ->label(__('hr::employee.email'))
                         ->email()
                         ->required()
                         ->unique(ignoreRecord: true)
@@ -50,7 +50,7 @@ class EmployeeForm
                         ->columnSpan(2),
 
                     TextInput::make('phone')
-                        ->label(__('employee.phone'))
+                        ->label(__('hr::employee.phone'))
                         ->tel()
                         ->maxLength(20)
                         ->columnSpan(1),
@@ -58,25 +58,25 @@ class EmployeeForm
                 ->columns(3)
                 ->columnSpanFull(),
 
-            Section::make(__('employee.organizational_details'))
-                ->description(__('employee.organizational_details_description'))
+            Section::make(__('hr::employee.organizational_details'))
+                ->description(__('hr::employee.organizational_details_description'))
                 ->schema([
                     TranslatableSelect::forModel('department_id', Department::class)
-                        ->label(__('employee.department'))
+                        ->label(__('hr::employee.department'))
                         ->searchable()
                         ->searchableFields(['name'])
                         ->preload()
                         ->columnSpan(1),
 
                     TranslatableSelect::forModel('position_id', Position::class)
-                        ->label(__('employee.position'))
+                        ->label(__('hr::employee.position'))
                         ->searchable()
                         ->searchableFields(['title'])
                         ->preload()
                         ->columnSpan(1),
 
                     TranslatableSelect::forModel('manager_id', Employee::class)
-                        ->label(__('employee.manager'))
+                        ->label(__('hr::employee.manager'))
                         ->searchable()
                         ->searchableFields(['first_name', 'last_name', 'employee_number'])
                         ->preload()
@@ -86,170 +86,170 @@ class EmployeeForm
                 ->columns(2)
                 ->columnSpanFull(),
 
-            Section::make(__('employee.personal_information'))
-                ->description(__('employee.personal_information_description'))
+            Section::make(__('hr::employee.personal_information'))
+                ->description(__('hr::employee.personal_information_description'))
                 ->schema([
                     DatePicker::make('date_of_birth')
-                        ->label(__('employee.date_of_birth'))
+                        ->label(__('hr::employee.date_of_birth'))
                         ->maxDate(now()->subYears(16))
                         ->columnSpan(1),
 
                     Select::make('gender')
-                        ->label(__('employee.gender'))
+                        ->label(__('hr::employee.gender'))
                         ->options([
-                            'male' => __('employee.gender_male'),
-                            'female' => __('employee.gender_female'),
-                            'other' => __('employee.gender_other'),
+                            'male' => __('hr::employee.gender_male'),
+                            'female' => __('hr::employee.gender_female'),
+                            'other' => __('hr::employee.gender_other'),
                         ])
                         ->columnSpan(1),
 
                     Select::make('marital_status')
-                        ->label(__('employee.marital_status'))
+                        ->label(__('hr::employee.marital_status'))
                         ->options([
-                            'single' => __('employee.marital_status_single'),
-                            'married' => __('employee.marital_status_married'),
-                            'divorced' => __('employee.marital_status_divorced'),
-                            'widowed' => __('employee.marital_status_widowed'),
+                            'single' => __('hr::employee.marital_status_single'),
+                            'married' => __('hr::employee.marital_status_married'),
+                            'divorced' => __('hr::employee.marital_status_divorced'),
+                            'widowed' => __('hr::employee.marital_status_widowed'),
                         ])
                         ->columnSpan(1),
 
                     TextInput::make('nationality')
-                        ->label(__('employee.nationality'))
+                        ->label(__('hr::employee.nationality'))
                         ->maxLength(100)
                         ->columnSpan(1),
 
                     TextInput::make('national_id')
-                        ->label(__('employee.national_id'))
+                        ->label(__('hr::employee.national_id'))
                         ->maxLength(50)
                         ->columnSpan(1),
 
                     TextInput::make('passport_number')
-                        ->label(__('employee.passport_number'))
+                        ->label(__('hr::employee.passport_number'))
                         ->maxLength(50)
                         ->columnSpan(1),
                 ])
                 ->columns(3)
                 ->columnSpanFull(),
 
-            Section::make(__('employee.address_information'))
-                ->description(__('employee.address_information_description'))
+            Section::make(__('hr::employee.address_information'))
+                ->description(__('hr::employee.address_information_description'))
                 ->schema([
                     TextInput::make('address_line_1')
-                        ->label(__('employee.address_line_1'))
+                        ->label(__('hr::employee.address_line_1'))
                         ->maxLength(255)
                         ->columnSpan(2),
 
                     TextInput::make('address_line_2')
-                        ->label(__('employee.address_line_2'))
+                        ->label(__('hr::employee.address_line_2'))
                         ->maxLength(255)
                         ->columnSpan(1),
 
                     TextInput::make('city')
-                        ->label(__('employee.city'))
+                        ->label(__('hr::employee.city'))
                         ->maxLength(100)
                         ->columnSpan(1),
 
                     TextInput::make('state')
-                        ->label(__('employee.state'))
+                        ->label(__('hr::employee.state'))
                         ->maxLength(100)
                         ->columnSpan(1),
 
                     TextInput::make('zip_code')
-                        ->label(__('employee.zip_code'))
+                        ->label(__('hr::employee.zip_code'))
                         ->maxLength(20)
                         ->columnSpan(1),
 
                     TextInput::make('country')
-                        ->label(__('employee.country'))
+                        ->label(__('hr::employee.country'))
                         ->maxLength(100)
                         ->columnSpan(1),
                 ])
                 ->columns(3)
                 ->columnSpanFull(),
 
-            Section::make(__('employee.emergency_contact'))
-                ->description(__('employee.emergency_contact_description'))
+            Section::make(__('hr::employee.emergency_contact'))
+                ->description(__('hr::employee.emergency_contact_description'))
                 ->schema([
                     TextInput::make('emergency_contact_name')
-                        ->label(__('employee.emergency_contact_name'))
+                        ->label(__('hr::employee.emergency_contact_name'))
                         ->maxLength(255)
                         ->columnSpan(1),
 
                     TextInput::make('emergency_contact_phone')
-                        ->label(__('employee.emergency_contact_phone'))
+                        ->label(__('hr::employee.emergency_contact_phone'))
                         ->tel()
                         ->maxLength(20)
                         ->columnSpan(1),
 
                     TextInput::make('emergency_contact_relationship')
-                        ->label(__('employee.emergency_contact_relationship'))
+                        ->label(__('hr::employee.emergency_contact_relationship'))
                         ->maxLength(100)
                         ->columnSpan(1),
                 ])
                 ->columns(3)
                 ->columnSpanFull(),
 
-            Section::make(__('employee.employment_details'))
-                ->description(__('employee.employment_details_description'))
+            Section::make(__('hr::employee.employment_details'))
+                ->description(__('hr::employee.employment_details_description'))
                 ->schema([
                     DatePicker::make('hire_date')
-                        ->label(__('employee.hire_date'))
+                        ->label(__('hr::employee.hire_date'))
                         ->required()
                         ->maxDate(now())
                         ->columnSpan(1),
 
                     DatePicker::make('termination_date')
-                        ->label(__('employee.termination_date'))
+                        ->label(__('hr::employee.termination_date'))
                         ->minDate(fn ($get) => $get('hire_date'))
                         ->columnSpan(1),
 
                     Select::make('employment_status')
-                        ->label(__('employee.employment_status'))
+                        ->label(__('hr::employee.employment_status'))
                         ->options([
-                            'active' => __('employee.employment_status_active'),
-                            'inactive' => __('employee.employment_status_inactive'),
-                            'terminated' => __('employee.employment_status_terminated'),
-                            'on_leave' => __('employee.employment_status_on_leave'),
+                            'active' => __('hr::employee.employment_status_active'),
+                            'inactive' => __('hr::employee.employment_status_inactive'),
+                            'terminated' => __('hr::employee.employment_status_terminated'),
+                            'on_leave' => __('hr::employee.employment_status_on_leave'),
                         ])
                         ->required()
                         ->default('active')
                         ->columnSpan(1),
 
                     Select::make('employee_type')
-                        ->label(__('employee.employee_type'))
+                        ->label(__('hr::employee.employee_type'))
                         ->options([
-                            'full_time' => __('employee.employee_type_full_time'),
-                            'part_time' => __('employee.employee_type_part_time'),
-                            'contract' => __('employee.employee_type_contract'),
-                            'intern' => __('employee.employee_type_intern'),
+                            'full_time' => __('hr::employee.employee_type_full_time'),
+                            'part_time' => __('hr::employee.employee_type_part_time'),
+                            'contract' => __('hr::employee.employee_type_contract'),
+                            'intern' => __('hr::employee.employee_type_intern'),
                         ])
                         ->required()
                         ->default('full_time')
                         ->columnSpan(1),
 
                     Toggle::make('is_active')
-                        ->label(__('employee.is_active'))
+                        ->label(__('hr::employee.is_active'))
                         ->default(true)
                         ->columnSpan(1),
                 ])
                 ->columns(3)
                 ->columnSpanFull(),
 
-            Section::make(__('employee.banking_information'))
-                ->description(__('employee.banking_information_description'))
+            Section::make(__('hr::employee.banking_information'))
+                ->description(__('hr::employee.banking_information_description'))
                 ->schema([
                     TextInput::make('bank_name')
-                        ->label(__('employee.bank_name'))
+                        ->label(__('hr::employee.bank_name'))
                         ->maxLength(255)
                         ->columnSpan(1),
 
                     TextInput::make('bank_account_number')
-                        ->label(__('employee.bank_account_number'))
+                        ->label(__('hr::employee.bank_account_number'))
                         ->maxLength(50)
                         ->columnSpan(1),
 
                     TextInput::make('bank_routing_number')
-                        ->label(__('employee.bank_routing_number'))
+                        ->label(__('hr::employee.bank_routing_number'))
                         ->maxLength(50)
                         ->columnSpan(1),
                 ])

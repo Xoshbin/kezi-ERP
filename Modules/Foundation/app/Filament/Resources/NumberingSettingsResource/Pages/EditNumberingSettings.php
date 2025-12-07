@@ -25,8 +25,8 @@ class EditNumberingSettings extends EditRecord
             $errors = method_exists($record, 'getNumberingChangeValidationErrors') ? $record->getNumberingChangeValidationErrors() : [];
 
             Notification::make()
-                ->title(__('numbering.settings.cannot_change_title'))
-                ->body(__('numbering.settings.cannot_change_message') . ' (' . implode(', ', $errors) . ')')
+                ->title(__('foundation::numbering.settings.cannot_change_title'))
+                ->body(__('foundation::numbering.settings.cannot_change_message') . ' (' . implode(', ', $errors) . ')')
                 ->danger()
                 ->send();
 
@@ -37,7 +37,7 @@ class EditNumberingSettings extends EditRecord
     protected function afterSave(): void
     {
         Notification::make()
-            ->title(__('numbering.settings.title'))
+            ->title(__('foundation::numbering.settings.title'))
             ->body(__('filament-panels::resources/pages/edit-record.notifications.saved.title'))
             ->success()
             ->send();

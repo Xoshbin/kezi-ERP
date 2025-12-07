@@ -20,8 +20,8 @@ enum InventoryAccountingMode: string
     public function label(): string
     {
         return match ($this) {
-            self::AUTO_RECORD_ON_BILL => __('inventory_accounting.modes.auto_record_on_bill'),
-            self::MANUAL_INVENTORY_RECORDING => __('inventory_accounting.modes.manual_inventory_recording'),
+            self::AUTO_RECORD_ON_BILL => __('inventory::inventory_accounting.modes.auto_record_on_bill'),
+            self::MANUAL_INVENTORY_RECORDING => __('inventory::inventory_accounting.modes.manual_inventory_recording'),
         };
     }
 
@@ -31,8 +31,8 @@ enum InventoryAccountingMode: string
     public function description(): string
     {
         return match ($this) {
-            self::AUTO_RECORD_ON_BILL => __('inventory_accounting.descriptions.auto_record_on_bill'),
-            self::MANUAL_INVENTORY_RECORDING => __('inventory_accounting.descriptions.manual_inventory_recording'),
+            self::AUTO_RECORD_ON_BILL => __('inventory::inventory_accounting.descriptions.auto_record_on_bill'),
+            self::MANUAL_INVENTORY_RECORDING => __('inventory::inventory_accounting.descriptions.manual_inventory_recording'),
         };
     }
 
@@ -42,8 +42,8 @@ enum InventoryAccountingMode: string
     public function targetAudience(): string
     {
         return match ($this) {
-            self::AUTO_RECORD_ON_BILL => __('inventory_accounting.target_audience.auto_record_on_bill'),
-            self::MANUAL_INVENTORY_RECORDING => __('inventory_accounting.target_audience.manual_inventory_recording'),
+            self::AUTO_RECORD_ON_BILL => __('inventory::inventory_accounting.target_audience.auto_record_on_bill'),
+            self::MANUAL_INVENTORY_RECORDING => __('inventory::inventory_accounting.target_audience.manual_inventory_recording'),
         };
     }
 
@@ -53,8 +53,8 @@ enum InventoryAccountingMode: string
     public function useCase(): string
     {
         return match ($this) {
-            self::AUTO_RECORD_ON_BILL => __('inventory_accounting.use_cases.auto_record_on_bill'),
-            self::MANUAL_INVENTORY_RECORDING => __('inventory_accounting.use_cases.manual_inventory_recording'),
+            self::AUTO_RECORD_ON_BILL => __('inventory::inventory_accounting.use_cases.auto_record_on_bill'),
+            self::MANUAL_INVENTORY_RECORDING => __('inventory::inventory_accounting.use_cases.manual_inventory_recording'),
         };
     }
 

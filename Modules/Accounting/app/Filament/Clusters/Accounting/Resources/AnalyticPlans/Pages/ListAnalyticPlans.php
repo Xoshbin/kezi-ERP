@@ -16,7 +16,7 @@ class ListAnalyticPlans extends ListRecords
 
     public function getTitle(): string
     {
-        return __('analytic_plan.pages.list');
+        return __('accounting::analytic_plan.pages.list');
     }
 
     protected function getHeaderActions(): array

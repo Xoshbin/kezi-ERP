@@ -110,7 +110,7 @@
                                 {{ number_format($totalOutgoing, 2) }}
                             </p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">
-                                {{ count($movementsByType['outgoing']) }} {{ __('inventory_reports.lot_trace.movements.count') }}
+                                {{ count($movementsByType['outgoing']) }} {{ __('inventory::inventory_reports.lot_trace.movements.count') }}
                             </p>
                         </div>
                     </div>
@@ -130,7 +130,7 @@
                                 {{ number_format($totalInternal, 2) }}
                             </p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">
-                                {{ count($movementsByType['internal']) }} {{ __('inventory_reports.lot_trace.movements.count') }}
+                                {{ count($movementsByType['internal']) }} {{ __('inventory::inventory_reports.lot_trace.movements.count') }}
                             </p>
                         </div>
                     </div>

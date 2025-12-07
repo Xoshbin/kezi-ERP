@@ -33,17 +33,17 @@ class PayrollResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('payroll.navigation_label');
+        return __('hr::payroll.navigation_label');
     }
 
     public static function getModelLabel(): string
     {
-        return __('payroll.model_label');
+        return __('hr::payroll.model_label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('payroll.model_plural_label');
+        return __('hr::payroll.model_plural_label');
     }
 
     public static function form(Schema $schema): Schema

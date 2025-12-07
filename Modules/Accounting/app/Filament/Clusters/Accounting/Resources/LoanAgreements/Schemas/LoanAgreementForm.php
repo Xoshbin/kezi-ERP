@@ -32,12 +32,12 @@ class LoanAgreementForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make(__('loan.form.counterparty_currency') ?: 'Counterparty & Currency')
+            Section::make(__('accounting::loan.form.counterparty_currency') ?: 'Counterparty & Currency')
                 ->compact()
                 ->schema([
                     TranslatableSelect::make('partner_id')
                         ->relationship('partner', 'name')
-                        ->label(__('loan.form.partner') ?: 'Partner')
+                        ->label(__('accounting::loan.form.partner') ?: 'Partner')
                         ->searchableFields(['name', 'email', 'contact_person'])
                         ->searchable()
                         ->preload()
@@ -56,12 +56,12 @@ class LoanAgreementForm
                     Group::make()
                         ->schema([
                             TextInput::make('name')
-                                ->label(__('loan.form.name') ?: 'Loan Name')
+                                ->label(__('accounting::loan.form.name') ?: 'Loan Name')
                                 ->maxLength(255)
                                 ->columnSpanFull(),
 
                             ToggleButtons::make('loan_type')
-                                ->label(__('loan.form.loan_type') ?: 'Loan Type')
+                                ->label(__('accounting::loan.form.loan_type') ?: 'Loan Type')
                                 ->options(collect(LoanType::cases())->mapWithKeys(fn(LoanType $t) => [$t->value => ucfirst($t->value)])->toArray())
                                 ->colors([
                                     LoanType::Receivable->value => 'success',
@@ -78,22 +78,22 @@ class LoanAgreementForm
                             Group::make()
                                 ->schema([
                                     DatePicker::make('loan_date')
-                                        ->label(__('loan.form.loan_date') ?: 'Loan Date')
+                                        ->label(__('accounting::loan.form.loan_date') ?: 'Loan Date')
                                         ->default(now())
                                         ->rules([new NotInLockedPeriod()])
                                         ->required()
                                         ->columnSpan(3),
                                     DatePicker::make('start_date')
-                                        ->label(__('loan.form.start_date') ?: 'Start Date')
+                                        ->label(__('accounting::loan.form.start_date') ?: 'Start Date')
                                         ->required()
                                         ->columnSpan(3),
                                     DatePicker::make('maturity_date')
-                                        ->label(__('loan.form.maturity_date') ?: 'Maturity Date')
+                                        ->label(__('accounting::loan.form.maturity_date') ?: 'Maturity Date')
                                         ->columnSpan(3),
                                     TextInput::make('duration_months')
-                                        ->label(__('loan.form.duration_months') ?: 'Duration (months)')
+                                        ->label(__('accounting::loan.form.duration_months') ?: 'Duration (months)')
                                         ->numeric()
-                                        ->suffix(__('loan.form.months') ?: 'months')
+                                        ->suffix(__('accounting::loan.form.months') ?: 'months')
                                         ->required()
                                         ->columnSpan(3),
                                 ])
@@ -167,13 +167,13 @@ class LoanAgreementForm
                                 ->columnSpanFull(),
 
                             MoneyInput::make('principal_amount')
-                                ->label(__('loan.form.principal_amount') ?: 'Principal Amount')
+                                ->label(__('accounting::loan.form.principal_amount') ?: 'Principal Amount')
                                 ->currencyField('currency_id')
                                 ->required()
                                 ->columnSpanFull(),
 
                             MoneyInput::make('outstanding_principal')
-                                ->label(__('loan.form.outstanding_principal') ?: 'Outstanding Principal')
+                                ->label(__('accounting::loan.form.outstanding_principal') ?: 'Outstanding Principal')
                                 ->currencyField('currency_id')
                                 ->disabled()
                                 ->dehydrated(false)
@@ -186,17 +186,17 @@ class LoanAgreementForm
                 ->columns(12)
                 ->columnSpanFull(),
 
-            Section::make(__('loan.form.schedule_rates') ?: 'Schedule & Rates')
+            Section::make(__('accounting::loan.form.schedule_rates') ?: 'Schedule & Rates')
                 ->compact()
                 ->schema([
                     Select::make('schedule_method')
-                        ->label(__('loan.form.schedule_method') ?: 'Schedule Method')
+                        ->label(__('accounting::loan.form.schedule_method') ?: 'Schedule Method')
                         ->options(ScheduleMethod::class)
                         ->required()
                         ->columnSpan(4),
 
                     TextInput::make('interest_rate')
-                        ->label(__('loan.form.interest_rate') ?: 'Nominal annual rate')
+                        ->label(__('accounting::loan.form.interest_rate') ?: 'Nominal annual rate')
                         ->numeric()
                         ->suffix('%')
                         ->default(0)
@@ -204,20 +204,20 @@ class LoanAgreementForm
                         ->columnSpan(4),
 
                     Toggle::make('eir_enabled')
-                        ->label(__('loan.form.eir_enabled') ?: 'Use EIR')
+                        ->label(__('accounting::loan.form.eir_enabled') ?: 'Use EIR')
                         ->inline(false)
                         ->live()
                         ->columnSpan(2),
 
                     TextInput::make('eir_rate')
-                        ->label(__('loan.form.eir_rate') ?: 'EIR periodic rate')
+                        ->label(__('accounting::loan.form.eir_rate') ?: 'EIR periodic rate')
                         ->numeric()
                         ->suffix('%')
                         ->disabled(fn(callable $get) => ! $get('eir_enabled'))
                         ->columnSpan(2),
 
                     Select::make('status')
-                        ->label(__('loan.form.status') ?: 'Status')
+                        ->label(__('accounting::loan.form.status') ?: 'Status')
                         ->options(LoanStatus::class)
                         ->default(LoanStatus::Draft->value)
                         ->required()

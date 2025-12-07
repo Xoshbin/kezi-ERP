@@ -35,17 +35,17 @@ class ViewBalanceSheet extends Page
 
     public static function getNavigationLabel(): string
     {
-        return __('reports.balance_sheet');
+        return __('accounting::reports.balance_sheet');
     }
 
     public function getTitle(): string|Htmlable
     {
-        return __('reports.balance_sheet');
+        return __('accounting::reports.balance_sheet');
     }
 
     public function getHeading(): string|Htmlable
     {
-        return __('reports.balance_sheet');
+        return __('accounting::reports.balance_sheet');
     }
 
     public function mount(): void
@@ -58,10 +58,10 @@ class ViewBalanceSheet extends Page
     {
         return $schema
             ->components([
-                Section::make(__('reports.as_of_date'))
+                Section::make(__('accounting::reports.as_of_date'))
                     ->schema([
                         DatePicker::make('asOfDate')
-                            ->label(__('reports.as_of_date'))
+                            ->label(__('accounting::reports.as_of_date'))
                             ->required()
                             ->default(Carbon::now()->endOfMonth()),
                     ]),
@@ -72,7 +72,7 @@ class ViewBalanceSheet extends Page
     {
         return [
             Action::make('generate')
-                ->label(__('reports.generate_report'))
+                ->label(__('accounting::reports.generate_report'))
                 ->icon('heroicon-o-play')
                 ->color('primary')
                 ->action('generateReport'),

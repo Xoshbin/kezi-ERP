@@ -23,7 +23,7 @@ class EditBankStatement extends EditRecord
 
     public function getTitle(): string
     {
-        return __('bank_statement.edit_bank_statement');
+        return __('accounting::bank_statement.edit_bank_statement');
     }
 
     protected function getHeaderActions(): array

@@ -10,17 +10,17 @@
             <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
                 <div class="mb-6">
                     <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-                        {{ __('reports.profit_and_loss_statement') }}
+                        {{ __('accounting::reports.profit_and_loss_statement') }}
                     </h2>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                        {{ __('reports.period') }}: {{ Carbon\Carbon::parse($startDate)->format('M j, Y') }} - {{ Carbon\Carbon::parse($endDate)->format('M j, Y') }}
+                        {{ __('accounting::reports.period') }}: {{ Carbon\Carbon::parse($startDate)->format('M j, Y') }} - {{ Carbon\Carbon::parse($endDate)->format('M j, Y') }}
                     </p>
                 </div>
 
                 <!-- Revenue Section -->
                 <div class="mb-8">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
-                        {{ __('reports.revenue') }}
+                        {{ __('accounting::reports.revenue') }}
                     </h3>
 
                     @if(count($reportData['revenueLines']) > 0)
@@ -40,21 +40,21 @@
 
                         <div class="border-t border-gray-200 dark:border-gray-700 mt-4 pt-4">
                             <div class="flex justify-between items-center font-semibold">
-                                <span class="text-gray-900 dark:text-white">{{ __('reports.total_revenue') }}</span>
+                                <span class="text-gray-900 dark:text-white">{{ __('accounting::reports.total_revenue') }}</span>
                                 <span class="text-gray-900 dark:text-white font-semibold">
                                     {{ $reportData['totalRevenue'] }}
                                 </span>
                             </div>
                         </div>
                     @else
-                        <p class="text-sm text-gray-500 dark:text-gray-400 italic">{{ __('reports.no_revenue_transactions') }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 italic">{{ __('accounting::reports.no_revenue_transactions') }}</p>
                     @endif
                 </div>
 
                 <!-- Expenses Section -->
                 <div class="mb-8">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
-                        {{ __('reports.expenses') }}
+                        {{ __('accounting::reports.expenses') }}
                     </h3>
 
                     @if(count($reportData['expenseLines']) > 0)
@@ -74,14 +74,14 @@
 
                         <div class="border-t border-gray-200 dark:border-gray-700 mt-4 pt-4">
                             <div class="flex justify-between items-center font-semibold">
-                                <span class="text-gray-900 dark:text-white">{{ __('reports.total_expenses') }}</span>
+                                <span class="text-gray-900 dark:text-white">{{ __('accounting::reports.total_expenses') }}</span>
                                 <span class="text-gray-900 dark:text-white font-semibold">
                                     {{ $reportData['totalExpenses'] }}
                                 </span>
                             </div>
                         </div>
                     @else
-                        <p class="text-sm text-gray-500 dark:text-gray-400 italic">{{ __('reports.no_expense_transactions') }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 italic">{{ __('accounting::reports.no_expense_transactions') }}</p>
                     @endif
                 </div>
 
@@ -89,7 +89,7 @@
                 <div class="border-t-2 border-gray-300 dark:border-gray-600 pt-6">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-gray-900 dark:text-white">
-                            {{ __('reports.net_income') }}
+                            {{ __('accounting::reports.net_income') }}
                         </h3>
                         <span class="text-xl font-bold {{ $reportData['isNetLoss'] ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
                             {{ $reportData['netIncome'] }}
@@ -97,7 +97,7 @@
                     </div>
                     @if($reportData['isNetLoss'])
                         <p class="text-sm text-red-600 dark:text-red-400 mt-2">
-                            {{ __('reports.net_loss_note') }}
+                            {{ __('accounting::reports.net_loss_note') }}
                         </p>
                     @endif
                 </div>
@@ -110,10 +110,10 @@
                     </svg>
                 </div>
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                    {{ __('reports.no_report_generated') }}
+                    {{ __('accounting::reports.no_report_generated') }}
                 </h3>
                 <p class="text-gray-600 dark:text-gray-400">
-                    {{ __('reports.select_date_range_and_generate') }}
+                    {{ __('accounting::reports.select_date_range_and_generate') }}
                 </p>
             </div>
         @endif

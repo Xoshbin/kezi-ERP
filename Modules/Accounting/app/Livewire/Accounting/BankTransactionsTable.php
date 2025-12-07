@@ -69,12 +69,12 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
             ])
             ->recordActions([
                 Action::make('writeOff')
-                    ->label(__('bank_statement.write_off'))
+                    ->label(__('accounting::bank_statement.write_off'))
                     ->icon('heroicon-o-x-mark')
                     ->color('danger')
                     ->schema([
                         Select::make('account_id')
-                            ->label(__('bank_statement.write_off_account'))
+                            ->label(__('accounting::bank_statement.write_off_account'))
                             ->options(function () {
                                 return Account::where('company_id', $this->bankStatement->company_id)
                                     ->where('type', 'expense')
@@ -82,7 +82,7 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
                             })
                             ->required(),
                         Textarea::make('reason')
-                            ->label(__('bank_statement.write_off_reason'))
+                            ->label(__('accounting::bank_statement.write_off_reason'))
                             ->required()
                             ->maxLength(500),
                     ])

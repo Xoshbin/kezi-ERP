@@ -246,7 +246,7 @@ describe('Invoice Confirmation Business Rules', function () {
 
         expect(function () use ($service, $invoice) {
             $service->confirm($invoice, $this->user);
-        })->toThrow(RuntimeException::class, __('invoice.validation_no_line_items'));
+        })->toThrow(RuntimeException::class, __('sales::invoice.validation_no_line_items'));
 
         $invoice->refresh();
         expect($invoice->status)->toBe(InvoiceStatus::Draft);
@@ -285,7 +285,7 @@ describe('Invoice Confirmation Business Rules', function () {
 
         expect(function () use ($service, $invoice) {
             $service->confirm($invoice, $this->user);
-        })->toThrow(RuntimeException::class, __('invoice.validation_zero_total_amount'));
+        })->toThrow(RuntimeException::class, __('sales::invoice.validation_zero_total_amount'));
     });
 
     it('enables confirm action when invoice has valid line items', function () {

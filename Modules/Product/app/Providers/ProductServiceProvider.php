@@ -78,7 +78,7 @@ class ProductServiceProvider extends ServiceProvider
     }
 
     /**
-     * Merge module translations into global translator so keys like __('product.*') work
+     * Merge module translations into global translator so keys like __('product::product.*') work
      */
     protected function mergeGlobalTranslations(string $baseLangPath): void
     {

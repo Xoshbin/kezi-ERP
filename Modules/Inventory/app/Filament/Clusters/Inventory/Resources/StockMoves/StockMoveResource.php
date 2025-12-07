@@ -52,53 +52,53 @@ class StockMoveResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('stock_move.label');
+        return __('inventory::stock_move.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('stock_move.plural_label');
+        return __('inventory::stock_move.plural_label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('stock_move.plural_label');
+        return __('inventory::stock_move.plural_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make(__('stock_move.basic_information'))
-                ->description(__('stock_move.basic_information_description'))
+            Section::make(__('inventory::stock_move.basic_information'))
+                ->description(__('inventory::stock_move.basic_information_description'))
                 ->icon('heroicon-o-arrow-path')
                 ->schema([
                     Grid::make(2)->schema([
                         TextInput::make('reference')
-                            ->label(__('stock_move.reference'))
+                            ->label(__('inventory::stock_move.reference'))
                             ->maxLength(255)
-                            ->placeholder(__('stock_move.reference_placeholder')),
+                            ->placeholder(__('inventory::stock_move.reference_placeholder')),
                         Textarea::make('description')
-                            ->label(__('stock_move.description'))
+                            ->label(__('inventory::stock_move.description'))
                             ->rows(2)
                             ->maxLength(500),
                     ]),
                 ]),
 
-            Section::make(__('stock_move.product_lines'))
-                ->description(__('stock_move.product_lines_description'))
+            Section::make(__('inventory::stock_move.product_lines'))
+                ->description(__('inventory::stock_move.product_lines_description'))
                 ->icon('heroicon-o-cube')
                 ->schema([
                     Repeater::make('productLines')
-                        ->label(__('stock_move.product_lines'))
+                        ->label(__('inventory::stock_move.product_lines'))
                         ->schema([
                             Grid::make(2)->schema([
                                 TranslatableSelect::forModel('product_id', Product::class)
-                                    ->label(__('stock_move.product'))
+                                    ->label(__('inventory::stock_move.product'))
                                     ->required()
                                     ->searchable()
                                     ->preload(),
                                 TextInput::make('quantity')
-                                    ->label(__('stock_move.quantity'))
+                                    ->label(__('inventory::stock_move.quantity'))
                                     ->required()
                                     ->numeric()
                                     ->minValue(0.0001)
@@ -109,26 +109,26 @@ class StockMoveResource extends Resource
                             CostPreviewComponent::forProductLine('product_id', 'quantity'),
                             Grid::make(2)->schema([
                                 TranslatableSelect::forModel('from_location_id', StockLocation::class)
-                                    ->label(__('stock_move.from_location'))
+                                    ->label(__('inventory::stock_move.from_location'))
                                     ->required()
                                     ->searchable()
                                     ->preload(),
                                 TranslatableSelect::forModel('to_location_id', StockLocation::class)
-                                    ->label(__('stock_move.to_location'))
+                                    ->label(__('inventory::stock_move.to_location'))
                                     ->required()
                                     ->searchable()
                                     ->preload(),
                             ]),
                             Grid::make(2)->schema([
                                 Select::make('source_type')
-                                    ->label(__('stock_move.source_type'))
+                                    ->label(__('inventory::stock_move.source_type'))
                                     ->options([
                                         Invoice::class => __('invoice.label'),
                                         VendorBill::class => __('vendor_bill.label'),
                                     ])
                                     ->reactive(),
                                 Select::make('source_id')
-                                    ->label(__('stock_move.source'))
+                                    ->label(__('inventory::stock_move.source'))
                                     ->options(function (callable $get): array {
                                         $type = $get('source_type');
                                         if (! $type || ! class_exists($type)) {
@@ -155,19 +155,19 @@ class StockMoveResource extends Resource
                                     ->disabled(fn(callable $get) => ! $get('source_type')),
                             ]),
                             Textarea::make('description')
-                                ->label(__('stock_move.line_description'))
+                                ->label(__('inventory::stock_move.line_description'))
                                 ->rows(2)
                                 ->maxLength(500),
                         ])
                         ->defaultItems(1)
-                        ->addActionLabel(__('stock_move.add_product_line'))
+                        ->addActionLabel(__('inventory::stock_move.add_product_line'))
                         ->reorderable()
                         ->collapsible()
                         ->itemLabel(
                             fn(array $state): ?string =>
                             isset($state['product_id'])
-                                ? Product::find($state['product_id'])?->name ?? __('stock_move.new_product_line')
-                                : __('stock_move.new_product_line')
+                                ? Product::find($state['product_id'])?->name ?? __('inventory::stock_move.new_product_line')
+                                : __('inventory::stock_move.new_product_line')
                         ),
                 ]),
 
@@ -180,13 +180,13 @@ class StockMoveResource extends Resource
                 ])
                 ->visible(fn(callable $get) => $get('move_type') === StockMoveType::Incoming->value),
 
-            Section::make(__('stock_move.movement_details'))
-                ->description(__('stock_move.movement_details_description'))
+            Section::make(__('inventory::stock_move.movement_details'))
+                ->description(__('inventory::stock_move.movement_details_description'))
                 ->icon('heroicon-o-calendar')
                 ->schema([
                     Grid::make(3)->schema([
                         Select::make('move_type')
-                            ->label(__('stock_move.move_type'))
+                            ->label(__('inventory::stock_move.move_type'))
                             ->required()
                             ->options(
                                 collect(StockMoveType::cases())
@@ -194,7 +194,7 @@ class StockMoveResource extends Resource
                             )
                             ->searchable(),
                         Select::make('status')
-                            ->label(__('stock_move.status'))
+                            ->label(__('inventory::stock_move.status'))
                             ->required()
                             ->options(
                                 collect(StockMoveStatus::cases())
@@ -203,7 +203,7 @@ class StockMoveResource extends Resource
                             ->default(StockMoveStatus::Draft->value)
                             ->searchable(),
                         DatePicker::make('move_date')
-                            ->label(__('stock_move.move_date'))
+                            ->label(__('inventory::stock_move.move_date'))
                             ->required()
                             ->default(now()),
                     ]),
@@ -216,26 +216,26 @@ class StockMoveResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('company.name')
-                    ->label(__('stock_move.company'))
+                    ->label(__('inventory::stock_move.company'))
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('move_date')
-                    ->label(__('stock_move.move_date'))
+                    ->label(__('inventory::stock_move.move_date'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('reference')
-                    ->label(__('stock_move.reference'))
+                    ->label(__('inventory::stock_move.reference'))
                     ->searchable()
                     ->copyable()
                     ->placeholder('-'),
                 TextColumn::make('description')
-                    ->label(__('stock_move.description'))
+                    ->label(__('inventory::stock_move.description'))
                     ->searchable()
                     ->limit(30)
                     ->placeholder('-'),
                 TextColumn::make('productLines')
-                    ->label(__('stock_move.products'))
+                    ->label(__('inventory::stock_move.products'))
                     ->formatStateUsing(function (StockMove $record): string {
                         $count = $record->productLines()->count();
                         if ($count === 0) {
@@ -245,7 +245,7 @@ class StockMoveResource extends Resource
                             $productLine = $record->productLines()->first();
                             return $productLine ? $productLine->product->name : '-';
                         }
-                        return "{$count} " . __('stock_move.products_count');
+                        return "{$count} " . __('inventory::stock_move.products_count');
                     })
                     ->searchable(query: function (Builder $query, string $search): Builder {
                         return $query->whereHas('productLines.product', function (Builder $query) use ($search) {
@@ -253,7 +253,7 @@ class StockMoveResource extends Resource
                         });
                     }),
                 TextColumn::make('total_quantity')
-                    ->label(__('stock_move.total_quantity'))
+                    ->label(__('inventory::stock_move.total_quantity'))
                     ->formatStateUsing(function (StockMove $record): string {
                         $total = $record->productLines()->sum('quantity');
                         return number_format($total, 4);
@@ -263,7 +263,7 @@ class StockMoveResource extends Resource
                             ->orderBy('product_lines_sum_quantity', $direction);
                     }),
                 TextColumn::make('move_type')
-                    ->label(__('stock_move.move_type'))
+                    ->label(__('inventory::stock_move.move_type'))
                     ->badge()
                     ->formatStateUsing(fn(StockMoveType $state): string => $state->label())
                     ->color(fn(StockMoveType $state): string => match ($state) {
@@ -273,7 +273,7 @@ class StockMoveResource extends Resource
                         StockMoveType::Adjustment => 'warning',
                     }),
                 TextColumn::make('status')
-                    ->label(__('stock_move.status'))
+                    ->label(__('inventory::stock_move.status'))
                     ->badge()
                     ->formatStateUsing(fn(StockMoveStatus $state): string => $state->label())
                     ->color(fn(StockMoveStatus $state): string => match ($state) {
@@ -283,11 +283,11 @@ class StockMoveResource extends Resource
                         StockMoveStatus::Cancelled => 'danger',
                     }),
                 TextColumn::make('source_type')
-                    ->label(__('stock_move.source'))
+                    ->label(__('inventory::stock_move.source'))
                     ->formatStateUsing(fn(?string $state): string => $state ? class_basename($state) : '-')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
-                    ->label(__('stock_move.created_at'))
+                    ->label(__('inventory::stock_move.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -296,11 +296,11 @@ class StockMoveResource extends Resource
             ->filters([
                 SelectFilter::make('company_id')
                     ->relationship('company', 'name')
-                    ->label(__('stock_move.company'))
+                    ->label(__('inventory::stock_move.company'))
                     ->multiple()
                     ->preload(),
                 SelectFilter::make('product_id')
-                    ->label(__('stock_move.product'))
+                    ->label(__('inventory::stock_move.product'))
                     ->multiple()
                     ->preload()
                     ->options(function () {
@@ -318,14 +318,14 @@ class StockMoveResource extends Resource
                         });
                     }),
                 SelectFilter::make('move_type')
-                    ->label(__('stock_move.move_type'))
+                    ->label(__('inventory::stock_move.move_type'))
                     ->options(
                         collect(StockMoveType::cases())
                             ->mapWithKeys(fn(StockMoveType $type) => [$type->value => $type->label()])
                     )
                     ->multiple(),
                 SelectFilter::make('status')
-                    ->label(__('stock_move.status'))
+                    ->label(__('inventory::stock_move.status'))
                     ->options(
                         collect(StockMoveStatus::cases())
                             ->mapWithKeys(fn(StockMoveStatus $status) => [$status->value => $status->label()])
@@ -334,9 +334,9 @@ class StockMoveResource extends Resource
                 Filter::make('move_date')
                     ->schema([
                         DatePicker::make('from')
-                            ->label(__('stock_move.from_date')),
+                            ->label(__('inventory::stock_move.from_date')),
                         DatePicker::make('until')
-                            ->label(__('stock_move.until_date')),
+                            ->label(__('inventory::stock_move.until_date')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -373,19 +373,19 @@ class StockMoveResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make(__('stock_move.basic_information'))
-                ->description(__('stock_move.basic_information_description'))
+            Section::make(__('inventory::stock_move.basic_information'))
+                ->description(__('inventory::stock_move.basic_information_description'))
                 ->icon('heroicon-o-arrow-path')
                 ->schema([
                     Grid::make(3)->schema([
                         TextEntry::make('reference')
-                            ->label(__('stock_move.reference'))
+                            ->label(__('inventory::stock_move.reference'))
                             ->placeholder('-'),
                         TextEntry::make('move_date')
-                            ->label(__('stock_move.move_date'))
+                            ->label(__('inventory::stock_move.move_date'))
                             ->date(),
                         TextEntry::make('status')
-                            ->label(__('stock_move.status'))
+                            ->label(__('inventory::stock_move.status'))
                             ->badge()
                             ->color(fn(StockMoveStatus $state): string => match ($state) {
                                 StockMoveStatus::Draft => 'gray',
@@ -395,7 +395,7 @@ class StockMoveResource extends Resource
                     ]),
                     Grid::make(2)->schema([
                         TextEntry::make('move_type')
-                            ->label(__('stock_move.move_type'))
+                            ->label(__('inventory::stock_move.move_type'))
                             ->badge()
                             ->color(fn(StockMoveType $state): string => match ($state) {
                                 StockMoveType::Incoming => 'success',
@@ -404,31 +404,31 @@ class StockMoveResource extends Resource
                                 StockMoveType::Adjustment => 'warning',
                             }),
                         TextEntry::make('description')
-                            ->label(__('stock_move.description'))
+                            ->label(__('inventory::stock_move.description'))
                             ->placeholder('-'),
                     ]),
                 ]),
 
-            Section::make(__('stock_move.product_lines'))
-                ->description(__('stock_move.product_lines_description'))
+            Section::make(__('inventory::stock_move.product_lines'))
+                ->description(__('inventory::stock_move.product_lines_description'))
                 ->icon('heroicon-o-cube')
                 ->schema([
                     RepeatableEntry::make('productLines')
-                        ->label(__('stock_move.product_lines'))
+                        ->label(__('inventory::stock_move.product_lines'))
                         ->schema([
                             Grid::make(2)->schema([
                                 TextEntry::make('product.name')
-                                    ->label(__('stock_move.product')),
+                                    ->label(__('inventory::stock_move.product')),
                                 TextEntry::make('quantity')
-                                    ->label(__('stock_move.quantity'))
+                                    ->label(__('inventory::stock_move.quantity'))
                                     ->numeric(decimalPlaces: 4),
                             ]),
                             Grid::make(2)->schema([
                                 TextEntry::make('fromLocation.name')
-                                    ->label(__('stock_move.from_location'))
+                                    ->label(__('inventory::stock_move.from_location'))
                                     ->placeholder('-'),
                                 TextEntry::make('toLocation.name')
-                                    ->label(__('stock_move.to_location'))
+                                    ->label(__('inventory::stock_move.to_location'))
                                     ->placeholder('-'),
                             ]),
                         ])
@@ -436,16 +436,16 @@ class StockMoveResource extends Resource
                 ])
                 ->visible(fn(StockMove $record): bool => $record->productLines()->exists()),
 
-            Section::make(__('stock_move.audit_information'))
-                ->description(__('stock_move.audit_information_description'))
+            Section::make(__('inventory::stock_move.audit_information'))
+                ->description(__('inventory::stock_move.audit_information_description'))
                 ->icon('heroicon-o-clock')
                 ->schema([
                     Grid::make(2)->schema([
                         TextEntry::make('createdByUser.name')
-                            ->label(__('stock_move.created_by'))
+                            ->label(__('inventory::stock_move.created_by'))
                             ->placeholder('-'),
                         TextEntry::make('created_at')
-                            ->label(__('stock_move.created_at'))
+                            ->label(__('inventory::stock_move.created_at'))
                             ->dateTime(),
                     ]),
                 ]),

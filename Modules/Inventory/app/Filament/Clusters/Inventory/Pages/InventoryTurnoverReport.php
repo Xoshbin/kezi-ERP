@@ -141,25 +141,25 @@ class InventoryTurnoverReport extends Page implements HasForms
             return [
                 'level' => 'excellent',
                 'color' => 'success',
-                'description' => __('inventory_reports.turnover.analysis.excellent'),
+                'description' => __('inventory::inventory_reports.turnover.analysis.excellent'),
             ];
         } elseif ($ratio >= 6) {
             return [
                 'level' => 'good',
                 'color' => 'info',
-                'description' => __('inventory_reports.turnover.analysis.good'),
+                'description' => __('inventory::inventory_reports.turnover.analysis.good'),
             ];
         } elseif ($ratio >= 3) {
             return [
                 'level' => 'average',
                 'color' => 'warning',
-                'description' => __('inventory_reports.turnover.analysis.average'),
+                'description' => __('inventory::inventory_reports.turnover.analysis.average'),
             ];
         } else {
             return [
                 'level' => 'poor',
                 'color' => 'danger',
-                'description' => __('inventory_reports.turnover.analysis.poor'),
+                'description' => __('inventory::inventory_reports.turnover.analysis.poor'),
             ];
         }
     }
@@ -198,7 +198,7 @@ class InventoryTurnoverReport extends Page implements HasForms
                 ->action(function () {
                     if (!$this->reportData) {
                         Notification::make()
-                            ->title(__('inventory_reports.turnover.no_data_to_export'))
+                            ->title(__('inventory::inventory_reports.turnover.no_data_to_export'))
                             ->danger()
                             ->send();
                         return;

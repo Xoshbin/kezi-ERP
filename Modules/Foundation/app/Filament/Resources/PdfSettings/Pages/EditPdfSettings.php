@@ -16,7 +16,7 @@ class EditPdfSettings extends EditRecord
     {
         return [
             Action::make('preview_pdf')
-                ->label(__('pdf_settings.preview_pdf'))
+                ->label(__('foundation::pdf_settings.preview_pdf'))
                 ->icon('heroicon-o-eye')
                 ->color('info')
                 ->url(function (): string {
@@ -31,7 +31,7 @@ class EditPdfSettings extends EditRecord
 
     public function getTitle(): string
     {
-        return __('pdf_settings.edit_title');
+        return __('foundation::pdf_settings.edit_title');
     }
 
     public function getHeading(): string
@@ -39,7 +39,7 @@ class EditPdfSettings extends EditRecord
         $record = $this->getRecord();
         $name = $record instanceof Company ? (string) $record->name : '';
 
-        return __('pdf_settings.edit_heading', ['company' => $name]);
+        return __('foundation::pdf_settings.edit_heading', ['company' => $name]);
     }
 
     protected function getRedirectUrl(): string
@@ -51,7 +51,7 @@ class EditPdfSettings extends EditRecord
     {
         return Notification::make()
             ->success()
-            ->title(__('pdf_settings.settings_saved'))
-            ->body(__('pdf_settings.settings_saved_body'));
+            ->title(__('foundation::pdf_settings.settings_saved'))
+            ->body(__('foundation::pdf_settings.settings_saved_body'));
     }
 }

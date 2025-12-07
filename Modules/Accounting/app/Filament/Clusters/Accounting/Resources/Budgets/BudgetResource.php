@@ -37,17 +37,17 @@ class BudgetResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('budget.label');
+        return __('accounting::budget.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('budget.plural_label');
+        return __('accounting::budget.plural_label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('budget.plural_label');
+        return __('accounting::budget.plural_label');
     }
 
     public static function form(Schema $schema): Schema
@@ -55,28 +55,28 @@ class BudgetResource extends Resource
         return $schema
             ->components([
                 Select::make('company_id')
-                    ->label(__('budget.form.company_id'))
+                    ->label(__('accounting::budget.form.company_id'))
                     ->relationship('company', 'name')
                     ->required(),
                 TextInput::make('name')
-                    ->label(__('budget.form.name'))
+                    ->label(__('accounting::budget.form.name'))
                     ->required()
                     ->maxLength(255),
                 DatePicker::make('period_start_date')
-                    ->label(__('budget.form.period_start_date'))
+                    ->label(__('accounting::budget.form.period_start_date'))
                     ->required(),
                 DatePicker::make('period_end_date')
-                    ->label(__('budget.form.period_end_date'))
+                    ->label(__('accounting::budget.form.period_end_date'))
                     ->required(),
                 TextInput::make('budget_type')
-                    ->label(__('budget.form.budget_type'))
+                    ->label(__('accounting::budget.form.budget_type'))
                     ->required()
                     ->maxLength(255),
                 TextInput::make('status')
-                    ->label(__('budget.form.status'))
+                    ->label(__('accounting::budget.form.status'))
                     ->required()
                     ->maxLength(255)
-                    ->default(__('budget.form.default_status')),
+                    ->default(__('accounting::budget.form.default_status')),
             ]);
     }
 
@@ -85,33 +85,33 @@ class BudgetResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('company.name')
-                    ->label(__('budget.table.company_name'))
+                    ->label(__('accounting::budget.table.company_name'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('name')
-                    ->label(__('budget.table.name'))
+                    ->label(__('accounting::budget.table.name'))
                     ->searchable(),
                 TextColumn::make('period_start_date')
-                    ->label(__('budget.table.period_start_date'))
+                    ->label(__('accounting::budget.table.period_start_date'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('period_end_date')
-                    ->label(__('budget.table.period_end_date'))
+                    ->label(__('accounting::budget.table.period_end_date'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('budget_type')
-                    ->label(__('budget.table.budget_type'))
+                    ->label(__('accounting::budget.table.budget_type'))
                     ->searchable(),
                 TextColumn::make('status')
-                    ->label(__('budget.table.status'))
+                    ->label(__('accounting::budget.table.status'))
                     ->searchable(),
                 TextColumn::make('created_at')
-                    ->label(__('budget.table.created_at'))
+                    ->label(__('accounting::budget.table.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label(__('budget.table.updated_at'))
+                    ->label(__('accounting::budget.table.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

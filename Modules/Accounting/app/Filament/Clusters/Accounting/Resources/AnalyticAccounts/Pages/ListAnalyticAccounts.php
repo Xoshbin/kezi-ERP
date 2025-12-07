@@ -12,7 +12,7 @@ class ListAnalyticAccounts extends ListRecords
 
     public function getTitle(): string
     {
-        return __('analytic_account.pages.list.title');
+        return __('accounting::analytic_account.pages.list.title');
     }
 
     protected function getHeaderActions(): array

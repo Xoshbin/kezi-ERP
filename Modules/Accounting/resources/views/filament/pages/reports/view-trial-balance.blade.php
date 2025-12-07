@@ -16,7 +16,7 @@
                                 <svg class="h-5 w-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                                 </svg>
-                                <span class="text-green-800 dark:text-green-200 font-medium">{{ __('reports.trial_balance_balanced') }}</span>
+                                <span class="text-green-800 dark:text-green-200 font-medium">{{ __('accounting::reports.trial_balance_balanced') }}</span>
                             </div>
                         </div>
                     @else
@@ -25,7 +25,7 @@
                                 <svg class="h-5 w-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
                                 </svg>
-                                <span class="text-red-800 dark:text-red-200 font-medium">{{ __('reports.trial_balance_not_balanced') }}</span>
+                                <span class="text-red-800 dark:text-red-200 font-medium">{{ __('accounting::reports.trial_balance_not_balanced') }}</span>
                             </div>
                         </div>
                     @endif
@@ -34,11 +34,11 @@
                 <!-- Report Header -->
                 <div class="mb-6">
                     <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-                        {{ __('reports.trial_balance_report') }}
+                        {{ __('accounting::reports.trial_balance_report') }}
                     </h2>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
                         {{ $reportData['companyName'] }} -
-                        {{ __('reports.as_of') }}: {{ Carbon\Carbon::parse($reportData['asOfDate'])->format('M j, Y') }}
+                        {{ __('accounting::reports.as_of') }}: {{ Carbon\Carbon::parse($reportData['asOfDate'])->format('M j, Y') }}
                     </p>
                 </div>
 
@@ -48,13 +48,13 @@
                         <thead class="bg-gray-50 dark:bg-gray-800">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('reports.account') }}
+                                    {{ __('accounting::reports.account') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('reports.debit') }}
+                                    {{ __('accounting::reports.debit') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('reports.credit') }}
+                                    {{ __('accounting::reports.credit') }}
                                 </th>
                             </tr>
                         </thead>
@@ -84,7 +84,7 @@
                             @empty
                                 <tr>
                                     <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                                        {{ __('reports.no_account_balances_found') }}
+                                        {{ __('accounting::reports.no_account_balances_found') }}
                                     </td>
                                 </tr>
                             @endforelse
@@ -95,7 +95,7 @@
                             <tfoot class="bg-gray-50 dark:bg-gray-800">
                                 <tr class="border-t-2 border-gray-300 dark:border-gray-600">
                                     <td class="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white">
-                                        {{ __('reports.total') }}
+                                        {{ __('accounting::reports.total') }}
                                     </td>
                                     <td class="px-6 py-4 text-right text-sm font-bold text-gray-900 dark:text-white">
                                         {{ $reportData['totalDebit'] }}
@@ -113,12 +113,12 @@
                 @if(count($reportData['reportLines']) > 0)
                     <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                         <div class="text-sm text-gray-600 dark:text-gray-400">
-                            <strong>{{ __('reports.balance_verification') }}:</strong>
-                            {{ __('reports.total_debits') }}: {{ $reportData['totalDebit'] }} |
-                            {{ __('reports.total_credits') }}: {{ $reportData['totalCredit'] }} |
-                            {{ __('reports.difference') }}:
+                            <strong>{{ __('accounting::reports.balance_verification') }}:</strong>
+                            {{ __('accounting::reports.total_debits') }}: {{ $reportData['totalDebit'] }} |
+                            {{ __('accounting::reports.total_credits') }}: {{ $reportData['totalCredit'] }} |
+                            {{ __('accounting::reports.difference') }}:
                             @if($reportData['isBalanced'])
-                                <span class="text-green-600 dark:text-green-400 font-medium">{{ __('reports.balanced') }}</span>
+                                <span class="text-green-600 dark:text-green-400 font-medium">{{ __('accounting::reports.balanced') }}</span>
                             @else
                                 <span class="text-red-600 dark:text-red-400 font-medium">
                                     {{ number_format(abs($reportData['totalDebitAmount'] - $reportData['totalCreditAmount']), 2) }}
@@ -137,10 +137,10 @@
                     </svg>
                 </div>
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                    {{ __('reports.no_report_generated') }}
+                    {{ __('accounting::reports.no_report_generated') }}
                 </h3>
                 <p class="text-gray-500 dark:text-gray-400">
-                    {{ __('reports.select_date_and_generate') }}
+                    {{ __('accounting::reports.select_date_and_generate') }}
                 </p>
             </div>
         @endif

@@ -19,7 +19,7 @@ class DepreciationEntryRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('asset.depreciation_entries');
+        return __('accounting::asset.depreciation_entries');
     }
 
     public function form(Schema $schema): Schema
@@ -36,12 +36,12 @@ class DepreciationEntryRelationManager extends RelationManager
             ->recordTitleAttribute('depreciation_date')
             ->columns([
                 TextColumn::make('depreciation_date')
-                    ->label(__('asset.depreciation_date'))
+                    ->label(__('accounting::asset.depreciation_date'))
                     ->date(),
                 TextColumn::make('amount')
-                    ->label(__('asset.amount')),
+                    ->label(__('accounting::asset.amount')),
                 TextColumn::make('status')
-                    ->label(__('asset.status')),
+                    ->label(__('accounting::asset.status')),
             ])
             ->filters([
                 //
@@ -51,7 +51,7 @@ class DepreciationEntryRelationManager extends RelationManager
             ])
             ->recordActions([
                 Action::make('post')
-                    ->label(__('asset.post'))
+                    ->label(__('accounting::asset.post'))
                     ->action(fn (DepreciationEntry $record) => $this->postDepreciation($record))
                     ->requiresConfirmation()
                     ->visible(fn (DepreciationEntry $record): bool => $record->status === DepreciationEntryStatus::Draft),
@@ -69,7 +69,7 @@ class DepreciationEntryRelationManager extends RelationManager
         }
         app(\Modules\Accounting\Services\AssetService::class)->postDepreciation($entry, $user);
         Notification::make()
-            ->title(__('asset.post_depreciation_success'))
+            ->title(__('accounting::asset.post_depreciation_success'))
             ->success()
             ->send();
     }

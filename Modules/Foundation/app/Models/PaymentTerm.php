@@ -217,21 +217,21 @@ class PaymentTerm extends Model
         $this->loadMissing('lines');
 
         if ($this->lines->isEmpty()) {
-            return __('payment_terms.immediate_payment');
+            return __('foundation::payment_terms.immediate_payment');
         }
 
         if ($this->lines->count() === 1) {
             $line = $this->lines->first();
             if ($line->percentage == 100 && $line->days == 0) {
-                return __('payment_terms.immediate_payment');
+                return __('foundation::payment_terms.immediate_payment');
             }
 
-            return __('payment_terms.net_days', ['days' => $line->days]);
+            return __('foundation::payment_terms.net_days', ['days' => $line->days]);
         }
 
         // Multiple installments
         $descriptions = $this->lines->map(function (PaymentTermLine $line) {
-            return __('payment_terms.installment_description', [
+            return __('foundation::payment_terms.installment_description', [
                 'percentage' => $line->percentage,
                 'days' => $line->days,
             ]);

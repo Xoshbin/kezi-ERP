@@ -46,31 +46,31 @@ class JournalResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('journal.label');
+        return __('accounting::journal.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('journal.plural_label');
+        return __('accounting::journal.plural_label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('journal.plural_label');
+        return __('accounting::journal.plural_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make(__('journal.details'))
-                ->description(__('journal.details_description'))
+            Section::make(__('accounting::journal.details'))
+                ->description(__('accounting::journal.details_description'))
                 ->schema([
                     TextInput::make('name')
-                        ->label(__('journal.name'))
+                        ->label(__('accounting::journal.name'))
                         ->required()
                         ->maxLength(255),
                     Select::make('type')
-                        ->label(__('journal.type'))
+                        ->label(__('accounting::journal.type'))
                         ->required()
                         ->searchable()
                         ->options(
@@ -79,11 +79,11 @@ class JournalResource extends Resource
                         )
                         ->searchable(),
                     TextInput::make('short_code')
-                        ->label(__('journal.short_code'))
+                        ->label(__('accounting::journal.short_code'))
                         ->required()
                         ->maxLength(255),
                     TranslatableSelect::forModel('currency_id', Currency::class, 'name')
-                        ->label(__('journal.currency'))
+                        ->label(__('accounting::journal.currency'))
                         ->required()
                         ->searchable()
                         ->preload()
@@ -118,18 +118,18 @@ class JournalResource extends Resource
                 ->columns(4)
                 ->columnSpanFull(),
 
-            Section::make(__('journal.default_accounts'))
-                ->description(__('journal.default_accounts_description'))
+            Section::make(__('accounting::journal.default_accounts'))
+                ->description(__('accounting::journal.default_accounts_description'))
                 ->schema([
                     TranslatableSelect::forModel('default_debit_account_id', Account::class, 'name')
                         ->searchable()
                         ->preload()
-                        ->helperText(__('journal.default_debit_account_helper')),
+                        ->helperText(__('accounting::journal.default_debit_account_helper')),
 
                     TranslatableSelect::forModel('default_credit_account_id', Account::class, 'name')
                         ->searchable()
                         ->preload()
-                        ->helperText(__('journal.default_credit_account_helper')),
+                        ->helperText(__('accounting::journal.default_credit_account_helper')),
                 ])
                 ->columns(2)
                 ->columnSpanFull(),
@@ -141,43 +141,43 @@ class JournalResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('company.name')
-                    ->label(__('journal.company'))
+                    ->label(__('accounting::journal.company'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('name')
-                    ->label(__('journal.name'))
+                    ->label(__('accounting::journal.name'))
                     ->searchable(),
                 TextColumn::make('type')
-                    ->label(__('journal.type'))
+                    ->label(__('accounting::journal.type'))
                     ->formatStateUsing(fn ($state) => $state instanceof JournalType ? $state->label() : ($state ? JournalType::from($state)->label() : null))
                     ->badge()
                     ->searchable(),
                 TextColumn::make('short_code')
-                    ->label(__('journal.short_code'))
+                    ->label(__('accounting::journal.short_code'))
                     ->searchable(),
 
                 // Configuration overview
                 TextColumn::make('defaultDebitAccount.name')
-                    ->label(__('journal.default_debit_account_short'))
+                    ->label(__('accounting::journal.default_debit_account_short'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('defaultCreditAccount.name')
-                    ->label(__('journal.default_credit_account_short'))
+                    ->label(__('accounting::journal.default_credit_account_short'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('currency.code')
-                    ->label(__('journal.currency'))
+                    ->label(__('accounting::journal.currency'))
                     ->badge()
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('created_at')
-                    ->label(__('journal.created_at'))
+                    ->label(__('accounting::journal.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label(__('journal.updated_at'))
+                    ->label(__('accounting::journal.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

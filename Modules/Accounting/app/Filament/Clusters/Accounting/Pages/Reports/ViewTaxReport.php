@@ -36,12 +36,12 @@ class ViewTaxReport extends Page
 
     public static function getNavigationLabel(): string
     {
-        return __('reports.tax_report');
+        return __('accounting::reports.tax_report');
     }
 
     public function getTitle(): string
     {
-        return __('reports.tax_report');
+        return __('accounting::reports.tax_report');
     }
 
     public function mount(): void
@@ -55,14 +55,14 @@ class ViewTaxReport extends Page
     {
         return $schema
             ->components([
-                Section::make(__('reports.report_parameters'))
+                Section::make(__('accounting::reports.report_parameters'))
                     ->schema([
                         DatePicker::make('startDate')
-                            ->label(__('reports.start_date'))
+                            ->label(__('accounting::reports.start_date'))
                             ->required()
                             ->default(Carbon::now()->startOfMonth()->toDateString()),
                         DatePicker::make('endDate')
-                            ->label(__('reports.end_date'))
+                            ->label(__('accounting::reports.end_date'))
                             ->required()
                             ->default(Carbon::now()->endOfMonth()->toDateString()),
                     ])
@@ -74,7 +74,7 @@ class ViewTaxReport extends Page
     {
         return [
             Action::make('generate')
-                ->label(__('reports.generate_report'))
+                ->label(__('accounting::reports.generate_report'))
                 ->icon('heroicon-o-play')
                 ->color('primary')
                 ->action('generateReport'),

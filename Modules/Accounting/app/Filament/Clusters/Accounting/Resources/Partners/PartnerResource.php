@@ -107,18 +107,18 @@ class PartnerResource extends Resource
                                     ->createOptionForm([
                                         Select::make('company_id')
                                             ->relationship('company', 'name')
-                                            ->label(__('tax.company'))
+                                            ->label(__('accounting::tax.company'))
                                             ->required(),
                                         Select::make('tax_account_id')
                                             ->relationship('taxAccount', 'name')
-                                            ->label(__('tax.tax_account'))
+                                            ->label(__('accounting::tax.tax_account'))
                                             ->required(),
                                         TextInput::make('name')
-                                            ->label(__('tax.name'))
+                                            ->label(__('accounting::tax.name'))
                                             ->required()
                                             ->maxLength(255),
                                         TextInput::make('rate')
-                                            ->label(__('tax.rate'))
+                                            ->label(__('accounting::tax.rate'))
                                             ->required()
                                             ->numeric()
                                             ->suffix('%'),
@@ -223,15 +223,15 @@ class PartnerResource extends Resource
                                                 return $tenant?->getKey();
                                             }),
                                         TextInput::make('name')
-                                            ->label(__('account.name'))
+                                            ->label(__('accounting::account.name'))
                                             ->required()
                                             ->maxLength(255),
                                         TextInput::make('code')
-                                            ->label(__('account.code'))
+                                            ->label(__('accounting::account.code'))
                                             ->required()
                                             ->maxLength(255),
                                         Select::make('type')
-                                            ->label(__('account.type'))
+                                            ->label(__('accounting::account.type'))
                                             ->options([\Modules\Accounting\Enums\Accounting\AccountType::Receivable->value => \Modules\Accounting\Enums\Accounting\AccountType::Receivable->label()])
                                             ->default(\Modules\Accounting\Enums\Accounting\AccountType::Receivable->value)
                                             ->required(),
@@ -251,15 +251,15 @@ class PartnerResource extends Resource
                                                 return $tenant?->getKey();
                                             }),
                                         TextInput::make('name')
-                                            ->label(__('account.name'))
+                                            ->label(__('accounting::account.name'))
                                             ->required()
                                             ->maxLength(255),
                                         TextInput::make('code')
-                                            ->label(__('account.code'))
+                                            ->label(__('accounting::account.code'))
                                             ->required()
                                             ->maxLength(255),
                                         Select::make('type')
-                                            ->label(__('account.type'))
+                                            ->label(__('accounting::account.type'))
                                             ->searchable()
                                             ->options([\Modules\Accounting\Enums\Accounting\AccountType::Payable->value => \Modules\Accounting\Enums\Accounting\AccountType::Payable->label()])
                                             ->default(\Modules\Accounting\Enums\Accounting\AccountType::Payable->value)

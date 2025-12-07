@@ -41,17 +41,17 @@ class ViewPartnerLedger extends Page
 
     public static function getNavigationLabel(): string
     {
-        return __('reports.partner_ledger');
+        return __('accounting::reports.partner_ledger');
     }
 
     public function getTitle(): string|Htmlable
     {
-        return __('reports.partner_ledger');
+        return __('accounting::reports.partner_ledger');
     }
 
     public function getHeading(): string|Htmlable
     {
-        return __('reports.partner_ledger');
+        return __('accounting::reports.partner_ledger');
     }
 
     public function mount(): void
@@ -64,10 +64,10 @@ class ViewPartnerLedger extends Page
     {
         return $schema
             ->components([
-                Section::make(__('reports.filter_options'))
+                Section::make(__('accounting::reports.filter_options'))
                     ->schema([
                         Select::make('partnerId')
-                            ->label(__('reports.partner'))
+                            ->label(__('accounting::reports.partner'))
                             ->required()
                             ->searchable()
                             ->options(function () {
@@ -86,16 +86,16 @@ class ViewPartnerLedger extends Page
                                         return [$partner->id => $partner->name . $suffix];
                                     });
                             })
-                            ->placeholder(__('reports.select_partner'))
-                            ->helperText(__('reports.partner_accounts_required')),
+                            ->placeholder(__('accounting::reports.select_partner'))
+                            ->helperText(__('accounting::reports.partner_accounts_required')),
 
                         DatePicker::make('startDate')
-                            ->label(__('reports.start_date'))
+                            ->label(__('accounting::reports.start_date'))
                             ->required()
                             ->default(Carbon::now()->startOfMonth()),
 
                         DatePicker::make('endDate')
-                            ->label(__('reports.end_date'))
+                            ->label(__('accounting::reports.end_date'))
                             ->required()
                             ->default(Carbon::now()->endOfMonth())
                             ->afterOrEqual('startDate'),
@@ -108,7 +108,7 @@ class ViewPartnerLedger extends Page
     {
         return [
             Action::make('generate')
-                ->label(__('reports.generate_report'))
+                ->label(__('accounting::reports.generate_report'))
                 ->icon('heroicon-o-play')
                 ->color('primary')
                 ->action('generateReport'),

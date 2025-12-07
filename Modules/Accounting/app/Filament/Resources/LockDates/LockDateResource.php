@@ -31,27 +31,27 @@ class LockDateResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('lock_date.label');
+        return __('accounting::lock_date.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('lock_date.plural_label');
+        return __('accounting::lock_date.plural_label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('lock_date.plural_label');
+        return __('accounting::lock_date.plural_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make(__('lock_date.basic_information'))
+                Section::make(__('accounting::lock_date.basic_information'))
                     ->schema([
                         Select::make('lock_type')
-                            ->label(__('lock_date.lock_type'))
+                            ->label(__('accounting::lock_date.lock_type'))
                             ->options(
                                 collect(LockDateType::cases())
                                     ->mapWithKeys(fn(LockDateType $type) => [$type->value => $type->label()])
@@ -60,7 +60,7 @@ class LockDateResource extends Resource
                             ->disabled(fn(?LockDate $record) => $record !== null && $record->lock_type === LockDateType::HardLock)
                             ->dehydrated(fn(?LockDate $record) => $record === null),
                         DatePicker::make('locked_until')
-                            ->label(__('lock_date.locked_until'))
+                            ->label(__('accounting::lock_date.locked_until'))
                             ->required(),
                     ])
                     ->columns(2)

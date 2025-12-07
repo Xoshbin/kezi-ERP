@@ -31,10 +31,10 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-                            {{ __('inventory_dashboard.quick_actions.new_receipt.title') }}
+                            {{ __('inventory::inventory_dashboard.quick_actions.new_receipt.title') }}
                         </h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ __('inventory_dashboard.quick_actions.new_receipt.description') }}
+                            {{ __('inventory::inventory_dashboard.quick_actions.new_receipt.description') }}
                         </p>
                         <x-filament::button
                             tag="a"
@@ -42,7 +42,7 @@
                             size="sm"
                             class="mt-2"
                         >
-                            {{ __('inventory_dashboard.quick_actions.new_receipt.button') }}
+                            {{ __('inventory::inventory_dashboard.quick_actions.new_receipt.button') }}
                         </x-filament::button>
                     </div>
                 </div>
@@ -55,10 +55,10 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-                            {{ __('inventory_dashboard.quick_actions.new_delivery.title') }}
+                            {{ __('inventory::inventory_dashboard.quick_actions.new_delivery.title') }}
                         </h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ __('inventory_dashboard.quick_actions.new_delivery.description') }}
+                            {{ __('inventory::inventory_dashboard.quick_actions.new_delivery.description') }}
                         </p>
                         <x-filament::button
                             tag="a"
@@ -67,7 +67,7 @@
                             class="mt-2"
                             color="warning"
                         >
-                            {{ __('inventory_dashboard.quick_actions.new_delivery.button') }}
+                            {{ __('inventory::inventory_dashboard.quick_actions.new_delivery.button') }}
                         </x-filament::button>
                     </div>
                 </div>
@@ -80,10 +80,10 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-                            {{ __('inventory_dashboard.quick_actions.reports.title') }}
+                            {{ __('inventory::inventory_dashboard.quick_actions.reports.title') }}
                         </h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ __('inventory_dashboard.quick_actions.reports.description') }}
+                            {{ __('inventory::inventory_dashboard.quick_actions.reports.description') }}
                         </p>
                         <x-filament::button
                             tag="a"
@@ -92,7 +92,7 @@
                             class="mt-2"
                             color="success"
                         >
-                            {{ __('inventory_dashboard.quick_actions.reports.button') }}
+                            {{ __('inventory::inventory_dashboard.quick_actions.reports.button') }}
                         </x-filament::button>
                     </div>
                 </div>
