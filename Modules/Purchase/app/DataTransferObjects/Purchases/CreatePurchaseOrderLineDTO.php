@@ -40,7 +40,7 @@ readonly class CreatePurchaseOrderLineDTO
             $unitPrice = $data['unit_price'];
         } elseif (is_numeric($data['unit_price']) && $data['unit_price'] > 0) {
             $currencyCode = $data['currency'] ?? 'USD';
-            $unitPrice = Money::of($data['unit_price'], $currencyCode);
+            $unitPrice = Money::of($data['unit_price'], $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
         } else {
             // Default to zero if no valid price provided
             $currencyCode = $data['currency'] ?? 'USD';

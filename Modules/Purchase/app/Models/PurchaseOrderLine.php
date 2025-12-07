@@ -142,12 +142,12 @@ class PurchaseOrderLine extends Model
         $currency = $this->purchaseOrder->currency ?? $this->purchaseOrder()->first()->currency;
 
         // Calculate subtotal
-        $this->subtotal = $this->unit_price->multipliedBy($this->quantity);
+        $this->subtotal = $this->unit_price->multipliedBy($this->quantity, \Brick\Math\RoundingMode::HALF_UP);
 
         // Calculate tax
         if ($this->tax_id && $this->tax) {
             $taxRate = $this->tax->rate / 100;
-            $this->total_line_tax = $this->subtotal->multipliedBy($taxRate);
+            $this->total_line_tax = $this->subtotal->multipliedBy($taxRate, \Brick\Math\RoundingMode::HALF_UP);
         } else {
             $this->total_line_tax = Money::of(0, $currency->code);
         }
