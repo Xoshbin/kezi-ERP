@@ -162,7 +162,7 @@ class SalesOrderForm
                             ->label(__('sales_orders.fields.lines'))
                             ->relationship()
                             ->schema([
-                                TranslatableSelect::make('product_id')
+                                Select::make('product_id')
                                     ->label(__('sales_orders.fields.product'))
                                     ->relationship('product', 'name')
                                     ->searchable()
@@ -198,7 +198,7 @@ class SalesOrderForm
                                     ->minValue(0.01)
                                     ->step(0.01),
 
-                                \Modules\Foundation\App\Filament\Forms\Components\MoneyInput::make('unit_price')
+                                MoneyInput::make('unit_price')
                                     ->label(__('sales_orders.fields.unit_price'))
                                     ->required(),
 
@@ -209,7 +209,7 @@ class SalesOrderForm
                                     ->preload()
                                     ->options(function () {
                                         return Tax::where('company_id', Filament::getTenant()?->id)
-                                            ->where('type', TaxType::Sale)
+                                            ->where('type', TaxType::Sales)
                                             ->pluck('name', 'id');
                                     }),
 
