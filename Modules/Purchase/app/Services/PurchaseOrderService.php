@@ -21,7 +21,8 @@ class PurchaseOrderService
     public function __construct(
         protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         protected SequenceService $sequenceService,
-    ) {}
+    ) {
+    }
 
     /**
      * Send RFQ to vendors
@@ -111,6 +112,9 @@ class PurchaseOrderService
             $purchaseOrder->updateStatusBasedOnReceipts(fromInventoryOperation: false);
             $purchaseOrder->save();
 
+            // Trigger event for listeners (e.g. creating stock picking)
+            \Modules\Purchase\Events\PurchaseOrderConfirmed::dispatch($purchaseOrder);
+
             return $purchaseOrder;
         });
     }
@@ -179,9 +183,11 @@ class PurchaseOrderService
         })
             ->where('company_id', $companyId)
             ->whereIn('status', PurchaseOrderStatus::activeStatuses())
-            ->with(['lines' => function ($query) use ($productId) {
-                $query->where('product_id', $productId);
-            }])
+            ->with([
+                'lines' => function ($query) use ($productId) {
+                    $query->where('product_id', $productId);
+                }
+            ])
             ->orderByDesc('confirmed_at')
             ->orderByDesc('created_at')
             ->get();

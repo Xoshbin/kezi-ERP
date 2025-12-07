@@ -260,4 +260,8 @@ class SalesOrderLine extends Model
     {
         return $this->getRemainingToInvoice() > 0;
     }
+    protected static function newFactory(): \Modules\Sales\Database\Factories\SalesOrderLineFactory
+    {
+        return \Modules\Sales\Database\Factories\SalesOrderLineFactory::new();
+    }
 }

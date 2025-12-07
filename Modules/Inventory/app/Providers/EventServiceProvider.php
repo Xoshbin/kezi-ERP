@@ -18,6 +18,9 @@ class EventServiceProvider extends ServiceProvider
         \Modules\Purchase\Events\VendorBillConfirmed::class => [
             \Modules\Inventory\Listeners\Inventory\ProcessInventoryForConfirmedBill::class,
         ],
+        \Modules\Purchase\Events\PurchaseOrderConfirmed::class => [
+            \Modules\Inventory\Listeners\Purchase\CreateStockPickingForPurchaseOrder::class,
+        ],
     ];
 
     /**
@@ -30,5 +33,7 @@ class EventServiceProvider extends ServiceProvider
     /**
      * Configure the proper event listeners for email verification.
      */
-    protected function configureEmailVerification(): void {}
+    protected function configureEmailVerification(): void
+    {
+    }
 }

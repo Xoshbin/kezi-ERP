@@ -323,4 +323,8 @@ class SalesOrder extends Model
 
         return ($invoicedQuantity / $totalQuantity) * 100;
     }
+    protected static function newFactory(): \Modules\Sales\Database\Factories\SalesOrderFactory
+    {
+        return \Modules\Sales\Database\Factories\SalesOrderFactory::new();
+    }
 }

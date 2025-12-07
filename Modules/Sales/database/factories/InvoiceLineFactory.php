@@ -28,8 +28,14 @@ class InvoiceLineFactory extends Factory
             'quantity' => $quantity,
             'unit_price' => $unitPrice,
             'tax_id' => null, // Default to no tax
-            // The income account should come from the product or be specified in the test.
-            'income_account_id' => Account::factory()->state(['type' => 'income']),
+            'income_account_id' => function (array $attributes) {
+                $invoice = Invoice::find($attributes['invoice_id']);
+                return Account::factory()->create([
+                    'type' => 'income',
+                    'company_id' => $invoice->company_id,
+                    'currency_id' => $invoice->currency_id,
+                ])->id;
+            },
             // Calculate subtotal and tax properly
             'subtotal' => $subtotal,
             'total_line_tax' => Money::of(0, 'USD'), // No tax by default
