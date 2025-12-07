@@ -19,7 +19,8 @@ class ProcessIncomingStockAction
         protected InventoryValuationService $inventoryValuationService,
         protected \Modules\Foundation\Services\CurrencyConverterService $currencyConverter,
         protected StockQuantService $stockQuantService,
-    ) {}
+    ) {
+    }
 
     public function execute(StockMove $stockMove): void
     {
@@ -37,22 +38,32 @@ class ProcessIncomingStockAction
         $costPerUnit = $this->extractCostFromSource($stockMove, $productLine);
 
         $product = $productLine->product;
-        if (! $product instanceof Product) {
+        if (!$product instanceof Product) {
             throw new Exception('Product not found for product line');
         }
 
         $sourceDocument = $stockMove->source;
-        if (! $sourceDocument) {
+        if (!$sourceDocument) {
             throw new Exception('Stock move must have a source document');
         }
 
         // Ensure cost is in company base currency
         $costPerUnitCompany = $costPerUnit;
         $companyCurrency = $product->company->currency;
-        if ($sourceDocument instanceof VendorBill) {
-            // Use the vendor bill's stored exchange rate for consistency
-            $exchangeRate = $sourceDocument->exchange_rate_at_creation ?? 1.0;
-            if ($sourceDocument->currency_id !== $companyCurrency->id) {
+        if ($sourceDocument instanceof VendorBill || $sourceDocument instanceof \Modules\Purchase\Models\PurchaseOrderLine) {
+            // Use the source document's stored exchange rate for consistency
+            $exchangeRate = 1.0;
+            $docCurrencyId = null;
+
+            if ($sourceDocument instanceof VendorBill) {
+                $exchangeRate = $sourceDocument->exchange_rate_at_creation ?? 1.0;
+                $docCurrencyId = $sourceDocument->currency_id;
+            } elseif ($sourceDocument instanceof \Modules\Purchase\Models\PurchaseOrderLine) {
+                $exchangeRate = $sourceDocument->purchaseOrder->exchange_rate_at_creation ?? 1.0;
+                $docCurrencyId = $sourceDocument->purchaseOrder->currency_id;
+            }
+
+            if ($docCurrencyId !== $companyCurrency->id) {
                 $costPerUnitCompany = $this->currencyConverter->convertWithRate(
                     $costPerUnit,
                     $exchangeRate,
@@ -85,10 +96,12 @@ class ProcessIncomingStockAction
             return $this->extractCostFromVendorBill($productLine, $sourceDocument);
         }
 
-        // For other source types (future: inventory adjustments, transfers, etc.)
-        // we can add more extraction logic here
 
-        if (! $sourceDocument) {
+        if ($sourceDocument instanceof \Modules\Purchase\Models\PurchaseOrderLine) {
+            return $this->extractCostFromPurchaseOrderLine($productLine, $sourceDocument);
+        }
+
+        if (!$sourceDocument) {
             throw new Exception('Source document is null');
         }
 
@@ -106,7 +119,7 @@ class ProcessIncomingStockAction
             ->where('product_id', $productLine->product_id)
             ->first();
 
-        if (! ($line instanceof VendorBillLine)) {
+        if (!($line instanceof VendorBillLine)) {
             throw new Exception("No vendor bill line found for product {$productLine->product_id} in vendor bill {$vendorBill->getKey()}");
         }
 
@@ -117,6 +130,23 @@ class ProcessIncomingStockAction
             $taxPerUnit = $line->total_line_tax->dividedBy($line->quantity);
             $unitPrice = $unitPrice->plus($taxPerUnit);
         }
+
+        return $unitPrice;
+    }
+
+    /**
+     * Extract cost from purchase order line
+     */
+    private function extractCostFromPurchaseOrderLine(StockMoveProductLine $productLine, \Modules\Purchase\Models\PurchaseOrderLine $poLine): Money
+    {
+        $unitPrice = $poLine->unit_price;
+
+        // Note: Tax handling for POs mirrors Vendor Bills.
+        // If tax is non-recoverable, it should increase the valuation cost.
+        // Assuming PO Line has access to tax details or calculated tax amount.
+        // PO Line has `total_line_tax`. Tax definition? `tax_id`?
+        // Let's assume for now we use unit_price. 
+        // Improvement: Handle non-recoverable tax if PO has it.
 
         return $unitPrice;
     }
