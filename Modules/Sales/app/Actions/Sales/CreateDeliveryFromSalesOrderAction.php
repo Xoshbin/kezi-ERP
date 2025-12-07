@@ -30,7 +30,8 @@ class CreateDeliveryFromSalesOrderAction
 {
     public function __construct(
         protected \Modules\Inventory\Actions\Inventory\CreateStockMoveAction $createStockMoveAction,
-    ) {}
+    ) {
+    }
 
     /**
      * Create delivery orders for all deliverable products in a sales order
@@ -63,7 +64,7 @@ class CreateDeliveryFromSalesOrderAction
             // Create a picking for this delivery
             $picking = StockPicking::create([
                 'company_id' => $salesOrder->company_id,
-                'type' => StockPickingType::Outgoing,
+                'type' => StockPickingType::Delivery,
                 'state' => StockPickingState::Draft,
                 'partner_id' => $salesOrder->customer_id,
                 'scheduled_date' => $dto->scheduled_date ?? now(),
@@ -129,15 +130,14 @@ class CreateDeliveryFromSalesOrderAction
         // Fallback to company's main warehouse
         if (!$warehouseLocation) {
             $warehouseLocation = StockLocation::where('company_id', $company->id)
-                ->where('location_type', StockLocationType::Internal)
+                ->where('type', StockLocationType::Internal)
                 ->first();
         }
 
         // Get customer location (create if doesn't exist)
         $customerLocation = StockLocation::firstOrCreate([
             'company_id' => $company->id,
-            'location_type' => StockLocationType::Customer,
-            'partner_id' => $salesOrder->customer_id,
+            'type' => StockLocationType::Customer,
         ], [
             'name' => "Customer: {$salesOrder->customer->name}",
             'is_active' => true,
@@ -163,9 +163,8 @@ class CreateDeliveryFromSalesOrderAction
         $productLineDto = new CreateStockMoveProductLineDTO(
             product_id: $line->product_id,
             quantity: $quantity,
-            source_location_id: $sourceLocation->id,
-            destination_location_id: $destinationLocation->id,
-            unit_cost: null, // Will be determined by cost layers
+            from_location_id: $sourceLocation->id,
+            to_location_id: $destinationLocation->id,
         );
 
         $dto = new CreateStockMoveDTO(

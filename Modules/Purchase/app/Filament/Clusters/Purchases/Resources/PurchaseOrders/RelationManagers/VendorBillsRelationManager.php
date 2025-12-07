@@ -79,7 +79,7 @@ class VendorBillsRelationManager extends RelationManager
                     ->badge()
                     ->color(fn(\Modules\Foundation\Enums\Shared\PaymentState $state): string => $state->color()),
 
-                \Modules\Foundation\App\Filament\Tables\Columns\MoneyColumn::make('total_amount')
+                MoneyColumn::make('total_amount')
                     ->label(__('vendor_bill.total_amount'))
                     ->sortable(),
 
