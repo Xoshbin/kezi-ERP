@@ -2,7 +2,7 @@
 
 namespace App\Filament\Clusters\Settings\Resources\Companies;
 
-use App\Enums\Inventory\InventoryAccountingMode;
+use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
 use App\Filament\Clusters\Settings\Resources\Companies\Pages\CreateCompany;
 use App\Filament\Clusters\Settings\Resources\Companies\Pages\EditCompany;
 use App\Filament\Clusters\Settings\Resources\Companies\Pages\ListCompanies;
@@ -97,7 +97,7 @@ class CompanyResource extends Resource
                                     ->default(true),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_currency'))
-                            ->createOptionAction(fn (Action $action) => $action->name('create-currency-option')->modalWidth('lg')),
+                            ->createOptionAction(fn(Action $action) => $action->name('create-currency-option')->modalWidth('lg')),
                         Toggle::make('enable_reconciliation')
                             ->label(__('company.enable_reconciliation'))
                             ->helperText(__('company.enable_reconciliation_help'))
@@ -130,7 +130,7 @@ class CompanyResource extends Resource
                                     ->maxLength(255),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_company'))
-                            ->createOptionAction(fn (Action $action) => $action->name('create-company-option')->modalWidth('lg')),
+                            ->createOptionAction(fn(Action $action) => $action->name('create-company-option')->modalWidth('lg')),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
