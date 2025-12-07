@@ -48,7 +48,7 @@ class VendorBillLineObserver
      */
     protected function updateCompanyCurrencyTotals(VendorBill $vendorBill): void
     {
-        if (! $vendorBill->exchange_rate_at_creation || $vendorBill->currency_id === $vendorBill->company->currency_id) {
+        if (!$vendorBill->exchange_rate_at_creation || $vendorBill->currency_id === $vendorBill->company->currency_id) {
             return; // No conversion needed
         }
 
@@ -60,8 +60,8 @@ class VendorBillLineObserver
         $totalTaxCompanyCurrency = $vendorBill->total_tax->getAmount()->toFloat() * $exchangeRate;
 
         $vendorBill->update([
-            'total_amount_company_currency' => Money::of($totalAmountCompanyCurrency, $companyCurrency->code),
-            'total_tax_company_currency' => Money::of($totalTaxCompanyCurrency, $companyCurrency->code),
+            'total_amount_company_currency' => Money::of($totalAmountCompanyCurrency, $companyCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP),
+            'total_tax_company_currency' => Money::of($totalTaxCompanyCurrency, $companyCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP),
         ]);
     }
 }
