@@ -40,17 +40,17 @@ class FiscalPositionResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('fiscal_position.label');
+        return __('accounting::fiscal_position.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('fiscal_position.plural_label');
+        return __('accounting::fiscal_position.plural_label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('fiscal_position.plural_label');
+        return __('accounting::fiscal_position.plural_label');
     }
 
     public static function form(Schema $schema): Schema
@@ -59,14 +59,14 @@ class FiscalPositionResource extends Resource
             ->components([
                 Select::make('company_id')
                     ->relationship('company', 'name')
-                    ->label(__('fiscal_position.company'))
+                    ->label(__('accounting::fiscal_position.company'))
                     ->required(),
                 TextInput::make('name')
-                    ->label(__('fiscal_position.name'))
+                    ->label(__('accounting::fiscal_position.name'))
                     ->required()
                     ->maxLength(255),
                 TextInput::make('country')
-                    ->label(__('fiscal_position.country'))
+                    ->label(__('accounting::fiscal_position.country'))
                     ->maxLength(255),
             ]);
     }
@@ -76,22 +76,22 @@ class FiscalPositionResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('company.name')
-                    ->label(__('fiscal_position.company'))
+                    ->label(__('accounting::fiscal_position.company'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('name')
-                    ->label(__('fiscal_position.name'))
+                    ->label(__('accounting::fiscal_position.name'))
                     ->searchable(),
                 TextColumn::make('country')
-                    ->label(__('fiscal_position.country'))
+                    ->label(__('accounting::fiscal_position.country'))
                     ->searchable(),
                 TextColumn::make('created_at')
-                    ->label(__('fiscal_position.created_at'))
+                    ->label(__('accounting::fiscal_position.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label(__('fiscal_position.updated_at'))
+                    ->label(__('accounting::fiscal_position.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

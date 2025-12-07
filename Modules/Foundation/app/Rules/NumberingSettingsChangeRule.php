@@ -22,7 +22,7 @@ class NumberingSettingsChangeRule implements ValidationRule
     {
         if (! $this->company->canChangeNumberingSettings()) {
             $errors = $this->company->getNumberingChangeValidationErrors();
-            $fail(__('numbering.validation.cannot_change_posted_exist') . ' (' . implode(', ', $errors) . ')');
+            $fail(__('foundation::numbering.validation.cannot_change_posted_exist') . ' (' . implode(', ', $errors) . ')');
         }
     }
 }

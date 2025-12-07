@@ -81,7 +81,7 @@ class InventoryServiceProvider extends ServiceProvider
     }
 
     /**
-     * Merge module translations into global translator so keys like __('inventory_accounting.*') work
+     * Merge module translations into global translator so keys like __('inventory::inventory_accounting.*') work
      */
     protected function mergeGlobalTranslations(string $baseLangPath): void
     {

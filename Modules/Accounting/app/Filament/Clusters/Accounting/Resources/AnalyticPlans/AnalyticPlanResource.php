@@ -40,12 +40,12 @@ class AnalyticPlanResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('analytic_plan.singular');
+        return __('accounting::analytic_plan.singular');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('analytic_plan.plural');
+        return __('accounting::analytic_plan.plural');
     }
 
     public static function form(Schema $schema): Schema
@@ -54,10 +54,10 @@ class AnalyticPlanResource extends Resource
             ->components([
                 Select::make('company_id')
                     ->relationship('company', 'name')
-                    ->label(__('analytic_plan.company'))
+                    ->label(__('accounting::analytic_plan.company'))
                     ->required(),
                 TextInput::make('name')
-                    ->label(__('analytic_plan.name'))
+                    ->label(__('accounting::analytic_plan.name'))
                     ->required()
                     ->maxLength(255),
             ]);
@@ -68,19 +68,19 @@ class AnalyticPlanResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('company.name')
-                    ->label(__('analytic_plan.company'))
+                    ->label(__('accounting::analytic_plan.company'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('name')
-                    ->label(__('analytic_plan.name'))
+                    ->label(__('accounting::analytic_plan.name'))
                     ->searchable(),
                 TextColumn::make('created_at')
-                    ->label(__('analytic_plan.created_at'))
+                    ->label(__('accounting::analytic_plan.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label(__('analytic_plan.updated_at'))
+                    ->label(__('accounting::analytic_plan.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

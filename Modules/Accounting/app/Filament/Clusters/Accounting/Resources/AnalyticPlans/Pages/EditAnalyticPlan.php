@@ -16,7 +16,7 @@ class EditAnalyticPlan extends EditRecord
 
     public function getTitle(): string
     {
-        return __('analytic_plan.pages.edit');
+        return __('accounting::analytic_plan.pages.edit');
     }
 
     protected function getHeaderActions(): array

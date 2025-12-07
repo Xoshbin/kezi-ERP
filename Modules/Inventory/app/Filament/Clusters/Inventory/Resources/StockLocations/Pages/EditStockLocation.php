@@ -26,7 +26,7 @@ class EditStockLocation extends EditRecord
         $record = $this->getRecord();
         $name = (string) $record->getAttribute('name');
 
-        return __('stock_location.edit_title', ['name' => $name]);
+        return __('inventory::stock_location.edit_title', ['name' => $name]);
     }
 
     protected function getRedirectUrl(): string

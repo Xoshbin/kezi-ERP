@@ -22,7 +22,7 @@ class CreateBankStatement extends CreateRecord
 
     public function getTitle(): string
     {
-        return __('bank_statement.create_bank_statement');
+        return __('accounting::bank_statement.create_bank_statement');
     }
 
     protected function mutateFormDataBeforeCreate(array $data): array

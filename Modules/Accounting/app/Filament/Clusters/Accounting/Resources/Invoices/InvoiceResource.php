@@ -340,15 +340,15 @@ class InvoiceResource extends Resource
                                             Hidden::make('company_id')
                                                 ->default(fn () => Filament::getTenant()?->getKey()),
                                             TextInput::make('code')
-                                                ->label(__('account.code'))
+                                                ->label(__('accounting::account.code'))
                                                 ->required()
                                                 ->maxLength(255),
                                             TextInput::make('name')
-                                                ->label(__('account.name'))
+                                                ->label(__('accounting::account.name'))
                                                 ->required()
                                                 ->maxLength(255),
                                             Select::make('type')
-                                                ->label(__('account.type'))
+                                                ->label(__('accounting::account.type'))
                                                 ->required()
                                                 ->options(
                                                     collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())
@@ -356,7 +356,7 @@ class InvoiceResource extends Resource
                                                 )
                                                 ->searchable(),
                                             Toggle::make('is_deprecated')
-                                                ->label(__('account.is_deprecated'))
+                                                ->label(__('accounting::account.is_deprecated'))
                                                 ->default(false),
                                         ])
                                         ->createOptionModalHeading(__('common.modal_title_create_account'))
@@ -411,23 +411,23 @@ class InvoiceResource extends Resource
                                                 ->where('is_deprecated', false)
                                                 ->pluck('name', 'id');
                                         })
-                                        ->label(__('tax.tax_account'))
+                                        ->label(__('accounting::tax.tax_account'))
                                         ->searchable()
                                         ->required(),
                                     TextInput::make('name')
-                                        ->label(__('tax.name'))
+                                        ->label(__('accounting::tax.name'))
                                         ->required()
                                         ->maxLength(255),
                                     TextInput::make('rate')
-                                        ->label(__('tax.rate'))
+                                        ->label(__('accounting::tax.rate'))
                                         ->required()
                                         ->numeric(),
                                     Select::make('type')
-                                        ->label(__('tax.type'))
+                                        ->label(__('accounting::tax.type'))
                                         ->options(collect(TaxType::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
                                         ->required(),
                                     Toggle::make('is_active')
-                                        ->label(__('tax.is_active'))
+                                        ->label(__('accounting::tax.is_active'))
                                         ->default(true),
                                 ])
                                 ->createOptionUsing(function (array $data): int {

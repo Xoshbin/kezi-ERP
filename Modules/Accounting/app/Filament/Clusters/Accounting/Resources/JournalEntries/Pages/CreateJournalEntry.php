@@ -77,7 +77,7 @@ class CreateJournalEntry extends CreateRecord
 
             if ($isDuplicateEntry) {
                 throw ValidationException::withMessages([
-                    'reference' => __('journal_entry.reference_already_exists', ['reference' => $data['reference']]),
+                    'reference' => __('accounting::journal_entry.reference_already_exists', ['reference' => $data['reference']]),
                 ]);
             }
 
@@ -87,7 +87,7 @@ class CreateJournalEntry extends CreateRecord
             // Handle PDO exceptions that might not be wrapped in QueryException
             if ($e->getCode() === '23000' && str_contains($e->getMessage(), 'Duplicate entry') && str_contains($e->getMessage(), 'reference_unique')) {
                 throw ValidationException::withMessages([
-                    'reference' => __('journal_entry.reference_already_exists', ['reference' => $data['reference']]),
+                    'reference' => __('accounting::journal_entry.reference_already_exists', ['reference' => $data['reference']]),
                 ]);
             }
 

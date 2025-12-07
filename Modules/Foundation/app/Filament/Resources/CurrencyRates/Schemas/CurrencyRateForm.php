@@ -17,7 +17,7 @@ class CurrencyRateForm
         return $schema
             ->components([
                 TranslatableSelect::forModel('currency_id', Currency::class)
-                    ->label(__('currency.exchange_rates.currency'))
+                    ->label(__('foundation::currency.exchange_rates.currency'))
                     ->searchable()
                     ->preload()
                     ->getOptionLabelFromRecordUsing(function ($record) {
@@ -31,26 +31,26 @@ class CurrencyRateForm
                     ->required(),
 
                 TextInput::make('rate')
-                    ->label(__('currency.exchange_rates.rate'))
+                    ->label(__('foundation::currency.exchange_rates.rate'))
                     ->required()
                     ->numeric()
                     ->step(0.0001)
                     ->minValue(0)
-                    ->helperText(__('currency.exchange_rates.rate_helper')),
+                    ->helperText(__('foundation::currency.exchange_rates.rate_helper')),
 
                 DatePicker::make('effective_date')
-                    ->label(__('currency.exchange_rates.effective_date'))
+                    ->label(__('foundation::currency.exchange_rates.effective_date'))
                     ->required()
                     ->default(Carbon::today())
                     ->maxDate(Carbon::today()),
 
                 Select::make('source')
-                    ->label(__('currency.exchange_rates.source'))
+                    ->label(__('foundation::currency.exchange_rates.source'))
                     ->options([
-                        'manual' => __('currency.exchange_rates.sources.manual'),
-                        'api' => __('currency.exchange_rates.sources.api'),
-                        'bank' => __('currency.exchange_rates.sources.bank'),
-                        'central_bank' => __('currency.exchange_rates.sources.central_bank'),
+                        'manual' => __('foundation::currency.exchange_rates.sources.manual'),
+                        'api' => __('foundation::currency.exchange_rates.sources.api'),
+                        'bank' => __('foundation::currency.exchange_rates.sources.bank'),
+                        'central_bank' => __('foundation::currency.exchange_rates.sources.central_bank'),
                     ])
                     ->default('manual')
                     ->required(),

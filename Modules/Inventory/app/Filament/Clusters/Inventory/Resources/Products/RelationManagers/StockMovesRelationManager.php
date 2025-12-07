@@ -42,32 +42,32 @@ class StockMovesRelationManager extends RelationManager
                 Grid::make(2)->schema([
                     Select::make('from_location_id')
                         ->relationship('fromLocation', 'name')
-                        ->label(__('stock_move.from_location'))
+                        ->label(__('inventory::stock_move.from_location'))
                         ->required()
                         ->searchable()
                         ->preload(),
                     Select::make('to_location_id')
                         ->relationship('toLocation', 'name')
-                        ->label(__('stock_move.to_location'))
+                        ->label(__('inventory::stock_move.to_location'))
                         ->required()
                         ->searchable()
                         ->preload(),
                 ]),
                 Grid::make(3)->schema([
                     TextInput::make('quantity')
-                        ->label(__('stock_move.quantity'))
+                        ->label(__('inventory::stock_move.quantity'))
                         ->required()
                         ->numeric()
                         ->minValue(0.0001),
                     Select::make('move_type')
-                        ->label(__('stock_move.move_type'))
+                        ->label(__('inventory::stock_move.move_type'))
                         ->required()
                         ->options(
                             collect(StockMoveType::cases())
                                 ->mapWithKeys(fn(StockMoveType $type) => [$type->value => $type->label()])
                         ),
                     Select::make('status')
-                        ->label(__('stock_move.status'))
+                        ->label(__('inventory::stock_move.status'))
                         ->required()
                         ->options(
                             collect(StockMoveStatus::cases())
@@ -77,11 +77,11 @@ class StockMovesRelationManager extends RelationManager
                 ]),
                 Grid::make(2)->schema([
                     DatePicker::make('move_date')
-                        ->label(__('stock_move.move_date'))
+                        ->label(__('inventory::stock_move.move_date'))
                         ->required()
                         ->default(now()),
                     TextInput::make('reference')
-                        ->label(__('stock_move.reference'))
+                        ->label(__('inventory::stock_move.reference'))
                         ->maxLength(255),
                 ]),
             ]);
@@ -93,25 +93,25 @@ class StockMovesRelationManager extends RelationManager
             ->recordTitleAttribute('reference')
             ->columns([
                 TextColumn::make('move_date')
-                    ->label(__('stock_move.move_date'))
+                    ->label(__('inventory::stock_move.move_date'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('reference')
-                    ->label(__('stock_move.reference'))
+                    ->label(__('inventory::stock_move.reference'))
                     ->searchable()
                     ->copyable(),
                 TextColumn::make('fromLocation.name')
-                    ->label(__('stock_move.from_location'))
+                    ->label(__('inventory::stock_move.from_location'))
                     ->searchable(),
                 TextColumn::make('toLocation.name')
-                    ->label(__('stock_move.to_location'))
+                    ->label(__('inventory::stock_move.to_location'))
                     ->searchable(),
                 TextColumn::make('quantity')
-                    ->label(__('stock_move.quantity'))
+                    ->label(__('inventory::stock_move.quantity'))
                     ->numeric(decimalPlaces: 4)
                     ->sortable(),
                 TextColumn::make('move_type')
-                    ->label(__('stock_move.move_type'))
+                    ->label(__('inventory::stock_move.move_type'))
                     ->badge()
                     ->formatStateUsing(fn(StockMoveType $state): string => $state->label())
                     ->color(fn(StockMoveType $state): string => match ($state) {
@@ -121,7 +121,7 @@ class StockMovesRelationManager extends RelationManager
                         StockMoveType::Adjustment => 'warning',
                     }),
                 TextColumn::make('status')
-                    ->label(__('stock_move.status'))
+                    ->label(__('inventory::stock_move.status'))
                     ->badge()
                     ->formatStateUsing(fn(StockMoveStatus $state): string => $state->label())
                     ->color(fn(StockMoveStatus $state): string => match ($state) {
@@ -131,11 +131,11 @@ class StockMovesRelationManager extends RelationManager
                         StockMoveStatus::Cancelled => 'danger',
                     }),
                 TextColumn::make('source_type')
-                    ->label(__('stock_move.source'))
+                    ->label(__('inventory::stock_move.source'))
                     ->formatStateUsing(fn(?string $state): string => $state ? class_basename($state) : '-')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
-                    ->label(__('stock_move.created_at'))
+                    ->label(__('inventory::stock_move.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -143,13 +143,13 @@ class StockMovesRelationManager extends RelationManager
             ->defaultSort('move_date', 'desc')
             ->filters([
                 SelectFilter::make('move_type')
-                    ->label(__('stock_move.move_type'))
+                    ->label(__('inventory::stock_move.move_type'))
                     ->options(
                         collect(StockMoveType::cases())
                             ->mapWithKeys(fn(StockMoveType $type) => [$type->value => $type->label()])
                     ),
                 SelectFilter::make('status')
-                    ->label(__('stock_move.status'))
+                    ->label(__('inventory::stock_move.status'))
                     ->options(
                         collect(StockMoveStatus::cases())
                             ->mapWithKeys(fn(StockMoveStatus $status) => [$status->value => $status->label()])

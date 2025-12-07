@@ -38,41 +38,41 @@ class CurrencyResource extends Resource
 
     public static function getLabel(): ?string
     {
-        return __('currency.label');
+        return __('foundation::currency.label');
     }
 
     public static function getPluralLabel(): ?string
     {
-        return __('currency.plural_label');
+        return __('foundation::currency.plural_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make(__('currency.basic_information'))
+                Section::make(__('foundation::currency.basic_information'))
                     ->schema([
                         TextInput::make('code')
-                            ->label(__('currency.code'))
+                            ->label(__('foundation::currency.code'))
                             ->required()
                             ->maxLength(255),
                         TextInput::make('name')
-                            ->label(__('currency.name'))
+                            ->label(__('foundation::currency.name'))
                             ->required()
                             ->maxLength(255),
                         TextInput::make('symbol')
-                            ->label(__('currency.symbol'))
+                            ->label(__('foundation::currency.symbol'))
                             ->required()
                             ->maxLength(5),
                         TextInput::make('exchange_rate')
-                            ->label(__('currency.exchange_rate'))
+                            ->label(__('foundation::currency.exchange_rate'))
                             ->required()
                             ->numeric(),
                         Toggle::make('is_active')
-                            ->label(__('currency.is_active'))
+                            ->label(__('foundation::currency.is_active'))
                             ->required(),
                         DateTimePicker::make('last_updated_at')
-                            ->label(__('currency.last_updated_at')),
+                            ->label(__('foundation::currency.last_updated_at')),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -84,32 +84,32 @@ class CurrencyResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('code')
-                    ->label(__('currency.code'))
+                    ->label(__('foundation::currency.code'))
                     ->searchable(),
                 TextColumn::make('name')
-                    ->label(__('currency.name'))
+                    ->label(__('foundation::currency.name'))
                     ->searchable(),
                 TextColumn::make('symbol')
-                    ->label(__('currency.symbol'))
+                    ->label(__('foundation::currency.symbol'))
                     ->searchable(),
                 TextColumn::make('exchange_rate')
-                    ->label(__('currency.exchange_rate'))
+                    ->label(__('foundation::currency.exchange_rate'))
                     ->formatStateUsing(fn($state) => \Modules\Foundation\Support\NumberFormatter::formatNumber($state, 4))
                     ->sortable(),
                 IconColumn::make('is_active')
-                    ->label(__('currency.is_active'))
+                    ->label(__('foundation::currency.is_active'))
                     ->boolean(),
                 TextColumn::make('last_updated_at')
-                    ->label(__('currency.last_updated_at'))
+                    ->label(__('foundation::currency.last_updated_at'))
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->label(__('currency.created_at'))
+                    ->label(__('foundation::currency.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label(__('currency.updated_at'))
+                    ->label(__('foundation::currency.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

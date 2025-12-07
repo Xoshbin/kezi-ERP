@@ -25,10 +25,10 @@ enum InstallmentStatus: string implements HasColor, HasIcon, HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::Pending => __('payment_installments.status.pending'),
-            self::PartiallyPaid => __('payment_installments.status.partially_paid'),
-            self::Paid => __('payment_installments.status.paid'),
-            self::Cancelled => __('payment_installments.status.cancelled'),
+            self::Pending => __('payment::payment_installments.status.pending'),
+            self::PartiallyPaid => __('payment::payment_installments.status.partially_paid'),
+            self::Paid => __('payment::payment_installments.status.paid'),
+            self::Cancelled => __('payment::payment_installments.status.cancelled'),
         };
     }
 
@@ -58,10 +58,10 @@ enum InstallmentStatus: string implements HasColor, HasIcon, HasLabel
     public function getDescription(): string
     {
         return match ($this) {
-            self::Pending => __('payment_installments.status.pending_description'),
-            self::PartiallyPaid => __('payment_installments.status.partially_paid_description'),
-            self::Paid => __('payment_installments.status.paid_description'),
-            self::Cancelled => __('payment_installments.status.cancelled_description'),
+            self::Pending => __('payment::payment_installments.status.pending_description'),
+            self::PartiallyPaid => __('payment::payment_installments.status.partially_paid_description'),
+            self::Paid => __('payment::payment_installments.status.paid_description'),
+            self::Cancelled => __('payment::payment_installments.status.cancelled_description'),
         };
     }
 

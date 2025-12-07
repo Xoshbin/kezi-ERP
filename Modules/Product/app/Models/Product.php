@@ -127,7 +127,7 @@ class Product extends Model
         static::saving(function (Product $product) {
             if ($product->type === \Modules\Product\Enums\Products\ProductType::Storable && empty($product->default_inventory_account_id)) {
                 throw ValidationException::withMessages([
-                    'default_inventory_account_id' => __('validation.required', ['attribute' => __('product.default_inventory_account')]),
+                    'default_inventory_account_id' => __('validation.required', ['attribute' => __('product::product.default_inventory_account')]),
                 ]);
             }
 

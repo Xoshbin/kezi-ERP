@@ -29,17 +29,17 @@ class PositionResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('position.navigation_label');
+        return __('hr::position.navigation_label');
     }
 
     public static function getModelLabel(): string
     {
-        return __('position.navigation_label');
+        return __('hr::position.navigation_label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('position.navigation_label');
+        return __('hr::position.navigation_label');
     }
 
     public static function form(Schema $schema): Schema

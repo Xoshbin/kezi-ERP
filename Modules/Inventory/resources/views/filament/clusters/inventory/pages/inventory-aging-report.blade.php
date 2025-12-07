@@ -17,7 +17,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.aging.summary.total_value') }}
+                                {{ __('inventory::inventory_reports.aging.summary.total_value') }}
                             </p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
                                 {{ $reportData['total_value']->formatTo(app()->getLocale()) }}
@@ -34,7 +34,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.aging.summary.total_quantity') }}
+                                {{ __('inventory::inventory_reports.aging.summary.total_quantity') }}
                             </p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
                                 {{ number_format($reportData['total_quantity'], 2) }}
@@ -51,10 +51,10 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.aging.summary.average_age') }}
+                                {{ __('inventory::inventory_reports.aging.summary.average_age') }}
                             </p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
-                                {{ number_format($averageAge, 0) }} {{ __('inventory_reports.aging.days') }}
+                                {{ number_format($averageAge, 0) }} {{ __('inventory::inventory_reports.aging.days') }}
                             </p>
                         </div>
                     </div>
@@ -68,7 +68,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {{ __('inventory_reports.aging.summary.expiring_soon') }}
+                                {{ __('inventory::inventory_reports.aging.summary.expiring_soon') }}
                             </p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">
                                 {{ count($expiringLots) }}
@@ -84,7 +84,7 @@
             <x-filament::card>
                 <div class="space-y-4">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        {{ __('inventory_reports.aging.buckets.title') }}
+                        {{ __('inventory::inventory_reports.aging.buckets.title') }}
                     </h3>
 
                     <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
@@ -93,23 +93,23 @@
                             <tr>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.aging.buckets.age_range') }}
+                                    {{ __('inventory::inventory_reports.aging.buckets.age_range') }}
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.aging.buckets.quantity') }}
+                                    {{ __('inventory::inventory_reports.aging.buckets.quantity') }}
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.aging.buckets.value') }}
+                                    {{ __('inventory::inventory_reports.aging.buckets.value') }}
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.aging.buckets.percentage') }}
+                                    {{ __('inventory::inventory_reports.aging.buckets.percentage') }}
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.aging.buckets.products') }}
+                                    {{ __('inventory::inventory_reports.aging.buckets.products') }}
                                 </th>
                             </tr>
                             </thead>
@@ -148,7 +148,7 @@
                             <tr>
                                 <th scope="row"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.aging.buckets.total') }}
+                                    {{ __('inventory::inventory_reports.aging.buckets.total') }}
                                 </th>
                                 <td class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-white">
                                     {{ number_format($reportData['total_quantity'], 2) }}
@@ -175,7 +175,7 @@
             <x-filament::card>
                 <div class="space-y-4">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        {{ __('inventory_reports.aging.expiration.title') }}
+                        {{ __('inventory::inventory_reports.aging.expiration.title') }}
                     </h3>
 
                     <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
@@ -184,23 +184,23 @@
                             <tr>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.aging.expiration.lot_code') }}
+                                    {{ __('inventory::inventory_reports.aging.expiration.lot_code') }}
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.aging.expiration.product') }}
+                                    {{ __('inventory::inventory_reports.aging.expiration.product') }}
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.aging.expiration.expiration_date') }}
+                                    {{ __('inventory::inventory_reports.aging.expiration.expiration_date') }}
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.aging.expiration.days_until_expiration') }}
+                                    {{ __('inventory::inventory_reports.aging.expiration.days_until_expiration') }}
                                 </th>
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('inventory_reports.aging.expiration.quantity_on_hand') }}
+                                    {{ __('inventory::inventory_reports.aging.expiration.quantity_on_hand') }}
                                 </th>
                             </tr>
                             </thead>
@@ -219,19 +219,19 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                                         @if($lot['days_until_expiration'] < 0)
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-                                                    {{ __('inventory_reports.aging.expired') }} ({{ abs($lot['days_until_expiration']) }} {{ __('inventory_reports.aging.days_ago') }})
+                                                    {{ __('inventory::inventory_reports.aging.expired') }} ({{ abs($lot['days_until_expiration']) }} {{ __('inventory::inventory_reports.aging.days_ago') }})
                                                 </span>
                                         @elseif($lot['days_until_expiration'] <= 7)
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-                                                    {{ $lot['days_until_expiration'] }} {{ __('inventory_reports.aging.days') }}
+                                                    {{ $lot['days_until_expiration'] }} {{ __('inventory::inventory_reports.aging.days') }}
                                                 </span>
                                         @elseif($lot['days_until_expiration'] <= 30)
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                                                    {{ $lot['days_until_expiration'] }} {{ __('inventory_reports.aging.days') }}
+                                                    {{ $lot['days_until_expiration'] }} {{ __('inventory::inventory_reports.aging.days') }}
                                                 </span>
                                         @else
                                             <span class="text-gray-900 dark:text-white">
-                                                    {{ $lot['days_until_expiration'] }} {{ __('inventory_reports.aging.days') }}
+                                                    {{ $lot['days_until_expiration'] }} {{ __('inventory::inventory_reports.aging.days') }}
                                                 </span>
                                         @endif
                                     </td>
@@ -253,10 +253,10 @@
                 <div class="text-center py-8">
                     <x-heroicon-o-clock class="mx-auto h-12 w-12 text-gray-400"/>
                     <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                        {{ __('inventory_reports.aging.no_data') }}
+                        {{ __('inventory::inventory_reports.aging.no_data') }}
                     </h3>
                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        {{ __('inventory_reports.aging.no_data_description') }}
+                        {{ __('inventory::inventory_reports.aging.no_data_description') }}
                     </p>
                 </div>
             </x-filament::card>

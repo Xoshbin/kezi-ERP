@@ -22,44 +22,44 @@ class PayrollsTable
         return $table
             ->columns([
                 TextColumn::make('payroll_number')
-                    ->label(__('payroll.fields.payroll_number'))
+                    ->label(__('hr::payroll.fields.payroll_number'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('employee.full_name')
-                    ->label(__('payroll.fields.employee'))
+                    ->label(__('hr::payroll.fields.employee'))
                     ->searchable(['employees.first_name', 'employees.last_name'])
                     ->sortable(),
 
                 TextColumn::make('period_start_date')
-                    ->label(__('payroll.fields.period_start_date'))
+                    ->label(__('hr::payroll.fields.period_start_date'))
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('period_end_date')
-                    ->label(__('payroll.fields.period_end_date'))
+                    ->label(__('hr::payroll.fields.period_end_date'))
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('pay_date')
-                    ->label(__('payroll.fields.pay_date'))
+                    ->label(__('hr::payroll.fields.pay_date'))
                     ->date()
                     ->sortable(),
 
                 MoneyColumn::make('gross_salary')
-                    ->label(__('payroll.fields.gross_salary'))
+                    ->label(__('hr::payroll.fields.gross_salary'))
                     ->sortable(),
 
                 MoneyColumn::make('total_deductions')
-                    ->label(__('payroll.fields.total_deductions'))
+                    ->label(__('hr::payroll.fields.total_deductions'))
                     ->sortable(),
 
                 MoneyColumn::make('net_salary')
-                    ->label(__('payroll.fields.net_salary'))
+                    ->label(__('hr::payroll.fields.net_salary'))
                     ->sortable(),
 
                 TextColumn::make('status')
-                    ->label(__('payroll.fields.status'))
+                    ->label(__('hr::payroll.fields.status'))
                     ->badge()
                     ->colors([
                         'gray' => 'draft',
@@ -67,11 +67,11 @@ class PayrollsTable
                         'success' => 'paid',
                         'danger' => 'cancelled',
                     ])
-                    ->formatStateUsing(fn(string $state): string => __("payroll.status.{$state}"))
+                    ->formatStateUsing(fn(string $state): string => __("hr::payroll.status.{$state}"))
                     ->sortable(),
 
                 TextColumn::make('created_at')
-                    ->label(__('payroll.fields.created_at'))
+                    ->label(__('hr::payroll.fields.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -84,13 +84,13 @@ class PayrollsTable
                 EditAction::make(),
 
                 Action::make('approve')
-                    ->label(__('payroll.actions.approve'))
+                    ->label(__('hr::payroll.actions.approve'))
                     ->icon('heroicon-o-check-circle')
                     ->color(Color::Green)
                     ->visible(fn(Payroll $record): bool => $record->status === 'draft')
                     ->requiresConfirmation()
-                    ->modalHeading(__('payroll.actions.approve_payroll'))
-                    ->modalDescription(__('payroll.actions.approve_payroll_description'))
+                    ->modalHeading(__('hr::payroll.actions.approve_payroll'))
+                    ->modalDescription(__('hr::payroll.actions.approve_payroll_description'))
                     ->action(function (Payroll $record) {
                         $user = auth()->user();
                         if (! $user) {
@@ -101,17 +101,17 @@ class PayrollsTable
 
                         return redirect()->back();
                     })
-                    ->successNotificationTitle(__('payroll.notifications.approved')),
+                    ->successNotificationTitle(__('hr::payroll.notifications.approved')),
 
                 Action::make('pay')
-                    ->label(__('payroll.actions.pay'))
+                    ->label(__('hr::payroll.actions.pay'))
                     ->icon('heroicon-o-currency-dollar')
                     ->color(Color::Blue)
                     ->visible(fn(Payroll $record): bool => $record->status === 'processed' && ! $record->payment_id)
                     ->requiresConfirmation()
-                    ->modalHeading(__('payroll.actions.pay_employee'))
+                    ->modalHeading(__('hr::payroll.actions.pay_employee'))
                     ->modalDescription(
-                        fn(Payroll $record): string => __('payroll.actions.pay_employee_description', [
+                        fn(Payroll $record): string => __('hr::payroll.actions.pay_employee_description', [
                             'employee' => $record->employee->full_name,
                             'amount' => $record->net_salary->formatTo('en_US'),
                         ])
@@ -126,10 +126,10 @@ class PayrollsTable
 
                         return redirect()->back();
                     })
-                    ->successNotificationTitle(__('payroll.notifications.paid')),
+                    ->successNotificationTitle(__('hr::payroll.notifications.paid')),
 
                 Action::make('view_payment')
-                    ->label(__('payroll.actions.view_payment'))
+                    ->label(__('hr::payroll.actions.view_payment'))
                     ->icon('heroicon-o-eye')
                     ->color(Color::Gray)
                     ->visible(fn(Payroll $record): bool => $record->payment_id !== null)

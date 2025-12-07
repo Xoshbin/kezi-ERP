@@ -54,7 +54,7 @@ it('converts InsufficientCostInformationException to user-friendly error data', 
         'help_text',
     ]);
 
-    expect($errorData['title'])->toBe(__('inventory_accounting.cost_validation_errors.title'));
+    expect($errorData['title'])->toBe(__('inventory::inventory_accounting.cost_validation_errors.title'));
     expect($errorData['message'])->toContain($this->product->name);
     expect($errorData['explanation'])->toContain('First In, First Out');
     expect($errorData['next_steps'])->toBeArray();

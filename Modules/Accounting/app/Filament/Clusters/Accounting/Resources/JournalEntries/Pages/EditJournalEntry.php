@@ -31,7 +31,7 @@ class EditJournalEntry extends EditRecord
         return [
             // The "Post Entry" button
             Action::make('post')
-                ->label(__('journal_entry.post_entry'))
+                ->label(__('accounting::journal_entry.post_entry'))
                 ->color('success')
                 ->requiresConfirmation()
                 // This action is only visible if the entry is a draft.
@@ -44,9 +44,9 @@ class EditJournalEntry extends EditRecord
                     $journalEntryService = app(JournalEntryService::class);
                     try {
                         $journalEntryService->post($record);
-                        Notification::make()->title(__('journal_entry.entry_posted_successfully'))->success()->send();
+                        Notification::make()->title(__('accounting::journal_entry.entry_posted_successfully'))->success()->send();
                     } catch (Exception $e) {
-                        Notification::make()->title(__('journal_entry.error_posting_entry'))->body($e->getMessage())->danger()->send();
+                        Notification::make()->title(__('accounting::journal_entry.error_posting_entry'))->body($e->getMessage())->danger()->send();
                     }
                 }),
 

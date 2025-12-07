@@ -257,18 +257,18 @@ class PaymentInstallment extends Model
         if ($this->isOverdue()) {
             $daysOverdue = abs($this->getDaysUntilDue());
 
-            return __('payment_installments.overdue_by_days', ['days' => $daysOverdue]);
+            return __('payment::payment_installments.overdue_by_days', ['days' => $daysOverdue]);
         }
 
         if ($this->isFullyPaid()) {
-            return __('payment_installments.paid');
+            return __('payment::payment_installments.paid');
         }
 
         $daysUntilDue = $this->getDaysUntilDue();
         if ($daysUntilDue === 0) {
-            return __('payment_installments.due_today');
+            return __('payment::payment_installments.due_today');
         }
 
-        return __('payment_installments.due_in_days', ['days' => $daysUntilDue]);
+        return __('payment::payment_installments.due_in_days', ['days' => $daysUntilDue]);
     }
 }

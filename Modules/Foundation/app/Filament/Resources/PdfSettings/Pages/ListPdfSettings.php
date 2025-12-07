@@ -18,12 +18,12 @@ class ListPdfSettings extends ListRecords
 
     public function getTitle(): string
     {
-        return __('pdf_settings.list_title');
+        return __('foundation::pdf_settings.list_title');
     }
 
     public function getHeading(): string
     {
-        return __('pdf_settings.list_title');
+        return __('foundation::pdf_settings.list_title');
     }
 
     protected function getHeaderWidgets(): array

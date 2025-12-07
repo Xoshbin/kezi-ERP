@@ -10,12 +10,12 @@
             <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
                 <div class="mb-6">
                     <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-                        {{ __('reports.general_ledger') }}
+                        {{ __('accounting::reports.general_ledger') }}
                     </h2>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
                         {{ $reportData['companyName'] }} -
-                        {{ __('reports.period') }}: {{ Carbon\Carbon::parse($reportData['startDate'])->format('M j, Y') }}
-                        {{ __('reports.to') }} {{ Carbon\Carbon::parse($reportData['endDate'])->format('M j, Y') }}
+                        {{ __('accounting::reports.period') }}: {{ Carbon\Carbon::parse($reportData['startDate'])->format('M j, Y') }}
+                        {{ __('accounting::reports.to') }} {{ Carbon\Carbon::parse($reportData['endDate'])->format('M j, Y') }}
                     </p>
                 </div>
 
@@ -32,7 +32,7 @@
                                             </h3>
                                         </div>
                                         <div class="text-right">
-                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('reports.opening_balance') }}</p>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('accounting::reports.opening_balance') }}</p>
                                             <p class="text-lg font-semibold text-gray-900 dark:text-white">
                                                 {{ $account['openingBalance'] }}
                                             </p>
@@ -47,25 +47,25 @@
                                             <thead class="bg-gray-50 dark:bg-gray-700">
                                                 <tr>
                                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                        {{ __('reports.date') }}
+                                                        {{ __('accounting::reports.date') }}
                                                     </th>
                                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                        {{ __('reports.reference') }}
+                                                        {{ __('accounting::reports.reference') }}
                                                     </th>
                                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                        {{ __('reports.description') }}
+                                                        {{ __('accounting::reports.description') }}
                                                     </th>
                                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                        {{ __('reports.contra_account') }}
+                                                        {{ __('accounting::reports.contra_account') }}
                                                     </th>
                                                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                        {{ __('reports.debit') }}
+                                                        {{ __('accounting::reports.debit') }}
                                                     </th>
                                                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                        {{ __('reports.credit') }}
+                                                        {{ __('accounting::reports.credit') }}
                                                     </th>
                                                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                        {{ __('reports.balance') }}
+                                                        {{ __('accounting::reports.balance') }}
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -112,7 +112,7 @@
                                 <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-t border-gray-200 dark:border-gray-600">
                                     <div class="flex justify-between items-center">
                                         <span class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ __('reports.closing_balance') }}
+                                            {{ __('accounting::reports.closing_balance') }}
                                         </span>
                                         <span class="text-lg font-semibold text-gray-900 dark:text-white">
                                             {{ $account['closingBalance'] }}
@@ -128,8 +128,8 @@
                             <svg class="mx-auto h-12 w-12 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            <h3 class="text-lg font-medium mb-2">{{ __('reports.no_data') }}</h3>
-                            <p class="text-sm">{{ __('reports.no_transactions_found') }}</p>
+                            <h3 class="text-lg font-medium mb-2">{{ __('accounting::reports.no_data') }}</h3>
+                            <p class="text-sm">{{ __('accounting::reports.no_transactions_found') }}</p>
                         </div>
                     </div>
                 @endif

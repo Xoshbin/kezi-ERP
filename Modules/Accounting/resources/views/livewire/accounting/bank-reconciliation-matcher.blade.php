@@ -77,7 +77,7 @@
                 <dd class="mt-1 text-sm text-gray-900">{{ $this->summary['systemTotalFormatted'] }}</dd>
                 @if(!empty($selectedPayments))
                     <div class="mt-1 text-xs text-gray-400">
-                        {{ __('bank_statement.includes_currency_conversions') }}
+                        {{ __('accounting::bank_statement.includes_currency_conversions') }}
                     </div>
                 @endif
             </div>

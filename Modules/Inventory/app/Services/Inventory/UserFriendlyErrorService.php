@@ -30,14 +30,14 @@ class UserFriendlyErrorService
         $vendorBillAnalysis = $this->costAnalysisService->analyzeVendorBillStatus($product);
 
         return [
-            'title' => __('inventory_accounting.cost_validation_errors.title'),
-            'message' => __('inventory_accounting.cost_validation_errors.message', [
+            'title' => __('inventory::inventory_accounting.cost_validation_errors.title'),
+            'message' => __('inventory::inventory_accounting.cost_validation_errors.message', [
                 'product_name' => $product->name,
             ]),
             'explanation' => $this->getValuationMethodExplanation($product),
             'primary_solution' => $this->getPrimarySolution($product, $vendorBillAnalysis),
             'next_steps' => $this->getNextSteps($product, $vendorBillAnalysis),
-            'help_text' => __('inventory_accounting.cost_validation_errors.help_text'),
+            'help_text' => __('inventory::inventory_accounting.cost_validation_errors.help_text'),
         ];
     }
 
@@ -48,7 +48,7 @@ class UserFriendlyErrorService
     {
         $method = strtolower($product->inventory_valuation_method->value);
 
-        return __("inventory_accounting.cost_validation_errors.explanation.{$method}");
+        return __("inventory::inventory_accounting.cost_validation_errors.explanation.{$method}");
     }
 
     /**
@@ -57,18 +57,18 @@ class UserFriendlyErrorService
     protected function getPrimarySolution(Product $product, array $vendorBillAnalysis): string
     {
         if (!$vendorBillAnalysis['has_vendor_bills']) {
-            return __('inventory_accounting.cost_validation_errors.solutions.no_bills');
+            return __('inventory::inventory_accounting.cost_validation_errors.solutions.no_bills');
         }
 
         if ($vendorBillAnalysis['draft_count'] > 0 && $vendorBillAnalysis['posted_count'] === 0) {
-            return __('inventory_accounting.cost_validation_errors.solutions.draft_bills');
+            return __('inventory::inventory_accounting.cost_validation_errors.solutions.draft_bills');
         }
 
         if ($vendorBillAnalysis['posted_count'] > 0) {
-            return __('inventory_accounting.cost_validation_errors.solutions.posted_bills_no_cost');
+            return __('inventory::inventory_accounting.cost_validation_errors.solutions.posted_bills_no_cost');
         }
 
-        return __('inventory_accounting.cost_validation_errors.solutions.system_issue');
+        return __('inventory::inventory_accounting.cost_validation_errors.solutions.system_issue');
     }
 
     /**
@@ -78,10 +78,10 @@ class UserFriendlyErrorService
     {
         if (!$vendorBillAnalysis['has_vendor_bills']) {
             return [
-                __('inventory_accounting.cost_validation_errors.next_steps.create_bill'),
-                __('inventory_accounting.cost_validation_errors.next_steps.add_product'),
-                __('inventory_accounting.cost_validation_errors.next_steps.confirm_bill'),
-                __('inventory_accounting.cost_validation_errors.next_steps.retry_movement'),
+                __('inventory::inventory_accounting.cost_validation_errors.next_steps.create_bill'),
+                __('inventory::inventory_accounting.cost_validation_errors.next_steps.add_product'),
+                __('inventory::inventory_accounting.cost_validation_errors.next_steps.confirm_bill'),
+                __('inventory::inventory_accounting.cost_validation_errors.next_steps.retry_movement'),
             ];
         }
 

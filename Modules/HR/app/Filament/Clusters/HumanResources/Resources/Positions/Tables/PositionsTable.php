@@ -16,30 +16,30 @@ class PositionsTable
         return $table
             ->columns([
                 TextColumn::make('title')
-                    ->label(__('position.title'))
+                    ->label(__('hr::position.title'))
                     ->searchable(),
                 TextColumn::make('department.name')
-                    ->label(__('position.department'))
+                    ->label(__('hr::position.department'))
                     ->searchable(),
                 TextColumn::make('employment_type')
-                    ->label(__('position.employment_type'))
+                    ->label(__('hr::position.employment_type'))
                     ->searchable(),
                 TextColumn::make('level')
-                    ->label(__('position.level'))
+                    ->label(__('hr::position.level'))
                     ->searchable(),
                 TextColumn::make('min_salary')
-                    ->label(__('position.min_salary'))
+                    ->label(__('hr::position.min_salary'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('max_salary')
-                    ->label(__('position.max_salary'))
+                    ->label(__('hr::position.max_salary'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('salaryCurrency.name')
-                    ->label(__('position.salary_currency'))
+                    ->label(__('hr::position.salary_currency'))
                     ->searchable(),
                 IconColumn::make('is_active')
-                    ->label(__('position.is_active'))
+                    ->label(__('hr::position.is_active'))
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->label(__('common.created_at'))

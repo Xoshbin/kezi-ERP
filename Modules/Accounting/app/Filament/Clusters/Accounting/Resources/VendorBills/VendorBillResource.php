@@ -267,7 +267,7 @@ class VendorBillResource extends Resource
                             TableColumn::make(__('vendor_bill.unit_price'))->width('12%'),
                             TableColumn::make(__('vendor_bill.expense_account'))->width('18%'),
                             TableColumn::make(__('vendor_bill.tax'))->width('18%'),
-                            TableColumn::make(__('asset.category'))->width('18%'),
+                            TableColumn::make(__('accounting::asset.category'))->width('18%'),
                         ])
                         ->live()
                         ->reorderable(true)
@@ -376,23 +376,23 @@ class VendorBillResource extends Resource
                                                 ->where('is_deprecated', false)
                                                 ->pluck('name', 'id');
                                         })
-                                        ->label(__('tax.tax_account'))
+                                        ->label(__('accounting::tax.tax_account'))
                                         ->searchable()
                                         ->required(),
                                     TextInput::make('name')
-                                        ->label(__('tax.name'))
+                                        ->label(__('accounting::tax.name'))
                                         ->required()
                                         ->maxLength(255),
                                     TextInput::make('rate')
-                                        ->label(__('tax.rate'))
+                                        ->label(__('accounting::tax.rate'))
                                         ->required()
                                         ->numeric(),
                                     Select::make('type')
-                                        ->label(__('tax.type'))
+                                        ->label(__('accounting::tax.type'))
                                         ->options(collect(TaxType::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()]))
                                         ->required(),
                                     Toggle::make('is_active')
-                                        ->label(__('tax.is_active'))
+                                        ->label(__('accounting::tax.is_active'))
                                         ->default(true),
                                 ])
                                 ->createOptionUsing(function (array $data): int {
@@ -406,7 +406,7 @@ class VendorBillResource extends Resource
                                 })
                                 ->columnSpan(3),
                             TranslatableSelect::forModel('asset_category_id', AssetCategory::class, 'name')
-                                ->label(__('asset.category'))
+                                ->label(__('accounting::asset.category'))
                                 ->searchableFields(['name'])
                                 ->searchable()
                                 ->preload()
@@ -414,37 +414,37 @@ class VendorBillResource extends Resource
                                 ->createOptionForm([
                                     Select::make('company_id')
                                         ->relationship('company', 'name')
-                                        ->label(__('asset.company'))
+                                        ->label(__('accounting::asset.company'))
                                         ->required(),
                                     TextInput::make('name')
-                                        ->label(__('asset.category_name'))
+                                        ->label(__('accounting::asset.category_name'))
                                         ->required(),
                                     Select::make('asset_account_id')
                                         ->relationship('assetAccount', 'name')
-                                        ->label(__('asset.asset_account'))
+                                        ->label(__('accounting::asset.asset_account'))
                                         ->required(),
                                     Select::make('accumulated_depreciation_account_id')
                                         ->relationship('accumulatedDepreciationAccount', 'name')
-                                        ->label(__('asset.accumulated_depreciation_account'))
+                                        ->label(__('accounting::asset.accumulated_depreciation_account'))
                                         ->required(),
                                     Select::make('depreciation_expense_account_id')
                                         ->relationship('depreciationExpenseAccount', 'name')
-                                        ->label(__('asset.depreciation_expense_account'))
+                                        ->label(__('accounting::asset.depreciation_expense_account'))
                                         ->required(),
                                     Select::make('depreciation_method')
                                         ->options(collect(DepreciationMethod::cases())->mapWithKeys(fn($m) => [$m->value => $m->label()]))
-                                        ->label(__('asset.depreciation_method'))
+                                        ->label(__('accounting::asset.depreciation_method'))
                                         ->required(),
                                     TextInput::make('useful_life_years')
                                         ->numeric()
-                                        ->label(__('asset.useful_life_years'))
+                                        ->label(__('accounting::asset.useful_life_years'))
                                         ->required(),
                                     TextInput::make('salvage_value_default')
                                         ->numeric()
-                                        ->label(__('asset.salvage_value_default'))
+                                        ->label(__('accounting::asset.salvage_value_default'))
                                         ->default(0),
                                 ])
-                                ->createOptionModalHeading(__('asset.create_category'))
+                                ->createOptionModalHeading(__('accounting::asset.create_category'))
                                 ->createOptionAction(fn(Action $action) => $action->modalWidth('lg'))
                                 ->columnSpan(3),
                         ])

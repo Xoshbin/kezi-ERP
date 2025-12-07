@@ -29,17 +29,17 @@ class DepartmentResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('department.navigation_label');
+        return __('hr::department.navigation_label');
     }
 
     public static function getModelLabel(): string
     {
-        return __('department.navigation_label');
+        return __('hr::department.navigation_label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('department.navigation_label');
+        return __('hr::department.navigation_label');
     }
 
     public static function form(Schema $schema): Schema

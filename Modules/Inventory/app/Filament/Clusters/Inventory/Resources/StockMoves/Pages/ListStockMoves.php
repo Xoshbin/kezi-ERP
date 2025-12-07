@@ -22,6 +22,6 @@ class ListStockMoves extends ListRecords
 
     public function getTitle(): string
     {
-        return __('stock_move.plural_label');
+        return __('inventory::stock_move.plural_label');
     }
 }

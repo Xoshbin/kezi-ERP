@@ -34,9 +34,9 @@ enum ReconciliationType: string
     public function label(): string
     {
         return match ($this) {
-            self::ManualArAp => __('reconciliation.type.manual_ar_ap'),
-            self::BankStatement => __('reconciliation.type.bank_statement'),
-            self::ManualGeneral => __('reconciliation.type.manual_general'),
+            self::ManualArAp => __('accounting::reconciliation.type.manual_ar_ap'),
+            self::BankStatement => __('accounting::reconciliation.type.bank_statement'),
+            self::ManualGeneral => __('accounting::reconciliation.type.manual_general'),
         };
     }
 
@@ -46,9 +46,9 @@ enum ReconciliationType: string
     public function description(): string
     {
         return match ($this) {
-            self::ManualArAp => __('reconciliation.type.manual_ar_ap_description'),
-            self::BankStatement => __('reconciliation.type.bank_statement_description'),
-            self::ManualGeneral => __('reconciliation.type.manual_general_description'),
+            self::ManualArAp => __('accounting::reconciliation.type.manual_ar_ap_description'),
+            self::BankStatement => __('accounting::reconciliation.type.bank_statement_description'),
+            self::ManualGeneral => __('accounting::reconciliation.type.manual_general_description'),
         };
     }
 

@@ -23,10 +23,10 @@ beforeEach(function () {
 test('it can render the trial balance page', function () {
     Livewire::test(ViewTrialBalance::class)
         ->assertSuccessful()
-        ->assertSee(__('reports.trial_balance_report'))
-        ->assertSee(__('reports.report_parameters'))
-        ->assertSee(__('reports.as_of_date'))
-        ->assertSee(__('reports.generate_report'));
+        ->assertSee(__('accounting::reports.trial_balance_report'))
+        ->assertSee(__('accounting::reports.report_parameters'))
+        ->assertSee(__('accounting::reports.as_of_date'))
+        ->assertSee(__('accounting::reports.generate_report'));
 });
 
 test('it generates a balanced trial balance report', function () {
@@ -91,8 +91,8 @@ test('it generates a balanced trial balance report', function () {
         ->assertSee('Bank Account')
         ->assertSee('Sales Revenue')
         ->assertSee('Office Expenses')
-        ->assertSee(__('reports.trial_balance_balanced'))
-        ->assertSee(__('reports.total'));
+        ->assertSee(__('accounting::reports.trial_balance_balanced'))
+        ->assertSee(__('accounting::reports.total'));
 
     // Check that the report data contains the expected values
     $reportData = $component->get('reportData');
@@ -131,7 +131,7 @@ test('it shows unbalanced status when trial balance does not balance', function 
         ->set('asOfDate', $asOfDate->toDateString())
         ->call('generateReport')
         ->assertSuccessful()
-        ->assertSee(__('reports.trial_balance_not_balanced'));
+        ->assertSee(__('accounting::reports.trial_balance_not_balanced'));
 });
 
 test('it validates required as of date', function () {
@@ -146,7 +146,7 @@ test('it shows no data message when no account balances exist', function () {
         ->set('asOfDate', Carbon::now()->toDateString())
         ->call('generateReport')
         ->assertSuccessful()
-        ->assertSee(__('reports.no_account_balances_found'));
+        ->assertSee(__('accounting::reports.no_account_balances_found'));
 });
 
 test('it excludes draft journal entries from trial balance', function () {
@@ -179,7 +179,7 @@ test('it excludes draft journal entries from trial balance', function () {
         ->set('asOfDate', $asOfDate->toDateString())
         ->call('generateReport')
         ->assertSuccessful()
-        ->assertSee(__('reports.no_account_balances_found'));
+        ->assertSee(__('accounting::reports.no_account_balances_found'));
 });
 
 test('it respects the as of date filter', function () {

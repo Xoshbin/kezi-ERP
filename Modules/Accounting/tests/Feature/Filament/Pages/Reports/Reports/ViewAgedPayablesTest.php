@@ -23,7 +23,7 @@ beforeEach(function () {
 test('it can render the aged payables page', function () {
     Livewire::test(ViewAgedPayables::class)
         ->assertSuccessful()
-        ->assertSee(__('reports.aged_payables_report'));
+        ->assertSee(__('accounting::reports.aged_payables_report'));
 });
 
 test('it can generate aged payables report', function () {
@@ -52,7 +52,7 @@ test('it can generate aged payables report', function () {
         ->assertSuccessful()
         ->assertSee('Test Vendor')
         ->assertSee($expectedAmount) // Should show in 1-30 days bucket
-        ->assertSee(__('reports.aged_payables_report'));
+        ->assertSee(__('accounting::reports.aged_payables_report'));
 });
 
 test('it shows no data message when no outstanding payables exist', function () {
@@ -66,7 +66,7 @@ test('it shows no data message when no outstanding payables exist', function () 
         ])
         ->call('generateReport')
         ->assertSuccessful()
-        ->assertSee(__('reports.no_outstanding_payables'));
+        ->assertSee(__('accounting::reports.no_outstanding_payables'));
 });
 
 test('it validates required as of date', function () {

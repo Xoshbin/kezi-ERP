@@ -37,17 +37,17 @@ class ViewProfitAndLoss extends Page
 
     public static function getNavigationLabel(): string
     {
-        return __('reports.profit_and_loss');
+        return __('accounting::reports.profit_and_loss');
     }
 
     public function getTitle(): string|Htmlable
     {
-        return __('reports.profit_and_loss_statement');
+        return __('accounting::reports.profit_and_loss_statement');
     }
 
     public function getHeading(): string|Htmlable
     {
-        return __('reports.profit_and_loss_statement');
+        return __('accounting::reports.profit_and_loss_statement');
     }
 
     public function mount(): void
@@ -61,14 +61,14 @@ class ViewProfitAndLoss extends Page
     {
         return $schema
             ->components([
-                Section::make(__('reports.date_range'))
+                Section::make(__('accounting::reports.date_range'))
                     ->schema([
                         DatePicker::make('startDate')
-                            ->label(__('reports.start_date'))
+                            ->label(__('accounting::reports.start_date'))
                             ->required()
                             ->default(Carbon::now()->startOfMonth()),
                         DatePicker::make('endDate')
-                            ->label(__('reports.end_date'))
+                            ->label(__('accounting::reports.end_date'))
                             ->required()
                             ->default(Carbon::now()->endOfMonth()),
                     ])
@@ -80,7 +80,7 @@ class ViewProfitAndLoss extends Page
     {
         return [
             Action::make('generate')
-                ->label(__('reports.generate_report'))
+                ->label(__('accounting::reports.generate_report'))
                 ->icon('heroicon-o-play')
                 ->color('primary')
                 ->action('generateReport'),

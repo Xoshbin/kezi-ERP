@@ -43,17 +43,17 @@ class ViewGeneralLedger extends Page
 
     public static function getNavigationLabel(): string
     {
-        return __('reports.general_ledger');
+        return __('accounting::reports.general_ledger');
     }
 
     public function getTitle(): string|Htmlable
     {
-        return __('reports.general_ledger');
+        return __('accounting::reports.general_ledger');
     }
 
     public function getHeading(): string|Htmlable
     {
-        return __('reports.general_ledger');
+        return __('accounting::reports.general_ledger');
     }
 
     public function mount(): void
@@ -67,22 +67,22 @@ class ViewGeneralLedger extends Page
     {
         return $schema
             ->components([
-                Section::make(__('reports.date_range'))
+                Section::make(__('accounting::reports.date_range'))
                     ->schema([
                         DatePicker::make('startDate')
-                            ->label(__('reports.start_date'))
+                            ->label(__('accounting::reports.start_date'))
                             ->required()
                             ->default(Carbon::now()->startOfMonth()),
                         DatePicker::make('endDate')
-                            ->label(__('reports.end_date'))
+                            ->label(__('accounting::reports.end_date'))
                             ->required()
                             ->default(Carbon::now()->endOfMonth()),
                     ])
                     ->columns(2),
-                Section::make(__('reports.account_filter'))
+                Section::make(__('accounting::reports.account_filter'))
                     ->schema([
                         Select::make('accountIds')
-                            ->label(__('reports.accounts'))
+                            ->label(__('accounting::reports.accounts'))
                             ->multiple()
                             ->searchable()
                             ->getSearchResultsUsing(function (string $search): array {
@@ -121,8 +121,8 @@ class ViewGeneralLedger extends Page
                                     })
                                     ->toArray();
                             })
-                            ->placeholder(__('reports.all_accounts'))
-                            ->helperText(__('reports.account_filter_help')),
+                            ->placeholder(__('accounting::reports.all_accounts'))
+                            ->helperText(__('accounting::reports.account_filter_help')),
                     ]),
             ]);
     }
@@ -131,7 +131,7 @@ class ViewGeneralLedger extends Page
     {
         return [
             Action::make('generate')
-                ->label(__('reports.generate_report'))
+                ->label(__('accounting::reports.generate_report'))
                 ->icon('heroicon-o-play')
                 ->color('primary')
                 ->action('generateReport'),

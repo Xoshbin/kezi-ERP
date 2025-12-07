@@ -10,11 +10,11 @@
             <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
                 <div class="mb-6">
                     <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-                        {{ __('reports.aged_payables_report') }}
+                        {{ __('accounting::reports.aged_payables_report') }}
                     </h2>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
                         {{ $reportData['companyName'] }} -
-                        {{ __('reports.as_of') }}: {{ Carbon\Carbon::parse($reportData['asOfDate'])->format('M j, Y') }}
+                        {{ __('accounting::reports.as_of') }}: {{ Carbon\Carbon::parse($reportData['asOfDate'])->format('M j, Y') }}
                     </p>
                 </div>
 
@@ -23,25 +23,25 @@
                         <thead class="bg-gray-50 dark:bg-gray-800">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('reports.vendor') }}
+                                    {{ __('accounting::reports.vendor') }}
                                 </th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('reports.current') }}
+                                    {{ __('accounting::reports.current') }}
                                 </th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('reports.1_30_days') }}
+                                    {{ __('accounting::reports.1_30_days') }}
                                 </th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('reports.31_60_days') }}
+                                    {{ __('accounting::reports.31_60_days') }}
                                 </th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('reports.61_90_days') }}
+                                    {{ __('accounting::reports.61_90_days') }}
                                 </th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('reports.90_plus_days') }}
+                                    {{ __('accounting::reports.90_plus_days') }}
                                 </th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    {{ __('reports.total') }}
+                                    {{ __('accounting::reports.total') }}
                                 </th>
                             </tr>
                         </thead>
@@ -85,7 +85,7 @@
                         <tfoot class="bg-gray-50 dark:bg-gray-800">
                             <tr class="font-semibold">
                                 <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
-                                    {{ __('reports.total') }}
+                                    {{ __('accounting::reports.total') }}
                                 </td>
                                 <td class="px-6 py-4 text-sm text-right text-gray-900 dark:text-white">
                                     {{ $reportData['totalCurrent'] }}
@@ -113,7 +113,7 @@
                 @if(empty($reportData['reportLines']))
                     <div class="text-center py-8">
                         <p class="text-gray-500 dark:text-gray-400">
-                            {{ __('reports.no_outstanding_payables') }}
+                            {{ __('accounting::reports.no_outstanding_payables') }}
                         </p>
                     </div>
                 @endif

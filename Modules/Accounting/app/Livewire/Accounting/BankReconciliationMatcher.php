@@ -104,7 +104,7 @@ class BankReconciliationMatcher extends Component
     {
         if (! $this->summary()['isBalanced']) {
             Notification::make()
-                ->title(__('bank_statement.reconciliation_not_balanced'))
+                ->title(__('accounting::bank_statement.reconciliation_not_balanced'))
                 ->danger()
                 ->send();
 
@@ -113,7 +113,7 @@ class BankReconciliationMatcher extends Component
 
         if (empty($this->selectedBankLines) || empty($this->selectedPayments)) {
             Notification::make()
-                ->title(__('bank_statement.select_transactions_to_reconcile'))
+                ->title(__('accounting::bank_statement.select_transactions_to_reconcile'))
                 ->warning()
                 ->send();
 
@@ -138,7 +138,7 @@ class BankReconciliationMatcher extends Component
         $this->systemTotal = Money::of(0, $this->bankStatement->currency->code);
 
         Notification::make()
-            ->title(__('bank_statement.reconciliation_successful'))
+            ->title(__('accounting::bank_statement.reconciliation_successful'))
             ->success()
             ->send();
 

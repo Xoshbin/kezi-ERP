@@ -10,19 +10,19 @@
             <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
                 <div class="mb-6">
                     <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-                        {{ __('reports.tax_report') }}
+                        {{ __('accounting::reports.tax_report') }}
                     </h2>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
                         {{ $reportData['companyName'] }} -
-                        {{ __('reports.period') }}: {{ Carbon\Carbon::parse($startDate)->format('M j, Y') }}
-                        {{ __('reports.to') }} {{ Carbon\Carbon::parse($endDate)->format('M j, Y') }}
+                        {{ __('accounting::reports.period') }}: {{ Carbon\Carbon::parse($startDate)->format('M j, Y') }}
+                        {{ __('accounting::reports.to') }} {{ Carbon\Carbon::parse($endDate)->format('M j, Y') }}
                     </p>
                 </div>
 
                 <!-- Output Tax (Sales) Section -->
                 <div class="mb-8">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                        {{ __('reports.output_tax_on_sales') }}
+                        {{ __('accounting::reports.output_tax_on_sales') }}
                     </h3>
 
                     @if(count($reportData['outputTaxLines']) > 0)
@@ -31,16 +31,16 @@
                                 <thead class="bg-gray-50 dark:bg-gray-800">
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            {{ __('reports.tax_name') }}
+                                            {{ __('accounting::reports.tax_name') }}
                                         </th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            {{ __('reports.tax_rate') }}
+                                            {{ __('accounting::reports.tax_rate') }}
                                         </th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            {{ __('reports.net_amount') }}
+                                            {{ __('accounting::reports.net_amount') }}
                                         </th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            {{ __('reports.tax_amount') }}
+                                            {{ __('accounting::reports.tax_amount') }}
                                         </th>
                                     </tr>
                                 </thead>
@@ -65,7 +65,7 @@
                                 <tfoot class="bg-gray-50 dark:bg-gray-800">
                                     <tr>
                                         <td colspan="3" class="px-6 py-3 text-right text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ __('reports.total_output_tax') }}:
+                                            {{ __('accounting::reports.total_output_tax') }}:
                                         </td>
                                         <td class="px-6 py-3 text-right text-sm font-bold text-gray-900 dark:text-white">
                                             {{ $reportData['totalOutputTax'] }}
@@ -76,7 +76,7 @@
                         </div>
                     @else
                         <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                            {{ __('reports.no_output_tax_transactions') }}
+                            {{ __('accounting::reports.no_output_tax_transactions') }}
                         </div>
                     @endif
                 </div>
@@ -84,7 +84,7 @@
                 <!-- Input Tax (Purchases) Section -->
                 <div class="mb-8">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                        {{ __('reports.input_tax_on_purchases') }}
+                        {{ __('accounting::reports.input_tax_on_purchases') }}
                     </h3>
 
                     @if(count($reportData['inputTaxLines']) > 0)
@@ -93,16 +93,16 @@
                                 <thead class="bg-gray-50 dark:bg-gray-800">
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            {{ __('reports.tax_name') }}
+                                            {{ __('accounting::reports.tax_name') }}
                                         </th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            {{ __('reports.tax_rate') }}
+                                            {{ __('accounting::reports.tax_rate') }}
                                         </th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            {{ __('reports.net_amount') }}
+                                            {{ __('accounting::reports.net_amount') }}
                                         </th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                            {{ __('reports.tax_amount') }}
+                                            {{ __('accounting::reports.tax_amount') }}
                                         </th>
                                     </tr>
                                 </thead>
@@ -127,7 +127,7 @@
                                 <tfoot class="bg-gray-50 dark:bg-gray-800">
                                     <tr>
                                         <td colspan="3" class="px-6 py-3 text-right text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ __('reports.total_input_tax') }}:
+                                            {{ __('accounting::reports.total_input_tax') }}:
                                         </td>
                                         <td class="px-6 py-3 text-right text-sm font-bold text-gray-900 dark:text-white">
                                             {{ $reportData['totalInputTax'] }}
@@ -138,7 +138,7 @@
                         </div>
                     @else
                         <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                            {{ __('reports.no_input_tax_transactions') }}
+                            {{ __('accounting::reports.no_input_tax_transactions') }}
                         </div>
                     @endif
                 </div>
@@ -146,14 +146,14 @@
                 <!-- Summary Section -->
                 <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                        {{ __('reports.tax_summary') }}
+                        {{ __('accounting::reports.tax_summary') }}
                     </h3>
 
                     <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="text-center">
                                 <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                                    {{ __('reports.total_output_tax') }}
+                                    {{ __('accounting::reports.total_output_tax') }}
                                 </div>
                                 <div class="text-lg font-semibold text-gray-900 dark:text-white">
                                     {{ $reportData['totalOutputTax'] }}
@@ -162,7 +162,7 @@
 
                             <div class="text-center">
                                 <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                                    {{ __('reports.total_input_tax') }}
+                                    {{ __('accounting::reports.total_input_tax') }}
                                 </div>
                                 <div class="text-lg font-semibold text-gray-900 dark:text-white">
                                     {{ $reportData['totalInputTax'] }}
@@ -171,18 +171,18 @@
 
                             <div class="text-center">
                                 <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                                    {{ __('reports.net_tax_payable') }}
+                                    {{ __('accounting::reports.net_tax_payable') }}
                                 </div>
                                 <div class="text-xl font-bold {{ $reportData['netTaxPayableRaw'] < 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
                                     {{ $reportData['netTaxPayable'] }}
                                 </div>
                                 @if($reportData['netTaxPayableRaw'] < 0)
                                     <div class="text-xs text-green-600 dark:text-green-400 mt-1">
-                                        {{ __('reports.refundable') }}
+                                        {{ __('accounting::reports.refundable') }}
                                     </div>
                                 @else
                                     <div class="text-xs text-red-600 dark:text-red-400 mt-1">
-                                        {{ __('reports.payable') }}
+                                        {{ __('accounting::reports.payable') }}
                                     </div>
                                 @endif
                             </div>
@@ -198,10 +198,10 @@
                     </svg>
                 </div>
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                    {{ __('reports.no_report_generated') }}
+                    {{ __('accounting::reports.no_report_generated') }}
                 </h3>
                 <p class="text-gray-600 dark:text-gray-400">
-                    {{ __('reports.select_date_range_and_generate') }}
+                    {{ __('accounting::reports.select_date_range_and_generate') }}
                 </p>
             </div>
         @endif

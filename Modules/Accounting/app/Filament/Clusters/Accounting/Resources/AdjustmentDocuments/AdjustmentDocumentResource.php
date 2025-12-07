@@ -320,18 +320,18 @@ class AdjustmentDocumentResource extends Resource
                                 ->createOptionForm([
                                     Select::make('company_id')
                                         ->relationship('company', 'name')
-                                        ->label(__('tax.company'))
+                                        ->label(__('accounting::tax.company'))
                                         ->required(),
                                     Select::make('tax_account_id')
                                         ->relationship('taxAccount', 'name')
-                                        ->label(__('tax.tax_account'))
+                                        ->label(__('accounting::tax.tax_account'))
                                         ->required(),
                                     TextInput::make('name')
-                                        ->label(__('tax.name'))
+                                        ->label(__('accounting::tax.name'))
                                         ->required()
                                         ->maxLength(255),
                                     TextInput::make('rate')
-                                        ->label(__('tax.rate'))
+                                        ->label(__('accounting::tax.rate'))
                                         ->required()
                                         ->numeric()
                                         ->suffix('%'),
@@ -351,19 +351,19 @@ class AdjustmentDocumentResource extends Resource
                                 ->required()
                                 ->createOptionForm([
                                     Select::make('company_id')
-                                        ->label(__('account.company'))
+                                        ->label(__('accounting::account.company'))
                                         ->relationship('company', 'name')
                                         ->required(),
                                     TextInput::make('code')
-                                        ->label(__('account.code'))
+                                        ->label(__('accounting::account.code'))
                                         ->required()
                                         ->maxLength(255),
                                     TextInput::make('name')
-                                        ->label(__('account.name'))
+                                        ->label(__('accounting::account.name'))
                                         ->required()
                                         ->maxLength(255),
                                     Select::make('type')
-                                        ->label(__('account.type'))
+                                        ->label(__('accounting::account.type'))
                                         ->required()
                                         ->options(
                                             collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())
@@ -371,7 +371,7 @@ class AdjustmentDocumentResource extends Resource
                                         )
                                         ->searchable(),
                                     Toggle::make('is_deprecated')
-                                        ->label(__('account.is_deprecated'))
+                                        ->label(__('accounting::account.is_deprecated'))
                                         ->default(false),
                                 ])
                                 ->createOptionModalHeading(__('common.modal_title_create_account'))

@@ -24,7 +24,7 @@ class AnalyticAccountsRelationManager extends RelationManager
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->label(__('analytic_plan.name'))
+                    ->label(__('accounting::analytic_plan.name'))
                     ->required()
                     ->maxLength(255),
             ]);
@@ -36,7 +36,7 @@ class AnalyticAccountsRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
-                    ->label(__('analytic_plan.name')),
+                    ->label(__('accounting::analytic_plan.name')),
             ])
             ->filters([
                 //

@@ -180,19 +180,19 @@ class PaymentTermLine extends Model
     public function getDescription(): string
     {
         $description = match ($this->type) {
-            \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Immediate => __('payment_terms.immediate'),
-            \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net => __('payment_terms.net_days', ['days' => $this->days]),
+            \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Immediate => __('foundation::payment_terms.immediate'),
+            \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::Net => __('foundation::payment_terms.net_days', ['days' => $this->days]),
             \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::EndOfMonth => $this->days > 0
-                ? __('payment_terms.end_of_month_plus_days', ['days' => $this->days])
-                : __('payment_terms.end_of_month'),
-            \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::DayOfMonth => __('payment_terms.day_of_month', [
+                ? __('foundation::payment_terms.end_of_month_plus_days', ['days' => $this->days])
+                : __('foundation::payment_terms.end_of_month'),
+            \Modules\Foundation\Enums\PaymentTerms\PaymentTermType::DayOfMonth => __('foundation::payment_terms.day_of_month', [
                 'day' => (string) $this->day_of_month,
                 'days' => (string) $this->days,
             ]),
         };
 
         if ($this->discount_percentage && $this->discount_days) {
-            $description .= ' ' . __('payment_terms.with_discount', [
+            $description .= ' ' . __('foundation::payment_terms.with_discount', [
                 'percentage' => $this->discount_percentage,
                 'days' => $this->discount_days,
             ]);

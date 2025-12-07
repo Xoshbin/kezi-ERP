@@ -11,6 +11,6 @@ class CreateAnalyticAccount extends CreateRecord
 
     public function getTitle(): string
     {
-        return __('analytic_account.pages.create.title');
+        return __('accounting::analytic_account.pages.create.title');
     }
 }

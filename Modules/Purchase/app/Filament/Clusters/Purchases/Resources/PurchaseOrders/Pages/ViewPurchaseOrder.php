@@ -39,13 +39,13 @@ class ViewPurchaseOrder extends ViewRecord
     protected function getCreateBillAction(): Action
     {
         return Action::make('createBill')
-            ->label(__('purchase_orders.actions.create_bill'))
+            ->label(__('purchase::purchase_orders.actions.create_bill'))
             ->icon('heroicon-o-document-plus')
             ->color('success')
             ->visible(fn() => $this->record->status->canCreateBill())
             ->requiresConfirmation()
-            ->modalHeading(__('purchase_orders.actions.create_bill_confirmation_title'))
-            ->modalDescription(__('purchase_orders.actions.create_bill_confirmation_description'))
+            ->modalHeading(__('purchase::purchase_orders.actions.create_bill_confirmation_title'))
+            ->modalDescription(__('purchase::purchase_orders.actions.create_bill_confirmation_description'))
             ->action(function () {
                 try {
                     // Generate unique bill reference
@@ -70,8 +70,8 @@ class ViewPurchaseOrder extends ViewRecord
 
                     // Show success notification and redirect
                     Notification::make()
-                        ->title(__('purchase_orders.notifications.bill_created_successfully'))
-                        ->body(__('purchase_orders.notifications.bill_created_body', ['reference' => $vendorBill->bill_reference]))
+                        ->title(__('purchase::purchase_orders.notifications.bill_created_successfully'))
+                        ->body(__('purchase::purchase_orders.notifications.bill_created_body', ['reference' => $vendorBill->bill_reference]))
                         ->success()
                         ->send();
 
@@ -81,7 +81,7 @@ class ViewPurchaseOrder extends ViewRecord
                     ]));
                 } catch (Exception $e) {
                     Notification::make()
-                        ->title(__('purchase_orders.notifications.bill_creation_failed'))
+                        ->title(__('purchase::purchase_orders.notifications.bill_creation_failed'))
                         ->body($e->getMessage())
                         ->danger()
                         ->send();
