@@ -6,20 +6,51 @@ use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
 use function Pest\Livewire\livewire;
 use Modules\Sales\Database\Factories\InvoiceFactory;
-
-
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Enums\Accounting\AccountType;
 
 it('updates invoice status to posted in UI after confirmation', function () {
     // 1. Setup Data
     $company = \App\Models\Company::factory()->create();
+
+    // Setup Accounting Defaults
+    // Create Default AR Account for the company
+    $arAccount = Account::factory()->create([
+        'company_id' => $company->id,
+        'type' => AccountType::Receivable,
+        'code' => '1100', // ensure unique code within company
+        'name' => 'Accounts Receivable',
+    ]);
+
+    // Create Default Sales Journal for the company
+    $salesJournal = Journal::factory()->create([
+        'company_id' => $company->id,
+        'type' => \Modules\Accounting\Enums\Accounting\JournalType::Sale,
+        'name' => 'Customer Invoices',
+        'short_code' => 'INV',
+    ]);
+
+    // Update Company to use these defaults
+    $company->update([
+        'default_accounts_receivable_id' => $arAccount->id,
+        'default_sales_journal_id' => $salesJournal->id,
+    ]);
+
+    // Create Invoice linked to this company
+    // Currency ID is handled by factory or defaults to company currency if not specified? 
+    // InvoiceFactory usually sets currency_id. We should match company currency to avoid exchange rate complexity in this test.
+
     $invoice = Invoice::factory()
         ->withLines(1)
         ->create([
             'status' => InvoiceStatus::Draft,
             'company_id' => $company->id,
+            'currency_id' => $company->currency_id,
         ]);
 
-    $user = \App\Models\User::factory()->create(['company_id' => $company->id]);
+    $user = \App\Models\User::factory()->create();
     $this->actingAs($user);
     \Filament\Facades\Filament::setTenant($company);
 
@@ -28,9 +59,6 @@ it('updates invoice status to posted in UI after confirmation', function () {
         'record' => $invoice->getRouteKey(),
     ]);
 
-    // 2.5 Ensure form is filled (mount happens automatically in livewire helper, but good to know)
-
-
     // 3. Trigger Confirm Action
     $component->callAction('confirm');
 
@@ -38,13 +66,7 @@ it('updates invoice status to posted in UI after confirmation', function () {
     $invoice->refresh();
     expect($invoice->status)->toBe(InvoiceStatus::Posted);
 
-    // 5. Verify Component State (This is where we expect the bug/issue)
-    // We check if the component 'knows' the status is Posted.
-    // If the component is dealing with a stale model, it might still think it's Draft.
-
-    // We can check if the 'confirm' action is still visible (it should be hidden if Posted)
+    // 5. Verify Component State
     $component->assertActionHidden('confirm');
-
-    // Or check if 'register_payment' is visible (it should be visible if Posted)
     $component->assertActionVisible('register_payment');
 });

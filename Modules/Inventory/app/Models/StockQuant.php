@@ -10,6 +10,10 @@ use Modules\Inventory\Models\StockLocation;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+use Modules\Inventory\Observers\StockQuantObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+
+#[ObservedBy(StockQuantObserver::class)]
 class StockQuant extends Model
 {
     use HasFactory;

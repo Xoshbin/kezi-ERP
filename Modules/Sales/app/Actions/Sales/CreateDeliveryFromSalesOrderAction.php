@@ -165,6 +165,8 @@ class CreateDeliveryFromSalesOrderAction
             quantity: $quantity,
             from_location_id: $sourceLocation->id,
             to_location_id: $destinationLocation->id,
+            source_type: SalesOrder::class,
+            source_id: $salesOrder->id,
         );
 
         $dto = new CreateStockMoveDTO(
