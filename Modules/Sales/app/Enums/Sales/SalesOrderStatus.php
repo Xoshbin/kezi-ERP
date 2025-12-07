@@ -40,28 +40,28 @@ enum SalesOrderStatus: string
     public function label(): string
     {
         return match ($this) {
-            // Pre-commitment phase
-            self::Quotation => __('sales_orders.statuses.quotation'),
-            self::QuotationSent => __('sales_orders.statuses.quotation_sent'),
+                // Pre-commitment phase
+            self::Quotation => __('sales::sales_orders.statuses.quotation'),
+            self::QuotationSent => __('sales::sales_orders.statuses.quotation_sent'),
 
-            // Commitment phase
-            self::Draft => __('sales_orders.statuses.draft'),
-            self::Sent => __('sales_orders.statuses.sent'),
-            self::Confirmed => __('sales_orders.statuses.confirmed'),
+                // Commitment phase
+            self::Draft => __('sales::sales_orders.statuses.draft'),
+            self::Sent => __('sales::sales_orders.statuses.sent'),
+            self::Confirmed => __('sales::sales_orders.statuses.confirmed'),
 
-            // Fulfillment phase
-            self::ToDeliver => __('sales_orders.statuses.to_deliver'),
-            self::PartiallyDelivered => __('sales_orders.statuses.partially_delivered'),
-            self::FullyDelivered => __('sales_orders.statuses.fully_delivered'),
+                // Fulfillment phase
+            self::ToDeliver => __('sales::sales_orders.statuses.to_deliver'),
+            self::PartiallyDelivered => __('sales::sales_orders.statuses.partially_delivered'),
+            self::FullyDelivered => __('sales::sales_orders.statuses.fully_delivered'),
 
-            // Invoicing phase
-            self::ToInvoice => __('sales_orders.statuses.to_invoice'),
-            self::PartiallyInvoiced => __('sales_orders.statuses.partially_invoiced'),
-            self::FullyInvoiced => __('sales_orders.statuses.fully_invoiced'),
+                // Invoicing phase
+            self::ToInvoice => __('sales::sales_orders.statuses.to_invoice'),
+            self::PartiallyInvoiced => __('sales::sales_orders.statuses.partially_invoiced'),
+            self::FullyInvoiced => __('sales::sales_orders.statuses.fully_invoiced'),
 
-            // Final states
-            self::Done => __('sales_orders.statuses.done'),
-            self::Cancelled => __('sales_orders.statuses.cancelled'),
+                // Final states
+            self::Done => __('sales::sales_orders.statuses.done'),
+            self::Cancelled => __('sales::sales_orders.statuses.cancelled'),
         };
     }
 
@@ -71,26 +71,26 @@ enum SalesOrderStatus: string
     public function color(): string
     {
         return match ($this) {
-            // Pre-commitment phase
+                // Pre-commitment phase
             self::Quotation => 'slate',
             self::QuotationSent => 'gray',
 
-            // Commitment phase
+                // Commitment phase
             self::Draft => 'gray',
             self::Sent => 'blue',
             self::Confirmed => 'indigo',
 
-            // Fulfillment phase
+                // Fulfillment phase
             self::ToDeliver => 'blue',
             self::PartiallyDelivered => 'yellow',
             self::FullyDelivered => 'emerald',
 
-            // Invoicing phase
+                // Invoicing phase
             self::ToInvoice => 'orange',
             self::PartiallyInvoiced => 'amber',
             self::FullyInvoiced => 'green',
 
-            // Final states
+                // Final states
             self::Done => 'green',
             self::Cancelled => 'red',
         };
@@ -262,26 +262,26 @@ enum SalesOrderStatus: string
     public function getOrder(): int
     {
         return match ($this) {
-            // Pre-commitment phase (0-9)
+                // Pre-commitment phase (0-9)
             self::Quotation => 0,
             self::QuotationSent => 1,
 
-            // Commitment phase (10-19)
+                // Commitment phase (10-19)
             self::Draft => 10,
             self::Sent => 11,
             self::Confirmed => 12,
 
-            // Fulfillment phase (20-29)
+                // Fulfillment phase (20-29)
             self::ToDeliver => 20,
             self::PartiallyDelivered => 21,
             self::FullyDelivered => 22,
 
-            // Invoicing phase (30-39)
+                // Invoicing phase (30-39)
             self::ToInvoice => 30,
             self::PartiallyInvoiced => 31,
             self::FullyInvoiced => 32,
 
-            // Final states (40+)
+                // Final states (40+)
             self::Done => 40,
             self::Cancelled => 99, // Special case - can be reached from many states
         };
