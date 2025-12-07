@@ -25,10 +25,10 @@ enum PaymentTermType: string implements HasColor, HasIcon, HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::Net => __('payment_terms.types.net'),
-            self::EndOfMonth => __('payment_terms.types.end_of_month'),
-            self::DayOfMonth => __('payment_terms.types.day_of_month'),
-            self::Immediate => __('payment_terms.types.immediate'),
+            self::Net => __('foundation::payment_terms.types.net'),
+            self::EndOfMonth => __('foundation::payment_terms.types.end_of_month'),
+            self::DayOfMonth => __('foundation::payment_terms.types.day_of_month'),
+            self::Immediate => __('foundation::payment_terms.types.immediate'),
         };
     }
 
@@ -58,10 +58,10 @@ enum PaymentTermType: string implements HasColor, HasIcon, HasLabel
     public function getDescription(): string
     {
         return match ($this) {
-            self::Net => __('payment_terms.types.net_description'),
-            self::EndOfMonth => __('payment_terms.types.end_of_month_description'),
-            self::DayOfMonth => __('payment_terms.types.day_of_month_description'),
-            self::Immediate => __('payment_terms.types.immediate_description'),
+            self::Net => __('foundation::payment_terms.types.net_description'),
+            self::EndOfMonth => __('foundation::payment_terms.types.end_of_month_description'),
+            self::DayOfMonth => __('foundation::payment_terms.types.day_of_month_description'),
+            self::Immediate => __('foundation::payment_terms.types.immediate_description'),
         };
     }
 
@@ -123,37 +123,37 @@ enum PaymentTermType: string implements HasColor, HasIcon, HasLabel
     {
         return [
             [
-                'name' => __('payment_terms.common.immediate'),
+                'name' => __('foundation::payment_terms.common.immediate'),
                 'type' => self::Immediate,
                 'days' => 0,
                 'percentage' => 100,
             ],
             [
-                'name' => __('payment_terms.common.net_15'),
+                'name' => __('foundation::payment_terms.common.net_15'),
                 'type' => self::Net,
                 'days' => 15,
                 'percentage' => 100,
             ],
             [
-                'name' => __('payment_terms.common.net_30'),
+                'name' => __('foundation::payment_terms.common.net_30'),
                 'type' => self::Net,
                 'days' => 30,
                 'percentage' => 100,
             ],
             [
-                'name' => __('payment_terms.common.net_60'),
+                'name' => __('foundation::payment_terms.common.net_60'),
                 'type' => self::Net,
                 'days' => 60,
                 'percentage' => 100,
             ],
             [
-                'name' => __('payment_terms.common.eom'),
+                'name' => __('foundation::payment_terms.common.eom'),
                 'type' => self::EndOfMonth,
                 'days' => 0,
                 'percentage' => 100,
             ],
             [
-                'name' => __('payment_terms.common.eom_plus_30'),
+                'name' => __('foundation::payment_terms.common.eom_plus_30'),
                 'type' => self::EndOfMonth,
                 'days' => 30,
                 'percentage' => 100,

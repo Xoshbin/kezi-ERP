@@ -22,12 +22,12 @@ class JournalEntryLinesRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                Select::make('account_id')->label(__('journal_entry.account'))->relationship('account', 'name')->required(),
-                TextInput::make('debit')->label(__('journal_entry.debit'))->required()->numeric(),
-                TextInput::make('credit')->label(__('journal_entry.credit'))->required()->numeric(),
-                TextInput::make('description')->label(__('journal_entry.description'))->maxLength(255),
-                Select::make('partner_id')->label(__('journal_entry.partner'))->relationship('partner', 'name'),
-                Select::make('analytic_account_id')->label(__('journal_entry.analytic_account'))->relationship('analyticAccount', 'name'),
+                Select::make('account_id')->label(__('accounting::journal_entry.account'))->relationship('account', 'name')->required(),
+                TextInput::make('debit')->label(__('accounting::journal_entry.debit'))->required()->numeric(),
+                TextInput::make('credit')->label(__('accounting::journal_entry.credit'))->required()->numeric(),
+                TextInput::make('description')->label(__('accounting::journal_entry.description'))->maxLength(255),
+                Select::make('partner_id')->label(__('accounting::journal_entry.partner'))->relationship('partner', 'name'),
+                Select::make('analytic_account_id')->label(__('accounting::journal_entry.analytic_account'))->relationship('analyticAccount', 'name'),
             ]);
     }
 
@@ -36,10 +36,10 @@ class JournalEntryLinesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('description')
             ->columns([
-                TextColumn::make('account.name')->label(__('journal_entry.account')),
-                TextColumn::make('debit')->label(__('journal_entry.debit')),
-                TextColumn::make('credit')->label(__('journal_entry.credit')),
-                TextColumn::make('description')->label(__('journal_entry.description')),
+                TextColumn::make('account.name')->label(__('accounting::journal_entry.account')),
+                TextColumn::make('debit')->label(__('accounting::journal_entry.debit')),
+                TextColumn::make('credit')->label(__('accounting::journal_entry.credit')),
+                TextColumn::make('description')->label(__('accounting::journal_entry.description')),
             ])
             ->filters([
                 //

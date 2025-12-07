@@ -25,21 +25,21 @@ class BudgetsRelationManager extends RelationManager
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->label(__('analytic_plan.name'))
+                    ->label(__('accounting::analytic_plan.name'))
                     ->required()
                     ->maxLength(255),
                 DatePicker::make('period_start_date')
-                    ->label(__('analytic_plan.period_start_date'))
+                    ->label(__('accounting::analytic_plan.period_start_date'))
                     ->required(),
                 DatePicker::make('period_end_date')
-                    ->label(__('analytic_plan.period_end_date'))
+                    ->label(__('accounting::analytic_plan.period_end_date'))
                     ->required(),
                 TextInput::make('budget_type')
-                    ->label(__('analytic_plan.budget_type'))
+                    ->label(__('accounting::analytic_plan.budget_type'))
                     ->required()
                     ->maxLength(255),
                 TextInput::make('status')
-                    ->label(__('analytic_plan.status'))
+                    ->label(__('accounting::analytic_plan.status'))
                     ->required()
                     ->maxLength(255)
                     ->default('Draft'),
@@ -52,17 +52,17 @@ class BudgetsRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
-                    ->label(__('analytic_plan.name')),
+                    ->label(__('accounting::analytic_plan.name')),
                 TextColumn::make('period_start_date')
-                    ->label(__('analytic_plan.period_start_date'))
+                    ->label(__('accounting::analytic_plan.period_start_date'))
                     ->date(),
                 TextColumn::make('period_end_date')
-                    ->label(__('analytic_plan.period_end_date'))
+                    ->label(__('accounting::analytic_plan.period_end_date'))
                     ->date(),
                 TextColumn::make('budget_type')
-                    ->label(__('analytic_plan.budget_type')),
+                    ->label(__('accounting::analytic_plan.budget_type')),
                 TextColumn::make('status')
-                    ->label(__('analytic_plan.status')),
+                    ->label(__('accounting::analytic_plan.status')),
             ])
             ->filters([
                 //

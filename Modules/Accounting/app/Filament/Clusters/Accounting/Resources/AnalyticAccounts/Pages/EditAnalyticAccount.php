@@ -12,7 +12,7 @@ class EditAnalyticAccount extends EditRecord
 
     public function getTitle(): string
     {
-        return __('analytic_account.pages.edit.title');
+        return __('accounting::analytic_account.pages.edit.title');
     }
 
     protected function getHeaderActions(): array

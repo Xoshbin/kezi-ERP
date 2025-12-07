@@ -25,7 +25,7 @@ class CreateStockMove extends CreateRecord
 
     public function getTitle(): string
     {
-        return __('stock_move.create_title');
+        return __('inventory::stock_move.create_title');
     }
 
     protected function getRedirectUrl(): string
@@ -73,7 +73,7 @@ class CreateStockMove extends CreateRecord
         } catch (InsufficientCostInformationException $e) {
             // Show user-friendly error notification
             Notification::make()
-                ->title(__('inventory_accounting.cost_validation_errors.title'))
+                ->title(__('inventory::inventory_accounting.cost_validation_errors.title'))
                 ->body($e->getUserFriendlyMessage())
                 ->danger()
                 ->persistent()

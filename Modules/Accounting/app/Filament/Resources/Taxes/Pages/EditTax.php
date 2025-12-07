@@ -24,6 +24,6 @@ class EditTax extends EditRecord
 
     public function getTitle(): string
     {
-        return __('tax.pages.edit');
+        return __('accounting::tax.pages.edit');
     }
 }

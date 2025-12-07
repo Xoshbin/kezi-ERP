@@ -25,21 +25,21 @@ class BudgetLinesRelationManager extends RelationManager
         return $schema
             ->components([
                 Select::make('analytic_account_id')
-                    ->label(__('budget.budget_lines.form.analytic_account_id'))
+                    ->label(__('accounting::budget.budget_lines.form.analytic_account_id'))
                     ->relationship('analyticAccount', 'name'),
                 Select::make('account_id')
-                    ->label(__('budget.budget_lines.form.account_id'))
+                    ->label(__('accounting::budget.budget_lines.form.account_id'))
                     ->relationship('account', 'name'),
                 TextInput::make('budgeted_amount')
-                    ->label(__('budget.budget_lines.form.budgeted_amount'))
+                    ->label(__('accounting::budget.budget_lines.form.budgeted_amount'))
                     ->required()
                     ->numeric(),
                 TextInput::make('achieved_amount')
-                    ->label(__('budget.budget_lines.form.achieved_amount'))
+                    ->label(__('accounting::budget.budget_lines.form.achieved_amount'))
                     ->required()
                     ->numeric(),
                 TextInput::make('committed_amount')
-                    ->label(__('budget.budget_lines.form.committed_amount'))
+                    ->label(__('accounting::budget.budget_lines.form.committed_amount'))
                     ->required()
                     ->numeric(),
             ]);
@@ -51,15 +51,15 @@ class BudgetLinesRelationManager extends RelationManager
             ->recordTitleAttribute('id')
             ->columns([
                 TextColumn::make('analyticAccount.name')
-                    ->label(__('budget.budget_lines.table.analytic_account_name')),
+                    ->label(__('accounting::budget.budget_lines.table.analytic_account_name')),
                 TextColumn::make('account.name')
-                    ->label(__('budget.budget_lines.table.account_name')),
+                    ->label(__('accounting::budget.budget_lines.table.account_name')),
                 TextColumn::make('budgeted_amount')
-                    ->label(__('budget.budget_lines.table.budgeted_amount')),
+                    ->label(__('accounting::budget.budget_lines.table.budgeted_amount')),
                 TextColumn::make('achieved_amount')
-                    ->label(__('budget.budget_lines.table.achieved_amount')),
+                    ->label(__('accounting::budget.budget_lines.table.achieved_amount')),
                 TextColumn::make('committed_amount')
-                    ->label(__('budget.budget_lines.table.committed_amount')),
+                    ->label(__('accounting::budget.budget_lines.table.committed_amount')),
             ])
             ->filters([
                 //

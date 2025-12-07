@@ -48,8 +48,8 @@ describe('NumberingSettingsChangeRule', function () {
         $this->rule->validate('numbering_settings', [], $fail);
 
         expect($failCalled)->toBeTrue();
-        expect($failMessage)->toContain(__('numbering.validation.cannot_change_posted_exist'));
-        expect($failMessage)->toContain(__('numbering.validation.posted_invoices_exist'));
+        expect($failMessage)->toContain(__('foundation::numbering.validation.cannot_change_posted_exist'));
+        expect($failMessage)->toContain(__('foundation::numbering.validation.posted_invoices_exist'));
     });
 
     it('fails validation when posted vendor bills exist', function () {
@@ -71,8 +71,8 @@ describe('NumberingSettingsChangeRule', function () {
         $this->rule->validate('numbering_settings', [], $fail);
 
         expect($failCalled)->toBeTrue();
-        expect($failMessage)->toContain(__('numbering.validation.cannot_change_posted_exist'));
-        expect($failMessage)->toContain(__('numbering.validation.posted_bills_exist'));
+        expect($failMessage)->toContain(__('foundation::numbering.validation.cannot_change_posted_exist'));
+        expect($failMessage)->toContain(__('foundation::numbering.validation.posted_bills_exist'));
     });
 
     it('fails validation when both posted invoices and bills exist', function () {
@@ -100,9 +100,9 @@ describe('NumberingSettingsChangeRule', function () {
         $this->rule->validate('numbering_settings', [], $fail);
 
         expect($failCalled)->toBeTrue();
-        expect($failMessage)->toContain(__('numbering.validation.cannot_change_posted_exist'));
-        expect($failMessage)->toContain(__('numbering.validation.posted_invoices_exist'));
-        expect($failMessage)->toContain(__('numbering.validation.posted_bills_exist'));
+        expect($failMessage)->toContain(__('foundation::numbering.validation.cannot_change_posted_exist'));
+        expect($failMessage)->toContain(__('foundation::numbering.validation.posted_invoices_exist'));
+        expect($failMessage)->toContain(__('foundation::numbering.validation.posted_bills_exist'));
     });
 
     it('passes validation when only draft documents exist', function () {

@@ -20,6 +20,6 @@ class ListStockLocations extends ListRecords
 
     public function getTitle(): string
     {
-        return __('stock_location.plural_label');
+        return __('inventory::stock_location.plural_label');
     }
 }

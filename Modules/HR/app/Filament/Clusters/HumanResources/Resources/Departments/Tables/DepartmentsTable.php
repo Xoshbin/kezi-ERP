@@ -16,13 +16,13 @@ class DepartmentsTable
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label(__('department.name'))
+                    ->label(__('hr::department.name'))
                     ->searchable(),
                 TextColumn::make('manager.name')
-                    ->label(__('department.manager'))
+                    ->label(__('hr::department.manager'))
                     ->searchable(),
                 IconColumn::make('is_active')
-                    ->label(__('department.is_active'))
+                    ->label(__('hr::department.is_active'))
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->label(__('common.created_at'))

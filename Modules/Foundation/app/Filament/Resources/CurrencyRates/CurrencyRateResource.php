@@ -32,12 +32,12 @@ class CurrencyRateResource extends Resource
 
     public static function getLabel(): ?string
     {
-        return __('currency.exchange_rates.label');
+        return __('foundation::currency.exchange_rates.label');
     }
 
     public static function getPluralLabel(): ?string
     {
-        return __('currency.exchange_rates.plural_label');
+        return __('foundation::currency.exchange_rates.plural_label');
     }
 
     public static function form(Schema $schema): Schema

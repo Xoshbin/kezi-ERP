@@ -39,17 +39,17 @@ class EmployeeResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('employee.navigation_label');
+        return __('hr::employee.navigation_label');
     }
 
     public static function getModelLabel(): string
     {
-        return __('employee.navigation_label');
+        return __('hr::employee.navigation_label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('employee.navigation_label');
+        return __('hr::employee.navigation_label');
     }
 
     public static function form(Schema $schema): Schema

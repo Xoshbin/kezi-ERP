@@ -35,7 +35,7 @@ class PurchaseOrderForm
     {
         return $schema
             ->components([
-                Section::make(__('purchase_orders.sections.basic_info'))
+                Section::make(__('purchase::purchase_orders.sections.basic_info'))
                     ->schema([
                         Hidden::make('company_id')
                             ->default(fn() => Auth::user()?->company_id),
@@ -46,13 +46,13 @@ class PurchaseOrderForm
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('po_number')
-                                    ->label(__('purchase_orders.fields.po_number'))
+                                    ->label(__('purchase::purchase_orders.fields.po_number'))
                                     ->disabled()
                                     ->dehydrated(false)
-                                    ->placeholder(__('purchase_orders.help.po_number')),
+                                    ->placeholder(__('purchase::purchase_orders.help.po_number')),
 
                                 Select::make('status')
-                                    ->label(__('purchase_orders.fields.status'))
+                                    ->label(__('purchase::purchase_orders.fields.status'))
                                     ->options(function (?string $operation, ?PurchaseOrder $record) {
                                         // In create mode, show all statuses
                                         if ($operation === 'create') {
@@ -101,15 +101,15 @@ class PurchaseOrderForm
 
                                             // Bill creation status message
                                             if ($record->canCreateBill()) {
-                                                $messages[] = __('purchase_orders.help.status_can_create_bill');
+                                                $messages[] = __('purchase::purchase_orders.help.status_can_create_bill');
                                             } elseif ($record->hasBills()) {
-                                                $messages[] = __('purchase_orders.help.status_bills_already_exist');
+                                                $messages[] = __('purchase::purchase_orders.help.status_bills_already_exist');
                                             } else {
-                                                $messages[] = __('purchase_orders.help.status_cannot_create_bill');
+                                                $messages[] = __('purchase::purchase_orders.help.status_cannot_create_bill');
                                             }
 
                                             // Forward-only transition message
-                                            $messages[] = __('purchase_orders.help.status_forward_only');
+                                            $messages[] = __('purchase::purchase_orders.help.status_forward_only');
 
                                             return implode(' ', $messages);
                                         }
@@ -121,22 +121,22 @@ class PurchaseOrderForm
                         Grid::make(2)
                             ->schema([
                                 DatePicker::make('po_date')
-                                    ->label(__('purchase_orders.fields.po_date'))
+                                    ->label(__('purchase::purchase_orders.fields.po_date'))
                                     ->default(now())
                                     ->required(),
 
                                 TextInput::make('reference')
-                                    ->label(__('purchase_orders.fields.reference'))
-                                    ->helperText(__('purchase_orders.help.reference')),
+                                    ->label(__('purchase::purchase_orders.fields.reference'))
+                                    ->helperText(__('purchase::purchase_orders.help.reference')),
                             ]),
                     ]),
 
-                Section::make(__('purchase_orders.sections.vendor_details'))
+                Section::make(__('purchase::purchase_orders.sections.vendor_details'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 Select::make('vendor_id')
-                                    ->label(__('purchase_orders.fields.vendor'))
+                                    ->label(__('purchase::purchase_orders.fields.vendor'))
                                     ->relationship('vendor', 'name')
                                     ->searchable()
                                     ->preload()
@@ -149,7 +149,7 @@ class PurchaseOrderForm
                                     ]),
 
                                 Select::make('currency_id')
-                                    ->label(__('purchase_orders.fields.currency'))
+                                    ->label(__('purchase::purchase_orders.fields.currency'))
                                     ->relationship('currency', 'name')
                                     ->searchable()
                                     ->preload()
@@ -158,34 +158,34 @@ class PurchaseOrderForm
                             ]),
                     ]),
 
-                Section::make(__('purchase_orders.sections.delivery_info'))
+                Section::make(__('purchase::purchase_orders.sections.delivery_info'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 DatePicker::make('expected_delivery_date')
-                                    ->label(__('purchase_orders.fields.expected_delivery_date')),
+                                    ->label(__('purchase::purchase_orders.fields.expected_delivery_date')),
 
                                 Select::make('delivery_location_id')
-                                    ->label(__('purchase_orders.fields.delivery_location'))
+                                    ->label(__('purchase::purchase_orders.fields.delivery_location'))
                                     ->relationship('deliveryLocation', 'name')
                                     ->searchable()
                                     ->preload(),
                             ]),
                     ]),
 
-                Section::make(__('purchase_orders.sections.line_items'))
-                    ->description(__('purchase_orders.sections.line_items_description'))
+                Section::make(__('purchase::purchase_orders.sections.line_items'))
+                    ->description(__('purchase::purchase_orders.sections.line_items_description'))
                     ->schema([
                         Repeater::make('lines')
-                            ->label(__('purchase_orders.fields.lines'))
+                            ->label(__('purchase::purchase_orders.fields.lines'))
                             ->table([
-                                TableColumn::make(__('purchase_orders.fields.product'))->width('18%'),
-                                TableColumn::make(__('purchase_orders.fields.description'))->width('15%'),
-                                TableColumn::make(__('purchase_orders.fields.quantity'))->width('8%'),
-                                TableColumn::make(__('purchase_orders.fields.unit_price'))->width('12%'),
-                                TableColumn::make(__('purchase_orders.fields.tax'))->width('15%'),
-                                TableColumn::make(__('purchase_orders.fields.expected_delivery_date'))->width('12%'),
-                                TableColumn::make(__('purchase_orders.fields.notes'))->width('20%'),
+                                TableColumn::make(__('purchase::purchase_orders.fields.product'))->width('18%'),
+                                TableColumn::make(__('purchase::purchase_orders.fields.description'))->width('15%'),
+                                TableColumn::make(__('purchase::purchase_orders.fields.quantity'))->width('8%'),
+                                TableColumn::make(__('purchase::purchase_orders.fields.unit_price'))->width('12%'),
+                                TableColumn::make(__('purchase::purchase_orders.fields.tax'))->width('15%'),
+                                TableColumn::make(__('purchase::purchase_orders.fields.expected_delivery_date'))->width('12%'),
+                                TableColumn::make(__('purchase::purchase_orders.fields.notes'))->width('20%'),
                             ])
                             ->live()
                             ->reorderable(true)
@@ -195,7 +195,7 @@ class PurchaseOrderForm
                             })
                             ->schema([
                                 TranslatableSelect::forModel('product_id', Product::class, 'name')
-                                    ->label(__('purchase_orders.fields.product'))
+                                    ->label(__('purchase::purchase_orders.fields.product'))
                                     ->searchableFields(['name', 'sku', 'description'])
                                     ->searchable()
                                     ->preload()
@@ -249,13 +249,13 @@ class PurchaseOrderForm
                                     ->columnSpan(3),
 
                                 TextInput::make('description')
-                                    ->label(__('purchase_orders.fields.description'))
+                                    ->label(__('purchase::purchase_orders.fields.description'))
                                     ->maxLength(255)
                                     ->required()
                                     ->columnSpan(4),
 
                                 TextInput::make('quantity')
-                                    ->label(__('purchase_orders.fields.quantity'))
+                                    ->label(__('purchase::purchase_orders.fields.quantity'))
                                     ->required()
                                     ->numeric()
                                     ->default(1)
@@ -268,7 +268,7 @@ class PurchaseOrderForm
                                     ->columnSpan(2),
 
                                 \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('unit_price')
-                                    ->label(__('purchase_orders.fields.unit_price'))
+                                    ->label(__('purchase::purchase_orders.fields.unit_price'))
                                     ->currencyField('../../currency_id')
                                     ->required()
                                     ->live(onBlur: true)
@@ -278,7 +278,7 @@ class PurchaseOrderForm
                                     ->columnSpan(3),
 
                                 TranslatableSelect::forModel('tax_id', Tax::class, 'name')
-                                    ->label(__('purchase_orders.fields.tax'))
+                                    ->label(__('purchase::purchase_orders.fields.tax'))
                                     ->options(function () {
                                         return Tax::where('company_id', Filament::getTenant()?->getKey())
                                             ->where('is_active', true)
@@ -329,29 +329,29 @@ class PurchaseOrderForm
                                     ->columnSpan(3),
 
                                 DatePicker::make('expected_delivery_date')
-                                    ->label(__('purchase_orders.fields.expected_delivery_date'))
+                                    ->label(__('purchase::purchase_orders.fields.expected_delivery_date'))
                                     ->columnSpan(3),
 
                                 Textarea::make('notes')
-                                    ->label(__('purchase_orders.fields.notes'))
+                                    ->label(__('purchase::purchase_orders.fields.notes'))
                                     ->rows(2)
                                     ->columnSpan(3),
                             ])
                             ->columns(18),
                     ])->columnSpanFull(),
 
-                Section::make(__('purchase_orders.sections.totals'))
+                Section::make(__('purchase::purchase_orders.sections.totals'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('total_tax')
-                                    ->label(__('purchase_orders.fields.total_tax'))
+                                    ->label(__('purchase::purchase_orders.fields.total_tax'))
                                     ->currencyField('currency_id')
                                     ->disabled()
                                     ->dehydrated(false),
 
                                 \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('total_amount')
-                                    ->label(__('purchase_orders.fields.total_amount'))
+                                    ->label(__('purchase::purchase_orders.fields.total_amount'))
                                     ->currencyField('currency_id')
                                     ->disabled()
                                     ->dehydrated(false),
@@ -360,16 +360,16 @@ class PurchaseOrderForm
                     ->collapsible()
                     ->collapsed(false),
 
-                Section::make(__('purchase_orders.sections.notes'))
+                Section::make(__('purchase::purchase_orders.sections.notes'))
                     ->schema([
                         Textarea::make('notes')
-                            ->label(__('purchase_orders.fields.notes'))
+                            ->label(__('purchase::purchase_orders.fields.notes'))
                             ->rows(3)
                             ->columnSpanFull(),
 
                         Textarea::make('terms_and_conditions')
-                            ->label(__('purchase_orders.fields.terms_and_conditions'))
-                            ->helperText(__('purchase_orders.help.terms_and_conditions'))
+                            ->label(__('purchase::purchase_orders.fields.terms_and_conditions'))
+                            ->helperText(__('purchase::purchase_orders.help.terms_and_conditions'))
                             ->rows(4)
                             ->columnSpanFull(),
                     ])

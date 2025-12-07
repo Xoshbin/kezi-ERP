@@ -13,7 +13,7 @@ class ListBankStatements extends ListRecords
 
     public function getTitle(): string
     {
-        return __('bank_statement.list_bank_statements');
+        return __('accounting::bank_statement.list_bank_statements');
     }
 
     protected function getHeaderActions(): array

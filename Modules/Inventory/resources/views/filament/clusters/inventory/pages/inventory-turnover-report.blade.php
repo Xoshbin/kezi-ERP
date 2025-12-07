@@ -116,7 +116,7 @@
                                 {{ __('inventory::inventory_reports.turnover.period_info.period_length') }}
                             </p>
                             <p class="text-lg font-bold text-gray-900 dark:text-white">
-                                {{ $periodLength }} {{ __('inventory_reports.turnover.days') }}
+                                {{ $periodLength }} {{ __('inventory::inventory_reports.turnover.days') }}
                             </p>
                         </div>
                     </div>

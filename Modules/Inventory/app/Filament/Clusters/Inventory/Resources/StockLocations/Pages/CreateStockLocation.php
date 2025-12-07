@@ -11,7 +11,7 @@ class CreateStockLocation extends CreateRecord
 
     public function getTitle(): string
     {
-        return __('stock_location.create_title');
+        return __('inventory::stock_location.create_title');
     }
 
     protected function getRedirectUrl(): string

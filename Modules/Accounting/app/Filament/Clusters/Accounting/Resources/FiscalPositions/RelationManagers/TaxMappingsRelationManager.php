@@ -22,7 +22,7 @@ class TaxMappingsRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('fiscal_position.relation_managers.tax_mappings.title');
+        return __('accounting::fiscal_position.relation_managers.tax_mappings.title');
     }
 
     public function form(Schema $schema): Schema
@@ -31,11 +31,11 @@ class TaxMappingsRelationManager extends RelationManager
             ->components([
                 Select::make('original_tax_id')
                     ->relationship('originalTax', 'name')
-                    ->label(__('fiscal_position.relation_managers.tax_mappings.original_tax'))
+                    ->label(__('accounting::fiscal_position.relation_managers.tax_mappings.original_tax'))
                     ->required(),
                 Select::make('mapped_tax_id')
                     ->relationship('mappedTax', 'name')
-                    ->label(__('fiscal_position.relation_managers.tax_mappings.mapped_tax'))
+                    ->label(__('accounting::fiscal_position.relation_managers.tax_mappings.mapped_tax'))
                     ->required(),
             ]);
     }
@@ -46,9 +46,9 @@ class TaxMappingsRelationManager extends RelationManager
             ->recordTitleAttribute('id')
             ->columns([
                 TextColumn::make('originalTax.name')
-                    ->label(__('fiscal_position.relation_managers.tax_mappings.original_tax')),
+                    ->label(__('accounting::fiscal_position.relation_managers.tax_mappings.original_tax')),
                 TextColumn::make('mappedTax.name')
-                    ->label(__('fiscal_position.relation_managers.tax_mappings.mapped_tax')),
+                    ->label(__('accounting::fiscal_position.relation_managers.tax_mappings.mapped_tax')),
             ])
             ->filters([
                 //

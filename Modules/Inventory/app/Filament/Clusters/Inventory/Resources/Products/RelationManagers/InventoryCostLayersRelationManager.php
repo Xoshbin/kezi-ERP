@@ -29,8 +29,8 @@ class InventoryCostLayersRelationManager extends RelationManager
         return $schema
             ->components([
                 Placeholder::make('info')
-                    ->label(__('inventory_cost_layer.info'))
-                    ->content(__('inventory_cost_layer.info_description'))
+                    ->label(__('inventory::inventory_cost_layer.info'))
+                    ->content(__('inventory::inventory_cost_layer.info_description'))
                     ->columnSpanFull(),
             ]);
     }
@@ -41,23 +41,23 @@ class InventoryCostLayersRelationManager extends RelationManager
             ->recordTitleAttribute('id')
             ->columns([
                 TextColumn::make('purchase_date')
-                    ->label(__('inventory_cost_layer.purchase_date'))
+                    ->label(__('inventory::inventory_cost_layer.purchase_date'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('quantity')
-                    ->label(__('inventory_cost_layer.quantity'))
+                    ->label(__('inventory::inventory_cost_layer.quantity'))
                     ->numeric(decimalPlaces: 4)
                     ->sortable(),
                 TextColumn::make('remaining_quantity')
-                    ->label(__('inventory_cost_layer.remaining_quantity'))
+                    ->label(__('inventory::inventory_cost_layer.remaining_quantity'))
                     ->numeric(decimalPlaces: 4)
                     ->sortable()
                     ->color(fn(float $state): string => $state > 0 ? 'success' : 'gray'),
                 MoneyColumn::make('cost_per_unit')
-                    ->label(__('inventory_cost_layer.cost_per_unit'))
+                    ->label(__('inventory::inventory_cost_layer.cost_per_unit'))
                     ->sortable(),
                 TextColumn::make('total_cost')
-                    ->label(__('inventory_cost_layer.total_cost'))
+                    ->label(__('inventory::inventory_cost_layer.total_cost'))
                     ->formatStateUsing(function (InventoryCostLayer $record): string {
                         if (! $record->cost_per_unit) {
                             return '0.00';
@@ -68,7 +68,7 @@ class InventoryCostLayersRelationManager extends RelationManager
                     })
                     ->sortable(),
                 TextColumn::make('remaining_value')
-                    ->label(__('inventory_cost_layer.remaining_value'))
+                    ->label(__('inventory::inventory_cost_layer.remaining_value'))
                     ->formatStateUsing(function (InventoryCostLayer $record): string {
                         if (! $record->cost_per_unit) {
                             return '0.00';
@@ -79,11 +79,11 @@ class InventoryCostLayersRelationManager extends RelationManager
                     })
                     ->sortable(),
                 TextColumn::make('source_type')
-                    ->label(__('inventory_cost_layer.source'))
+                    ->label(__('inventory::inventory_cost_layer.source'))
                     ->formatStateUsing(fn(?string $state): string => $state ? class_basename($state) : '-')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
-                    ->label(__('inventory_cost_layer.created_at'))
+                    ->label(__('inventory::inventory_cost_layer.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -91,11 +91,11 @@ class InventoryCostLayersRelationManager extends RelationManager
             ->defaultSort('purchase_date', 'desc')
             ->filters([
                 Filter::make('has_remaining_quantity')
-                    ->label(__('inventory_cost_layer.has_remaining_quantity'))
+                    ->label(__('inventory::inventory_cost_layer.has_remaining_quantity'))
                     ->query(fn(Builder $query): Builder => $query->where('remaining_quantity', '>', 0))
                     ->toggle(),
                 Filter::make('fully_consumed')
-                    ->label(__('inventory_cost_layer.fully_consumed'))
+                    ->label(__('inventory::inventory_cost_layer.fully_consumed'))
                     ->query(fn(Builder $query): Builder => $query->where('remaining_quantity', '=', 0))
                     ->toggle(),
             ])
@@ -110,8 +110,8 @@ class InventoryCostLayersRelationManager extends RelationManager
             ->toolbarActions([
                 // No bulk actions - cost layers are immutable
             ])
-            ->emptyStateHeading(__('inventory_cost_layer.no_cost_layers'))
-            ->emptyStateDescription(__('inventory_cost_layer.no_cost_layers_description'))
+            ->emptyStateHeading(__('inventory::inventory_cost_layer.no_cost_layers'))
+            ->emptyStateDescription(__('inventory::inventory_cost_layer.no_cost_layers_description'))
             ->emptyStateIcon('heroicon-o-cube-transparent');
     }
 

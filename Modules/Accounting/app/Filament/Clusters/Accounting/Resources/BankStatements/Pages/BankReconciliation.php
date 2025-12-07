@@ -30,12 +30,12 @@ class BankReconciliation extends Page
 
     public function getTitle(): string
     {
-        return __('bank_statement.reconcile_bank_statement');
+        return __('accounting::bank_statement.reconcile_bank_statement');
     }
 
     public function getHeading(): string
     {
-        return __('bank_statement.reconcile_bank_statement');
+        return __('accounting::bank_statement.reconcile_bank_statement');
     }
 
     /**

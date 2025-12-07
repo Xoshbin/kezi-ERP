@@ -10,10 +10,10 @@
             <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
                 <div class="mb-6">
                     <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-                        {{ __('reports.balance_sheet') }}
+                        {{ __('accounting::reports.balance_sheet') }}
                     </h2>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                        {{ __('reports.as_of') }}: {{ Carbon\Carbon::parse($asOfDate)->format('M j, Y') }}
+                        {{ __('accounting::reports.as_of') }}: {{ Carbon\Carbon::parse($asOfDate)->format('M j, Y') }}
                     </p>
                 </div>
 
@@ -21,7 +21,7 @@
                     <!-- Assets Section -->
                     <div>
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
-                            {{ __('reports.assets') }}
+                            {{ __('accounting::reports.assets') }}
                         </h3>
 
                         @if(count($reportData['assetLines']) > 0)
@@ -41,14 +41,14 @@
 
                             <div class="border-t border-gray-200 dark:border-gray-700 mt-4 pt-4">
                                 <div class="flex justify-between items-center font-semibold">
-                                    <span class="text-gray-900 dark:text-white">{{ __('reports.total_assets') }}</span>
+                                    <span class="text-gray-900 dark:text-white">{{ __('accounting::reports.total_assets') }}</span>
                                     <span class="text-gray-900 dark:text-white font-bold text-lg">
                                         {{ $reportData['totalAssets'] }}
                                     </span>
                                 </div>
                             </div>
                         @else
-                            <p class="text-sm text-gray-500 dark:text-gray-400 italic">{{ __('reports.no_asset_accounts') }}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 italic">{{ __('accounting::reports.no_asset_accounts') }}</p>
                         @endif
                     </div>
 
@@ -56,7 +56,7 @@
                     <div>
                         <!-- Liabilities -->
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
-                            {{ __('reports.liabilities') }}
+                            {{ __('accounting::reports.liabilities') }}
                         </h3>
 
                         @if(count($reportData['liabilityLines']) > 0)
@@ -76,19 +76,19 @@
 
                             <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mb-6">
                                 <div class="flex justify-between items-center font-semibold">
-                                    <span class="text-gray-900 dark:text-white">{{ __('reports.total_liabilities') }}</span>
+                                    <span class="text-gray-900 dark:text-white">{{ __('accounting::reports.total_liabilities') }}</span>
                                     <span class="text-gray-900 dark:text-white font-semibold">
                                         {{ $reportData['totalLiabilities'] }}
                                     </span>
                                 </div>
                             </div>
                         @else
-                            <p class="text-sm text-gray-500 dark:text-gray-400 italic mb-6">{{ __('reports.no_liability_accounts') }}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 italic mb-6">{{ __('accounting::reports.no_liability_accounts') }}</p>
                         @endif
 
                         <!-- Equity -->
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
-                            {{ __('reports.equity') }}
+                            {{ __('accounting::reports.equity') }}
                         </h3>
 
                         <div class="space-y-2">
@@ -110,7 +110,7 @@
                             <div class="flex justify-between items-center py-2 px-4 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-sm">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm font-mono text-gray-500 dark:text-gray-400">CYE</span>
-                                    <span class="text-sm text-gray-900 dark:text-white">{{ __('reports.current_year_earnings') }}</span>
+                                    <span class="text-sm text-gray-900 dark:text-white">{{ __('accounting::reports.current_year_earnings') }}</span>
                                 </div>
                                 <span class="text-sm font-medium {{ $reportData['isCurrentYearLoss'] ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
                                     {{ $reportData['currentYearEarnings'] }}
@@ -120,7 +120,7 @@
 
                         <div class="border-t border-gray-200 dark:border-gray-700 mt-4 pt-4">
                             <div class="flex justify-between items-center font-semibold">
-                                <span class="text-gray-900 dark:text-white">{{ __('reports.total_equity') }}</span>
+                                <span class="text-gray-900 dark:text-white">{{ __('accounting::reports.total_equity') }}</span>
                                 <span class="text-gray-900 dark:text-white font-semibold">
                                     {{ $reportData['totalEquity'] }}
                                 </span>
@@ -130,7 +130,7 @@
                         <!-- Total Liabilities and Equity -->
                         <div class="border-t-2 border-gray-300 dark:border-gray-600 mt-6 pt-4">
                             <div class="flex justify-between items-center font-bold">
-                                <span class="text-gray-900 dark:text-white text-lg">{{ __('reports.total_liabilities_and_equity') }}</span>
+                                <span class="text-gray-900 dark:text-white text-lg">{{ __('accounting::reports.total_liabilities_and_equity') }}</span>
                                 <span class="text-gray-900 dark:text-white font-bold text-lg">
                                     {{ $reportData['totalLiabilitiesAndEquity'] }}
                                 </span>
@@ -146,11 +146,11 @@
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                         </svg>
                         <span class="text-sm font-medium text-green-800 dark:text-green-200">
-                            {{ __('reports.balance_sheet_balanced') }}
+                            {{ __('accounting::reports.balance_sheet_balanced') }}
                         </span>
                     </div>
                     <p class="text-sm text-green-700 dark:text-green-300 mt-1">
-                        {{ __('reports.assets_equal_liabilities_equity') }}: {{ $reportData['totalAssets'] }}
+                        {{ __('accounting::reports.assets_equal_liabilities_equity') }}: {{ $reportData['totalAssets'] }}
                     </p>
                 </div>
             </div>
@@ -162,10 +162,10 @@
                     </svg>
                 </div>
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                    {{ __('reports.no_report_generated') }}
+                    {{ __('accounting::reports.no_report_generated') }}
                 </h3>
                 <p class="text-gray-600 dark:text-gray-400">
-                    {{ __('reports.select_date_and_generate') }}
+                    {{ __('accounting::reports.select_date_and_generate') }}
                 </p>
             </div>
         @endif

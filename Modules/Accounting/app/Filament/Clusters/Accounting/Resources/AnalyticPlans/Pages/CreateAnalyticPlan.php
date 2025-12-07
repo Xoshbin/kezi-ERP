@@ -22,6 +22,6 @@ class CreateAnalyticPlan extends CreateRecord
 
     public function getTitle(): string
     {
-        return __('analytic_plan.pages.create');
+        return __('accounting::analytic_plan.pages.create');
     }
 }

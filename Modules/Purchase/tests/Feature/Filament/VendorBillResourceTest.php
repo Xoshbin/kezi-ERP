@@ -78,7 +78,7 @@ describe('Vendor Bill Confirmation Business Rules', function () {
         // Assert that it throws a validation error with an appropriate message
         expect(function () use ($vendorBillService, $vendorBill) {
             $vendorBillService->confirm($vendorBill, $this->user);
-        })->toThrow(\RuntimeException::class, __('vendor_bill.validation_no_line_items'));
+        })->toThrow(\RuntimeException::class, __('purchase::vendor_bill.validation_no_line_items'));
 
         // Verify the bill was NOT confirmed
         $vendorBill->refresh();
@@ -197,7 +197,7 @@ describe('Vendor Bill Confirmation Business Rules', function () {
 
         expect(function () use ($vendorBillService, $vendorBill) {
             $vendorBillService->confirm($vendorBill, $this->user);
-        })->toThrow(\RuntimeException::class, __('vendor_bill.validation_zero_total_amount'));
+        })->toThrow(\RuntimeException::class, __('purchase::vendor_bill.validation_zero_total_amount'));
     });
 
     it('enables confirm action when vendor bill has valid line items', function () {

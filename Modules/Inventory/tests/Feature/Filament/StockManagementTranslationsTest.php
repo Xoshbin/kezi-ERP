@@ -22,10 +22,10 @@ class StockManagementTranslationsTest extends TestCase
     {
         app()->setLocale('en');
 
-        $this->assertEquals('Stock Location', __('stock_location.label'));
-        $this->assertEquals('Stock Locations', __('stock_location.plural_label'));
-        $this->assertEquals('Basic Information', __('stock_location.basic_information'));
-        $this->assertEquals('Location Type', __('stock_location.type'));
+        $this->assertEquals('Stock Location', __('inventory::stock_location.label'));
+        $this->assertEquals('Stock Locations', __('inventory::stock_location.plural_label'));
+        $this->assertEquals('Basic Information', __('inventory::stock_location.basic_information'));
+        $this->assertEquals('Location Type', __('inventory::stock_location.type'));
     }
 
     /** @test */
@@ -33,10 +33,10 @@ class StockManagementTranslationsTest extends TestCase
     {
         app()->setLocale('ckb');
 
-        $this->assertEquals('شوێنی کۆگا', __('stock_location.label'));
-        $this->assertEquals('شوێنەکانی کۆگا', __('stock_location.plural_label'));
-        $this->assertEquals('زانیاری بنەڕەتی', __('stock_location.basic_information'));
-        $this->assertEquals('جۆری شوێن', __('stock_location.type'));
+        $this->assertEquals('شوێنی کۆگا', __('inventory::stock_location.label'));
+        $this->assertEquals('شوێنەکانی کۆگا', __('inventory::stock_location.plural_label'));
+        $this->assertEquals('زانیاری بنەڕەتی', __('inventory::stock_location.basic_information'));
+        $this->assertEquals('جۆری شوێن', __('inventory::stock_location.type'));
     }
 
     /** @test */
@@ -44,10 +44,10 @@ class StockManagementTranslationsTest extends TestCase
     {
         app()->setLocale('en');
 
-        $this->assertEquals('Stock Movement', __('stock_move.label'));
-        $this->assertEquals('Stock Movements', __('stock_move.plural_label'));
-        $this->assertEquals('Movement Details', __('stock_move.movement_details'));
-        $this->assertEquals('Quantity', __('stock_move.quantity'));
+        $this->assertEquals('Stock Movement', __('inventory::stock_move.label'));
+        $this->assertEquals('Stock Movements', __('inventory::stock_move.plural_label'));
+        $this->assertEquals('Movement Details', __('inventory::stock_move.movement_details'));
+        $this->assertEquals('Quantity', __('inventory::stock_move.quantity'));
     }
 
     /** @test */
@@ -55,10 +55,10 @@ class StockManagementTranslationsTest extends TestCase
     {
         app()->setLocale('ckb');
 
-        $this->assertEquals('جووڵەی کۆگا', __('stock_move.label'));
-        $this->assertEquals('جووڵەکانی کۆگا', __('stock_move.plural_label'));
-        $this->assertEquals('وردەکارییەکانی جووڵە', __('stock_move.movement_details'));
-        $this->assertEquals('بڕ', __('stock_move.quantity'));
+        $this->assertEquals('جووڵەی کۆگا', __('inventory::stock_move.label'));
+        $this->assertEquals('جووڵەکانی کۆگا', __('inventory::stock_move.plural_label'));
+        $this->assertEquals('وردەکارییەکانی جووڵە', __('inventory::stock_move.movement_details'));
+        $this->assertEquals('بڕ', __('inventory::stock_move.quantity'));
     }
 
     /** @test */
@@ -66,10 +66,10 @@ class StockManagementTranslationsTest extends TestCase
     {
         app()->setLocale('en');
 
-        $this->assertEquals('Cost Layer', __('inventory_cost_layer.label'));
-        $this->assertEquals('Cost Layers', __('inventory_cost_layer.plural_label'));
-        $this->assertEquals('Purchase Date', __('inventory_cost_layer.purchase_date'));
-        $this->assertEquals('Remaining Quantity', __('inventory_cost_layer.remaining_quantity'));
+        $this->assertEquals('Cost Layer', __('inventory::inventory_cost_layer.label'));
+        $this->assertEquals('Cost Layers', __('inventory::inventory_cost_layer.plural_label'));
+        $this->assertEquals('Purchase Date', __('inventory::inventory_cost_layer.purchase_date'));
+        $this->assertEquals('Remaining Quantity', __('inventory::inventory_cost_layer.remaining_quantity'));
     }
 
     /** @test */
@@ -77,10 +77,10 @@ class StockManagementTranslationsTest extends TestCase
     {
         app()->setLocale('ckb');
 
-        $this->assertEquals('چینی تێچوو', __('inventory_cost_layer.label'));
-        $this->assertEquals('چینەکانی تێچوو', __('inventory_cost_layer.plural_label'));
-        $this->assertEquals('بەرواری کڕین', __('inventory_cost_layer.purchase_date'));
-        $this->assertEquals('بڕی ماوە', __('inventory_cost_layer.remaining_quantity'));
+        $this->assertEquals('چینی تێچوو', __('inventory::inventory_cost_layer.label'));
+        $this->assertEquals('چینەکانی تێچوو', __('inventory::inventory_cost_layer.plural_label'));
+        $this->assertEquals('بەرواری کڕین', __('inventory::inventory_cost_layer.purchase_date'));
+        $this->assertEquals('بڕی ماوە', __('inventory::inventory_cost_layer.remaining_quantity'));
     }
 
     /** @test */

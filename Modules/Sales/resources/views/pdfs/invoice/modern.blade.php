@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>{{ __('invoice.invoice') }} {{ $invoice->invoice_number }}</title>
+    <title>{{ __('sales::invoice.invoice') }} {{ $invoice->invoice_number }}</title>
     @php
         use Brick\Money\Money;use Filament\Support\Facades\FilamentColor;
         use Filament\Support\Colors\Color as FsColor;
@@ -287,7 +287,7 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1>{{ strtoupper(__('invoice.invoice')) }}</h1>
+        <h1>{{ strtoupper(__('sales::invoice.invoice')) }}</h1>
         <div class="invoice-number"># {{ $invoice->invoice_number ?? 'DRAFT' }}</div>
         @if($invoice->status === 'draft')
             <div class="draft-watermark">DRAFT</div>
@@ -341,19 +341,19 @@
 
     <div class="invoice-meta">
         <div class="meta-item">
-            <div class="meta-label">{{ __('invoice.invoice_date') }}</div>
+            <div class="meta-label">{{ __('sales::invoice.invoice_date') }}</div>
             <div class="meta-value">{{ $invoice->invoice_date->format('M d, Y') }}</div>
         </div>
         <div class="meta-item">
-            <div class="meta-label">{{ __('invoice.due_date') }}</div>
+            <div class="meta-label">{{ __('sales::invoice.due_date') }}</div>
             <div class="meta-value">{{ $invoice->due_date->format('M d, Y') }}</div>
         </div>
         <div class="meta-item">
-            <div class="meta-label">{{ __('invoice.currency') }}</div>
+            <div class="meta-label">{{ __('sales::invoice.currency') }}</div>
             <div class="meta-value">{{ $currency->code }}</div>
         </div>
         <div class="meta-item">
-            <div class="meta-label">{{ __('invoice.status') }}</div>
+            <div class="meta-label">{{ __('sales::invoice.status') }}</div>
             <div class="meta-value">{{ $invoice->status->label() }}</div>
         </div>
     </div>
@@ -362,9 +362,9 @@
         <table>
             <thead>
             <tr>
-                <th style="width: 40%;">{{ __('invoice.description') }}</th>
+                <th style="width: 40%;">{{ __('sales::invoice.description') }}</th>
                 <th style="width: 15%;">Qty</th>
-                <th style="width: 20%;">{{ __('invoice.unit_price') }}</th>
+                <th style="width: 20%;">{{ __('sales::invoice.unit_price') }}</th>
                 <th style="width: 25%;">Total</th>
             </tr>
             </thead>
@@ -394,12 +394,12 @@
             </tr>
             @if($invoice->total_tax->isPositive())
                 <tr>
-                    <td class="label">{{ __('invoice.tax') }}</td>
+                    <td class="label">{{ __('sales::invoice.tax') }}</td>
                     <td class="amount">{{ $invoice->total_tax }}</td>
                 </tr>
             @endif
             <tr class="total-row">
-                <td class="label">{{ __('invoice.total_amount') }}</td>
+                <td class="label">{{ __('sales::invoice.total_amount') }}</td>
                 <td class="amount">{{ $invoice->total_amount }}</td>
             </tr>
         </table>

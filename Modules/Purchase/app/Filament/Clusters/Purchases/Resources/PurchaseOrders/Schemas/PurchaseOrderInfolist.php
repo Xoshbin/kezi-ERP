@@ -14,16 +14,16 @@ class PurchaseOrderInfolist
     {
         return $schema
             ->components([
-                Section::make(__('purchase_orders.sections.basic_information'))
+                Section::make(__('purchase::purchase_orders.sections.basic_information'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextEntry::make('po_number')
-                                    ->label(__('purchase_orders.fields.po_number'))
-                                    ->placeholder(__('purchase_orders.help.po_number')),
+                                    ->label(__('purchase::purchase_orders.fields.po_number'))
+                                    ->placeholder(__('purchase::purchase_orders.help.po_number')),
 
                                 TextEntry::make('status')
-                                    ->label(__('purchase_orders.fields.status'))
+                                    ->label(__('purchase::purchase_orders.fields.status'))
                                     ->badge()
                                     ->color(fn($state) => match ($state?->value ?? $state) {
                                         'draft' => 'gray',
@@ -43,76 +43,76 @@ class PurchaseOrderInfolist
                                     }),
 
                                 TextEntry::make('po_date')
-                                    ->label(__('purchase_orders.fields.po_date'))
+                                    ->label(__('purchase::purchase_orders.fields.po_date'))
                                     ->date(),
 
                                 TextEntry::make('reference')
-                                    ->label(__('purchase_orders.fields.reference'))
+                                    ->label(__('purchase::purchase_orders.fields.reference'))
                                     ->placeholder('—'),
                             ]),
                     ]),
 
-                Section::make(__('purchase_orders.sections.vendor_details'))
+                Section::make(__('purchase::purchase_orders.sections.vendor_details'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextEntry::make('vendor.name')
-                                    ->label(__('purchase_orders.fields.vendor')),
+                                    ->label(__('purchase::purchase_orders.fields.vendor')),
 
                                 TextEntry::make('currency.name')
-                                    ->label(__('purchase_orders.fields.currency')),
+                                    ->label(__('purchase::purchase_orders.fields.currency')),
                             ]),
                     ]),
 
-                Section::make(__('purchase_orders.sections.delivery_information'))
+                Section::make(__('purchase::purchase_orders.sections.delivery_information'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextEntry::make('expected_delivery_date')
-                                    ->label(__('purchase_orders.fields.expected_delivery_date'))
+                                    ->label(__('purchase::purchase_orders.fields.expected_delivery_date'))
                                     ->date()
                                     ->placeholder('—'),
 
                                 TextEntry::make('deliveryLocation.name')
-                                    ->label(__('purchase_orders.fields.delivery_location'))
+                                    ->label(__('purchase::purchase_orders.fields.delivery_location'))
                                     ->placeholder('—'),
                             ]),
                     ]),
 
-                Section::make(__('purchase_orders.sections.line_items'))
-                    ->description(__('purchase_orders.sections.line_items_description'))
+                Section::make(__('purchase::purchase_orders.sections.line_items'))
+                    ->description(__('purchase::purchase_orders.sections.line_items_description'))
                     ->schema([
                         RepeatableEntry::make('lines')
-                            ->label(__('purchase_orders.fields.lines'))
+                            ->label(__('purchase::purchase_orders.fields.lines'))
                             ->schema([
                                 Grid::make(7)
                                     ->schema([
                                         TextEntry::make('product.name')
-                                            ->label(__('purchase_orders.fields.product'))
+                                            ->label(__('purchase::purchase_orders.fields.product'))
                                             ->weight('bold'),
 
                                         TextEntry::make('description')
-                                            ->label(__('purchase_orders.fields.description')),
+                                            ->label(__('purchase::purchase_orders.fields.description')),
 
                                         TextEntry::make('quantity')
-                                            ->label(__('purchase_orders.fields.quantity'))
+                                            ->label(__('purchase::purchase_orders.fields.quantity'))
                                             ->numeric(decimalPlaces: 2),
 
                                         TextEntry::make('unit_price')
-                                            ->label(__('purchase_orders.fields.unit_price'))
+                                            ->label(__('purchase::purchase_orders.fields.unit_price'))
                                             ->money(fn($record) => $record->purchaseOrder->currency->code),
 
                                         TextEntry::make('tax.name')
-                                            ->label(__('purchase_orders.fields.tax'))
+                                            ->label(__('purchase::purchase_orders.fields.tax'))
                                             ->placeholder('—'),
 
                                         TextEntry::make('expected_delivery_date')
-                                            ->label(__('purchase_orders.fields.expected_delivery_date'))
+                                            ->label(__('purchase::purchase_orders.fields.expected_delivery_date'))
                                             ->date()
                                             ->placeholder('—'),
 
                                         TextEntry::make('notes')
-                                            ->label(__('purchase_orders.fields.notes'))
+                                            ->label(__('purchase::purchase_orders.fields.notes'))
                                             ->placeholder('—'),
                                     ]),
                             ])
@@ -120,33 +120,33 @@ class PurchaseOrderInfolist
                             ->columnSpanFull(),
                     ]),
 
-                Section::make(__('purchase_orders.sections.totals'))
+                Section::make(__('purchase::purchase_orders.sections.totals'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextEntry::make('total_tax')
-                                    ->label(__('purchase_orders.fields.total_tax'))
+                                    ->label(__('purchase::purchase_orders.fields.total_tax'))
                                     ->money(fn($record) => $record->currency->code),
 
                                 TextEntry::make('total_amount')
-                                    ->label(__('purchase_orders.fields.total_amount'))
+                                    ->label(__('purchase::purchase_orders.fields.total_amount'))
                                     ->money(fn($record) => $record->currency->code)
                                     ->weight('bold')
                                     ->size('lg'),
                             ]),
                     ]),
 
-                Section::make(__('purchase_orders.sections.notes'))
+                Section::make(__('purchase::purchase_orders.sections.notes'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextEntry::make('notes')
-                                    ->label(__('purchase_orders.fields.notes'))
+                                    ->label(__('purchase::purchase_orders.fields.notes'))
                                     ->placeholder('—')
                                     ->columnSpanFull(),
 
                                 TextEntry::make('terms_and_conditions')
-                                    ->label(__('purchase_orders.fields.terms_and_conditions'))
+                                    ->label(__('purchase::purchase_orders.fields.terms_and_conditions'))
                                     ->placeholder('—')
                                     ->columnSpanFull(),
                             ]),

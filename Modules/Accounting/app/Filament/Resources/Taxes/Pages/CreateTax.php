@@ -22,6 +22,6 @@ class CreateTax extends CreateRecord
 
     public function getTitle(): string
     {
-        return __('tax.pages.create');
+        return __('accounting::tax.pages.create');
     }
 }

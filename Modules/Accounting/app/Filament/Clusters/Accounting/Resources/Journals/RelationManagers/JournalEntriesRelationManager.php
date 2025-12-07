@@ -24,7 +24,7 @@ class JournalEntriesRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('journal.journal_entries');
+        return __('accounting::journal.journal_entries');
     }
 
     protected static string $relationship = 'journalEntries';
@@ -34,17 +34,17 @@ class JournalEntriesRelationManager extends RelationManager
         return $schema
             ->components([
                 DatePicker::make('entry_date')
-                    ->label(__('journal.entry_date'))
+                    ->label(__('accounting::journal.entry_date'))
                     ->required(),
                 TextInput::make('reference')
-                    ->label(__('journal.reference'))
+                    ->label(__('accounting::journal.reference'))
                     ->required()
                     ->maxLength(255),
                 Textarea::make('description')
-                    ->label(__('journal.description'))
+                    ->label(__('accounting::journal.description'))
                     ->columnSpanFull(),
                 Toggle::make('is_posted')
-                    ->label(__('journal.is_posted'))
+                    ->label(__('accounting::journal.is_posted'))
                     ->required(),
             ]);
     }
@@ -55,12 +55,12 @@ class JournalEntriesRelationManager extends RelationManager
             ->recordTitleAttribute('reference')
             ->columns([
                 TextColumn::make('entry_date')
-                    ->label(__('journal.entry_date'))
+                    ->label(__('accounting::journal.entry_date'))
                     ->date(),
                 TextColumn::make('reference')
-                    ->label(__('journal.reference')),
+                    ->label(__('accounting::journal.reference')),
                 IconColumn::make('is_posted')
-                    ->label(__('journal.is_posted'))
+                    ->label(__('accounting::journal.is_posted'))
                     ->boolean(),
             ])
             ->filters([

@@ -37,21 +37,21 @@ class BankStatementLinesRelationManager extends RelationManager
         return $schema
             ->components([
                 DatePicker::make('date')
-                    ->label(__('bank_statement.date'))
+                    ->label(__('accounting::bank_statement.date'))
                     ->required(),
                 TextInput::make('description')
-                    ->label(__('bank_statement.description'))
+                    ->label(__('accounting::bank_statement.description'))
                     ->required()
                     ->maxLength(255),
                 TextInput::make('partner_name')
-                    ->label(__('bank_statement.partner_name'))
+                    ->label(__('accounting::bank_statement.partner_name'))
                     ->maxLength(255),
                 TextInput::make('amount')
-                    ->label(__('bank_statement.amount'))
+                    ->label(__('accounting::bank_statement.amount'))
                     ->required()
                     ->numeric(),
                 Toggle::make('is_reconciled')
-                    ->label(__('bank_statement.is_reconciled'))
+                    ->label(__('accounting::bank_statement.is_reconciled'))
                     ->required(),
             ]);
     }
@@ -63,16 +63,16 @@ class BankStatementLinesRelationManager extends RelationManager
             ->modifyQueryUsing(fn (Builder $query) => $query->with(['journalEntry', 'bankStatement.currency']))
             ->columns([
                 TextColumn::make('date')
-                    ->label(__('bank_statement.date'))
+                    ->label(__('accounting::bank_statement.date'))
                     ->date(),
                 TextColumn::make('description')
-                    ->label(__('bank_statement.description')),
+                    ->label(__('accounting::bank_statement.description')),
                 TextColumn::make('partner_name')
-                    ->label(__('bank_statement.partner_name')),
+                    ->label(__('accounting::bank_statement.partner_name')),
                 TextColumn::make('amount')
-                    ->label(__('bank_statement.amount')),
+                    ->label(__('accounting::bank_statement.amount')),
                 IconColumn::make('is_reconciled')
-                    ->label(__('bank_statement.is_reconciled'))
+                    ->label(__('accounting::bank_statement.is_reconciled'))
                     ->boolean(),
             ])
             ->filters([

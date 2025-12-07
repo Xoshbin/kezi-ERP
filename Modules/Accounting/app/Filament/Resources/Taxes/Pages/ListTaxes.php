@@ -24,6 +24,6 @@ class ListTaxes extends ListRecords
 
     public function getTitle(): string
     {
-        return __('tax.pages.list');
+        return __('accounting::tax.pages.list');
     }
 }
