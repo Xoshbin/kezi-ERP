@@ -43,7 +43,7 @@ enum AccountType: string
      */
     public function label(): string
     {
-        return __('enums.account_type.'.$this->value);
+        return __('accounting::enums.account_type.' . $this->value);
     }
 
     /**
