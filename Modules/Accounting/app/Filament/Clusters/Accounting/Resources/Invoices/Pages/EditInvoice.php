@@ -35,6 +35,10 @@ use Modules\Sales\DataTransferObjects\Sales\UpdateInvoiceDTO;
 use Modules\Sales\DataTransferObjects\Sales\UpdateInvoiceLineDTO;
 use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Modules\Sales\Models\Invoice;
+use Illuminate\Support\Arr;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 use Modules\Sales\Services\InvoiceService;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -152,7 +156,18 @@ class EditInvoice extends EditRecord
                         $service->confirm($record, $user);
                         Notification::make()->title(__('invoice.invoice_confirmed_successfully'))->success()->send();
                         $this->redirect(InvoiceResource::getUrl('edit', ['record' => $record]));
-                    } catch (Exception $e) {
+                    } catch (ValidationException $e) {
+                        Notification::make()
+                            ->title(__('invoice.error_confirming_invoice'))
+                            ->body(implode("\n", Arr::flatten($e->errors())))
+                            ->danger()
+                            ->send();
+                    } catch (Throwable $e) {
+                        Log::error('Invoice confirmation failed', [
+                            'invoice_id' => $record->id,
+                            'error' => $e->getMessage(),
+                            'trace' => $e->getTraceAsString(),
+                        ]);
                         Notification::make()->title(__('invoice.error_confirming_invoice'))->body($e->getMessage())->danger()->send();
                     }
                 }),
