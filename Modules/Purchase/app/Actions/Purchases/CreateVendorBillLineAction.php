@@ -18,7 +18,7 @@ class CreateVendorBillLineAction
         // 1. Explicitly create the Money object from the DTO.
         $unitPrice = $dto->unit_price instanceof Money
             ? $dto->unit_price
-            : Money::of($dto->unit_price, $currency->code);
+            : Money::of($dto->unit_price, $currency->code, null, RoundingMode::HALF_UP);
 
         // 2. Perform calculations with full context.
         $subtotal = $unitPrice->multipliedBy($dto->quantity, RoundingMode::HALF_UP);
