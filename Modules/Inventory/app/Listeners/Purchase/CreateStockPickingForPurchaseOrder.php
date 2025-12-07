@@ -34,12 +34,12 @@ class CreateStockPickingForPurchaseOrder
         }
 
         // Get Locations
+        // Get Locations
         $vendorLocation = StockLocation::firstOrCreate([
             'company_id' => $po->company_id,
             'type' => StockLocationType::Vendor,
-            'partner_id' => $po->vendor_id,
         ], [
-            'name' => "Vendor: {$po->vendor->name}",
+            'name' => "Vendors",
             'is_active' => true,
         ]);
 
@@ -55,7 +55,7 @@ class CreateStockPickingForPurchaseOrder
             'partner_id' => $po->vendor_id,
             'scheduled_date' => $po->po_date ?? now(),
             'origin' => $po->po_number,
-            'created_by_user_id' => auth()->id(), // Best effort
+            'created_by_user_id' => auth()->id() ?? $po->created_by_user_id ?? \App\Models\User::first()->id,
         ]);
 
         // Create Moves
