@@ -140,7 +140,7 @@ class EditInvoice extends EditRecord
                 }),
 
             Action::make('confirm')
-                ->label(__('invoice.confirm_invoice'))
+                ->label(__('sales::invoice.confirm_invoice'))
                 ->color('success')
                 ->requiresConfirmation()
                 ->visible(fn(Invoice $record): bool => $record->status === InvoiceStatus::Draft)
@@ -154,11 +154,11 @@ class EditInvoice extends EditRecord
                             throw new Exception('User must be authenticated to confirm invoice');
                         }
                         $service->confirm($record, $user);
-                        Notification::make()->title(__('invoice.invoice_confirmed_successfully'))->success()->send();
+                        Notification::make()->title(__('sales::invoice.invoice_confirmed_successfully'))->success()->send();
                         $this->redirect(InvoiceResource::getUrl('edit', ['record' => $record]));
                     } catch (ValidationException $e) {
                         Notification::make()
-                            ->title(__('invoice.error_confirming_invoice'))
+                            ->title(__('sales::invoice.error_confirming_invoice'))
                             ->body(implode("\n", Arr::flatten($e->errors())))
                             ->danger()
                             ->send();
@@ -168,19 +168,19 @@ class EditInvoice extends EditRecord
                             'error' => $e->getMessage(),
                             'trace' => $e->getTraceAsString(),
                         ]);
-                        Notification::make()->title(__('invoice.error_confirming_invoice'))->body($e->getMessage())->danger()->send();
+                        Notification::make()->title(__('sales::invoice.error_confirming_invoice'))->body($e->getMessage())->danger()->send();
                     }
                 }),
 
             Action::make('register_payment')
-                ->label(__('Register Payment'))
+                ->label(__('sales::invoice.register_payment'))
                 ->icon('heroicon-o-banknotes')
                 ->color('warning')
-                ->modalHeading(__('Register Payment'))
-                ->modalDescription(__('Register a payment for this invoice'))
+                ->modalHeading(__('sales::invoice.register_payment'))
+                ->modalDescription(__('sales::invoice.payments_relation_manager.payment_details'))
                 ->schema([
                     Select::make('journal_id')
-                        ->label(__('payment.form.journal_id'))
+                        ->label(__('payment::payment.form.journal_id'))
                         ->options(function (): array {
                             $tenant = Filament::getTenant();
                             if (!$tenant instanceof Company) {
@@ -203,16 +203,16 @@ class EditInvoice extends EditRecord
                                 ->value('id');
                         }),
                     DatePicker::make('payment_date')
-                        ->label(__('payment.form.payment_date'))
+                        ->label(__('payment::payment.form.payment_date'))
                         ->default(now())
                         ->required(),
                     MoneyInput::make('amount')
-                        ->label(__('payment.form.amount'))
+                        ->label(__('payment::payment.form.amount'))
                         ->currencyField('currency_id')
                         ->default(fn(Invoice $record) => $record->getRemainingAmount())
                         ->required(),
                     TextInput::make('reference')
-                        ->label(__('payment.form.reference'))
+                        ->label(__('payment::payment.form.reference'))
                         ->placeholder(__('Optional reference')),
                     Hidden::make('currency_id')
                         ->default(fn(Invoice $record) => $record->currency_id),
@@ -252,12 +252,12 @@ class EditInvoice extends EditRecord
                         app(PaymentService::class)->confirm($payment, $user);
 
                         Notification::make()
-                            ->title(__('Payment registered successfully'))
+                            ->title(__('payment::payment.action.confirm.notification.success'))
                             ->success()
                             ->send();
                     } catch (Exception $e) {
                         Notification::make()
-                            ->title(__('Error registering payment'))
+                            ->title(__('payment::payment.action.confirm.notification.error'))
                             ->body($e->getMessage())
                             ->danger()
                             ->send();

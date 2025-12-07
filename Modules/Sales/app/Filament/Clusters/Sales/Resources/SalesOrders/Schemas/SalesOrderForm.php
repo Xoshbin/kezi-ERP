@@ -20,6 +20,7 @@ use Modules\Sales\Enums\Sales\SalesOrderStatus;
 use Modules\Accounting\Enums\Accounting\TaxType;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
+use Modules\Sales\Models\SalesOrder;
 
 class SalesOrderForm
 {
@@ -27,7 +28,7 @@ class SalesOrderForm
     {
         return $schema
             ->components([
-                Section::make(__('sales_orders.sections.basic_info'))
+                Section::make(__('sales::sales_orders.sections.basic_info'))
                     ->schema([
                         Hidden::make('company_id')
                             ->default(fn() => Auth::user()?->company_id),
@@ -38,13 +39,13 @@ class SalesOrderForm
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('so_number')
-                                    ->label(__('sales_orders.fields.so_number'))
+                                    ->label(__('sales::sales_orders.fields.so_number'))
                                     ->disabled()
                                     ->dehydrated(false)
-                                    ->placeholder(__('sales_orders.help.so_number')),
+                                    ->placeholder(__('sales::sales_orders.help.so_number')),
 
                                 Select::make('status')
-                                    ->label(__('sales_orders.fields.status'))
+                                    ->label(__('sales::sales_orders.fields.status'))
                                     ->options(function (?string $operation, ?SalesOrder $record) {
                                         // In create mode, show all statuses
                                         if ($operation === 'create') {
@@ -93,16 +94,16 @@ class SalesOrderForm
 
                                             // Invoice creation status message
                                             if ($record->canCreateInvoice()) {
-                                                $messages[] = __('sales_orders.help.status_can_create_invoice');
+                                                $messages[] = __('sales::sales_orders.help.status_can_create_invoice');
                                             } else {
-                                                $messages[] = __('sales_orders.help.status_cannot_create_invoice');
+                                                $messages[] = __('sales::sales_orders.help.status_cannot_create_invoice');
                                             }
 
                                             // Delivery status message
                                             if ($record->canDeliverGoods()) {
-                                                $messages[] = __('sales_orders.help.status_can_deliver');
+                                                $messages[] = __('sales::sales_orders.help.status_can_deliver');
                                             } else {
-                                                $messages[] = __('sales_orders.help.status_cannot_deliver');
+                                                $messages[] = __('sales::sales_orders.help.status_cannot_deliver');
                                             }
 
                                             return implode(' ', $messages);
@@ -115,21 +116,21 @@ class SalesOrderForm
 
                         Grid::make(2)
                             ->schema([
-                                TranslatableSelect::make('customer_id')
-                                    ->label(__('sales_orders.fields.customer'))
+                                Select::make('customer_id')
+                                    ->label(__('sales::sales_orders.fields.customer'))
                                     ->relationship('customer', 'name')
                                     ->searchable()
                                     ->preload()
                                     ->required()
                                     ->createOptionAction(
                                         fn(Action $action) => $action
-                                            ->modalHeading(__('partners.create_customer'))
-                                            ->modalSubmitActionLabel(__('partners.create'))
+                                            ->modalHeading(__('foundation::partner.create_customer'))
+                                            ->modalSubmitActionLabel(__('foundation::partner.create'))
                                             ->modalWidth('lg')
                                     ),
 
-                                Select::make('currency_id')
-                                    ->label(__('sales_orders.fields.currency'))
+                                Select::make('currency_code')
+                                    ->label(__('sales::sales_orders.fields.currency'))
                                     ->relationship('currency', 'code')
                                     ->searchable()
                                     ->preload()
@@ -139,31 +140,33 @@ class SalesOrderForm
 
                         Grid::make(2)
                             ->schema([
-                                DatePicker::make('so_date')
-                                    ->label(__('sales_orders.fields.so_date'))
+                                DatePicker::make('order_date')
+                                    ->label(__('sales::sales_orders.fields.order_date'))
                                     ->required()
                                     ->default(now())
                                     ->native(false),
 
                                 DatePicker::make('expected_delivery_date')
-                                    ->label(__('sales_orders.fields.expected_delivery_date'))
+                                    ->label(__('sales::sales_orders.fields.expected_delivery_date'))
                                     ->native(false),
                             ]),
 
                         TextInput::make('reference')
-                            ->label(__('sales_orders.fields.reference'))
+                            ->label(__('sales::sales_orders.fields.reference'))
                             ->maxLength(255)
-                            ->helperText(__('sales_orders.help.reference')),
+                            ->helperText(__('sales::sales_orders.help.reference')),
                     ]),
 
-                Section::make(__('sales_orders.sections.line_items'))
+                Section::make(__('sales::sales_orders.sections.line_items'))
                     ->schema([
+                        DatePicker::make('expiration')
+                            ->label(__('sales::sales_orders.fields.expiration')),
                         Repeater::make('lines')
-                            ->label(__('sales_orders.fields.lines'))
+                            ->label(__('sales::sales_orders.fields.lines'))
                             ->relationship()
                             ->schema([
                                 Select::make('product_id')
-                                    ->label(__('sales_orders.fields.product'))
+                                    ->label(__('sales::sales_orders.fields.product'))
                                     ->relationship('product', 'name')
                                     ->searchable()
                                     ->preload()
@@ -180,18 +183,18 @@ class SalesOrderForm
                                     })
                                     ->createOptionAction(
                                         fn(Action $action) => $action
-                                            ->modalHeading(__('products.create'))
-                                            ->modalSubmitActionLabel(__('products.create'))
+                                            ->modalHeading(__('product::product.create'))
+                                            ->modalSubmitActionLabel(__('product::product.create'))
                                             ->modalWidth('lg')
                                     ),
 
                                 TextInput::make('description')
-                                    ->label(__('sales_orders.fields.description'))
+                                    ->label(__('sales::sales_orders.fields.description'))
                                     ->required()
                                     ->maxLength(255),
 
                                 TextInput::make('quantity')
-                                    ->label(__('sales_orders.fields.quantity'))
+                                    ->label(__('sales::sales_orders.fields.quantity'))
                                     ->numeric()
                                     ->required()
                                     ->default(1)
@@ -199,11 +202,11 @@ class SalesOrderForm
                                     ->step(0.01),
 
                                 MoneyInput::make('unit_price')
-                                    ->label(__('sales_orders.fields.unit_price'))
+                                    ->label(__('sales::sales_orders.fields.unit_price'))
                                     ->required(),
 
                                 Select::make('tax_id')
-                                    ->label(__('sales_orders.fields.tax'))
+                                    ->label(__('sales::sales_orders.fields.tax'))
                                     ->relationship('tax', 'name')
                                     ->searchable()
                                     ->preload()
@@ -214,27 +217,27 @@ class SalesOrderForm
                                     }),
 
                                 DatePicker::make('expected_delivery_date')
-                                    ->label(__('sales_orders.fields.line_expected_delivery_date'))
+                                    ->label(__('sales::sales_orders.fields.line_expected_delivery_date'))
                                     ->native(false),
 
                                 Textarea::make('notes')
-                                    ->label(__('sales_orders.fields.line_notes'))
+                                    ->label(__('sales::sales_orders.fields.line_notes'))
                                     ->rows(2),
                             ])
                             ->columns(2)
                             ->defaultItems(1)
-                            ->addActionLabel(__('sales_orders.actions.add_line'))
+                            ->addActionLabel(__('sales::sales_orders.actions.add_line'))
                             ->reorderableWithButtons()
                             ->collapsible()
                             ->itemLabel(fn(array $state): ?string => $state['description'] ?? null),
                     ]),
 
-                Section::make(__('sales_orders.sections.additional_info'))
+                Section::make(__('sales::sales_orders.sections.additional_info'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 Select::make('delivery_location_id')
-                                    ->label(__('sales_orders.fields.delivery_location'))
+                                    ->label(__('sales::sales_orders.fields.delivery_location'))
                                     ->relationship('deliveryLocation', 'name')
                                     ->searchable()
                                     ->preload(),
@@ -243,11 +246,11 @@ class SalesOrderForm
                             ]),
 
                         Textarea::make('notes')
-                            ->label(__('sales_orders.fields.notes'))
+                            ->label(__('sales::sales_orders.fields.notes'))
                             ->rows(3),
 
                         Textarea::make('terms_and_conditions')
-                            ->label(__('sales_orders.fields.terms_and_conditions'))
+                            ->label(__('sales::sales_orders.fields.terms_and_conditions'))
                             ->rows(3),
                     ])
                     ->collapsible(),

@@ -15,6 +15,6 @@ class SalesCluster extends Cluster
 
     public static function getNavigationLabel(): string
     {
-        return __('navigation.sales');
+        return __('sales::navigation.sales');
     }
 }

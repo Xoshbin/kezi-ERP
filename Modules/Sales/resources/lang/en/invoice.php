@@ -6,7 +6,7 @@ return [
     'plural_label' => 'Invoices',
     'invoice' => 'Invoice',
     'invoices' => 'Invoices',
-    'invoice_details' => 'Invoice Details',
+
 
     // Form Fields
     'company' => 'Company',
@@ -14,6 +14,7 @@ return [
     'currency' => 'Currency',
     'fiscal_position' => 'Fiscal Position',
     'invoice_date' => 'Invoice Date',
+    'date' => 'Date',
     'due_date' => 'Due Date',
     'status' => 'Status',
     'payment_state' => 'Payment State',
@@ -37,14 +38,7 @@ return [
     'line_items_description' => 'Add products and services to this invoice',
     'company_currency_totals' => 'Company Currency Totals',
 
-    // Exchange Rate Fields
-    'current_exchange_rate' => 'Current Exchange Rate',
-    'exchange_rate_helper' => 'This is the current exchange rate for the selected currency',
-    'exchange_rate_at_creation' => 'Exchange Rate at Creation',
-    'total_amount_company_currency' => 'Total Amount (Company Currency)',
-    'total_tax_company_currency' => 'Total Tax (Company Currency)',
 
-    // Table Columns
     'company_name' => 'Company',
     'customer_name' => 'Customer',
     'currency_name' => 'Currency',
