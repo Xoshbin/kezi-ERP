@@ -4,6 +4,7 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\
 
 use Exception;
 use Brick\Money\Money;
+use Brick\Math\RoundingMode;
 use Filament\Actions\Action;
 use InvalidArgumentException;
 use Filament\Facades\Filament;
@@ -49,7 +50,7 @@ class CreateVendorBill extends CreateRecord
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof Collection) {
             $currency = $currency->first();
-            if (! $currency) {
+            if (!$currency) {
                 throw new InvalidArgumentException('Currency not found');
             }
         }
@@ -59,7 +60,7 @@ class CreateVendorBill extends CreateRecord
                 product_id: $line['product_id'],
                 description: $line['description'],
                 quantity: $line['quantity'],
-                unit_price: Money::of($line['unit_price'], $currency->code),
+                unit_price: Money::of($line['unit_price'], $currency->code, null, RoundingMode::HALF_UP),
                 expense_account_id: $line['expense_account_id'],
                 tax_id: $line['tax_id'] ?? null,
                 analytic_account_id: $line['analytic_account_id'] ?? null,
