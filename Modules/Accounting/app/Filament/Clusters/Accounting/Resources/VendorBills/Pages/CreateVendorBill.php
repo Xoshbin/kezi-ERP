@@ -151,6 +151,11 @@ class CreateVendorBill extends CreateRecord
 
         // Validate that the PO can be billed
         if (!$purchaseOrder->status->canCreateBill()) {
+            \Filament\Notifications\Notification::make()
+                ->title(__('vendor_bill.errors.cannot_create_bill_title'))
+                ->body(__('vendor_bill.errors.cannot_create_bill_body', ['status' => $purchaseOrder->status->label()]))
+                ->warning()
+                ->send();
             return;
         }
 

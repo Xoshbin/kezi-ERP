@@ -35,7 +35,7 @@ it('shows unhelpful error message when validation exception occurs (current beha
         'income_account_id' => $deprecatedAccount->id,
     ]);
 
-    $user = \App\Models\User::factory()->create(['company_id' => $company->id]);
+    $user = \App\Models\User::factory()->create();
     $this->actingAs($user);
     \Filament\Facades\Filament::setTenant($company);
 

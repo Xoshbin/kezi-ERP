@@ -58,11 +58,23 @@ class BaseCurrencyMoneyCast extends MoneyCast
                 }
             }
         }
-        // Handle InventoryCostLayer through product.company relationship
         if (method_exists($model, 'product') && $model->relationLoaded('product')) {
             $product = $model->getRelation('product');
             if ($product instanceof Model && method_exists($product, 'company')) {
                 $company = $product->relationLoaded('company') ? $product->getRelation('company') : $product->company()->first();
+                if ($company instanceof Model && method_exists($company, 'currency')) {
+                    $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
+                    if ($currency instanceof Currency) {
+                        return $currency;
+                    }
+                }
+            }
+        }
+
+        if (method_exists($model, 'purchaseOrder') && $model->relationLoaded('purchaseOrder')) {
+            $purchaseOrder = $model->getRelation('purchaseOrder');
+            if ($purchaseOrder instanceof Model && method_exists($purchaseOrder, 'company')) {
+                $company = $purchaseOrder->relationLoaded('company') ? $purchaseOrder->getRelation('company') : $purchaseOrder->company()->first();
                 if ($company instanceof Model && method_exists($company, 'currency')) {
                     $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
                     if ($currency instanceof Currency) {
@@ -98,6 +110,13 @@ class BaseCurrencyMoneyCast extends MoneyCast
             $asset = $model->asset()->with('company.currency')->first();
             if ($asset && $asset->company && $asset->company->currency) {
                 return $asset->company->currency;
+            }
+        }
+
+        if (method_exists($model, 'purchaseOrder') && $model->getAttribute('purchase_order_id')) {
+            $purchaseOrder = $model->purchaseOrder()->with('company.currency')->first();
+            if ($purchaseOrder && $purchaseOrder->company && $purchaseOrder->company->currency) {
+                return $purchaseOrder->company->currency;
             }
         }
 

@@ -99,7 +99,8 @@ class VendorBillsRelationManager extends RelationManager
                             'purchase_order_id' => $this->getOwnerRecord()->id,
                             'tenant' => Filament::getTenant(),
                         ])
-                    ),
+                    )
+                    ->visible(fn() => $this->getOwnerRecord()->status->canCreateBill()),
             ])
             ->defaultSort('created_at', 'desc');
     }
