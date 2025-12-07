@@ -63,16 +63,16 @@ class SalesOrderResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('sales_orders.navigation.label');
+        return __('sales::sales_orders.navigation.label');
     }
 
     public static function getModelLabel(): string
     {
-        return __('sales_orders.model.label');
+        return __('sales::sales_orders.model.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('sales_orders.model.plural_label');
+        return __('sales::sales_orders.model.plural_label');
     }
 }

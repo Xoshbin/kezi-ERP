@@ -76,17 +76,17 @@ class VendorBillResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('vendor_bill.label');
+        return __('purchase::vendor_bill.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('vendor_bill.plural_label');
+        return __('purchase::vendor_bill.plural_label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('vendor_bill.plural_label');
+        return __('purchase::vendor_bill.plural_label');
     }
 
     public static function form(Schema $schema): Schema
@@ -546,11 +546,11 @@ class VendorBillResource extends Resource
                     ->url(
                         fn(?VendorBill $record): ?string =>
                         $record?->purchaseOrder
-                            ? route('filament.jmeryar.purchases.resources.purchase-orders.view', [
-                                'record' => $record->purchaseOrder,
-                                'tenant' => Filament::getTenant(),
-                            ])
-                            : null
+                        ? route('filament.jmeryar.purchases.resources.purchase-orders.view', [
+                            'record' => $record->purchaseOrder,
+                            'tenant' => Filament::getTenant(),
+                        ])
+                        : null
                     )
                     ->openUrlInNewTab()
                     ->placeholder(__('vendor_bill.no_purchase_order'))
@@ -674,7 +674,7 @@ class VendorBillResource extends Resource
                             ->label(__('payment.form.journal_id'))
                             ->options(function (): array {
                                 $tenant = Filament::getTenant();
-                                if (! $tenant instanceof Company) {
+                                if (!$tenant instanceof Company) {
                                     return [];
                                 }
 
@@ -685,7 +685,7 @@ class VendorBillResource extends Resource
                             ->required()
                             ->default(function (): ?int {
                                 $tenant = Filament::getTenant();
-                                if (! $tenant instanceof Company) {
+                                if (!$tenant instanceof Company) {
                                     return null;
                                 }
 
@@ -736,7 +736,7 @@ class VendorBillResource extends Resource
 
                             // Create and confirm payment
                             $user = Auth::user();
-                            if (! $user) {
+                            if (!$user) {
                                 throw new Exception('User must be authenticated to create payment');
                             }
                             $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
@@ -756,7 +756,7 @@ class VendorBillResource extends Resource
                     })
                     ->visible(
                         fn(VendorBill $record) => $record->status === VendorBillStatus::Posted &&
-                            ! $record->getRemainingAmount()->isZero()
+                        !$record->getRemainingAmount()->isZero()
                     ),
             ])
             ->toolbarActions([
@@ -769,7 +769,7 @@ class VendorBillResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // RelationManagers\VendorBillLinesRelationManager::class,
+                // RelationManagers\VendorBillLinesRelationManager::class,
             PaymentsRelationManager::class,
             AdjustmentDocumentsRelationManager::class,
         ];
