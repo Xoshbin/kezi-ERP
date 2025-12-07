@@ -10,6 +10,7 @@ return [
     'rate' => 'Rate (%)',
     'type' => 'Type',
     'is_active' => 'Active',
+    'is_recoverable' => 'Is Recoverable',
 
     // Relations
     'company' => 'Company',

@@ -30,25 +30,25 @@ class ViewSalesOrder extends ViewRecord
             Actions\EditAction::make(),
 
             Action::make('create_invoice')
-                ->label(__('sales_orders.actions.create_invoice'))
+                ->label(__('sales::sales_orders.actions.create_invoice'))
                 ->icon('heroicon-o-document-text')
                 ->color('success')
                 ->visible(fn() => $this->record->canCreateInvoice())
                 ->form([
                     DatePicker::make('invoice_date')
-                        ->label(__('invoices.fields.invoice_date'))
+                        ->label(__('sales::invoice.invoice_date'))
                         ->required()
                         ->default(now())
                         ->native(false),
 
                     DatePicker::make('due_date')
-                        ->label(__('invoices.fields.due_date'))
+                        ->label(__('sales::invoice.due_date'))
                         ->required()
                         ->default(now()->addDays(30))
                         ->native(false),
 
                     Select::make('default_income_account_id')
-                        ->label(__('invoices.fields.default_income_account'))
+                        ->label(__('sales::invoice.income_account'))
                         ->options(function () {
                             return Account::where('company_id', Filament::getTenant()?->id)
                                 ->where('account_type', 'income')
@@ -70,14 +70,14 @@ class ViewSalesOrder extends ViewRecord
                         $invoice = $action->execute($dto);
 
                         Notification::make()
-                            ->title(__('sales_orders.notifications.invoice_created'))
+                            ->title(__('sales::sales_orders.notifications.invoice_created'))
                             ->success()
                             ->send();
 
                         return redirect()->route('filament.admin.resources.invoices.view', $invoice);
                     } catch (Exception $e) {
                         Notification::make()
-                            ->title(__('sales_orders.notifications.invoice_creation_failed'))
+                            ->title(__('sales::sales_orders.notifications.invoice_creation_failed'))
                             ->body($e->getMessage())
                             ->danger()
                             ->send();
@@ -85,20 +85,20 @@ class ViewSalesOrder extends ViewRecord
                 }),
 
             Action::make('create_delivery')
-                ->label(__('sales_orders.actions.create_delivery'))
+                ->label(__('sales::sales_orders.actions.create_delivery'))
                 ->icon('heroicon-o-truck')
                 ->color('warning')
                 ->visible(fn() => $this->record->canDeliverGoods())
                 ->form([
                     DatePicker::make('scheduled_date')
-                        ->label(__('deliveries.fields.scheduled_date'))
+                        ->label(__('inventory::deliveries.fields.scheduled_date'))
                         ->required()
                         ->default(now())
                         ->native(false),
 
                     Toggle::make('auto_confirm')
-                        ->label(__('deliveries.fields.auto_confirm'))
-                        ->helperText(__('deliveries.help.auto_confirm'))
+                        ->label(__('inventory::deliveries.fields.auto_confirm'))
+                        ->helperText(__('inventory::deliveries.help.auto_confirm'))
                         ->default(function () {
                             return $this->record->company->inventory_accounting_mode->autoRecordsInventory();
                         }),
@@ -116,8 +116,8 @@ class ViewSalesOrder extends ViewRecord
                         $stockMoves = $action->execute($dto);
 
                         Notification::make()
-                            ->title(__('sales_orders.notifications.delivery_created'))
-                            ->body(__('sales_orders.notifications.delivery_created_count', ['count' => $stockMoves->count()]))
+                            ->title(__('sales::sales_orders.notifications.delivery_created'))
+                            ->body(__('sales::sales_orders.notifications.delivery_created_count', ['count' => $stockMoves->count()]))
                             ->success()
                             ->send();
 
@@ -127,7 +127,7 @@ class ViewSalesOrder extends ViewRecord
                         ]);
                     } catch (Exception $e) {
                         Notification::make()
-                            ->title(__('sales_orders.notifications.delivery_creation_failed'))
+                            ->title(__('sales::sales_orders.notifications.delivery_creation_failed'))
                             ->body($e->getMessage())
                             ->danger()
                             ->send();

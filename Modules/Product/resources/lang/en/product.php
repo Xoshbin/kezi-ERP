@@ -4,6 +4,7 @@ return [
     // Labels
     'label' => 'Product',
     'plural_label' => 'Products',
+    'create' => 'Create Product',
 
     // Basic Information
     'basic_information' => 'Basic Information',

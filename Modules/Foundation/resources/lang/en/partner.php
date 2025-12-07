@@ -4,6 +4,9 @@ return [
     // Labels
     'label' => 'Partner',
     'plural_label' => 'Partners',
+    'create' => 'Create Partner',
+    'create_customer' => 'Create Customer',
+    'create_vendor' => 'Create Vendor',
 
     // Form Sections
     'basic_information' => 'Basic Information',
