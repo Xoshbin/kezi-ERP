@@ -66,7 +66,7 @@ class EditVendorBill extends EditRecord
                 ->modalContent(function (VendorBill $record) {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
 
-                    return view('filament/accounting/vendor-bills/preview-posting', [
+                    return view('purchase::filament.accounting.vendor-bills.preview-posting', [
                         'preview' => $preview,
                         'bill' => $record,
                     ]);
@@ -76,7 +76,7 @@ class EditVendorBill extends EditRecord
                 ->label(__('Export Preview (CSV)'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('gray')
-                ->visible(fn(VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->visible(fn(VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && !app()->environment('production'))
                 ->action(function (VendorBill $record): StreamedResponse {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
                     $rows = [];
@@ -106,7 +106,7 @@ class EditVendorBill extends EditRecord
                 ->label(__('Export Preview (PDF)'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
-                ->visible(fn(VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
+                ->visible(fn(VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && !app()->environment('production'))
                 ->action(function (VendorBill $record): StreamedResponse {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
                     $pdf = Pdf::loadView('filament/accounting/vendor-bills/preview-posting-pdf', [
@@ -132,13 +132,14 @@ class EditVendorBill extends EditRecord
                     $vendorBillService = app(VendorBillService::class);
                     try {
                         $user = Auth::user();
-                        if (! $user) {
+                        if (!$user) {
                             throw new Exception('User must be authenticated to confirm vendor bill');
                         }
                         $vendorBillService->confirm($record, $user);
                         Notification::make()->title(__('vendor_bill.notification_bill_confirmed_success'))->success()->send();
+                        $this->redirect($this->getResource()::getUrl('edit', ['record' => $record]));
                     } catch (Exception $e) {
-                        Notification::make()->title(__('vendor_bill.notification_confirm_bill_error'))->body($e->getMessage())->danger()->send();
+                        Notification::make()->title(__('vendor_bill.notification_confirm_bill_error'))->body($e->getMessage())->danger()->persistent()->send();
                     }
                 }),
 
@@ -171,7 +172,7 @@ class EditVendorBill extends EditRecord
                         ->label('Journal')
                         ->options(function (): array {
                             $tenant = Filament::getTenant();
-                            if (! $tenant instanceof Company) {
+                            if (!$tenant instanceof Company) {
                                 return [];
                             }
 
@@ -182,7 +183,7 @@ class EditVendorBill extends EditRecord
                         ->required()
                         ->default(function (): ?int {
                             $tenant = Filament::getTenant();
-                            if (! $tenant instanceof Company) {
+                            if (!$tenant instanceof Company) {
                                 return null;
                             }
 
@@ -233,7 +234,7 @@ class EditVendorBill extends EditRecord
 
                         // Create and confirm payment
                         $user = Auth::user();
-                        if (! $user) {
+                        if (!$user) {
                             throw new Exception('User must be authenticated to create payment');
                         }
                         $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
@@ -253,12 +254,12 @@ class EditVendorBill extends EditRecord
                 })
                 ->visible(
                     fn(VendorBill $record) => $record->status === VendorBillStatus::Posted &&
-                        ! $record->getRemainingAmount()->isZero()
+                    !$record->getRemainingAmount()->isZero()
                 ),
 
             DeleteAction::make()
                 ->action(function (Model $record) {
-                    if (! $record instanceof VendorBill) {
+                    if (!$record instanceof VendorBill) {
                         throw new Exception('Invalid record type');
                     }
                     app(VendorBillService::class)->delete($record);
@@ -271,7 +272,7 @@ class EditVendorBill extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        if (! $record instanceof VendorBill) {
+        if (!$record instanceof VendorBill) {
             throw new InvalidArgumentException('Expected VendorBill record');
         }
 
@@ -329,7 +330,7 @@ class EditVendorBill extends EditRecord
         }
 
         $record = $this->getRecord();
-        if (! $record instanceof VendorBill) {
+        if (!$record instanceof VendorBill) {
             return;
         }
 
@@ -364,7 +365,7 @@ class EditVendorBill extends EditRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $record = $this->getRecord();
-        if (! $record instanceof VendorBill) {
+        if (!$record instanceof VendorBill) {
             return $data;
         }
 
@@ -393,7 +394,7 @@ class EditVendorBill extends EditRecord
     protected function getHeaderWidgets(): array
     {
         return [
-            // VendorBillResource\Widgets\AgingAnalysisWidget::class,
+                // VendorBillResource\Widgets\AgingAnalysisWidget::class,
             SettlementSummaryWidget::class,
         ];
     }
