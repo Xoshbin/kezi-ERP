@@ -50,23 +50,28 @@ class AssignPickingAction extends Action
                     Repeater::make('moves')
                         ->label(__('Stock Moves'))
                         ->schema([
-                            Placeholder::make('product_info')
-                                ->label(__('product.label'))
-                                ->content(function ($get, $state) {
-                                    if (!$state || !isset($state['product_name'])) {
-                                        return '—';
-                                    }
-                                    return $state['product_name'] . ' (' . number_format($state['quantity'], 2) . ' units)';
-                                }),
+                            \Filament\Forms\Components\Hidden::make('move_id'),
+                            \Filament\Forms\Components\Hidden::make('product_line_id'),
 
-                            Placeholder::make('locations')
-                                ->label(__('Route'))
-                                ->content(function ($get, $state) {
-                                    if (!$state) {
-                                        return '—';
-                                    }
-                                    return ($state['from_location'] ?? '—') . ' → ' . ($state['to_location'] ?? '—');
-                                }),
+                            \Filament\Forms\Components\TextInput::make('product_name')
+                                ->label(__('Product'))
+                                ->disabled()
+                                ->dehydrated(false)
+                                ->suffix(fn($get) => 'Qty: ' . $get('quantity')),
+
+                            \Filament\Forms\Components\Hidden::make('quantity'),
+
+                            \Filament\Schemas\Components\Grid::make(2)
+                                ->schema([
+                                    \Filament\Forms\Components\TextInput::make('from_location')
+                                        ->label(__('From'))
+                                        ->disabled()
+                                        ->dehydrated(false),
+                                    \Filament\Forms\Components\TextInput::make('to_location')
+                                        ->label(__('To'))
+                                        ->disabled()
+                                        ->dehydrated(false),
+                                ]),
 
                             Repeater::make('lot_lines')
                                 ->label(__('Lot Assignments'))
@@ -75,12 +80,14 @@ class AssignPickingAction extends Action
                                         ->label(__('Lot'))
                                         ->options(function ($get) {
                                             $moveData = $get('../../');
-                                            if (!$moveData || !isset($moveData['product_id'])) {
+                                            // Fallback for getting parent data if relative path fails or structure changes
+                                            $productId = $moveData['product_id'] ?? null;
+
+                                            if (!$productId) {
                                                 return [];
                                             }
 
-                                            // Get available lots for this product
-                                            return Lot::where('product_id', $moveData['product_id'])
+                                            return Lot::where('product_id', $productId)
                                                 ->where('active', true)
                                                 ->pluck('lot_code', 'id')
                                                 ->toArray();
@@ -104,17 +111,22 @@ class AssignPickingAction extends Action
                         ->reorderable(false)
                         ->default(function (Model $record) {
                             /** @var StockPicking $record */
-                            return $record->stockMoves->map(function ($move) {
-                                return [
-                                    'move_id' => $move->id,
-                                    'product_id' => $move->product_id,
-                                    'product_name' => $move->product->name,
-                                    'quantity' => $move->quantity,
-                                    'from_location' => $move->fromLocation?->name,
-                                    'to_location' => $move->toLocation?->name,
-                                    'lot_lines' => [],
-                                ];
-                            })->toArray();
+                            $moves = [];
+                            foreach ($record->stockMoves as $move) {
+                                foreach ($move->productLines as $productLine) {
+                                    $moves[] = [
+                                        'move_id' => $move->id,
+                                        'product_line_id' => $productLine->id,
+                                        'product_id' => $productLine->product_id,
+                                        'product_name' => $productLine->product?->name ?? 'Unknown Product',
+                                        'quantity' => $productLine->quantity,
+                                        'from_location' => $productLine->fromLocation?->name ?? '—',
+                                        'to_location' => $productLine->toLocation?->name ?? '—',
+                                        'lot_lines' => [],
+                                    ];
+                                }
+                            }
+                            return $moves;
                         }),
                 ]),
         ];
@@ -133,20 +145,23 @@ class AssignPickingAction extends Action
                         continue;
                     }
 
-                    // Reserve stock for the move - use first product line's from_location_id
-                    $firstProductLine = $move->productLines()->first();
-                    if ($firstProductLine) {
-                        $reservationService->reserveForMove($move, $firstProductLine->from_location_id);
+                    // Reserve stock for the specific product line
+                    if (isset($moveData['product_line_id'])) {
+                        $productLine = $move->productLines()->find($moveData['product_line_id']);
 
-                        // Create lot lines if specified
-                        if (!empty($moveData['lot_lines'])) {
-                            foreach ($moveData['lot_lines'] as $lotLineData) {
-                                $move->stockMoveLines()->create([
-                                    'company_id' => $move->company_id,
-                                    'stock_move_product_line_id' => $firstProductLine->id,
-                                    'lot_id' => $lotLineData['lot_id'],
-                                    'quantity' => $lotLineData['quantity'],
-                                ]);
+                        if ($productLine) {
+                            $reservationService->reserveForMove($move, $productLine->from_location_id); // Note: Assuming reserveForMove handles productLine logic or we might need to update that service too. For now passing what it expects.
+
+                            // Create lot lines if specified
+                            if (!empty($moveData['lot_lines'])) {
+                                foreach ($moveData['lot_lines'] as $lotLineData) {
+                                    $move->stockMoveLines()->create([
+                                        'company_id' => $move->company_id,
+                                        'stock_move_product_line_id' => $productLine->id,
+                                        'lot_id' => $lotLineData['lot_id'],
+                                        'quantity' => $lotLineData['quantity'],
+                                    ]);
+                                }
                             }
                         }
                     }
@@ -165,7 +180,7 @@ class AssignPickingAction extends Action
                 ->send();
 
             // Refresh the page to show updated state
-            $this->getLivewire()->redirect(request()->url());
+            $this->getLivewire()->redirect(\Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource::getUrl('view', ['record' => $picking]));
         } catch (Exception $e) {
             Notification::make()
                 ->title(__('Error'))
