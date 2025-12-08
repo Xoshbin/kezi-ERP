@@ -93,6 +93,7 @@ class AccountResource extends Resource
                     ->searchable(),
                 TextColumn::make('type')
                     ->label(__('accounting::account.type'))
+                    ->formatStateUsing(fn($state) => $state instanceof \Modules\Accounting\Enums\Accounting\AccountType ? $state->label() : $state)
                     ->searchable(),
                 IconColumn::make('is_deprecated')
                     ->label(__('accounting::account.is_deprecated'))

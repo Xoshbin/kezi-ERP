@@ -72,8 +72,22 @@ class LockDateResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('lock_type')->badge(),
-                TextColumn::make('locked_until')->date(),
+                TextColumn::make('lock_type')
+                    ->badge()
+                    ->label(__('accounting::lock_date.lock_type')),
+                TextColumn::make('locked_until')
+                    ->date()
+                    ->label(__('accounting::lock_date.locked_until')),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label(__('accounting::lock_date.created_at')),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label(__('accounting::lock_date.updated_at')),
             ])
             ->recordActions([
                 EditAction::make()

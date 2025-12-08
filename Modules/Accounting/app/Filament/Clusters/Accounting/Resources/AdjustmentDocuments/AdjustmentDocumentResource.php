@@ -59,24 +59,24 @@ class AdjustmentDocumentResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('adjustment_document.label');
+        return __('accounting::adjustment_document.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('adjustment_document.plural_label');
+        return __('accounting::adjustment_document.plural_label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('adjustment_document.plural_label');
+        return __('accounting::adjustment_document.plural_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make(__('adjustment_document.document_information'))
-                ->description(__('adjustment_document.document_information_description'))
+            Section::make(__('accounting::adjustment_document.document_information'))
+                ->description(__('accounting::adjustment_document.document_information_description'))
                 ->schema([
                     TranslatableSelect::forModel('currency_id', Currency::class, 'name')
                         ->required()
@@ -84,7 +84,7 @@ class AdjustmentDocumentResource extends Resource
                         ->preload()
                         ->live()
                         ->columnSpan(2)
-                        ->disabled(fn (Get $get): bool => ! empty($get('original_invoice_id')) || ! empty($get('original_vendor_bill_id')))
+                        ->disabled(fn(Get $get): bool => !empty($get('original_invoice_id')) || !empty($get('original_vendor_bill_id')))
                         ->createOptionForm([
                             TextInput::make('code')
                                 ->label(__('currency.code'))
@@ -114,36 +114,36 @@ class AdjustmentDocumentResource extends Resource
                                 ->modalWidth('lg');
                         }),
                     Select::make('type')
-                        ->label(__('adjustment_document.adjustment_type'))
+                        ->label(__('accounting::adjustment_document.adjustment_type'))
                         ->options(
                             collect(AdjustmentDocumentType::cases())
-                                ->mapWithKeys(fn (AdjustmentDocumentType $type) => [$type->value => $type->label()])
+                                ->mapWithKeys(fn(AdjustmentDocumentType $type) => [$type->value => $type->label()])
                         )
                         ->required()
                         ->searchable()
                         ->columnSpan(2),
                     TextInput::make('reference_number')
-                        ->label(__('adjustment_document.reference_number'))
+                        ->label(__('accounting::adjustment_document.reference_number'))
                         ->required()
                         ->maxLength(255)
                         ->placeholder('e.g., ADJ-2024-001')
                         ->columnSpan(2),
                     DatePicker::make('date')
-                        ->label(__('adjustment_document.adjustment_date'))
+                        ->label(__('accounting::adjustment_document.adjustment_date'))
                         ->required()
                         ->rules([new NotInLockedPeriod()])
                         ->default(now())
                         ->native(false)
                         ->columnSpan(1),
                     Select::make('status')
-                        ->label(__('adjustment_document.status'))
-                        ->options(collect(AdjustmentDocumentStatus::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
+                        ->label(__('accounting::adjustment_document.status'))
+                        ->options(collect(AdjustmentDocumentStatus::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()]))
                         ->disabled()
                         ->dehydrated(false)
                         ->default(AdjustmentDocumentStatus::Draft->value)
                         ->columnSpan(1),
                     Textarea::make('reason')
-                        ->label(__('adjustment_document.reason_for_adjustment'))
+                        ->label(__('accounting::adjustment_document.reason_for_adjustment'))
                         ->required()
                         ->placeholder('Describe the reason for this adjustment...')
                         ->rows(3)
@@ -152,17 +152,17 @@ class AdjustmentDocumentResource extends Resource
                 ->columns(4)
                 ->columnSpanFull(),
 
-            Section::make(__('adjustment_document.link_to_original_document'))
-                ->description(__('adjustment_document.link_to_original_document_description'))
+            Section::make(__('accounting::adjustment_document.link_to_original_document'))
+                ->description(__('accounting::adjustment_document.link_to_original_document_description'))
                 ->schema([
                     Select::make('document_link_type')
-                        ->label(__('adjustment_document.document_type_to_adjust'))
+                        ->label(__('accounting::adjustment_document.document_type_to_adjust'))
                         ->options([
-                            'invoice' => __('adjustment_document.invoice'),
-                            'vendor_bill' => __('adjustment_document.vendor_bill'),
+                            'invoice' => __('accounting::adjustment_document.invoice'),
+                            'vendor_bill' => __('accounting::adjustment_document.vendor_bill'),
                         ])
                         ->reactive()
-                        ->afterStateUpdated(fn (Set $set) => [$set('original_invoice_id', null), $set('original_vendor_bill_id', null)])
+                        ->afterStateUpdated(fn(Set $set) => [$set('original_invoice_id', null), $set('original_vendor_bill_id', null)])
                         ->dehydrated(false)
                         ->afterStateHydrated(function (Get $get, Set $set) {
                             if ($get('original_invoice_id')) {
@@ -179,24 +179,24 @@ class AdjustmentDocumentResource extends Resource
                         ->relationship(
                             'originalInvoice',
                             'invoice_number',
-                            fn ($query) => $query->posted()->with('customer')
+                            fn($query) => $query->posted()->with('customer')
                         )
                         ->getOptionLabelUsing(function ($value): ?string {
                             $invoice = Invoice::posted()->with('customer')->find($value);
-                            if (! $invoice) {
+                            if (!$invoice) {
                                 return null;
                             }
                             // Ensure we have a single Invoice model, not a collection
                             if ($invoice instanceof Collection) {
                                 $invoice = $invoice->first();
                             }
-                            if (! $invoice) {
+                            if (!$invoice) {
                                 return null;
                             }
 
                             return $invoice->invoice_number . ' - ' . $invoice->customer->name;
                         })
-                        ->visible(fn (Get $get) => $get('document_link_type') === 'invoice')
+                        ->visible(fn(Get $get) => $get('document_link_type') === 'invoice')
                         ->reactive()
                         ->afterStateUpdated(function ($state, Set $set) {
                             if ($state) {
@@ -213,8 +213,8 @@ class AdjustmentDocumentResource extends Resource
                         ->label('Original Vendor Bill')
                         ->searchable()
                         ->preload()
-                        ->relationship('originalVendorBill', 'bill_reference', fn ($query) => $query->posted())
-                        ->visible(fn (Get $get) => $get('document_link_type') === 'vendor_bill')
+                        ->relationship('originalVendorBill', 'bill_reference', fn($query) => $query->posted())
+                        ->visible(fn(Get $get) => $get('document_link_type') === 'vendor_bill')
                         ->reactive()
                         ->afterStateUpdated(function ($state, Set $set) {
                             if ($state) {
@@ -230,15 +230,15 @@ class AdjustmentDocumentResource extends Resource
                 ])
                 ->columnSpanFull(),
 
-            Section::make(__('adjustment_document.line_items'))
-                ->description(__('adjustment_document.line_items_description'))
+            Section::make(__('accounting::adjustment_document.line_items'))
+                ->description(__('accounting::adjustment_document.line_items_description'))
                 ->schema([
                     Repeater::make('lines')
                         ->label('')
                         ->table([
-                            TableColumn::make(__('adjustment_document.product'))->width('20%'),
-                            TableColumn::make(__('adjustment_document.description'))->width('20%'),
-                            TableColumn::make(__('adjustment_document.qty'))->width('10%'),
+                            TableColumn::make(__('accounting::adjustment_document.product'))->width('20%'),
+                            TableColumn::make(__('accounting::adjustment_document.description'))->width('20%'),
+                            TableColumn::make(__('accounting::adjustment_document.qty'))->width('10%'),
                             TableColumn::make('Price')->width('15%'),
                             TableColumn::make('Tax')->width('20%'),
                             TableColumn::make('Account')->width('15%'),
@@ -248,7 +248,7 @@ class AdjustmentDocumentResource extends Resource
                         ->minItems(1)
                         ->schema([
                             TranslatableSelect::forModel('product_id', Product::class, 'name')
-                                ->label(__('adjustment_document.product'))
+                                ->label(__('accounting::adjustment_document.product'))
                                 ->searchable()
                                 ->searchableFields(['name', 'sku', 'description'])
                                 ->preload()
@@ -299,12 +299,12 @@ class AdjustmentDocumentResource extends Resource
                                 })
                                 ->columnSpan(3),
                             TextInput::make('description')
-                                ->label(__('adjustment_document.description'))
+                                ->label(__('accounting::adjustment_document.description'))
                                 ->maxLength(255)
                                 ->required()
                                 ->columnSpan(4),
                             TextInput::make('quantity')
-                                ->label(__('adjustment_document.qty'))
+                                ->label(__('accounting::adjustment_document.qty'))
                                 ->required()
                                 ->numeric()
                                 ->default(1)
@@ -347,7 +347,7 @@ class AdjustmentDocumentResource extends Resource
                                 ->searchable()
                                 ->searchableFields(['name', 'code'])
                                 ->preload()
-                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->getTranslatedLabel('name') . ' (' . $record->code . ')')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->getTranslatedLabel('name') . ' (' . $record->code . ')')
                                 ->required()
                                 ->createOptionForm([
                                     Select::make('company_id')
@@ -367,7 +367,7 @@ class AdjustmentDocumentResource extends Resource
                                         ->required()
                                         ->options(
                                             collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())
-                                                ->mapWithKeys(fn (\Modules\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
+                                                ->mapWithKeys(fn(\Modules\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
                                         )
                                         ->searchable(),
                                     Toggle::make('is_deprecated')
@@ -394,7 +394,7 @@ class AdjustmentDocumentResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('reference_number')
-                    ->label('Reference')
+                    ->label(__('accounting::adjustment_document.reference'))
                     ->searchable()
                     ->sortable()
                     ->weight('medium')
@@ -402,38 +402,38 @@ class AdjustmentDocumentResource extends Resource
                     ->copyMessage('Reference copied!')
                     ->icon('heroicon-o-hashtag'),
                 TextColumn::make('company.name')
-                    ->label('Company')
+                    ->label(__('accounting::adjustment_document.company'))
                     ->sortable()
                     ->icon('heroicon-o-building-office'),
                 TextColumn::make('type')
-                    ->label('Type')
+                    ->label(__('accounting::adjustment_document.type'))
                     ->searchable()
                     ->badge()
-                    ->color(fn (AdjustmentDocumentType $state): string => match ($state->value) {
+                    ->color(fn(AdjustmentDocumentType $state): string => match ($state->value) {
                         'credit_note' => 'success',
                         'debit_note' => 'warning',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn (AdjustmentDocumentType $state): string => ucfirst(str_replace('_', ' ', $state->value))),
+                    ->formatStateUsing(fn(AdjustmentDocumentType $state): string => ucfirst(str_replace('_', ' ', $state->value))),
                 TextColumn::make('date')
-                    ->label('Date')
+                    ->label(__('accounting::adjustment_document.date'))
                     ->date('M j, Y')
                     ->sortable()
                     ->icon('heroicon-o-calendar-days'),
                 TextColumn::make('total_amount')
-                    ->label('Amount')
-                    ->money(fn ($record) => $record->currency->code)
+                    ->label(__('accounting::adjustment_document.amount'))
+                    ->money(fn($record) => $record->currency->code)
                     ->sortable(),
                 TextColumn::make('status')
-                    ->label('Status')
-                    ->formatStateUsing(fn (AdjustmentDocumentStatus $state): string => $state->label())
+                    ->label(__('accounting::adjustment_document.status'))
+                    ->formatStateUsing(fn(AdjustmentDocumentStatus $state): string => $state->label())
                     ->badge()
-                    ->color(fn (AdjustmentDocumentStatus $state): string => match ($state) {
+                    ->color(fn(AdjustmentDocumentStatus $state): string => match ($state) {
                         AdjustmentDocumentStatus::Draft => 'warning',
                         AdjustmentDocumentStatus::Posted => 'success',
                         AdjustmentDocumentStatus::Cancelled => 'danger',
                     })
-                    ->icon(fn (AdjustmentDocumentStatus $state): string => match ($state) {
+                    ->icon(fn(AdjustmentDocumentStatus $state): string => match ($state) {
                         AdjustmentDocumentStatus::Draft => 'heroicon-m-pencil-square',
                         AdjustmentDocumentStatus::Posted => 'heroicon-m-check-circle',
                         AdjustmentDocumentStatus::Cancelled => 'heroicon-m-x-circle',
@@ -452,7 +452,7 @@ class AdjustmentDocumentResource extends Resource
                 SelectFilter::make('type')
                     ->options(
                         collect(AdjustmentDocumentType::cases())
-                            ->mapWithKeys(fn (AdjustmentDocumentType $type) => [$type->value => $type->label()])
+                            ->mapWithKeys(fn(AdjustmentDocumentType $type) => [$type->value => $type->label()])
                     )
                     ->multiple(),
             ])

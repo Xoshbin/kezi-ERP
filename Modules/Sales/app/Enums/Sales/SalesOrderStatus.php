@@ -9,7 +9,9 @@ namespace Modules\Sales\Enums\Sales;
  * This enum implements the comprehensive sales workflow with proper status tracking
  * for quotations, commitments, delivery, invoicing, and completion phases.
  */
-enum SalesOrderStatus: string
+use Filament\Support\Contracts\HasLabel;
+
+enum SalesOrderStatus: string implements HasLabel
 {
     // Pre-commitment phase
     case Quotation = 'quotation';                   // Initial quotation/estimate
@@ -322,5 +324,10 @@ enum SalesOrderStatus: string
         }
 
         return $validTransitions;
+    }
+
+    public function getLabel(): ?string
+    {
+        return $this->label();
     }
 }

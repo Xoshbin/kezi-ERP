@@ -27,11 +27,20 @@ class PurchaseOrderResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'po_number';
 
-    protected static ?string $navigationLabel = 'Purchase Orders';
+    public static function getNavigationLabel(): string
+    {
+        return __('purchase::purchase_orders.label_plural');
+    }
 
-    protected static ?string $modelLabel = 'Purchase Order';
+    public static function getModelLabel(): string
+    {
+        return __('purchase::purchase_orders.label');
+    }
 
-    protected static ?string $pluralModelLabel = 'Purchase Orders';
+    public static function getPluralModelLabel(): string
+    {
+        return __('purchase::purchase_orders.label_plural');
+    }
 
     protected static ?int $navigationSort = 10;
 
