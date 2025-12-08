@@ -13,6 +13,7 @@ return [
     'customer' => 'کڕیار',
     'currency' => 'پارە',
     'fiscal_position' => 'دۆخی دارایی',
+    'date' => 'بەروار',
     'invoice_date' => 'ڕێکەوتی پسووڵە',
     'due_date' => 'ڕێکەوتی شایستە',
     'status' => 'دۆخ',

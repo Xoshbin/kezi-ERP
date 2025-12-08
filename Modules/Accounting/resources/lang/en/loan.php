@@ -1,6 +1,9 @@
 <?php
 
 return [
+    'label' => 'Loan Agreement',
+    'plural_label' => 'Loan Agreements',
+    'navigation_label' => 'Loan Agreements',
     'form' => [
         'counterparty_currency' => 'Counterparty & Currency',
         'partner' => 'Partner',

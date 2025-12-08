@@ -1,37 +1,47 @@
 <?php
 
 return [
-    // Labels
-    'label' => 'جووڵەی کۆگا',
-    'plural_label' => 'جووڵەکانی کۆگا',
-    'create_title' => 'دروستکردنی جووڵەی کۆگا',
-    'edit_title' => 'دەستکاریکردنی جووڵەی کۆگا: :reference',
-    'view_title' => 'جووڵەی کۆگا: :reference',
-
-    // Basic Information
-    'basic_information' => 'زانیاری بنەڕەتی',
-    'basic_information_description' => 'وردەکارییەکانی بنەڕەتی جووڵە بنووسە لەوانە بەرهەم، شوێنەکان، و ژمارەی بەڵگە.',
-    'company' => 'کۆمپانیا',
+    'create_title' => 'دروستکردنی جوڵەی کۆگا',
+    'select_product_help' => 'بەرهەم و بڕی دیاری بکە بۆ بینینی پێشبینی تێچوو',
+    'label' => 'جوڵەی کۆگا',
+    'plural_label' => 'جوڵەکانی کۆگا',
+    'basic_information' => 'زانیاری سەرەتایی',
+    'basic_information_description' => 'زانیاری گشتی دەربارەی جوڵەی کۆگا.',
+    'reference' => 'سەرچاوە',
+    'reference_placeholder' => 'سەرچاوە داخڵ بکە/سکان بکە',
+    'description' => 'وەسف',
+    'product_lines' => 'هێڵەکانی بەرهەم',
+    'product_lines_description' => 'ئەو بەرهەمانەی لەم جوڵەیەدا بەشدارن.',
     'product' => 'بەرهەم',
-    'reference' => 'ژمارەی بەڵگە',
-    'reference_placeholder' => 'ژمارەیەکی بەڵگە بنووسە (ئیختیاری)',
-    'from_location' => 'لە شوێن',
-    'to_location' => 'بۆ شوێن',
-
-    // Movement Details
-    'movement_details' => 'وردەکارییەکانی جووڵە',
-    'movement_details_description' => 'بڕ، جۆر، و دۆخی جووڵە دیاری بکە.',
     'quantity' => 'بڕ',
-    'move_type' => 'جۆری جووڵە',
+    'from_location' => 'لە شوێنی',
+    'to_location' => 'بۆ شوێنی',
+    'source_type' => 'جۆری سەرچاوە',
+    'source' => 'بەڵگەنامەی سەرچاوە',
+    'line_description' => 'وەسفی هێڵ',
+    'add_product_line' => 'زیادکردنی هێڵی بەرهەم',
+    'new_product_line' => 'هێڵی بەرهەمی نوێ',
+    'movement_details' => 'وردەکارییەکانی جوڵە',
+    'movement_details_description' => 'وردەکارییەکان دەربارەی جۆر و دۆخی جوڵە.',
+    'move_type' => 'جۆری جوڵە',
     'status' => 'دۆخ',
-    'move_date' => 'بەرواری جووڵە',
-    'source' => 'بەڵگەی سەرچاوە',
-
-    // Filters
-    'from_date' => 'لە بەروار',
-    'until_date' => 'تا بەروار',
-
-    // Timestamps
-    'created_at' => 'کاتی دروستبوون',
-    'updated_at' => 'کاتی نوێکردنەوە',
+    'move_date' => 'بەروار',
+    'company' => 'کۆمپانیا',
+    'products' => 'بەرهەمەکان',
+    'products_count' => 'بەرهەمەکان',
+    'total_quantity' => 'کۆی گشتی بڕ',
+    'created_at' => 'بەرواری دروستکردن',
+    'from_date' => 'لە بەرواری',
+    'until_date' => 'تا بەرواری',
+    'audit_information' => 'زانیاری وردبینی',
+    'audit_information_description' => 'تۆماری دروستکردن و نوێکردنەوەکان.',
+    'created_by' => 'دروستکراوە لەلایەن',
+    'statuses' => [
+        'draft' => 'ڕەشنووس',
+        'waiting' => 'چاوەڕوانی',
+        'confirmed' => 'پەسەندکراو',
+        'assigned' => 'دیاریکراو',
+        'done' => 'تەواو',
+        'cancelled' => 'هەڵوەشاوە',
+    ],
 ];
