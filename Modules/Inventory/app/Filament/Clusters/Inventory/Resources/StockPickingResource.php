@@ -16,6 +16,7 @@ use Filament\Forms\Components\Select;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Tables\Filters\SelectFilter;
 use Modules\Inventory\Models\StockPicking;
@@ -93,6 +94,82 @@ class StockPickingResource extends Resource
                         ->maxLength(255),
                 ])
                 ->columns(2),
+
+            Section::make(__('Operations'))
+                ->schema([
+                    Forms\Components\Repeater::make('stockMoves')
+                        ->relationship()
+                        ->collapsible()
+                        ->itemLabel(fn(array $state): ?string => 'Move (' . (isset($state['productLines']) ? count($state['productLines']) : 0) . ' lines)')
+                        ->deleteAction(fn($action) => $action->requiresConfirmation())
+                        ->mutateRelationshipDataBeforeCreateUsing(function (array $data, StockPicking $record): array {
+                            $data['company_id'] = $record->company_id;
+                            $data['created_by_user_id'] = \Illuminate\Support\Facades\Auth::id();
+                            $data['move_date'] = $record->scheduled_date;
+                            $data['status'] = \Modules\Inventory\Enums\Inventory\StockMoveStatus::Draft;
+
+                            $data['move_type'] = match ($record->type) {
+                                StockPickingType::Receipt => \Modules\Inventory\Enums\Inventory\StockMoveType::Incoming,
+                                StockPickingType::Delivery => \Modules\Inventory\Enums\Inventory\StockMoveType::Outgoing,
+                                StockPickingType::Internal => \Modules\Inventory\Enums\Inventory\StockMoveType::InternalTransfer,
+                                default => \Modules\Inventory\Enums\Inventory\StockMoveType::InternalTransfer,
+                            };
+
+                            return $data;
+                        })
+                        ->schema([
+                            Forms\Components\Textarea::make('description')
+                                ->label(__('Description'))
+                                ->rows(1)
+                                ->columnSpanFull(),
+
+                            Forms\Components\Repeater::make('productLines')
+                                ->label(__('Product Lines'))
+                                ->relationship('productLines')
+                                ->schema([
+                                    Grid::make(2)
+                                        ->schema([
+                                            \Xoshbin\TranslatableSelect\Components\TranslatableSelect::forModel('product_id', \Modules\Product\Models\Product::class)
+                                                ->label(__('Product'))
+                                                ->required()
+                                                ->searchable()
+                                                ->preload(),
+
+                                            Forms\Components\TextInput::make('quantity')
+                                                ->label(__('Quantity'))
+                                                ->numeric()
+                                                ->required()
+                                                ->default(1),
+                                        ]),
+
+                                    Grid::make(2)
+                                        ->schema([
+                                            \Xoshbin\TranslatableSelect\Components\TranslatableSelect::forModel('from_location_id', \Modules\Inventory\Models\StockLocation::class)
+                                                ->label(__('From Location'))
+                                                ->searchable()
+                                                ->preload()
+                                                ->required(),
+
+                                            \Xoshbin\TranslatableSelect\Components\TranslatableSelect::forModel('to_location_id', \Modules\Inventory\Models\StockLocation::class)
+                                                ->label(__('To Location'))
+                                                ->searchable()
+                                                ->preload()
+                                                ->required(),
+                                        ]),
+                                    Forms\Components\Textarea::make('description')
+                                        ->label(__('Description'))
+                                        ->rows(1)
+                                        ->columnSpanFull(),
+                                ])
+                                ->collapsible()
+                                ->itemLabel(fn(array $state): ?string => $state['product_id'] ? \Modules\Product\Models\Product::find($state['product_id'])?->name : null)
+                                ->deleteAction(fn($action) => $action->requiresConfirmation())
+                                ->mutateRelationshipDataBeforeCreateUsing(function (array $data): array {
+                                    $data['company_id'] = \Illuminate\Support\Facades\Auth::user()->company_id ?? \App\Models\Company::first()->id;
+                                    return $data;
+                                }),
+                        ]),
+                ]),
         ]);
     }
 
