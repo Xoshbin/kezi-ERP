@@ -13,6 +13,7 @@ use Modules\Inventory\Models\StockPicking;
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
 use Modules\Inventory\Enums\Inventory\StockPickingState;
 use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource;
 
 class ConfirmPickingAction extends Action
 {
@@ -66,7 +67,7 @@ class ConfirmPickingAction extends Action
                 ->send();
 
             // Refresh the page to show updated state
-            $this->getLivewire()->redirect(request()->url());
+            $this->getLivewire()->redirect(StockPickingResource::getUrl('view', ['record' => $picking]));
         } catch (Exception $e) {
             Notification::make()
                 ->title(__('Error'))
