@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'create_title' => 'Create Stock Move',
+    'select_product_help' => 'Select product and quantity to see cost preview',
     'label' => 'Stock Move',
     'plural_label' => 'Stock Moves',
     'basic_information' => 'Basic Information',
