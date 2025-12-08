@@ -3,6 +3,7 @@
 namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Schemas;
 
 use Brick\Money\Money;
+use Filament\Forms\Get;
 use Filament\Actions\Action;
 use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
@@ -241,10 +242,26 @@ class PurchaseOrderForm
                                         Toggle::make('is_active')
                                             ->label(__('product.is_active'))
                                             ->default(true),
+                                        Select::make('default_inventory_account_id')
+                                            ->label(__('product.default_inventory_account'))
+                                            ->options(function () {
+                                                return Account::where('company_id', Filament::getTenant()?->getKey())
+                                                    ->where('is_deprecated', false)
+                                                    ->pluck('name', 'id');
+                                            })
+                                            ->visible(fn($get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
+                                            ->required(fn($get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
+                                            ->searchable()
+                                            ->preload(),
                                     ])
                                     ->createOptionModalHeading(__('common.modal_title_create_product'))
                                     ->createOptionAction(function (Action $action) {
                                         return $action->modalWidth('lg');
+                                    })
+                                    ->createOptionUsing(function (array $data): int {
+                                        $data['company_id'] = Filament::getTenant()?->getKey();
+                                        $product = Product::create($data);
+                                        return $product->getKey();
                                     })
                                     ->columnSpan(3),
 
