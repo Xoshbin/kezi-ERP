@@ -29,7 +29,7 @@ class PurchaseOrderResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('purchase::purchase_orders.label_plural');
+        return __('purchase::purchase_orders.plural_label');
     }
 
     public static function getModelLabel(): string
@@ -39,7 +39,7 @@ class PurchaseOrderResource extends Resource
 
     public static function getPluralModelLabel(): string
     {
-        return __('purchase::purchase_orders.label_plural');
+        return __('purchase::purchase_orders.plural_label');
     }
 
     protected static ?int $navigationSort = 10;

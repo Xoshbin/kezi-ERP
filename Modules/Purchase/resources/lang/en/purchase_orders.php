@@ -17,9 +17,11 @@ return [
         'line_items_description' => 'Add products and services to this purchase order',
         'notes' => 'Notes & Terms',
         'totals' => 'Totals',
+        'lines' => 'Order Lines',
     ],
 
     'fields' => [
+        'id' => 'ID',
         'po_number' => 'PO Number',
         'status' => 'Status',
         'po_date' => 'PO Date',
@@ -34,6 +36,14 @@ return [
         'total_tax' => 'Total Tax',
         'created_by' => 'Created By',
         'created_at' => 'Created At',
+        'updated_at' => 'Updated At',
+        'created_by_user' => 'Created By',
+        'confirmed_at' => 'Confirmed At',
+        'cancelled_at' => 'Cancelled At',
+        'exchange_rate_at_creation' => 'Exchange Rate',
+        'total_amount_company_currency' => 'Total (Company Currency)',
+        'total_tax_company_currency' => 'Tax (Company Currency)',
+        'billing_status' => 'Billing Status',
         // Line item fields
         'lines' => 'Line Items',
         'product' => 'Product',
@@ -43,20 +53,19 @@ return [
         'tax' => 'Tax',
     ],
 
-    'help' => [
-        'po_number' => 'Auto-generated when saved',
-        'reference' => 'Your internal reference or vendor quote number',
-        'terms_and_conditions' => 'Standard terms and conditions for this purchase order',
-    ],
-
-    'actions' => [
-        'confirm' => 'Confirm',
-        'cancel' => 'Cancel',
-    ],
-
-    'notifications' => [
-        'confirmed' => 'Purchase order confirmed successfully',
-        'cancelled' => 'Purchase order cancelled successfully',
+    'line_fields' => [
+        'product' => 'Product',
+        'description' => 'Description',
+        'quantity' => 'Quantity',
+        'quantity_received' => 'Quantity Received',
+        'remaining_quantity' => 'Remaining',
+        'unit_price' => 'Unit Price',
+        'subtotal' => 'Subtotal',
+        'tax' => 'Tax',
+        'total_line_tax' => 'Line Tax',
+        'total' => 'Total',
+        'expected_delivery_date' => 'Expected Delivery',
+        'notes' => 'Notes',
     ],
 
     'status' => [
@@ -84,53 +93,10 @@ return [
         'cancelled' => 'Cancelled',
     ],
 
-    'sections' => [
-        'basic_info' => 'Basic Information',
-        'vendor_details' => 'Vendor Details',
-        'delivery_info' => 'Delivery Information',
-        'totals' => 'Totals',
-        'lines' => 'Order Lines',
-        'notes' => 'Notes & Terms',
-    ],
-
-    'fields' => [
-        'id' => 'ID',
-        'po_number' => 'PO Number',
-        'status' => 'Status',
-        'reference' => 'Reference',
-        'vendor' => 'Vendor',
-        'currency' => 'Currency',
-        'po_date' => 'PO Date',
-        'expected_delivery_date' => 'Expected Delivery Date',
-        'confirmed_at' => 'Confirmed At',
-        'cancelled_at' => 'Cancelled At',
-        'exchange_rate_at_creation' => 'Exchange Rate',
-        'total_amount' => 'Total Amount',
-        'total_tax' => 'Total Tax',
-        'total_amount_company_currency' => 'Total (Company Currency)',
-        'total_tax_company_currency' => 'Tax (Company Currency)',
-        'notes' => 'Notes',
-        'terms_and_conditions' => 'Terms & Conditions',
-        'delivery_location' => 'Delivery Location',
-        'created_by_user' => 'Created By',
-        'created_at' => 'Created At',
-        'updated_at' => 'Updated At',
-        'billing_status' => 'Billing Status',
-    ],
-
-    'line_fields' => [
-        'product' => 'Product',
-        'description' => 'Description',
-        'quantity' => 'Quantity',
-        'quantity_received' => 'Quantity Received',
-        'remaining_quantity' => 'Remaining',
-        'unit_price' => 'Unit Price',
-        'subtotal' => 'Subtotal',
-        'tax' => 'Tax',
-        'total_line_tax' => 'Line Tax',
-        'total' => 'Total',
-        'expected_delivery_date' => 'Expected Delivery',
-        'notes' => 'Notes',
+    'billing_status' => [
+        'not_billed' => 'Not Billed',
+        'billed' => 'Billed',
+        'multiple_bills' => ':count Bills',
     ],
 
     'actions' => [
@@ -139,12 +105,12 @@ return [
         'view' => 'View Purchase Order',
         'send_rfq' => 'Send RFQ',
         'send' => 'Send to Vendor',
-        'confirm' => 'Confirm Purchase Order',
+        'confirm' => 'Confirm',
         'ready_to_receive' => 'Ready to Receive',
         'ready_to_receive_confirmation_title' => 'Ready to Receive Goods',
         'ready_to_receive_confirmation_description' => 'This will mark the purchase order as ready to receive goods from the vendor.',
         'mark_done' => 'Mark as Done',
-        'cancel' => 'Cancel Purchase Order',
+        'cancel' => 'Cancel',
         'receive_goods' => 'Receive Goods',
         'create_bill' => 'Create Vendor Bill',
         'create_bill_confirmation_title' => 'Create Vendor Bill',
@@ -166,32 +132,26 @@ return [
     ],
 
     'notifications' => [
+        'confirmed' => 'Purchase order confirmed successfully',
+        'cancelled' => 'Purchase order cancelled successfully',
         'rfq_sent' => 'RFQ sent to vendor successfully.',
         'sent' => 'Purchase order sent to vendor successfully.',
-        'confirmed' => 'Purchase order confirmed successfully.',
         'ready_to_receive' => 'Purchase order is now ready to receive goods.',
         'marked_done' => 'Purchase order marked as done successfully.',
-        'cancelled' => 'Purchase order cancelled successfully.',
         'bill_created_successfully' => 'Vendor Bill Created Successfully',
         'bill_created_body' => 'Vendor bill :reference has been created and is ready for review.',
         'bill_creation_failed' => 'Failed to Create Vendor Bill',
     ],
 
     'help' => [
-        'po_number' => 'Auto-generated when the purchase order is confirmed.',
-        'reference' => 'External reference number or vendor quote number.',
+        'po_number' => 'Auto-generated when saved',
+        'reference' => 'Your internal reference or vendor quote number',
+        'terms_and_conditions' => 'Standard terms and conditions for this purchase order',
         'exchange_rate' => 'Exchange rate used for currency conversion when the PO was created.',
         'delivery_location' => 'Default location where goods will be received.',
-        'terms_and_conditions' => 'Terms and conditions for this purchase order.',
         'status_can_create_bill' => 'Vendor bills can be created from this purchase order.',
         'status_cannot_create_bill' => 'Change status to Confirmed, To Receive, or later to enable bill creation.',
         'status_bills_already_exist' => 'Vendor bills already exist for this purchase order.',
         'status_forward_only' => 'Status can only be changed forward in the workflow.',
-    ],
-
-    'billing_status' => [
-        'not_billed' => 'Not Billed',
-        'billed' => 'Billed',
-        'multiple_bills' => ':count Bills',
     ],
 ];
