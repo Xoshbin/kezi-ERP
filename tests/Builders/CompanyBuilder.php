@@ -2,17 +2,17 @@
 
 namespace Tests\Builders;
 
-use App\Enums\Accounting\JournalType;
-use App\Enums\Inventory\StockLocationType;
-use App\Models\Account;
+
+
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Journal;
-use App\Models\StockLocation;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Models\Journal;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Enums\Inventory\StockLocationType;
 
 class CompanyBuilder
 {
-    protected ?Currency $currency = null;
+    protected ?\Modules\Foundation\Models\Currency $currency = null;
 
     protected array $accounts = [];
 
@@ -24,12 +24,12 @@ class CompanyBuilder
 
     public static function new(): self
     {
-        return new self;
+        return new self();
     }
 
     public function withCurrency(string $code = 'IQD'): self
     {
-        $this->currency = Currency::firstOrCreate(
+        $this->currency = \Modules\Foundation\Models\Currency::firstOrCreate(
             ['code' => $code],
             [
                 'name' => $code === 'IQD' ? 'Iraqi Dinar' : 'US Dollar',
@@ -106,7 +106,7 @@ class CompanyBuilder
 
         $accountInstances = [];
         foreach ($this->accounts as $key => $details) {
-            $accountInstances[$key] = Account::factory()->for($company)->create($details);
+            $accountInstances[$key] = \Modules\Accounting\Models\Account::factory()->for($company)->create($details);
         }
 
         $journalInstances = [];
@@ -125,9 +125,9 @@ class CompanyBuilder
         }
 
         $company->update(array_merge(
-            collect($accountInstances)->mapWithKeys(fn ($acc, $k) => [$k => $acc->id])->all(),
-            collect($journalInstances)->mapWithKeys(fn ($jour, $k) => [$k => $jour->id])->all(),
-            collect($locationInstances)->mapWithKeys(fn ($loc, $k) => [$k => $loc->id])->all()
+            collect($accountInstances)->mapWithKeys(fn($acc, $k) => [$k => $acc->id])->all(),
+            collect($journalInstances)->mapWithKeys(fn($jour, $k) => [$k => $jour->id])->all(),
+            collect($locationInstances)->mapWithKeys(fn($loc, $k) => [$k => $loc->id])->all()
         ));
 
         // Associate the locations with the company
@@ -142,7 +142,7 @@ class CompanyBuilder
         return $company->fresh();
     }
 
-    private function getDefaultAccountForJournal(string $journalKey, array $accounts): ?Account
+    private function getDefaultAccountForJournal(string $journalKey, array $accounts): ?\Modules\Accounting\Models\Account
     {
         $mapping = [
             'default_sales_journal_id' => 'default_accounts_receivable_id',

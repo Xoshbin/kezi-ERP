@@ -1,27 +1,42 @@
 <?php
 
-use App\Enums\Accounting\AccountType;
-use App\Enums\Accounting\JournalType;
-use App\Enums\Adjustments\AdjustmentDocumentStatus;
-use App\Enums\Inventory\ValuationMethod;
-use App\Enums\Partners\PartnerType;
-use App\Enums\Payments\PaymentStatus;
-use App\Enums\Products\ProductType;
+
+
+
+
+use Modules\Accounting\Models\Journal;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+
+use Illuminate\Support\Facades\Hash;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\Pages\CreateBankStatement;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages\CreatePartner;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
+use Modules\Accounting\Filament\Resources\Accounts\Pages\CreateAccount;
 use App\Models\Account;
-use App\Models\AdjustmentDocument;
-use App\Models\BankStatement;
 use App\Models\Company;
 use App\Models\Currency;
 use App\Models\Invoice;
-use App\Models\Journal;
-use App\Models\JournalEntry;
-use App\Models\LockDate;
-use App\Models\Partner;
+
+use Modules\Accounting\Models\JournalEntry;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\User;
-use App\Models\VendorBill;
+use Modules\Inventory\Services\AdjustmentDocumentService;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Exceptions\PeriodIsLockedException;
+use Modules\Accounting\Models\Asset;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
 
 use function Pest\Livewire\livewire;
 
@@ -36,7 +51,7 @@ beforeEach(function () {
 function setupFoundation()
 {
     // Create currency (use firstOrCreate to avoid duplicates)
-    $currency = Currency::firstOrCreate(
+    $currency = \Modules\Foundation\Models\Currency::firstOrCreate(
         ['code' => 'IQD'],
         [
             'name' => 'Iraqi Dinar',
@@ -59,26 +74,26 @@ function setupFoundation()
     $user = User::create([
         'name' => 'Soran',
         'email' => 'soran@jmeryarerp.com',
-        'password' => \Hash::make('SecurePassword123!'),
+        'password' => Hash::make('SecurePassword123!'),
     ]);
     $user->companies()->attach($company);
 
     // Create accounts
     $accountsData = [
-        '1010' => ['name' => 'Bank', 'type' => AccountType::BankAndCash],
-        '1200' => ['name' => 'Accounts Receivable', 'type' => AccountType::Receivable],
-        '1500' => ['name' => 'IT Equipment', 'type' => AccountType::FixedAssets, 'can_create_assets' => true],
-        '1501' => ['name' => 'Accumulated Depreciation', 'type' => AccountType::NonCurrentAssets],
-        '2100' => ['name' => 'Accounts Payable', 'type' => AccountType::Payable],
-        '3000' => ['name' => 'Owner\'s Equity', 'type' => AccountType::Equity],
-        '4000' => ['name' => 'Consulting Revenue', 'type' => AccountType::Income],
-        '5000' => ['name' => 'Sales Discounts & Returns', 'type' => AccountType::Income],
-        '6100' => ['name' => 'Depreciation Expense', 'type' => AccountType::Depreciation],
+        '1010' => ['name' => 'Bank', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash],
+        '1200' => ['name' => 'Accounts Receivable', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::Receivable],
+        '1500' => ['name' => 'IT Equipment', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::FixedAssets, 'can_create_assets' => true],
+        '1501' => ['name' => 'Accumulated Depreciation', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::NonCurrentAssets],
+        '2100' => ['name' => 'Accounts Payable', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::Payable],
+        '3000' => ['name' => 'Owner\'s Equity', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::Equity],
+        '4000' => ['name' => 'Consulting Revenue', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income],
+        '5000' => ['name' => 'Sales Discounts & Returns', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income],
+        '6100' => ['name' => 'Depreciation Expense', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::Depreciation],
     ];
 
     $accounts = [];
     foreach ($accountsData as $code => $data) {
-        $accounts[$code] = Account::create([
+        $accounts[$code] = \Modules\Accounting\Models\Account::create([
             'company_id' => $company->id,
             'code' => $code,
             'name' => $data['name'],
@@ -128,7 +143,7 @@ function setupFoundation()
     test()->actingAs($user);
 
     // Set up Filament tenant context
-    \Filament\Facades\Filament::setTenant($company);
+    Filament::setTenant($company);
 }
 
 test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
@@ -150,7 +165,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
 
     // Step 4: Capital Injection (Owner's Investment)
     // Create manual journal entry for 15,000,000 IQD capital injection
-    livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+    livewire(CreateJournalEntry::class)
         ->fillForm([
             'journal_id' => $journals['Bank']->id,
             'currency_id' => $currency->id,
@@ -185,7 +200,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($capitalJournalEntry->company_id)->toBe($company->id);
 
     // Post the journal entry using Filament action
-    livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, [
+    livewire(EditJournalEntry::class, [
         'record' => $capitalJournalEntry->getRouteKey(),
     ])
         ->callAction('post')
@@ -219,19 +234,19 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
 
     // Step 5: Purchasing Fixed Asset
     // Create the Vendor ("Paykar Tech Supplies")
-    livewire(\App\Filament\Clusters\Accounting\Resources\Partners\Pages\CreatePartner::class)
+    livewire(CreatePartner::class)
         ->fillForm([
             'name' => 'Paykar Tech Supplies',
-            'type' => PartnerType::Vendor->value,
+            'type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor->value,
         ])
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $vendor = Partner::where('name', 'Paykar Tech Supplies')->first();
+    $vendor = \Modules\Foundation\Models\Partner::where('name', 'Paykar Tech Supplies')->first();
     expect($vendor)->not->toBeNull();
 
     // Record the Vendor Bill
-    livewire(\App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill::class)
+    livewire(CreateVendorBill::class)
         ->fillForm([
             'vendor_id' => $vendor->id,
             'currency_id' => $currency->id,
@@ -252,11 +267,11 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $vendorBill = VendorBill::where('bill_reference', 'KE-LAPTOP-001')->first();
+    $vendorBill = \Modules\Purchase\Models\VendorBill::where('bill_reference', 'KE-LAPTOP-001')->first();
     expect($vendorBill)->not->toBeNull();
 
     // Post the vendor bill using Filament action
-    livewire(\App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill::class, [
+    livewire(EditVendorBill::class, [
         'record' => $vendorBill->getRouteKey(),
     ])
         ->callAction('confirm')
@@ -271,7 +286,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($vendorBillJE)->not->toBeNull();
     expect($vendorBillJE->is_posted)->toBeTrue();
     expect($vendorBillJE->hash)->not->toBeNull();
-    expect($vendorBillJE->source_type)->toBe('App\Models\VendorBill');
+    expect($vendorBillJE->source_type)->toBe(\Modules\Purchase\Models\VendorBill::class);
     expect($vendorBillJE->source_id)->toBe($vendorBill->id);
 
     $vendorBillLines = $vendorBillJE->lines;
@@ -290,7 +305,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($liabilityLine->credit->getAmount()->toInt())->toBe(3000000);
 
     // Verify that an asset was created from the vendor bill
-    $createdAssets = \App\Models\Asset::where('source_type', 'App\Models\VendorBill')
+    $createdAssets = Asset::where('source_type', \Modules\Purchase\Models\VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->get();
     expect($createdAssets)->toHaveCount(1);
@@ -303,19 +318,19 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
 
     // Step 6: Customer Invoice and Payment
     // Create the Customer ("Hawre Trading Group")
-    livewire(\App\Filament\Clusters\Accounting\Resources\Partners\Pages\CreatePartner::class)
+    livewire(CreatePartner::class)
         ->fillForm([
             'name' => 'Hawre Trading Group',
-            'type' => PartnerType::Customer->value,
+            'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer->value,
         ])
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $customer = Partner::where('name', 'Hawre Trading Group')->first();
+    $customer = \Modules\Foundation\Models\Partner::where('name', 'Hawre Trading Group')->first();
     expect($customer)->not->toBeNull();
 
     // Create the Customer Invoice
-    livewire(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice::class)
+    livewire(CreateInvoice::class)
         ->fillForm([
             'customer_id' => $customer->id,
             'currency_id' => $currency->id,
@@ -334,19 +349,19 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $invoice = Invoice::where('customer_id', $customer->id)->first();
+    $invoice = \Modules\Sales\Models\Invoice::where('customer_id', $customer->id)->first();
     expect($invoice)->not->toBeNull();
     expect($invoice->invoice_number)->toBeNull(); // Should be null in draft
 
     // Post the invoice using Filament action
-    livewire(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
+    livewire(EditInvoice::class, [
         'record' => $invoice->getRouteKey(),
     ])
         ->callAction('confirm')
         ->assertHasNoErrors();
 
     $invoice->refresh();
-    expect($invoice->status)->toBe(\App\Enums\Sales\InvoiceStatus::Posted);
+    expect($invoice->status)->toBe(InvoiceStatus::Posted);
     expect($invoice->invoice_number)->not->toBeNull(); // Sequential numbering
 
     // Verify invoice journal entry
@@ -354,7 +369,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($invoiceJE)->not->toBeNull();
     expect($invoiceJE->is_posted)->toBeTrue();
     expect($invoiceJE->hash)->not->toBeNull();
-    expect($invoiceJE->source_type)->toBe('App\Models\Invoice');
+    expect($invoiceJE->source_type)->toBe(\Modules\Sales\Models\Invoice::class);
     expect($invoiceJE->source_id)->toBe($invoice->id);
 
     $invoiceLines = $invoiceJE->lines;
@@ -373,10 +388,10 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($revenueLine->credit->getAmount()->toInt())->toBe(5000000);
 
     // Step 7: Receiving Payment from Customer (using Register Payment action)
-    expect($invoice->status)->toBe(\App\Enums\Sales\InvoiceStatus::Posted);
+    expect($invoice->status)->toBe(InvoiceStatus::Posted);
     expect($invoice->getRemainingAmount()->isZero())->toBeFalse();
 
-    livewire(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice::class, [
+    livewire(EditInvoice::class, [
         'record' => $invoice->getRouteKey(),
     ])
         ->callAction('register_payment', [
@@ -387,7 +402,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
             'currency_id' => $currency->id,
         ]);
 
-    $payment = Payment::where('reference', 'Payment from Hawre Trading Group')->first();
+    $payment = \Modules\Payment\Models\Payment::where('reference', 'Payment from Hawre Trading Group')->first();
     expect($payment)->not->toBeNull();
 
     // Payment should already be confirmed automatically by the register_payment action
@@ -397,10 +412,10 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
 
     // Verify invoice is now paid
     $invoice->refresh();
-    expect($invoice->status)->toBe(\App\Enums\Sales\InvoiceStatus::Paid);
+    expect($invoice->status)->toBe(InvoiceStatus::Paid);
 
     // Step 8: Paying a Vendor (using Register Payment action)
-    livewire(\App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill::class, [
+    livewire(EditVendorBill::class, [
         'record' => $vendorBill->getRouteKey(),
     ])
         ->callAction('register_payment', [
@@ -411,7 +426,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
             'currency_id' => $currency->id,
         ]);
 
-    $vendorPayment = Payment::where('reference', 'Payment to Paykar Tech Supplies')->first();
+    $vendorPayment = \Modules\Payment\Models\Payment::where('reference', 'Payment to Paykar Tech Supplies')->first();
     expect($vendorPayment)->not->toBeNull();
 
     // Payment should already be confirmed automatically by the register_payment action
@@ -419,7 +434,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($vendorPayment->journalEntry)->not->toBeNull();
 
     // Step 9: Handling a Correction (Credit Note) using AdjustmentDocumentResource
-    livewire(\App\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument::class)
+    livewire(CreateAdjustmentDocument::class)
         ->fillForm([
             'company_id' => $company->id,
             'type' => 'credit_note',
@@ -441,7 +456,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $creditNote = AdjustmentDocument::where('original_invoice_id', $invoice->id)->first();
+    $creditNote = \Modules\Inventory\Models\AdjustmentDocument::where('original_invoice_id', $invoice->id)->first();
     expect($creditNote)->not->toBeNull();
     expect($creditNote->type->value)->toBe('credit_note');
     expect($creditNote->reason)->toBe('Goodwill discount for new client');
@@ -452,7 +467,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($creditNote->status)->toBe(AdjustmentDocumentStatus::Draft);
 
     // Post the credit note using the service directly (Filament action has issues)
-    $adjustmentService = app(\App\Services\AdjustmentDocumentService::class);
+    $adjustmentService = app(AdjustmentDocumentService::class);
     $adjustmentService->post($creditNote, $user);
 
     $creditNote->refresh();
@@ -462,16 +477,16 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Verify the credit note journal entry
     $creditNoteJE = $creditNote->journalEntry;
     expect($creditNoteJE->is_posted)->toBeTrue();
-    expect($creditNoteJE->source_type)->toBe('App\Models\AdjustmentDocument');
+    expect($creditNoteJE->source_type)->toBe(\Modules\Inventory\Models\AdjustmentDocument::class);
     expect($creditNoteJE->source_id)->toBe($creditNote->id);
 
     // Step 10: Bank Reconciliation
-    livewire(\App\Filament\Clusters\Accounting\Resources\BankStatements\Pages\CreateBankStatement::class)
+    livewire(CreateBankStatement::class)
         ->fillForm([
             'company_id' => $company->id,
             'currency_id' => $currency->id,
             'journal_id' => $journals['Bank']->id,
-            'reference' => 'Monthly Statement - '.now()->format('Y-m'),
+            'reference' => 'Monthly Statement - ' . now()->format('Y-m'),
             'date' => now()->format('Y-m-d'),
             'starting_balance' => 17000000,
             'ending_balance' => 18999500,
@@ -499,7 +514,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $bankStatement = BankStatement::where('reference', 'Monthly Statement - '.now()->format('Y-m'))->first();
+    $bankStatement = \Modules\Accounting\Models\BankStatement::where('reference', 'Monthly Statement - ' . now()->format('Y-m'))->first();
     expect($bankStatement)->not->toBeNull();
 
     // Verify bank statement lines
@@ -509,14 +524,14 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Step 11: Inventory Management
     // Create Inventory Accounts
     $inventoryAccounts = [
-        ['code' => '1100', 'name' => 'Inventory Asset', 'type' => AccountType::CurrentAssets],
-        ['code' => '6000', 'name' => 'Cost of Goods Sold', 'type' => AccountType::CostOfRevenue],
-        ['code' => '2150', 'name' => 'Stock Interim (Received)', 'type' => AccountType::CurrentLiabilities],
+        ['code' => '1100', 'name' => 'Inventory Asset', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets],
+        ['code' => '6000', 'name' => 'Cost of Goods Sold', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::CostOfRevenue],
+        ['code' => '2150', 'name' => 'Stock Interim (Received)', 'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities],
     ];
 
     $inventoryAccountsCreated = [];
     foreach ($inventoryAccounts as $accountData) {
-        livewire(\App\Filament\Clusters\Settings\Resources\Accounts\Pages\CreateAccount::class)
+        livewire(CreateAccount::class)
             ->fillForm([
                 'company_id' => $company->id,
                 'code' => $accountData['code'],
@@ -527,18 +542,18 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
             ->call('create')
             ->assertHasNoFormErrors();
 
-        $account = Account::where('code', $accountData['code'])->first();
+        $account = \Modules\Accounting\Models\Account::where('code', $accountData['code'])->first();
         expect($account)->not->toBeNull();
         $inventoryAccountsCreated[$accountData['code']] = $account;
     }
 
     // Create a Storable Product
-    livewire(\App\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct::class)
+    livewire(CreateProduct::class)
         ->fillForm([
             'name' => 'IT Workstation',
             'sku' => 'ITWS001',
             'unit_price' => 10000000,
-            'type' => ProductType::Storable->value,
+            'type' => \Modules\Product\Enums\Products\ProductType::Storable->value,
             'inventory_valuation_method' => ValuationMethod::AVCO->value,
             'default_inventory_account_id' => $inventoryAccountsCreated['1100']->id,
             'default_cogs_account_id' => $inventoryAccountsCreated['6000']->id,
@@ -549,24 +564,24 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $product = Product::where('sku', 'ITWS001')->first();
+    $product = \Modules\Product\Models\Product::where('sku', 'ITWS001')->first();
     expect($product)->not->toBeNull();
 
     // Step 11.3: Purchase Inventory (simplified test)
     // Create inventory vendor
-    livewire(\App\Filament\Clusters\Accounting\Resources\Partners\Pages\CreatePartner::class)
+    livewire(CreatePartner::class)
         ->fillForm([
             'name' => 'Global Tech Distributors',
-            'type' => PartnerType::Vendor->value,
+            'type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor->value,
         ])
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $inventoryVendor = Partner::where('name', 'Global Tech Distributors')->first();
+    $inventoryVendor = \Modules\Foundation\Models\Partner::where('name', 'Global Tech Distributors')->first();
     expect($inventoryVendor)->not->toBeNull();
 
     // Create inventory purchase bill
-    livewire(\App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill::class)
+    livewire(CreateVendorBill::class)
         ->fillForm([
             'vendor_id' => $inventoryVendor->id,
             'currency_id' => $currency->id,
@@ -587,11 +602,11 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $inventoryBill = VendorBill::where('bill_reference', 'GBL-WS-001')->first();
+    $inventoryBill = \Modules\Purchase\Models\VendorBill::where('bill_reference', 'GBL-WS-001')->first();
     expect($inventoryBill)->not->toBeNull();
 
     // Post the inventory bill using Filament action
-    livewire(\App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill::class, [
+    livewire(EditVendorBill::class, [
         'record' => $inventoryBill->getRouteKey(),
     ])
         ->callAction('confirm')
@@ -605,7 +620,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     $lockDate = now()->subDays(1); // Lock yesterday and before
 
     // Create a lock date record directly (Filament form has issues with disabled company_id field)
-    $lockDateRecord = LockDate::create([
+    $lockDateRecord = \Modules\Accounting\Models\LockDate::create([
         'company_id' => $company->id,
         'lock_type' => 'everything_date',
         'locked_until' => $lockDate->format('Y-m-d'),
@@ -619,7 +634,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Test that the lock date validation works by expecting an exception
     $exceptionThrown = false;
     try {
-        livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+        livewire(CreateJournalEntry::class)
             ->fillForm([
                 'company_id' => $company->id,
                 'journal_id' => $journals['Miscellaneous']->id,
@@ -647,7 +662,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
                 ],
             ])
             ->call('create');
-    } catch (\App\Exceptions\PeriodIsLockedException $e) {
+    } catch (PeriodIsLockedException $e) {
         $exceptionThrown = true;
         expect($e->getMessage())->toContain('The period is locked until');
     }
@@ -658,7 +673,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     // Test 2: Verify that transactions with dates after the lock date still work
     $futureDate = now()->addDays(1)->format('Y-m-d');
 
-    livewire(\App\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+    livewire(CreateJournalEntry::class)
         ->fillForm([
             'company_id' => $company->id,
             'journal_id' => $journals['Miscellaneous']->id,
@@ -693,7 +708,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($allowedJournalEntry->entry_date->format('Y-m-d'))->toBe($futureDate);
 
     // Test 3: Attempt to create an invoice with a date before the lock date (should fail)
-    $lockedInvoiceTest = livewire(\App\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice::class)
+    $lockedInvoiceTest = livewire(CreateInvoice::class)
         ->fillForm([
             'company_id' => $company->id,
             'customer_id' => $customer->id,
@@ -716,7 +731,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($lockedInvoiceTest->errors()->has('data.invoice_date'))->toBeTrue();
 
     // Test 4: Attempt to create a vendor bill with a date before the lock date (should fail)
-    $lockedVendorBillTest = livewire(\App\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill::class)
+    $lockedVendorBillTest = livewire(CreateVendorBill::class)
         ->fillForm([
             'company_id' => $company->id,
             'vendor_id' => $vendor->id,

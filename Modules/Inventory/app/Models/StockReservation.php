@@ -1,0 +1,44 @@
+<?php
+
+namespace Modules\Inventory\Models;
+
+use App\Models\Company;
+use Modules\Product\Models\Product;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockLocation;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class StockReservation extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'company_id',
+        'product_id',
+        'stock_move_id',
+        'location_id',
+        'quantity',
+    ];
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    public function move(): BelongsTo
+    {
+        return $this->belongsTo(StockMove::class, 'stock_move_id');
+    }
+
+    public function location(): BelongsTo
+    {
+        return $this->belongsTo(StockLocation::class, 'location_id');
+    }
+}

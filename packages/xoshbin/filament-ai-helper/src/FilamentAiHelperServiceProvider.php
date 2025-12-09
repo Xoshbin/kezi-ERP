@@ -11,6 +11,8 @@ use Livewire\Livewire;
 use Xoshbin\FilamentAiHelper\Actions\FillFormAction;
 use Xoshbin\FilamentAiHelper\Actions\GetAIAssistantResponseAction;
 use Xoshbin\FilamentAiHelper\Actions\UpdateFormAction;
+use Xoshbin\FilamentAiHelper\Livewire\AiChatBox;
+use Xoshbin\FilamentAiHelper\Livewire\AiChatWidget;
 use Xoshbin\FilamentAiHelper\Services\DeepContextService;
 use Xoshbin\FilamentAiHelper\Services\FormSchemaExtractor;
 use Xoshbin\FilamentAiHelper\Services\GeminiService;
@@ -51,8 +53,8 @@ class FilamentAiHelperServiceProvider extends ServiceProvider
         }
 
         // Register Livewire components
-        Livewire::component('ai-chat-box', \Xoshbin\FilamentAiHelper\Livewire\AiChatBox::class);
-        Livewire::component('ai-chat-widget', \Xoshbin\FilamentAiHelper\Livewire\AiChatWidget::class);
+        Livewire::component('ai-chat-box', AiChatBox::class);
+        Livewire::component('ai-chat-widget', AiChatWidget::class);
 
         // Load views
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'filament-ai-helper');
