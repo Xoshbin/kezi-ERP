@@ -11,7 +11,7 @@ class BuildVendorBillPostingPreviewAction
 {
     private function accountLabelName(?Account $account): string
     {
-        if (! $account) {
+        if (!$account) {
             return '';
         }
         // Some models may cast name as array (translatable); normalize to string
@@ -41,25 +41,25 @@ class BuildVendorBillPostingPreviewAction
 
         // Validate that vendor bill has line items
         if ($vendorBill->lines->isEmpty()) {
-            $msg = __('vendor_bill.validation_no_line_items');
+            $msg = __('purchase::vendor_bill.validation_no_line_items');
             $errors[] = $msg;
             $issues[] = ['type' => 'no_line_items', 'message' => $msg];
         }
 
         // Validate that vendor bill has non-zero total amount
         if ($vendorBill->total_amount->isZero()) {
-            $msg = __('vendor_bill.validation_zero_total_amount');
+            $msg = __('purchase::vendor_bill.validation_zero_total_amount');
             $errors[] = $msg;
             $issues[] = ['type' => 'zero_total_amount', 'message' => $msg];
         }
 
         $apAccountId = $vendorBill->vendor->payable_account_id ?? $company->default_accounts_payable_id;
-        if (! $apAccountId) {
+        if (!$apAccountId) {
             $msg = 'Company default Accounts Payable account is not configured.';
             $errors[] = $msg;
             $issues[] = ['type' => 'ap_account_missing', 'message' => $msg];
         }
-        if (! $company->default_purchase_journal_id) {
+        if (!$company->default_purchase_journal_id) {
             $msg = 'Company default purchase journal is not configured.';
             $errors[] = $msg;
             $issues[] = ['type' => 'purchase_journal_missing', 'message' => $msg];
@@ -76,7 +76,7 @@ class BuildVendorBillPostingPreviewAction
             if ($isStorable && $line->product) {
                 /** @var Account|null $inventoryAccount */
                 $inventoryAccount = $line->product->inventoryAccount;
-                if (! $inventoryAccount) {
+                if (!$inventoryAccount) {
                     $msg = "Product ID {$line->product_id} is missing its inventory account.";
                     $errors[] = $msg;
                     $issues[] = ['type' => 'inventory_account_missing', 'message' => $msg, 'product_id' => $line->product_id];
@@ -94,7 +94,7 @@ class BuildVendorBillPostingPreviewAction
                 }
             } elseif ($isAsset) {
                 $category = AssetCategory::find($line->asset_category_id);
-                if (! $category) {
+                if (!$category) {
                     $msg = 'Invalid asset category selected on a bill line.';
                     $errors[] = $msg;
                     $issues[] = ['type' => 'asset_category_invalid', 'message' => $msg];
@@ -127,7 +127,7 @@ class BuildVendorBillPostingPreviewAction
 
             if ($line->tax_id && $line->total_line_tax->isPositive()) {
                 $taxAccountId = $company->default_tax_receivable_id ?? $company->default_tax_account_id;
-                if (! $taxAccountId) {
+                if (!$taxAccountId) {
                     $msg = 'Company input tax account is not configured but taxable lines exist.';
                     $errors[] = $msg;
                     $issues[] = ['type' => 'input_tax_missing', 'message' => $msg];
