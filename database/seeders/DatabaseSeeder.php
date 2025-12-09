@@ -30,10 +30,10 @@ class DatabaseSeeder extends Seeder
 
                 // 3. Operational data
                 // Basic data for transactions (customers, vendors, products).
-                \Modules\Foundation\Database\Seeders\PartnerSeeder::class,
-                \Modules\Foundation\Database\Seeders\PartnerCustomFieldSeeder::class,
+                // \Modules\Foundation\Database\Seeders\PartnerSeeder::class,
+                // \Modules\Foundation\Database\Seeders\PartnerCustomFieldSeeder::class,
                 \Modules\Accounting\Database\Seeders\TaxSeeder::class,
-                \Modules\Product\Database\Seeders\ProductSeeder::class,
+                // \Modules\Product\Database\Seeders\ProductSeeder::class,
 
                 // 4. Fiscal positions and mappings
                 // Rules for applying taxes and mapping accounts based on partner location.
