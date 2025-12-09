@@ -127,6 +127,7 @@ class Company extends Model
         'default_bank_journal_id',
         'default_gain_loss_account_id',
         'inventory_adjustment_account_id',
+        'default_stock_input_account_id',
         'default_stock_location_id',
         'default_vendor_location_id',
         'default_adjustment_location_id',
@@ -525,6 +526,14 @@ class Company extends Model
         return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'inventory_adjustment_account_id');
     }
 
+    /**
+     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     */
+    public function defaultStockInputAccount(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_stock_input_account_id');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | HR-related Default Account Relationships
@@ -724,7 +733,7 @@ class Company extends Model
             ->whereNotNull('bill_reference')
             ->exists();
 
-        return ! $hasPostedInvoices && ! $hasPostedBills;
+        return !$hasPostedInvoices && !$hasPostedBills;
     }
 
     /**

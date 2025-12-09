@@ -33,7 +33,7 @@ beforeEach(function () {
     // Create a product with expense account
     $this->product = Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Service,
         'expense_account_id' => $this->expenseAccount->id,
     ]);
 
@@ -176,7 +176,7 @@ it('validates that products have expense accounts', function () {
     // Create a product without expense account
     $productWithoutAccount = Product::factory()->create([
         'company_id' => $this->company->id,
-        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
+        'type' => \Modules\Product\Enums\Products\ProductType::Service,
         'expense_account_id' => null, // No expense account
     ]);
 
