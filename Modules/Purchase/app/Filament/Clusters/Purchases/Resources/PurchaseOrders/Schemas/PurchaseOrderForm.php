@@ -164,7 +164,8 @@ class PurchaseOrderForm
                                     ->searchable()
                                     ->preload()
                                     ->default(fn () => Auth::user()?->company?->currency_id)
-                                    ->required(),
+                                    ->required()
+                                    ->live(),
                             ]),
                     ]),
 
