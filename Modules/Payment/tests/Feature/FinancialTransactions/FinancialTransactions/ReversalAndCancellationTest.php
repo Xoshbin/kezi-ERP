@@ -2,24 +2,24 @@
 
 namespace Modules\Payment\Tests\Feature\FinancialTransactions;
 
-use Exception;
 use Brick\Money\Money;
-use Tests\Traits\MocksTime;
-use Modules\Sales\Models\Invoice;
-use Modules\Payment\Models\Payment;
-use Modules\Accounting\Models\Account;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Payment\Services\PaymentService;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Payment\Enums\Payments\PaymentMethod;
-use Modules\Payment\Enums\Payments\PaymentStatus;
+use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Accounting\JournalEntryState;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\JournalEntry;
 use Modules\Accounting\Services\JournalEntryService;
 use Modules\Payment\Actions\Payments\CreatePaymentAction;
-use Modules\Accounting\Enums\Accounting\JournalEntryState;
-use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
 use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Models\Payment;
+use Modules\Payment\Services\PaymentService;
+use Modules\Sales\Models\Invoice;
+use Tests\Traits\MocksTime;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
@@ -53,7 +53,7 @@ describe('Journal Entry Reversals', function () {
         // Assert: Check the new reversing entry.
         $this->assertModelExists($reversingEntry);
         expect($reversingEntry->is_posted)->toBeTrue();
-        expect($reversingEntry->reference)->toBe('REV/' . $originalEntry->reference);
+        expect($reversingEntry->reference)->toBe('REV/'.$originalEntry->reference);
         expect($reversingEntry->total_debit->isEqualTo(Money::of(150, $currencyCode)))->toBeTrue();
         expect($reversingEntry->total_credit->isEqualTo(Money::of(150, $currencyCode)))->toBeTrue();
 
@@ -82,7 +82,7 @@ describe('Journal Entry Reversals', function () {
         $draftEntry = JournalEntry::factory()->for($this->company)->create(['is_posted' => false]);
 
         // Act & Assert: Expect an exception when trying to reverse it.
-        expect(fn() => $this->journalEntryService->createReversal($draftEntry, 'Should fail', $this->user))
+        expect(fn () => $this->journalEntryService->createReversal($draftEntry, 'Should fail', $this->user))
             ->toThrow(Exception::class, 'Only posted journal entries can be reversed.');
     });
 });
@@ -143,7 +143,7 @@ describe('Payment Cancellations', function () {
             ->create(['status' => PaymentStatus::Draft]);
 
         // Act & Assert: Expect an exception.
-        expect(fn() => $this->paymentService->cancel($draftPayment, $this->user, 'Should fail')) // FIX
+        expect(fn () => $this->paymentService->cancel($draftPayment, $this->user, 'Should fail')) // FIX
             ->toThrow(Exception::class, 'Only confirmed payments can be cancelled.');
     });
 
@@ -156,7 +156,7 @@ describe('Payment Cancellations', function () {
             ->create(['status' => PaymentStatus::Reconciled]);
 
         // Act & Assert: Expect an exception.
-        expect(fn() => $this->paymentService->cancel($reconciledPayment, $this->user, 'Should fail')) // FIX
+        expect(fn () => $this->paymentService->cancel($reconciledPayment, $this->user, 'Should fail')) // FIX
             ->toThrow(Exception::class, 'Only confirmed payments can be cancelled.');
     });
 });

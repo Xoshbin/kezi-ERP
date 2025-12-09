@@ -2,20 +2,18 @@
 
 namespace Modules\Purchase\Database\Seeders;
 
-use Carbon\Carbon;
-use Brick\Money\Money;
 use App\Models\Company;
+use Brick\Money\Money;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Modules\Accounting\Models\Tax;
-use Modules\Product\Models\Product;
-use Modules\Foundation\Models\Partner;
 use Modules\Foundation\Models\Currency;
-use Modules\Purchase\Models\PurchaseOrder;
-use Modules\Foundation\Enums\Partners\PartnerType;
-use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
 use Modules\Purchase\Actions\Purchases\CreatePurchaseOrderLineAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
-
+use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Modules\Purchase\Models\PurchaseOrder;
 
 class PurchaseOrderSeeder extends Seeder
 {

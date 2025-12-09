@@ -109,14 +109,14 @@ class ViewProfitAndLoss extends Page
 
         // Convert to array format that Livewire can handle
         $this->reportData = [
-            'revenueLines' => $report->revenueLines->map(fn($line) => [
+            'revenueLines' => $report->revenueLines->map(fn ($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
                 'balance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
-            'expenseLines' => $report->expenseLines->map(fn($line) => [
+            'expenseLines' => $report->expenseLines->map(fn ($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,

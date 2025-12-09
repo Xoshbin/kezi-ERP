@@ -2,11 +2,9 @@
 
 namespace Modules\Inventory\DataTransferObjects\Inventory;
 
-
-
 use Carbon\Carbon;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
 
 readonly class UpdateStockMoveDTO
 {

@@ -4,8 +4,8 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pag
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
+use Modules\Foundation\Filament\Actions\DocsAction;
 
 class ListPayments extends ListRecords
 {

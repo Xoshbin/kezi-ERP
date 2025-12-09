@@ -2,19 +2,19 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\RelationManagers;
 
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Table;
 use Modules\Accounting\Enums\Loans\FeeType;
 use Modules\Accounting\Models\LoanAgreement;
-use Filament\Resources\RelationManagers\RelationManager;
-use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
+use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 
 class FeeLinesRelationManager extends RelationManager
 {
@@ -31,7 +31,7 @@ class FeeLinesRelationManager extends RelationManager
                 }),
             DatePicker::make('date')->required(),
             Select::make('type')
-                ->options(collect(FeeType::cases())->mapWithKeys(fn($c) => [$c->value => $c->name])->toArray())
+                ->options(collect(FeeType::cases())->mapWithKeys(fn ($c) => [$c->value => $c->name])->toArray())
                 ->required(),
             MoneyInput::make('amount')->currencyField('currency_id')->required(),
             Toggle::make('capitalize')->default(true),

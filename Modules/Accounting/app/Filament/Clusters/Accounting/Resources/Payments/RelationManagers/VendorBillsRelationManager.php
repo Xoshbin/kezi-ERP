@@ -2,20 +2,20 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\RelationManagers;
 
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Forms\Components\Select;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 
 class VendorBillsRelationManager extends RelationManager
 {
@@ -75,9 +75,9 @@ class VendorBillsRelationManager extends RelationManager
 
                 TextColumn::make('status')
                     ->label(__('payment.relation_manager.vendor_bills.column.status'))
-                    ->formatStateUsing(fn(VendorBillStatus $state): string => $state->label())
+                    ->formatStateUsing(fn (VendorBillStatus $state): string => $state->label())
                     ->badge()
-                    ->color(fn(VendorBillStatus $state): string => match ($state) {
+                    ->color(fn (VendorBillStatus $state): string => match ($state) {
                         VendorBillStatus::Draft => 'warning',
                         VendorBillStatus::Posted => 'success',
                         VendorBillStatus::Paid => 'info',

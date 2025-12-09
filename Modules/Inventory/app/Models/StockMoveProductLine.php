@@ -3,15 +3,12 @@
 namespace Modules\Inventory\Models;
 
 use App\Models\Company;
-use Modules\Product\Models\Product;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Inventory\Models\StockMove;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Inventory\Models\StockMoveLine;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Product\Models\Product;
 
 class StockMoveProductLine extends Model
 {
@@ -112,6 +109,7 @@ class StockMoveProductLine extends Model
     {
         return $this->getRemainingQuantity() <= 0;
     }
+
     protected static function newFactory(): \Modules\Inventory\Database\Factories\StockMoveProductLineFactory
     {
         return \Modules\Inventory\Database\Factories\StockMoveProductLineFactory::new();

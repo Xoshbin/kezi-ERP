@@ -25,7 +25,7 @@ class CurrencyFactory extends Factory
         $currencyCode = $currencies[array_rand($currencies)];
 
         return [
-            'name' => $currencyCode . ' Currency',
+            'name' => $currencyCode.' Currency',
             'code' => $currencyCode,
             'symbol' => '$',
             'decimal_places' => 2,

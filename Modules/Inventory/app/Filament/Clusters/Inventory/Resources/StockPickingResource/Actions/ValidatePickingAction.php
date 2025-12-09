@@ -5,15 +5,15 @@ namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingRe
 use DB;
 use Exception;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\Placeholder;
-use Modules\Inventory\Models\StockPicking;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
 use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Models\StockPicking;
 use Modules\Inventory\Services\Inventory\StockReservationService;
 
 class ValidatePickingAction extends Action
@@ -52,18 +52,20 @@ class ValidatePickingAction extends Action
                             Placeholder::make('product_info')
                                 ->label('Product')
                                 ->content(function ($get, $state) {
-                                    if (!$state || !isset($state['product_name'])) {
+                                    if (! $state || ! isset($state['product_name'])) {
                                         return '—';
                                     }
+
                                     return $state['product_name'];
                                 }),
 
                             Placeholder::make('planned_quantity')
                                 ->label('Planned Quantity')
                                 ->content(function ($get, $state) {
-                                    if (!$state || !isset($state['planned_quantity'])) {
+                                    if (! $state || ! isset($state['planned_quantity'])) {
                                         return '—';
                                     }
+
                                     return number_format($state['planned_quantity'], 2);
                                 }),
 
@@ -78,12 +80,12 @@ class ValidatePickingAction extends Action
                             Placeholder::make('lot_lines_info')
                                 ->label('Assigned Lots')
                                 ->content(function ($get, $state) {
-                                    if (!$state || empty($state['lot_lines'])) {
+                                    if (! $state || empty($state['lot_lines'])) {
                                         return 'No lots assigned';
                                     }
 
                                     $lotInfo = collect($state['lot_lines'])
-                                        ->map(fn($lot) => $lot['lot_code'] . ' (' . number_format($lot['quantity'], 2) . ')')
+                                        ->map(fn ($lot) => $lot['lot_code'].' ('.number_format($lot['quantity'], 2).')')
                                         ->join(', ');
 
                                     return $lotInfo;
@@ -124,7 +126,7 @@ class ValidatePickingAction extends Action
                 // Process each move
                 foreach ($data['moves'] as $moveData) {
                     $move = $picking->stockMoves()->find($moveData['move_id']);
-                    if (!$move) {
+                    if (! $move) {
                         continue;
                     }
 

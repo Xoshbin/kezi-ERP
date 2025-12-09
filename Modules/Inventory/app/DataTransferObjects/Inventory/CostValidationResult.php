@@ -2,8 +2,6 @@
 
 namespace Modules\Inventory\DataTransferObjects\Inventory;
 
-use Modules\Inventory\DataTransferObjects\Inventory\CostDeterminationResult;
-
 /**
  * Data Transfer Object for cost validation results
  *

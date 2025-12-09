@@ -2,12 +2,12 @@
 
 namespace Modules\Payment\Database\Factories;
 
-use DateTimeInterface;
 use App\Models\Company;
-use Modules\Sales\Models\Invoice;
-use Modules\Payment\Models\PaymentInstallment;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Payment\Enums\PaymentInstallments\InstallmentStatus;
+use Modules\Payment\Models\PaymentInstallment;
+use Modules\Sales\Models\Invoice;
 
 /**
  * @extends Factory<PaymentInstallment>
@@ -72,7 +72,7 @@ class PaymentInstallmentFactory extends Factory
      */
     public function overdue(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'due_date' => $this->faker->dateTimeBetween('-30 days', '-1 day'),
             'status' => InstallmentStatus::Pending,
         ]);
@@ -83,7 +83,7 @@ class PaymentInstallmentFactory extends Factory
      */
     public function dueSoon(int $days = 7): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'due_date' => $this->faker->dateTimeBetween('now', "+{$days} days"),
             'status' => InstallmentStatus::Pending,
         ]);
@@ -94,7 +94,7 @@ class PaymentInstallmentFactory extends Factory
      */
     public function withDiscount(float $discountPercentage = 2.0, int $discountDays = 10): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'discount_percentage' => $discountPercentage,
             'discount_deadline' => now()->addDays($discountDays),
         ]);
@@ -105,7 +105,7 @@ class PaymentInstallmentFactory extends Factory
      */
     public function amount(int $amountInMinorUnits): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'amount' => $amountInMinorUnits,
         ]);
     }
@@ -115,7 +115,7 @@ class PaymentInstallmentFactory extends Factory
      */
     public function withSequence(int $sequence): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'sequence' => $sequence,
         ]);
     }
@@ -125,7 +125,7 @@ class PaymentInstallmentFactory extends Factory
      */
     public function dueDate(DateTimeInterface $dueDate): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'due_date' => $dueDate,
         ]);
     }

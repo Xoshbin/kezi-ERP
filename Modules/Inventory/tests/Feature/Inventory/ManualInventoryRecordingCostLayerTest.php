@@ -3,24 +3,23 @@
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
 use Brick\Money\Money;
-use Modules\Product\Models\Product;
-use Modules\Inventory\Models\StockMove;
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Inventory\Models\InventoryCostLayer;
-use Modules\Purchase\Services\VendorBillService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Inventory\Models\StockMoveProductLine;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
-use Modules\Purchase\Actions\Purchases\CreateVendorBillLineAction;
-use Modules\Inventory\Services\Inventory\InventoryValuationService;
-use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
 use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
+use Modules\Inventory\Models\InventoryCostLayer;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveProductLine;
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Actions\Purchases\CreateVendorBillLineAction;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Services\VendorBillService;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -70,7 +69,7 @@ it('creates cost layers when stock moves are processed in manual mode even witho
     // This should fail because there's no cost information available
     $inventoryValuationService = app(InventoryValuationService::class);
 
-    expect(fn() => $inventoryValuationService->calculateIncomingCostPerUnitEnhanced(
+    expect(fn () => $inventoryValuationService->calculateIncomingCostPerUnitEnhanced(
         $this->product,
         $stockMove,
         false

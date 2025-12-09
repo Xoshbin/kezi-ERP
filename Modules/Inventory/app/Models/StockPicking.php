@@ -2,16 +2,14 @@
 
 namespace Modules\Inventory\Models;
 
-
 use App\Models\Company;
-use Modules\Foundation\Models\Partner;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Inventory\Models\StockMove;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Foundation\Models\Partner;
 use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
 
 class StockPicking extends Model
 {

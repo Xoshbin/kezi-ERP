@@ -2,12 +2,12 @@
 
 namespace Modules\Accounting\Database\Factories;
 
+use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use App\Models\Company;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Accounting\Models\Journal;
 use Modules\Accounting\Models\JournalEntry;
-use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<JournalEntry>

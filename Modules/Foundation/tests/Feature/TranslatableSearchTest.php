@@ -2,16 +2,13 @@
 
 namespace Modules\Foundation\Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\Company;
-
-use Modules\Accounting\Models\Tax;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Partner;
-use Modules\Foundation\Models\Currency;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Foundation\Enums\Partners\PartnerType;
-use Modules\Accounting\Enums\Accounting\AccountType;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Tax;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Tests\TestCase;
 
 class TranslatableSearchTest extends TestCase
 {
@@ -223,7 +220,7 @@ class TranslatableSearchTest extends TestCase
             'type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash,
         ]);
 
-        $formatter = fn($account) => [$account->id => $account->getTranslatedLabel('name') . ' (' . $account->code . ')'];
+        $formatter = fn ($account) => [$account->id => $account->getTranslatedLabel('name').' ('.$account->code.')'];
 
         $results = Account::getFormattedSearchResults('Bank', 50, $formatter);
         $this->assertArrayHasKey($account->id, $results);

@@ -2,20 +2,16 @@
 
 namespace Modules\Purchase\Models;
 
-
 use Brick\Money\Money;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Modules\Accounting\Models\Tax;
-use Modules\Product\Models\Product;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Models\Currency;
-use Modules\Purchase\Models\PurchaseOrder;
-use Modules\Foundation\Observers\AuditLogObserver;
-use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
+use Modules\Foundation\Models\Currency;
+use Modules\Product\Models\Product;
 
 /**
  * Purchase Order Line Model
@@ -211,6 +207,7 @@ class PurchaseOrderLine extends Model
 
         // Convert to company currency
         $companyCurrency = $purchaseOrder->company->currency;
+
         return Money::of(
             $this->unit_price->getAmount()->toFloat() * $exchangeRate,
             $companyCurrency->code

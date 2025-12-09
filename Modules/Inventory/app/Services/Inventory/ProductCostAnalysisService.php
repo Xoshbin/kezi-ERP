@@ -2,10 +2,10 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use Modules\Product\Models\Product;
-use Modules\Purchase\Models\VendorBillLine;
 use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Product\Models\Product;
 use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Models\VendorBillLine;
 
 /**
  * Service for analyzing product cost information and providing contextual guidance
@@ -35,9 +35,6 @@ class ProductCostAnalysisService
 {
     /**
      * Analyze vendor bill status for a product
-     *
-     * @param Product $product
-     * @return array
      */
     public function analyzeVendorBillStatus(Product $product): array
     {
@@ -57,7 +54,7 @@ class ProductCostAnalysisService
                     $draftCount++;
                 } elseif ($line->vendorBill->status === VendorBillStatus::Posted) {
                     $postedCount++;
-                    if (!$latestPostedBill || $line->vendorBill->posted_at > $latestPostedBill->posted_at) {
+                    if (! $latestPostedBill || $line->vendorBill->posted_at > $latestPostedBill->posted_at) {
                         $latestPostedBill = $line->vendorBill;
                     }
                 }
@@ -75,9 +72,6 @@ class ProductCostAnalysisService
 
     /**
      * Get context-aware cost suggestions for a product
-     *
-     * @param Product $product
-     * @return array
      */
     public function getContextualCostSuggestions(Product $product): array
     {
@@ -89,32 +83,32 @@ class ProductCostAnalysisService
         $hasCostLayers = $product->inventoryCostLayers()->where('remaining_quantity', '>', 0)->exists();
 
         // Vendor bill related suggestions
-        if (!$vendorBillAnalysis['has_vendor_bills']) {
+        if (! $vendorBillAnalysis['has_vendor_bills']) {
             $suggestions[] = 'Create and post a vendor bill for this product to establish purchase cost';
         } elseif ($vendorBillAnalysis['draft_count'] > 0 && $vendorBillAnalysis['posted_count'] === 0) {
             $suggestions[] = "Post the {$vendorBillAnalysis['draft_count']} draft vendor bill(s) for this product to establish cost";
         } elseif ($vendorBillAnalysis['posted_count'] > 0) {
-            if ($product->inventory_valuation_method === ValuationMethod::AVCO && !$hasAverageCost) {
+            if ($product->inventory_valuation_method === ValuationMethod::AVCO && ! $hasAverageCost) {
                 $suggestions[] = 'Check why posted vendor bills are not updating the average cost - verify product configuration and bill posting process';
-            } elseif ($product->inventory_valuation_method !== ValuationMethod::AVCO && !$hasCostLayers) {
+            } elseif ($product->inventory_valuation_method !== ValuationMethod::AVCO && ! $hasCostLayers) {
                 $suggestions[] = 'Check why posted vendor bills are not creating cost layers - verify inventory accounting configuration';
             }
         }
 
         // Valuation method specific suggestions
         if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
-            if (!$hasAverageCost && $vendorBillAnalysis['posted_count'] === 0) {
+            if (! $hasAverageCost && $vendorBillAnalysis['posted_count'] === 0) {
                 $suggestions[] = 'Average cost is calculated automatically from posted vendor bills - no manual entry needed';
             }
         } else {
             // FIFO/LIFO methods
-            if (!$hasCostLayers) {
+            if (! $hasCostLayers) {
                 $suggestions[] = 'Cost layers (historical purchase costs) are created when vendor bills with storable products are posted';
             }
         }
 
         // Proper cost establishment guidance (no fallbacks to unreliable data)
-        if (!$this->isReadyForInventoryMovements($product)) {
+        if (! $this->isReadyForInventoryMovements($product)) {
             $suggestions[] = 'Cost information is required before processing inventory movements';
 
             // Add specific establishment steps
@@ -130,9 +124,6 @@ class ProductCostAnalysisService
 
     /**
      * Get a detailed cost status explanation for a product
-     *
-     * @param Product $product
-     * @return string
      */
     public function getCostStatusExplanation(Product $product): string
     {
@@ -141,14 +132,14 @@ class ProductCostAnalysisService
         $explanation = "Cannot determine cost for product '{$product->name}' (ID: {$product->id}). ";
 
         if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
-            $explanation .= "Using AVCO valuation method - requires positive average cost. ";
+            $explanation .= 'Using AVCO valuation method - requires positive average cost. ';
 
             if ($vendorBillAnalysis['posted_count'] > 0) {
                 $explanation .= "Found {$vendorBillAnalysis['posted_count']} posted vendor bill(s) but average cost is not set. ";
             } elseif ($vendorBillAnalysis['draft_count'] > 0) {
                 $explanation .= "Found {$vendorBillAnalysis['draft_count']} draft vendor bill(s) - these need to be posted to calculate average cost. ";
             } else {
-                $explanation .= "No vendor bills found for this product. ";
+                $explanation .= 'No vendor bills found for this product. ';
             }
         } else {
             $explanation .= "Using {$product->inventory_valuation_method->label()} valuation method - requires cost layers. ";
@@ -156,7 +147,7 @@ class ProductCostAnalysisService
             if ($vendorBillAnalysis['posted_count'] > 0) {
                 $explanation .= "Found {$vendorBillAnalysis['posted_count']} posted vendor bill(s) but no cost layers available. ";
             } else {
-                $explanation .= "No posted vendor bills found to create cost layers. ";
+                $explanation .= 'No posted vendor bills found to create cost layers. ';
             }
         }
 
@@ -165,16 +156,13 @@ class ProductCostAnalysisService
 
     /**
      * Get specific action steps for establishing proper cost information
-     *
-     * @param Product $product
-     * @return array
      */
     public function getEstablishmentSteps(Product $product): array
     {
         $steps = [];
         $vendorBillAnalysis = $this->analyzeVendorBillStatus($product);
 
-        if (!$vendorBillAnalysis['has_vendor_bills']) {
+        if (! $vendorBillAnalysis['has_vendor_bills']) {
             $steps[] = '1. Obtain purchase invoices from your supplier for this product';
             $steps[] = '2. Create a vendor bill in the system using the purchase invoice data';
             $steps[] = '3. Ensure the vendor bill includes this product with correct quantities and unit prices';
@@ -201,9 +189,6 @@ class ProductCostAnalysisService
 
     /**
      * Check if a product is ready for inventory movements
-     *
-     * @param Product $product
-     * @return bool
      */
     public function isReadyForInventoryMovements(Product $product): bool
     {
@@ -216,9 +201,6 @@ class ProductCostAnalysisService
 
     /**
      * Get the minimum requirements for cost establishment
-     *
-     * @param Product $product
-     * @return array
      */
     public function getMinimumRequirements(Product $product): array
     {

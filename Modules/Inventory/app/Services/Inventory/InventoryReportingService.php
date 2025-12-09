@@ -2,24 +2,23 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use Carbon\Carbon;
-use RuntimeException;
-use Brick\Money\Money;
 use App\Models\Company;
 use Brick\Math\RoundingMode;
+use Brick\Money\Money;
+use Carbon\Carbon;
 use Filament\Facades\Filament;
-
-use Modules\Inventory\Models\Lot;
-use Illuminate\Support\Collection;
-use Modules\Product\Models\Product;
-use Modules\Inventory\Models\StockMove;
 use Illuminate\Database\Eloquent\Builder;
-use Modules\Inventory\Models\ReorderingRule;
+use Illuminate\Support\Collection;
 use Modules\Accounting\Models\JournalEntryLine;
-use Modules\Inventory\Models\InventoryCostLayer;
-use Modules\Inventory\Models\StockMoveValuation;
 use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Models\InventoryCostLayer;
+use Modules\Inventory\Models\Lot;
+use Modules\Inventory\Models\ReorderingRule;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveValuation;
+use Modules\Product\Models\Product;
+use RuntimeException;
 
 /**
  * Inventory Reporting Service
@@ -48,8 +47,8 @@ use Modules\Inventory\Enums\Inventory\ValuationMethod;
  * - StockQuant for current quantities
  * - ReorderingRule for replenishment logic
  *
- * @package App\Services\Inventory
  * @author Laravel/Filament Inventory System
+ *
  * @version 1.0.0
  */
 class InventoryReportingService
@@ -57,8 +56,8 @@ class InventoryReportingService
     /**
      * Create a new inventory reporting service instance
      *
-     * @param StockQuantService $stockQuantService Service for stock quantity operations
-     * @param ReorderingRuleService $reorderingRuleService Service for reordering logic
+     * @param  StockQuantService  $stockQuantService  Service for stock quantity operations
+     * @param  ReorderingRuleService  $reorderingRuleService  Service for reordering logic
      */
     public function __construct(
         private readonly StockQuantService $stockQuantService,
@@ -79,13 +78,12 @@ class InventoryReportingService
      * - Total values and summary statistics
      * - Cost layer details for FIFO/LIFO products
      *
-     * @param Carbon $asOfDate The date for valuation calculation
-     * @param array $filters Optional filters for products, locations, etc.
-     *                      - company_id: Specific company (required)
-     *                      - product_ids: Array of specific product IDs
-     *                      - location_ids: Array of specific location IDs
-     *                      - include_zero_qty: Include products with zero quantity
-     *
+     * @param  Carbon  $asOfDate  The date for valuation calculation
+     * @param  array  $filters  Optional filters for products, locations, etc.
+     *                          - company_id: Specific company (required)
+     *                          - product_ids: Array of specific product IDs
+     *                          - location_ids: Array of specific location IDs
+     *                          - include_zero_qty: Include products with zero quantity
      * @return array Valuation report data structure containing:
      *               - products: Array of product valuation details
      *               - total_value: Total inventory value
@@ -426,7 +424,7 @@ class InventoryReportingService
 
         // Get from current tenant context
         $company = Filament::getTenant();
-        if (!$company instanceof Company) {
+        if (! $company instanceof Company) {
             throw new RuntimeException('Company context is required for inventory reporting');
         }
 
@@ -561,6 +559,7 @@ class InventoryReportingService
                 return $bucket;
             }
         }
+
         return null;
     }
 

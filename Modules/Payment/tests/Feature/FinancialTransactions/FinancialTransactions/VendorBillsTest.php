@@ -3,33 +3,29 @@
 namespace Modules\Payment\Tests\Feature\FinancialTransactions;
 
 use Brick\Money\Money;
-use Tests\Traits\MocksTime;
-use Modules\Payment\Models\Payment;
-use Modules\Product\Models\Product;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Partner;
 use Modules\Accounting\Models\LockDate;
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
+use Modules\Foundation\Models\Partner;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Payment\Models\Payment;
 use Modules\Payment\Models\PaymentDocumentLink;
 use Modules\Product\Enums\Products\ProductType;
-use Modules\Purchase\Events\VendorBillConfirmed;
-use Modules\Purchase\Services\VendorBillService;
-use Modules\Foundation\Enums\Shared\PaymentState;
-use Modules\Payment\Enums\Payments\PaymentStatus;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
-use Modules\Accounting\Exceptions\PeriodIsLockedException;
-use Modules\Foundation\Exceptions\UpdateNotAllowedException;
-use Modules\Foundation\Exceptions\DeletionNotAllowedException;
+use Modules\Product\Models\Product;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillAction;
-use Modules\Purchase\Actions\Purchases\UpdateVendorBillAction;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillLineAction;
+use Modules\Purchase\Actions\Purchases\UpdateVendorBillAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use Modules\Purchase\DataTransferObjects\Purchases\UpdateVendorBillDTO;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Modules\Purchase\DataTransferObjects\Purchases\UpdateVendorBillDTO;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Events\VendorBillConfirmed;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Services\VendorBillService;
+use Tests\Traits\MocksTime;
+use Tests\Traits\WithConfiguredCompany;
 
 // Import the Action
 // Import the DTO
@@ -61,7 +57,7 @@ test('a draft vendor bill can be confirmed, which posts it and dispatches an eve
 
     $vendorBill->refresh();
     expect($vendorBill->status)->toBe(VendorBillStatus::Posted);
-    Event::assertDispatched(VendorBillConfirmed::class, fn($event) => $event->vendorBill->id === $vendorBill->id);
+    Event::assertDispatched(VendorBillConfirmed::class, fn ($event) => $event->vendorBill->id === $vendorBill->id);
 });
 
 test('confirming a vendor bill generates the correct journal entry', function () {
@@ -120,13 +116,13 @@ test('a posted vendor bill cannot be updated', function () {
         updated_by_user_id: $this->user->id
     );
 
-    expect(fn() => app(UpdateVendorBillAction::class)->execute($updateDto))
+    expect(fn () => app(UpdateVendorBillAction::class)->execute($updateDto))
         ->toThrow(\Modules\Foundation\Exceptions\UpdateNotAllowedException::class);
 });
 
 test('a posted vendor bill cannot be deleted', function () {
     $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => 'posted']);
-    expect(fn() => app(VendorBillService::class)->delete($vendorBill))
+    expect(fn () => app(VendorBillService::class)->delete($vendorBill))
         ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class);
 });
 
@@ -156,7 +152,7 @@ test('a vendor bill cannot be created in a locked period', function () {
         created_by_user_id: $this->user->id
     );
 
-    expect(fn() => app(CreateVendorBillAction::class)->execute($vendorBillDto))
+    expect(fn () => app(CreateVendorBillAction::class)->execute($vendorBillDto))
         ->toThrow(\Modules\Accounting\Exceptions\PeriodIsLockedException::class);
 });
 

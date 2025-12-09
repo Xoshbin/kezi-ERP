@@ -2,29 +2,23 @@
 
 namespace Modules\Inventory\Models;
 
-use Eloquent;
-
-use Brick\Money\Money;
 use App\Models\Company;
-use Illuminate\Support\Carbon;
-use Modules\Sales\Models\Invoice;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Models\Currency;
-use Modules\Purchase\Models\VendorBill;
+use Brick\Money\Money;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
-use Modules\Accounting\Models\JournalEntry;
 use Illuminate\Database\Eloquent\Collection;
-use Modules\Inventory\Database\Factories\AdjustmentDocumentFactory;
-
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
-use Modules\Inventory\Models\AdjustmentDocumentLine;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
-use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Models\Currency;
+use Modules\Inventory\Database\Factories\AdjustmentDocumentFactory;
 use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
-
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 
 /**
  * @property int $id
@@ -280,12 +274,12 @@ class AdjustmentDocument extends Model
         $lines = $this->lines;
 
         $totalTax = $lines->reduce(
-            fn(Money $carry, AdjustmentDocumentLine $line) => $carry->plus($line->total_line_tax ?? $zero),
+            fn (Money $carry, AdjustmentDocumentLine $line) => $carry->plus($line->total_line_tax ?? $zero),
             $zero
         );
 
         $subtotal = $lines->reduce(
-            fn(Money $carry, AdjustmentDocumentLine $line) => $carry->plus($line->subtotal ?? $zero),
+            fn (Money $carry, AdjustmentDocumentLine $line) => $carry->plus($line->subtotal ?? $zero),
             $zero
         );
 

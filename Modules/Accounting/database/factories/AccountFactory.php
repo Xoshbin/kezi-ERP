@@ -3,8 +3,8 @@
 namespace Modules\Accounting\Database\Factories;
 
 use App\Models\Company;
-use Modules\Accounting\Models\Account;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Accounting\Models\Account;
 
 class AccountFactory extends Factory
 {
@@ -50,7 +50,7 @@ class AccountFactory extends Factory
 
         return [
             'company_id' => Company::factory(),
-            'name' => $this->faker->words(2, true) . ' Account',
+            'name' => $this->faker->words(2, true).' Account',
             'type' => $type,
             'is_deprecated' => false,
             'allow_reconciliation' => false, // Default to not allowing reconciliation for security
@@ -72,7 +72,7 @@ class AccountFactory extends Factory
             default => $this->faker->numberBetween(6000, 9999),
         };
 
-        return $prefix . $this->faker->unique()->randomNumber(3, true);
+        return $prefix.$this->faker->unique()->randomNumber(3, true);
     }
 
     // --- STATE METHODS ---
@@ -80,52 +80,52 @@ class AccountFactory extends Factory
 
     public function deprecated(): Factory
     {
-        return $this->state(fn(array $attributes) => ['is_deprecated' => true]);
+        return $this->state(fn (array $attributes) => ['is_deprecated' => true]);
     }
 
     public function asset(): Factory
     {
-        return $this->state(fn(array $attributes) => ['type' => 'current_assets']);
+        return $this->state(fn (array $attributes) => ['type' => 'current_assets']);
     }
 
     public function liability(): Factory
     {
-        return $this->state(fn(array $attributes) => ['type' => 'current_liabilities']);
+        return $this->state(fn (array $attributes) => ['type' => 'current_liabilities']);
     }
 
     public function equity(): Factory
     {
-        return $this->state(fn(array $attributes) => ['type' => 'equity']);
+        return $this->state(fn (array $attributes) => ['type' => 'equity']);
     }
 
     public function income(): Factory
     {
-        return $this->state(fn(array $attributes) => ['type' => 'income']);
+        return $this->state(fn (array $attributes) => ['type' => 'income']);
     }
 
     public function expense(): Factory
     {
-        return $this->state(fn(array $attributes) => ['type' => 'expense']);
+        return $this->state(fn (array $attributes) => ['type' => 'expense']);
     }
 
     public function cash(): Factory
     {
-        return $this->state(fn(array $attributes) => ['type' => 'bank_and_cash', 'name' => 'Cash Account']);
+        return $this->state(fn (array $attributes) => ['type' => 'bank_and_cash', 'name' => 'Cash Account']);
     }
 
     public function bank(): Factory
     {
-        return $this->state(fn(array $attributes) => ['type' => 'bank_and_cash', 'name' => 'Bank Account']);
+        return $this->state(fn (array $attributes) => ['type' => 'bank_and_cash', 'name' => 'Bank Account']);
     }
 
     public function accountsReceivable(): Factory
     {
-        return $this->state(fn(array $attributes) => ['type' => 'receivable', 'name' => 'Accounts Receivable']);
+        return $this->state(fn (array $attributes) => ['type' => 'receivable', 'name' => 'Accounts Receivable']);
     }
 
     public function accountsPayable(): Factory
     {
-        return $this->state(fn(array $attributes) => ['type' => 'payable', 'name' => 'Accounts Payable']);
+        return $this->state(fn (array $attributes) => ['type' => 'payable', 'name' => 'Accounts Payable']);
     }
 
     /**
@@ -133,6 +133,6 @@ class AccountFactory extends Factory
      */
     public function allowReconciliation(): Factory
     {
-        return $this->state(fn(array $attributes) => ['allow_reconciliation' => true]);
+        return $this->state(fn (array $attributes) => ['allow_reconciliation' => true]);
     }
 }

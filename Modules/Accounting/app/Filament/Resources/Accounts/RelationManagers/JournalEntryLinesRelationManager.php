@@ -53,7 +53,7 @@ class JournalEntryLinesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('description')
-            ->modifyQueryUsing(fn(Builder $query) => $query->with(['journalEntry.company.currency']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['journalEntry.company.currency']))
             ->columns([
                 TextColumn::make('journalEntry.reference')->label(__('accounting::account.journal_entry_lines.journal_entry')),
                 TextColumn::make('debit')->label(__('accounting::account.journal_entry_lines.debit')),

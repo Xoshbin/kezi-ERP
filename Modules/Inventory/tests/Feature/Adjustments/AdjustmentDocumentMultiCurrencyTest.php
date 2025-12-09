@@ -2,24 +2,24 @@
 
 namespace Modules\Inventory\Tests\Feature\Adjustments;
 
-use Carbon\Carbon;
-use Tests\TestCase;
 use App\Models\User;
 use Brick\Money\Money;
-use Modules\Accounting\Models\Tax;
-use Modules\Product\Models\Product;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Currency;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Foundation\Models\CurrencyRate;
-use Modules\Inventory\Models\AdjustmentDocument;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Inventory\Models\AdjustmentDocumentLine;
-use Modules\Inventory\Services\AdjustmentDocumentService;
-use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Tax;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
 use Modules\Inventory\Actions\Adjustments\CreateAdjustmentDocumentAction;
 use Modules\Inventory\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
 use Modules\Inventory\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Inventory\Models\AdjustmentDocumentLine;
+use Modules\Inventory\Services\AdjustmentDocumentService;
+use Modules\Product\Models\Product;
+use Tests\TestCase;
+use Tests\Traits\WithConfiguredCompany;
 
 class AdjustmentDocumentMultiCurrencyTest extends TestCase
 {

@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports;
 
+use App\Models\Company;
 use BackedEnum;
 use Carbon\Carbon;
 use Exception;
@@ -12,7 +13,6 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
-use App\Models\Company;
 
 class ViewTaxReport extends Page
 {

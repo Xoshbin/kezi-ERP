@@ -3,12 +3,12 @@
 namespace Modules\Inventory\Database\Factories;
 
 use Brick\Money\Money;
-use Modules\Accounting\Models\Tax;
-use Modules\Product\Models\Product;
-use Modules\Accounting\Models\Account;
-use Modules\Inventory\Models\AdjustmentDocument;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Tax;
+use Modules\Inventory\Models\AdjustmentDocument;
 use Modules\Inventory\Models\AdjustmentDocumentLine;
+use Modules\Product\Models\Product;
 
 class AdjustmentDocumentLineFactory extends Factory
 {

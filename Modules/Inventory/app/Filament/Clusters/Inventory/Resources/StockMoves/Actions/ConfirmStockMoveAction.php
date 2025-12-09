@@ -2,16 +2,16 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Actions;
 
-use Modules\Inventory\Actions\Inventory\ConfirmStockMoveAction as ConfirmStockMoveActionClass;
-use Modules\Inventory\DataTransferObjects\Inventory\ConfirmStockMoveDTO;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use Modules\Inventory\Actions\Inventory\ConfirmStockMoveAction as ConfirmStockMoveActionClass;
+use Modules\Inventory\DataTransferObjects\Inventory\ConfirmStockMoveDTO;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
 use Modules\Inventory\Models\StockMove;
 
 class ConfirmStockMoveAction extends Action
@@ -33,8 +33,7 @@ class ConfirmStockMoveAction extends Action
             ->modalDescription(__('Are you sure you want to confirm this stock movement? This will process the inventory changes and cannot be undone.'))
             ->modalSubmitActionLabel(__('Confirm Movement'))
             ->visible(
-                fn(Model $record): bool =>
-                $record instanceof StockMove && $record->status === StockMoveStatus::Draft
+                fn (Model $record): bool => $record instanceof StockMove && $record->status === StockMoveStatus::Draft
             )
             ->action(function (Model $record) {
                 /** @var StockMove $record */
@@ -73,7 +72,7 @@ class ConfirmStockMoveAction extends Action
         // Show user-friendly notification with detailed information
         Notification::make()
             ->title($errorData['title'])
-            ->body($exception->getUserFriendlyMessage() . "\n\n" . $errorData['explanation'])
+            ->body($exception->getUserFriendlyMessage()."\n\n".$errorData['explanation'])
             ->danger()
             ->persistent()
             ->actions([

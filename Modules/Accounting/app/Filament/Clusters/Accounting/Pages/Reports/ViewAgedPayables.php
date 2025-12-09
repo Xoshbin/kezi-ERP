@@ -101,7 +101,7 @@ class ViewAgedPayables extends Page
 
         // Convert to array format that Livewire can handle
         $this->reportData = [
-            'reportLines' => $report->reportLines->map(fn($line) => [
+            'reportLines' => $report->reportLines->map(fn ($line) => [
                 'partnerId' => $line->partnerId,
                 'partnerName' => $line->partnerName,
                 'current' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->current),

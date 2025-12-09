@@ -2,19 +2,18 @@
 
 namespace Modules\Purchase\Actions\Purchases;
 
-use Modules\Purchase\Models\VendorBill;
-use Modules\Purchase\Models\PurchaseOrder;
 use Illuminate\Validation\ValidationException;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Models\VendorBill;
 
 class CreateVendorBillFromPurchaseOrderAction
 {
     public function __construct(
         protected CreateVendorBillAction $createVendorBillAction,
-    ) {
-    }
+    ) {}
 
     public function execute(CreateVendorBillFromPurchaseOrderDTO $dto): VendorBill
     {
@@ -37,13 +36,13 @@ class CreateVendorBillFromPurchaseOrderAction
     {
         $purchaseOrder = PurchaseOrder::with(['lines.product', 'vendor', 'currency', 'company'])->find($purchaseOrderId);
 
-        if (!$purchaseOrder) {
+        if (! $purchaseOrder) {
             throw ValidationException::withMessages([
                 'purchase_order_id' => 'The selected purchase order does not exist.',
             ]);
         }
 
-        if (!$purchaseOrder->status->canCreateBill()) {
+        if (! $purchaseOrder->status->canCreateBill()) {
             throw ValidationException::withMessages([
                 'purchase_order_id' => 'The purchase order status does not allow creating bills.',
             ]);
@@ -82,7 +81,7 @@ class CreateVendorBillFromPurchaseOrderAction
                 }
             }
 
-            if (!$expenseAccountId) {
+            if (! $expenseAccountId) {
                 // Enhanced error message
                 $accountTypeNeeded = ($poLine->product?->type === \Modules\Product\Enums\Products\ProductType::Storable)
                     ? 'Stock Input Account'

@@ -1,13 +1,13 @@
 <?php
 
 use Brick\Money\Money;
-use Modules\Accounting\Models\Asset;
-use Modules\Accounting\Models\Account;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Models\DepreciationEntry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Enums\Assets\DepreciationEntryStatus;
 use Modules\Accounting\Actions\Accounting\CreateJournalEntryForDepreciationAction;
+use Modules\Accounting\Enums\Assets\DepreciationEntryStatus;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Asset;
+use Modules\Accounting\Models\DepreciationEntry;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

@@ -3,14 +3,12 @@
 namespace Modules\Inventory\Models;
 
 use App\Models\Company;
-use Modules\Product\Models\Product;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Inventory\Models\StockLocation;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Modules\Inventory\Models\ReplenishmentSuggestion;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Inventory\Enums\Inventory\ReorderingRoute;
+use Modules\Product\Models\Product;
 
 class ReorderingRule extends Model
 {
@@ -136,7 +134,7 @@ class ReorderingRule extends Model
             return "Below minimum quantity ({$this->min_qty} units). Current stock: {$currentQty}";
         }
 
-        return "Stock replenishment suggested";
+        return 'Stock replenishment suggested';
     }
 
     protected static function newFactory(): \Modules\Inventory\Database\Factories\ReorderingRuleFactory

@@ -2,10 +2,9 @@
 
 namespace Modules\Sales\DataTransferObjects\Sales;
 
-use Carbon\Carbon;
 use App\Models\User;
+use Carbon\Carbon;
 use Modules\Sales\Models\SalesOrder;
-
 
 /**
  * Data Transfer Object for creating delivery orders from a sales order

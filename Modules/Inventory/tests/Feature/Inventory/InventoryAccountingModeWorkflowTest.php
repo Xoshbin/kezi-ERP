@@ -3,26 +3,25 @@
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
 use Brick\Money\Money;
-use Modules\Product\Models\Product;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Partner;
-use Modules\Inventory\Models\StockMove;
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Inventory\Models\StockPicking;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Inventory\Models\StockMoveValuation;
-use Modules\Purchase\Services\VendorBillService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
-use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
-use Modules\Purchase\Actions\Purchases\CreateVendorBillLineAction;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Models\Partner;
 use Modules\Inventory\Actions\Inventory\ProcessIncomingStockAction;
+use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveValuation;
+use Modules\Inventory\Models\StockPicking;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Actions\Purchases\CreateVendorBillLineAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Services\VendorBillService;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -119,7 +118,7 @@ it('auto-records inventory when company mode is AUTO_RECORD_ON_BILL', function (
     app(VendorBillService::class)->post($vendorBill, $this->user);
 
     // Assert: Stock picking was created
-    $stockPicking = StockPicking::where('origin', 'VendorBill#' . $vendorBill->getKey())->first();
+    $stockPicking = StockPicking::where('origin', 'VendorBill#'.$vendorBill->getKey())->first();
     expect($stockPicking)->not->toBeNull();
     expect($stockPicking->state->value)->toBe('done');
 
@@ -205,7 +204,7 @@ it('does NOT auto-record inventory when company mode is MANUAL_INVENTORY_RECORDI
     app(VendorBillService::class)->post($vendorBill, $this->user);
 
     // Assert: NO stock picking was created
-    $stockPicking = StockPicking::where('origin', 'VendorBill#' . $vendorBill->getKey())->first();
+    $stockPicking = StockPicking::where('origin', 'VendorBill#'.$vendorBill->getKey())->first();
     expect($stockPicking)->toBeNull();
 
     // Assert: NO stock moves were created

@@ -1,15 +1,17 @@
 <?php
 
-
-
-
-
-use Modules\Accounting\Models\Journal;
-use Modules\Payment\Enums\Payments\PaymentStatus;
-
+use App\Models\Account;
+use App\Models\Company;
+use App\Models\Currency;
+use App\Models\Invoice;
+use App\Models\Payment;
+use App\Models\Product;
+use App\Models\User;
+use Filament\Facades\Filament;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Modules\Accounting\Enums\Accounting\JournalType;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Accounting\Exceptions\PeriodIsLockedException;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\Pages\CreateBankStatement;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice;
@@ -19,24 +21,16 @@ use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pag
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages\CreatePartner;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
 use Modules\Accounting\Filament\Resources\Accounts\Pages\CreateAccount;
-use App\Models\Account;
-use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Invoice;
-
-use Modules\Accounting\Models\JournalEntry;
-use App\Models\Payment;
-use App\Models\Product;
-use App\Models\User;
-use Modules\Inventory\Services\AdjustmentDocumentService;
-use Filament\Facades\Filament;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Exceptions\PeriodIsLockedException;
 use Modules\Accounting\Models\Asset;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Models\JournalEntry;
 use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
 use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
+use Modules\Inventory\Services\AdjustmentDocumentService;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
 
 use function Pest\Livewire\livewire;
 
@@ -486,7 +480,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
             'company_id' => $company->id,
             'currency_id' => $currency->id,
             'journal_id' => $journals['Bank']->id,
-            'reference' => 'Monthly Statement - ' . now()->format('Y-m'),
+            'reference' => 'Monthly Statement - '.now()->format('Y-m'),
             'date' => now()->format('Y-m-d'),
             'starting_balance' => 17000000,
             'ending_balance' => 18999500,
@@ -514,7 +508,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $bankStatement = \Modules\Accounting\Models\BankStatement::where('reference', 'Monthly Statement - ' . now()->format('Y-m'))->first();
+    $bankStatement = \Modules\Accounting\Models\BankStatement::where('reference', 'Monthly Statement - '.now()->format('Y-m'))->first();
     expect($bankStatement)->not->toBeNull();
 
     // Verify bank statement lines

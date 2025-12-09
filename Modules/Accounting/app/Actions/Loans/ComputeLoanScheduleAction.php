@@ -14,9 +14,7 @@ use RuntimeException;
 
 class ComputeLoanScheduleAction
 {
-    public function __construct(private readonly \Modules\Accounting\Services\Loans\InterestCalculatorService $interestCalc)
-    {
-    }
+    public function __construct(private readonly \Modules\Accounting\Services\Loans\InterestCalculatorService $interestCalc) {}
 
     public function execute(LoanAgreement $loan): void
     {
@@ -71,7 +69,7 @@ class ComputeLoanScheduleAction
 
                 $balance = $balance->minus($principalComponent);
 
-                $entry = new LoanScheduleEntry();
+                $entry = new LoanScheduleEntry;
                 $entry->loan()->associate($loan);
                 $entry->sequence = $i;
                 $entry->due_date = $date->copy()->addMonths($i);

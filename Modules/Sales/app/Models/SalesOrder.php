@@ -2,26 +2,20 @@
 
 namespace Modules\Sales\Models;
 
+use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use App\Models\Company;
-use Illuminate\Support\Carbon;
-use Modules\Sales\Models\Invoice;
-
-use Modules\Foundation\Models\Partner;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Models\Currency;
-use Modules\Sales\Models\SalesOrderLine;
-use Modules\Inventory\Models\StockLocation;
-use Illuminate\Database\Eloquent\Collection;
-use Modules\Sales\Enums\Sales\SalesOrderStatus;
-use Modules\Foundation\Observers\AuditLogObserver;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Sales\Enums\Sales\SalesOrderStatus;
 
 /**
  * Sales Order Model
@@ -215,12 +209,12 @@ class SalesOrder extends Model
     public function canCreateInvoice(): bool
     {
         // First check if status allows invoice creation
-        if (!$this->status->canCreateInvoice()) {
+        if (! $this->status->canCreateInvoice()) {
             return false;
         }
 
         // Then check if invoices already exist for this SO
-        return !$this->hasInvoices();
+        return ! $this->hasInvoices();
     }
 
     /**
@@ -278,6 +272,7 @@ class SalesOrder extends Model
                 return false;
             }
         }
+
         return true;
     }
 
@@ -291,6 +286,7 @@ class SalesOrder extends Model
                 return false;
             }
         }
+
         return true;
     }
 
@@ -323,6 +319,7 @@ class SalesOrder extends Model
 
         return ($invoicedQuantity / $totalQuantity) * 100;
     }
+
     protected static function newFactory(): \Modules\Sales\Database\Factories\SalesOrderFactory
     {
         return \Modules\Sales\Database\Factories\SalesOrderFactory::new();

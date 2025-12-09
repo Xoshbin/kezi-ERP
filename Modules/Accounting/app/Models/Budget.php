@@ -2,20 +2,19 @@
 
 namespace Modules\Accounting\Models;
 
-use Eloquent;
 use App\Models\Company;
-use Illuminate\Support\Carbon;
 use Database\Factories\BudgetFactory;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Models\Currency;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
-use Modules\Accounting\Models\BudgetLine;
 use Illuminate\Database\Eloquent\Collection;
-use Modules\Accounting\Enums\Budgets\BudgetType;
-use Modules\Accounting\Enums\Budgets\BudgetStatus;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Modules\Accounting\Enums\Budgets\BudgetStatus;
+use Modules\Accounting\Enums\Budgets\BudgetType;
+use Modules\Foundation\Models\Currency;
 
 /**
  * Class Budget

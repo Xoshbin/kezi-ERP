@@ -6,10 +6,8 @@ use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Models\Account;
 use Modules\Foundation\Models\Currency;
-
 use Modules\HR\Models\Employee;
 use Modules\HR\Models\Payroll;
-
 use Tests\TestCase;
 use Tests\Traits\WithConfiguredCompany;
 
@@ -215,8 +213,8 @@ class PayrollProcessingTest extends TestCase
         $this->assertGreaterThan(0, $journalEntry->lines->count());
 
         // Verify debits equal credits
-        $totalDebits = $journalEntry->lines->sum(fn($line) => (int) $line->debit->getMinorAmount()->toInt());
-        $totalCredits = $journalEntry->lines->sum(fn($line) => (int) $line->credit->getMinorAmount()->toInt());
+        $totalDebits = $journalEntry->lines->sum(fn ($line) => (int) $line->debit->getMinorAmount()->toInt());
+        $totalCredits = $journalEntry->lines->sum(fn ($line) => (int) $line->credit->getMinorAmount()->toInt());
         $this->assertEquals($totalDebits, $totalCredits);
     }
 

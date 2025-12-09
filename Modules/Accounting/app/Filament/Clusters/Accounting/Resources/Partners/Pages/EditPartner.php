@@ -43,7 +43,7 @@ class EditPartner extends EditRecord
         unset($data['custom_fields']);
 
         // Save custom fields
-        if (!empty($customFieldsData)) {
+        if (! empty($customFieldsData)) {
             $this->record->setCustomFieldValues($customFieldsData);
         }
 

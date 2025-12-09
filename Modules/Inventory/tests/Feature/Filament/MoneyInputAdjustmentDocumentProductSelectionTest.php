@@ -2,28 +2,30 @@
 
 namespace Modules\Inventory\Tests\Feature\Filament;
 
-use Tests\TestCase;
+use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use Livewire\Livewire;
-use App\Models\Company;
 use Filament\Facades\Filament;
-
-
-use Modules\Product\Models\Product;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument;
 use Modules\Accounting\Models\Account;
 use Modules\Foundation\Models\Currency;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument;
+use Modules\Product\Models\Product;
+use Tests\TestCase;
 
 class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
 {
     use RefreshDatabase;
 
     private Company $company;
+
     private User $user;
+
     private Currency $currency;
+
     private Product $product;
+
     private Account $incomeAccount;
 
     protected function setUp(): void

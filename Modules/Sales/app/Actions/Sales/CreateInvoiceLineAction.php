@@ -2,12 +2,12 @@
 
 namespace Modules\Sales\Actions\Sales;
 
-use Brick\Money\Money;
 use Brick\Math\RoundingMode;
-use Modules\Sales\Models\Invoice;
+use Brick\Money\Money;
 use Modules\Accounting\Models\Tax;
-use Modules\Sales\Models\InvoiceLine;
 use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
 
 class CreateInvoiceLineAction
 {

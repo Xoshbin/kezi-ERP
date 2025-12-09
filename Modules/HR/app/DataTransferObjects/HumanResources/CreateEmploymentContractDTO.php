@@ -34,6 +34,5 @@ readonly class CreateEmploymentContractDTO
         public ?string $terms_and_conditions,
         public ?string $job_description,
         public int $created_by_user_id,
-    ) {
-    }
+    ) {}
 }

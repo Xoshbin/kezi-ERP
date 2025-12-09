@@ -21,6 +21,5 @@ readonly class CreateAssetDTO
         public int $currency_id,
         public ?string $source_type = null,
         public ?int $source_id = null,
-    ) {
-    }
+    ) {}
 }

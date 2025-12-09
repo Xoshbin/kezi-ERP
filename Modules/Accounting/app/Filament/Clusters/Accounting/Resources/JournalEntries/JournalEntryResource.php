@@ -132,8 +132,8 @@ class JournalEntryResource extends Resource
                                 ->searchableFields(['name', 'code'])
                                 ->searchable()
                                 ->preload()
-                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->getTranslatedLabel('name') . ' (' . $record->code . ')')
-                                ->rules([new \Modules\Accounting\Rules\ActiveAccount()])
+                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->getTranslatedLabel('name').' ('.$record->code.')')
+                                ->rules([new \Modules\Accounting\Rules\ActiveAccount])
                                 ->required()
                                 ->columnSpan(3),
                             MoneyInput::make('debit')

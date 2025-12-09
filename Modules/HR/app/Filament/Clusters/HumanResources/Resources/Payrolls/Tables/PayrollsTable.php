@@ -3,17 +3,17 @@
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Tables;
 
 use Exception;
-use Filament\Tables\Table;
 use Filament\Actions\Action;
-use Modules\HR\Models\Payroll;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Support\Colors\Color;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Modules\HR\Services\HumanResources\PayrollService;
+use Filament\Tables\Table;
 use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
+use Modules\HR\Models\Payroll;
+use Modules\HR\Services\HumanResources\PayrollService;
 
 class PayrollsTable
 {
@@ -67,7 +67,7 @@ class PayrollsTable
                         'success' => 'paid',
                         'danger' => 'cancelled',
                     ])
-                    ->formatStateUsing(fn(string $state): string => __("hr::payroll.status.{$state}"))
+                    ->formatStateUsing(fn (string $state): string => __("hr::payroll.status.{$state}"))
                     ->sortable(),
 
                 TextColumn::make('created_at')
@@ -87,7 +87,7 @@ class PayrollsTable
                     ->label(__('hr::payroll.actions.approve'))
                     ->icon('heroicon-o-check-circle')
                     ->color(Color::Green)
-                    ->visible(fn(Payroll $record): bool => $record->status === 'draft')
+                    ->visible(fn (Payroll $record): bool => $record->status === 'draft')
                     ->requiresConfirmation()
                     ->modalHeading(__('hr::payroll.actions.approve_payroll'))
                     ->modalDescription(__('hr::payroll.actions.approve_payroll_description'))
@@ -107,11 +107,11 @@ class PayrollsTable
                     ->label(__('hr::payroll.actions.pay'))
                     ->icon('heroicon-o-currency-dollar')
                     ->color(Color::Blue)
-                    ->visible(fn(Payroll $record): bool => $record->status === 'processed' && ! $record->payment_id)
+                    ->visible(fn (Payroll $record): bool => $record->status === 'processed' && ! $record->payment_id)
                     ->requiresConfirmation()
                     ->modalHeading(__('hr::payroll.actions.pay_employee'))
                     ->modalDescription(
-                        fn(Payroll $record): string => __('hr::payroll.actions.pay_employee_description', [
+                        fn (Payroll $record): string => __('hr::payroll.actions.pay_employee_description', [
                             'employee' => $record->employee->full_name,
                             'amount' => $record->net_salary->formatTo('en_US'),
                         ])
@@ -132,8 +132,8 @@ class PayrollsTable
                     ->label(__('hr::payroll.actions.view_payment'))
                     ->icon('heroicon-o-eye')
                     ->color(Color::Gray)
-                    ->visible(fn(Payroll $record): bool => $record->payment_id !== null)
-                    ->url(fn(Payroll $record): string => route('filament.jmeryar.resources.payments.edit', $record->payment_id))
+                    ->visible(fn (Payroll $record): bool => $record->payment_id !== null)
+                    ->url(fn (Payroll $record): string => route('filament.jmeryar.resources.payments.edit', $record->payment_id))
                     ->openUrlInNewTab(),
             ])
             ->toolbarActions([

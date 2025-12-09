@@ -2,13 +2,13 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Widgets;
 
-use NumberFormatter;
 use Brick\Money\Money;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Purchase\Models\VendorBill;
-use Filament\Widgets\StatsOverviewWidget\Stat;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Models\VendorBill;
+use NumberFormatter;
 
 class SettlementSummaryWidget extends BaseWidget
 {
@@ -77,7 +77,7 @@ class SettlementSummaryWidget extends BaseWidget
             $money->getCurrency()->getCurrencyCode()
         );
 
-        return $result ?: $money->getCurrency()->getCurrencyCode() . ' 0.00';
+        return $result ?: $money->getCurrency()->getCurrencyCode().' 0.00';
     }
 
     protected function getColumns(): int

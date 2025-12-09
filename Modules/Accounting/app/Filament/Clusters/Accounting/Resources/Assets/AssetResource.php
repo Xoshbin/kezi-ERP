@@ -150,7 +150,7 @@ class AssetResource extends Resource
                         ->label(__('accounting::asset.purchase_date'))
                         ->default(now())
                         ->required()
-                        ->rules([new NotInLockedPeriod()])
+                        ->rules([new NotInLockedPeriod])
                         ->columnSpan(1),
 
                     \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('purchase_value')
@@ -320,7 +320,7 @@ class AssetResource extends Resource
 
                 TextColumn::make('useful_life_years')
                     ->label(__('accounting::asset.useful_life'))
-                    ->suffix(' ' . __('accounting::asset.years'))
+                    ->suffix(' '.__('accounting::asset.years'))
                     ->toggleable(),
 
                 TextColumn::make('currency.code')

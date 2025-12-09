@@ -2,14 +2,12 @@
 
 namespace Modules\Foundation\Database\Seeders;
 
-use Exception;
 use App\Models\Company;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Seeder;
 use Modules\Accounting\Models\Account;
 use Modules\Foundation\Models\Partner;
-use Modules\Foundation\Enums\Partners\PartnerType;
-use Modules\Accounting\Enums\Accounting\AccountType;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PartnerSeeder extends Seeder
 {

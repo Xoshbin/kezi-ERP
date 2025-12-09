@@ -2,36 +2,33 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use Exception;
-use Carbon\Carbon;
-use RuntimeException;
-use Brick\Money\Money;
 use App\Models\Company;
 use Brick\Math\RoundingMode;
-use Illuminate\Support\Facades\Log;
-
-use Modules\Product\Models\Product;
-use Illuminate\Support\Facades\Auth;
+use Brick\Money\Money;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Inventory\Models\StockMove;
-use Modules\Purchase\Models\VendorBill;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Modules\Accounting\Enums\Accounting\JournalEntryState;
 use Modules\Accounting\Models\JournalEntry;
-use Modules\Purchase\Models\VendorBillLine;
 use Modules\Accounting\Models\JournalEntryLine;
-use Modules\Inventory\Models\InventoryCostLayer;
-use Modules\Inventory\Models\StockMoveValuation;
+use Modules\Inventory\DataTransferObjects\Inventory\AdjustInventoryDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\CostDeterminationResult;
 use Modules\Inventory\Enums\Inventory\CostSource;
 use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
-use Modules\Accounting\Enums\Accounting\JournalEntryState;
-use Modules\Inventory\Services\Inventory\StockQuantService;
-use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
-use Modules\Inventory\DataTransferObjects\Inventory\AdjustInventoryDTO;
-use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use Modules\Inventory\DataTransferObjects\Inventory\CostDeterminationResult;
-use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
+use Modules\Inventory\Models\InventoryCostLayer;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveValuation;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Models\VendorBillLine;
+use RuntimeException;
 
 /**
  * Inventory Valuation Service
@@ -52,8 +49,8 @@ use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
  * - Outgoing stock: Debit COGS Expense, Credit Inventory Asset
  * - Inventory adjustments: Debit/Credit Inventory and Adjustment accounts
  *
- * @package App\Services\Inventory
  * @author Laravel/Filament Inventory System
+ *
  * @version 1.0.0
  */
 class InventoryValuationService
@@ -61,9 +58,9 @@ class InventoryValuationService
     /**
      * Create a new inventory valuation service instance
      *
-     * @param \Modules\Accounting\Services\Accounting\LockDateService $lockDateService Service for enforcing accounting lock dates
-     * @param StockQuantService $stockQuantService Service for managing stock quantities
-     * @param \Modules\Foundation\Services\CurrencyConverterService $currencyConverter Service for currency conversion
+     * @param  \Modules\Accounting\Services\Accounting\LockDateService  $lockDateService  Service for enforcing accounting lock dates
+     * @param  StockQuantService  $stockQuantService  Service for managing stock quantities
+     * @param  \Modules\Foundation\Services\CurrencyConverterService  $currencyConverter  Service for currency conversion
      */
     public function __construct(
         protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
@@ -83,11 +80,11 @@ class InventoryValuationService
      * The method enforces lock date restrictions and validates that Standard costing
      * is not used (not supported in current implementation).
      *
-     * @param Product $product The product receiving stock (must be storable type)
-     * @param float $quantity Quantity being received (must be positive)
-     * @param Money $costPerUnit Cost per unit in company base currency
-     * @param Carbon $date Transaction date for valuation (must be after lock date)
-     * @param Model $sourceDocument Source document (VendorBill, etc.)
+     * @param  Product  $product  The product receiving stock (must be storable type)
+     * @param  float  $quantity  Quantity being received (must be positive)
+     * @param  Money  $costPerUnit  Cost per unit in company base currency
+     * @param  Carbon  $date  Transaction date for valuation (must be after lock date)
+     * @param  Model  $sourceDocument  Source document (VendorBill, etc.)
      *
      * @throws Exception When Standard costing is used (not supported)
      * @throws LockDateException When transaction date is before lock date
@@ -100,8 +97,6 @@ class InventoryValuationService
      *     Carbon::now(),
      *     $vendorBill
      * );
-     *
-     * @return void
      */
     public function processIncomingStock(Product $product, float $quantity, Money $costPerUnit, Carbon $date, Model $sourceDocument): void
     {
@@ -136,7 +131,7 @@ class InventoryValuationService
                 $costResult = $this->calculateIncomingCostPerUnitEnhanced($product, $sourceDocument, false);
             } catch (Exception $e) {
                 // If cost determination fails, continue without tracking (backward compatibility)
-                Log::warning("Could not determine cost source for stock move {$sourceDocument->id}: " . $e->getMessage());
+                Log::warning("Could not determine cost source for stock move {$sourceDocument->id}: ".$e->getMessage());
             }
         }
 
@@ -159,10 +154,10 @@ class InventoryValuationService
      * The method automatically determines the appropriate cost based on the product's
      * valuation method and creates the necessary accounting entries.
      *
-     * @param Product $product The product being consumed (must be storable type)
-     * @param float $quantity Quantity being consumed (must be positive)
-     * @param Carbon $date Transaction date for COGS calculation (must be after lock date)
-     * @param Model $sourceDocument Source document (CustomerInvoice, StockMove, etc.)
+     * @param  Product  $product  The product being consumed (must be storable type)
+     * @param  float  $quantity  Quantity being consumed (must be positive)
+     * @param  Carbon  $date  Transaction date for COGS calculation (must be after lock date)
+     * @param  Model  $sourceDocument  Source document (CustomerInvoice, StockMove, etc.)
      *
      * @throws Exception When Standard costing is used (not supported)
      * @throws LockDateException When transaction date is before lock date
@@ -174,8 +169,6 @@ class InventoryValuationService
      *     Carbon::now(),
      *     $customerInvoice
      * );
-     *
-     * @return void
      */
     public function processOutgoingStock(Product $product, float $quantity, Carbon $date, Model $sourceDocument): void
     {
@@ -223,12 +216,11 @@ class InventoryValuationService
      * The adjustment uses the product's current average cost to calculate the value impact
      * and creates journal entries following standard inventory adjustment accounting.
      *
-     * @param AdjustInventoryDTO $dto Data transfer object containing adjustment details
+     * @param  AdjustInventoryDTO  $dto  Data transfer object containing adjustment details
      *
-     * @return void
-     *@throws LockDateException When adjustment date is before lock date
-     *
+     * @throws LockDateException When adjustment date is before lock date
      * @throws Exception When product doesn't have an average cost
+     *
      * @example
      * $dto = new AdjustInventoryDTO(
      *     product_id: 123,
@@ -237,7 +229,6 @@ class InventoryValuationService
      *     reference: 'Physical count adjustment'
      * );
      * $service->adjustInventoryValue($dto);
-     *
      */
     public function adjustInventoryValue(AdjustInventoryDTO $dto): void
     {
@@ -615,7 +606,7 @@ class InventoryValuationService
         if ($sourceDocument instanceof StockMove) {
             // Try to find the latest vendor bill for cost determination
             $product = $sourceDocument->productLines->first()?->product;
-            if (!$product) {
+            if (! $product) {
                 return null;
             }
 
@@ -638,6 +629,7 @@ class InventoryValuationService
                 // Convert the company currency amount back to original currency
                 if ($vendorBill->currency_id !== $product->company->currency_id && $exchangeRate > 0) {
                     $originalAmount = $totalCostInCompanyCurrency->getAmount()->toFloat() / $exchangeRate;
+
                     return Money::of($originalAmount, $vendorBill->currency->code);
                 }
             }
@@ -655,7 +647,7 @@ class InventoryValuationService
         if ($sourceDocument instanceof StockMove) {
             // Try to find the latest vendor bill for cost determination
             $product = $sourceDocument->productLines->first()?->product;
-            if (!$product) {
+            if (! $product) {
                 return null;
             }
 
@@ -683,7 +675,6 @@ class InventoryValuationService
      * Create a StockMoveValuation record for incoming stock
      *
      * @param  Model  $sourceDocument
-     * @param  CostDeterminationResult|null  $costResult
      */
     private function createIncomingStockMoveValuation(Product $product, float $quantity, Money $totalCost, JournalEntry $journalEntry, $sourceDocument, ?CostDeterminationResult $costResult = null): StockMoveValuation
     {
@@ -742,11 +733,10 @@ class InventoryValuationService
     /**
      * Get or create a consolidated journal entry for vendor bill stock moves
      *
-     * @param VendorBill $vendorBill The vendor bill
-     * @param Product $product The product being processed
-     * @param Money $totalCost The total cost for this product
-     * @param Carbon $date The transaction date
-     * @return JournalEntry
+     * @param  VendorBill  $vendorBill  The vendor bill
+     * @param  Product  $product  The product being processed
+     * @param  Money  $totalCost  The total cost for this product
+     * @param  Carbon  $date  The transaction date
      */
     private function getOrCreateConsolidatedVendorBillJournalEntry(VendorBill $vendorBill, Product $product, Money $totalCost, Carbon $date): JournalEntry
     {
@@ -772,8 +762,7 @@ class InventoryValuationService
     /**
      * Create a consolidated journal entry for a single manual stock move with multiple products
      *
-     * @param StockMove $stockMove The manual stock move
-     * @return JournalEntry
+     * @param  StockMove  $stockMove  The manual stock move
      */
     public function createConsolidatedManualStockMoveJournalEntry(StockMove $stockMove): JournalEntry
     {
@@ -789,15 +778,15 @@ class InventoryValuationService
             $product = $productLine->product;
             $quantity = $productLine->quantity;
 
-            if (!$product) {
+            if (! $product) {
                 throw new Exception("Product not found for product line ID {$productLine->id}");
             }
 
             // Validate required accounts
-            if (!$product->default_inventory_account_id) {
+            if (! $product->default_inventory_account_id) {
                 throw new Exception("Product {$product->id} does not have an inventory account configured");
             }
-            if (!$product->default_stock_input_account_id) {
+            if (! $product->default_stock_input_account_id) {
                 throw new Exception("Product {$product->id} does not have a stock input account configured");
             }
 
@@ -809,7 +798,7 @@ class InventoryValuationService
 
             // Log any cost determination warnings
             if ($costResult->hasWarnings()) {
-                Log::warning("Cost determination warnings for product {$product->id} in stock move {$stockMove->id}: " . $costResult->getWarningsText());
+                Log::warning("Cost determination warnings for product {$product->id} in stock move {$stockMove->id}: ".$costResult->getWarningsText());
             }
 
             // Add debit line for inventory account
@@ -847,7 +836,7 @@ class InventoryValuationService
             currency_id: $company->currency_id,
             entry_date: Carbon::parse($stockMove->move_date)->toDateString(),
             reference: "STOCK-IN-{$stockMove->reference}",
-            description: "Stock receipt for " . implode(', ', $productNames),
+            description: 'Stock receipt for '.implode(', ', $productNames),
             created_by_user_id: (int) (Auth::id() ?? 1),
             is_posted: true,
             lines: $journalEntryLines,
@@ -881,14 +870,13 @@ class InventoryValuationService
     /**
      * Create a consolidated journal entry for multiple incoming stock moves from the same vendor bill
      *
-     * @param array $stockMoves Array of StockMove objects
-     * @param Model $sourceDocument The source document (e.g., VendorBill)
-     * @return JournalEntry
+     * @param  array  $stockMoves  Array of StockMove objects
+     * @param  Model  $sourceDocument  The source document (e.g., VendorBill)
      */
     public function createConsolidatedIncomingStockJournalEntry(array $stockMoves, $sourceDocument): JournalEntry
     {
         if (empty($stockMoves)) {
-            throw new Exception("No stock moves provided for consolidated journal entry");
+            throw new Exception('No stock moves provided for consolidated journal entry');
         }
 
         $firstStockMove = $stockMoves[0];
@@ -898,7 +886,7 @@ class InventoryValuationService
 
         // Use the purchase journal for incoming stock entries
         $journalId = $company->default_purchase_journal_id;
-        if (!$journalId) {
+        if (! $journalId) {
             throw new Exception("Company {$company->id} does not have a default purchase journal configured");
         }
 
@@ -930,10 +918,10 @@ class InventoryValuationService
                 $quantity = (float) $productLine->quantity;
 
                 // Validate required accounts
-                if (!$product->default_inventory_account_id) {
+                if (! $product->default_inventory_account_id) {
                     throw new Exception("Product {$product->id} does not have an inventory account configured");
                 }
-                if (!$product->default_stock_input_account_id) {
+                if (! $product->default_stock_input_account_id) {
                     throw new Exception("Product {$product->id} does not have a stock input account configured");
                 }
 
@@ -945,7 +933,7 @@ class InventoryValuationService
 
                 // Log any cost determination warnings
                 if ($costResult->hasWarnings()) {
-                    Log::warning("Cost determination warnings for product {$product->id} in stock move {$stockMove->id}: " . $costResult->getWarningsText());
+                    Log::warning("Cost determination warnings for product {$product->id} in stock move {$stockMove->id}: ".$costResult->getWarningsText());
                 }
 
                 // Add debit line for inventory account
@@ -980,7 +968,7 @@ class InventoryValuationService
             currency_id: $company->currency_id,
             entry_date: Carbon::parse($firstStockMove->move_date)->toDateString(),
             reference: $reference,
-            description: "Consolidated stock receipt for " . implode(', ', $productNames),
+            description: 'Consolidated stock receipt for '.implode(', ', $productNames),
             created_by_user_id: (int) (Auth::id() ?? 1),
             is_posted: true,
             source_type: get_class($sourceDocument),
@@ -1008,7 +996,7 @@ class InventoryValuationService
             }
         }
 
-        Log::info("Successfully created consolidated inventory journal entry for " . count($stockMoves) . " products, Total cost: {$totalCost->getAmount()}");
+        Log::info('Successfully created consolidated inventory journal entry for '.count($stockMoves)." products, Total cost: {$totalCost->getAmount()}");
 
         return $journalEntry;
     }
@@ -1017,10 +1005,11 @@ class InventoryValuationService
      * Calculate the incoming cost per unit for a stock move in company base currency
      * Includes non-recoverable taxes as part of the inventory cost
      *
-     * @param Product $product The product for cost determination
-     * @param StockMove $stockMove The stock move requiring cost
-     * @param bool $allowFallbacks Whether to allow fallback cost sources (default: false for strict accounting)
+     * @param  Product  $product  The product for cost determination
+     * @param  StockMove  $stockMove  The stock move requiring cost
+     * @param  bool  $allowFallbacks  Whether to allow fallback cost sources (default: false for strict accounting)
      * @return CostDeterminationResult Result containing cost, source, and any warnings
+     *
      * @throws InsufficientCostInformationException When no cost can be determined
      */
     public function calculateIncomingCostPerUnitEnhanced(
@@ -1059,11 +1048,11 @@ class InventoryValuationService
                     // Include capitalized tax in the unit cost if tax is non-recoverable
                     if (
                         $vendorBillLine->tax_id && $vendorBillLine->total_line_tax->isPositive() &&
-                        $vendorBillLine->tax && !$vendorBillLine->tax->is_recoverable
+                        $vendorBillLine->tax && ! $vendorBillLine->tax->is_recoverable
                     ) {
                         $taxInCompanyCurrency = $vendorBillLine->total_line_tax_company_currency ?? $vendorBillLine->total_line_tax;
 
-                        if (!$vendorBillLine->total_line_tax_company_currency && $vendorBill->currency_id !== $companyCurrency->id) {
+                        if (! $vendorBillLine->total_line_tax_company_currency && $vendorBill->currency_id !== $companyCurrency->id) {
                             $taxInCompanyCurrency = $this->currencyConverter->convertWithRate(
                                 $vendorBillLine->total_line_tax,
                                 $exchangeRate,
@@ -1122,11 +1111,11 @@ class InventoryValuationService
             // Include capitalized tax in the unit cost if tax is non-recoverable
             if (
                 $latestVendorBillLine->tax_id && $latestVendorBillLine->total_line_tax->isPositive() &&
-                $latestVendorBillLine->tax && !$latestVendorBillLine->tax->is_recoverable
+                $latestVendorBillLine->tax && ! $latestVendorBillLine->tax->is_recoverable
             ) {
                 $taxInCompanyCurrency = $latestVendorBillLine->total_line_tax_company_currency ?? $latestVendorBillLine->total_line_tax;
 
-                if (!$latestVendorBillLine->total_line_tax_company_currency && $vendorBill->currency_id !== $companyCurrency->id) {
+                if (! $latestVendorBillLine->total_line_tax_company_currency && $vendorBill->currency_id !== $companyCurrency->id) {
                     $taxInCompanyCurrency = $this->currencyConverter->convertWithRate(
                         $latestVendorBillLine->total_line_tax,
                         $exchangeRate,
@@ -1145,7 +1134,7 @@ class InventoryValuationService
                     $unitPrice,
                     CostSource::VendorBill,
                     "VendorBill:{$vendorBill->id}",
-                    ["Using latest posted vendor bill for cost determination"],
+                    ['Using latest posted vendor bill for cost determination'],
                     $attemptedSources
                 );
             }
@@ -1183,6 +1172,7 @@ class InventoryValuationService
             $attemptedSources[] = 'unit_price';
             if ($product->unit_price && $product->unit_price->isPositive()) {
                 $warnings[] = 'Using product unit price as cost - this may not reflect actual purchase cost';
+
                 return CostDeterminationResult::withWarnings(
                     $product->unit_price,
                     CostSource::UnitPrice,
@@ -1205,9 +1195,6 @@ class InventoryValuationService
     /**
      * Backward-compatible wrapper for calculateIncomingCostPerUnitEnhanced
      *
-     * @param Product $product
-     * @param StockMove $stockMove
-     * @return Money
      * @throws InsufficientCostInformationException
      */
     public function calculateIncomingCostPerUnit(Product $product, StockMove $stockMove): Money
@@ -1216,7 +1203,7 @@ class InventoryValuationService
 
         // Log warnings if any
         if ($result->hasWarnings()) {
-            Log::warning("Cost determination warnings for product {$product->id}: " . $result->getWarningsText());
+            Log::warning("Cost determination warnings for product {$product->id}: ".$result->getWarningsText());
         }
 
         return $result->cost;

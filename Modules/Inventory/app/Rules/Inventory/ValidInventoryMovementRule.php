@@ -34,14 +34,14 @@ class ValidInventoryMovementRule implements ValidationRule
             $this->quantity
         );
 
-        if (!$result->isValid()) {
+        if (! $result->isValid()) {
             $errors = $result->getErrors();
             $requirements = $result->getRequirements();
 
-            $message = 'Inventory movement validation failed: ' . implode(', ', $errors);
+            $message = 'Inventory movement validation failed: '.implode(', ', $errors);
 
-            if (!empty($requirements)) {
-                $message .= ' Requirements: ' . implode(', ', array_values($requirements));
+            if (! empty($requirements)) {
+                $message .= ' Requirements: '.implode(', ', array_values($requirements));
             }
 
             $fail($message);

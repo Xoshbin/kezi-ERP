@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
 
 class CompanyFactory extends Factory
 {
@@ -25,6 +25,7 @@ class CompanyFactory extends Factory
                         'decimal_places' => 3,
                     ]
                 );
+
                 return $currency->id;
             },
             'fiscal_country' => 'IQ', // Default to Iraq as per project spec
@@ -39,7 +40,7 @@ class CompanyFactory extends Factory
      */
     public function withReconciliationEnabled(): static
     {
-        return $this->state(fn() => [
+        return $this->state(fn () => [
             'enable_reconciliation' => true,
         ]);
     }

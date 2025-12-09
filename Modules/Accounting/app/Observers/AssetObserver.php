@@ -3,9 +3,9 @@
 namespace Modules\Accounting\Observers;
 
 use Illuminate\Support\Facades\Auth;
-use Modules\Accounting\Models\Asset;
-use Modules\Accounting\Enums\Assets\AssetStatus;
 use Modules\Accounting\Actions\Accounting\CreateJournalEntryForAssetAcquisitionAction;
+use Modules\Accounting\Enums\Assets\AssetStatus;
+use Modules\Accounting\Models\Asset;
 
 class AssetObserver
 {

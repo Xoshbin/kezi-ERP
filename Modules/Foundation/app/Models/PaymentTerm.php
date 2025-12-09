@@ -2,25 +2,21 @@
 
 namespace Modules\Foundation\Models;
 
-use Eloquent;
-use Brick\Money\Money;
 use App\Models\Company;
 use Brick\Math\RoundingMode;
-use Illuminate\Support\Carbon;
-use Modules\Sales\Models\Invoice;
-use Modules\Foundation\Models\Partner;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Purchase\Models\VendorBill;
-use Spatie\Translatable\HasTranslations;
-use Illuminate\Database\Eloquent\Builder;
-
-use Illuminate\Database\Eloquent\Collection;
-use Modules\Foundation\Models\PaymentTermLine;
-use Modules\Foundation\Observers\AuditLogObserver;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Brick\Money\Money;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
+use Spatie\Translatable\HasTranslations;
 
 /**
  * Class PaymentTerm

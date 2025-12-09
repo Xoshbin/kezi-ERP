@@ -4,8 +4,8 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreemen
 
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
-use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
+use Modules\Foundation\Filament\Actions\DocsAction;
 
 class CreateLoanAgreement extends CreateRecord
 {

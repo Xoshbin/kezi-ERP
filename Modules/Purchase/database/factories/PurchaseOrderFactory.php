@@ -2,15 +2,14 @@
 
 namespace Modules\Purchase\Database\Factories;
 
-use App\Models\User;
 use App\Models\Company;
-use Modules\Foundation\Models\Partner;
-
-use Modules\Foundation\Models\Currency;
-use Modules\Purchase\Models\PurchaseOrder;
-use Modules\Inventory\Models\StockLocation;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Inventory\Models\StockLocation;
 use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Modules\Purchase\Models\PurchaseOrder;
 
 /**
  * @extends Factory<PurchaseOrder>
@@ -55,7 +54,7 @@ class PurchaseOrderFactory extends Factory
      */
     public function rfq(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => PurchaseOrderStatus::RFQ,
         ]);
     }
@@ -65,7 +64,7 @@ class PurchaseOrderFactory extends Factory
      */
     public function rfqSent(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => PurchaseOrderStatus::RFQSent,
         ]);
     }
@@ -75,9 +74,9 @@ class PurchaseOrderFactory extends Factory
      */
     public function sent(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => PurchaseOrderStatus::Sent,
-            'po_number' => 'PO-' . $this->faker->unique()->numerify('######'),
+            'po_number' => 'PO-'.$this->faker->unique()->numerify('######'),
         ]);
     }
 
@@ -86,10 +85,10 @@ class PurchaseOrderFactory extends Factory
      */
     public function confirmed(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => PurchaseOrderStatus::ToReceive,
             'confirmed_at' => $this->faker->dateTimeBetween('-7 days', 'now'),
-            'po_number' => 'PO-' . $this->faker->unique()->numerify('######'),
+            'po_number' => 'PO-'.$this->faker->unique()->numerify('######'),
         ]);
     }
 
@@ -98,7 +97,7 @@ class PurchaseOrderFactory extends Factory
      */
     public function toReceive(): static
     {
-        return $this->confirmed()->state(fn(array $attributes) => [
+        return $this->confirmed()->state(fn (array $attributes) => [
             'status' => PurchaseOrderStatus::ToReceive,
         ]);
     }
@@ -108,7 +107,7 @@ class PurchaseOrderFactory extends Factory
      */
     public function partiallyReceived(): static
     {
-        return $this->confirmed()->state(fn(array $attributes) => [
+        return $this->confirmed()->state(fn (array $attributes) => [
             'status' => PurchaseOrderStatus::PartiallyReceived,
         ]);
     }
@@ -118,7 +117,7 @@ class PurchaseOrderFactory extends Factory
      */
     public function fullyReceived(): static
     {
-        return $this->confirmed()->state(fn(array $attributes) => [
+        return $this->confirmed()->state(fn (array $attributes) => [
             'status' => PurchaseOrderStatus::FullyReceived,
         ]);
     }
@@ -128,7 +127,7 @@ class PurchaseOrderFactory extends Factory
      */
     public function toBill(): static
     {
-        return $this->fullyReceived()->state(fn(array $attributes) => [
+        return $this->fullyReceived()->state(fn (array $attributes) => [
             'status' => PurchaseOrderStatus::ToBill,
         ]);
     }
@@ -138,7 +137,7 @@ class PurchaseOrderFactory extends Factory
      */
     public function partiallyBilled(): static
     {
-        return $this->toBill()->state(fn(array $attributes) => [
+        return $this->toBill()->state(fn (array $attributes) => [
             'status' => PurchaseOrderStatus::PartiallyBilled,
         ]);
     }
@@ -148,7 +147,7 @@ class PurchaseOrderFactory extends Factory
      */
     public function fullyBilled(): static
     {
-        return $this->partiallyBilled()->state(fn(array $attributes) => [
+        return $this->partiallyBilled()->state(fn (array $attributes) => [
             'status' => PurchaseOrderStatus::FullyBilled,
         ]);
     }
@@ -158,7 +157,7 @@ class PurchaseOrderFactory extends Factory
      */
     public function done(): static
     {
-        return $this->fullyBilled()->state(fn(array $attributes) => [
+        return $this->fullyBilled()->state(fn (array $attributes) => [
             'status' => PurchaseOrderStatus::Done,
         ]);
     }
@@ -168,7 +167,7 @@ class PurchaseOrderFactory extends Factory
      */
     public function cancelled(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => PurchaseOrderStatus::Cancelled,
             'cancelled_at' => $this->faker->dateTimeBetween('-7 days', 'now'),
         ]);
@@ -179,7 +178,7 @@ class PurchaseOrderFactory extends Factory
      */
     public function withDeliveryLocation(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'delivery_location_id' => StockLocation::factory(),
         ]);
     }
@@ -189,7 +188,7 @@ class PurchaseOrderFactory extends Factory
      */
     public function withExchangeRate(float $rate = 1.0): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'exchange_rate_at_creation' => $rate,
         ]);
     }

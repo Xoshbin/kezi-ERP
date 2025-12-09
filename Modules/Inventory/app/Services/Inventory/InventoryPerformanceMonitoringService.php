@@ -52,7 +52,7 @@ class InventoryPerformanceMonitoringService
 
         foreach ($tables as $table) {
             try {
-                $result = DB::select("
+                $result = DB::select('
                     SELECT
                         table_name,
                         ROUND(((data_length + index_length) / 1024 / 1024), 2) AS size_mb,
@@ -60,9 +60,9 @@ class InventoryPerformanceMonitoringService
                     FROM information_schema.tables
                     WHERE table_schema = DATABASE()
                     AND table_name = ?
-                ", [$table]);
+                ', [$table]);
 
-                if (!empty($result)) {
+                if (! empty($result)) {
                     $sizes[$table] = [
                         'size_mb' => $result[0]->size_mb ?? 0,
                         'rows' => $result[0]->table_rows ?? 0,
@@ -126,7 +126,7 @@ class InventoryPerformanceMonitoringService
     {
         try {
             // Get index usage statistics
-            $indexStats = DB::select("
+            $indexStats = DB::select('
                 SELECT
                     index_name,
                     cardinality,
@@ -138,7 +138,7 @@ class InventoryPerformanceMonitoringService
                 WHERE table_schema = DATABASE()
                 AND table_name = ?
                 ORDER BY seq_in_index
-            ", [$tableName]);
+            ', [$tableName]);
 
             // Simple heuristic: if table has very few indexes, it might need optimization
             $indexCount = count(array_unique(array_column($indexStats, 'index_name')));
@@ -472,6 +472,7 @@ class InventoryPerformanceMonitoringService
         // Sort by priority
         usort($recommendations, function ($a, $b) {
             $priorityOrder = ['high' => 1, 'medium' => 2, 'low' => 3];
+
             return $priorityOrder[$a['priority']] <=> $priorityOrder[$b['priority']];
         });
 

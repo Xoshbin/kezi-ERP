@@ -2,12 +2,12 @@
 
 namespace Modules\Inventory\Models;
 
-use Modules\Product\Models\Product;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Product\Models\Product;
 
 class InventoryCostLayer extends Model
 {
@@ -54,6 +54,7 @@ class InventoryCostLayer extends Model
     {
         return $this->morphTo();
     }
+
     protected static function newFactory(): \Modules\Inventory\Database\Factories\InventoryCostLayerFactory
     {
         return \Modules\Inventory\Database\Factories\InventoryCostLayerFactory::new();

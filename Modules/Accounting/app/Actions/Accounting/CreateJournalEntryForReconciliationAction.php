@@ -2,12 +2,12 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
+use App\Models\User;
 use Brick\Money\Money;
 use InvalidArgumentException;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Modules\Accounting\Models\JournalEntry;
-use App\Models\User;
 use Modules\Payment\Models\Payment;
 use RuntimeException;
 
@@ -70,8 +70,8 @@ class CreateJournalEntryForReconciliationAction
             journal_id: $payment->journal_id,
             currency_id: $currency->id,
             entry_date: now(),
-            reference: 'RECO/' . $payment->id,
-            description: 'Reconciliation for Payment #' . $payment->id,
+            reference: 'RECO/'.$payment->id,
+            description: 'Reconciliation for Payment #'.$payment->id,
             source_type: Payment::class,
             source_id: $payment->id,
             created_by_user_id: $user->id,

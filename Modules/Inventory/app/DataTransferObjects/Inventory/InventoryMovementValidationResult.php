@@ -16,8 +16,7 @@ readonly class InventoryMovementValidationResult
         public array $errors = [],
         public array $warnings = [],
         public array $requirements = [],
-    ) {
-    }
+    ) {}
 
     /**
      * Check if the validation passed
@@ -32,7 +31,7 @@ readonly class InventoryMovementValidationResult
      */
     public function hasWarnings(): bool
     {
-        return !empty($this->warnings);
+        return ! empty($this->warnings);
     }
 
     /**
@@ -40,7 +39,7 @@ readonly class InventoryMovementValidationResult
      */
     public function hasErrors(): bool
     {
-        return !empty($this->errors);
+        return ! empty($this->errors);
     }
 
     /**
@@ -126,6 +125,7 @@ readonly class InventoryMovementValidationResult
 
         if ($this->status === 'warning') {
             $warningCount = count($this->warnings);
+
             return "Validation passed with {$warningCount} warning(s)";
         }
 
@@ -151,15 +151,15 @@ readonly class InventoryMovementValidationResult
             'summary' => $this->getSummary(),
         ];
 
-        if (!empty($this->errors)) {
+        if (! empty($this->errors)) {
             $report['errors'] = $this->errors;
         }
 
-        if (!empty($this->warnings)) {
+        if (! empty($this->warnings)) {
             $report['warnings'] = $this->warnings;
         }
 
-        if (!empty($this->requirements)) {
+        if (! empty($this->requirements)) {
             $report['requirements'] = $this->requirements;
         }
 

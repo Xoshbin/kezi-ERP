@@ -2,18 +2,14 @@
 
 namespace Modules\Inventory\Database\Factories;
 
-
-
-use App\Models\User;
 use App\Models\Company;
-
-use Illuminate\Database\Eloquent\Model;
-use Modules\Inventory\Models\StockMove;
-use Modules\Inventory\Models\StockLocation;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Models\StockMove;
 
 /**
  * @extends Factory<StockMove>
@@ -34,7 +30,7 @@ class StockMoveFactory extends Factory
             'move_type' => $this->faker->randomElement(StockMoveType::cases()),
             'status' => $this->faker->randomElement(StockMoveStatus::cases()),
             'move_date' => $this->faker->dateTimeBetween('-1 month', 'now'),
-            'reference' => 'SM-' . $this->faker->unique()->numerify('####'),
+            'reference' => 'SM-'.$this->faker->unique()->numerify('####'),
             'description' => $this->faker->sentence(),
             'source_type' => 'Test',
             'source_id' => 1,
@@ -48,7 +44,7 @@ class StockMoveFactory extends Factory
      */
     public function receipt(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'move_type' => StockMoveType::Receipt,
         ]);
     }
@@ -58,7 +54,7 @@ class StockMoveFactory extends Factory
      */
     public function delivery(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'move_type' => StockMoveType::Delivery,
         ]);
     }
@@ -68,7 +64,7 @@ class StockMoveFactory extends Factory
      */
     public function adjustment(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'move_type' => StockMoveType::Adjustment,
         ]);
     }
@@ -78,7 +74,7 @@ class StockMoveFactory extends Factory
      */
     public function done(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => StockMoveStatus::Done,
         ]);
     }
@@ -88,7 +84,7 @@ class StockMoveFactory extends Factory
      */
     public function draft(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => StockMoveStatus::Draft,
         ]);
     }
@@ -98,7 +94,7 @@ class StockMoveFactory extends Factory
      */
     public function withQuantity(float $quantity): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'quantity' => $quantity,
         ]);
     }

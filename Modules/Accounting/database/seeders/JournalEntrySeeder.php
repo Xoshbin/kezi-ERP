@@ -2,16 +2,15 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
+use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use App\Models\Company;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
 
 class JournalEntrySeeder extends Seeder
 {

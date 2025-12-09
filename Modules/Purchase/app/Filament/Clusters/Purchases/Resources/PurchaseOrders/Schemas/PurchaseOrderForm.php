@@ -3,31 +3,29 @@
 namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Schemas;
 
 use Brick\Money\Money;
-use Filament\Forms\Get;
 use Filament\Actions\Action;
-use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
-use Modules\Accounting\Models\Tax;
-use Modules\Product\Models\Product;
-use Illuminate\Support\Facades\Auth;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Grid;
-use Modules\Accounting\Models\Account;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Textarea;
-use Modules\Foundation\Models\Currency;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\DatePicker;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Accounting\Enums\Accounting\TaxType;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Get;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
+use Modules\Accounting\Enums\Accounting\TaxType;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Tax;
+use Modules\Foundation\Filament\Forms\Components\MoneyInput;
+use Modules\Foundation\Models\Currency;
+use Modules\Product\Models\Product;
 use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
 use Modules\Purchase\Models\PurchaseOrder;
-
-use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PurchaseOrderForm
@@ -39,10 +37,10 @@ class PurchaseOrderForm
                 Section::make(__('purchase::purchase_orders.sections.basic_info'))
                     ->schema([
                         Hidden::make('company_id')
-                            ->default(fn() => Auth::user()?->company_id),
+                            ->default(fn () => Auth::user()?->company_id),
 
                         Hidden::make('created_by_user_id')
-                            ->default(fn() => Auth::id()),
+                            ->default(fn () => Auth::id()),
 
                         Grid::make(2)
                             ->schema([
@@ -67,6 +65,7 @@ class PurchaseOrderForm
                                             foreach ($validTransitions as $status) {
                                                 $options[$status->value] = $status->label();
                                             }
+
                                             return $options;
                                         }
 
@@ -82,7 +81,7 @@ class PurchaseOrderForm
                                         // In edit mode, allow editing if status allows flexibility
                                         if ($operation === 'edit' && $record) {
                                             // Allow editing for active statuses that might need manual adjustment
-                                            return !in_array($record->status, [
+                                            return ! in_array($record->status, [
                                                 PurchaseOrderStatus::Draft,
                                                 PurchaseOrderStatus::Sent,
                                                 PurchaseOrderStatus::Confirmed,
@@ -114,6 +113,7 @@ class PurchaseOrderForm
 
                                             return implode(' ', $messages);
                                         }
+
                                         return null;
                                     })
                                     ->required(),
@@ -154,7 +154,7 @@ class PurchaseOrderForm
                                     ->relationship('currency', 'name')
                                     ->searchable()
                                     ->preload()
-                                    ->default(fn() => Auth::user()?->company?->currency_id)
+                                    ->default(fn () => Auth::user()?->company?->currency_id)
                                     ->required(),
                             ]),
                     ]),
@@ -219,7 +219,7 @@ class PurchaseOrderForm
                                     })
                                     ->createOptionForm([
                                         Hidden::make('company_id')
-                                            ->default(fn() => Filament::getTenant()?->getKey()),
+                                            ->default(fn () => Filament::getTenant()?->getKey()),
                                         TextInput::make('name')
                                             ->label(__('product.name'))
                                             ->required()
@@ -234,7 +234,7 @@ class PurchaseOrderForm
                                             ->live()
                                             ->options(
                                                 collect(\Modules\Product\Enums\Products\ProductType::cases())
-                                                    ->mapWithKeys(fn(\Modules\Product\Enums\Products\ProductType $type) => [$type->value => $type->label()])
+                                                    ->mapWithKeys(fn (\Modules\Product\Enums\Products\ProductType $type) => [$type->value => $type->label()])
                                             ),
                                         Textarea::make('description')
                                             ->label(__('product.description'))
@@ -249,8 +249,8 @@ class PurchaseOrderForm
                                                     ->where('is_deprecated', false)
                                                     ->pluck('name', 'id');
                                             })
-                                            ->visible(fn($get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
-                                            ->required(fn($get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
+                                            ->visible(fn ($get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
+                                            ->required(fn ($get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
                                             ->searchable()
                                             ->preload(),
                                     ])
@@ -261,6 +261,7 @@ class PurchaseOrderForm
                                     ->createOptionUsing(function (array $data): int {
                                         $data['company_id'] = Filament::getTenant()?->getKey();
                                         $product = Product::create($data);
+
                                         return $product->getKey();
                                     })
                                     ->columnSpan(3),
@@ -309,7 +310,7 @@ class PurchaseOrderForm
                                     })
                                     ->createOptionForm([
                                         Hidden::make('company_id')
-                                            ->default(fn() => Filament::getTenant()?->getKey()),
+                                            ->default(fn () => Filament::getTenant()?->getKey()),
                                         Select::make('tax_account_id')
                                             ->options(function () {
                                                 return Account::where('company_id', Filament::getTenant()?->getKey())
@@ -329,7 +330,7 @@ class PurchaseOrderForm
                                             ->numeric(),
                                         Select::make('type')
                                             ->label(__('tax.type'))
-                                            ->options(collect(TaxType::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()]))
+                                            ->options(collect(TaxType::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
                                             ->required(),
                                         Toggle::make('is_active')
                                             ->label(__('tax.is_active'))
@@ -337,6 +338,7 @@ class PurchaseOrderForm
                                     ])
                                     ->createOptionUsing(function (array $data): int {
                                         $tax = Tax::create($data);
+
                                         return $tax->getKey();
                                     })
                                     ->createOptionModalHeading(__('common.modal_title_create_tax'))
@@ -403,15 +405,16 @@ class PurchaseOrderForm
         $lines = $get('lines') ?? [];
         $currencyId = $get('currency_id');
 
-        if (!$currencyId || empty($lines)) {
+        if (! $currencyId || empty($lines)) {
             $set('total_amount', 0);
             $set('total_tax', 0);
+
             return;
         }
 
         // Get currency for calculations
         $currency = Currency::find($currencyId);
-        if (!$currency) {
+        if (! $currency) {
             return;
         }
 

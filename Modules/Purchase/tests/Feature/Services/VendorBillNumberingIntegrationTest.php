@@ -1,11 +1,10 @@
 <?php
 
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Purchase\Services\VendorBillService;
-use Modules\Foundation\Enums\Settings\NumberingType;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Services\VendorBillService;
+use Tests\Traits\WithConfiguredCompany;
 
 describe('VendorBill Numbering Integration', function () {
     uses(RefreshDatabase::class, WithConfiguredCompany::class);

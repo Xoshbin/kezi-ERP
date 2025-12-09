@@ -2,27 +2,26 @@
 
 namespace Modules\Inventory\Tests\Feature\Filament;
 
-use Tests\TestCase;
 use Brick\Money\Money;
-use Livewire\Livewire;
-use Modules\Product\Models\Product;
-use Modules\Inventory\Models\StockMove;
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Purchase\Models\VendorBillLine;
-use Modules\Product\Enums\Products\ProductType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Inventory\Models\StockMoveProductLine;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Livewire\Livewire;
 use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
-use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
 use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\EditStockMove;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\CreateStockMove;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\EditStockMove;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveProductLine;
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Models\VendorBillLine;
+use Tests\TestCase;
+use Tests\Traits\WithConfiguredCompany;
 
 /**
  * Filament/Livewire integration test for manual stock move creation and processing
@@ -38,16 +37,24 @@ class ManualStockMoveFilamentTest extends TestCase
 
     // Properties set up by WithConfiguredCompany trait
     protected $company;
+
     protected $user;
+
     protected $vendor;
+
     protected $vendorLocation;
+
     protected $stockLocation;
+
     protected $inventoryAccount;
+
     protected $stockInputAccount;
+
     protected $cogsAccount;
 
     // Test-specific properties
     protected Product $product;
+
     protected VendorBill $vendorBill;
 
     protected function setUp(): void

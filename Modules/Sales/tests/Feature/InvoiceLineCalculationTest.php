@@ -2,14 +2,14 @@
 
 namespace Modules\Sales\Tests\Feature;
 
-use Modules\Sales\Models\Invoice;
-use Modules\Sales\Models\InvoiceLine;
-use Modules\Accounting\Models\Tax;
-use Modules\Accounting\Models\Account;
 use App\Models\Company;
 use Brick\Money\Money;
-use Modules\Accounting\Enums\Accounting\TaxType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Accounting\TaxType;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Tax;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
 use Tests\TestCase;
 
 class InvoiceLineCalculationTest extends TestCase
@@ -38,7 +38,7 @@ class InvoiceLineCalculationTest extends TestCase
         ]);
 
         // Create Line
-        $line = new InvoiceLine();
+        $line = new InvoiceLine;
         $line->invoice_id = $invoice->id;
         $line->company_id = $company->id;
         $line->income_account_id = $account->id;

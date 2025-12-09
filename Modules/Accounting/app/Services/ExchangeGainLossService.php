@@ -2,21 +2,20 @@
 
 namespace Modules\Accounting\Services;
 
-use Exception;
-use Carbon\Carbon;
-use Brick\Money\Money;
 use App\Models\Company;
-use Modules\Sales\Models\Invoice;
-use Illuminate\Support\Collection;
-use Modules\Payment\Models\Payment;
+use Brick\Money\Money;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Models\Currency;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Foundation\Services\CurrencyConverterService;
-use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
+use Illuminate\Support\Collection;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Services\CurrencyConverterService;
+use Modules\Payment\Models\Payment;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 
 /**
  * ExchangeGainLossService
@@ -41,8 +40,8 @@ class ExchangeGainLossService
     /**
      * Calculate and post realized exchange gain/loss for a payment reconciliation.
      *
-     * @param Payment $payment
-     * @param Invoice|VendorBill $document
+     * @param  Payment  $payment
+     * @param  Invoice|VendorBill  $document
      */
     public function processRealizedGainLoss($payment, $document, Money $amountApplied): ?JournalEntry
     {
@@ -270,7 +269,7 @@ class ExchangeGainLossService
             currency_id: $company->currency_id,
             entry_date: $payment->payment_date->toDateString(),
             reference: "EX-GAIN-LOSS-{$payment->getKey()}",
-            description: 'Realized exchange ' . ($isGain ? 'gain' : 'loss') . " on payment #{$payment->getKey()}",
+            description: 'Realized exchange '.($isGain ? 'gain' : 'loss')." on payment #{$payment->getKey()}",
             created_by_user_id: $payment->created_by_user_id ?? $payment->user_id ?? optional($payment->company->users()->first())->getKey() ?? 1,
             is_posted: true,
             lines: $lineDTOs,

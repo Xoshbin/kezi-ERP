@@ -2,25 +2,22 @@
 
 namespace Modules\Sales\Models;
 
-
-use Eloquent;
-use Brick\Money\Money;
 use App\Models\Company;
-use Illuminate\Support\Carbon;
-use Modules\Sales\Models\Invoice;
-use Modules\Accounting\Models\Tax;
-use Modules\Product\Models\Product;
-use Modules\Accounting\Models\Account;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
-use Modules\Sales\Database\Factories\InvoiceLineFactory;
-use Modules\Accounting\Models\AnalyticAccount;
-use Modules\Sales\Observers\InvoiceLineObserver;
-use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Brick\Money\Money;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\AnalyticAccount;
+use Modules\Accounting\Models\Tax;
 use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
+use Modules\Product\Models\Product;
+use Modules\Sales\Database\Factories\InvoiceLineFactory;
+use Modules\Sales\Observers\InvoiceLineObserver;
 
 /**
  * @property int $id

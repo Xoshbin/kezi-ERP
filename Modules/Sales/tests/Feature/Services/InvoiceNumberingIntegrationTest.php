@@ -1,12 +1,10 @@
 <?php
 
-use Modules\Sales\Models\Invoice;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Sales\Services\InvoiceService;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Modules\Foundation\Enums\Settings\NumberingType;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Services\InvoiceService;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

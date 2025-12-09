@@ -1,20 +1,20 @@
 <?php
 
 use Brick\Money\Money;
-use Modules\Sales\Models\Invoice;
-use Modules\Payment\Models\Payment;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Partner;
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Payment\Services\PaymentService;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Payment\Models\PaymentDocumentLink;
-use Modules\Payment\Enums\Payments\PaymentStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Models\Partner;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Models\Payment;
+use Modules\Payment\Models\PaymentDocumentLink;
+use Modules\Payment\Services\PaymentService;
 use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Models\Invoice;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

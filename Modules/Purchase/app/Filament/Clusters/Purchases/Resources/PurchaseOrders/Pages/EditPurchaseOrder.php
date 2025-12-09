@@ -2,23 +2,20 @@
 
 namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages;
 
-
-use Exception;
 use Carbon\Carbon;
+use Exception;
 use Filament\Actions\Action;
-use Filament\Facades\Filament;
 use Filament\Actions\DeleteAction;
-use Illuminate\Support\Facades\Auth;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Modules\Purchase\Models\PurchaseOrder;
-use Modules\Foundation\Services\SequenceService;
-use Modules\Purchase\Services\PurchaseOrderService;
-use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Illuminate\Support\Facades\Auth;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
+use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
 use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\PurchaseOrderResource;
-
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Services\PurchaseOrderService;
 
 class EditPurchaseOrder extends EditRecord
 {
@@ -31,7 +28,7 @@ class EditPurchaseOrder extends EditRecord
                 ->label(__('purchase::purchase_orders.actions.send_rfq'))
                 ->icon('heroicon-o-paper-airplane')
                 ->color('blue')
-                ->visible(fn() => $this->record->status === PurchaseOrderStatus::RFQ)
+                ->visible(fn () => $this->record->status === PurchaseOrderStatus::RFQ)
                 ->requiresConfirmation()
                 ->action(function () {
                     app(PurchaseOrderService::class)->sendRFQ($this->record, Auth::user());
@@ -48,7 +45,7 @@ class EditPurchaseOrder extends EditRecord
                 ->label(__('purchase::purchase_orders.actions.send'))
                 ->icon('heroicon-o-paper-airplane')
                 ->color('blue')
-                ->visible(fn() => $this->record->status === PurchaseOrderStatus::Draft)
+                ->visible(fn () => $this->record->status === PurchaseOrderStatus::Draft)
                 ->requiresConfirmation()
                 ->action(function () {
                     app(PurchaseOrderService::class)->send($this->record, Auth::user());
@@ -65,7 +62,7 @@ class EditPurchaseOrder extends EditRecord
                 ->label(__('purchase::purchase_orders.actions.confirm'))
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
-                ->visible(fn() => $this->record->canBeConfirmed())
+                ->visible(fn () => $this->record->canBeConfirmed())
                 ->requiresConfirmation()
                 ->action(function () {
                     app(PurchaseOrderService::class)->confirm($this->record, Auth::user());
@@ -82,7 +79,7 @@ class EditPurchaseOrder extends EditRecord
                 ->label(__('purchase::purchase_orders.actions.ready_to_receive'))
                 ->icon('heroicon-o-truck')
                 ->color('blue')
-                ->visible(fn() => $this->record->status === PurchaseOrderStatus::Confirmed)
+                ->visible(fn () => $this->record->status === PurchaseOrderStatus::Confirmed)
                 ->requiresConfirmation()
                 ->modalHeading(__('purchase::purchase_orders.actions.ready_to_receive_confirmation_title'))
                 ->modalDescription(__('purchase::purchase_orders.actions.ready_to_receive_confirmation_description'))
@@ -102,7 +99,7 @@ class EditPurchaseOrder extends EditRecord
                 ->label(__('purchase::purchase_orders.actions.create_bill'))
                 ->icon('heroicon-o-document-plus')
                 ->color('success')
-                ->visible(fn() => $this->record->canCreateBill())
+                ->visible(fn () => $this->record->canCreateBill())
                 ->requiresConfirmation()
                 ->modalHeading(__('purchase::purchase_orders.actions.create_bill_confirmation_title'))
                 ->modalDescription(__('purchase::purchase_orders.actions.create_bill_confirmation_description'))
@@ -153,7 +150,7 @@ class EditPurchaseOrder extends EditRecord
                 ->label(__('purchase::purchase_orders.actions.mark_done'))
                 ->icon('heroicon-o-archive-box')
                 ->color('gray')
-                ->visible(fn() => $this->record->status === PurchaseOrderStatus::FullyBilled)
+                ->visible(fn () => $this->record->status === PurchaseOrderStatus::FullyBilled)
                 ->requiresConfirmation()
                 ->action(function () {
                     app(PurchaseOrderService::class)->markAsDone($this->record, Auth::user());
@@ -170,7 +167,7 @@ class EditPurchaseOrder extends EditRecord
                 ->label(__('purchase::purchase_orders.actions.cancel'))
                 ->icon('heroicon-o-x-circle')
                 ->color('danger')
-                ->visible(fn() => $this->record->canBeCancelled())
+                ->visible(fn () => $this->record->canBeCancelled())
                 ->requiresConfirmation()
                 ->action(function () {
                     app(PurchaseOrderService::class)->cancel($this->record, Auth::user());
@@ -184,7 +181,7 @@ class EditPurchaseOrder extends EditRecord
                 }),
 
             DeleteAction::make()
-                ->visible(fn() => in_array($this->record->status, [PurchaseOrderStatus::RFQ, PurchaseOrderStatus::Draft])),
+                ->visible(fn () => in_array($this->record->status, [PurchaseOrderStatus::RFQ, PurchaseOrderStatus::Draft])),
         ];
     }
 

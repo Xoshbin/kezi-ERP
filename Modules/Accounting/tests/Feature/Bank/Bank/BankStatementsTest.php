@@ -3,18 +3,18 @@
 namespace Modules\Accounting\Tests\Feature\Bank;
 
 use Brick\Money\Money;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Partner;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Models\BankStatement;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Enums\Accounting\JournalType;
 use Modules\Accounting\Actions\Accounting\CreateBankStatementAction;
 use Modules\Accounting\Actions\Accounting\UpdateBankStatementAction;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateBankStatementDTO;
-use Modules\Accounting\DataTransferObjects\Accounting\UpdateBankStatementDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateBankStatementLineDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\UpdateBankStatementDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\UpdateBankStatementLineDTO;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Models\Partner;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

@@ -3,18 +3,16 @@
 namespace Modules\Payment\Tests\Feature\FinancialTransactions;
 
 use Brick\Money\Money;
-use Modules\Sales\Models\Invoice;
-use Modules\Payment\Models\Payment;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Accounting\JournalType;
 use Modules\Accounting\Models\Journal;
 use Modules\Foundation\Models\Partner;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Modules\Payment\Models\PaymentDocumentLink;
-use Modules\Foundation\Enums\Shared\PaymentState;
 use Modules\Payment\Enums\Payments\PaymentStatus;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Foundation\Enums\Partners\PartnerType;
-use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Payment\Models\Payment;
+use Modules\Payment\Models\PaymentDocumentLink;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Models\Invoice;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

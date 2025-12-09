@@ -2,15 +2,13 @@
 
 namespace Modules\Inventory\Database\Factories;
 
-use App\Models\User;
 use App\Models\Company;
-use Modules\Foundation\Models\Partner;
-use Modules\Inventory\Models\StockPicking;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Modules\Foundation\Models\Partner;
 use Modules\Inventory\Enums\Inventory\StockPickingState;
-
-
+use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Modules\Inventory\Models\StockPicking;
 
 /**
  * @extends Factory<StockPicking>
@@ -33,7 +31,7 @@ class StockPickingFactory extends Factory
             'partner_id' => null,
             'scheduled_date' => $this->faker->dateTimeBetween('-1 month', '+1 month'),
             'completed_at' => null,
-            'reference' => 'SP-' . $this->faker->unique()->numerify('####'),
+            'reference' => 'SP-'.$this->faker->unique()->numerify('####'),
             'origin' => null,
             'created_by_user_id' => User::factory(),
         ];
@@ -44,7 +42,7 @@ class StockPickingFactory extends Factory
      */
     public function receipt(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => StockPickingType::Receipt,
         ]);
     }
@@ -54,7 +52,7 @@ class StockPickingFactory extends Factory
      */
     public function delivery(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => StockPickingType::Delivery,
         ]);
     }
@@ -64,7 +62,7 @@ class StockPickingFactory extends Factory
      */
     public function internal(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => StockPickingType::Internal,
         ]);
     }
@@ -74,7 +72,7 @@ class StockPickingFactory extends Factory
      */
     public function done(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'state' => StockPickingState::Done,
             'completed_at' => now(),
         ]);
@@ -85,7 +83,7 @@ class StockPickingFactory extends Factory
      */
     public function draft(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'state' => StockPickingState::Draft,
             'completed_at' => null,
         ]);
@@ -96,7 +94,7 @@ class StockPickingFactory extends Factory
      */
     public function withPartner(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'partner_id' => Partner::factory(),
         ]);
     }

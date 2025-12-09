@@ -2,8 +2,8 @@
 
 namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages;
 
-use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Purchase\Actions\Purchases\CreatePurchaseOrderAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
 use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\PurchaseOrderResource;

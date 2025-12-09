@@ -25,7 +25,7 @@ class CreatePartner extends CreateRecord
         $partner = static::getModel()::create($data);
 
         // Save custom fields if any
-        if (!empty($customFieldsData)) {
+        if (! empty($customFieldsData)) {
             $partner->setCustomFieldValues($customFieldsData);
         }
 

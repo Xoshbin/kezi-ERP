@@ -2,19 +2,18 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use Carbon\Carbon;
 use Brick\Money\Money;
-use Modules\Inventory\Models\Lot;
-use Modules\Product\Models\Product;
-use Illuminate\Support\Facades\Storage;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Inventory\Models\StockQuant;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Inventory\Models\InventoryCostLayer;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Models\InventoryCostLayer;
+use Modules\Inventory\Models\Lot;
+use Modules\Inventory\Models\StockQuant;
 use Modules\Inventory\Services\Inventory\InventoryCSVExportService;
 use Modules\Inventory\Services\Inventory\InventoryReportingService;
+use Modules\Product\Models\Product;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -251,18 +250,21 @@ describe('Inventory CSV Export Verification', function () {
 function generateValuationCSV(array $valuation, bool $includeMetadata = false): string
 {
     $csvService = app(InventoryCSVExportService::class);
+
     return $csvService->exportValuationReport($valuation, ['include_metadata' => $includeMetadata]);
 }
 
 function generateAgingCSV(array $aging): string
 {
     $csvService = app(InventoryCSVExportService::class);
+
     return $csvService->exportAgingReport($aging);
 }
 
 function generateTurnoverCSV(array $turnover): string
 {
     $csvService = app(InventoryCSVExportService::class);
+
     return $csvService->exportTurnoverReport($turnover);
 }
 
@@ -273,7 +275,7 @@ function generateLotTraceabilityCSV(array $traceability): string
     if (isset($traceability['movements']) && is_array($traceability['movements'])) {
         foreach ($traceability['movements'] as $movement) {
             $csv .= sprintf(
-                '"%s","%s","%s",%s,"%s","%s",%s,"%s"' . "\n",
+                '"%s","%s","%s",%s,"%s","%s",%s,"%s"'."\n",
                 $movement['move_date'] ?? '',
                 $movement['reference'] ?? '',
                 $movement['move_type'] ?? '',
@@ -292,6 +294,7 @@ function generateLotTraceabilityCSV(array $traceability): string
 function generateReorderStatusCSV(array $reorderStatus): string
 {
     $csvService = app(InventoryCSVExportService::class);
+
     return $csvService->exportReorderStatusReport($reorderStatus);
 }
 

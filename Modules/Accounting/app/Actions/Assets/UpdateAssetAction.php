@@ -10,8 +10,7 @@ class UpdateAssetAction
 {
     public function __construct(
         protected ComputeDepreciationScheduleAction $computeDepreciationScheduleAction,
-    ) {
-    }
+    ) {}
 
     public function execute(Asset $asset, UpdateAssetDTO $dto): Asset
     {

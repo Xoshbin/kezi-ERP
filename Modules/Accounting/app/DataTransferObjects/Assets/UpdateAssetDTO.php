@@ -18,6 +18,5 @@ readonly class UpdateAssetDTO
         public int $depreciation_expense_account_id,
         public int $accumulated_depreciation_account_id,
         public int $currency_id,
-    ) {
-    }
+    ) {}
 }

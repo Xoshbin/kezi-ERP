@@ -2,17 +2,16 @@
 
 namespace Modules\Accounting\Tests\Feature\Services\Reports;
 
-use Modules\Accounting\Models\Tax;
-use Modules\Accounting\Models\Journal;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Accounting\Models\JournalEntryLine;
-use Modules\Accounting\Enums\Accounting\JournalType;
-use Modules\Accounting\Enums\Accounting\TaxType;
-
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Enums\Accounting\TaxType;
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\JournalEntryLine;
+use Modules\Accounting\Models\Tax;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

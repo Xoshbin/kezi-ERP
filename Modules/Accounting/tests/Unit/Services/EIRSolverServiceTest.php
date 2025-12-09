@@ -2,7 +2,6 @@
 
 use Modules\Accounting\Services\Loans\EIRSolverService;
 
-
 it('solves IRR for simple cashflows', function () {
     /** @var EIRSolverService $svc */
     $svc = app(EIRSolverService::class);

@@ -2,10 +2,10 @@
 
 namespace Modules\Product\Tests\Feature;
 
-use Modules\Product\Models\Product;
-use Tests\Traits\WithConfiguredCompany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Product\Models\Product;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

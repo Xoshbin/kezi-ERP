@@ -2,14 +2,13 @@
 
 namespace Modules\Accounting\Listeners\Asset;
 
-use Exception;
 use App\Models\Company;
-use Illuminate\Support\Facades\Log;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Modules\Purchase\Models\VendorBillLine;
-use Modules\Accounting\Models\AssetCategory;
-use Modules\Accounting\Enums\Assets\DepreciationMethod;
+use Illuminate\Support\Facades\Log;
 use Modules\Accounting\Actions\Assets\CreateAssetAction;
+use Modules\Accounting\Enums\Assets\DepreciationMethod;
+use Modules\Purchase\Models\VendorBillLine;
 
 class CreateAssetFromVendorBillListener implements ShouldQueue
 {
@@ -30,7 +29,8 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                 $category = \Modules\Accounting\Models\AssetCategory::find($line->asset_category_id);
             } elseif ($line->expenseAccount->can_create_assets) {
                 // Implicit asset via account; map into a temporary category-like structure using company defaults
-                $category = new class($company, $line) {
+                $category = new class($company, $line)
+                {
                     public int $asset_account_id;
 
                     public int $depreciation_expense_account_id;

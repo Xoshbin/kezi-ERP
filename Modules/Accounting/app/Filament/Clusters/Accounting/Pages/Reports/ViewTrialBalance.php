@@ -101,7 +101,7 @@ class ViewTrialBalance extends Page
         $this->reportData = [
             'companyName' => $company->name,
             'asOfDate' => $this->asOfDate,
-            'reportLines' => $report->reportLines->map(fn($line) => [
+            'reportLines' => $report->reportLines->map(fn ($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,

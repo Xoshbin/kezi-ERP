@@ -2,17 +2,16 @@
 
 namespace Modules\Accounting\Tests\Feature\Services\Reports;
 
-use Carbon\Carbon;
-use Brick\Money\Money;
 use App\Models\Company;
+use Brick\Money\Money;
+use Carbon\Carbon;
 use InvalidArgumentException;
+use Modules\Accounting\Enums\Accounting\JournalType;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Partner;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Accounting\Models\JournalEntryLine;
-use Modules\Accounting\Enums\Accounting\JournalType;
-use Modules\Accounting\Services\Reports\PartnerLedgerService;
+use Modules\Foundation\Models\Partner;
 
 beforeEach(function () {
     $this->company = Company::factory()->create();
@@ -104,7 +103,7 @@ test('it throws exception when partner does not have assigned accounts', functio
     // Action & Assert
     $service = app(\Modules\Accounting\Services\Reports\PartnerLedgerService::class);
 
-    expect(fn() => $service->generate($this->company, $partner, $startDate, $endDate))
+    expect(fn () => $service->generate($this->company, $partner, $startDate, $endDate))
         ->toThrow(InvalidArgumentException::class, "Partner {$partner->name} does not have assigned receivable/payable accounts.");
 });
 

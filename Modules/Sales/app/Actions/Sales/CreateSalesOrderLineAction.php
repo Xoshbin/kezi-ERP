@@ -2,10 +2,9 @@
 
 namespace Modules\Sales\Actions\Sales;
 
-
+use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderLineDTO;
 use Modules\Sales\Models\SalesOrder;
 use Modules\Sales\Models\SalesOrderLine;
-use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderLineDTO;
 
 /**
  * Action for creating a new Sales Order Line

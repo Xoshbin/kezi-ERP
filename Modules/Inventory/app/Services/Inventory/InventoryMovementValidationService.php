@@ -2,10 +2,10 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use Modules\Product\Models\Product;
-use Modules\Inventory\Models\StockMove;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\DataTransferObjects\Inventory\InventoryMovementValidationResult;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Models\StockMove;
+use Modules\Product\Models\Product;
 
 /**
  * Service for validating inventory movements before execution
@@ -21,11 +21,6 @@ class InventoryMovementValidationService
 
     /**
      * Validate that a product is ready for inventory movements
-     *
-     * @param Product $product
-     * @param StockMoveType $moveType
-     * @param float $quantity
-     * @return InventoryMovementValidationResult
      */
     public function validateMovement(
         Product $product,
@@ -40,12 +35,13 @@ class InventoryMovementValidationService
         // 1. Validate product type
         if ($product->type->value !== 'storable') {
             $errors[] = 'Only storable products can have inventory movements';
+
             return InventoryMovementValidationResult::failed($errors, $warnings, $requirements);
         }
 
         // 2. Validate cost information for incoming movements
         if ($moveType === StockMoveType::Incoming) {
-            if (!$this->costAnalysisService->isReadyForInventoryMovements($product)) {
+            if (! $this->costAnalysisService->isReadyForInventoryMovements($product)) {
                 $errors[] = 'Product lacks sufficient cost information for inventory movements';
                 $requirements = $this->costAnalysisService->getMinimumRequirements($product);
 
@@ -59,22 +55,22 @@ class InventoryMovementValidationService
                 $errors[] = "Insufficient stock: Available {$product->quantity_on_hand}, Requested {$quantity}";
             }
 
-            if (!$this->costAnalysisService->isReadyForInventoryMovements($product)) {
+            if (! $this->costAnalysisService->isReadyForInventoryMovements($product)) {
                 $errors[] = 'Product lacks cost information required for COGS calculation';
                 $requirements = $this->costAnalysisService->getMinimumRequirements($product);
             }
         }
 
         // 4. Validate inventory accounts
-        if (!$product->default_inventory_account_id) {
+        if (! $product->default_inventory_account_id) {
             $errors[] = 'Product must have a default inventory account configured';
         }
 
-        if (!$product->default_cogs_account_id && $moveType === StockMoveType::Outgoing) {
+        if (! $product->default_cogs_account_id && $moveType === StockMoveType::Outgoing) {
             $errors[] = 'Product must have a COGS account configured for outgoing movements';
         }
 
-        if (!$product->default_stock_input_account_id && $moveType === StockMoveType::Incoming) {
+        if (! $product->default_stock_input_account_id && $moveType === StockMoveType::Incoming) {
             $errors[] = 'Product must have a stock input account configured for incoming movements';
         }
 
@@ -84,11 +80,11 @@ class InventoryMovementValidationService
             $warnings[] = "Product has {$vendorBillAnalysis['draft_count']} draft vendor bill(s) that could affect cost calculation";
         }
 
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             return InventoryMovementValidationResult::failed($errors, $warnings, $requirements);
         }
 
-        if (!empty($warnings)) {
+        if (! empty($warnings)) {
             return InventoryMovementValidationResult::warning($warnings);
         }
 
@@ -97,9 +93,6 @@ class InventoryMovementValidationService
 
     /**
      * Validate a complete stock move before execution
-     *
-     * @param StockMove $stockMove
-     * @return InventoryMovementValidationResult
      */
     public function validateStockMove(StockMove $stockMove): InventoryMovementValidationResult
     {
@@ -108,8 +101,9 @@ class InventoryMovementValidationService
         $allRequirements = [];
 
         foreach ($stockMove->productLines as $line) {
-            if (!$line->product) {
+            if (! $line->product) {
                 $allErrors[] = "Product line {$line->id} has no associated product";
+
                 continue;
             }
 
@@ -119,18 +113,18 @@ class InventoryMovementValidationService
                 $line->quantity
             );
 
-            if (!$result->isValid()) {
+            if (! $result->isValid()) {
                 $allErrors = array_merge($allErrors, $result->getErrors());
                 $allWarnings = array_merge($allWarnings, $result->getWarnings());
                 $allRequirements = array_merge($allRequirements, $result->getRequirements());
             }
         }
 
-        if (!empty($allErrors)) {
+        if (! empty($allErrors)) {
             return InventoryMovementValidationResult::failed($allErrors, $allWarnings, $allRequirements);
         }
 
-        if (!empty($allWarnings)) {
+        if (! empty($allWarnings)) {
             return InventoryMovementValidationResult::warning($allWarnings);
         }
 
@@ -139,9 +133,6 @@ class InventoryMovementValidationService
 
     /**
      * Get detailed guidance for resolving validation failures
-     *
-     * @param Product $product
-     * @return array
      */
     public function getResolutionGuidance(Product $product): array
     {

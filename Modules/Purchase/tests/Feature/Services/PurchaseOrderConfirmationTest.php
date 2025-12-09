@@ -2,31 +2,34 @@
 
 namespace Modules\Purchase\Tests\Feature\Services;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Company;
-use Modules\Product\Models\Product;
-use Illuminate\Support\Facades\Event;
-use Modules\Inventory\Models\StockMove;
-use Modules\Purchase\Models\PurchaseOrder;
-use Modules\Inventory\Models\StockPicking;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Purchase\Models\PurchaseOrderLine;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Purchase\Services\PurchaseOrderService;
-use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
-use Modules\Purchase\Events\PurchaseOrderConfirmed;
+use Illuminate\Support\Facades\Event;
+use Modules\Inventory\Enums\Inventory\StockLocationType;
 use Modules\Inventory\Enums\Inventory\StockPickingType;
 use Modules\Inventory\Models\StockLocation;
-use Modules\Inventory\Enums\Inventory\StockLocationType;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockPicking;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Modules\Purchase\Events\PurchaseOrderConfirmed;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Models\PurchaseOrderLine;
+use Modules\Purchase\Services\PurchaseOrderService;
+use Tests\TestCase;
 
 class PurchaseOrderConfirmationTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $user;
+
     protected Company $company;
+
     protected Product $product;
+
     protected PurchaseOrderService $service;
 
     protected function setUp(): void
@@ -93,7 +96,7 @@ class PurchaseOrderConfirmationTest extends TestCase
         $this->assertDatabaseHas('stock_moves', [
             'picking_id' => $picking->id,
             'company_id' => $this->company->id,
-            'description' => 'Receive ' . $po->po_number,
+            'description' => 'Receive '.$po->po_number,
         ]);
 
         // Assert Move Lines

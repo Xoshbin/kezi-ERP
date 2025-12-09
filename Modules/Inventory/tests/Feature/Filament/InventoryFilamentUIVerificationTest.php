@@ -2,28 +2,27 @@
 
 namespace Modules\Inventory\Tests\Feature\Filament;
 
-use Carbon\Carbon;
 use Brick\Money\Money;
-use Livewire\Livewire;
-use Modules\Inventory\Models\Lot;
-use Modules\Product\Models\Product;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Inventory\Models\StockQuant;
-use Modules\Product\Enums\Products\ProductType;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Inventory\Filament\Clusters\Inventory\Pages\InventoryOverview;
-use Modules\Inventory\Filament\Clusters\Inventory\Pages\ReorderStatusReport;
 use Modules\Inventory\Filament\Clusters\Inventory\Pages\InventoryAgingReport;
-use Modules\Inventory\Filament\Clusters\Inventory\Pages\LotTraceabilityReport;
+use Modules\Inventory\Filament\Clusters\Inventory\Pages\InventoryOverview;
 use Modules\Inventory\Filament\Clusters\Inventory\Pages\InventoryTurnoverReport;
 use Modules\Inventory\Filament\Clusters\Inventory\Pages\InventoryValuationReport;
+use Modules\Inventory\Filament\Clusters\Inventory\Pages\LotTraceabilityReport;
+use Modules\Inventory\Filament\Clusters\Inventory\Pages\ReorderStatusReport;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages\ListStockQuants;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages\ViewStockQuant;
 use Modules\Inventory\Filament\Clusters\Inventory\Widgets\InventoryAgingChartWidget;
-use Modules\Inventory\Filament\Clusters\Inventory\Widgets\InventoryValueChartWidget;
 use Modules\Inventory\Filament\Clusters\Inventory\Widgets\InventoryStatsOverviewWidget;
 use Modules\Inventory\Filament\Clusters\Inventory\Widgets\InventoryTurnoverChartWidget;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages\ViewStockQuant;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages\ListStockQuants;
+use Modules\Inventory\Filament\Clusters\Inventory\Widgets\InventoryValueChartWidget;
+use Modules\Inventory\Models\Lot;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Product\Models\Product;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

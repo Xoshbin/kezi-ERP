@@ -3,14 +3,14 @@
 namespace Modules\Inventory\Services\Inventory;
 
 use Carbon\Carbon;
-use Modules\Inventory\Models\StockMove;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
+use Modules\Inventory\DataTransferObjects\Inventory\ConfirmStockMoveDTO;
 use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use Modules\Inventory\DataTransferObjects\Inventory\UpdateStockMoveDTO;
-use Modules\Inventory\DataTransferObjects\Inventory\ConfirmStockMoveDTO;
 use Modules\Inventory\DataTransferObjects\Inventory\UpdateStockMoveWithProductLinesDTO;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
+use Modules\Inventory\Models\StockMove;
 
 /**
  * Stock Move Service
@@ -37,8 +37,8 @@ use Modules\Inventory\DataTransferObjects\Inventory\UpdateStockMoveWithProductLi
  * - Confirmed: Locked, stock reserved
  * - Done: Completed, stock updated, journal entries created
  *
- * @package App\Services\Inventory
  * @author Laravel/Filament Inventory System
+ *
  * @version 1.0.0
  */
 class StockMoveService
@@ -50,8 +50,7 @@ class StockMoveService
      * The move is created in Draft status by default, allowing for modifications before
      * confirmation and processing.
      *
-     * @param CreateStockMoveDTO $dto Data transfer object containing move details
-     *
+     * @param  CreateStockMoveDTO  $dto  Data transfer object containing move details
      * @return StockMove The newly created stock move
      *
      * @example

@@ -1,18 +1,18 @@
 <?php
 
 use Brick\Money\Money;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryForStatementLineAction;
+use Modules\Accounting\Actions\Accounting\ReverseJournalEntryAction;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
+use Modules\Accounting\Enums\Accounting\JournalEntryState;
 use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Models\JournalEntry;
 use Modules\Accounting\Models\BankStatement;
 use Modules\Accounting\Models\BankStatementLine;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Enums\Accounting\JournalEntryState;
-use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
-use Modules\Accounting\Actions\Accounting\ReverseJournalEntryAction;
-use Modules\Accounting\Actions\Accounting\CreateJournalEntryForStatementLineAction;
-use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Models\JournalEntry;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -43,11 +43,11 @@ it('creates a correct reversing journal entry with inverted amounts', function (
     $this->assertDatabaseHas('journal_entries', [
         'id' => $reversingJe->id,
         'reversed_entry_id' => $this->originalJe->id,
-        'reference' => 'REV/' . $this->originalJe->reference,
+        'reference' => 'REV/'.$this->originalJe->reference,
     ]);
 
-    $originalDebit = $this->originalJe->lines->sum(fn($line) => $line->debit->getMinorAmount()->toInt());
-    $originalCredit = $this->originalJe->lines->sum(fn($line) => $line->credit->getMinorAmount()->toInt());
+    $originalDebit = $this->originalJe->lines->sum(fn ($line) => $line->debit->getMinorAmount()->toInt());
+    $originalCredit = $this->originalJe->lines->sum(fn ($line) => $line->credit->getMinorAmount()->toInt());
 
     expect($reversingJe->total_credit->getMinorAmount()->toInt())->toBe($originalDebit);
     expect($reversingJe->total_debit->getMinorAmount()->toInt())->toBe($originalCredit);

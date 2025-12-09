@@ -11,18 +11,7 @@ use Modules\Foundation\Models\Currency;
 readonly class CreatePurchaseOrderDTO
 {
     /**
-     * @param int $company_id
-     * @param int $vendor_id
-     * @param int $currency_id
-     * @param int $created_by_user_id
-     * @param string|null $reference
-     * @param Carbon $po_date
-     * @param Carbon|null $expected_delivery_date
-     * @param float|null $exchange_rate_at_creation
-     * @param string|null $notes
-     * @param string|null $terms_and_conditions
-     * @param int|null $delivery_location_id
-     * @param array<CreatePurchaseOrderLineDTO> $lines
+     * @param  array<CreatePurchaseOrderLineDTO>  $lines
      */
     public function __construct(
         public int $company_id,
@@ -30,15 +19,14 @@ readonly class CreatePurchaseOrderDTO
         public int $currency_id,
         public int $created_by_user_id,
         public ?string $reference = null,
-        public Carbon $po_date = new Carbon(),
+        public Carbon $po_date = new Carbon,
         public ?Carbon $expected_delivery_date = null,
         public ?float $exchange_rate_at_creation = null,
         public ?string $notes = null,
         public ?string $terms_and_conditions = null,
         public ?int $delivery_location_id = null,
         public array $lines = [],
-    ) {
-    }
+    ) {}
 
     /**
      * Create from array data
@@ -67,7 +55,7 @@ readonly class CreatePurchaseOrderDTO
             currency_id: $data['currency_id'],
             created_by_user_id: $data['created_by_user_id'],
             reference: $data['reference'] ?? null,
-            po_date: isset($data['po_date']) ? Carbon::parse($data['po_date']) : new Carbon(),
+            po_date: isset($data['po_date']) ? Carbon::parse($data['po_date']) : new Carbon,
             expected_delivery_date: isset($data['expected_delivery_date']) ? Carbon::parse($data['expected_delivery_date']) : null,
             exchange_rate_at_creation: $data['exchange_rate_at_creation'] ?? null,
             notes: $data['notes'] ?? null,

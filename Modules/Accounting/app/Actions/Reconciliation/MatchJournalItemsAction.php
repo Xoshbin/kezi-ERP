@@ -105,7 +105,7 @@ class MatchJournalItemsAction
     private function validateGlobalReconciliationSetting(Company $company): void
     {
         if (! $company->enable_reconciliation) {
-            throw new ReconciliationDisabledException();
+            throw new ReconciliationDisabledException;
         }
     }
 

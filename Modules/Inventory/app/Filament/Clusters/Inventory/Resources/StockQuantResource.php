@@ -3,32 +3,23 @@
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources;
 
 use BackedEnum;
-use Filament\Forms;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Resources\Resource;
-use Filament\Tables\Filters\Filter;
-use Filament\Actions\BulkActionGroup;
-use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Grid;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
-use Modules\Inventory\Models\StockQuant;
-use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages\EditStockQuant;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages\ViewStockQuant;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages\ListStockQuants;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages\CreateStockQuant;
+use Modules\Inventory\Models\StockQuant;
 
 class StockQuantResource extends Resource
 {
@@ -112,6 +103,7 @@ class StockQuantResource extends Resource
                                 $quantity = (float) ($get('quantity') ?? 0);
                                 $reserved = (float) ($get('reserved_quantity') ?? 0);
                                 $available = $quantity - $reserved;
+
                                 return number_format($available, 4);
                             }),
                     ]),
@@ -150,9 +142,9 @@ class StockQuantResource extends Resource
 
                         TextEntry::make('available_quantity')
                             ->label(__('inventory::stock_quant.fields.available_quantity'))
-                            ->getStateUsing(fn(StockQuant $record): float => $record->available_quantity)
+                            ->getStateUsing(fn (StockQuant $record): float => $record->available_quantity)
                             ->numeric(decimalPlaces: 4)
-                            ->color(fn(float $state): string => match (true) {
+                            ->color(fn (float $state): string => match (true) {
                                 $state <= 0 => 'danger',
                                 $state <= 10 => 'warning',
                                 default => 'success',
@@ -199,12 +191,12 @@ class StockQuantResource extends Resource
 
                 Tables\Columns\TextColumn::make('available_quantity')
                     ->label(__('inventory::stock_quant.fields.available_quantity'))
-                    ->getStateUsing(fn(StockQuant $record): float => $record->available_quantity)
+                    ->getStateUsing(fn (StockQuant $record): float => $record->available_quantity)
                     ->numeric(decimalPlaces: 4)
                     ->sortable(query: function (Builder $query, string $direction): Builder {
                         return $query->orderByRaw("(quantity - reserved_quantity) {$direction}");
                     })
-                    ->color(fn(float $state): string => match (true) {
+                    ->color(fn (float $state): string => match (true) {
                         $state <= 0 => 'danger',
                         $state <= 10 => 'warning',
                         default => 'success',
@@ -238,22 +230,19 @@ class StockQuantResource extends Resource
                 Tables\Filters\Filter::make('low_stock')
                     ->label(__('inventory::stock_quant.filters.low_stock'))
                     ->query(
-                        fn(Builder $query): Builder =>
-                        $query->whereRaw('(quantity - reserved_quantity) <= 10')
+                        fn (Builder $query): Builder => $query->whereRaw('(quantity - reserved_quantity) <= 10')
                     ),
 
                 Tables\Filters\Filter::make('out_of_stock')
                     ->label(__('inventory::stock_quant.filters.out_of_stock'))
                     ->query(
-                        fn(Builder $query): Builder =>
-                        $query->whereRaw('(quantity - reserved_quantity) <= 0')
+                        fn (Builder $query): Builder => $query->whereRaw('(quantity - reserved_quantity) <= 0')
                     ),
 
                 Tables\Filters\Filter::make('with_reservations')
                     ->label(__('inventory::stock_quant.filters.with_reservations'))
                     ->query(
-                        fn(Builder $query): Builder =>
-                        $query->where('reserved_quantity', '>', 0)
+                        fn (Builder $query): Builder => $query->where('reserved_quantity', '>', 0)
                     ),
             ])
             ->recordActions([

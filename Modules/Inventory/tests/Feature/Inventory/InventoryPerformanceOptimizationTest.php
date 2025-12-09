@@ -2,32 +2,35 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use Tests\TestCase;
-use ReflectionClass;
 use App\Models\Company;
-use Modules\Inventory\Models\Lot;
-
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Modules\Product\Models\Product;
-use Illuminate\Support\Facades\Cache;
-use Modules\Inventory\Models\StockMove;
-use Modules\Inventory\Models\StockQuant;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Product\Enums\Products\ProductType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Modules\Inventory\Models\Lot;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Models\StockMove;
 use Modules\Inventory\Models\StockMoveProductLine;
-use Modules\Inventory\Services\Inventory\InventoryQueryOptimizationService;
+use Modules\Inventory\Models\StockQuant;
 use Modules\Inventory\Services\Inventory\InventoryPerformanceMonitoringService;
+use Modules\Inventory\Services\Inventory\InventoryQueryOptimizationService;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
+use ReflectionClass;
+use Tests\TestCase;
 
 class InventoryPerformanceOptimizationTest extends TestCase
 {
     use RefreshDatabase;
 
     private Company $company;
+
     private Product $product;
+
     private StockLocation $location;
+
     private InventoryPerformanceMonitoringService $monitoringService;
+
     private InventoryQueryOptimizationService $optimizationService;
 
     protected function setUp(): void

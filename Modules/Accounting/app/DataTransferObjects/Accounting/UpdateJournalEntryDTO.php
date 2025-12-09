@@ -18,6 +18,5 @@ class UpdateJournalEntryDTO
         public readonly ?string $description,
         public readonly bool $is_posted,
         public readonly array $lines,
-    ) {
-    }
+    ) {}
 }

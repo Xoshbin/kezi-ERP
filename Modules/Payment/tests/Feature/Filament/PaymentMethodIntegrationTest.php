@@ -1,20 +1,20 @@
 <?php
 
 use Brick\Money\Money;
-use Modules\Payment\Models\Payment;
 use Filament\Forms\Components\Field;
-use function Pest\Livewire\livewire;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Partner;
-
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Payment\Enums\Payments\PaymentMethod;
-use Modules\Payment\Enums\Payments\PaymentStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages\ListPayments;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment;
+use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Models\Partner;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Models\Payment;
+use Tests\Traits\WithConfiguredCompany;
+
+use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -61,7 +61,7 @@ it('has correct payment method options', function () {
 
     $options = $paymentMethodField->getOptions();
     $expectedOptions = collect(PaymentMethod::cases())
-        ->mapWithKeys(fn($case) => [$case->value => $case->label()]);
+        ->mapWithKeys(fn ($case) => [$case->value => $case->label()]);
 
     expect($options)->toEqual($expectedOptions->toArray());
 });

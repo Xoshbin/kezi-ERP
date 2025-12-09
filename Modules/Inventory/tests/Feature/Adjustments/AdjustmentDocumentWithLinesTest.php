@@ -3,17 +3,17 @@
 namespace Modules\Inventory\Tests\Feature\Adjustments;
 
 use Brick\Money\Money;
-use Tests\Traits\MocksTime;
-use Modules\Accounting\Models\Tax;
-use Modules\Accounting\Models\Account;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Inventory\Models\AdjustmentDocument;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Tax;
 use Modules\Inventory\Actions\Adjustments\CreateAdjustmentDocumentAction;
 use Modules\Inventory\Actions\Adjustments\CreateAdjustmentDocumentLineAction;
 use Modules\Inventory\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO;
 use Modules\Inventory\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Modules\Inventory\Models\AdjustmentDocument;
+use Tests\Traits\MocksTime;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 

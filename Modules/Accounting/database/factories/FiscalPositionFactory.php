@@ -2,8 +2,8 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Company;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Accounting\Models\FiscalPosition;
 
 /**

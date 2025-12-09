@@ -30,6 +30,7 @@ class InvoiceLineFactory extends Factory
             'tax_id' => null, // Default to no tax
             'income_account_id' => function (array $attributes) {
                 $invoice = Invoice::find($attributes['invoice_id']);
+
                 return Account::factory()->create([
                     'type' => 'income',
                     'company_id' => $invoice->company_id,

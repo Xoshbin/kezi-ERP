@@ -1,16 +1,9 @@
 <?php
 
-use Carbon\Carbon;
-
 use App\Models\Company;
+use Carbon\Carbon;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
-
-
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-
-
 
 test('currency rate can be created', function () {
     $company = Company::factory()->create();

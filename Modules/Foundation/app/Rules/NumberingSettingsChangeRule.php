@@ -2,8 +2,8 @@
 
 namespace Modules\Foundation\Rules;
 
-use Closure;
 use App\Models\Company;
+use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Translation\PotentiallyTranslatedString;
 
@@ -22,7 +22,7 @@ class NumberingSettingsChangeRule implements ValidationRule
     {
         if (! $this->company->canChangeNumberingSettings()) {
             $errors = $this->company->getNumberingChangeValidationErrors();
-            $fail(__('foundation::numbering.validation.cannot_change_posted_exist') . ' (' . implode(', ', $errors) . ')');
+            $fail(__('foundation::numbering.validation.cannot_change_posted_exist').' ('.implode(', ', $errors).')');
         }
     }
 }

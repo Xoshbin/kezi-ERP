@@ -2,10 +2,10 @@
 
 namespace Modules\Accounting\Database\Factories;
 
+use App\Models\Company;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Accounting\Models\BankStatement;
-use App\Models\Company;
 use Modules\Accounting\Models\Journal;
 use Modules\Foundation\Models\Currency;
 

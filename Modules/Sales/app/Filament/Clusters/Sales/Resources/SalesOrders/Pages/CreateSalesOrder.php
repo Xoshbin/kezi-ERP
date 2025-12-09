@@ -2,12 +2,11 @@
 
 namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages;
 
-use Carbon\Carbon;
 use Brick\Money\Money;
-
+use Carbon\Carbon;
+use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Foundation\Models\Currency;
-use Filament\Resources\Pages\CreateRecord;
 use Modules\Sales\Actions\Sales\CreateSalesOrderAction;
 use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderDTO;
 use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderLineDTO;
@@ -51,6 +50,7 @@ class CreateSalesOrder extends CreateRecord
 
         // Execute the action
         $action = app(CreateSalesOrderAction::class);
+
         return $action->execute($dto);
     }
 
@@ -58,6 +58,7 @@ class CreateSalesOrder extends CreateRecord
     {
         $currencyId = $data['currency_id'];
         $currency = Currency::find($currencyId);
+
         return $currency ? $currency->code : 'USD';
     }
 }

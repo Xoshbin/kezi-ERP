@@ -3,31 +3,26 @@
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources;
 
 use BackedEnum;
-use Filament\Forms;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms;
 use Filament\Resources\Resource;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Forms\Components\Select;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Tables\Filters\SelectFilter;
-use Modules\Inventory\Models\StockPicking;
-use Filament\Forms\Components\DateTimePicker;
-use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Filament\Schemas\Schema;
+use Filament\Tables;
+use Filament\Tables\Table;
 use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
 use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\EditStockPicking;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ListStockPickings;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\CreateStockPicking;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\EditStockPicking;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ListStockPickings;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking;
+use Modules\Inventory\Models\StockPicking;
 
 class StockPickingResource extends Resource
 {
@@ -63,7 +58,7 @@ class StockPickingResource extends Resource
                         ->label(__('Reference'))
                         ->required()
                         ->maxLength(255)
-                        ->default(fn() => 'SP-' . str_pad(random_int(1, 9999), 4, '0', STR_PAD_LEFT)),
+                        ->default(fn () => 'SP-'.str_pad(random_int(1, 9999), 4, '0', STR_PAD_LEFT)),
 
                     Forms\Components\Select::make('type')
                         ->label(__('Type'))
@@ -100,8 +95,8 @@ class StockPickingResource extends Resource
                     Forms\Components\Repeater::make('stockMoves')
                         ->relationship()
                         ->collapsible()
-                        ->itemLabel(fn(array $state): ?string => 'Move (' . (isset($state['productLines']) ? count($state['productLines']) : 0) . ' lines)')
-                        ->deleteAction(fn($action) => $action->requiresConfirmation())
+                        ->itemLabel(fn (array $state): ?string => 'Move ('.(isset($state['productLines']) ? count($state['productLines']) : 0).' lines)')
+                        ->deleteAction(fn ($action) => $action->requiresConfirmation())
                         ->mutateRelationshipDataBeforeCreateUsing(function (array $data, StockPicking $record): array {
                             $data['company_id'] = $record->company_id;
                             $data['created_by_user_id'] = \Illuminate\Support\Facades\Auth::id();
@@ -162,10 +157,11 @@ class StockPickingResource extends Resource
                                         ->columnSpanFull(),
                                 ])
                                 ->collapsible()
-                                ->itemLabel(fn(array $state): ?string => $state['product_id'] ? \Modules\Product\Models\Product::find($state['product_id'])?->name : null)
-                                ->deleteAction(fn($action) => $action->requiresConfirmation())
+                                ->itemLabel(fn (array $state): ?string => $state['product_id'] ? \Modules\Product\Models\Product::find($state['product_id'])?->name : null)
+                                ->deleteAction(fn ($action) => $action->requiresConfirmation())
                                 ->mutateRelationshipDataBeforeCreateUsing(function (array $data): array {
                                     $data['company_id'] = \Illuminate\Support\Facades\Auth::user()->company_id ?? \App\Models\Company::first()->id;
+
                                     return $data;
                                 }),
                         ]),
@@ -185,7 +181,7 @@ class StockPickingResource extends Resource
                 Tables\Columns\TextColumn::make('type')
                     ->label('Type')
                     ->badge()
-                    ->color(fn(StockPickingType $state): string => match ($state) {
+                    ->color(fn (StockPickingType $state): string => match ($state) {
                         StockPickingType::Receipt => 'success',
                         StockPickingType::Delivery => 'danger',
                         StockPickingType::Internal => 'info',
@@ -195,7 +191,7 @@ class StockPickingResource extends Resource
                 Tables\Columns\TextColumn::make('state')
                     ->label('State')
                     ->badge()
-                    ->color(fn(StockPickingState $state): string => match ($state) {
+                    ->color(fn (StockPickingState $state): string => match ($state) {
                         StockPickingState::Draft => 'gray',
                         StockPickingState::Confirmed => 'warning',
                         StockPickingState::Assigned => 'info',
@@ -246,10 +242,10 @@ class StockPickingResource extends Resource
                     ->icon('heroicon-o-eye'),
                 EditAction::make()
                     ->icon('heroicon-o-pencil-square')
-                    ->visible(fn(StockPicking $record): bool => $record->state === StockPickingState::Draft),
+                    ->visible(fn (StockPicking $record): bool => $record->state === StockPickingState::Draft),
                 DeleteAction::make()
                     ->icon('heroicon-o-trash')
-                    ->visible(fn(StockPicking $record): bool => $record->state === StockPickingState::Draft),
+                    ->visible(fn (StockPicking $record): bool => $record->state === StockPickingState::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

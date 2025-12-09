@@ -48,7 +48,7 @@ class VendorBillLineObserver
      */
     protected function updateCompanyCurrencyTotals(VendorBill $vendorBill): void
     {
-        if (!$vendorBill->exchange_rate_at_creation || $vendorBill->currency_id === $vendorBill->company->currency_id) {
+        if (! $vendorBill->exchange_rate_at_creation || $vendorBill->currency_id === $vendorBill->company->currency_id) {
             return; // No conversion needed
         }
 

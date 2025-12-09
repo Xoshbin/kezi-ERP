@@ -1,18 +1,12 @@
 <?php
 
-use App\Models\User;
-use Livewire\Livewire;
 use App\Models\Company;
+use App\Models\User;
 use Filament\Facades\Filament;
-use Modules\Foundation\Filament\Resources\PdfSettings\PdfSettingsResource;
+use Livewire\Livewire;
 use Modules\Foundation\Filament\Resources\PdfSettings\Pages\EditPdfSettings;
 use Modules\Foundation\Filament\Resources\PdfSettings\Pages\ListPdfSettings;
-
-
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-
-
+use Modules\Foundation\Filament\Resources\PdfSettings\PdfSettingsResource;
 
 beforeEach(function () {
     $this->user = User::factory()->create();

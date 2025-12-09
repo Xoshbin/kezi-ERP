@@ -2,30 +2,28 @@
 
 namespace Modules\Inventory\Actions\Inventory;
 
-use Brick\Money\Money;
 use App\Models\Company;
-use InvalidArgumentException;
+use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
-
-use Modules\Product\Models\Product;
+use InvalidArgumentException;
 use Modules\Accounting\Models\Account;
-use Modules\Inventory\Models\StockMove;
-use Modules\Inventory\Models\StockPicking;
 use Modules\Accounting\Models\JournalEntry;
-use Modules\Inventory\Models\StockMoveLine;
 use Modules\Accounting\Models\JournalEntryLine;
-use Modules\Inventory\Models\StockMoveValuation;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\StockPickingType;
-use Modules\Inventory\Enums\Inventory\StockPickingState;
-use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use Modules\Inventory\DataTransferObjects\Inventory\CreateInventoryAdjustmentDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
-
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveLine;
+use Modules\Inventory\Models\StockMoveValuation;
+use Modules\Inventory\Models\StockPicking;
 use Modules\Inventory\Services\Inventory\InventoryValuationService;
-use Modules\Inventory\Services\Inventory\StockQuantService;
 use Modules\Inventory\Services\Inventory\StockMoveService;
+use Modules\Inventory\Services\Inventory\StockQuantService;
+use Modules\Product\Models\Product;
 
 class CreateInventoryAdjustmentAction
 {
@@ -47,7 +45,7 @@ class CreateInventoryAdjustmentAction
             $company = Company::findOrFail($dto->company_id);
             $adjustmentLocation = $company->adjustmentLocation;
 
-            if (!$adjustmentLocation) {
+            if (! $adjustmentLocation) {
                 throw new InvalidArgumentException('Company must have an adjustment location configured');
             }
 
@@ -55,11 +53,11 @@ class CreateInventoryAdjustmentAction
             $hasAdjustments = false;
 
             foreach ($dto->lines as $line) {
-                if (!$line->requiresAdjustment()) {
+                if (! $line->requiresAdjustment()) {
                     continue; // Skip lines with no change
                 }
 
-                if (!$picking) {
+                if (! $picking) {
                     // Create picking on first adjustment line
                     $picking = $this->createAdjustmentPicking($dto, $adjustmentLocation->id);
                 }
@@ -274,7 +272,7 @@ class CreateInventoryAdjustmentAction
         if ($move->move_type === StockMoveType::Adjustment) {
             // Get the first product line to determine adjustment direction
             $productLine = $move->productLines()->first();
-            if (!$productLine) {
+            if (! $productLine) {
                 return;
             }
 
@@ -295,7 +293,7 @@ class CreateInventoryAdjustmentAction
     private function processPositiveAdjustmentValuation(StockMove $move, float $quantity): void
     {
         $productLine = $move->productLines()->first();
-        if (!$productLine) {
+        if (! $productLine) {
             return;
         }
 
@@ -342,7 +340,7 @@ class CreateInventoryAdjustmentAction
             ->where('name', 'LIKE', '%adjustment%')
             ->first();
 
-        if (!$adjustmentAccount) {
+        if (! $adjustmentAccount) {
             $adjustmentAccount = Account::where('company_id', $company->id)
                 ->where('type', 'expense')
                 ->first();
@@ -379,7 +377,7 @@ class CreateInventoryAdjustmentAction
     private function processNegativeAdjustmentValuation(StockMove $move, float $quantity): void
     {
         $productLine = $move->productLines()->first();
-        if (!$productLine) {
+        if (! $productLine) {
             return;
         }
 
@@ -416,7 +414,7 @@ class CreateInventoryAdjustmentAction
             ->where('name', 'LIKE', '%adjustment%')
             ->first();
 
-        if (!$adjustmentAccount) {
+        if (! $adjustmentAccount) {
             $adjustmentAccount = Account::where('company_id', $company->id)
                 ->where('type', 'expense')
                 ->first();

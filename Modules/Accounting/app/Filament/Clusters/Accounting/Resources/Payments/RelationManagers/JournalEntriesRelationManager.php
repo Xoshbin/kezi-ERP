@@ -2,22 +2,22 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\RelationManagers;
 
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Modules\Payment\Models\Payment;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\DatePicker;
-use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Database\Eloquent\Builder;
-use Modules\Accounting\Models\JournalEntry;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Accounting\Enums\Accounting\JournalEntryState;
+use Modules\Accounting\Models\JournalEntry;
 use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
+use Modules\Payment\Models\Payment;
 
 class JournalEntriesRelationManager extends RelationManager
 {
@@ -109,7 +109,7 @@ class JournalEntriesRelationManager extends RelationManager
                 TextColumn::make('state')
                     ->label(__('payment.journal_entries_relation_manager.state'))
                     ->badge()
-                    ->color(fn(JournalEntryState $state): string => match ($state) {
+                    ->color(fn (JournalEntryState $state): string => match ($state) {
                         JournalEntryState::Posted => 'success',
                         JournalEntryState::Reversed => 'danger',
                         default => 'gray',
@@ -131,7 +131,7 @@ class JournalEntriesRelationManager extends RelationManager
                         };
                     })
                     ->badge()
-                    ->color(fn(?string $state): string => match ($state) {
+                    ->color(fn (?string $state): string => match ($state) {
                         'Modules\Accounting\Models\Payment' => 'primary',
                         'Modules\Accounting\Models\BankStatementLine' => 'warning',
                         'Modules\Accounting\Models\Invoice' => 'info',

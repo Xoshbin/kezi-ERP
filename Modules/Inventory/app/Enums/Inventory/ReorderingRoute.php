@@ -12,6 +12,6 @@ enum ReorderingRoute: string
      */
     public function label(): string
     {
-        return __('enums.reordering_route.' . $this->value);
+        return __('enums.reordering_route.'.$this->value);
     }
 }
