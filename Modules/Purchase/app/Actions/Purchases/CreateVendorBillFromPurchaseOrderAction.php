@@ -13,7 +13,8 @@ class CreateVendorBillFromPurchaseOrderAction
 {
     public function __construct(
         protected CreateVendorBillAction $createVendorBillAction,
-    ) {}
+    ) {
+    }
 
     public function execute(CreateVendorBillFromPurchaseOrderDTO $dto): VendorBill
     {
@@ -34,7 +35,7 @@ class CreateVendorBillFromPurchaseOrderAction
 
     private function validateAndGetPurchaseOrder(int $purchaseOrderId): PurchaseOrder
     {
-        $purchaseOrder = PurchaseOrder::with(['lines.product', 'vendor', 'currency'])->find($purchaseOrderId);
+        $purchaseOrder = PurchaseOrder::with(['lines.product', 'vendor', 'currency', 'company'])->find($purchaseOrderId);
 
         if (!$purchaseOrder) {
             throw ValidationException::withMessages([
@@ -70,12 +71,25 @@ class CreateVendorBillFromPurchaseOrderAction
             // Determine expense account - use product's account or require it to be set
             $expenseAccountId = null;
             if ($poLine->product_id && $poLine->product) {
-                $expenseAccountId = $poLine->product->expense_account_id;
+                if ($poLine->product->type === \Modules\Product\Enums\Products\ProductType::Storable) {
+                    // For storable products, use Stock Input Account (Interim Receipt)
+                    // Fallback: Product specific -> Company default
+                    $expenseAccountId = $poLine->product->default_stock_input_account_id
+                        ?? $purchaseOrder->company->default_stock_input_account_id;
+                } else {
+                    // For Service/Consumable, use Expense Account
+                    $expenseAccountId = $poLine->product->expense_account_id;
+                }
             }
 
             if (!$expenseAccountId) {
+                // Enhanced error message
+                $accountTypeNeeded = ($poLine->product?->type === \Modules\Product\Enums\Products\ProductType::Storable)
+                    ? 'Stock Input Account'
+                    : 'Expense Account';
+
                 throw ValidationException::withMessages([
-                    'lines' => "Product '{$poLine->description}' must have an expense account configured.",
+                    'lines' => "Product '{$poLine->description}' must have a {$accountTypeNeeded} configured.",
                 ]);
             }
 
