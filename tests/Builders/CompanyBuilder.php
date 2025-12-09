@@ -2,17 +2,15 @@
 
 namespace Tests\Builders;
 
-use App\Enums\Accounting\JournalType;
-use App\Enums\Inventory\StockLocationType;
-use App\Models\Account;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Journal;
-use App\Models\StockLocation;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Models\Journal;
+use Modules\Inventory\Enums\Inventory\StockLocationType;
+use Modules\Inventory\Models\StockLocation;
 
 class CompanyBuilder
 {
-    protected ?Currency $currency = null;
+    protected ?\Modules\Foundation\Models\Currency $currency = null;
 
     protected array $accounts = [];
 
@@ -29,7 +27,7 @@ class CompanyBuilder
 
     public function withCurrency(string $code = 'IQD'): self
     {
-        $this->currency = Currency::firstOrCreate(
+        $this->currency = \Modules\Foundation\Models\Currency::firstOrCreate(
             ['code' => $code],
             [
                 'name' => $code === 'IQD' ? 'Iraqi Dinar' : 'US Dollar',
@@ -106,7 +104,7 @@ class CompanyBuilder
 
         $accountInstances = [];
         foreach ($this->accounts as $key => $details) {
-            $accountInstances[$key] = Account::factory()->for($company)->create($details);
+            $accountInstances[$key] = \Modules\Accounting\Models\Account::factory()->for($company)->create($details);
         }
 
         $journalInstances = [];
@@ -142,7 +140,7 @@ class CompanyBuilder
         return $company->fresh();
     }
 
-    private function getDefaultAccountForJournal(string $journalKey, array $accounts): ?Account
+    private function getDefaultAccountForJournal(string $journalKey, array $accounts): ?\Modules\Accounting\Models\Account
     {
         $mapping = [
             'default_sales_journal_id' => 'default_accounts_receivable_id',

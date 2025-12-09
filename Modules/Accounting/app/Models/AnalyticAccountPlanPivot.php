@@ -1,0 +1,104 @@
+<?php
+
+namespace Modules\Accounting\Models;
+
+use App\Models\Company;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Support\Carbon;
+
+/**
+ * Class AnalyticAccountPlanPivot
+ *
+ * @property int $analytic_account_id
+ * @property int $analytic_plan_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read AnalyticAccount $analyticAccount
+ * @property-read AnalyticPlan $analyticPlan
+ *
+ * @method static Builder<static>|AnalyticAccountPlanPivot newModelQuery()
+ * @method static Builder<static>|AnalyticAccountPlanPivot newQuery()
+ * @method static Builder<static>|AnalyticAccountPlanPivot query()
+ * @method static Builder<static>|AnalyticAccountPlanPivot whereAnalyticAccountId($value)
+ * @method static Builder<static>|AnalyticAccountPlanPivot whereAnalyticPlanId($value)
+ * @method static Builder<static>|AnalyticAccountPlanPivot whereCreatedAt($value)
+ * @method static Builder<static>|AnalyticAccountPlanPivot whereUpdatedAt($value)
+ *
+ * @mixin Eloquent
+ */
+class AnalyticAccountPlanPivot extends Pivot
+{
+    /**
+     * The table associated with the model.
+     * This table connects Analytic Accounts to Analytic Plans, allowing for
+     * flexible grouping and multi-dimensional analysis in management accounting.
+     *
+     * @var string
+     */
+    protected $table = 'analytic_account_plan_pivots';
+
+    /**
+     * The attributes that are mass assignable.
+     * These are the foreign keys that establish the many-to-many relationship.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'company_id',          // Foreign key to the parent company, ensuring data integrity [2, 3].
+        'analytic_account_id', // Links to the specific analytic account
+        'analytic_plan_id',    // Links to the analytic plan it belongs to
+    ];
+
+    /**
+     * The attributes that should be cast.
+     * Eloquent automatically manages 'created_at' and 'updated_at' for Pivot models
+     * when `withTimestamps()` is called on the relationship definition.
+     * Explicitly casting them here ensures consistent Carbon instances.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    | Pivot models typically define inverse relationships back to their parent models.
+    */
+
+    /**
+     * Get the company that this rate belongs to.
+     *
+     * @return BelongsTo<Company, static>
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * Get the analytic account that this pivot record is associated with.
+     *
+     * @return BelongsTo<AnalyticAccount, static>
+     */
+    public function analyticAccount(): BelongsTo
+    {
+        return $this->belongsTo(AnalyticAccount::class);
+    }
+
+    /**
+     * Get the analytic plan that this pivot record is associated with.
+     *
+     * @return BelongsTo<AnalyticPlan, static>
+     */
+    public function analyticPlan(): BelongsTo
+    {
+        return $this->belongsTo(AnalyticPlan::class);
+    }
+}
