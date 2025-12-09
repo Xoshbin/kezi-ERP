@@ -95,7 +95,7 @@ describe('Company Numbering Settings', function () {
 
         $errors = $this->company->getNumberingChangeValidationErrors();
         expect($errors)->not->toBeEmpty();
-        expect($errors)->toContain(__('numbering.validation.posted_invoices_exist'));
+        expect($errors)->toContain(__('foundation::numbering.validation.posted_invoices_exist'));
     });
 
     it('prevents numbering changes when posted vendor bills exist', function () {
@@ -110,7 +110,7 @@ describe('Company Numbering Settings', function () {
 
         $errors = $this->company->getNumberingChangeValidationErrors();
         expect($errors)->not->toBeEmpty();
-        expect($errors)->toContain(__('numbering.validation.posted_bills_exist'));
+        expect($errors)->toContain(__('foundation::numbering.validation.posted_bills_exist'));
     });
 
     it('prevents numbering changes when both posted invoices and bills exist', function () {
@@ -131,8 +131,8 @@ describe('Company Numbering Settings', function () {
 
         $errors = $this->company->getNumberingChangeValidationErrors();
         expect($errors)->toHaveCount(2);
-        expect($errors)->toContain(__('numbering.validation.posted_invoices_exist'));
-        expect($errors)->toContain(__('numbering.validation.posted_bills_exist'));
+        expect($errors)->toContain(__('foundation::numbering.validation.posted_invoices_exist'));
+        expect($errors)->toContain(__('foundation::numbering.validation.posted_bills_exist'));
     });
 
     it('allows numbering changes when only draft documents exist', function () {
