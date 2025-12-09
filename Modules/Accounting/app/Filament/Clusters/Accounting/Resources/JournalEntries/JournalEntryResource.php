@@ -139,14 +139,14 @@ class JournalEntryResource extends Resource
                             MoneyInput::make('debit')
                                 ->label(__('accounting::journal_entry.debit'))
                                 ->required()
-                                ->currencyField('../../company.currency_id')
+                                ->currencyField('../../currency_id')
                                 ->default(0)
                                 ->live(onBlur: true)
                                 ->columnSpan(3),
                             MoneyInput::make('credit')
                                 ->label(__('accounting::journal_entry.credit'))
                                 ->required()
-                                ->currencyField('../../company.currency_id')
+                                ->currencyField('../../currency_id')
                                 ->default(0)
                                 ->live(onBlur: true)
                                 ->columnSpan(3),
