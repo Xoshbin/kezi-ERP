@@ -746,11 +746,11 @@ class Company extends Model
         $errors = [];
 
         if ($this->invoices()->whereNotNull('invoice_number')->exists()) {
-            $errors[] = __('numbering.validation.posted_invoices_exist');
+            $errors[] = __('foundation::numbering.validation.posted_invoices_exist');
         }
 
         if ($this->vendorBills()->where('status', VendorBillStatus::Posted)->whereNotNull('bill_reference')->exists()) {
-            $errors[] = __('numbering.validation.posted_bills_exist');
+            $errors[] = __('foundation::numbering.validation.posted_bills_exist');
         }
 
         return $errors;
