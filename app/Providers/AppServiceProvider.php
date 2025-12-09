@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Listeners\PostJournalEntry;
+use Modules\Accounting\Listeners\PostJournalEntry;
 use Modules\Foundation\Livewire\Synthesizers\MoneySynth;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
