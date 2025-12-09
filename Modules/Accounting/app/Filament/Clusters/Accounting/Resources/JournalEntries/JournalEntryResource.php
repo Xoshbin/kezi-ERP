@@ -140,12 +140,14 @@ class JournalEntryResource extends Resource
                                 ->label(__('accounting::journal_entry.debit'))
                                 ->required()
                                 ->currencyField('../../company.currency_id')
+                                ->default(0)
                                 ->live(onBlur: true)
                                 ->columnSpan(3),
                             MoneyInput::make('credit')
                                 ->label(__('accounting::journal_entry.credit'))
                                 ->required()
                                 ->currencyField('../../company.currency_id')
+                                ->default(0)
                                 ->live(onBlur: true)
                                 ->columnSpan(3),
                             TranslatableSelect::forModel('partner_id', Partner::class, 'name')
