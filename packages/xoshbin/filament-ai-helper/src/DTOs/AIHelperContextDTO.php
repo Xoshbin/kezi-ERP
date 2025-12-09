@@ -2,6 +2,7 @@
 
 namespace Xoshbin\FilamentAiHelper\DTOs;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 
 class AIHelperContextDTO
@@ -72,7 +73,7 @@ class AIHelperContextDTO
 
         try {
             return $this->modelClass::find($this->modelId);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
     }

@@ -17,9 +17,7 @@ parameters:
 
         # Missing generic types for models without factories or with complex relationships
         # These are acceptable for models that don't need factories or have complex setups
-        - '#Class.*?uses generic trait.*?HasFactory but does not specify its types#'
         - '#return type with generic class.*?does not specify its types#'
-        - '#has parameter.*?with generic class.*?does not specify its types#'
 
 #    excludePaths:
 #        - ./*/*/FileToBeExcluded.php

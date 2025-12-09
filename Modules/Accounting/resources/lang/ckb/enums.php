@@ -1,0 +1,24 @@
+<?php
+
+return [
+    'account_type' => [
+        'receivable' => 'وەرگیراوەکان',
+        'bank_and_cash' => 'بانک و کاش',
+        'current_assets' => 'سامانە هەنووکەییەکان',
+        'non_current_assets' => 'سامانە درێژخایەنەکان',
+        'prepayments' => 'پێشەکییەکان',
+        'fixed_assets' => 'سامانە جێگیرەکان',
+        'payable' => 'پێدانەکان',
+        'credit_card' => 'کارتی قەرز',
+        'current_liabilities' => 'بەرپرسیارێتییە هەنووکەییەکان',
+        'non_current_liabilities' => 'بەرپرسیارێتییە درێژخایەنەکان',
+        'equity' => 'سەرمایە',
+        'current_year_earnings' => 'قازانجی ئەمساڵ',
+        'income' => 'داهات',
+        'other_income' => 'داهاتی تر',
+        'expense' => 'خەرجی',
+        'depreciation' => 'داخوران',
+        'cost_of_revenue' => 'تێچووی داهات',
+        'off_balance_sheet' => 'دەرەوەی تەرازووی پێداچوونەوە',
+    ],
+];

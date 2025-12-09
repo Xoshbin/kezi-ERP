@@ -2,7 +2,6 @@
 
 namespace App\Filament\Clusters\Settings\Resources\Companies;
 
-use App\Enums\Inventory\InventoryAccountingMode;
 use App\Filament\Clusters\Settings\Resources\Companies\Pages\CreateCompany;
 use App\Filament\Clusters\Settings\Resources\Companies\Pages\EditCompany;
 use App\Filament\Clusters\Settings\Resources\Companies\Pages\ListCompanies;
@@ -10,7 +9,6 @@ use App\Filament\Clusters\Settings\Resources\Companies\RelationManagers\Accounts
 use App\Filament\Clusters\Settings\Resources\Companies\RelationManagers\UsersRelationManager;
 use App\Filament\Clusters\Settings\SettingsCluster;
 use App\Models\Company;
-use App\Models\Currency;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -25,6 +23,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class CompanyResource extends Resource
@@ -69,7 +68,7 @@ class CompanyResource extends Resource
                         Textarea::make('address')
                             ->label(__('company.address'))
                             ->columnSpanFull(),
-                        TranslatableSelect::forModel('currency_id', Currency::class)
+                        TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class)
                             ->label(__('company.currency_id'))
                             ->searchable()
                             ->preload()
@@ -98,7 +97,7 @@ class CompanyResource extends Resource
                                     ->default(true),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_currency'))
-                            ->createOptionAction(fn(Action $action) => $action->name('create-currency-option')->modalWidth('lg')),
+                            ->createOptionAction(fn (Action $action) => $action->name('create-currency-option')->modalWidth('lg')),
                         Toggle::make('enable_reconciliation')
                             ->label(__('company.enable_reconciliation'))
                             ->helperText(__('company.enable_reconciliation_help'))
@@ -131,7 +130,7 @@ class CompanyResource extends Resource
                                     ->maxLength(255),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_company'))
-                            ->createOptionAction(fn(Action $action) => $action->name('create-company-option')->modalWidth('lg')),
+                            ->createOptionAction(fn (Action $action) => $action->name('create-company-option')->modalWidth('lg')),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

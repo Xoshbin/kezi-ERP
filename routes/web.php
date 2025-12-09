@@ -1,11 +1,11 @@
 <?php
 
-use App\Actions\Sales\GenerateInvoicePdfAction;
-use App\Enums\Sales\InvoiceStatus;
 use App\Models\Company;
-use App\Models\Invoice;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Modules\Sales\Actions\Sales\GenerateInvoicePdfAction;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Models\Invoice;
 
 Route::get('/', function () {
     return view('welcome');
@@ -57,5 +57,4 @@ Route::middleware(['auth'])->group(function () {
 
         return app(GenerateInvoicePdfAction::class)->execute($invoice, $template);
     })->name('pdf.preview');
-
 });

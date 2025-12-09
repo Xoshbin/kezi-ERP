@@ -102,7 +102,7 @@ it('handles unexpected exceptions gracefully', function () {
     $geminiService = Mockery::mock(GeminiService::class);
     $geminiService->shouldReceive('generateResponse')
         ->once()
-        ->andThrow(new \Exception('Unexpected error'));
+        ->andThrow(new Exception('Unexpected error'));
 
     $action = new GetAIAssistantResponseAction($geminiService);
 

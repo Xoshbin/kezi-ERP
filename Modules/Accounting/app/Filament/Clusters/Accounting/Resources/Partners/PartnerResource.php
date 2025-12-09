@@ -1,0 +1,541 @@
+<?php
+
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners;
+
+use BackedEnum;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages\CreatePartner;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages\EditPartner;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages\ListPartners;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages\ViewPartner;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\InvoicesRelationManager;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\PaymentsRelationManager;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\UnreconciledEntriesRelationManager;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\VendorBillsRelationManager;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Tax;
+use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
+use Modules\Foundation\Models\Partner;
+use Xoshbin\CustomFields\Filament\Forms\Components\CustomFieldsComponent;
+use Xoshbin\CustomFields\Filament\Tables\Components\CustomFieldTableColumns;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
+
+class PartnerResource extends Resource
+{
+    protected static ?string $model = Partner::class;
+
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
+
+    protected static ?int $navigationSort = 6;
+
+    protected static ?string $cluster = AccountingCluster::class;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.sales_purchases');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('foundation::partner.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('foundation::partner.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('foundation::partner.plural_label');
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Section::make(__('foundation::partner.basic_information'))
+                    ->description(__('foundation::partner.basic_information_description'))
+                    ->icon('heroicon-m-user')
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label(__('foundation::partner.name'))
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->prefixIcon('heroicon-m-building-office'),
+                            ]),
+                        Grid::make(3)
+                            ->schema([
+                                Select::make('type')
+                                    ->label(__('foundation::partner.type'))
+                                    ->required()
+                                    ->searchable()
+                                    ->options(
+                                        collect(\Modules\Foundation\Enums\Partners\PartnerType::cases())
+                                            ->mapWithKeys(fn (\Modules\Foundation\Enums\Partners\PartnerType $type) => [$type->value => $type->label()])
+                                    )
+                                    ->prefixIcon('heroicon-m-tag'),
+                                TranslatableSelect::forModel('tax_id', Tax::class, 'name')
+                                    ->label(__('accounting::tax.label'))
+                                    ->searchable()
+                                    ->preload()
+                                    ->createOptionForm([
+                                        Select::make('company_id')
+                                            ->relationship('company', 'name')
+                                            ->label(__('accounting::tax.company'))
+                                            ->required(),
+                                        Select::make('tax_account_id')
+                                            ->relationship('taxAccount', 'name')
+                                            ->label(__('accounting::tax.tax_account'))
+                                            ->required(),
+                                        TextInput::make('name')
+                                            ->label(__('accounting::tax.name'))
+                                            ->required()
+                                            ->maxLength(255),
+                                        TextInput::make('rate')
+                                            ->label(__('accounting::tax.rate'))
+                                            ->required()
+                                            ->numeric()
+                                            ->suffix('%'),
+                                    ])
+                                    ->createOptionModalHeading(__('common.modal_title_create_tax'))
+                                    ->createOptionAction(function (Action $action) {
+                                        return $action
+                                            ->modalWidth('lg');
+                                    })
+                                    ->prefixIcon('heroicon-m-document-text'),
+                                Toggle::make('is_active')
+                                    ->label(__('foundation::partner.is_active'))
+                                    ->default(true)
+                                    ->required()
+                                    ->inline(false),
+                            ]),
+                    ])
+                    ->columnSpanFull()
+                    ->collapsible(),
+
+                Section::make(__('foundation::partner.contact_information'))
+                    ->description(__('foundation::partner.contact_information_description'))
+                    ->icon('heroicon-m-phone')
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('contact_person')
+                                    ->label(__('foundation::partner.contact_person'))
+                                    ->maxLength(255)
+                                    ->prefixIcon('heroicon-m-user'),
+                                TextInput::make('email')
+                                    ->label(__('foundation::partner.email'))
+                                    ->email()
+                                    ->maxLength(255)
+                                    ->prefixIcon('heroicon-m-envelope'),
+                            ]),
+                        TextInput::make('phone')
+                            ->label(__('foundation::partner.phone'))
+                            ->tel()
+                            ->maxLength(255)
+                            ->prefixIcon('heroicon-m-phone')
+                            ->columnSpan(1),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull()
+                    ->collapsible(),
+
+                Section::make(__('foundation::partner.address_information'))
+                    ->description(__('foundation::partner.address_information_description'))
+                    ->icon('heroicon-m-map-pin')
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('address_line_1')
+                                    ->label(__('foundation::partner.address_line_1'))
+                                    ->maxLength(255)
+                                    ->prefixIcon('heroicon-m-home'),
+                                TextInput::make('address_line_2')
+                                    ->label(__('foundation::partner.address_line_2'))
+                                    ->maxLength(255)
+                                    ->prefixIcon('heroicon-m-home'),
+                            ]),
+                        Grid::make(3)
+                            ->schema([
+                                TextInput::make('city')
+                                    ->label(__('foundation::partner.city'))
+                                    ->maxLength(255)
+                                    ->prefixIcon('heroicon-m-building-office-2'),
+                                TextInput::make('state')
+                                    ->label(__('foundation::partner.state'))
+                                    ->maxLength(255)
+                                    ->prefixIcon('heroicon-m-map'),
+                                TextInput::make('zip_code')
+                                    ->label(__('foundation::partner.zip_code'))
+                                    ->maxLength(255)
+                                    ->prefixIcon('heroicon-m-hashtag'),
+                            ]),
+                        TextInput::make('country')
+                            ->label(__('foundation::partner.country'))
+                            ->maxLength(255)
+                            ->prefixIcon('heroicon-m-globe-alt')
+                            ->columnSpan(1),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull()
+                    ->collapsible(),
+
+                Section::make(__('foundation::partner.accounting_configuration'))
+                    ->description(__('foundation::partner.accounting_configuration_description'))
+                    ->icon('heroicon-m-calculator')
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                TranslatableSelect::forModel('receivable_account_id', Account::class)
+                                    ->searchable()
+                                    ->preload()
+                                    ->createOptionForm([
+                                        Hidden::make('company_id')
+                                            ->default(function (): ?int {
+                                                $tenant = Filament::getTenant();
+
+                                                return $tenant?->getKey();
+                                            }),
+                                        TextInput::make('name')
+                                            ->label(__('accounting::account.name'))
+                                            ->required()
+                                            ->maxLength(255),
+                                        TextInput::make('code')
+                                            ->label(__('accounting::account.code'))
+                                            ->required()
+                                            ->maxLength(255),
+                                        Select::make('type')
+                                            ->label(__('accounting::account.type'))
+                                            ->options([\Modules\Accounting\Enums\Accounting\AccountType::Receivable->value => \Modules\Accounting\Enums\Accounting\AccountType::Receivable->label()])
+                                            ->default(\Modules\Accounting\Enums\Accounting\AccountType::Receivable->value)
+                                            ->required(),
+                                    ])
+                                    ->createOptionModalHeading(__('foundation::partner.create_receivable_account'))
+                                    ->helperText(__('foundation::partner.receivable_account_help'))
+                                    ->prefixIcon('heroicon-m-arrow-trending-up'),
+
+                                TranslatableSelect::forModel('payable_account_id', Account::class)
+                                    ->searchable()
+                                    ->preload()
+                                    ->createOptionForm([
+                                        Hidden::make('company_id')
+                                            ->default(function (): ?int {
+                                                $tenant = Filament::getTenant();
+
+                                                return $tenant?->getKey();
+                                            }),
+                                        TextInput::make('name')
+                                            ->label(__('accounting::account.name'))
+                                            ->required()
+                                            ->maxLength(255),
+                                        TextInput::make('code')
+                                            ->label(__('accounting::account.code'))
+                                            ->required()
+                                            ->maxLength(255),
+                                        Select::make('type')
+                                            ->label(__('accounting::account.type'))
+                                            ->searchable()
+                                            ->options([\Modules\Accounting\Enums\Accounting\AccountType::Payable->value => \Modules\Accounting\Enums\Accounting\AccountType::Payable->label()])
+                                            ->default(\Modules\Accounting\Enums\Accounting\AccountType::Payable->value)
+                                            ->required(),
+                                    ])
+                                    ->createOptionModalHeading(__('foundation::partner.create_payable_account'))
+                                    ->helperText(__('foundation::partner.payable_account_help'))
+                                    ->prefixIcon('heroicon-m-arrow-trending-down'),
+                            ]),
+                    ])
+                    ->columnSpanFull()
+                    ->collapsible(),
+
+                // Custom Fields Section
+                CustomFieldsComponent::make(Partner::class),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                // Name (most important for identification)
+                TextColumn::make('name')
+                    ->label(__('foundation::partner.name'))
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold')
+                    ->size('lg'),
+
+                // Type (critical for categorization)
+                TextColumn::make('type')
+                    ->label(__('foundation::partner.type'))
+                    ->formatStateUsing(fn (\Modules\Foundation\Enums\Partners\PartnerType $state): string => $state->label())
+                    ->badge()
+                    ->color(fn (\Modules\Foundation\Enums\Partners\PartnerType $state): string => match ($state) {
+                        \Modules\Foundation\Enums\Partners\PartnerType::Customer => 'success',
+                        \Modules\Foundation\Enums\Partners\PartnerType::Vendor => 'info',
+                        \Modules\Foundation\Enums\Partners\PartnerType::Both => 'warning',
+                    })
+                    ->icons([
+                        'heroicon-m-user' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
+                        'heroicon-m-building-office' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor,
+                        'heroicon-m-user-group' => \Modules\Foundation\Enums\Partners\PartnerType::Both,
+                    ])
+                    ->searchable()
+                    ->sortable(),
+
+                // Status (important for active/inactive)
+                TextColumn::make('is_active')
+                    ->label(__('foundation::partner.status'))
+                    ->formatStateUsing(fn (bool $state): string => $state ? __('foundation::partner.active') : __('foundation::partner.inactive'))
+                    ->badge()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
+                    ->icon(fn (bool $state): string => $state ? 'heroicon-m-check-circle' : 'heroicon-m-x-circle')
+                    ->sortable(),
+
+                // Financial Information - Customer Balances
+                MoneyColumn::make('customer_balance')
+                    ->label(__('foundation::partner.customer_outstanding'))
+                    ->getStateUsing(function (Partner $record) {
+                        if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Customer, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
+                            return null;
+                        }
+
+                        return $record->getCustomerOutstandingBalance();
+                    })
+                    ->badge()
+                    ->color(function (Partner $record) {
+                        if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Customer, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
+                            return 'gray';
+                        }
+
+                        return $record->getCustomerOutstandingBalance()->isZero() ? 'gray' : 'success';
+                    })
+                    ->sortable(false),
+
+                MoneyColumn::make('customer_overdue')
+                    ->label(__('foundation::partner.customer_overdue'))
+                    ->getStateUsing(function (Partner $record) {
+                        if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Customer, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
+                            return null;
+                        }
+
+                        return $record->getCustomerOverdueBalance();
+                    })
+                    ->badge()
+                    ->color(function (Partner $record) {
+                        if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Customer, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
+                            return 'gray';
+                        }
+
+                        return $record->getCustomerOverdueBalance()->isZero() ? 'gray' : 'warning';
+                    })
+                    ->sortable(false),
+
+                // Financial Information - Vendor Balances
+                MoneyColumn::make('vendor_balance')
+                    ->label(__('foundation::partner.vendor_outstanding'))
+                    ->getStateUsing(function (Partner $record) {
+                        if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
+                            return null;
+                        }
+
+                        return $record->getVendorOutstandingBalance();
+                    })
+                    ->badge()
+                    ->color(function (Partner $record) {
+                        if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
+                            return 'gray';
+                        }
+
+                        return $record->getVendorOutstandingBalance()->isZero() ? 'gray' : 'danger';
+                    })
+                    ->sortable(false),
+
+                MoneyColumn::make('vendor_overdue')
+                    ->label(__('foundation::partner.vendor_overdue'))
+                    ->getStateUsing(function (Partner $record) {
+                        if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
+                            return null;
+                        }
+
+                        return $record->getVendorOverdueBalance();
+                    })
+                    ->badge()
+                    ->color(function (Partner $record) {
+                        if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
+                            return 'gray';
+                        }
+
+                        return $record->getVendorOverdueBalance()->isZero() ? 'gray' : 'warning';
+                    })
+                    ->sortable(false),
+
+                // Last Activity
+                TextColumn::make('last_activity')
+                    ->label(__('foundation::partner.last_activity'))
+                    ->getStateUsing(
+                        fn (Partner $record): string => $record->getLastTransactionDate()?->format('M j, Y') ?? __('foundation::partner.no_activity')
+                    )
+                    ->sortable(false)
+                    ->toggleable(),
+
+                // Custom Fields (dynamic columns)
+                ...CustomFieldTableColumns::make(Partner::class),
+
+                // Contact Information (toggleable)
+                TextColumn::make('contact_person')
+                    ->label(__('foundation::partner.contact_person'))
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('email')
+                    ->label(__('foundation::partner.email'))
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('phone')
+                    ->label(__('foundation::partner.phone'))
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                // Address Information (toggleable)
+                TextColumn::make('address_line_1')
+                    ->label(__('foundation::partner.address_line_1'))
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('city')
+                    ->label(__('foundation::partner.city'))
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('country')
+                    ->label(__('foundation::partner.country'))
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('tax_id')
+                    ->label(__('foundation::partner.tax_id'))
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                // Status
+                IconColumn::make('is_active')
+                    ->label(__('foundation::partner.is_active'))
+                    ->boolean(),
+
+                // Timestamps (hidden by default)
+                TextColumn::make('created_at')
+                    ->label(__('foundation::partner.created_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->label(__('foundation::partner.updated_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                SelectFilter::make('type')
+                    ->label(__('foundation::partner.type'))
+                    ->options([
+                        'customer' => __('enums.partner_type.customer'),
+                        'vendor' => __('enums.partner_type.vendor'),
+                        'both' => __('enums.partner_type.both'),
+                    ]),
+
+                Filter::make('has_overdue')
+                    ->label(__('foundation::partner.has_overdue_amounts'))
+                    ->query(
+                        fn (Builder $query): Builder => $query->whereHas('invoices', function ($q) {
+                            $q->whereIn('status', ['posted', 'paid'])
+                                ->where('due_date', '<', now())
+                                ->whereRaw('total_amount > (
+                                  SELECT COALESCE(SUM(amount_applied), 0)
+                                  FROM payment_document_links
+                                  WHERE invoice_id = invoices.id
+                              )');
+                        })->orWhereHas('vendorBills', function ($q) {
+                            $q->whereIn('status', ['posted', 'paid'])
+                                ->where('due_date', '<', now())
+                                ->whereRaw('total_amount > (
+                                  SELECT COALESCE(SUM(amount_applied), 0)
+                                  FROM payment_document_links
+                                  WHERE vendor_bill_id = vendor_bills.id
+                              )');
+                        })
+                    ),
+
+                Filter::make('has_outstanding_balance')
+                    ->label(__('foundation::partner.has_outstanding_balance'))
+                    ->query(
+                        fn (Builder $query): Builder => $query->whereHas('invoices', function ($q) {
+                            $q->whereIn('status', ['posted', 'paid'])
+                                ->whereRaw('total_amount > (
+                                  SELECT COALESCE(SUM(amount_applied), 0)
+                                  FROM payment_document_links
+                                  WHERE invoice_id = invoices.id
+                              )');
+                        })->orWhereHas('vendorBills', function ($q) {
+                            $q->whereIn('status', ['posted', 'paid'])
+                                ->whereRaw('total_amount > (
+                                  SELECT COALESCE(SUM(amount_applied), 0)
+                                  FROM payment_document_links
+                                  WHERE vendor_bill_id = vendor_bills.id
+                              )');
+                        })
+                    ),
+
+                TernaryFilter::make('is_active')
+                    ->label(__('foundation::partner.is_active')),
+            ])
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            InvoicesRelationManager::class,
+            VendorBillsRelationManager::class,
+            PaymentsRelationManager::class,
+            UnreconciledEntriesRelationManager::class,
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListPartners::route('/'),
+            'create' => CreatePartner::route('/create'),
+            'view' => ViewPartner::route('/{record}'),
+            'edit' => EditPartner::route('/{record}/edit'),
+        ];
+    }
+}

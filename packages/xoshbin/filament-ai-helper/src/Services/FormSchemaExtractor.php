@@ -2,6 +2,8 @@
 
 namespace Xoshbin\FilamentAiHelper\Services;
 
+use DateTime;
+use Exception;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\DatePicker;
@@ -124,7 +126,7 @@ class FormSchemaExtractor
             $options = $component->getOptions();
 
             return is_array($options) ? $options : [];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return [];
         }
     }
@@ -170,7 +172,7 @@ class FormSchemaExtractor
             }
 
             return [];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return [];
         }
     }
@@ -239,7 +241,7 @@ class FormSchemaExtractor
             }
 
             return [];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return [];
         }
     }
@@ -310,7 +312,7 @@ class FormSchemaExtractor
             return false;
         }
 
-        $date = \DateTime::createFromFormat('Y-m-d', $value);
+        $date = DateTime::createFromFormat('Y-m-d', $value);
 
         return $date && $date->format('Y-m-d') === $value;
     }

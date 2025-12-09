@@ -3,13 +3,11 @@
 namespace Tests\Feature\Filament;
 
 use App\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice;
-use App\Models\Account;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Partner;
 use App\Models\Product;
 use App\Models\User;
 use Brick\Money\Money;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -19,11 +17,16 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
     use RefreshDatabase;
 
     private Company $company;
+
     private User $user;
-    private Currency $currency;
-    private Partner $customer;
-    private Product $product;
-    private Account $incomeAccount;
+
+    private \Modules\Foundation\Models\Currency $currency;
+
+    private \Modules\Foundation\Models\Partner $customer;
+
+    private \Modules\Product\Models\Product $product;
+
+    private \Modules\Accounting\Models\Account $incomeAccount;
 
     protected function setUp(): void
     {
@@ -32,21 +35,21 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
         // Create test data
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
-        $this->currency = Currency::factory()->create(['code' => 'USD']);
-        
+        $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+
         $this->company->update(['currency_id' => $this->currency->id]);
-        
-        $this->customer = Partner::factory()->customer()->create([
+
+        $this->customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
             'company_id' => $this->company->id,
         ]);
 
-        $this->incomeAccount = Account::factory()->create([
+        $this->incomeAccount = \Modules\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'income',
         ]);
 
         // Create a product with a specific Money unit price
-        $this->product = Product::factory()->create([
+        $this->product = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Test Invoice Product',
             'description' => 'Test product for invoice',
@@ -56,7 +59,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
 
         // Set up authentication and tenant
         $this->actingAs($this->user);
-        \Filament\Facades\Filament::setTenant($this->company);
+        Filament::setTenant($this->company);
     }
 
     /** @test */
@@ -87,17 +90,17 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
 
         // Verify that the unit_price is populated as a string, not "[object Object]"
         $formData = $livewire->get('data');
-        
+
         $this->assertIsArray($formData['invoiceLines']);
         $this->assertCount(1, $formData['invoiceLines']);
-        
+
         $lineData = $formData['invoiceLines'][0];
-        
+
         // The key assertion: unit_price should be a string representation of the amount
         $this->assertIsString($lineData['unit_price']);
         $this->assertEquals('299.99', $lineData['unit_price']);
         $this->assertNotEquals('[object Object]', $lineData['unit_price']);
-        
+
         // Also verify other fields were populated correctly
         $this->assertEquals($this->product->description, $lineData['description']);
         $this->assertEquals($this->product->income_account_id, $lineData['income_account_id']);
@@ -107,7 +110,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
     public function it_handles_products_with_different_price_formats_in_invoice(): void
     {
         // Test with integer price
-        $integerProduct = Product::factory()->create([
+        $integerProduct = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Integer Price Product',
             'description' => 'Product with integer price',
@@ -116,7 +119,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
         ]);
 
         // Test with decimal price
-        $decimalProduct = Product::factory()->create([
+        $decimalProduct = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Decimal Price Product',
             'description' => 'Product with decimal price',
@@ -149,7 +152,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
 
         // Test decimal price
         $livewire->set('data.invoiceLines.0.product_id', $decimalProduct->id);
-        
+
         $formData = $livewire->get('data');
         $this->assertEquals('49.95', $formData['invoiceLines'][0]['unit_price']);
     }
@@ -158,7 +161,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
     public function it_handles_products_with_null_unit_price_in_invoice(): void
     {
         // Create a product with null unit price
-        $nullPriceProduct = Product::factory()->create([
+        $nullPriceProduct = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'No Price Product',
             'description' => 'Product without price',
@@ -186,7 +189,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
         ]);
 
         $formData = $livewire->get('data');
-        
+
         // Should handle null gracefully
         $this->assertNull($formData['invoiceLines'][0]['unit_price']);
         $this->assertNotEquals('[object Object]', $formData['invoiceLines'][0]['unit_price']);
@@ -196,7 +199,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
     public function it_can_create_invoice_after_product_selection(): void
     {
         // End-to-end test to ensure the fix doesn't break the creation process
-        
+
         $livewire = Livewire::test(CreateInvoice::class)
             ->fillForm([
                 'customer_id' => $this->customer->id,
@@ -240,7 +243,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
     public function it_populates_description_from_product_description_not_name(): void
     {
         // Verify that the invoice uses product description, not name (unlike vendor bills)
-        $productWithDescription = Product::factory()->create([
+        $productWithDescription = \Modules\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Product Name',
             'description' => 'Detailed product description',
@@ -268,7 +271,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
         ]);
 
         $formData = $livewire->get('data');
-        
+
         // Should populate description field with product description, not name
         $this->assertEquals('Detailed product description', $formData['invoiceLines'][0]['description']);
         $this->assertNotEquals('Product Name', $formData['invoiceLines'][0]['description']);
