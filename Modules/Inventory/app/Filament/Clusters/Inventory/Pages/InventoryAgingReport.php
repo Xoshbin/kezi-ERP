@@ -2,30 +2,29 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Pages;
 
-
-
-use Exception;
 use BackedEnum;
-use Filament\Pages\Page;
+use Exception;
 use Filament\Actions\Action;
-use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
-use Modules\Product\Models\Product;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
-use Filament\Schemas\Components\Section;
-use Modules\Inventory\Models\StockLocation;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
+use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
+use Modules\Inventory\Models\StockLocation;
 use Modules\Inventory\Services\Inventory\InventoryCSVExportService;
 use Modules\Inventory\Services\Inventory\InventoryReportingService;
+use Modules\Product\Models\Product;
 
 class InventoryAgingReport extends Page implements HasForms
 {
     use InteractsWithForms;
+
     protected static ?string $cluster = InventoryCluster::class;
 
     protected string $view = 'inventory::filament.clusters.inventory.pages.inventory-aging-report';
@@ -85,7 +84,7 @@ class InventoryAgingReport extends Page implements HasForms
                             ->searchable()
                             ->preload()
                             ->live()
-                            ->afterStateUpdated(fn() => $this->generateReport()),
+                            ->afterStateUpdated(fn () => $this->generateReport()),
 
                         Select::make('location_ids')
                             ->label(__('inventory::inventory_reports.aging.filters.locations'))
@@ -98,13 +97,13 @@ class InventoryAgingReport extends Page implements HasForms
                             ->searchable()
                             ->preload()
                             ->live()
-                            ->afterStateUpdated(fn() => $this->generateReport()),
+                            ->afterStateUpdated(fn () => $this->generateReport()),
 
                         Toggle::make('include_expiration')
                             ->label(__('inventory::inventory_reports.aging.filters.include_expiration'))
                             ->default(true)
                             ->live()
-                            ->afterStateUpdated(fn() => $this->generateReport()),
+                            ->afterStateUpdated(fn () => $this->generateReport()),
 
                         TextInput::make('expiration_warning_days')
                             ->label(__('inventory::inventory_reports.aging.filters.expiration_warning_days'))
@@ -113,8 +112,8 @@ class InventoryAgingReport extends Page implements HasForms
                             ->minValue(1)
                             ->maxValue(365)
                             ->live()
-                            ->afterStateUpdated(fn() => $this->generateReport())
-                            ->visible(fn($get) => $get('include_expiration')),
+                            ->afterStateUpdated(fn () => $this->generateReport())
+                            ->visible(fn ($get) => $get('include_expiration')),
                     ])
                     ->columns(2),
             ])
@@ -138,7 +137,7 @@ class InventoryAgingReport extends Page implements HasForms
 
     public function getBucketData(): array
     {
-        if (!$this->reportData || empty($this->reportData['buckets'])) {
+        if (! $this->reportData || empty($this->reportData['buckets'])) {
             return [];
         }
 
@@ -166,7 +165,7 @@ class InventoryAgingReport extends Page implements HasForms
 
     public function getExpiringLots(): array
     {
-        if (!$this->reportData || !isset($this->reportData['expiring_soon'])) {
+        if (! $this->reportData || ! isset($this->reportData['expiring_soon'])) {
             return [];
         }
 
@@ -175,7 +174,7 @@ class InventoryAgingReport extends Page implements HasForms
 
     public function getAverageAge(): float
     {
-        if (!$this->reportData || empty($this->reportData['buckets'])) {
+        if (! $this->reportData || empty($this->reportData['buckets'])) {
             return 0;
         }
 
@@ -206,17 +205,18 @@ class InventoryAgingReport extends Page implements HasForms
             Action::make('export')
                 ->label(__('inventory::inventory_reports.aging.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
-                ->disabled(fn() => !$this->reportData)
+                ->disabled(fn () => ! $this->reportData)
                 ->requiresConfirmation()
                 ->modalHeading(__('inventory::inventory_reports.aging.export_confirmation'))
                 ->modalDescription(__('inventory::inventory_reports.aging.export_description'))
                 ->modalSubmitActionLabel(__('inventory::inventory_reports.aging.actions.export'))
                 ->action(function () {
-                    if (!$this->reportData) {
+                    if (! $this->reportData) {
                         Notification::make()
                             ->title(__('inventory::inventory_reports.aging.no_data_to_export'))
                             ->danger()
                             ->send();
+
                         return;
                     }
 
@@ -226,7 +226,7 @@ class InventoryAgingReport extends Page implements HasForms
                             'include_metadata' => true,
                         ]);
 
-                        $filename = 'inventory-aging-' . now()->format('Y-m-d-H-i-s') . '.csv';
+                        $filename = 'inventory-aging-'.now()->format('Y-m-d-H-i-s').'.csv';
 
                         Notification::make()
                             ->title(__('inventory::inventory_reports.aging.export_started'))

@@ -3,19 +3,18 @@
 namespace Modules\Purchase\Tests\Feature\Filament;
 
 use Brick\Money\Money;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
-use Modules\Product\Models\Product;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
 use Modules\Accounting\Models\Account;
 use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\ViewPurchaseOrder;
+use Modules\Purchase\Models\PurchaseOrder;
 use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
-use Modules\Purchase\Models\PurchaseOrder;
-use Illuminate\Validation\ValidationException;
-use Modules\Product\Enums\Products\ProductType;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
-use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\ViewPurchaseOrder;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

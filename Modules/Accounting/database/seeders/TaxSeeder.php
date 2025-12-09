@@ -2,13 +2,13 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
-use Exception;
 use App\Models\Company;
+use Exception;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Modules\Accounting\Models\Tax;
-use Modules\Accounting\Models\Account;
 use Modules\Accounting\Enums\Accounting\TaxType;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Tax;
 
 class TaxSeeder extends Seeder
 {

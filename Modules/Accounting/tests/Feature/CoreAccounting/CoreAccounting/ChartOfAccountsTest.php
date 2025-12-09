@@ -1,16 +1,14 @@
 <?php
 
 use Brick\Money\Money;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Tests\Traits\WithConfiguredCompany;
-use Illuminate\Validation\ValidationException;
-use Modules\Accounting\Services\AccountService;
-use Modules\Accounting\Services\JournalService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
+use Illuminate\Validation\ValidationException;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Services\JournalService;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -31,7 +29,7 @@ test('creating an account with a duplicate code for the same company is prevente
 
     // Assert: Expect that trying to create the duplicate account will fail
     // with a ValidationException. This proves your backend rule works.
-    expect(fn() => $accountService->create($duplicateAccountData))
+    expect(fn () => $accountService->create($duplicateAccountData))
         ->toThrow(ValidationException::class);
 });
 
@@ -132,7 +130,7 @@ test('a deprecated account cannot be used for new financial transactions', funct
 
     // Assert: Expect the action to throw a specific, clear exception when it detects
     // the use of a deprecated account. This confirms the backend rule is enforced.
-    expect(fn() => $createJournalEntryAction->execute($journalEntryDTO))
+    expect(fn () => $createJournalEntryAction->execute($journalEntryDTO))
         ->toThrow(ValidationException::class);
 });
 
@@ -153,6 +151,6 @@ test('creating a journal with an existing short code for the same company is pre
 
     // Assert: Expect the service to throw a ValidationException when it
     // detects the duplicate short code for the given company.
-    expect(fn() => $journalService->create($duplicateData))
+    expect(fn () => $journalService->create($duplicateData))
         ->toThrow(ValidationException::class);
 });

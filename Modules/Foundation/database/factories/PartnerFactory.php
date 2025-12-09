@@ -3,8 +3,8 @@
 namespace Modules\Foundation\Database\Factories;
 
 use App\Models\Company;
-use Modules\Foundation\Enums\Partners\PartnerType;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Foundation\Enums\Partners\PartnerType;
 
 /**
  * @extends Factory<Partner>
@@ -40,14 +40,14 @@ class PartnerFactory extends Factory
 
     public function vendor(): self
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => PartnerType::Vendor,
         ]);
     }
 
     public function customer(): self
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => PartnerType::Customer,
         ]);
     }

@@ -2,36 +2,35 @@
 
 namespace Modules\Purchase\Services;
 
-use Exception;
-use Carbon\Carbon;
-use App\Models\User;
-use RuntimeException;
 use App\Models\Company;
+use App\Models\User;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Modules\Foundation\Models\AuditLog;
-use Modules\Foundation\Models\Currency;
-use Modules\Inventory\Models\StockMove;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Inventory\Models\StockPicking;
-use Modules\Purchase\Models\VendorBillLine;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Foundation\Services\SequenceService;
-use Modules\Purchase\Events\VendorBillConfirmed;
-use Modules\Accounting\Services\JournalEntryService;
-use Modules\Foundation\Services\ExchangeRateService;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
-use Modules\Inventory\Enums\Inventory\StockPickingType;
-use Modules\Inventory\Enums\Inventory\StockPickingState;
-use Modules\Foundation\Services\CurrencyConverterService;
-use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
-use Modules\Inventory\Services\Inventory\InventoryValuationService;
-use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use Modules\Accounting\Actions\Accounting\BuildVendorBillPostingPreviewAction;
 use Modules\Accounting\Actions\Accounting\CreateJournalEntryForVendorBillAction;
+use Modules\Accounting\Services\JournalEntryService;
+use Modules\Foundation\Models\AuditLog;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Services\CurrencyConverterService;
+use Modules\Foundation\Services\ExchangeRateService;
+use Modules\Foundation\Services\SequenceService;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
+use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockPicking;
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Events\VendorBillConfirmed;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Models\VendorBillLine;
+use RuntimeException;
 
 class VendorBillService
 {
@@ -74,7 +73,7 @@ class VendorBillService
             // Create stock moves and inventory journal entries based on company's inventory accounting mode
             $company = $vendorBill->company;
             $storableLines = $vendorBill->lines()->with('product')->get()
-                ->filter(fn(VendorBillLine $l) => $l->product?->type === \Modules\Product\Enums\Products\ProductType::Storable);
+                ->filter(fn (VendorBillLine $l) => $l->product?->type === \Modules\Product\Enums\Products\ProductType::Storable);
 
             if ($storableLines->isNotEmpty()) {
                 // Check the company's inventory accounting mode
@@ -88,12 +87,12 @@ class VendorBillService
                         'scheduled_date' => $vendorBill->bill_date,
                         'completed_at' => now(),
                         'reference' => $vendorBill->bill_reference,
-                        'origin' => 'VendorBill#' . $vendorBill->getKey(),
+                        'origin' => 'VendorBill#'.$vendorBill->getKey(),
                         'created_by_user_id' => $user->id,
                     ]);
 
                     // Create one stock move with multiple product lines
-                    if (!empty($storableLines)) {
+                    if (! empty($storableLines)) {
                         $stockMove = $this->createStockMoveForLines($vendorBill, $storableLines, $user, $picking);
 
                         // Create consolidated inventory journal entry for all storable products
@@ -208,7 +207,7 @@ class VendorBillService
                 'event_type' => 'cancellation', // A more specific event type
                 'auditable_type' => get_class($vendorBill),
                 'auditable_id' => $vendorBill->id,
-                'description' => 'Vendor Bill Cancelled: ' . $reason,
+                'description' => 'Vendor Bill Cancelled: '.$reason,
                 'old_values' => ['status' => $vendorBill->status],
                 'new_values' => ['status' => VendorBillStatus::Cancelled],
                 'ip_address' => request()->ip(),
@@ -218,7 +217,7 @@ class VendorBillService
             // The "reason" is passed to the reversal for the entry's description.
             $this->journalEntryService->createReversal(
                 $originalEntry,
-                'Cancellation of Bill ' . $vendorBill->bill_reference . ': ' . $reason,
+                'Cancellation of Bill '.$vendorBill->bill_reference.': '.$reason,
                 $user
             );
 
@@ -308,7 +307,7 @@ class VendorBillService
     /**
      * Convert vendor bill line amounts to company currency.
      *
-     * @param VendorBillLine $line
+     * @param  VendorBillLine  $line
      */
     protected function convertVendorBillLineAmounts($line, Currency $companyCurrency, float $exchangeRate): void
     {
@@ -351,7 +350,7 @@ class VendorBillService
         DB::transaction(function () use ($vendorBill, $user, $reason) {
             $originalEntry = $vendorBill->journalEntry;
             if ($originalEntry) {
-                $this->journalEntryService->createReversal($originalEntry, 'Reset of Bill ' . $vendorBill->bill_reference . ': ' . $reason, $user);
+                $this->journalEntryService->createReversal($originalEntry, 'Reset of Bill '.$vendorBill->bill_reference.': '.$reason, $user);
             }
 
             $logEntry = [
@@ -380,7 +379,7 @@ class VendorBillService
     {
         $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($vendorBill);
 
-        if (!empty($preview['errors'])) {
+        if (! empty($preview['errors'])) {
             // Priority order for error handling
             $errorPriority = [
                 'no_line_items',

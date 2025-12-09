@@ -53,6 +53,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory;
+
     use Notifiable;
 
     /**

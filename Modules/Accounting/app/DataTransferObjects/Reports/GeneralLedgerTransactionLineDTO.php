@@ -16,6 +16,5 @@ readonly class GeneralLedgerTransactionLineDTO
         public Money $debit,
         public Money $credit,
         public Money $balance, // The running balance after this transaction
-    ) {
-    }
+    ) {}
 }

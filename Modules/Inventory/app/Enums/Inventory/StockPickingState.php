@@ -12,6 +12,6 @@ enum StockPickingState: string
 
     public function label(): string
     {
-        return __('enums.stock_picking_state.' . $this->value);
+        return __('enums.stock_picking_state.'.$this->value);
     }
 }

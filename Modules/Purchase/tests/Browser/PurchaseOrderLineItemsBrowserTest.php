@@ -14,7 +14,9 @@ class PurchaseOrderLineItemsBrowserTest extends DuskTestCase
     use WithConfiguredCompany;
 
     protected $vendor;
+
     protected $product;
+
     protected $tax;
 
     protected function setUp(): void

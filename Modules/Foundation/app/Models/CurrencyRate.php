@@ -2,15 +2,14 @@
 
 namespace Modules\Foundation\Models;
 
-use Eloquent;
 use App\Models\Company;
-use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Models\Currency;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
-use Modules\Foundation\Database\Factories\CurrencyRateFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
+use Modules\Foundation\Database\Factories\CurrencyRateFactory;
 
 /**
  * Class CurrencyRate
@@ -42,7 +41,6 @@ class CurrencyRate extends Model
 {
     /** @use HasFactory<CurrencyRateFactory> */
     use HasFactory;
-
 
     protected static function newFactory(): \Modules\Foundation\Database\Factories\CurrencyRateFactory
     {

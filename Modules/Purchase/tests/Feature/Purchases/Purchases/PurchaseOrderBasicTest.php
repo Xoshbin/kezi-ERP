@@ -3,16 +3,15 @@
 namespace Modules\Purchase\Tests\Feature\Purchases;
 
 use Brick\Money\Money;
-use Modules\Product\Models\Product;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Purchase\Models\PurchaseOrder;
-use Modules\Product\Enums\Products\ProductType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Purchase\Services\PurchaseOrderService;
-use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Modules\Product\Models\Product;
 use Modules\Purchase\Actions\Purchases\CreatePurchaseOrderAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
 use Modules\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
+use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Services\PurchaseOrderService;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

@@ -17,9 +17,7 @@ use RuntimeException;
 
 class ReclassifyLoanCurrentPortionAction
 {
-    public function __construct(private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJE)
-    {
-    }
+    public function __construct(private readonly \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction $createJE) {}
 
     public function execute(
         LoanAgreement $loan,
@@ -106,7 +104,7 @@ class ReclassifyLoanCurrentPortionAction
                 journal_id: $journalId,
                 currency_id: $loan->currency_id,
                 entry_date: $asOf->toDateString(),
-                reference: 'LOAN-RECLASS/' . $loan->id . '/' . $months,
+                reference: 'LOAN-RECLASS/'.$loan->id.'/'.$months,
                 description: 'Reclassify loan current portion',
                 created_by_user_id: $user->id,
                 is_posted: true,

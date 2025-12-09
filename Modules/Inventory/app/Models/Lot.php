@@ -3,13 +3,11 @@
 namespace Modules\Inventory\Models;
 
 use App\Models\Company;
-use Modules\Product\Models\Product;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Inventory\Models\StockQuant;
-use Modules\Inventory\Models\StockMoveLine;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Product\Models\Product;
 
 class Lot extends Model
 {
@@ -65,7 +63,7 @@ class Lot extends Model
      */
     public function isExpired(): bool
     {
-        if (!$this->expiration_date) {
+        if (! $this->expiration_date) {
             return false;
         }
 
@@ -77,7 +75,7 @@ class Lot extends Model
      */
     public function daysUntilExpiration(): ?int
     {
-        if (!$this->expiration_date) {
+        if (! $this->expiration_date) {
             return null;
         }
 

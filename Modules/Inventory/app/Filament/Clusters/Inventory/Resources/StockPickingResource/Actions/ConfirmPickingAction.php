@@ -2,18 +2,16 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions;
 
-
-
 use DB;
 use Exception;
 use Filament\Actions\Action;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
-use Modules\Inventory\Models\StockPicking;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
 use Modules\Inventory\Enums\Inventory\StockPickingState;
 use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource;
+use Modules\Inventory\Models\StockPicking;
 
 class ConfirmPickingAction extends Action
 {

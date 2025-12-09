@@ -1,22 +1,22 @@
 <?php
 
-use Carbon\Carbon;
 use Brick\Money\Money;
-use Modules\Sales\Models\Invoice;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Currency;
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Foundation\Models\CurrencyRate;
-use Modules\Payment\Services\PaymentService;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Payment\Enums\Payments\PaymentMethod;
-use Modules\Payment\Enums\Payments\PaymentStatus;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
 use Modules\Payment\Actions\Payments\CreatePaymentAction;
-use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
 use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Services\PaymentService;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

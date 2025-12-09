@@ -10,7 +10,6 @@ use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\ProductResource;
 
-
 class CreateProduct extends CreateRecord
 {
     use Translatable;

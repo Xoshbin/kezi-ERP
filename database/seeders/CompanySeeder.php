@@ -2,12 +2,11 @@
 
 namespace Database\Seeders;
 
-
 use App\Models\Company;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Inventory\Enums\Inventory\StockLocationType;
 use Exception;
 use Illuminate\Database\Seeder;
+use Modules\Inventory\Enums\Inventory\StockLocationType;
+use Modules\Inventory\Models\StockLocation;
 
 class CompanySeeder extends Seeder
 {

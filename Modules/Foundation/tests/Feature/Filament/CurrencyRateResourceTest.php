@@ -1,17 +1,17 @@
 <?php
 
-use Filament\Actions\DeleteAction;
-use function Pest\Livewire\livewire;
-use Modules\Foundation\Models\Currency;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Foundation\Models\CurrencyRate;
-
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Filament\Clusters\Settings\SettingsCluster;
+use Filament\Actions\DeleteAction;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Foundation\Filament\Resources\CurrencyRates\CurrencyRateResource;
+use Modules\Foundation\Filament\Resources\CurrencyRates\Pages\CreateCurrencyRate;
 use Modules\Foundation\Filament\Resources\CurrencyRates\Pages\EditCurrencyRate;
 use Modules\Foundation\Filament\Resources\CurrencyRates\Pages\ListCurrencyRates;
-use Modules\Foundation\Filament\Resources\CurrencyRates\Pages\CreateCurrencyRate;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
+use Tests\Traits\WithConfiguredCompany;
+
+use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

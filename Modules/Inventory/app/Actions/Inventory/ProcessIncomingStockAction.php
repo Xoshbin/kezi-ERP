@@ -2,16 +2,16 @@
 
 namespace Modules\Inventory\Actions\Inventory;
 
-use Exception;
 use Brick\Money\Money;
+use Exception;
 use Illuminate\Support\Facades\DB;
-use Modules\Product\Models\Product;
 use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveProductLine;
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use Modules\Inventory\Services\Inventory\StockQuantService;
+use Modules\Product\Models\Product;
 use Modules\Purchase\Models\VendorBill;
 use Modules\Purchase\Models\VendorBillLine;
-use Modules\Inventory\Models\StockMoveProductLine;
-use Modules\Inventory\Services\Inventory\StockQuantService;
-use Modules\Inventory\Services\Inventory\InventoryValuationService;
 
 class ProcessIncomingStockAction
 {
@@ -19,8 +19,7 @@ class ProcessIncomingStockAction
         protected InventoryValuationService $inventoryValuationService,
         protected \Modules\Foundation\Services\CurrencyConverterService $currencyConverter,
         protected StockQuantService $stockQuantService,
-    ) {
-    }
+    ) {}
 
     public function execute(StockMove $stockMove): void
     {
@@ -38,12 +37,12 @@ class ProcessIncomingStockAction
         $costPerUnit = $this->extractCostFromSource($stockMove, $productLine);
 
         $product = $productLine->product;
-        if (!$product instanceof Product) {
+        if (! $product instanceof Product) {
             throw new Exception('Product not found for product line');
         }
 
         $sourceDocument = $stockMove->source;
-        if (!$sourceDocument) {
+        if (! $sourceDocument) {
             throw new Exception('Stock move must have a source document');
         }
 
@@ -96,16 +95,15 @@ class ProcessIncomingStockAction
             return $this->extractCostFromVendorBill($productLine, $sourceDocument);
         }
 
-
         if ($sourceDocument instanceof \Modules\Purchase\Models\PurchaseOrderLine) {
             return $this->extractCostFromPurchaseOrderLine($productLine, $sourceDocument);
         }
 
-        if (!$sourceDocument) {
+        if (! $sourceDocument) {
             throw new Exception('Source document is null');
         }
 
-        throw new Exception('Unable to extract cost from source document type: ' . get_class($sourceDocument));
+        throw new Exception('Unable to extract cost from source document type: '.get_class($sourceDocument));
     }
 
     /**
@@ -119,14 +117,14 @@ class ProcessIncomingStockAction
             ->where('product_id', $productLine->product_id)
             ->first();
 
-        if (!($line instanceof VendorBillLine)) {
+        if (! ($line instanceof VendorBillLine)) {
             throw new Exception("No vendor bill line found for product {$productLine->product_id} in vendor bill {$vendorBill->getKey()}");
         }
 
         $unitPrice = $line->unit_price;
 
         // If tax is non-recoverable, include it in the unit cost
-        if ($line->tax_id && $line->total_line_tax->isPositive() && $line->tax && !$line->tax->is_recoverable) {
+        if ($line->tax_id && $line->total_line_tax->isPositive() && $line->tax && ! $line->tax->is_recoverable) {
             $taxPerUnit = $line->total_line_tax->dividedBy($line->quantity);
             $unitPrice = $unitPrice->plus($taxPerUnit);
         }
@@ -145,7 +143,7 @@ class ProcessIncomingStockAction
         // If tax is non-recoverable, it should increase the valuation cost.
         // Assuming PO Line has access to tax details or calculated tax amount.
         // PO Line has `total_line_tax`. Tax definition? `tax_id`?
-        // Let's assume for now we use unit_price. 
+        // Let's assume for now we use unit_price.
         // Improvement: Handle non-recoverable tax if PO has it.
 
         return $unitPrice;

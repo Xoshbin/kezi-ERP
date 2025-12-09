@@ -18,8 +18,7 @@ class AIHelperContextDTO
         public readonly ?array $formSchema = null,
         public readonly ?array $currentFormData = null,
         public readonly ?string $pageType = null
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new instance from array data

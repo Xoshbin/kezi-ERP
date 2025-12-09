@@ -2,26 +2,24 @@
 
 namespace Modules\Sales\Actions\Sales;
 
-
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Modules\Sales\Models\SalesOrder;
-use Modules\Inventory\Models\StockPicking;
-use Modules\Inventory\Models\StockLocation;
 use Illuminate\Validation\ValidationException;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Sales\Enums\Sales\SalesOrderStatus;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\StockPickingType;
-use Modules\Inventory\Enums\Inventory\StockLocationType;
-use Modules\Inventory\Enums\Inventory\StockPickingState;
-use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
-use Modules\Inventory\Services\Inventory\StockReservationService;
 use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use Modules\Sales\DataTransferObjects\Sales\CreateDeliveryFromSalesOrderDTO;
 use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
+use Modules\Inventory\Enums\Inventory\StockLocationType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Models\StockPicking;
+use Modules\Inventory\Services\Inventory\StockReservationService;
+use Modules\Sales\DataTransferObjects\Sales\CreateDeliveryFromSalesOrderDTO;
+use Modules\Sales\Enums\Sales\SalesOrderStatus;
+use Modules\Sales\Models\SalesOrder;
 
 /**
  * Action for creating delivery orders from sales orders
@@ -30,8 +28,7 @@ class CreateDeliveryFromSalesOrderAction
 {
     public function __construct(
         protected \Modules\Inventory\Actions\Inventory\CreateStockMoveAction $createStockMoveAction,
-    ) {
-    }
+    ) {}
 
     /**
      * Create delivery orders for all deliverable products in a sales order
@@ -44,7 +41,7 @@ class CreateDeliveryFromSalesOrderAction
         $user = $dto->user;
 
         // Validate that the sales order can deliver goods
-        if (!$salesOrder->canDeliverGoods()) {
+        if (! $salesOrder->canDeliverGoods()) {
             throw ValidationException::withMessages([
                 'sales_order' => 'This sales order cannot deliver goods in its current status.',
             ]);
@@ -56,7 +53,7 @@ class CreateDeliveryFromSalesOrderAction
             // Get stock locations with fallback strategy
             $locations = $this->getStockLocations($salesOrder);
 
-            if (!$locations['warehouse'] || !$locations['customer']) {
+            if (! $locations['warehouse'] || ! $locations['customer']) {
                 // Skip stock move creation if locations are not available
                 return $stockMoves;
             }
@@ -128,7 +125,7 @@ class CreateDeliveryFromSalesOrderAction
         $warehouseLocation = $salesOrder->deliveryLocation;
 
         // Fallback to company's main warehouse
-        if (!$warehouseLocation) {
+        if (! $warehouseLocation) {
             $warehouseLocation = StockLocation::where('company_id', $company->id)
                 ->where('type', StockLocationType::Internal)
                 ->first();

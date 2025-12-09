@@ -2,22 +2,21 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use Carbon\Carbon;
 use Brick\Money\Money;
-use Modules\Product\Models\Product;
-use Modules\Accounting\Models\Account;
-use Modules\Inventory\Models\StockMove;
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Inventory\Models\StockQuant;
-use Modules\Product\Enums\Products\ProductType;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Accounting\Models\Account;
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Inventory\Services\Inventory\StockQuantService;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockQuant;
 use Modules\Inventory\Services\Inventory\InventoryReportingService;
 use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use Modules\Inventory\Services\Inventory\StockQuantService;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -112,7 +111,7 @@ function createStockReceiptForTest($testCase, Product $product, float $quantity,
         'move_type' => StockMoveType::Incoming,
         'status' => StockMoveStatus::Done,
         'move_date' => $date,
-        'reference' => 'TEST-RECEIPT-' . $date->format('Ymd'),
+        'reference' => 'TEST-RECEIPT-'.$date->format('Ymd'),
         'source_type' => VendorBill::class,
         'source_id' => $vendorBill->id,
         'created_by_user_id' => $testCase->user->id,

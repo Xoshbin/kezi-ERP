@@ -2,14 +2,14 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use Brick\Money\Money;
 use App\Models\Company;
-use Modules\Foundation\Models\Currency;
-use Modules\Accounting\Enums\Loans\LoanType;
-use Modules\Accounting\Models\LoanAgreement;
-use Modules\Accounting\Enums\Loans\LoanStatus;
-use Modules\Accounting\Enums\Loans\ScheduleMethod;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Accounting\Enums\Loans\LoanStatus;
+use Modules\Accounting\Enums\Loans\LoanType;
+use Modules\Accounting\Enums\Loans\ScheduleMethod;
+use Modules\Accounting\Models\LoanAgreement;
+use Modules\Foundation\Models\Currency;
 
 /**
  * @extends Factory<LoanAgreement>

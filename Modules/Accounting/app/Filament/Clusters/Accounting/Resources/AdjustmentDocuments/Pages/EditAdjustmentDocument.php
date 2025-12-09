@@ -73,9 +73,9 @@ class EditAdjustmentDocument extends EditRecord
                     }
                     $csv = '';
                     foreach ($rows as $row) {
-                        $csv .= implode(',', array_map(fn ($v) => '"' . str_replace('"', '""', (string) $v) . '"', $row)) . "\n";
+                        $csv .= implode(',', array_map(fn ($v) => '"'.str_replace('"', '""', (string) $v).'"', $row))."\n";
                     }
-                    $filename = 'adjustment-' . ($record->reference_number ?: ('ADJ-' . str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))) . '-preview.csv';
+                    $filename = 'adjustment-'.($record->reference_number ?: ('ADJ-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))).'-preview.csv';
 
                     return response()->streamDownload(function () use ($csv) {
                         echo $csv;
@@ -94,7 +94,7 @@ class EditAdjustmentDocument extends EditRecord
                         'preview' => $preview,
                         'adjustment' => $record,
                     ]);
-                    $filename = 'adjustment-' . ($record->reference_number ?: ('ADJ-' . str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))) . '-preview.pdf';
+                    $filename = 'adjustment-'.($record->reference_number ?: ('ADJ-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT))).'-preview.pdf';
 
                     return response()->streamDownload(function () use ($pdf) {
                         echo $pdf->output();

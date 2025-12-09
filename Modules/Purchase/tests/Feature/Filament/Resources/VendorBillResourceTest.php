@@ -2,23 +2,23 @@
 
 use Brick\Money\Money;
 use Filament\Actions\DeleteAction;
-use Modules\Product\Models\Product;
-use function Pest\Livewire\livewire;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Partner;
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Product\Enums\Products\ProductType;
-
-use Modules\Purchase\Services\VendorBillService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ListVendorBills;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Partner;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Services\VendorBillService;
+use Tests\Traits\WithConfiguredCompany;
+
+use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -414,7 +414,7 @@ it('can create and confirm vendor bill following complete workflow', function ()
     ]);
 
     // Act: Create the vendor bill using Filament form
-    $uniqueReference = 'BILL-' . now()->timestamp;
+    $uniqueReference = 'BILL-'.now()->timestamp;
 
     livewire(CreateVendorBill::class)
         ->fillForm([
@@ -516,7 +516,7 @@ it('shows error and keeps draft when storable product lacks inventory account', 
 
     // Create a storable product WITHOUT inventory account on purpose
     // Bypass model-level validation to simulate legacy/bad data
-    $product = Product::withoutEvents(fn() => Product::factory()->create([
+    $product = Product::withoutEvents(fn () => Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => ProductType::Storable,
         'default_inventory_account_id' => null, // This is the key - no inventory account

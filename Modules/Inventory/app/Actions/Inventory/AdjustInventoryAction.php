@@ -3,8 +3,8 @@
 namespace Modules\Inventory\Actions\Inventory;
 
 use Illuminate\Support\Facades\DB;
-use Modules\Inventory\Services\Inventory\InventoryValuationService;
 use Modules\Inventory\DataTransferObjects\Inventory\AdjustInventoryDTO;
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
 
 class AdjustInventoryAction
 {

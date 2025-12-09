@@ -11,7 +11,6 @@ use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
 use Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;
 
-
 class CreatePosition extends CreateRecord
 {
     use Translatable;

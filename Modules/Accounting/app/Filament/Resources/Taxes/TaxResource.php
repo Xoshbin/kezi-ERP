@@ -2,30 +2,28 @@
 
 namespace Modules\Accounting\Filament\Resources\Taxes;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
-use NumberFormatter;
-use Filament\Tables\Table;
 use Filament\Actions\Action;
-use Filament\Schemas\Schema;
-use Filament\Actions\EditAction;
-use Filament\Resources\Resource;
-use Modules\Accounting\Models\Tax;
 use Filament\Actions\BulkActionGroup;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
-use Modules\Accounting\Enums\Accounting\TaxType;
-use App\Filament\Clusters\Settings\SettingsCluster;
-use Modules\Accounting\Enums\Accounting\AccountType;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
+use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
-use Modules\Accounting\Filament\Resources\Taxes\Pages\EditTax;
+use Modules\Accounting\Enums\Accounting\TaxType;
 use Modules\Accounting\Filament\Resources\Taxes\Pages\CreateTax;
+use Modules\Accounting\Filament\Resources\Taxes\Pages\EditTax;
 use Modules\Accounting\Filament\Resources\Taxes\Pages\ListTaxes;
+use Modules\Accounting\Models\Tax;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class TaxResource extends Resource
 {
@@ -70,13 +68,13 @@ class TaxResource extends Resource
                                 TextInput::make('code')->label(__('accounting::account.code'))->required(),
                                 TextInput::make('name')->label(__('accounting::account.name'))->required(),
                                 Select::make('type')->label(__('accounting::account.type'))
-                                    ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()]))
+                                    ->options(collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
                                     ->required(),
                                 Toggle::make('is_deprecated')->label(__('accounting::account.is_deprecated'))->default(false),
                                 Toggle::make('allow_reconciliation')->label(__('accounting::account.allow_reconciliation'))->default(false),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_account'))
-                            ->createOptionAction(fn(Action $a) => $a->name('create-account-option')->modalWidth('lg'))
+                            ->createOptionAction(fn (Action $a) => $a->name('create-account-option')->modalWidth('lg'))
                             ->required(),
 
                         TextInput::make('name')
@@ -89,7 +87,7 @@ class TaxResource extends Resource
                             ->numeric(),
                         Select::make('type')
                             ->label(__('accounting::tax.type'))
-                            ->options(collect(TaxType::cases())->mapWithKeys(fn($c) => [$c->value => $c->label()]))
+                            ->options(collect(TaxType::cases())->mapWithKeys(fn ($c) => [$c->value => $c->label()]))
                             ->required(),
                         Toggle::make('is_active')
                             ->label(__('accounting::tax.is_active'))
@@ -116,7 +114,7 @@ class TaxResource extends Resource
                     ->searchable(),
                 TextColumn::make('rate')
                     ->label(__('accounting::tax.rate'))
-                    ->formatStateUsing(fn($state) => \Modules\Foundation\Support\NumberFormatter::formatPercentage($state / 100))
+                    ->formatStateUsing(fn ($state) => \Modules\Foundation\Support\NumberFormatter::formatPercentage($state / 100))
                     ->sortable(),
                 TextColumn::make('type')
                     ->label(__('accounting::tax.type'))

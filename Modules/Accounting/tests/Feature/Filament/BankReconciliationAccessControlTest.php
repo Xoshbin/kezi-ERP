@@ -1,11 +1,11 @@
 <?php
 
-use App\Models\User;
 use App\Models\Company;
+use App\Models\User;
 use Filament\Facades\Filament;
-use Tests\Traits\WithConfiguredCompany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\Pages\BankReconciliation;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

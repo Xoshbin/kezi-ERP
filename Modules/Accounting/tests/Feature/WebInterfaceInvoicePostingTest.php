@@ -2,15 +2,15 @@
 
 namespace Modules\Accounting\Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\User;
-use Livewire\Livewire;
 use Filament\Facades\Filament;
-use Modules\Sales\Models\Invoice;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
+use Modules\Sales\Models\Invoice;
+use Tests\TestCase;
 
 class WebInterfaceInvoicePostingTest extends TestCase
 {

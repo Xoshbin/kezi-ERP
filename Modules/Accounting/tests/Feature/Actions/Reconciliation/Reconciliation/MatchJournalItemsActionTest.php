@@ -1,24 +1,24 @@
 <?php
 
+use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use App\Models\Company;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Partner;
-use Modules\Foundation\Models\Currency;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Accounting\Models\Reconciliation;
-use Modules\Accounting\Models\JournalEntryLine;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Enums\Reconciliation\ReconciliationType;
 use Modules\Accounting\Actions\Reconciliation\MatchJournalItemsAction;
-use Modules\Accounting\Exceptions\Reconciliation\PartnerMismatchException;
-use Modules\Accounting\Exceptions\Reconciliation\AlreadyReconciledException;
+use Modules\Accounting\Enums\Reconciliation\ReconciliationType;
 use Modules\Accounting\Exceptions\Reconciliation\AccountNotReconcilableException;
+use Modules\Accounting\Exceptions\Reconciliation\AlreadyReconciledException;
+use Modules\Accounting\Exceptions\Reconciliation\PartnerMismatchException;
 use Modules\Accounting\Exceptions\Reconciliation\ReconciliationDisabledException;
 use Modules\Accounting\Exceptions\Reconciliation\UnbalancedReconciliationException;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\JournalEntryLine;
+use Modules\Accounting\Models\Reconciliation;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -105,7 +105,7 @@ test('it throws exception when reconciliation is globally disabled', function ()
     // First, let's verify the journal entry is correctly associated
     expect($journalEntry->company_id)->toBe($company->id);
 
-    $line1 = new JournalEntryLine();
+    $line1 = new JournalEntryLine;
     $line1->journal_entry_id = $journalEntry->id;
     $line1->company_id = $company->id;
     $line1->account_id = $account1->id;
@@ -114,7 +114,7 @@ test('it throws exception when reconciliation is globally disabled', function ()
     $line1->description = 'Test debit line';
     $line1->save();
 
-    $line2 = new JournalEntryLine();
+    $line2 = new JournalEntryLine;
     $line2->journal_entry_id = $journalEntry->id;
     $line2->company_id = $company->id;
     $line2->account_id = $account2->id;
@@ -123,7 +123,7 @@ test('it throws exception when reconciliation is globally disabled', function ()
     $line2->description = 'Test credit line';
     $line2->save();
 
-    expect(fn() => $this->action->execute([$line1->id, $line2->id]))
+    expect(fn () => $this->action->execute([$line1->id, $line2->id]))
         ->toThrow(ReconciliationDisabledException::class);
 });
 
@@ -203,7 +203,7 @@ test('it throws exception when account does not allow reconciliation', function 
 
     $lines = collect([$line1, $line2]);
 
-    expect(fn() => $this->action->execute($lines->pluck('id')->toArray()))
+    expect(fn () => $this->action->execute($lines->pluck('id')->toArray()))
         ->toThrow(AccountNotReconcilableException::class);
 });
 
@@ -270,7 +270,7 @@ test('it throws exception when journal entry lines are unbalanced', function () 
 
     $lines = collect([$line1, $line2]);
 
-    expect(fn() => $this->action->execute($lines->pluck('id')->toArray()))
+    expect(fn () => $this->action->execute($lines->pluck('id')->toArray()))
         ->toThrow(UnbalancedReconciliationException::class);
 });
 
@@ -349,7 +349,7 @@ test('it throws exception when journal entry lines have different partners for A
 
     $lines = collect([$line1, $line2]);
 
-    expect(fn() => $this->action->execute($lines->pluck('id')->toArray(), ReconciliationType::ManualArAp))
+    expect(fn () => $this->action->execute($lines->pluck('id')->toArray(), ReconciliationType::ManualArAp))
         ->toThrow(PartnerMismatchException::class);
 });
 
@@ -418,7 +418,7 @@ test('it throws exception when journal entry lines are already reconciled', func
     ]);
     $existingReconciliation->journalEntryLines()->attach($lines->first()->id);
 
-    expect(fn() => $this->action->execute($lines->pluck('id')->toArray()))
+    expect(fn () => $this->action->execute($lines->pluck('id')->toArray()))
         ->toThrow(AlreadyReconciledException::class);
 });
 

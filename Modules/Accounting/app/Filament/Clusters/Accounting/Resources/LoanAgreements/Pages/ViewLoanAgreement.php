@@ -2,29 +2,26 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages;
 
+use App\Models\Company;
 use App\Models\User;
 use Filament\Actions;
-use App\Models\Company;
-use Filament\Actions\Action;
 use Filament\Facades\Filament;
-use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Forms\Components\DatePicker;
+use Modules\Accounting\Actions\Loans\AccrueLoanInterestAction;
+use Modules\Accounting\Actions\Loans\BuildLoanPaymentJournalEntryAction;
+use Modules\Accounting\Actions\Loans\CalculateEIRAction;
+use Modules\Accounting\Actions\Loans\ComputeLoanScheduleAction;
+use Modules\Accounting\Actions\Loans\ReclassifyLoanCurrentPortionAction;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
 use Modules\Accounting\Models\LoanAgreement;
 use Modules\Foundation\Filament\Actions\DocsAction;
-use Modules\Accounting\Enums\Accounting\AccountType;
-use Modules\Accounting\Enums\Accounting\JournalType;
-use Modules\Accounting\Actions\Loans\CalculateEIRAction;
-use Modules\Accounting\Actions\Loans\AccrueLoanInterestAction;
-use Modules\Accounting\Actions\Loans\ComputeLoanScheduleAction;
-use Modules\Accounting\Actions\Loans\BuildLoanPaymentJournalEntryAction;
-use Modules\Accounting\Actions\Loans\ReclassifyLoanCurrentPortionAction;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
 
 class ViewLoanAgreement extends ViewRecord
 {
@@ -74,14 +71,14 @@ class ViewLoanAgreement extends ViewRecord
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
-                            Hidden::make('company_id')->default(fn() => Filament::getTenant()?->getKey()),
+                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
                             TextInput::make('name')->required(),
                             Select::make('type')->options(
-                                collect(JournalType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()])
+                                collect(JournalType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
                             )->required(),
                             TextInput::make('short_code')->maxLength(16),
                         ])
-                        ->createOptionUsing(fn(array $data) => Journal::query()->create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => Journal::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_journal'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
@@ -101,14 +98,14 @@ class ViewLoanAgreement extends ViewRecord
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
-                            Hidden::make('company_id')->default(fn() => Filament::getTenant()?->getKey()),
+                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
                             TextInput::make('code')->required(),
                             TextInput::make('name')->required(),
                             Select::make('type')->options(
-                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()])
+                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
                             )->required(),
                         ])
-                        ->createOptionUsing(fn(array $data) => Account::query()->create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
@@ -128,14 +125,14 @@ class ViewLoanAgreement extends ViewRecord
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
-                            Hidden::make('company_id')->default(fn() => Filament::getTenant()?->getKey()),
+                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
                             TextInput::make('code')->required(),
                             TextInput::make('name')->required(),
                             Select::make('type')->options(
-                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()])
+                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
                             )->required(),
                         ])
-                        ->createOptionUsing(fn(array $data) => Account::query()->create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
@@ -182,14 +179,14 @@ class ViewLoanAgreement extends ViewRecord
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
-                            Hidden::make('company_id')->default(fn() => Filament::getTenant()?->getKey()),
+                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
                             TextInput::make('name')->required(),
                             Select::make('type')->options(
-                                collect(JournalType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()])
+                                collect(JournalType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
                             )->required(),
                             TextInput::make('short_code')->maxLength(16),
                         ])
-                        ->createOptionUsing(fn(array $data) => Journal::query()->create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => Journal::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_journal'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
@@ -209,14 +206,14 @@ class ViewLoanAgreement extends ViewRecord
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
-                            Hidden::make('company_id')->default(fn() => Filament::getTenant()?->getKey()),
+                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
                             TextInput::make('code')->required(),
                             TextInput::make('name')->required(),
                             Select::make('type')->options(
-                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()])
+                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
                             )->required(),
                         ])
-                        ->createOptionUsing(fn(array $data) => Account::query()->create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
@@ -236,14 +233,14 @@ class ViewLoanAgreement extends ViewRecord
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
-                            Hidden::make('company_id')->default(fn() => Filament::getTenant()?->getKey()),
+                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
                             TextInput::make('code')->required(),
                             TextInput::make('name')->required(),
                             Select::make('type')->options(
-                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()])
+                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
                             )->required(),
                         ])
-                        ->createOptionUsing(fn(array $data) => Account::query()->create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
@@ -263,14 +260,14 @@ class ViewLoanAgreement extends ViewRecord
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
-                            Hidden::make('company_id')->default(fn() => Filament::getTenant()?->getKey()),
+                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
                             TextInput::make('code')->required(),
                             TextInput::make('name')->required(),
                             Select::make('type')->options(
-                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()])
+                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
                             )->required(),
                         ])
-                        ->createOptionUsing(fn(array $data) => Account::query()->create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
@@ -318,14 +315,14 @@ class ViewLoanAgreement extends ViewRecord
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
-                            Hidden::make('company_id')->default(fn() => Filament::getTenant()?->getKey()),
+                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
                             TextInput::make('name')->required(),
                             Select::make('type')->options(
-                                collect(JournalType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()])
+                                collect(JournalType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
                             )->required(),
                             TextInput::make('short_code')->maxLength(16),
                         ])
-                        ->createOptionUsing(fn(array $data) => Journal::query()->create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => Journal::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_journal'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
@@ -345,14 +342,14 @@ class ViewLoanAgreement extends ViewRecord
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
-                            Hidden::make('company_id')->default(fn() => Filament::getTenant()?->getKey()),
+                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
                             TextInput::make('code')->required(),
                             TextInput::make('name')->required(),
                             Select::make('type')->options(
-                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()])
+                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
                             )->required(),
                         ])
-                        ->createOptionUsing(fn(array $data) => Account::query()->create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
@@ -372,14 +369,14 @@ class ViewLoanAgreement extends ViewRecord
                             return $q->pluck('name', 'id');
                         })
                         ->createOptionForm([
-                            Hidden::make('company_id')->default(fn() => Filament::getTenant()?->getKey()),
+                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
                             TextInput::make('code')->required(),
                             TextInput::make('name')->required(),
                             Select::make('type')->options(
-                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn($t) => [$t->value => $t->label()])
+                                collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
                             )->required(),
                         ])
-                        ->createOptionUsing(fn(array $data) => Account::query()->create($data)->getKey())
+                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
                         ->createOptionModalHeading(__('common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');

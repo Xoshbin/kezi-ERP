@@ -5,7 +5,6 @@ namespace Modules\HR\Policies;
 use App\Models\User;
 use Modules\HR\Models\Payroll;
 
-
 class PayrollPolicy
 {
     /**

@@ -9,6 +9,5 @@ class AIAssistantResponseDTO
         public readonly string $response,
         public readonly ?string $error = null,
         public readonly array $metadata = []
-    ) {
-    }
+    ) {}
 }

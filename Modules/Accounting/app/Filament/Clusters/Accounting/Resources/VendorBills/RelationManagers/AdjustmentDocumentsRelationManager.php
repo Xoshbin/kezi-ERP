@@ -2,28 +2,28 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers;
 
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Forms\Components\Select;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Purchase\Models\VendorBill;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
-use Filament\Tables\Filters\SelectFilter;
-use Modules\Inventory\Models\AdjustmentDocument;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
-use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
 use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Purchase\Models\VendorBill;
 
 class AdjustmentDocumentsRelationManager extends RelationManager
 {
@@ -115,9 +115,9 @@ class AdjustmentDocumentsRelationManager extends RelationManager
 
                 TextColumn::make('type')
                     ->label(__('vendor_bill.adjustment_documents_relation_manager.type'))
-                    ->formatStateUsing(fn(AdjustmentDocumentType $state): string => $state->label())
+                    ->formatStateUsing(fn (AdjustmentDocumentType $state): string => $state->label())
                     ->badge()
-                    ->color(fn(AdjustmentDocumentType $state): string => match ($state) {
+                    ->color(fn (AdjustmentDocumentType $state): string => match ($state) {
                         AdjustmentDocumentType::CreditNote => 'success',
                         AdjustmentDocumentType::DebitNote => 'warning',
                         AdjustmentDocumentType::Miscellaneous => 'info',
@@ -138,9 +138,9 @@ class AdjustmentDocumentsRelationManager extends RelationManager
 
                 TextColumn::make('status')
                     ->label(__('vendor_bill.adjustment_documents_relation_manager.status'))
-                    ->formatStateUsing(fn(AdjustmentDocumentStatus $state): string => $state->label())
+                    ->formatStateUsing(fn (AdjustmentDocumentStatus $state): string => $state->label())
                     ->badge()
-                    ->color(fn(AdjustmentDocumentStatus $state): string => match ($state) {
+                    ->color(fn (AdjustmentDocumentStatus $state): string => match ($state) {
                         AdjustmentDocumentStatus::Draft => 'gray',
                         AdjustmentDocumentStatus::Posted => 'success',
                         AdjustmentDocumentStatus::Cancelled => 'danger',
@@ -204,14 +204,14 @@ class AdjustmentDocumentsRelationManager extends RelationManager
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
-                    ->visible(fn(AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
+                    ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
                 DeleteAction::make()
-                    ->visible(fn(AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
+                    ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->visible(fn(): bool => true), // Add custom logic if needed
+                        ->visible(fn (): bool => true), // Add custom logic if needed
                 ]),
             ])
             ->defaultSort('date', 'desc');

@@ -5,15 +5,15 @@ namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingRe
 use DB;
 use Exception;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\Placeholder;
-use Modules\Inventory\Models\StockPicking;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
 use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Models\StockPicking;
 
 class CreateBackorderAction extends Action
 {
@@ -51,18 +51,20 @@ class CreateBackorderAction extends Action
                             Placeholder::make('product_info')
                                 ->label(__('product.label'))
                                 ->content(function ($get, $state) {
-                                    if (!$state || !isset($state['product_name'])) {
+                                    if (! $state || ! isset($state['product_name'])) {
                                         return '—';
                                     }
+
                                     return $state['product_name'];
                                 }),
 
                             Placeholder::make('planned_quantity')
                                 ->label(__('Planned Quantity'))
                                 ->content(function ($get, $state) {
-                                    if (!$state || !isset($state['planned_quantity'])) {
+                                    if (! $state || ! isset($state['planned_quantity'])) {
                                         return '—';
                                     }
+
                                     return number_format($state['planned_quantity'], 2);
                                 }),
 
@@ -80,6 +82,7 @@ class CreateBackorderAction extends Action
                                     $planned = $state['planned_quantity'] ?? 0;
                                     $fulfilled = $get('fulfilled_quantity') ?? 0;
                                     $backorder = max(0, $planned - $fulfilled);
+
                                     return number_format($backorder, 2);
                                 }),
                         ])
@@ -114,14 +117,14 @@ class CreateBackorderAction extends Action
                     'state' => StockPickingState::Draft,
                     'partner_id' => $picking->partner_id,
                     'scheduled_date' => $picking->scheduled_date,
-                    'reference' => $picking->reference . '-BO',
-                    'origin' => 'Backorder from ' . $picking->reference,
+                    'reference' => $picking->reference.'-BO',
+                    'origin' => 'Backorder from '.$picking->reference,
                 ]);
 
                 // Process each move
                 foreach ($data['moves'] as $moveData) {
                     $originalMove = $picking->stockMoves()->find($moveData['move_id']);
-                    if (!$originalMove) {
+                    if (! $originalMove) {
                         continue;
                     }
 
@@ -153,7 +156,7 @@ class CreateBackorderAction extends Action
                 }
 
                 // If no backorder items, delete the empty backorder
-                if (!$hasBackorderItems) {
+                if (! $hasBackorderItems) {
                     $backorder->delete();
 
                     Notification::make()

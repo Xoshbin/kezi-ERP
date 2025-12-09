@@ -2,14 +2,12 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use Modules\Product\Models\Product;
-use Modules\Inventory\Models\StockMove;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Services\Inventory\ProductCostAnalysisService;
 use Modules\Inventory\DataTransferObjects\Inventory\CostPreviewResult;
 use Modules\Inventory\DataTransferObjects\Inventory\CostValidationResult;
-
+use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
+use Modules\Inventory\Models\StockMove;
+use Modules\Product\Models\Product;
 
 /**
  * Service for validating cost availability and providing cost previews
@@ -25,12 +23,6 @@ class CostValidationService
 
     /**
      * Validate if cost can be determined for a product and stock move
-     *
-     * @param Product $product
-     * @param StockMoveType $moveType
-     * @param StockMove|null $stockMove
-     * @param bool $allowFallbacks
-     * @return CostValidationResult
      */
     public function validateCostAvailability(
         Product $product,
@@ -45,7 +37,7 @@ class CostValidationService
         }
 
         // Create a temporary stock move for validation if none provided
-        if (!$stockMove) {
+        if (! $stockMove) {
             $stockMove = new StockMove([
                 'move_type' => $moveType,
                 'source_type' => null,
@@ -75,13 +67,6 @@ class CostValidationService
 
     /**
      * Get cost preview for a product and quantity
-     *
-     * @param Product $product
-     * @param float $quantity
-     * @param StockMoveType $moveType
-     * @param StockMove|null $stockMove
-     * @param bool $allowFallbacks
-     * @return CostPreviewResult
      */
     public function getCostPreview(
         Product $product,
@@ -93,7 +78,7 @@ class CostValidationService
 
         $validation = $this->validateCostAvailability($product, $moveType, $stockMove, $allowFallbacks);
 
-        if (!$validation->isValid()) {
+        if (! $validation->isValid()) {
             return CostPreviewResult::invalid(
                 $validation->getMessage(),
                 $validation->getSuggestedActions()
@@ -101,7 +86,7 @@ class CostValidationService
         }
 
         $costResult = $validation->getCostResult();
-        if (!$costResult) {
+        if (! $costResult) {
             return CostPreviewResult::invalid('No cost result available');
         }
 
@@ -118,9 +103,6 @@ class CostValidationService
 
     /**
      * Check if a product has any cost information available
-     *
-     * @param Product $product
-     * @return bool
      */
     public function hasAnyCostInformation(Product $product): bool
     {
@@ -144,14 +126,12 @@ class CostValidationService
 
     /**
      * Get suggested actions for improving cost availability
-     *
-     * @param Product $product
-     * @return array
      */
     public function getSuggestedActions(Product $product): array
     {
         // Use the new analysis service for context-aware suggestions
         $analysisService = app(\Modules\Inventory\Services\Inventory\ProductCostAnalysisService::class);
+
         return $analysisService->getContextualCostSuggestions($product);
     }
 }

@@ -2,22 +2,22 @@
 
 namespace Modules\Foundation\Filament\Resources\PdfSettings;
 
-use BackedEnum;
-use App\Models\Company;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Facades\Filament;
-use Filament\Actions\EditAction;
-use Filament\Resources\Resource;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\KeyValue;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Schemas\Components\Section;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Forms\Components\FileUpload;
-use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Clusters\Settings\SettingsCluster;
+use App\Models\Company;
+use BackedEnum;
+use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\Select;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Modules\Foundation\Filament\Resources\PdfSettings\Pages\EditPdfSettings;
 use Modules\Foundation\Filament\Resources\PdfSettings\Pages\ListPdfSettings;
 
@@ -119,7 +119,7 @@ class PdfSettingsResource extends Resource
                 TextColumn::make('pdf_template')
                     ->label(__('foundation::pdf_settings.pdf_template'))
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'classic' => 'primary',
                         'modern' => 'success',
                         'minimal' => 'warning',

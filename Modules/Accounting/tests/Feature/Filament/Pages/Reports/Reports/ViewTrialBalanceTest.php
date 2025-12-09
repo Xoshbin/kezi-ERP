@@ -3,15 +3,14 @@
 namespace Modules\Accounting\Tests\Feature\Filament\Pages\Reports;
 
 use Carbon\Carbon;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports\ViewTrialBalance;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Journal;
-use Tests\Traits\WithConfiguredCompany;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Accounting\Models\JournalEntryLine;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Enums\Accounting\AccountType;
-use Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports\ViewTrialBalance;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

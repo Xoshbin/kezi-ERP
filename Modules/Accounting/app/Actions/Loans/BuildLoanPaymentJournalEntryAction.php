@@ -2,16 +2,16 @@
 
 namespace Modules\Accounting\Actions\Loans;
 
+use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
-use Modules\Accounting\Models\LoanAgreement;
-use Modules\Accounting\Models\LoanScheduleEntry;
-use App\Models\User;
-use RuntimeException;
-use Modules\Accounting\Enums\Loans\LoanType;
-use Modules\Accounting\Models\JournalEntry;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Modules\Accounting\Enums\Loans\LoanType;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\LoanAgreement;
+use Modules\Accounting\Models\LoanScheduleEntry;
+use RuntimeException;
 
 class BuildLoanPaymentJournalEntryAction
 {
@@ -48,7 +48,7 @@ class BuildLoanPaymentJournalEntryAction
                     account_id: $accruedInterestAccountId,
                     debit: $int,
                     credit: $zero,
-                    description: 'Settle accrued interest for loan #' . $loan->id . ' month ' . $forMonthSequence,
+                    description: 'Settle accrued interest for loan #'.$loan->id.' month '.$forMonthSequence,
                     partner_id: $loan->partner_id,
                     analytic_account_id: null,
                 );
@@ -101,7 +101,7 @@ class BuildLoanPaymentJournalEntryAction
                 journal_id: $journalId,
                 currency_id: $loan->currency_id,
                 entry_date: $entry->due_date,
-                reference: 'LOAN-PAY/' . $loan->id . '/' . $forMonthSequence,
+                reference: 'LOAN-PAY/'.$loan->id.'/'.$forMonthSequence,
                 description: 'Loan repayment',
                 created_by_user_id: $user->id,
                 is_posted: true,

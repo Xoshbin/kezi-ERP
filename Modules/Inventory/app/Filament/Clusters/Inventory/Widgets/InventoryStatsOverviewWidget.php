@@ -2,18 +2,18 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Widgets;
 
-use Carbon\Carbon;
 use Brick\Money\Money;
-use Illuminate\Support\Facades\Cache;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Facades\Cache;
 use Modules\Inventory\Services\Inventory\InventoryReportingService;
 
 class InventoryStatsOverviewWidget extends BaseWidget
 {
     protected static ?int $sort = 1;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected function getReportingService(): InventoryReportingService
     {
@@ -23,7 +23,7 @@ class InventoryStatsOverviewWidget extends BaseWidget
     protected function getStats(): array
     {
         $filters = $this->getFilters();
-        $cacheKey = 'inventory_stats_' . md5(serialize($filters));
+        $cacheKey = 'inventory_stats_'.md5(serialize($filters));
 
         return Cache::remember($cacheKey, 300, function () use ($filters) {
             $asOfDate = Carbon::parse($filters['date_to'] ?? now());
@@ -82,7 +82,7 @@ class InventoryStatsOverviewWidget extends BaseWidget
             default => 'heroicon-m-arrow-trending-down'
         };
 
-        return Stat::make(__('inventory::inventory_dashboard.stats.turnover_ratio'), number_format($turnoverRatio, 2) . 'x')
+        return Stat::make(__('inventory::inventory_dashboard.stats.turnover_ratio'), number_format($turnoverRatio, 2).'x')
             ->description(__('inventory::inventory_dashboard.stats.turnover_description'))
             ->descriptionIcon($icon)
             ->color($color);
@@ -120,6 +120,7 @@ class InventoryStatsOverviewWidget extends BaseWidget
             $valuation = $reportingService->valuationAt($date, $this->getFilters());
             $data[] = $valuation['total_value']->getAmount()->toFloat();
         }
+
         return $data;
     }
 

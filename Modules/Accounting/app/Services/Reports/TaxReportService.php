@@ -2,17 +2,16 @@
 
 namespace Modules\Accounting\Services\Reports;
 
-
-use Exception;
-use Carbon\Carbon;
-use Brick\Money\Money;
-use Brick\Math\RoundingMode;
-use Illuminate\Support\Collection;
-use Modules\Accounting\Models\Tax;
 use App\Models\Company;
-use Modules\Accounting\Models\JournalEntry;
+use Brick\Math\RoundingMode;
+use Brick\Money\Money;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Support\Collection;
 use Modules\Accounting\DataTransferObjects\Reports\TaxReportDTO;
 use Modules\Accounting\DataTransferObjects\Reports\TaxReportLineDTO;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\Tax;
 
 class TaxReportService
 {
@@ -29,7 +28,7 @@ class TaxReportService
 
         // Initialize collections for aggregated data
         /** @var Collection<string, array<string, mixed>> $taxData */
-        $taxData = new Collection();
+        $taxData = new Collection;
 
         // Get all posted journal entries in the period from sale and purchase journals
         $journalEntries = JournalEntry::query()
@@ -37,7 +36,7 @@ class TaxReportService
             ->where('company_id', $company->id)
             ->where('is_posted', true)
             ->whereBetween('entry_date', [$startDate, $endDate])
-            ->whereHas('journal', fn($q) => $q->whereIn('type', ['sale', 'purchase']))
+            ->whereHas('journal', fn ($q) => $q->whereIn('type', ['sale', 'purchase']))
             ->get();
 
         // Process each journal entry to extract tax information
@@ -63,7 +62,7 @@ class TaxReportService
 
         foreach ($taxLines as $taxLine) {
             // Find the tax that corresponds to this account
-            $tax = $taxes->first(fn($t) => $t->tax_account_id === $taxLine->account_id);
+            $tax = $taxes->first(fn ($t) => $t->tax_account_id === $taxLine->account_id);
 
             if (! $tax) {
                 continue;
@@ -107,8 +106,8 @@ class TaxReportService
     private function buildReportFromTaxData(Collection $taxData, string $currency): TaxReportDTO
     {
         $zero = Money::zero($currency);
-        $outputTaxLines = new Collection();
-        $inputTaxLines = new Collection();
+        $outputTaxLines = new Collection;
+        $inputTaxLines = new Collection;
 
         foreach ($taxData as $data) {
             $tax = $data['tax'];
@@ -133,12 +132,12 @@ class TaxReportService
 
         // Calculate totals
         $totalOutputTax = $outputTaxLines->reduce(
-            fn(Money $carry, TaxReportLineDTO $line) => $carry->plus($line->taxAmount),
+            fn (Money $carry, TaxReportLineDTO $line) => $carry->plus($line->taxAmount),
             $zero
         );
 
         $totalInputTax = $inputTaxLines->reduce(
-            fn(Money $carry, TaxReportLineDTO $line) => $carry->plus($line->taxAmount),
+            fn (Money $carry, TaxReportLineDTO $line) => $carry->plus($line->taxAmount),
             $zero
         );
 

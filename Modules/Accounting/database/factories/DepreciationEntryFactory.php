@@ -3,10 +3,10 @@
 namespace Modules\Accounting\Database\Factories;
 
 use Brick\Money\Money;
-use Modules\Accounting\Models\Asset;
-use Modules\Accounting\Models\DepreciationEntry;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Accounting\Enums\Assets\DepreciationEntryStatus;
+use Modules\Accounting\Models\Asset;
+use Modules\Accounting\Models\DepreciationEntry;
 
 /**
  * @extends Factory<DepreciationEntry>

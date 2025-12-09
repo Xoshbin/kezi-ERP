@@ -2,24 +2,23 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use Brick\Money\Money;
 use App\Models\Company;
-use Modules\Product\Models\Product;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Partner;
-use Modules\Inventory\Models\StockMove;
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Inventory\Models\StockMoveValuation;
-use Modules\Purchase\Services\VendorBillService;
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Models\Partner;
 use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveValuation;
+use Modules\Product\Models\Product;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillLineAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Services\VendorBillService;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

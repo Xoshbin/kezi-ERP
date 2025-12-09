@@ -3,18 +3,17 @@
 namespace Modules\Purchase\Tests\Feature\Purchases;
 
 use Brick\Money\Money;
-use Modules\Product\Models\Product;
-use Modules\Accounting\Models\Account;
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Purchase\Models\PurchaseOrder;
-use Illuminate\Validation\ValidationException;
-use Modules\Product\Enums\Products\ProductType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
-use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Illuminate\Validation\ValidationException;
+use Modules\Accounting\Models\Account;
+use Modules\Product\Models\Product;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
+use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Models\VendorBill;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -142,7 +141,7 @@ it('validates that purchase order exists', function () {
         line_quantities: []
     );
 
-    expect(fn() => app(CreateVendorBillFromPurchaseOrderAction::class)->execute($dto))
+    expect(fn () => app(CreateVendorBillFromPurchaseOrderAction::class)->execute($dto))
         ->toThrow(ValidationException::class);
 });
 
@@ -168,7 +167,7 @@ it('validates that purchase order can create bills', function () {
         line_quantities: []
     );
 
-    expect(fn() => app(CreateVendorBillFromPurchaseOrderAction::class)->execute($dto))
+    expect(fn () => app(CreateVendorBillFromPurchaseOrderAction::class)->execute($dto))
         ->toThrow(ValidationException::class);
 });
 
@@ -212,7 +211,7 @@ it('validates that products have expense accounts', function () {
         line_quantities: []
     );
 
-    expect(fn() => app(CreateVendorBillFromPurchaseOrderAction::class)->execute($dto))
+    expect(fn () => app(CreateVendorBillFromPurchaseOrderAction::class)->execute($dto))
         ->toThrow(ValidationException::class);
 });
 

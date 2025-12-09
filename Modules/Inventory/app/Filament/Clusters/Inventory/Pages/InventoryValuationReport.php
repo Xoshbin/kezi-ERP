@@ -2,24 +2,24 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Pages;
 
-use Exception;
 use BackedEnum;
 use Carbon\Carbon;
-use Filament\Pages\Page;
+use Exception;
 use Filament\Actions\Action;
-use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
-use Modules\Product\Models\Product;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
+use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Schemas\Schema;
 use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
 use Modules\Inventory\Services\Inventory\InventoryCSVExportService;
 use Modules\Inventory\Services\Inventory\InventoryReportingService;
+use Modules\Product\Models\Product;
 
 class InventoryValuationReport extends Page implements HasForms
 {
@@ -48,6 +48,7 @@ class InventoryValuationReport extends Page implements HasForms
     {
         try {
             Carbon::parse($date);
+
             return true;
         } catch (Exception) {
             return false;
@@ -109,13 +110,13 @@ class InventoryValuationReport extends Page implements HasForms
                             ->searchable()
                             ->preload()
                             ->live()
-                            ->afterStateUpdated(fn() => $this->generateReport()),
+                            ->afterStateUpdated(fn () => $this->generateReport()),
 
                         Toggle::make('include_reconciliation')
                             ->label(__('inventory::inventory_reports.valuation.filters.include_reconciliation'))
                             ->default(true)
                             ->live()
-                            ->afterStateUpdated(fn() => $this->generateReport()),
+                            ->afterStateUpdated(fn () => $this->generateReport()),
                     ])
                     ->columns(3),
             ])
@@ -152,7 +153,7 @@ class InventoryValuationReport extends Page implements HasForms
 
     public function getProductDetails(): array
     {
-        if (!$this->reportData || empty($this->reportData['by_product'])) {
+        if (! $this->reportData || empty($this->reportData['by_product'])) {
             return [];
         }
 
@@ -182,17 +183,18 @@ class InventoryValuationReport extends Page implements HasForms
             Action::make('export')
                 ->label(__('inventory::inventory_reports.valuation.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
-                ->disabled(fn() => !$this->reportData)
+                ->disabled(fn () => ! $this->reportData)
                 ->requiresConfirmation()
                 ->modalHeading(__('inventory::inventory_reports.valuation.export_confirmation'))
                 ->modalDescription(__('inventory::inventory_reports.valuation.export_description'))
                 ->modalSubmitActionLabel(__('inventory::inventory_reports.valuation.actions.export'))
                 ->action(function () {
-                    if (!$this->reportData) {
+                    if (! $this->reportData) {
                         Notification::make()
                             ->title(__('inventory::inventory_reports.valuation.no_data_to_export'))
                             ->danger()
                             ->send();
+
                         return;
                     }
 
@@ -202,7 +204,7 @@ class InventoryValuationReport extends Page implements HasForms
                             'include_metadata' => true,
                         ]);
 
-                        $filename = 'inventory-valuation-' . now()->format('Y-m-d-H-i-s') . '.csv';
+                        $filename = 'inventory-valuation-'.now()->format('Y-m-d-H-i-s').'.csv';
 
                         Notification::make()
                             ->title(__('inventory::inventory_reports.valuation.export_started'))

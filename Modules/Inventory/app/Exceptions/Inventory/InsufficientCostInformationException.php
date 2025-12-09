@@ -3,9 +3,9 @@
 namespace Modules\Inventory\Exceptions\Inventory;
 
 use Exception;
-use Modules\Product\Models\Product;
-use Modules\Inventory\Services\Inventory\UserFriendlyErrorService;
 use Modules\Inventory\Services\Inventory\ProductCostAnalysisService;
+use Modules\Inventory\Services\Inventory\UserFriendlyErrorService;
+use Modules\Product\Models\Product;
 
 /**
  * Exception thrown when insufficient cost information is available for inventory operations
@@ -25,12 +25,12 @@ class InsufficientCostInformationException extends Exception
         $analysisService = app(ProductCostAnalysisService::class);
         $defaultMessage = $analysisService->getCostStatusExplanation($product);
 
-        if (!empty($this->attemptedSources)) {
-            $defaultMessage .= " Attempted sources: " . implode(', ', $this->attemptedSources) . ".";
+        if (! empty($this->attemptedSources)) {
+            $defaultMessage .= ' Attempted sources: '.implode(', ', $this->attemptedSources).'.';
         }
 
-        if (!empty($this->suggestedActions)) {
-            $defaultMessage .= " Suggested actions: " . implode(', ', $this->suggestedActions) . ".";
+        if (! empty($this->suggestedActions)) {
+            $defaultMessage .= ' Suggested actions: '.implode(', ', $this->suggestedActions).'.';
         }
 
         parent::__construct($message ?? $defaultMessage);
@@ -41,12 +41,13 @@ class InsufficientCostInformationException extends Exception
      */
     public function getSuggestedActions(): array
     {
-        if (!empty($this->suggestedActions)) {
+        if (! empty($this->suggestedActions)) {
             return $this->suggestedActions;
         }
 
         // Use the new analysis service for context-aware suggestions
         $analysisService = app(ProductCostAnalysisService::class);
+
         return $analysisService->getContextualCostSuggestions($this->product);
     }
 
@@ -72,6 +73,7 @@ class InsufficientCostInformationException extends Exception
     public function getUserFriendlyMessage(): string
     {
         $errorService = app(UserFriendlyErrorService::class);
+
         return $errorService->getNotificationMessage($this);
     }
 
@@ -81,6 +83,7 @@ class InsufficientCostInformationException extends Exception
     public function getUserFriendlyDetails(): array
     {
         $errorService = app(UserFriendlyErrorService::class);
+
         return $errorService->getDetailedErrorInfo($this);
     }
 
@@ -90,6 +93,7 @@ class InsufficientCostInformationException extends Exception
     public function getUserFriendlyErrorData(): array
     {
         $errorService = app(UserFriendlyErrorService::class);
+
         return $errorService->convertCostInformationException($this);
     }
 }

@@ -7,7 +7,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-use Modules\Accounting\Console\Commands\ProcessDepreciations;
 use Illuminate\Support\Facades\Schedule;
+use Modules\Accounting\Console\Commands\ProcessDepreciations;
 
 Schedule::command(ProcessDepreciations::class)->daily();

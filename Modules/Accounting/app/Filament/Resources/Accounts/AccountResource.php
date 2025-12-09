@@ -2,26 +2,26 @@
 
 namespace Modules\Accounting\Filament\Resources\Accounts;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Actions\EditAction;
-use Filament\Resources\Resource;
 use Filament\Actions\BulkActionGroup;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
 use Filament\Actions\DeleteBulkAction;
-use Modules\Accounting\Models\Account;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
-use App\Filament\Clusters\Settings\SettingsCluster;
+use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\Accounting\Filament\Resources\Accounts\Pages\CreateAccount;
 use Modules\Accounting\Filament\Resources\Accounts\Pages\EditAccount;
 use Modules\Accounting\Filament\Resources\Accounts\Pages\ListAccounts;
-use Modules\Accounting\Filament\Resources\Accounts\Pages\CreateAccount;
 use Modules\Accounting\Filament\Resources\Accounts\RelationManagers\JournalEntryLinesRelationManager;
+use Modules\Accounting\Models\Account;
 
 class AccountResource extends Resource
 {
@@ -65,7 +65,7 @@ class AccountResource extends Resource
                             ->required()
                             ->options(
                                 collect(\Modules\Accounting\Enums\Accounting\AccountType::cases())
-                                    ->mapWithKeys(fn(\Modules\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
+                                    ->mapWithKeys(fn (\Modules\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
                             )
                             ->searchable(),
                         Toggle::make('is_deprecated')
@@ -93,7 +93,7 @@ class AccountResource extends Resource
                     ->searchable(),
                 TextColumn::make('type')
                     ->label(__('accounting::account.type'))
-                    ->formatStateUsing(fn($state) => $state instanceof \Modules\Accounting\Enums\Accounting\AccountType ? $state->label() : $state)
+                    ->formatStateUsing(fn ($state) => $state instanceof \Modules\Accounting\Enums\Accounting\AccountType ? $state->label() : $state)
                     ->searchable(),
                 IconColumn::make('is_deprecated')
                     ->label(__('accounting::account.is_deprecated'))

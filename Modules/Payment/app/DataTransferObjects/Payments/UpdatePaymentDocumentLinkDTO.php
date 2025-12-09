@@ -10,6 +10,5 @@ class UpdatePaymentDocumentLinkDTO
         public readonly string $document_type, // 'invoice' or 'vendor_bill'
         public readonly int $document_id,
         public readonly Money $amount_applied,
-    ) {
-    }
+    ) {}
 }

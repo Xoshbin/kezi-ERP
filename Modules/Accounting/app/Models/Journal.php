@@ -2,23 +2,20 @@
 
 namespace Modules\Accounting\Models;
 
-use Eloquent;
 use App\Models\Company;
-use Illuminate\Support\Carbon;
-
-use Modules\Accounting\Models\Account;
+use Eloquent;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Observers\JournalObserver;
 use Modules\Foundation\Models\Currency;
 use Spatie\Translatable\HasTranslations;
-use Illuminate\Database\Eloquent\Builder;
-use Modules\Accounting\Models\JournalEntry;
-use Illuminate\Database\Eloquent\Collection;
-use Modules\Accounting\Observers\JournalObserver;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Modules\Accounting\Enums\Accounting\JournalType;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 /**
  * @property int $id

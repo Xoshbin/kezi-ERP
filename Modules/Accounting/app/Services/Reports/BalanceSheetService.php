@@ -2,17 +2,16 @@
 
 namespace Modules\Accounting\Services\Reports;
 
-use Carbon\Carbon;
+use App\Models\Company;
 use Brick\Money\Money;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Modules\Accounting\Models\Account;
-use App\Models\Company;
-use Modules\Accounting\Enums\Accounting\AccountType;
-use Modules\Accounting\Enums\Accounting\JournalEntryState;
-use Modules\Accounting\DataTransferObjects\Reports\ReportLineDTO;
 use Modules\Accounting\DataTransferObjects\Reports\BalanceSheetDTO;
+use Modules\Accounting\DataTransferObjects\Reports\ReportLineDTO;
+use Modules\Accounting\Enums\Accounting\JournalEntryState;
 use Modules\Accounting\Exceptions\BalanceSheetNotBalancedException;
+use Modules\Accounting\Models\Account;
 
 class BalanceSheetService
 {
@@ -80,7 +79,7 @@ class BalanceSheetService
             ->join('accounts', 'journal_entry_lines.account_id', '=', 'accounts.id')
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
             ->where('accounts.company_id', $company->id)
-            ->whereIn('accounts.type', array_map(fn($type) => $type->value, \Modules\Accounting\Enums\Accounting\AccountType::balanceSheetTypes()))
+            ->whereIn('accounts.type', array_map(fn ($type) => $type->value, \Modules\Accounting\Enums\Accounting\AccountType::balanceSheetTypes()))
             ->where('journal_entries.state', JournalEntryState::Posted->value)
             ->where('journal_entries.entry_date', '<=', $asOfDate->toDateString())
             ->groupBy('accounts.id', 'accounts.code', 'accounts.name', 'accounts.type')
@@ -159,13 +158,13 @@ class BalanceSheetService
     }
 
     /**
-     * @param array<\Modules\Accounting\Enums\Accounting\AccountType> $types
-     * @param \Illuminate\Database\Eloquent\Collection<int, Account> $accounts
+     * @param  array<\Modules\Accounting\Enums\Accounting\AccountType>  $types
+     * @param  \Illuminate\Database\Eloquent\Collection<int, Account>  $accounts
      * @return Collection<int, ReportLineDTO>
      */
     private function mapBalancesToReportLines(Collection $balances, array $types, string $currency, Collection $accounts, bool $negate = false): Collection
     {
-        return $balances->whereIn('account_type', array_map(fn($type) => $type->value, $types))
+        return $balances->whereIn('account_type', array_map(fn ($type) => $type->value, $types))
             ->map(function ($row) use ($currency, $accounts, $negate) {
                 $balance = Money::ofMinor($row->balance, $currency);
                 $account = $accounts->get($row->account_id);
@@ -182,12 +181,12 @@ class BalanceSheetService
     }
 
     /**
-     * @param Collection<int, ReportLineDTO> $lines
+     * @param  Collection<int, ReportLineDTO>  $lines
      */
     private function sumLines(Collection $lines, Money $zero): Money
     {
         return $lines->reduce(
-            fn(Money $carry, ReportLineDTO $line) => $carry->plus($line->balance),
+            fn (Money $carry, ReportLineDTO $line) => $carry->plus($line->balance),
             $zero
         );
     }

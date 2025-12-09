@@ -1,11 +1,11 @@
 <?php
 
 use Brick\Money\Money;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Models\LoanAgreement;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Enums\Loans\ScheduleMethod;
 use Modules\Accounting\Actions\Loans\ComputeLoanScheduleAction;
+use Modules\Accounting\Enums\Loans\ScheduleMethod;
+use Modules\Accounting\Models\LoanAgreement;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

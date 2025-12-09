@@ -26,7 +26,7 @@ class EditNumberingSettings extends EditRecord
 
             Notification::make()
                 ->title(__('foundation::numbering.settings.cannot_change_title'))
-                ->body(__('foundation::numbering.settings.cannot_change_message') . ' (' . implode(', ', $errors) . ')')
+                ->body(__('foundation::numbering.settings.cannot_change_message').' ('.implode(', ', $errors).')')
                 ->danger()
                 ->send();
 

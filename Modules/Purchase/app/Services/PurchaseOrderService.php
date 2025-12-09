@@ -2,16 +2,14 @@
 
 namespace Modules\Purchase\Services;
 
-
 use App\Models\User;
-use InvalidArgumentException;
-use Illuminate\Support\Facades\DB;
-
-use Modules\Purchase\Models\PurchaseOrder;
 use Illuminate\Database\Eloquent\Collection;
-use Modules\Purchase\Models\PurchaseOrderLine;
+use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 use Modules\Foundation\Services\SequenceService;
 use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Models\PurchaseOrderLine;
 
 /**
  * Service for managing Purchase Order operations
@@ -21,15 +19,14 @@ class PurchaseOrderService
     public function __construct(
         protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         protected SequenceService $sequenceService,
-    ) {
-    }
+    ) {}
 
     /**
      * Send RFQ to vendors
      */
     public function sendRFQ(PurchaseOrder $purchaseOrder, User $user): PurchaseOrder
     {
-        if (!$purchaseOrder->status->canSendRFQ()) {
+        if (! $purchaseOrder->status->canSendRFQ()) {
             throw new InvalidArgumentException('RFQ cannot be sent in the current state.');
         }
 
@@ -37,7 +34,7 @@ class PurchaseOrderService
             throw new InvalidArgumentException('Cannot send RFQ without any lines.');
         }
 
-        return DB::transaction(function () use ($purchaseOrder, $user) {
+        return DB::transaction(function () use ($purchaseOrder) {
             $purchaseOrder->status = PurchaseOrderStatus::RFQSent;
             $purchaseOrder->save();
 
@@ -50,7 +47,7 @@ class PurchaseOrderService
      */
     public function send(PurchaseOrder $purchaseOrder, User $user): PurchaseOrder
     {
-        if (!$purchaseOrder->status->canBeSent()) {
+        if (! $purchaseOrder->status->canBeSent()) {
             throw new InvalidArgumentException('Purchase order cannot be sent in its current state.');
         }
 
@@ -60,9 +57,9 @@ class PurchaseOrderService
 
         $this->lockDateService->enforce($purchaseOrder->company, $purchaseOrder->po_date);
 
-        return DB::transaction(function () use ($purchaseOrder, $user) {
+        return DB::transaction(function () use ($purchaseOrder) {
             // Generate PO number if not already set
-            if (!$purchaseOrder->po_number) {
+            if (! $purchaseOrder->po_number) {
                 $purchaseOrder->po_number = $this->sequenceService->getNextNumber(
                     $purchaseOrder->company,
                     'purchase_order',
@@ -82,7 +79,7 @@ class PurchaseOrderService
      */
     public function confirm(PurchaseOrder $purchaseOrder, User $user): PurchaseOrder
     {
-        if (!$purchaseOrder->canBeConfirmed()) {
+        if (! $purchaseOrder->canBeConfirmed()) {
             throw new InvalidArgumentException('Purchase order cannot be confirmed in its current state.');
         }
 
@@ -92,9 +89,9 @@ class PurchaseOrderService
 
         $this->lockDateService->enforce($purchaseOrder->company, $purchaseOrder->po_date);
 
-        return DB::transaction(function () use ($purchaseOrder, $user) {
+        return DB::transaction(function () use ($purchaseOrder) {
             // Generate PO number if not already set (in case it was confirmed directly from draft)
-            if (!$purchaseOrder->po_number) {
+            if (! $purchaseOrder->po_number) {
                 $purchaseOrder->po_number = $this->sequenceService->getNextNumber(
                     $purchaseOrder->company,
                     'purchase_order',
@@ -124,7 +121,7 @@ class PurchaseOrderService
      */
     public function cancel(PurchaseOrder $purchaseOrder, User $user, ?string $reason = null): PurchaseOrder
     {
-        if (!$purchaseOrder->canBeCancelled()) {
+        if (! $purchaseOrder->canBeCancelled()) {
             throw new InvalidArgumentException('Purchase order cannot be cancelled in its current state.');
         }
 
@@ -135,8 +132,8 @@ class PurchaseOrderService
             $purchaseOrder->cancelled_at = now();
 
             if ($reason) {
-                $purchaseOrder->notes = ($purchaseOrder->notes ? $purchaseOrder->notes . "\n\n" : '')
-                    . "Cancelled: " . $reason;
+                $purchaseOrder->notes = ($purchaseOrder->notes ? $purchaseOrder->notes."\n\n" : '')
+                    .'Cancelled: '.$reason;
             }
 
             $purchaseOrder->save();
@@ -150,7 +147,7 @@ class PurchaseOrderService
      */
     public function updateReceivedQuantity(PurchaseOrder $purchaseOrder, int $lineId, float $receivedQuantity): PurchaseOrder
     {
-        if (!$purchaseOrder->canReceiveGoods()) {
+        if (! $purchaseOrder->canReceiveGoods()) {
             throw new InvalidArgumentException('Cannot receive goods for this purchase order.');
         }
 
@@ -186,7 +183,7 @@ class PurchaseOrderService
             ->with([
                 'lines' => function ($query) use ($productId) {
                     $query->where('product_id', $productId);
-                }
+                },
             ])
             ->orderByDesc('confirmed_at')
             ->orderByDesc('created_at')
@@ -221,7 +218,7 @@ class PurchaseOrderService
             throw new InvalidArgumentException('Purchase order must be fully billed before it can be marked as done.');
         }
 
-        return DB::transaction(function () use ($purchaseOrder, $user) {
+        return DB::transaction(function () use ($purchaseOrder) {
             $purchaseOrder->status = PurchaseOrderStatus::Done;
             $purchaseOrder->save();
 

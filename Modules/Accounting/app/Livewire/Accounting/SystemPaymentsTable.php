@@ -2,26 +2,26 @@
 
 namespace Modules\Accounting\Livewire\Accounting;
 
-use Exception;
 use Brick\Money\Money;
-use Livewire\Component;
-use Filament\Tables\Table;
-use Illuminate\Contracts\View\View;
-use Modules\Payment\Models\Payment;
+use Exception;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Support\Contracts\TranslatableContentDriver;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
+use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Actions\Contracts\HasActions;
+use Filament\Tables\Table;
+use Illuminate\Contracts\View\View;
+use Livewire\Component;
 use Modules\Accounting\Models\BankStatement;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Filament\Tables\Concerns\InteractsWithTable;
-use Modules\Payment\Enums\Payments\PaymentStatus;
-use Filament\Actions\Concerns\InteractsWithActions;
-use Filament\Support\Contracts\TranslatableContentDriver;
 use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Models\Payment;
 
 class SystemPaymentsTable extends Component implements HasActions, HasForms, HasTable
 {
@@ -67,9 +67,9 @@ class SystemPaymentsTable extends Component implements HasActions, HasForms, Has
                     ->sortable(),
                 TextColumn::make('payment_type')
                     ->label(__('accounting::bank_statement.type'))
-                    ->formatStateUsing(fn($state) => $state->label())
+                    ->formatStateUsing(fn ($state) => $state->label())
                     ->badge()
-                    ->color(fn($state) => match ($state->value) {
+                    ->color(fn ($state) => match ($state->value) {
                         'inbound' => 'success',
                         'outbound' => 'danger',
                         default => 'gray',
@@ -80,8 +80,8 @@ class SystemPaymentsTable extends Component implements HasActions, HasForms, Has
                 TextColumn::make('currency.code')
                     ->label(__('accounting::bank_statement.currency'))
                     ->badge()
-                    ->color(fn($record) => $record->currency_id === $this->bankStatement->currency_id ? 'success' : 'warning')
-                    ->tooltip(fn($record) => $record->currency_id === $this->bankStatement->currency_id
+                    ->color(fn ($record) => $record->currency_id === $this->bankStatement->currency_id ? 'success' : 'warning')
+                    ->tooltip(fn ($record) => $record->currency_id === $this->bankStatement->currency_id
                         ? __('accounting::bank_statement.same_currency_as_statement')
                         : __('accounting::bank_statement.different_currency_conversion_required')),
             ])
@@ -119,7 +119,7 @@ class SystemPaymentsTable extends Component implements HasActions, HasForms, Has
     public function togglePayment(int $paymentId): void
     {
         if (in_array($paymentId, $this->selectedPayments)) {
-            $this->selectedPayments = array_filter($this->selectedPayments, fn($id) => $id !== $paymentId);
+            $this->selectedPayments = array_filter($this->selectedPayments, fn ($id) => $id !== $paymentId);
         } else {
             $this->selectedPayments[] = $paymentId;
         }

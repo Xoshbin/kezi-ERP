@@ -1,19 +1,19 @@
 <?php
 
-use Carbon\Carbon;
 use Brick\Money\Money;
-use Modules\Payment\Models\Payment;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Currency;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Foundation\Models\CurrencyRate;
-use Modules\Accounting\Models\BankStatement;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Accounting\Models\BankStatementLine;
-use Modules\Payment\Enums\Payments\PaymentStatus;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\BankStatementLine;
+use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Models\Payment;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -108,7 +108,7 @@ describe('BankReconciliationService', function () {
                 'status' => 'confirmed',
             ]);
 
-        expect(fn() => $this->service->reconcileMultiple(
+        expect(fn () => $this->service->reconcileMultiple(
             [$bankLine->id],
             [$payment->id],
             $this->user
@@ -333,7 +333,7 @@ describe('Multi-Currency Bank Reconciliation', function () {
             ]);
 
         // Should throw exception due to mismatch
-        expect(fn() => $this->service->reconcileMultiple(
+        expect(fn () => $this->service->reconcileMultiple(
             [$bankLine->id],
             [$payment->id],
             $this->user

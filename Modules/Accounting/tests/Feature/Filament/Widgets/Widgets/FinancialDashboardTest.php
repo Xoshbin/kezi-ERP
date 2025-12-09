@@ -2,27 +2,26 @@
 
 namespace Modules\Accounting\Tests\Feature\Filament\Widgets;
 
-use Exception;
-use Carbon\Carbon;
 use App\Models\User;
-use ReflectionClass;
 use Brick\Money\Money;
-use Livewire\Livewire;
+use Carbon\Carbon;
+use Exception;
 use Filament\Facades\Filament;
-use Modules\Sales\Models\Invoice;
-use Modules\Product\Models\Product;
-use Modules\Sales\Models\InvoiceLine;
-use Modules\Foundation\Models\Partner;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Sales\Services\InvoiceService;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Foundation\Enums\Partners\PartnerType;
-use Modules\Accounting\Services\Reports\ProfitAndLossStatementService;
+use Livewire\Livewire;
 use Modules\Accounting\Filament\Clusters\Accounting\Widgets\CashFlowWidget;
-use Modules\Accounting\Filament\Clusters\Accounting\Widgets\IncomeVsExpenseChart;
 use Modules\Accounting\Filament\Clusters\Accounting\Widgets\FinancialStatsOverview;
+use Modules\Accounting\Filament\Clusters\Accounting\Widgets\IncomeVsExpenseChart;
+use Modules\Accounting\Services\Reports\ProfitAndLossStatementService;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
+use Modules\Sales\Services\InvoiceService;
+use ReflectionClass;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -36,7 +35,7 @@ beforeEach(function () {
 it('can render financial stats overview widget', function () {
     $this->actingAs($this->user);
 
-    $widget = new FinancialStatsOverview();
+    $widget = new FinancialStatsOverview;
 
     // Use reflection to access protected method
     $reflection = new ReflectionClass($widget);
@@ -86,7 +85,7 @@ it('displays correct financial stats with real data', function () {
 
     // Test with just the invoice for simplicity
 
-    $widget = new FinancialStatsOverview();
+    $widget = new FinancialStatsOverview;
 
     // Use reflection to access protected method
     $reflection = new ReflectionClass($widget);
@@ -101,7 +100,7 @@ it('displays correct financial stats with real data', function () {
 it('can render income vs expense chart widget', function () {
     $this->actingAs($this->user);
 
-    $widget = new IncomeVsExpenseChart();
+    $widget = new IncomeVsExpenseChart;
 
     // Use reflection to access protected method
     $reflection = new ReflectionClass($widget);
@@ -117,7 +116,7 @@ it('can render income vs expense chart widget', function () {
 it('can render cash flow widget', function () {
     $this->actingAs($this->user);
 
-    $widget = new CashFlowWidget();
+    $widget = new CashFlowWidget;
 
     // Use reflection to access protected method
     $reflection = new ReflectionClass($widget);
@@ -181,7 +180,7 @@ it('calculates cash flow forecasts correctly', function () {
         'total_amount' => Money::of(3000, $this->company->currency->code),
     ]);
 
-    $widget = new CashFlowWidget();
+    $widget = new CashFlowWidget;
 
     // Use reflection to access protected method
     $reflection = new ReflectionClass($widget);

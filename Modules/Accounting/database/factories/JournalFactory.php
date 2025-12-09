@@ -3,9 +3,9 @@
 namespace Modules\Accounting\Database\Factories;
 
 use App\Models\Company;
-use Modules\Accounting\Models\Account;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Models\Account;
 
 /**
  * @extends Factory<Journal>

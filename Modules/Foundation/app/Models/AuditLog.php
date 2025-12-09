@@ -2,16 +2,16 @@
 
 namespace Modules\Foundation\Models;
 
-use Eloquent;
-use App\Models\User;
 use App\Models\Company;
-use Illuminate\Support\Carbon;
+use App\Models\User;
 use Database\Factories\AuditLogFactory;
-use Illuminate\Database\Eloquent\Model;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id

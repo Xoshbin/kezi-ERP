@@ -15,6 +15,5 @@ class CreateJournalEntryLineDTO
         public readonly ?int $analytic_account_id,
         public readonly ?Money $original_currency_amount = null,
         public readonly ?float $exchange_rate_at_transaction = null,
-    ) {
-    }
+    ) {}
 }

@@ -2,15 +2,15 @@
 
 namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\RelationManagers;
 
-use Filament\Tables\Table;
-use Filament\Facades\Filament;
 use Filament\Actions\CreateAction;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Filament\Facades\Filament;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Models\VendorBill;
 
 class VendorBillsRelationManager extends RelationManager
 {
@@ -35,14 +35,13 @@ class VendorBillsRelationManager extends RelationManager
                             return $record->bill_reference;
                         }
 
-                        return 'DRAFT-' . str_pad((string) $record->id, 5, '0', STR_PAD_LEFT);
+                        return 'DRAFT-'.str_pad((string) $record->id, 5, '0', STR_PAD_LEFT);
                     })
                     ->badge()
-                    ->color(fn(VendorBill $record): string => $record->bill_reference ? 'success' : 'warning')
-                    ->icon(fn(VendorBill $record): string => $record->bill_reference ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
+                    ->color(fn (VendorBill $record): string => $record->bill_reference ? 'success' : 'warning')
+                    ->icon(fn (VendorBill $record): string => $record->bill_reference ? 'heroicon-m-check-circle' : 'heroicon-m-pencil-square')
                     ->url(
-                        fn(VendorBill $record): string =>
-                        route('filament.jmeryar.accounting.resources.vendor-bills.view', [
+                        fn (VendorBill $record): string => route('filament.jmeryar.accounting.resources.vendor-bills.view', [
                             'record' => $record,
                             'tenant' => Filament::getTenant(),
                         ])
@@ -75,9 +74,9 @@ class VendorBillsRelationManager extends RelationManager
 
                 TextColumn::make('paymentState')
                     ->label(__('purchase::vendor_bill.payment_state'))
-                    ->formatStateUsing(fn(\Modules\Foundation\Enums\Shared\PaymentState $state): string => $state->label())
+                    ->formatStateUsing(fn (\Modules\Foundation\Enums\Shared\PaymentState $state): string => $state->label())
                     ->badge()
-                    ->color(fn(\Modules\Foundation\Enums\Shared\PaymentState $state): string => $state->color()),
+                    ->color(fn (\Modules\Foundation\Enums\Shared\PaymentState $state): string => $state->color()),
 
                 MoneyColumn::make('total_amount')
                     ->label(__('purchase::vendor_bill.total_amount'))
@@ -94,13 +93,12 @@ class VendorBillsRelationManager extends RelationManager
                     ->label(__('purchase::vendor_bill.actions.create_from_purchase_order'))
                     ->icon('heroicon-o-document-plus')
                     ->url(
-                        fn(): string =>
-                        route('filament.jmeryar.accounting.resources.vendor-bills.create', [
+                        fn (): string => route('filament.jmeryar.accounting.resources.vendor-bills.create', [
                             'purchase_order_id' => $this->getOwnerRecord()->id,
                             'tenant' => Filament::getTenant(),
                         ])
                     )
-                    ->visible(fn() => $this->getOwnerRecord()->status->canCreateBill()),
+                    ->visible(fn () => $this->getOwnerRecord()->status->canCreateBill()),
             ])
             ->defaultSort('created_at', 'desc');
     }

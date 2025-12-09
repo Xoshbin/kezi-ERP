@@ -1,24 +1,18 @@
 <?php
 
 use Brick\Money\Money;
-use Modules\Accounting\Models\Journal;
-
-
-
-
-
-
-use Modules\Foundation\Models\Partner;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Payment\Services\PaymentService;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Payment\Enums\Payments\PaymentMethod;
-use Modules\Payment\Enums\Payments\PaymentStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Models\Partner;
 use Modules\Payment\Actions\Payments\CreatePaymentAction;
 use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Services\PaymentService;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -170,6 +164,6 @@ test('settlement payments still work as before', function () {
     );
 
     // Act & Assert: Without document links and without partner, should throw specific error
-    expect(fn() => app(CreatePaymentAction::class)->execute($paymentDTO, $this->user))
+    expect(fn () => app(CreatePaymentAction::class)->execute($paymentDTO, $this->user))
         ->toThrow(\InvalidArgumentException::class, 'Payments without document links must specify a partner.');
 });

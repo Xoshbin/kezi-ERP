@@ -2,35 +2,39 @@
 
 namespace Modules\Purchase\Tests\Feature\Filament;
 
-use Tests\TestCase;
+use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use Livewire\Livewire;
-use App\Models\Company;
 use Filament\Facades\Filament;
-use Modules\Accounting\Models\Tax;
-
-
-use Modules\Product\Models\Product;
-use Modules\Foundation\Models\Partner;
-use Modules\Foundation\Models\Currency;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Purchase\Models\PurchaseOrder;
-use Modules\Purchase\Models\PurchaseOrderLine;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
+use Modules\Accounting\Models\Tax;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
 use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
 use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\EditPurchaseOrder;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Models\PurchaseOrderLine;
+use Modules\Purchase\Models\VendorBill;
+use Tests\TestCase;
 
 class PurchaseOrderCreateBillActionTest extends TestCase
 {
     use RefreshDatabase;
 
     protected Company $company;
+
     protected User $user;
+
     protected Currency $currency;
+
     protected Partner $vendor;
+
     protected Tax $tax;
+
     protected Product $product;
+
     protected PurchaseOrder $purchaseOrder;
 
     protected function setUp(): void

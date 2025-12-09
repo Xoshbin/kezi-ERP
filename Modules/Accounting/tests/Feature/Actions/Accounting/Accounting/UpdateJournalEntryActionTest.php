@@ -1,13 +1,13 @@
 <?php
 
 use Brick\Money\Money;
-use Modules\Accounting\Models\Account;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Models\JournalEntry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Actions\Accounting\UpdateJournalEntryAction;
 use Modules\Accounting\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\UpdateJournalEntryLineDTO;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\JournalEntry;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

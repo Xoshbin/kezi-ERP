@@ -3,10 +3,10 @@
 namespace Modules\Inventory\Actions\Adjustments;
 
 use Illuminate\Support\Facades\DB;
-use Modules\Inventory\Models\AdjustmentDocument;
-use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
-use Modules\Inventory\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentDTO;
 use Modules\Inventory\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO;
+use Modules\Inventory\DataTransferObjects\Adjustments\UpdateAdjustmentDocumentDTO;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
+use Modules\Inventory\Models\AdjustmentDocument;
 
 class UpdateAdjustmentDocumentAction
 {

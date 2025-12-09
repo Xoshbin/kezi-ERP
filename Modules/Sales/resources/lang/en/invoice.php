@@ -7,7 +7,6 @@ return [
     'invoice' => 'Invoice',
     'invoices' => 'Invoices',
 
-
     // Form Fields
     'company' => 'Company',
     'customer' => 'Customer',
@@ -37,7 +36,6 @@ return [
     'line_items' => 'Line Items',
     'line_items_description' => 'Add products and services to this invoice',
     'company_currency_totals' => 'Company Currency Totals',
-
 
     'company_name' => 'Company',
     'customer_name' => 'Customer',

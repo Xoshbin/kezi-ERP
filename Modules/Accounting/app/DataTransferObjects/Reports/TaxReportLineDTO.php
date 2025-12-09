@@ -12,6 +12,5 @@ readonly class TaxReportLineDTO
         public float $taxRate,
         public Money $netAmount,
         public Money $taxAmount,
-    ) {
-    }
+    ) {}
 }

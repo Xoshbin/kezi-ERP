@@ -2,13 +2,13 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use Exception;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\Log;
-use Modules\Inventory\Models\StockQuant;
+use Modules\Inventory\Enums\Inventory\ReorderingRoute;
 use Modules\Inventory\Models\ReorderingRule;
 use Modules\Inventory\Models\ReplenishmentSuggestion;
-use Modules\Inventory\Enums\Inventory\ReorderingRoute;
+use Modules\Inventory\Models\StockQuant;
 
 /**
  * Reordering Rule Service
@@ -37,8 +37,8 @@ use Modules\Inventory\Enums\Inventory\ReorderingRoute;
  * - Standard rules trigger on stock levels
  * - Suggestions include quantity and priority
  *
- * @package App\Services\Inventory
  * @author Laravel/Filament Inventory System
+ *
  * @version 1.0.0
  */
 class ReorderingRuleService
@@ -46,7 +46,7 @@ class ReorderingRuleService
     /**
      * Create a new reordering rule service instance
      *
-     * @param StockQuantService $stockQuantService Service for stock quantity operations
+     * @param  StockQuantService  $stockQuantService  Service for stock quantity operations
      */
     public function __construct(
         private readonly StockQuantService $stockQuantService,
@@ -88,7 +88,7 @@ class ReorderingRuleService
                     $suggestionsCreated++;
                 }
             } catch (Exception $e) {
-                Log::error("Failed to process reordering rule {$rule->id}: " . $e->getMessage());
+                Log::error("Failed to process reordering rule {$rule->id}: ".$e->getMessage());
             }
         }
 

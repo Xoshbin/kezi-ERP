@@ -1,16 +1,15 @@
 <?php
 
 use Brick\Money\Money;
-use function Pest\Livewire\livewire;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Tests\Traits\WithConfiguredCompany;
-
-use Modules\Accounting\Models\LoanAgreement;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Enums\Accounting\AccountType;
 use Modules\Accounting\Enums\Accounting\JournalType;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ViewLoanAgreement;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Models\LoanAgreement;
+use Tests\Traits\WithConfiguredCompany;
+
+use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -70,6 +69,6 @@ it('configures createOption forms and can post repayment after creating needed r
     // Basic assertion: the repayment journal entry exists with expected reference format
     $this->assertDatabaseHas('journal_entries', [
         'company_id' => $this->company->id,
-        'reference' => 'LOAN-PAY/' . $loan->id . '/1',
+        'reference' => 'LOAN-PAY/'.$loan->id.'/1',
     ]);
 });

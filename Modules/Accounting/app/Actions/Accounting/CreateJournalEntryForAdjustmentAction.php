@@ -2,11 +2,11 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
+use App\Models\User;
 use Brick\Money\Money;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Modules\Accounting\Models\JournalEntry;
-use App\Models\User;
 use Modules\Inventory\Models\AdjustmentDocument;
 use RuntimeException;
 
@@ -76,8 +76,8 @@ class CreateJournalEntryForAdjustmentAction
             currency_id: $adjustment->currency_id,
             journal_id: $salesJournalId,
             entry_date: $adjustment->posted_at ?? now()->toDateString(),
-            reference: 'CN-' . $adjustment->reference_number,
-            description: 'Credit Note ' . $adjustment->reference_number,
+            reference: 'CN-'.$adjustment->reference_number,
+            description: 'Credit Note '.$adjustment->reference_number,
             source_type: AdjustmentDocument::class,
             source_id: $adjustment->id,
             created_by_user_id: $user->id,

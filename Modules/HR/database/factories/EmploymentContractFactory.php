@@ -2,10 +2,10 @@
 
 namespace Modules\HR\Database\Factories;
 
+use App\Models\Company;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Foundation\Models\Currency;
-use App\Models\Company;
 use Modules\HR\Models\Employee;
 use Modules\HR\Models\EmploymentContract;
 
@@ -63,7 +63,7 @@ class EmploymentContractFactory extends Factory
 
     public function temporary(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'contract_type' => 'temporary',
             'end_date' => $this->faker->date('Y-m-d', '+2 years'),
         ]);
@@ -71,7 +71,7 @@ class EmploymentContractFactory extends Factory
 
     public function withProbation(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'probation_period_months' => 3,
             'probation_end_date' => $this->faker->date('Y-m-d', '+3 months'),
         ]);
@@ -79,7 +79,7 @@ class EmploymentContractFactory extends Factory
 
     public function inactive(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_active' => false,
             'end_date' => $this->faker->date('Y-m-d', 'now'),
         ]);

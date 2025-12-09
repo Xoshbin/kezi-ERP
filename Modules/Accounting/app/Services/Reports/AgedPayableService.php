@@ -2,14 +2,14 @@
 
 namespace Modules\Accounting\Services\Reports;
 
-use Carbon\Carbon;
-use Brick\Money\Money;
 use App\Models\Company;
+use Brick\Money\Money;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 use Modules\Accounting\DataTransferObjects\Reports\AgedPayableDTO;
 use Modules\Accounting\DataTransferObjects\Reports\AgedPayableLineDTO;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 
 class AgedPayableService
 {
@@ -145,12 +145,12 @@ class AgedPayableService
     {
         $zero = Money::zero($currency);
 
-        $totalCurrent = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->current), $zero);
-        $totalBucket1_30 = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->bucket1_30), $zero);
-        $totalBucket31_60 = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->bucket31_60), $zero);
-        $totalBucket61_90 = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->bucket61_90), $zero);
-        $totalBucket90_plus = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->bucket90_plus), $zero);
-        $grandTotalDue = $reportLines->reduce(fn(Money $carry, $line) => $carry->plus($line->totalDue), $zero);
+        $totalCurrent = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->current), $zero);
+        $totalBucket1_30 = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->bucket1_30), $zero);
+        $totalBucket31_60 = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->bucket31_60), $zero);
+        $totalBucket61_90 = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->bucket61_90), $zero);
+        $totalBucket90_plus = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->bucket90_plus), $zero);
+        $grandTotalDue = $reportLines->reduce(fn (Money $carry, $line) => $carry->plus($line->totalDue), $zero);
 
         return new AgedPayableDTO(
             $reportLines,

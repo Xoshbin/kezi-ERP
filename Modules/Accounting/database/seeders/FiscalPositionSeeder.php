@@ -2,10 +2,10 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
+use App\Models\Company;
 use Exception;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use App\Models\Company;
 use Modules\Accounting\Models\FiscalPosition;
 
 class FiscalPositionSeeder extends Seeder

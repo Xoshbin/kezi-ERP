@@ -2,10 +2,10 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use Modules\Accounting\Models\Account;
 use App\Models\Company;
-use Modules\Accounting\Enums\Accounting\TaxType;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Accounting\Enums\Accounting\TaxType;
+use Modules\Accounting\Models\Account;
 
 /**
  * @extends Factory<Tax>

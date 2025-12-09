@@ -5,8 +5,8 @@ namespace Modules\Accounting\Filament\Resources\Taxes\Pages;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
-use Modules\Accounting\Filament\Resources\Taxes\TaxResource;
 use LaraZeus\SpatieTranslatable\Resources\Pages\ListRecords\Concerns\Translatable;
+use Modules\Accounting\Filament\Resources\Taxes\TaxResource;
 
 class ListTaxes extends ListRecords
 {

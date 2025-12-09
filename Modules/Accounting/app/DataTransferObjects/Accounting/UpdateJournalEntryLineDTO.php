@@ -11,6 +11,5 @@ class UpdateJournalEntryLineDTO
         public readonly ?string $description,
         public readonly ?int $partner_id,
         public readonly ?int $analytic_account_id,
-    ) {
-    }
+    ) {}
 }

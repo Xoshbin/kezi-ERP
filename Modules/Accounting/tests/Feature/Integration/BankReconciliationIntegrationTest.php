@@ -1,18 +1,18 @@
 <?php
 
+use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use App\Models\Company;
 use Filament\Facades\Filament;
-use Modules\Payment\Models\Payment;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Partner;
-use Modules\Accounting\Models\BankStatement;
-use Modules\Accounting\Models\BankStatementLine;
-use Modules\Payment\Enums\Payments\PaymentStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\BankStatementLine;
+use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Models\Partner;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Payment\Models\Payment;
 
 uses(RefreshDatabase::class);
 

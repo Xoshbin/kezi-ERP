@@ -1,13 +1,12 @@
 <?php
 
 use Brick\Money\Money;
-use Brick\Math\RoundingMode;
-use Modules\Accounting\Enums\Loans\ScheduleMethod;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Actions\Loans\CalculateEIRAction;
-use Modules\Accounting\Models\LoanAgreement;
-use Modules\Accounting\Actions\Loans\ComputeLoanScheduleAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Actions\Loans\CalculateEIRAction;
+use Modules\Accounting\Actions\Loans\ComputeLoanScheduleAction;
+use Modules\Accounting\Enums\Loans\ScheduleMethod;
+use Modules\Accounting\Models\LoanAgreement;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

@@ -24,7 +24,7 @@ class SalesOrderFactory extends Factory
             'customer_id' => \Modules\Foundation\Models\Partner::factory(),
             'currency_id' => \Modules\Foundation\Models\Currency::factory(),
             'created_by_user_id' => \App\Models\User::factory(),
-            'so_number' => 'SO-' . $this->faker->unique()->numberBetween(1000, 9999),
+            'so_number' => 'SO-'.$this->faker->unique()->numberBetween(1000, 9999),
             'status' => \Modules\Sales\Enums\Sales\SalesOrderStatus::Draft,
             'so_date' => now(),
             'total_amount' => 0,

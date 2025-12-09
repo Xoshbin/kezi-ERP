@@ -4,10 +4,8 @@ namespace Modules\Purchase\Actions\Purchases;
 
 use App\Models\Company;
 use Illuminate\Support\Facades\DB;
-use Modules\Purchase\Models\PurchaseOrder;
 use Modules\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
-
-
+use Modules\Purchase\Models\PurchaseOrder;
 
 /**
  * Action for creating a new Purchase Order

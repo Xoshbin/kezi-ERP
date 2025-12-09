@@ -4,12 +4,10 @@ namespace Modules\Inventory\Services;
 
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Modules\Inventory\Models\AdjustmentDocument;
-use Modules\Inventory\Events\AdjustmentDocumentPosted;
-use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
-
-
 use Modules\Accounting\Actions\Accounting\CreateJournalEntryForAdjustmentAction;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
+use Modules\Inventory\Events\AdjustmentDocumentPosted;
+use Modules\Inventory\Models\AdjustmentDocument;
 
 // 1. Import the new action
 

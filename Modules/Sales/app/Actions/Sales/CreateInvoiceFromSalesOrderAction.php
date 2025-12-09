@@ -3,14 +3,14 @@
 namespace Modules\Sales\Actions\Sales;
 
 use Brick\Money\Money;
-use Modules\Sales\Models\Invoice;
 use Illuminate\Support\Facades\DB;
-use Modules\Sales\Models\SalesOrder;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Illuminate\Validation\ValidationException;
-use Modules\Sales\Enums\Sales\SalesOrderStatus;
-use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Enums\Sales\SalesOrderStatus;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\SalesOrder;
 
 /**
  * Action for creating a customer invoice from a sales order
@@ -30,7 +30,7 @@ class CreateInvoiceFromSalesOrderAction
         $salesOrder = $dto->salesOrder;
 
         // Validate that the sales order can create an invoice
-        if (!$salesOrder->canCreateInvoice()) {
+        if (! $salesOrder->canCreateInvoice()) {
             throw ValidationException::withMessages([
                 'sales_order' => 'This sales order cannot be invoiced in its current status.',
             ]);

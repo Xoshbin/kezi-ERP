@@ -2,14 +2,13 @@
 
 namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Tables;
 
-
-use Filament\Tables\Table;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
 
 class PurchaseOrdersTable
@@ -48,6 +47,7 @@ class PurchaseOrdersTable
                     ->badge()
                     ->color(function ($record): string {
                         $billsCount = $record->vendorBills()->count();
+
                         return match ($billsCount) {
                             0 => 'warning',
                             1 => 'success',
@@ -56,6 +56,7 @@ class PurchaseOrdersTable
                     })
                     ->icon(function ($record): string {
                         $billsCount = $record->vendorBills()->count();
+
                         return match ($billsCount) {
                             0 => 'heroicon-m-exclamation-triangle',
                             1 => 'heroicon-m-check-circle',
@@ -77,7 +78,7 @@ class PurchaseOrdersTable
 
                 TextColumn::make('total_amount')
                     ->label(__('purchase::purchase_orders.fields.total_amount'))
-                    ->money(fn($record) => $record->currency->code)
+                    ->money(fn ($record) => $record->currency->code)
                     ->sortable(),
 
                 TextColumn::make('currency.code')

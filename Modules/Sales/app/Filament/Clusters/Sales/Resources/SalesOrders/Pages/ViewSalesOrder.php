@@ -2,22 +2,21 @@
 
 namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages;
 
-use Exception;
 use Carbon\Carbon;
+use Exception;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
-use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
-use Modules\Accounting\Models\Account;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Forms\Components\DatePicker;
-use Modules\Sales\Actions\Sales\CreateInvoiceFromSalesOrderAction;
+use Modules\Accounting\Models\Account;
 use Modules\Sales\Actions\Sales\CreateDeliveryFromSalesOrderAction;
-use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
+use Modules\Sales\Actions\Sales\CreateInvoiceFromSalesOrderAction;
 use Modules\Sales\DataTransferObjects\Sales\CreateDeliveryFromSalesOrderDTO;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
 use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\SalesOrderResource;
 
 class ViewSalesOrder extends ViewRecord
@@ -33,7 +32,7 @@ class ViewSalesOrder extends ViewRecord
                 ->label(__('sales::sales_orders.actions.create_invoice'))
                 ->icon('heroicon-o-document-text')
                 ->color('success')
-                ->visible(fn() => $this->record->canCreateInvoice())
+                ->visible(fn () => $this->record->canCreateInvoice())
                 ->form([
                     DatePicker::make('invoice_date')
                         ->label(__('sales::invoice.invoice_date'))
@@ -88,7 +87,7 @@ class ViewSalesOrder extends ViewRecord
                 ->label(__('sales::sales_orders.actions.create_delivery'))
                 ->icon('heroicon-o-truck')
                 ->color('warning')
-                ->visible(fn() => $this->record->canDeliverGoods())
+                ->visible(fn () => $this->record->canDeliverGoods())
                 ->form([
                     DatePicker::make('scheduled_date')
                         ->label(__('inventory::deliveries.fields.scheduled_date'))

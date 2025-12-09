@@ -2,14 +2,14 @@
 
 namespace Modules\Accounting\Actions\Loans;
 
+use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
-use Modules\Accounting\Models\LoanAgreement;
-use Modules\Accounting\Models\LoanScheduleEntry;
-use App\Models\User;
-use Modules\Accounting\Models\JournalEntry;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\LoanAgreement;
+use Modules\Accounting\Models\LoanScheduleEntry;
 use RuntimeException;
 
 class AccrueLoanInterestAction
@@ -42,7 +42,7 @@ class AccrueLoanInterestAction
                     account_id: $interestAccountId,
                     debit: $amount,
                     credit: $zero,
-                    description: 'Interest accrual for loan #' . $loan->id . ' month ' . $forMonthSequence,
+                    description: 'Interest accrual for loan #'.$loan->id.' month '.$forMonthSequence,
                     partner_id: $loan->partner_id,
                     analytic_account_id: null,
                 ),
@@ -61,7 +61,7 @@ class AccrueLoanInterestAction
                 journal_id: $journalId,
                 currency_id: $loan->currency_id,
                 entry_date: $entry->due_date,
-                reference: 'LOAN-INT/' . $loan->id . '/' . $forMonthSequence,
+                reference: 'LOAN-INT/'.$loan->id.'/'.$forMonthSequence,
                 description: 'Loan interest accrual',
                 created_by_user_id: $user->id,
                 is_posted: true,

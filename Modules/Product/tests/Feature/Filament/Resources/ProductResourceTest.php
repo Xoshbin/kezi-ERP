@@ -1,17 +1,17 @@
 <?php
 
 use Filament\Actions\DeleteAction;
-use Modules\Product\Models\Product;
-use function Pest\Livewire\livewire;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Models\Account;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\EditProduct;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\ListProducts;
+use Modules\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertSoftDeleted;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\EditProduct;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\ListProducts;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
+use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

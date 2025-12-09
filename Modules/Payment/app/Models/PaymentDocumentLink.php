@@ -2,23 +2,20 @@
 
 namespace Modules\Payment\Models;
 
-
-use Eloquent;
-use Brick\Money\Money;
 use App\Models\Company;
-use InvalidArgumentException;
-use Illuminate\Support\Carbon;
-use Modules\Sales\Models\Invoice;
-use Modules\Payment\Models\Payment;
+use Brick\Money\Money;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Illuminate\Support\Carbon;
+use InvalidArgumentException;
+use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
 use Modules\Foundation\Models\Currency;
 use Modules\Purchase\Models\VendorBill;
-use Illuminate\Database\Eloquent\Builder;
-
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Modules\Sales\Models\Invoice;
 
 /**
  * @property int $id
@@ -194,6 +191,7 @@ class PaymentDocumentLink extends Model
             }
         });
     }
+
     protected static function newFactory(): \Modules\Payment\Database\Factories\PaymentDocumentLinkFactory
     {
         return \Modules\Payment\Database\Factories\PaymentDocumentLinkFactory::new();

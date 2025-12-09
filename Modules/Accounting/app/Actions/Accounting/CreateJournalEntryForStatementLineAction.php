@@ -12,9 +12,7 @@ use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 
 class CreateJournalEntryForStatementLineAction
 {
-    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction)
-    {
-    }
+    public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 
     public function execute(CreateJournalEntryForStatementLineDTO $dto): void
     {

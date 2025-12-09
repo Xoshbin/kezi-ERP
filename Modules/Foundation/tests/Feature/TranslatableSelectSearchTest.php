@@ -2,12 +2,10 @@
 
 namespace Modules\Foundation\Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\Company;
-
-use Modules\Accounting\Models\Account;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Enums\Accounting\AccountType;
+use Modules\Accounting\Models\Account;
+use Tests\TestCase;
 use Xoshbin\TranslatableSelect\Services\LocaleResolver;
 use Xoshbin\TranslatableSelect\Services\TranslatableSearchService;
 
@@ -56,7 +54,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id),
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id),
             'limit' => 50,
         ]);
 
@@ -68,7 +66,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id),
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id),
             'limit' => 50,
         ]);
 
@@ -80,7 +78,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id),
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id),
             'limit' => 50,
         ]);
 
@@ -92,7 +90,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id),
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id),
             'limit' => 50,
         ]);
 
@@ -137,7 +135,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id),
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id),
             'limit' => 50,
         ]);
 
@@ -149,7 +147,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id),
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id),
             'limit' => 50,
         ]);
 
@@ -168,7 +166,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id),
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id),
             'limit' => 50,
         ]);
 
@@ -205,7 +203,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id)
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id)
                 ->whereIn('type', [\Modules\Accounting\Enums\Accounting\AccountType::Income, \Modules\Accounting\Enums\Accounting\AccountType::OtherIncome]),
             'limit' => 50,
         ]);
@@ -245,7 +243,7 @@ class TranslatableSelectSearchTest extends TestCase
             'searchFields' => ['name', 'code'],
             'labelField' => 'name',
             'searchLocales' => $searchLocales,
-            'queryModifier' => fn($query) => $query->where('company_id', $this->company->id)
+            'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id)
                 ->whereIn('type', [\Modules\Accounting\Enums\Accounting\AccountType::Expense, \Modules\Accounting\Enums\Accounting\AccountType::Depreciation, \Modules\Accounting\Enums\Accounting\AccountType::CostOfRevenue]),
             'limit' => 50,
         ]);
@@ -269,13 +267,13 @@ class TranslatableSelectSearchTest extends TestCase
                     'searchFields' => ['name', 'code'],
                     'labelField' => 'name',
                     'searchLocales' => ['en', 'ckb', 'ar'],
-                    'queryModifier' => fn($query) => $query->where('company_id', $this->company->id)
+                    'queryModifier' => fn ($query) => $query->where('company_id', $this->company->id)
                         ->whereIn('type', [\Modules\Accounting\Enums\Accounting\AccountType::Income, \Modules\Accounting\Enums\Accounting\AccountType::OtherIncome]),
                     'limit' => 50,
                 ]
             );
 
-            echo "\nSearch term: '$term' - Results count: " . count($results) . "\n";
+            echo "\nSearch term: '$term' - Results count: ".count($results)."\n";
             foreach ($results as $id => $name) {
                 echo "  - $name\n";
             }

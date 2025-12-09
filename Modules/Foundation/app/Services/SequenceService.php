@@ -2,8 +2,8 @@
 
 namespace Modules\Foundation\Services;
 
-use Carbon\Carbon;
 use App\Models\Company;
+use Carbon\Carbon;
 use Modules\Foundation\Models\Sequence;
 
 /**

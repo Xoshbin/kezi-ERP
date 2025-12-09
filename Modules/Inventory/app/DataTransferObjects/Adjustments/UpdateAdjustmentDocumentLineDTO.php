@@ -13,6 +13,5 @@ class UpdateAdjustmentDocumentLineDTO
         public readonly int $account_id,
         public readonly ?int $product_id,
         public readonly ?int $tax_id,
-    ) {
-    }
+    ) {}
 }

@@ -2,17 +2,16 @@
 
 namespace Modules\HR\Services\HumanResources;
 
-use Exception;
-use Carbon\Carbon;
 use App\Models\User;
-use Modules\HR\Models\Employee;
-use Modules\HR\Models\LeaveType;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\DB;
-use Modules\HR\Models\LeaveRequest;
 use Illuminate\Support\Facades\Gate;
 use Modules\HR\Actions\HumanResources\CreateLeaveRequestAction;
 use Modules\HR\DataTransferObjects\HumanResources\CreateLeaveRequestDTO;
-
+use Modules\HR\Models\Employee;
+use Modules\HR\Models\LeaveRequest;
+use Modules\HR\Models\LeaveType;
 
 class LeaveManagementService
 {
@@ -174,19 +173,19 @@ class LeaveManagementService
         // Check if employee has sufficient leave balance
         $balance = $this->getLeaveBalance($employee, $leaveType);
         if ($dto->days_requested > $balance['remaining_days']) {
-            throw new Exception('Insufficient leave balance. Available: ' . $balance['remaining_days'] . ' days.');
+            throw new Exception('Insufficient leave balance. Available: '.$balance['remaining_days'].' days.');
         }
 
         // Check minimum notice period
         $startDate = Carbon::parse($dto->start_date);
         $noticeGiven = now()->diffInDays($startDate);
         if ($noticeGiven < $leaveType->min_notice_days) {
-            throw new Exception('Minimum notice of ' . $leaveType->min_notice_days . ' days required.');
+            throw new Exception('Minimum notice of '.$leaveType->min_notice_days.' days required.');
         }
 
         // Check maximum consecutive days
         if ($leaveType->exceedsMaxConsecutiveDays((int) $dto->days_requested)) {
-            throw new Exception('Maximum consecutive days allowed: ' . $leaveType->max_consecutive_days);
+            throw new Exception('Maximum consecutive days allowed: '.$leaveType->max_consecutive_days);
         }
 
         // Check for overlapping leave requests
@@ -231,7 +230,7 @@ class LeaveManagementService
                         'status' => 'on_leave',
                         'attendance_type' => 'regular',
                         'leave_request_id' => $leaveRequest->getKey(),
-                        'notes' => 'On leave: ' . $leaveRequest->leaveType->getTranslation('name', app()->getLocale()),
+                        'notes' => 'On leave: '.$leaveRequest->leaveType->getTranslation('name', app()->getLocale()),
                     ]
                 );
             }

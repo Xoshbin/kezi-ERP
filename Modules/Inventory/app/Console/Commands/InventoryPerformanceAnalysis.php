@@ -2,12 +2,11 @@
 
 namespace Modules\Inventory\Console\Commands;
 
-use Exception;
 use App\Models\Company;
+use Exception;
 use Illuminate\Console\Command;
-use Modules\Inventory\Services\Inventory\InventoryQueryOptimizationService;
 use Modules\Inventory\Services\Inventory\InventoryPerformanceMonitoringService;
-
+use Modules\Inventory\Services\Inventory\InventoryQueryOptimizationService;
 
 class InventoryPerformanceAnalysis extends Command
 {
@@ -36,8 +35,9 @@ class InventoryPerformanceAnalysis extends Command
 
         // Get company to analyze
         $company = $this->getCompanyToAnalyze();
-        if (!$company) {
+        if (! $company) {
             $this->error('No company found to analyze.');
+
             return Command::FAILURE;
         }
 
@@ -96,7 +96,7 @@ class InventoryPerformanceAnalysis extends Command
             default => 'white'
         };
 
-        $this->info("🏥 Overall System Health: <fg={$healthColor}>" . strtoupper($report['overall_health']) . '</fg>');
+        $this->info("🏥 Overall System Health: <fg={$healthColor}>".strtoupper($report['overall_health']).'</fg>');
         $this->newLine();
 
         // Table sizes
@@ -140,7 +140,7 @@ class InventoryPerformanceAnalysis extends Command
                 $queryRows[] = [
                     ucwords(str_replace('_', ' ', $queryType)),
                     number_format($data['execution_time_ms'], 2),
-                    "<fg={$ratingColor}>" . strtoupper($rating) . '</fg>',
+                    "<fg={$ratingColor}>".strtoupper($rating).'</fg>',
                     $status,
                 ];
             }
@@ -179,6 +179,7 @@ class InventoryPerformanceAnalysis extends Command
     {
         if (empty($report['optimization_recommendations'])) {
             $this->info('🎉 No optimization recommendations - system is performing well!');
+
             return;
         }
 
@@ -199,7 +200,7 @@ class InventoryPerformanceAnalysis extends Command
             }
 
             $this->line(
-                "{$priorityIcon} <fg={$priorityColor}>[" . strtoupper($rec['priority']) . "]</fg> " .
+                "{$priorityIcon} <fg={$priorityColor}>[".strtoupper($rec['priority']).']</fg> '.
                     "<fg=cyan>{$rec['category']}</fg>: {$rec['recommendation']}"
             );
         }
@@ -209,10 +210,10 @@ class InventoryPerformanceAnalysis extends Command
         $this->newLine();
 
         // Next steps
-        if (!empty($report['next_steps'])) {
+        if (! empty($report['next_steps'])) {
             $this->info('🚀 Recommended Next Steps:');
             foreach ($report['next_steps'] as $index => $step) {
-                $this->line('   ' . ($index + 1) . '. ' . $step);
+                $this->line('   '.($index + 1).'. '.$step);
             }
             $this->newLine();
         }
@@ -239,7 +240,7 @@ class InventoryPerformanceAnalysis extends Command
                     'total_recommendations' => count($report['optimization_recommendations']),
                     'high_priority_count' => count(array_filter(
                         $report['optimization_recommendations'],
-                        fn($r) => $r['priority'] === 'high'
+                        fn ($r) => $r['priority'] === 'high'
                     )),
                 ],
             ];

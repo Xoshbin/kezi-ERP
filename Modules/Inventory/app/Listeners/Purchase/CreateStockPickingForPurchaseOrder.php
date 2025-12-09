@@ -2,18 +2,17 @@
 
 namespace Modules\Inventory\Listeners\Purchase;
 
-use Modules\Purchase\Events\PurchaseOrderConfirmed;
-use Modules\Inventory\Models\StockPicking;
-use Modules\Inventory\Enums\Inventory\StockPickingType;
-use Modules\Inventory\Enums\Inventory\StockPickingState;
-use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Enums\Inventory\StockLocationType;
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
 use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
 use Modules\Inventory\Models\StockLocation;
-use Modules\Inventory\Enums\Inventory\StockLocationType;
+use Modules\Inventory\Models\StockMove;
 use Modules\Inventory\Models\StockMoveProductLine;
+use Modules\Inventory\Models\StockPicking;
 use Modules\Product\Enums\Products\ProductType;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Modules\Purchase\Events\PurchaseOrderConfirmed;
 
 class CreateStockPickingForPurchaseOrder
 {
@@ -39,7 +38,7 @@ class CreateStockPickingForPurchaseOrder
             'company_id' => $po->company_id,
             'type' => StockLocationType::Vendor,
         ], [
-            'name' => "Vendors",
+            'name' => 'Vendors',
             'is_active' => true,
         ]);
 

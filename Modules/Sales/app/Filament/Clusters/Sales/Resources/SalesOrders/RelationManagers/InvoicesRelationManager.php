@@ -2,10 +2,9 @@
 
 namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\RelationManagers;
 
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Resources\RelationManagers\RelationManager;
 
 class InvoicesRelationManager extends RelationManager
 {
@@ -40,7 +39,7 @@ class InvoicesRelationManager extends RelationManager
 
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label(__('invoices.fields.total_amount'))
-                    ->money(fn($record) => $record->currency->code)
+                    ->money(fn ($record) => $record->currency->code)
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')

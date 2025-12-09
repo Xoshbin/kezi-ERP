@@ -2,26 +2,20 @@
 
 namespace Modules\Accounting\Models;
 
-use Eloquent;
 use App\Models\Company;
-use Illuminate\Support\Carbon;
-use Modules\Accounting\Models\Tax;
-use Modules\Sales\Models\InvoiceLine;
-
-use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Models\Currency;
-use Spatie\Translatable\HasTranslations;
-use Illuminate\Database\Eloquent\Builder;
-use Modules\Purchase\Models\VendorBillLine;
-use Illuminate\Database\Eloquent\Collection;
-use Modules\Accounting\Models\JournalEntryLine;
-use Modules\Accounting\Observers\AccountObserver;
-use Modules\Foundation\Observers\AuditLogObserver;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Modules\Accounting\Enums\Accounting\AccountType;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Modules\Foundation\Models\Currency;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Sales\Models\InvoiceLine;
+use Spatie\Translatable\HasTranslations;
 
 /**
  * Class Account
@@ -80,6 +74,7 @@ class Account extends Model
     {
         return \Modules\Accounting\Database\Factories\AccountFactory::new();
     }
+
     use HasTranslations;
 
     /** @var array<int, string> */

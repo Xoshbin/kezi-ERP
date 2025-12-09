@@ -2,11 +2,11 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use RuntimeException;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Models\StockMove;
-use Modules\Inventory\Models\StockQuant;
 use Modules\Inventory\Models\StockMoveProductLine;
+use Modules\Inventory\Models\StockQuant;
+use RuntimeException;
 
 /**
  * Stock Quantity Service
@@ -28,8 +28,8 @@ use Modules\Inventory\Models\StockMoveProductLine;
  * - FEFO allocation prioritizes lots by expiration date
  * - All operations are atomic and thread-safe
  *
- * @package App\Services\Inventory
  * @author Laravel/Filament Inventory System
+ *
  * @version 1.0.0
  */
 class StockQuantService
@@ -41,11 +41,10 @@ class StockQuantService
      * of company, product, location, and lot. If the record doesn't exist, it creates
      * one with zero quantities.
      *
-     * @param int $companyId Company identifier
-     * @param int $productId Product identifier
-     * @param int $locationId Location identifier
-     * @param int|null $lotId Lot identifier (null for non-lot-tracked products)
-     *
+     * @param  int  $companyId  Company identifier
+     * @param  int  $productId  Product identifier
+     * @param  int  $locationId  Location identifier
+     * @param  int|null  $lotId  Lot identifier (null for non-lot-tracked products)
      * @return StockQuant The existing or newly created stock quant
      *
      * @example
@@ -78,13 +77,12 @@ class StockQuantService
      * The operation is wrapped in a database transaction with row-level locking to ensure
      * thread safety in high-concurrency environments.
      *
-     * @param int $companyId Company identifier
-     * @param int $productId Product identifier
-     * @param int $locationId Location identifier
-     * @param float $deltaQty Change in quantity (positive for increases, negative for decreases)
-     * @param float $deltaReserved Change in reserved quantity (default: 0)
-     * @param int|null $lotId Lot identifier (null for non-lot-tracked products)
-     *
+     * @param  int  $companyId  Company identifier
+     * @param  int  $productId  Product identifier
+     * @param  int  $locationId  Location identifier
+     * @param  float  $deltaQty  Change in quantity (positive for increases, negative for decreases)
+     * @param  float  $deltaReserved  Change in reserved quantity (default: 0)
+     * @param  int|null  $lotId  Lot identifier (null for non-lot-tracked products)
      * @return StockQuant The updated stock quant
      *
      * @throws RuntimeException When insufficient quantity for adjustment
@@ -236,7 +234,7 @@ class StockQuantService
 
         $quant = $query->first();
 
-        if (!$quant) {
+        if (! $quant) {
             return 0.0;
         }
 
@@ -258,7 +256,7 @@ class StockQuantService
             }])
             ->get()
             ->filter(function ($quant) {
-                return $quant->lot && !$quant->lot->isExpired();
+                return $quant->lot && ! $quant->lot->isExpired();
             })
             ->sortBy(function ($quant) {
                 return $quant->lot->expiration_date ?? '9999-12-31';

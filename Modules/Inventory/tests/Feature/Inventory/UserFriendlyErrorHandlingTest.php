@@ -1,18 +1,16 @@
 <?php
 
-use App\Models\User;
-
-use Brick\Money\Money;
 use App\Models\Company;
-use Modules\Product\Models\Product;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Purchase\Models\VendorBillLine;
-use Modules\Product\Enums\Products\ProductType;
+use App\Models\User;
+use Brick\Money\Money;
 use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
-use Modules\Inventory\Services\Inventory\UserFriendlyErrorService;
 use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Services\Inventory\UserFriendlyErrorService;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Models\VendorBillLine;
 
 beforeEach(function () {
     $this->company = Company::factory()->create();

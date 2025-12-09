@@ -1,31 +1,31 @@
 <?php
 
+use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use App\Models\Company;
-use Modules\Accounting\Models\Tax;
-use Modules\Product\Models\Product;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Partner;
-use Modules\Foundation\Models\Currency;
-use Modules\Inventory\Models\StockMove;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Accounting\Models\AssetCategory;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Inventory\Enums\Inventory\CostSource;
-use Modules\Inventory\Models\StockMoveProductLine;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryForVendorBillAction;
 use Modules\Accounting\Enums\Assets\DepreciationMethod;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\AssetCategory;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Models\Tax;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Inventory\Enums\Inventory\CostSource;
 use Modules\Inventory\Enums\Inventory\StockLocationType;
-use Modules\Purchase\Actions\Purchases\CreateVendorBillAction;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveProductLine;
 use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Actions\Purchases\CreateVendorBillAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use Modules\Accounting\Actions\Accounting\CreateJournalEntryForVendorBillAction;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 
 beforeEach(function () {
     $this->company = Company::factory()->create();

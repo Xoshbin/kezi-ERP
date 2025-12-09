@@ -2,23 +2,18 @@
 
 namespace Modules\Inventory\Models;
 
-
-use App\Models\User;
 use App\Models\Company;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Inventory\Models\StockPicking;
-use Modules\Inventory\Models\StockMoveLine;
-use Modules\Inventory\Models\StockMoveValuation;
-use Modules\Inventory\Models\StockMoveProductLine;
-use Modules\Inventory\Observers\StockMoveObserver;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Observers\StockMoveObserver;
 
 #[ObservedBy([StockMoveObserver::class])]
 class StockMove extends Model
@@ -83,6 +78,7 @@ class StockMove extends Model
 
     /**
      * Get all stock move lines through product lines
+     *
      * @return HasManyThrough<StockMoveLine, StockMoveProductLine, static>
      */
     public function stockMoveLines(): HasManyThrough

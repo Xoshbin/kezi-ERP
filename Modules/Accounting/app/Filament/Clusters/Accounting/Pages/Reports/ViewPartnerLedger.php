@@ -83,7 +83,7 @@ class ViewPartnerLedger extends Page
                                         $hasAccounts = $partner->receivable_account_id && $partner->payable_account_id;
                                         $suffix = $hasAccounts ? '' : ' (⚠️ Missing Accounts)';
 
-                                        return [$partner->id => $partner->name . $suffix];
+                                        return [$partner->id => $partner->name.$suffix];
                                     });
                             })
                             ->placeholder(__('accounting::reports.select_partner'))
@@ -148,7 +148,7 @@ class ViewPartnerLedger extends Page
             'openingBalanceAmount' => $report->openingBalance->getAmount()->toFloat(),
             'closingBalance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($report->closingBalance),
             'closingBalanceAmount' => $report->closingBalance->getAmount()->toFloat(),
-            'transactionLines' => $report->transactionLines->map(fn($line) => [
+            'transactionLines' => $report->transactionLines->map(fn ($line) => [
                 'date' => $line->date->format('Y-m-d'),
                 'reference' => $line->reference,
                 'transactionType' => $line->transactionType,

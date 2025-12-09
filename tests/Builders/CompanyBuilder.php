@@ -2,13 +2,11 @@
 
 namespace Tests\Builders;
 
-
-
 use App\Models\Company;
 use Modules\Accounting\Enums\Accounting\JournalType;
 use Modules\Accounting\Models\Journal;
-use Modules\Inventory\Models\StockLocation;
 use Modules\Inventory\Enums\Inventory\StockLocationType;
+use Modules\Inventory\Models\StockLocation;
 
 class CompanyBuilder
 {
@@ -24,7 +22,7 @@ class CompanyBuilder
 
     public static function new(): self
     {
-        return new self();
+        return new self;
     }
 
     public function withCurrency(string $code = 'IQD'): self
@@ -125,9 +123,9 @@ class CompanyBuilder
         }
 
         $company->update(array_merge(
-            collect($accountInstances)->mapWithKeys(fn($acc, $k) => [$k => $acc->id])->all(),
-            collect($journalInstances)->mapWithKeys(fn($jour, $k) => [$k => $jour->id])->all(),
-            collect($locationInstances)->mapWithKeys(fn($loc, $k) => [$k => $loc->id])->all()
+            collect($accountInstances)->mapWithKeys(fn ($acc, $k) => [$k => $acc->id])->all(),
+            collect($journalInstances)->mapWithKeys(fn ($jour, $k) => [$k => $jour->id])->all(),
+            collect($locationInstances)->mapWithKeys(fn ($loc, $k) => [$k => $loc->id])->all()
         ));
 
         // Associate the locations with the company

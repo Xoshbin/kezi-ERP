@@ -3,17 +3,17 @@
 namespace Modules\Accounting\Tests\Feature\Assets;
 
 use Brick\Money\Money;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Partner;
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Models\AssetCategory;
-use Modules\Purchase\Services\VendorBillService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Enums\Assets\DepreciationMethod;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\AssetCategory;
+use Modules\Foundation\Models\Partner;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Services\VendorBillService;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

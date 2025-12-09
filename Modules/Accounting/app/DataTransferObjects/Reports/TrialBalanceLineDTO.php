@@ -13,6 +13,5 @@ readonly class TrialBalanceLineDTO
         public \Modules\Accounting\Enums\Accounting\AccountType $accountType,
         public Money $debit,
         public Money $credit,
-    ) {
-    }
+    ) {}
 }

@@ -13,7 +13,7 @@ class TestModel extends Model
     public static function find($id)
     {
         if ($id === 1) {
-            $model = new static();
+            $model = new static;
             $model->id = 1;
             $model->name = 'Test Model';
             $model->email = 'test@example.com';
@@ -76,7 +76,7 @@ it('can be converted to array', function () {
 });
 
 it('can get model instance when record is provided', function () {
-    $model = new TestModel();
+    $model = new TestModel;
     $model->id = 1;
     $model->name = 'Test';
 

@@ -2,29 +2,27 @@
 
 namespace Modules\Accounting\Models;
 
-use Eloquent;
-use App\Models\User;
-use RuntimeException;
-use Brick\Money\Money;
 use App\Models\Company;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Modules\Accounting\Models\Journal;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Models\Currency;
+use App\Models\User;
+use Brick\Money\Money;
+use Eloquent;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
-use Modules\Accounting\Database\Factories\JournalEntryFactory;
-use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Collection;
-use Modules\Accounting\Models\JournalEntryLine;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Modules\Accounting\Observers\JournalEntryObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Modules\Accounting\Database\Factories\JournalEntryFactory;
 use Modules\Accounting\Enums\Accounting\JournalEntryState;
+use Modules\Accounting\Observers\JournalEntryObserver;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Modules\Foundation\Models\Currency;
+use RuntimeException;
 
 // For explicit exception handling for immutability violations
 

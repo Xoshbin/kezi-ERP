@@ -3,13 +3,13 @@
 namespace Modules\Inventory\Jobs\Inventory;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Modules\Inventory\Models\StockMove;
-use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Modules\Inventory\Actions\Inventory\ProcessIncomingStockAction;
+use Modules\Inventory\Models\StockMove;
 
 class ProcessIncomingStockJob implements ShouldBeUnique, ShouldQueue
 {

@@ -2,19 +2,17 @@
 
 namespace Modules\Purchase\Database\Seeders;
 
-use Carbon\Carbon;
-use Brick\Money\Money;
 use App\Models\Company;
+use Brick\Money\Money;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Modules\Accounting\Models\Tax;
-use Modules\Product\Models\Product;
-
-use Modules\Foundation\Models\Partner;
 use Modules\Foundation\Models\Currency;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Foundation\Enums\Partners\PartnerType;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillLineAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Modules\Purchase\Models\VendorBill;
 
 class VendorBillSeeder extends Seeder
 {

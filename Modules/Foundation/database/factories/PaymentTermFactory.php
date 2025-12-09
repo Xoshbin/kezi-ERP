@@ -2,10 +2,9 @@
 
 namespace Modules\Foundation\Database\Factories;
 
+use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Foundation\Enums\PaymentTerms\PaymentTermType;
-use App\Models\Company;
-
 use Modules\Foundation\Models\PaymentTerm;
 
 /**
@@ -59,7 +58,7 @@ class PaymentTermFactory extends Factory
      */
     public function inactive(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_active' => false,
         ]);
     }
@@ -69,7 +68,7 @@ class PaymentTermFactory extends Factory
      */
     public function immediate(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'name' => [
                 'en' => 'Immediate Payment',
                 'ar' => 'دفع فوري',
@@ -89,7 +88,7 @@ class PaymentTermFactory extends Factory
      */
     public function net30(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'name' => [
                 'en' => 'Net 30',
                 'ar' => 'صافي 30',
@@ -109,7 +108,7 @@ class PaymentTermFactory extends Factory
      */
     public function withDiscount(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'name' => [
                 'en' => '2% 10, Net 30',
                 'ar' => '2% خلال 10، صافي 30',
@@ -131,7 +130,7 @@ class PaymentTermFactory extends Factory
      */
     public function installments(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'name' => [
                 'en' => '50% in 30 days, 50% in 60 days',
                 'ar' => '50% خلال 30 يوم، 50% خلال 60 يوم',

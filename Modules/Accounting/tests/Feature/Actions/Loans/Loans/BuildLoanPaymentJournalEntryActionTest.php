@@ -1,16 +1,16 @@
 <?php
 
 use Brick\Money\Money;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Actions\Loans\AccrueLoanInterestAction;
+use Modules\Accounting\Actions\Loans\BuildLoanPaymentJournalEntryAction;
+use Modules\Accounting\Actions\Loans\ComputeLoanScheduleAction;
+use Modules\Accounting\Enums\Loans\LoanType;
+use Modules\Accounting\Enums\Loans\ScheduleMethod;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Journal;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Enums\Loans\LoanType;
 use Modules\Accounting\Models\LoanAgreement;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Enums\Loans\ScheduleMethod;
-use Modules\Accounting\Actions\Loans\AccrueLoanInterestAction;
-use Modules\Accounting\Actions\Loans\ComputeLoanScheduleAction;
-use Modules\Accounting\Actions\Loans\BuildLoanPaymentJournalEntryAction;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

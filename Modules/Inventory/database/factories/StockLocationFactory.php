@@ -2,12 +2,10 @@
 
 namespace Modules\Inventory\Database\Factories;
 
-
 use App\Models\Company;
-
-use Modules\Inventory\Models\StockLocation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Inventory\Enums\Inventory\StockLocationType;
+use Modules\Inventory\Models\StockLocation;
 
 /**
  * @extends Factory<StockLocation>

@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
+use App\Models\Company;
 use Brick\Math\Exception\RoundingNecessaryException;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
@@ -10,7 +11,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 use Modules\Accounting\DataTransferObjects\Accounting\UpdateJournalEntryDTO;
-use App\Models\Company;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Accounting\Models\JournalEntryLine;
 use Modules\Foundation\Models\Currency;
@@ -75,7 +75,7 @@ class UpdateJournalEntryAction
             // Create the new lines from the DTO
             if (! empty($dto->lines)) {
                 foreach ($dto->lines as $lineDto) {
-                    $line = new JournalEntryLine();
+                    $line = new JournalEntryLine;
 
                     // First, establish the relationship. This makes the parent's context (like currency)
                     // available to the line model *before* any attributes are set. This is the key

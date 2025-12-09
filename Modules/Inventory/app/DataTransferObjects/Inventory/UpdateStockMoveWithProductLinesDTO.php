@@ -2,16 +2,14 @@
 
 namespace Modules\Inventory\DataTransferObjects\Inventory;
 
-
-
 use Carbon\Carbon;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
 
 readonly class UpdateStockMoveWithProductLinesDTO
 {
     /**
-     * @param array<CreateStockMoveProductLineDTO> $product_lines
+     * @param  array<CreateStockMoveProductLineDTO>  $product_lines
      */
     public function __construct(
         public int $id,

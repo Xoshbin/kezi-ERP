@@ -2,29 +2,29 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use Carbon\Carbon;
 use Brick\Money\Money;
-use InvalidArgumentException;
-use Modules\Inventory\Models\Lot;
-use Modules\Product\Models\Product;
-use Modules\Accounting\Models\Account;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Inventory\Models\StockQuant;
-use Modules\Inventory\Models\StockPicking;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Inventory\Models\StockMoveLine;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Inventory\Models\InventoryCostLayer;
-use Modules\Inventory\Models\StockMoveValuation;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Inventory\Enums\Inventory\StockPickingType;
-use Modules\Inventory\Enums\Inventory\StockPickingState;
+use InvalidArgumentException;
 use Modules\Accounting\Enums\Accounting\JournalEntryState;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\JournalEntry;
 use Modules\Inventory\Actions\Inventory\CreateInventoryAdjustmentAction;
-use Modules\Inventory\DataTransferObjects\Inventory\InventoryAdjustmentLineDTO;
 use Modules\Inventory\DataTransferObjects\Inventory\CreateInventoryAdjustmentDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\InventoryAdjustmentLineDTO;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Models\InventoryCostLayer;
+use Modules\Inventory\Models\Lot;
+use Modules\Inventory\Models\StockMoveLine;
+use Modules\Inventory\Models\StockMoveValuation;
+use Modules\Inventory\Models\StockPicking;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -340,7 +340,7 @@ it('prevents negative quantity adjustments', function () {
         created_by_user_id: $this->user->id,
     );
 
-    expect(fn() => $this->adjustmentAction->execute($adjustmentDto))
+    expect(fn () => $this->adjustmentAction->execute($adjustmentDto))
         ->toThrow(InvalidArgumentException::class, 'Counted quantity cannot be negative');
 });
 

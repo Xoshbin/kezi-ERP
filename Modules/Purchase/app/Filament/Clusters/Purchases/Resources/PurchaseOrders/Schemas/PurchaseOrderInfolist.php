@@ -25,7 +25,7 @@ class PurchaseOrderInfolist
                                 TextEntry::make('status')
                                     ->label(__('purchase::purchase_orders.fields.status'))
                                     ->badge()
-                                    ->color(fn($state) => match ($state?->value ?? $state) {
+                                    ->color(fn ($state) => match ($state?->value ?? $state) {
                                         'draft' => 'gray',
                                         'rfq' => 'info',
                                         'rfq_sent' => 'info',
@@ -100,7 +100,7 @@ class PurchaseOrderInfolist
 
                                         TextEntry::make('unit_price')
                                             ->label(__('purchase::purchase_orders.fields.unit_price'))
-                                            ->money(fn($record) => $record->purchaseOrder->currency->code),
+                                            ->money(fn ($record) => $record->purchaseOrder->currency->code),
 
                                         TextEntry::make('tax.name')
                                             ->label(__('purchase::purchase_orders.fields.tax'))
@@ -126,11 +126,11 @@ class PurchaseOrderInfolist
                             ->schema([
                                 TextEntry::make('total_tax')
                                     ->label(__('purchase::purchase_orders.fields.total_tax'))
-                                    ->money(fn($record) => $record->currency->code),
+                                    ->money(fn ($record) => $record->currency->code),
 
                                 TextEntry::make('total_amount')
                                     ->label(__('purchase::purchase_orders.fields.total_amount'))
-                                    ->money(fn($record) => $record->currency->code)
+                                    ->money(fn ($record) => $record->currency->code)
                                     ->weight('bold')
                                     ->size('lg'),
                             ]),

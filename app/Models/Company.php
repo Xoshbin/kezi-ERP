@@ -13,10 +13,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Modules\Inventory\Models\StockLocation;
 use Modules\Accounting\Models\Journal;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Accounting\Models\Tax;
+use Modules\Inventory\Models\StockLocation;
 use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 
 /**
@@ -733,7 +733,7 @@ class Company extends Model
             ->whereNotNull('bill_reference')
             ->exists();
 
-        return !$hasPostedInvoices && !$hasPostedBills;
+        return ! $hasPostedInvoices && ! $hasPostedBills;
     }
 
     /**

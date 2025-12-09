@@ -2,16 +2,16 @@
 
 namespace Modules\Foundation\Tests\Feature;
 
-use Modules\Sales\Models\Invoice;
-use Modules\Accounting\Models\Tax;
-use Modules\Accounting\Models\Asset;
-use Modules\Sales\Models\InvoiceLine;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Models\JournalEntry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Asset;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\Tax;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -29,7 +29,7 @@ test('a company with any financial records cannot be deleted', function (string 
     $relatedModel::factory()->for($this->company)->create($factoryState);
 
     // Act & Assert: Attempting to delete the company should fail with our specific exception.
-    expect(fn() => $this->company->delete())
+    expect(fn () => $this->company->delete())
         ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a company with associated financial records.');
 
     // Verify: The company must still exist in the database.
@@ -56,7 +56,7 @@ test('a journal with journal entries cannot be deleted', function () {
     JournalEntry::factory()->for($this->company)->for($journal)->create(['total_debit' => 0, 'total_credit' => 0]);
 
     // Act & Assert: Attempting to delete the journal should be blocked.
-    expect(fn() => $journal->delete())
+    expect(fn () => $journal->delete())
         ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a journal with associated journal entries.');
 
     // Verify: The journal must still exist.
@@ -76,7 +76,7 @@ test('a currency in use by a company or transaction cannot be deleted', function
     $currencyInUse = $this->company->currency;
 
     // Act & Assert: Attempting to delete this currency should fail.
-    expect(fn() => $currencyInUse->delete())
+    expect(fn () => $currencyInUse->delete())
         ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a currency that is in use.');
 
     // Verify: The currency must still exist.

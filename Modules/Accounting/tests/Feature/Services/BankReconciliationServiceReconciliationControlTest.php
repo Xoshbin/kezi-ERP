@@ -1,20 +1,19 @@
 <?php
 
+use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use App\Models\Company;
-use Tests\Builders\CompanyBuilder;
-use Modules\Payment\Models\Payment;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Exceptions\Reconciliation\ReconciliationDisabledException;
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\BankStatementLine;
 use Modules\Accounting\Models\Journal;
 use Modules\Foundation\Models\Partner;
-use Modules\Accounting\Models\BankStatement;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Accounting\Models\BankStatementLine;
 use Modules\Payment\Enums\Payments\PaymentStatus;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Services\BankReconciliationService;
-use Modules\Accounting\Exceptions\Reconciliation\ReconciliationDisabledException;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Models\Payment;
+use Tests\Builders\CompanyBuilder;
 
 uses(RefreshDatabase::class);
 
@@ -92,7 +91,7 @@ test('reconcilePayment throws exception when reconciliation is disabled', functi
         'is_reconciled' => false,
     ]);
 
-    expect(fn() => $this->service->reconcilePayment($payment, $statementLine, $this->user))
+    expect(fn () => $this->service->reconcilePayment($payment, $statementLine, $this->user))
         ->toThrow(ReconciliationDisabledException::class);
 });
 
@@ -130,7 +129,7 @@ test('reconcile throws exception when reconciliation is disabled for payments', 
     // Create payments
     $payments = Payment::factory()->for($company)->count(2)->create();
 
-    expect(fn() => $this->service->reconcile([], $payments->pluck('id')->toArray(), $this->user))
+    expect(fn () => $this->service->reconcile([], $payments->pluck('id')->toArray(), $this->user))
         ->toThrow(ReconciliationDisabledException::class);
 });
 
@@ -142,7 +141,7 @@ test('reconcile throws exception when reconciliation is disabled for bank statem
     $bankStatement = BankStatement::factory()->for($company)->create();
     $lines = BankStatementLine::factory()->for($bankStatement)->count(2)->create();
 
-    expect(fn() => $this->service->reconcile($lines->pluck('id')->toArray(), [], $this->user))
+    expect(fn () => $this->service->reconcile($lines->pluck('id')->toArray(), [], $this->user))
         ->toThrow(ReconciliationDisabledException::class);
 });
 
@@ -188,7 +187,7 @@ test('reconcileMultiple throws exception when reconciliation is disabled for pay
     // Create payments
     $payments = Payment::factory()->for($company)->count(2)->create();
 
-    expect(fn() => $this->service->reconcileMultiple([], $payments->pluck('id')->toArray(), $this->user))
+    expect(fn () => $this->service->reconcileMultiple([], $payments->pluck('id')->toArray(), $this->user))
         ->toThrow(ReconciliationDisabledException::class);
 });
 
@@ -200,7 +199,7 @@ test('reconcileMultiple throws exception when reconciliation is disabled for ban
     $bankStatement = BankStatement::factory()->for($company)->create();
     $lines = BankStatementLine::factory()->for($bankStatement)->count(2)->create();
 
-    expect(fn() => $this->service->reconcileMultiple($lines->pluck('id')->toArray(), [], $this->user))
+    expect(fn () => $this->service->reconcileMultiple($lines->pluck('id')->toArray(), [], $this->user))
         ->toThrow(ReconciliationDisabledException::class);
 });
 

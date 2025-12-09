@@ -2,8 +2,8 @@
 
 namespace Modules\Inventory\Services\Inventory;
 
-use Modules\Product\Models\Product;
 use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
+use Modules\Product\Models\Product;
 
 /**
  * Service for converting technical inventory exceptions into user-friendly error messages
@@ -21,7 +21,6 @@ class UserFriendlyErrorService
     /**
      * Convert InsufficientCostInformationException to user-friendly error data
      *
-     * @param InsufficientCostInformationException $exception
      * @return array Array containing title, message, explanation, solutions, and next_steps
      */
     public function convertCostInformationException(InsufficientCostInformationException $exception): array
@@ -56,7 +55,7 @@ class UserFriendlyErrorService
      */
     protected function getPrimarySolution(Product $product, array $vendorBillAnalysis): string
     {
-        if (!$vendorBillAnalysis['has_vendor_bills']) {
+        if (! $vendorBillAnalysis['has_vendor_bills']) {
             return __('inventory::inventory_accounting.cost_validation_errors.solutions.no_bills');
         }
 
@@ -76,7 +75,7 @@ class UserFriendlyErrorService
      */
     protected function getNextSteps(Product $product, array $vendorBillAnalysis): array
     {
-        if (!$vendorBillAnalysis['has_vendor_bills']) {
+        if (! $vendorBillAnalysis['has_vendor_bills']) {
             return [
                 __('inventory::inventory_accounting.cost_validation_errors.next_steps.create_bill'),
                 __('inventory::inventory_accounting.cost_validation_errors.next_steps.add_product'),
@@ -120,15 +119,15 @@ class UserFriendlyErrorService
             'product_name' => $product->name,
         ]);
 
-        if (!$vendorBillAnalysis['has_vendor_bills']) {
-            return $baseMessage . ' ' . __('Please create and confirm a vendor bill for this product first.');
+        if (! $vendorBillAnalysis['has_vendor_bills']) {
+            return $baseMessage.' '.__('Please create and confirm a vendor bill for this product first.');
         }
 
         if ($vendorBillAnalysis['draft_count'] > 0 && $vendorBillAnalysis['posted_count'] === 0) {
-            return $baseMessage . ' ' . __('Please confirm the existing draft vendor bills for this product.');
+            return $baseMessage.' '.__('Please confirm the existing draft vendor bills for this product.');
         }
 
-        return $baseMessage . ' ' . __('Cost information is not available. Please check vendor bills or contact support.');
+        return $baseMessage.' '.__('Cost information is not available. Please check vendor bills or contact support.');
     }
 
     /**

@@ -2,10 +2,10 @@
 
 namespace Modules\Purchase\Database\Factories;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Product\Models\Product;
 use Modules\Purchase\Models\PurchaseOrder;
 use Modules\Purchase\Models\PurchaseOrderLine;
-use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<PurchaseOrderLine>
@@ -49,7 +49,7 @@ class PurchaseOrderLineFactory extends Factory
     /**
      * Indicate that the line has been partially received.
      */
-    public function partiallyReceived(int $receivedQuantity = null): static
+    public function partiallyReceived(?int $receivedQuantity = null): static
     {
         return $this->state(function (array $attributes) use ($receivedQuantity) {
             $totalQuantity = $attributes['quantity'];
@@ -66,7 +66,7 @@ class PurchaseOrderLineFactory extends Factory
      */
     public function fullyReceived(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'quantity_received' => $attributes['quantity'],
         ]);
     }
