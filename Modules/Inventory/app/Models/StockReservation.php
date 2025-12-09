@@ -3,12 +3,10 @@
 namespace Modules\Inventory\Models;
 
 use App\Models\Company;
-use Modules\Product\Models\Product;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Inventory\Models\StockMove;
-use Modules\Inventory\Models\StockLocation;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Product\Models\Product;
 
 class StockReservation extends Model
 {

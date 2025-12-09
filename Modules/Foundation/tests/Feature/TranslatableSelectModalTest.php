@@ -2,14 +2,13 @@
 
 namespace Modules\Foundation\Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\Company;
 use Filament\Facades\Filament;
-
-use Modules\Accounting\Models\Tax;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Enums\Accounting\TaxType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Accounting\TaxType;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Tax;
+use Tests\TestCase;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class TranslatableSelectModalTest extends TestCase

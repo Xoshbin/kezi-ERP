@@ -2,26 +2,28 @@
 
 namespace Modules\Purchase\Tests\Feature\Filament;
 
-use Tests\TestCase;
-use App\Models\User;
-use Livewire\Livewire;
 use App\Models\Company;
-
-use Modules\Foundation\Models\Partner;
-use Modules\Foundation\Models\Currency;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Purchase\Models\PurchaseOrder;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
 use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
 use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\EditPurchaseOrder;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Models\VendorBill;
+use Tests\TestCase;
 
 class PurchaseOrderBusinessRulesTest extends TestCase
 {
     use RefreshDatabase;
 
     protected Company $company;
+
     protected User $user;
+
     protected Partner $vendor;
+
     protected Currency $currency;
 
     protected function setUp(): void

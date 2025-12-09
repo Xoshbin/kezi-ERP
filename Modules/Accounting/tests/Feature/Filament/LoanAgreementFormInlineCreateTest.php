@@ -1,14 +1,14 @@
 <?php
 
-use function Pest\Livewire\livewire;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Enums\Loans\LoanType;
-
-use Modules\Accounting\Enums\Loans\LoanStatus;
-use Tests\Support\FilamentInlineCreate as Inline;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Loans\LoanStatus;
+use Modules\Accounting\Enums\Loans\LoanType;
 use Modules\Accounting\Enums\Loans\ScheduleMethod;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\CreateLoanAgreement;
+use Tests\Support\FilamentInlineCreate as Inline;
+use Tests\Traits\WithConfiguredCompany;
+
+use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

@@ -2,21 +2,19 @@
 
 namespace Modules\Accounting\Models;
 
-use Eloquent;
-use Brick\Money\Money;
 use App\Models\Company;
-use Illuminate\Support\Carbon;
-use Modules\Accounting\Models\Asset;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Accounting\Database\Factories\DepreciationEntryFactory;
-use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Brick\Money\Money;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Modules\Accounting\Observers\DepreciationEntryObserver;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
+use Modules\Accounting\Database\Factories\DepreciationEntryFactory;
 use Modules\Accounting\Enums\Assets\DepreciationEntryStatus;
+use Modules\Accounting\Observers\DepreciationEntryObserver;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
 
 /**
  * Class DepreciationEntry
@@ -52,7 +50,6 @@ class DepreciationEntry extends Model
 {
     /** @use HasFactory<DepreciationEntryFactory> */
     use HasFactory;
-
 
     protected static function newFactory(): \Modules\Accounting\Database\Factories\DepreciationEntryFactory
     {

@@ -4,9 +4,8 @@ namespace Modules\Sales\Actions\Sales;
 
 use App\Models\Company;
 use Illuminate\Support\Facades\DB;
-
-use Modules\Sales\Models\SalesOrder;
 use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderDTO;
+use Modules\Sales\Models\SalesOrder;
 
 /**
  * Action for creating a new Sales Order

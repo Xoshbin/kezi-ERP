@@ -4,17 +4,16 @@ namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingRe
 
 use Exception;
 use Filament\Actions\Action;
-use Modules\Inventory\Models\Lot;
-use Illuminate\Support\Facades\DB;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
-use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\Placeholder;
-use Modules\Inventory\Models\StockPicking;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Models\Lot;
+use Modules\Inventory\Models\StockPicking;
 use Modules\Inventory\Services\Inventory\StockReservationService;
 
 class AssignPickingAction extends Action
@@ -57,7 +56,7 @@ class AssignPickingAction extends Action
                                 ->label(__('Product'))
                                 ->disabled()
                                 ->dehydrated(false)
-                                ->suffix(fn($get) => 'Qty: ' . $get('quantity')),
+                                ->suffix(fn ($get) => 'Qty: '.$get('quantity')),
 
                             \Filament\Forms\Components\Hidden::make('quantity'),
 
@@ -83,7 +82,7 @@ class AssignPickingAction extends Action
                                             // Fallback for getting parent data if relative path fails or structure changes
                                             $productId = $moveData['product_id'] ?? null;
 
-                                            if (!$productId) {
+                                            if (! $productId) {
                                                 return [];
                                             }
 
@@ -126,6 +125,7 @@ class AssignPickingAction extends Action
                                     ];
                                 }
                             }
+
                             return $moves;
                         }),
                 ]),
@@ -141,7 +141,7 @@ class AssignPickingAction extends Action
                 // Process each move
                 foreach ($data['moves'] as $moveData) {
                     $move = $picking->stockMoves()->find($moveData['move_id']);
-                    if (!$move) {
+                    if (! $move) {
                         continue;
                     }
 
@@ -153,7 +153,7 @@ class AssignPickingAction extends Action
                             $reservationService->reserveForMove($move, $productLine->from_location_id); // Note: Assuming reserveForMove handles productLine logic or we might need to update that service too. For now passing what it expects.
 
                             // Create lot lines if specified
-                            if (!empty($moveData['lot_lines'])) {
+                            if (! empty($moveData['lot_lines'])) {
                                 foreach ($moveData['lot_lines'] as $lotLineData) {
                                     $move->stockMoveLines()->create([
                                         'company_id' => $move->company_id,

@@ -18,8 +18,7 @@ class GetAIAssistantResponseAction
     public function __construct(
         protected GeminiService $geminiService,
         private readonly DeepContextService $deepContextService
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the action and get AI response

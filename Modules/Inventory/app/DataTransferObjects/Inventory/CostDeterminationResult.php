@@ -2,7 +2,6 @@
 
 namespace Modules\Inventory\DataTransferObjects\Inventory;
 
-
 use Brick\Money\Money;
 use Modules\Inventory\Enums\Inventory\CostSource;
 
@@ -27,7 +26,7 @@ readonly class CostDeterminationResult
      */
     public function hasWarnings(): bool
     {
-        return !empty($this->warnings);
+        return ! empty($this->warnings);
     }
 
     /**
@@ -53,7 +52,7 @@ readonly class CostDeterminationResult
     {
         $description = "Cost {$this->cost->getAmount()} from {$this->source->label()}";
 
-        if (!empty($this->reference)) {
+        if (! empty($this->reference)) {
             $description .= " ({$this->reference})";
         }
 

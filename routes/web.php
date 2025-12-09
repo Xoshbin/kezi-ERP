@@ -1,11 +1,11 @@
 <?php
 
-use Modules\Sales\Actions\Sales\GenerateInvoicePdfAction;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
 use App\Models\Company;
-use Modules\Sales\Models\Invoice;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Modules\Sales\Actions\Sales\GenerateInvoicePdfAction;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Models\Invoice;
 
 Route::get('/', function () {
     return view('welcome');

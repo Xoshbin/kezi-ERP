@@ -2,29 +2,28 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Pages;
 
-
-
-use Exception;
 use BackedEnum;
 use Carbon\Carbon;
-use Filament\Pages\Page;
+use Exception;
 use Filament\Actions\Action;
-use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
-use Modules\Product\Models\Product;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
+use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Schemas\Schema;
 use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
 use Modules\Inventory\Services\Inventory\InventoryCSVExportService;
 use Modules\Inventory\Services\Inventory\InventoryReportingService;
+use Modules\Product\Models\Product;
 
 class InventoryTurnoverReport extends Page implements HasForms
 {
     use InteractsWithForms;
+
     protected static ?string $cluster = InventoryCluster::class;
 
     protected string $view = 'inventory::filament.clusters.inventory.pages.inventory-turnover-report';
@@ -79,7 +78,7 @@ class InventoryTurnoverReport extends Page implements HasForms
                             ->default(now()->startOfYear())
                             ->maxDate(now())
                             ->live()
-                            ->afterStateUpdated(fn() => $this->generateReport()),
+                            ->afterStateUpdated(fn () => $this->generateReport()),
 
                         DatePicker::make('end_date')
                             ->label(__('inventory::inventory_reports.turnover.filters.end_date'))
@@ -87,7 +86,7 @@ class InventoryTurnoverReport extends Page implements HasForms
                             ->default(now())
                             ->maxDate(now())
                             ->live()
-                            ->afterStateUpdated(fn() => $this->generateReport()),
+                            ->afterStateUpdated(fn () => $this->generateReport()),
 
                         Select::make('product_ids')
                             ->label(__('inventory::inventory_reports.turnover.filters.products'))
@@ -100,7 +99,7 @@ class InventoryTurnoverReport extends Page implements HasForms
                             ->searchable()
                             ->preload()
                             ->live()
-                            ->afterStateUpdated(fn() => $this->generateReport()),
+                            ->afterStateUpdated(fn () => $this->generateReport()),
                     ])
                     ->columns(3),
             ])
@@ -131,7 +130,7 @@ class InventoryTurnoverReport extends Page implements HasForms
 
     public function getTurnoverAnalysis(): array
     {
-        if (!$this->reportData) {
+        if (! $this->reportData) {
             return [];
         }
 
@@ -166,7 +165,7 @@ class InventoryTurnoverReport extends Page implements HasForms
 
     public function getPeriodLength(): int
     {
-        if (!$this->reportData) {
+        if (! $this->reportData) {
             return 0;
         }
 
@@ -175,7 +174,7 @@ class InventoryTurnoverReport extends Page implements HasForms
 
     public function getAnnualizedTurnover(): float
     {
-        if (!$this->reportData) {
+        if (! $this->reportData) {
             return 0;
         }
 
@@ -185,6 +184,7 @@ class InventoryTurnoverReport extends Page implements HasForms
         }
 
         $ratio = $this->reportData['inventory_turnover_ratio'];
+
         return ($ratio * 365) / $periodDays;
     }
 
@@ -194,13 +194,14 @@ class InventoryTurnoverReport extends Page implements HasForms
             Action::make('export')
                 ->label(__('inventory::inventory_reports.turnover.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
-                ->disabled(fn() => !$this->reportData)
+                ->disabled(fn () => ! $this->reportData)
                 ->action(function () {
-                    if (!$this->reportData) {
+                    if (! $this->reportData) {
                         Notification::make()
                             ->title(__('inventory::inventory_reports.turnover.no_data_to_export'))
                             ->danger()
                             ->send();
+
                         return;
                     }
 
@@ -210,7 +211,7 @@ class InventoryTurnoverReport extends Page implements HasForms
                             'include_metadata' => true,
                         ]);
 
-                        $filename = 'inventory-turnover-' . now()->format('Y-m-d-H-i-s') . '.csv';
+                        $filename = 'inventory-turnover-'.now()->format('Y-m-d-H-i-s').'.csv';
 
                         Notification::make()
                             ->title(__('inventory::inventory_reports.turnover.export_started'))

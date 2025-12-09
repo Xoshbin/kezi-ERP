@@ -10,6 +10,5 @@ class AIAssistantRequestDTO
         public readonly ?string $modelId = null,
         public readonly ?string $resourceClass = null,
         public readonly array $additionalContext = []
-    ) {
-    }
+    ) {}
 }

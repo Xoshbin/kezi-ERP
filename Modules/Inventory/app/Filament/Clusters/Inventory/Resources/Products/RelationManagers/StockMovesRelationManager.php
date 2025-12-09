@@ -2,29 +2,27 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers;
 
-
-
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Facades\Filament;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
-use Modules\Product\Models\Product;
-use Filament\Actions\BulkActionGroup;
-use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Grid;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Inventory\Models\StockMove;
-use Filament\Forms\Components\TextInput;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
-use Filament\Tables\Filters\SelectFilter;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Models\StockMove;
+use Modules\Product\Models\Product;
 
 class StockMovesRelationManager extends RelationManager
 {
@@ -64,14 +62,14 @@ class StockMovesRelationManager extends RelationManager
                         ->required()
                         ->options(
                             collect(StockMoveType::cases())
-                                ->mapWithKeys(fn(StockMoveType $type) => [$type->value => $type->label()])
+                                ->mapWithKeys(fn (StockMoveType $type) => [$type->value => $type->label()])
                         ),
                     Select::make('status')
                         ->label(__('inventory::stock_move.status'))
                         ->required()
                         ->options(
                             collect(StockMoveStatus::cases())
-                                ->mapWithKeys(fn(StockMoveStatus $status) => [$status->value => $status->label()])
+                                ->mapWithKeys(fn (StockMoveStatus $status) => [$status->value => $status->label()])
                         )
                         ->default(StockMoveStatus::Draft->value),
                 ]),
@@ -113,8 +111,8 @@ class StockMovesRelationManager extends RelationManager
                 TextColumn::make('move_type')
                     ->label(__('inventory::stock_move.move_type'))
                     ->badge()
-                    ->formatStateUsing(fn(StockMoveType $state): string => $state->label())
-                    ->color(fn(StockMoveType $state): string => match ($state) {
+                    ->formatStateUsing(fn (StockMoveType $state): string => $state->label())
+                    ->color(fn (StockMoveType $state): string => match ($state) {
                         StockMoveType::Incoming => 'success',
                         StockMoveType::Outgoing => 'danger',
                         StockMoveType::InternalTransfer => 'info',
@@ -123,8 +121,8 @@ class StockMovesRelationManager extends RelationManager
                 TextColumn::make('status')
                     ->label(__('inventory::stock_move.status'))
                     ->badge()
-                    ->formatStateUsing(fn(StockMoveStatus $state): string => $state->label())
-                    ->color(fn(StockMoveStatus $state): string => match ($state) {
+                    ->formatStateUsing(fn (StockMoveStatus $state): string => $state->label())
+                    ->color(fn (StockMoveStatus $state): string => match ($state) {
                         StockMoveStatus::Draft => 'gray',
                         StockMoveStatus::Confirmed => 'warning',
                         StockMoveStatus::Done => 'success',
@@ -132,7 +130,7 @@ class StockMovesRelationManager extends RelationManager
                     }),
                 TextColumn::make('source_type')
                     ->label(__('inventory::stock_move.source'))
-                    ->formatStateUsing(fn(?string $state): string => $state ? class_basename($state) : '-')
+                    ->formatStateUsing(fn (?string $state): string => $state ? class_basename($state) : '-')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label(__('inventory::stock_move.created_at'))
@@ -146,13 +144,13 @@ class StockMovesRelationManager extends RelationManager
                     ->label(__('inventory::stock_move.move_type'))
                     ->options(
                         collect(StockMoveType::cases())
-                            ->mapWithKeys(fn(StockMoveType $type) => [$type->value => $type->label()])
+                            ->mapWithKeys(fn (StockMoveType $type) => [$type->value => $type->label()])
                     ),
                 SelectFilter::make('status')
                     ->label(__('inventory::stock_move.status'))
                     ->options(
                         collect(StockMoveStatus::cases())
-                            ->mapWithKeys(fn(StockMoveStatus $status) => [$status->value => $status->label()])
+                            ->mapWithKeys(fn (StockMoveStatus $status) => [$status->value => $status->label()])
                     ),
             ])
             ->headerActions([
@@ -173,10 +171,10 @@ class StockMovesRelationManager extends RelationManager
                     ->icon('heroicon-o-eye'),
                 EditAction::make()
                     ->icon('heroicon-o-pencil-square')
-                    ->visible(fn(StockMove $record): bool => $record->status === StockMoveStatus::Draft),
+                    ->visible(fn (StockMove $record): bool => $record->status === StockMoveStatus::Draft),
                 DeleteAction::make()
                     ->icon('heroicon-o-trash')
-                    ->visible(fn(StockMove $record): bool => $record->status === StockMoveStatus::Draft),
+                    ->visible(fn (StockMove $record): bool => $record->status === StockMoveStatus::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

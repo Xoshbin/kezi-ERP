@@ -2,15 +2,14 @@
 
 namespace Modules\Inventory\Database\Factories;
 
-use Brick\Money\Money;
 use App\Models\Company;
-use Modules\Foundation\Models\Currency;
-use Modules\Accounting\Models\JournalEntry;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Modules\Inventory\Models\AdjustmentDocumentLine;
-use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Models\Currency;
 use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
-
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Modules\Inventory\Models\AdjustmentDocumentLine;
 
 /**
  * @extends Factory<AdjustmentDocument>
@@ -61,7 +60,7 @@ class AdjustmentDocumentFactory extends Factory
 
     public function draft(): self
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => AdjustmentDocumentStatus::Draft,
             'posted_at' => null,
             'journal_entry_id' => null,

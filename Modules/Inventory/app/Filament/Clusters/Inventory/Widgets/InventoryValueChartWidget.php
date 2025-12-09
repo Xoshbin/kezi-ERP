@@ -2,7 +2,6 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Widgets;
 
-
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Cache;
@@ -12,7 +11,7 @@ class InventoryValueChartWidget extends ChartWidget
 {
     protected static ?int $sort = 2;
 
-    protected int | string | array $columnSpan = [
+    protected int|string|array $columnSpan = [
         'md' => 2,
         'xl' => 1,
     ];
@@ -35,7 +34,7 @@ class InventoryValueChartWidget extends ChartWidget
     protected function getData(): array
     {
         $filters = $this->getFilters();
-        $cacheKey = 'inventory_value_chart_' . md5(serialize($filters));
+        $cacheKey = 'inventory_value_chart_'.md5(serialize($filters));
 
         return Cache::remember($cacheKey, 300, function () use ($filters) {
             $dateFrom = Carbon::parse($filters['date_from'] ?? now()->subDays(30));

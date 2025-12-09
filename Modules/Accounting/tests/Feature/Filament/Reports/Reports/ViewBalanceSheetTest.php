@@ -3,17 +3,16 @@
 namespace Modules\Accounting\Tests\Feature\Filament\Reports;
 
 use Carbon\Carbon;
-use function Pest\Livewire\livewire;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Accounting\Models\JournalEntryLine;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Enums\Accounting\AccountType;
 use Modules\Accounting\Enums\Accounting\JournalEntryState;
 use Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports\ViewBalanceSheet;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\JournalEntryLine;
+use Tests\Traits\WithConfiguredCompany;
+
+use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

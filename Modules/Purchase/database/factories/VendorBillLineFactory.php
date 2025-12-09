@@ -3,13 +3,13 @@
 namespace Modules\Purchase\Database\Factories;
 
 use Brick\Money\Money;
-use Modules\Accounting\Models\Tax;
-use Modules\Product\Models\Product;
-use Modules\Accounting\Models\Account;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Accounting\Models\AnalyticAccount;
-use Modules\Product\Enums\Products\ProductType;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\AnalyticAccount;
+use Modules\Accounting\Models\Tax;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
 
 /**
  * @extends Factory<VendorBillLine>

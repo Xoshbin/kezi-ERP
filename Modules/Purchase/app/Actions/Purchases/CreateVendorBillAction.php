@@ -2,15 +2,14 @@
 
 namespace Modules\Purchase\Actions\Purchases;
 
-use Exception;
-use Carbon\Carbon;
 use App\Models\Company;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\DB;
-
-use Modules\Purchase\Models\VendorBill;
-use Modules\Purchase\Models\PurchaseOrder;
 use Illuminate\Validation\ValidationException;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Models\VendorBill;
 
 class CreateVendorBillAction
 {
@@ -69,7 +68,7 @@ class CreateVendorBillAction
     {
         $purchaseOrder = PurchaseOrder::find($createVendorBillDTO->purchase_order_id);
 
-        if (!$purchaseOrder) {
+        if (! $purchaseOrder) {
             throw ValidationException::withMessages([
                 'purchase_order_id' => 'The selected purchase order does not exist.',
             ]);
@@ -97,7 +96,7 @@ class CreateVendorBillAction
         }
 
         // Validate that the purchase order status allows billing
-        if (!$purchaseOrder->status->canCreateBill()) {
+        if (! $purchaseOrder->status->canCreateBill()) {
             throw ValidationException::withMessages([
                 'purchase_order_id' => 'The purchase order status does not allow creating bills.',
             ]);

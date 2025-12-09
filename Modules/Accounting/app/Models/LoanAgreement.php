@@ -2,22 +2,17 @@
 
 namespace Modules\Accounting\Models;
 
-
 use App\Models\Company;
-use Modules\Foundation\Models\Partner;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Models\Currency;
-use Modules\Accounting\Models\LoanFeeLine;
-use Modules\Accounting\Enums\Loans\LoanType;
-use Modules\Accounting\Models\LoanRateChange;
-use Modules\Accounting\Enums\Loans\LoanStatus;
-use Modules\Accounting\Models\LoanScheduleEntry;
-use Modules\Accounting\Enums\Loans\ScheduleMethod;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Accounting\Database\Factories\LoanAgreementFactory;
+use Modules\Accounting\Enums\Loans\LoanStatus;
+use Modules\Accounting\Enums\Loans\LoanType;
+use Modules\Accounting\Enums\Loans\ScheduleMethod;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
 
 class LoanAgreement extends Model
 {
@@ -82,6 +77,7 @@ class LoanAgreement extends Model
     {
         return $this->hasMany(LoanRateChange::class, 'loan_id');
     }
+
     protected static function newFactory()
     {
         return LoanAgreementFactory::new();

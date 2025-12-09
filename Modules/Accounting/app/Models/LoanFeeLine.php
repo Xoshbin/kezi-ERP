@@ -2,12 +2,10 @@
 
 namespace Modules\Accounting\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Modules\Accounting\Enums\Loans\FeeType;
-use Modules\Accounting\Models\LoanAgreement;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Accounting\Enums\Loans\FeeType;
 
 class LoanFeeLine extends Model
 {

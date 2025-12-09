@@ -1,21 +1,19 @@
 <?php
 
 use Brick\Money\Money;
-use Modules\Product\Models\Product;
-use Modules\Accounting\Models\Account;
-use Modules\Inventory\Models\StockMove;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Inventory\Models\StockMoveValuation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Inventory\Actions\Inventory\CreateStockMoveAction;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\JournalEntry;
 use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
 use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveValuation;
+use Modules\Product\Models\Product;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -135,7 +133,7 @@ it('throws exception for manual stock moves when product has no cost information
     );
 
     // Act & Assert: Should throw InsufficientCostInformationException
-    expect(fn() => app(\Modules\Inventory\Actions\Inventory\CreateStockMoveAction::class)->execute($dto))
+    expect(fn () => app(\Modules\Inventory\Actions\Inventory\CreateStockMoveAction::class)->execute($dto))
         ->toThrow(InsufficientCostInformationException::class, 'Cannot determine cost for product');
 });
 
@@ -174,6 +172,6 @@ it('throws exception for manual outgoing stock moves when product has no cost in
     );
 
     // Act & Assert: Should throw RuntimeException for COGS calculation (outgoing moves still use old logic)
-    expect(fn() => app(\Modules\Inventory\Actions\Inventory\CreateStockMoveAction::class)->execute($dto))
+    expect(fn () => app(\Modules\Inventory\Actions\Inventory\CreateStockMoveAction::class)->execute($dto))
         ->toThrow(\RuntimeException::class, 'Cannot calculate COGS for product');
 });

@@ -1,20 +1,20 @@
 <?php
 
 use Brick\Money\Money;
-use Modules\Sales\Models\Invoice;
-use Modules\Product\Models\Product;
-use function Pest\Livewire\livewire;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Partner;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Modules\Sales\Services\InvoiceService;
-
-use Modules\Product\Enums\Products\ProductType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Services\InvoiceService;
+use Tests\Traits\WithConfiguredCompany;
+
+use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

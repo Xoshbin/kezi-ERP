@@ -2,9 +2,9 @@
 
 namespace Modules\Accounting\Database\Factories;
 
+use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Accounting\Models\AnalyticAccount;
-use App\Models\Company;
 use Modules\Foundation\Models\Currency;
 
 /**
@@ -23,7 +23,7 @@ class AnalyticAccountFactory extends Factory
     {
         return [
             'company_id' => Company::factory(),
-            'name' => $this->faker->company . ' ' . $this->faker->word,
+            'name' => $this->faker->company.' '.$this->faker->word,
             'reference' => $this->faker->optional()->bothify('AA-####'),
             'currency_id' => function () {
                 return Currency::factory()->createSafely()->id;

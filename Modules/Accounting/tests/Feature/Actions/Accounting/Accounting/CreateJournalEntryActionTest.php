@@ -3,12 +3,11 @@
 namespace Modules\Accounting\Tests\Feature\Actions\Accounting;
 
 use Brick\Money\Money;
-use Modules\Accounting\Models\Account;
-use Tests\Traits\WithConfiguredCompany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Modules\Accounting\Models\Account;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

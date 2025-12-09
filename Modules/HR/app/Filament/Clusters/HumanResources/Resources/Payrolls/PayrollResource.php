@@ -3,19 +3,19 @@
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls;
 
 use BackedEnum;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Modules\HR\Models\Payroll;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Modules\HR\Filament\Clusters\HumanResources\HumanResourcesCluster;
-use Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Pages\EditPayroll;
-use Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Pages\ViewPayroll;
-use Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Pages\ListPayrolls;
 use Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Pages\CreatePayroll;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Pages\EditPayroll;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Pages\ListPayrolls;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Pages\ViewPayroll;
 use Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Schemas\PayrollForm;
-use Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Tables\PayrollsTable;
 use Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Schemas\PayrollInfolist;
+use Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Tables\PayrollsTable;
+use Modules\HR\Models\Payroll;
 
 class PayrollResource extends Resource
 {

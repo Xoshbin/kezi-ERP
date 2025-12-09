@@ -4,30 +4,34 @@ namespace Modules\Purchase\tests\Feature;
 
 use App\Models\Company;
 use App\Models\User;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Currency;
-use Modules\Accounting\Models\Journal;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
+use Modules\Accounting\Actions\Accounting\BuildVendorBillPostingPreviewAction;
 use Modules\Accounting\Enums\Accounting\AccountType;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill as FilamentEditVendorBill;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Models\Currency; // Adjust namespace if needed
 use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 use Modules\Purchase\Models\VendorBill;
 use Modules\Purchase\Models\VendorBillLine;
-use Modules\Purchase\Screens\EditVendorBill;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill as FilamentEditVendorBill; // Adjust namespace if needed
 use Modules\Purchase\Services\VendorBillService;
-use Modules\Accounting\Actions\Accounting\BuildVendorBillPostingPreviewAction;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use Livewire\Livewire;
 
 class VendorBillConfirmationTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $user;
+
     protected Company $company;
+
     protected Account $payableAccount;
+
     protected Account $expenseAccount;
+
     protected Account $inputTaxAccount;
+
     protected Journal $journal;
 
     protected function setUp(): void
@@ -75,7 +79,7 @@ class VendorBillConfirmationTest extends TestCase
             'default_accounts_payable_id' => $this->payableAccount->id,
             'default_purchase_journal_id' => $this->journal->id,
             'default_tax_receivable_id' => $this->inputTaxAccount->id,
-        ]);// Configure company defaults
+        ]); // Configure company defaults
         $this->company->update([
             'default_accounts_payable_id' => $this->payableAccount->id,
             'default_purchase_journal_id' => $this->journal->id,

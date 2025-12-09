@@ -2,29 +2,27 @@
 
 namespace Modules\Sales\Services;
 
-use Exception;
-use Carbon\Carbon;
-use App\Models\User;
-use RuntimeException;
 use App\Models\Company;
-use Modules\Sales\Models\Invoice;
+use App\Models\User;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\DB;
-
 use Illuminate\Support\Facades\Gate;
-use Modules\Sales\Models\InvoiceLine;
-
-use Modules\Foundation\Models\AuditLog;
-use Modules\Foundation\Models\Currency;
-use Modules\Sales\Events\InvoiceConfirmed;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Modules\Foundation\Services\SequenceService;
-use Modules\Accounting\Services\JournalEntryService;
-use Modules\Foundation\Services\ExchangeRateService;
-use Modules\Foundation\Services\CurrencyConverterService;
-use Modules\Sales\Actions\Sales\CreateStockMovesForInvoiceAction;
-use Modules\Sales\DataTransferObjects\Sales\CreateStockMovesForInvoiceDTO;
 use Modules\Accounting\Actions\Accounting\BuildInvoicePostingPreviewAction;
 use Modules\Accounting\Actions\Accounting\CreateJournalEntryForInvoiceAction;
+use Modules\Accounting\Services\JournalEntryService;
+use Modules\Foundation\Models\AuditLog;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Services\CurrencyConverterService;
+use Modules\Foundation\Services\ExchangeRateService;
+use Modules\Foundation\Services\SequenceService;
+use Modules\Sales\Actions\Sales\CreateStockMovesForInvoiceAction;
+use Modules\Sales\DataTransferObjects\Sales\CreateStockMovesForInvoiceDTO;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Events\InvoiceConfirmed;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
+use RuntimeException;
 
 // Add this import
 
@@ -83,7 +81,7 @@ class InvoiceService
             // Invoice is not linked to a sales order (sales orders handle their own deliveries)
             // Note: Unlike vendor bills, invoices always create stock moves regardless of inventory mode
             // for proper lot tracking, FEFO allocation, and inventory management
-            if (!$invoice->sales_order_id) {
+            if (! $invoice->sales_order_id) {
                 $this->createStockMovesForInvoiceAction->execute(
                     new CreateStockMovesForInvoiceDTO($invoice, $user)
                 );
@@ -114,7 +112,7 @@ class InvoiceService
                 'event_type' => 'reset_to_draft',
                 'auditable_type' => get_class($invoice),
                 'auditable_id' => $invoice->id,
-                'description' => 'Invoice Reset to Draft: ' . $reason,
+                'description' => 'Invoice Reset to Draft: '.$reason,
                 'old_values' => ['status' => $invoice->status],
                 'new_values' => ['status' => InvoiceStatus::Draft],
                 'ip_address' => request()->ip(),
@@ -123,7 +121,7 @@ class InvoiceService
             // Step 2: Use the service to create the reversing journal entry.
             $this->journalEntryService->createReversal(
                 $originalEntry,
-                'Reset to Draft of Invoice ' . $invoice->invoice_number . ': ' . $reason,
+                'Reset to Draft of Invoice '.$invoice->invoice_number.': '.$reason,
                 $user
             );
 
@@ -175,7 +173,7 @@ class InvoiceService
                 'event_type' => 'cancellation',
                 'auditable_type' => get_class($invoice),
                 'auditable_id' => $invoice->id,
-                'description' => 'Invoice Cancelled: ' . $reason,
+                'description' => 'Invoice Cancelled: '.$reason,
                 'old_values' => ['status' => $invoice->status],
                 'new_values' => ['status' => InvoiceStatus::Cancelled],
                 'ip_address' => request()->ip(),
@@ -184,7 +182,7 @@ class InvoiceService
             // Step 2: Use the service to create the reversing journal entry.
             $this->journalEntryService->createReversal(
                 $originalEntry,
-                'Cancellation of Invoice ' . $invoice->invoice_number . ': ' . $reason,
+                'Cancellation of Invoice '.$invoice->invoice_number.': '.$reason,
                 $user
             );
 
@@ -269,7 +267,7 @@ class InvoiceService
     /**
      * Convert invoice line amounts to company currency.
      *
-     * @param InvoiceLine $line
+     * @param  InvoiceLine  $line
      */
     protected function convertInvoiceLineAmounts($line, Currency $companyCurrency, float $exchangeRate): void
     {

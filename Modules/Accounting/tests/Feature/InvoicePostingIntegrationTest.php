@@ -2,23 +2,22 @@
 
 namespace Modules\Accounting\Tests\Feature;
 
-use Tests\TestCase;
+use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use App\Models\Company;
-use Modules\Sales\Models\Invoice;
-use Modules\Accounting\Models\Tax;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Partner;
-use Modules\Foundation\Models\Currency;
-use Modules\Sales\Services\InvoiceService;
 use Modules\Accounting\Models\JournalEntry;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Sales\Actions\Sales\CreateInvoiceAction;
+use Modules\Accounting\Models\Tax;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
 use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
 use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Services\InvoiceService;
+use Tests\TestCase;
 
 class InvoicePostingIntegrationTest extends TestCase
 {

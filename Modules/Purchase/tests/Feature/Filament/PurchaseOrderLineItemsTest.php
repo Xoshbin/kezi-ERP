@@ -1,17 +1,17 @@
 <?php
 
 use Brick\Money\Money;
-use Livewire\Livewire;
 use Filament\Facades\Filament;
-use Modules\Accounting\Models\Tax;
-use Modules\Product\Models\Product;
-use Modules\Foundation\Models\Partner;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Purchase\Models\PurchaseOrder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Purchase\Services\PurchaseOrderService;
+use Livewire\Livewire;
+use Modules\Accounting\Models\Tax;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
 use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
 use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\CreatePurchaseOrder;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Services\PurchaseOrderService;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -228,10 +228,10 @@ test('validates required line item fields', function () {
 
     // Check that errors contain the expected field types
     $errorKeys = $errors->keys();
-    $hasProductError = collect($errorKeys)->contains(fn($key) => str_contains($key, 'product_id'));
-    $hasDescriptionError = collect($errorKeys)->contains(fn($key) => str_contains($key, 'description'));
-    $hasQuantityError = collect($errorKeys)->contains(fn($key) => str_contains($key, 'quantity'));
-    $hasUnitPriceError = collect($errorKeys)->contains(fn($key) => str_contains($key, 'unit_price'));
+    $hasProductError = collect($errorKeys)->contains(fn ($key) => str_contains($key, 'product_id'));
+    $hasDescriptionError = collect($errorKeys)->contains(fn ($key) => str_contains($key, 'description'));
+    $hasQuantityError = collect($errorKeys)->contains(fn ($key) => str_contains($key, 'quantity'));
+    $hasUnitPriceError = collect($errorKeys)->contains(fn ($key) => str_contains($key, 'unit_price'));
 
     expect($hasProductError)->toBeTrue();
     expect($hasDescriptionError)->toBeTrue();

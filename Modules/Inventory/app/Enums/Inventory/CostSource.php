@@ -22,7 +22,7 @@ enum CostSource: string
      */
     public function label(): string
     {
-        return __('enums.cost_source.' . $this->value);
+        return __('enums.cost_source.'.$this->value);
     }
 
     /**

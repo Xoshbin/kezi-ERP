@@ -2,13 +2,13 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
+use App\Models\User;
 use Brick\Money\Money;
 use InvalidArgumentException;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Modules\Accounting\Models\Asset;
 use Modules\Accounting\Models\JournalEntry;
-use App\Models\User;
 use Modules\Foundation\Models\Currency;
 use RuntimeException;
 
@@ -36,7 +36,7 @@ class CreateJournalEntryForAssetAcquisitionAction
                 account_id: $asset->asset_account_id,
                 debit: $purchaseValue,
                 credit: Money::zero($assetCurrency->code),
-                description: 'Asset Acquisition: ' . $asset->name,
+                description: 'Asset Acquisition: '.$asset->name,
                 partner_id: null,
                 analytic_account_id: null,
             ),
@@ -44,7 +44,7 @@ class CreateJournalEntryForAssetAcquisitionAction
                 account_id: $payableAccountId,
                 credit: $purchaseValue,
                 debit: Money::zero($assetCurrency->code),
-                description: 'Acquisition of Asset: ' . $asset->name,
+                description: 'Acquisition of Asset: '.$asset->name,
                 partner_id: null,
                 analytic_account_id: null,
             ),
@@ -59,8 +59,8 @@ class CreateJournalEntryForAssetAcquisitionAction
             journal_id: $company->default_depreciation_journal_id,
             currency_id: $asset->currency_id,
             entry_date: $asset->purchase_date->toDateString(),
-            reference: 'ASSET/' . $asset->id,
-            description: 'Acquisition of Asset: ' . $asset->name,
+            reference: 'ASSET/'.$asset->id,
+            description: 'Acquisition of Asset: '.$asset->name,
             created_by_user_id: $user->id,
             is_posted: true,
             lines: $lines,

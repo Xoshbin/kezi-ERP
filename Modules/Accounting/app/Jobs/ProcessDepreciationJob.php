@@ -2,16 +2,16 @@
 
 namespace Modules\Accounting\Jobs;
 
-use Exception;
 use App\Models\User;
+use Exception;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Database\Eloquent\Collection;
-use Modules\Accounting\Models\DepreciationEntry;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Modules\Accounting\Actions\Assets\PostDepreciationEntryAction;
+use Modules\Accounting\Models\DepreciationEntry;
 
 class ProcessDepreciationJob implements ShouldQueue
 {

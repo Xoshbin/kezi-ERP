@@ -16,6 +16,5 @@ class PurchaseOrderConfirmed
      */
     public function __construct(
         public PurchaseOrder $purchaseOrder
-    ) {
-    }
+    ) {}
 }

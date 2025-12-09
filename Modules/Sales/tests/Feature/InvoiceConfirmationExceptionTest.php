@@ -1,17 +1,17 @@
 <?php
 
-use Modules\Sales\Models\Invoice;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
-use function Pest\Livewire\livewire;
 use Modules\Accounting\Models\Account;
-use Modules\Sales\Database\Factories\InvoiceFactory;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Models\Invoice;
+
+use function Pest\Livewire\livewire;
 
 it('shows unhelpful error message when validation exception occurs (current behavior)', function () {
     // 1. Setup Data with Deprecated Account to trigger ValidationException in CreateJournalEntryAction
     $company = \App\Models\Company::factory()->create();
     $currency = \Modules\Foundation\Models\Currency::factory()->create(); // Ensure currency exists
-    // Fix: Account factory might need company or config. 
+    // Fix: Account factory might need company or config.
     // Assuming simple factory works.
     $deprecatedAccount = Account::factory()->create([
         'company_id' => $company->id,
@@ -54,5 +54,5 @@ it('shows unhelpful error message when validation exception occurs (current beha
     // We expect this to be the specific message if my hypothesis is correct.
     // However, I want to IMPROVE it.
     // So this test failing (or passing with generic message) confirms the need for improvement.
-    // assertNotified('The given data was invalid.'); 
+    // assertNotified('The given data was invalid.');
 });

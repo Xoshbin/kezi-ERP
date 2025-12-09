@@ -2,37 +2,29 @@
 
 namespace Modules\Payment\Models;
 
-
-use Eloquent;
-
-use Brick\Money\Money;
 use App\Models\Company;
-use Illuminate\Support\Carbon;
-use Modules\Sales\Models\Invoice;
-
-
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Partner;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Models\Currency;
-use Modules\Purchase\Models\VendorBill;
+use Brick\Money\Money;
+use Eloquent;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
-use Modules\Accounting\Models\JournalEntry;
 use Illuminate\Database\Eloquent\Collection;
-use Modules\Payment\Observers\PaymentObserver;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Payment\Models\PaymentDocumentLink;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Modules\Accounting\Models\BankStatementLine;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
 use Modules\Payment\Enums\Payments\PaymentMethod;
 use Modules\Payment\Enums\Payments\PaymentStatus;
-use Modules\Foundation\Observers\AuditLogObserver;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Observers\PaymentObserver;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 
 // Note: SoftDeletes trait is intentionally excluded.
 // Financial transaction records like Payments, once confirmed, are immutable

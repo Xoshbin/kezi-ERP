@@ -1,12 +1,12 @@
 <?php
 
 use Brick\Money\Money;
-use Modules\Payment\Models\Payment;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Payment\Enums\Payments\PaymentStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Actions\Accounting\CreateJournalEntryForPaymentAction;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Models\Payment;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

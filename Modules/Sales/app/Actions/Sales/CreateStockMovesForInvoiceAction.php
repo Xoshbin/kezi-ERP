@@ -2,27 +2,25 @@
 
 namespace Modules\Sales\Actions\Sales;
 
-use Exception;
 use App\Models\User;
-use Modules\Sales\Models\Invoice;
+use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Modules\Sales\Models\InvoiceLine;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
+use Modules\Inventory\Enums\Inventory\StockLocationType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
+use Modules\Inventory\Models\StockLocation;
 use Modules\Inventory\Models\StockMove;
 use Modules\Inventory\Models\StockPicking;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\StockPickingType;
-use Modules\Inventory\Enums\Inventory\StockLocationType;
-use Modules\Inventory\Enums\Inventory\StockPickingState;
-use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
 use Modules\Inventory\Services\Inventory\StockReservationService;
-use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use Modules\Sales\DataTransferObjects\Sales\CreateStockMovesForInvoiceDTO;
-use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
-
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
 
 class CreateStockMovesForInvoiceAction
 {
@@ -59,7 +57,7 @@ class CreateStockMovesForInvoiceAction
                 'scheduled_date' => $invoice->posted_at ?? now(),
                 'completed_at' => now(),
                 'reference' => $invoice->invoice_number,
-                'origin' => 'Invoice#' . $invoice->getKey(),
+                'origin' => 'Invoice#'.$invoice->getKey(),
                 'created_by_user_id' => $user->id,
             ]);
 
@@ -103,8 +101,8 @@ class CreateStockMovesForInvoiceAction
         /** @var StockLocation|null $warehouseLocation */
         $warehouseLocation = $invoice->company->defaultStockLocation
             ?? StockLocation::where('company_id', $invoice->company_id)
-            ->where('type', StockLocationType::Internal)
-            ->first()
+                ->where('type', StockLocationType::Internal)
+                ->first()
             ?? StockLocation::where('name', 'Warehouse')->first();
 
         /** @var StockLocation|null $customerLocation */

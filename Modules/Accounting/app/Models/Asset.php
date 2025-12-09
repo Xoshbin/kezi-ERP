@@ -2,29 +2,26 @@
 
 namespace Modules\Accounting\Models;
 
-use Eloquent;
-use Brick\Money\Money;
 use App\Models\Company;
+use Brick\Money\Money;
+use Eloquent;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 use Modules\Accounting\Database\Factories\AssetFactory;
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Modules\Accounting\Models\Account;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Models\Currency;
-use Illuminate\Database\Eloquent\Builder;
-use Modules\Accounting\Models\JournalEntry;
-use Illuminate\Database\Eloquent\Collection;
-use Modules\Accounting\Observers\AssetObserver;
 use Modules\Accounting\Enums\Assets\AssetStatus;
-use Modules\Accounting\Models\DepreciationEntry;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Modules\Accounting\Enums\Assets\DepreciationMethod;
+use Modules\Accounting\Observers\AssetObserver;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Modules\Foundation\Models\Currency;
 
 /**
  * Class Asset

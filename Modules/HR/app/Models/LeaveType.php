@@ -3,13 +3,12 @@
 namespace Modules\HR\Models;
 
 use App\Models\Company;
-use Illuminate\Support\Carbon;
-use Modules\HR\Models\LeaveRequest;
-use Illuminate\Database\Eloquent\Model;
-use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Spatie\Translatable\HasTranslations;
 
 /**
  * Class LeaveType

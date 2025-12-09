@@ -1,28 +1,28 @@
 <?php
 
 use Brick\Money\Money;
-use Modules\Payment\Models\Payment;
-use function Pest\Livewire\livewire;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Partner;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Accounting\Models\BankStatement;
-use Modules\Payment\Enums\Payments\PaymentType;
-
-use Modules\Accounting\Models\BankStatementLine;
-use Modules\Payment\Enums\Payments\PaymentMethod;
-use Modules\Payment\Enums\Payments\PaymentStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Enums\Accounting\AccountType;
 use Modules\Accounting\Enums\Accounting\JournalType;
-use Modules\Foundation\Exceptions\UpdateNotAllowedException;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages\CreatePayment;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\JournalEntriesRelationManager;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages\EditPayment;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\BankStatementLinesRelationManager;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\RelationManagers\JournalEntriesRelationManager;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\BankStatementLine;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Exceptions\UpdateNotAllowedException;
+use Modules\Foundation\Models\Partner;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Models\Payment;
+use Tests\Traits\WithConfiguredCompany;
+
+use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -365,7 +365,7 @@ it('can display journal entries relation manager', function () {
         'currency_id' => $this->company->currency_id,
         'source_type' => Payment::class,
         'source_id' => $payment->id,
-        'reference' => 'PAY/' . $payment->id,
+        'reference' => 'PAY/'.$payment->id,
         'description' => 'Payment journal entry',
         'total_debit' => Money::of(1000, $this->company->currency->code),
         'total_credit' => Money::of(1000, $this->company->currency->code),

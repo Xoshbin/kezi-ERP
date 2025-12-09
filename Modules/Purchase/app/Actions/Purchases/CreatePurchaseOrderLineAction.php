@@ -3,10 +3,9 @@
 namespace Modules\Purchase\Actions\Purchases;
 
 use Brick\Money\Money;
-use Modules\Purchase\Models\PurchaseOrder;
-
-use Modules\Purchase\Models\PurchaseOrderLine;
 use Modules\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Models\PurchaseOrderLine;
 
 /**
  * Action for creating a Purchase Order Line

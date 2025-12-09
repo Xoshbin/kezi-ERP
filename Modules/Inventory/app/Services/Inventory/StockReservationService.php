@@ -33,8 +33,8 @@ use Modules\Inventory\Models\StockReservation;
  * - For non-lot-tracked products: Simple quantity allocation
  * - Partial allocations supported when insufficient stock
  *
- * @package App\Services\Inventory
  * @author Laravel/Filament Inventory System
+ *
  * @version 1.0.0
  */
 class StockReservationService
@@ -42,11 +42,9 @@ class StockReservationService
     /**
      * Create a new stock reservation service instance
      *
-     * @param StockQuantService $stockQuantService Service for managing stock quantities
+     * @param  StockQuantService  $stockQuantService  Service for managing stock quantities
      */
-    public function __construct(private readonly StockQuantService $stockQuantService)
-    {
-    }
+    public function __construct(private readonly StockQuantService $stockQuantService) {}
 
     /**
      * Reserve stock for a move using FEFO allocation strategy
@@ -59,9 +57,8 @@ class StockReservationService
      * For lot-tracked products, the method prioritizes lots by expiration date (earliest first).
      * For non-lot-tracked products, it performs simple quantity allocation.
      *
-     * @param StockMove $move The stock move requiring reservation
-     * @param int $locationId Location to reserve stock from
-     *
+     * @param  StockMove  $move  The stock move requiring reservation
+     * @param  int  $locationId  Location to reserve stock from
      * @return float The total quantity reserved (may be partial if insufficient stock)
      *
      * @example
@@ -92,7 +89,7 @@ class StockReservationService
             }
 
             // If we couldn't determine product_id, return 0
-            if (!$productId) {
+            if (! $productId) {
                 return 0.0;
             }
 
@@ -191,7 +188,7 @@ class StockReservationService
             foreach ($reservations as $res) {
                 // Find the product line for this reservation
                 $productLine = $move->productLines()->where('product_id', $res->product_id)->first();
-                if (!$productLine) {
+                if (! $productLine) {
                     continue; // Skip if no matching product line
                 }
 

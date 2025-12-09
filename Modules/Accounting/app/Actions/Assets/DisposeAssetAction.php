@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Actions\Assets;
 
+use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -10,7 +11,6 @@ use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Modules\Accounting\DataTransferObjects\Assets\DisposeAssetDTO;
 use Modules\Accounting\Enums\Assets\AssetStatus;
 use Modules\Accounting\Models\Asset;
-use App\Models\User;
 use RuntimeException;
 
 class DisposeAssetAction

@@ -2,9 +2,9 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Widgets;
 
-use Exception;
-use Carbon\Carbon;
 use App\Models\Company;
+use Carbon\Carbon;
+use Exception;
 use Filament\Facades\Filament;
 use Filament\Widgets\ChartWidget;
 
@@ -113,7 +113,7 @@ class IncomeVsExpenseChart extends ChartWidget
                                 label += ": ";
                             }
                             if (context.parsed.y !== null) {
-                                label += new Intl.NumberFormat("' . app()->getLocale() . '", {
+                                label += new Intl.NumberFormat("'.app()->getLocale().'", {
                                     style: "currency",
                                     currency: "IQD",
                                     minimumFractionDigits: 0,
@@ -141,7 +141,7 @@ class IncomeVsExpenseChart extends ChartWidget
                     ],
                     'ticks' => [
                         'callback' => 'function(value, index, values) {
-                            return new Intl.NumberFormat("' . app()->getLocale() . '", {
+                            return new Intl.NumberFormat("'.app()->getLocale().'", {
                                 style: "currency",
                                 currency: "IQD",
                                 minimumFractionDigits: 0,

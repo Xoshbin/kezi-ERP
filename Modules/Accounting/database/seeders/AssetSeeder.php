@@ -2,12 +2,12 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
-use Exception;
 use App\Models\Company;
-use Illuminate\Support\Carbon;
+use Exception;
 use Illuminate\Database\Seeder;
-use Modules\Accounting\Models\Asset;
+use Illuminate\Support\Carbon;
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Asset;
 use Modules\Accounting\Models\Journal;
 
 class AssetSeeder extends Seeder

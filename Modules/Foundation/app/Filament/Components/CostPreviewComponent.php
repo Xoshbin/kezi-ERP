@@ -3,11 +3,11 @@
 namespace Modules\Foundation\Filament\Components;
 
 use Exception;
-use Modules\Product\Models\Product;
 use Filament\Schemas\Components\View;
 use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Services\Inventory\CostValidationService;
 use Modules\Inventory\Services\Inventory\InventoryMovementValidationService;
+use Modules\Product\Models\Product;
 
 /**
  * Custom Filament component for displaying cost previews in stock move forms
@@ -28,7 +28,7 @@ class CostPreviewComponent
                 $quantity = $get($quantityFieldName);
                 $moveType = $get('../../move_type'); // Get move type from parent form
 
-                if (!$productId || !$quantity || !$moveType) {
+                if (! $productId || ! $quantity || ! $moveType) {
                     return [
                         'status' => 'empty',
                         'message' => __('Select product and quantity to see cost preview'),
@@ -37,7 +37,7 @@ class CostPreviewComponent
 
                 try {
                     $product = Product::find($productId);
-                    if (!$product) {
+                    if (! $product) {
                         return [
                             'status' => 'error',
                             'message' => __('Product not found'),
@@ -55,7 +55,7 @@ class CostPreviewComponent
                         (float) $quantity
                     );
 
-                    if (!$movementValidation->isValid()) {
+                    if (! $movementValidation->isValid()) {
                         $guidance = $movementValidationService->getResolutionGuidance($product);
 
                         return [
@@ -105,7 +105,7 @@ class CostPreviewComponent
                 } catch (Exception $e) {
                     return [
                         'status' => 'error',
-                        'message' => __('Error calculating cost preview') . ': ' . $e->getMessage(),
+                        'message' => __('Error calculating cost preview').': '.$e->getMessage(),
                     ];
                 }
             });
@@ -121,7 +121,7 @@ class CostPreviewComponent
                 $productLines = $get('productLines') ?? [];
                 $moveType = $get('move_type');
 
-                if (empty($productLines) || !$moveType) {
+                if (empty($productLines) || ! $moveType) {
                     return [
                         'status' => 'empty',
                         'message' => __('Add product lines to see cost summary'),
@@ -136,12 +136,12 @@ class CostPreviewComponent
                     $warnings = [];
 
                     foreach ($productLines as $line) {
-                        if (!isset($line['product_id']) || !isset($line['quantity'])) {
+                        if (! isset($line['product_id']) || ! isset($line['quantity'])) {
                             continue;
                         }
 
                         $product = Product::find($line['product_id']);
-                        if (!$product) {
+                        if (! $product) {
                             continue;
                         }
 
@@ -175,7 +175,7 @@ class CostPreviewComponent
                 } catch (Exception $e) {
                     return [
                         'status' => 'error',
-                        'message' => __('Error calculating cost summary') . ': ' . $e->getMessage(),
+                        'message' => __('Error calculating cost summary').': '.$e->getMessage(),
                     ];
                 }
             });

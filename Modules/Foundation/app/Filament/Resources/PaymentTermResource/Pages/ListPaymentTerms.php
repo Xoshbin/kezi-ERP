@@ -3,7 +3,6 @@
 namespace Modules\Foundation\Filament\Resources\PaymentTermResource\Pages;
 
 use Filament\Actions;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Foundation\Filament\Resources\PaymentTermResource;

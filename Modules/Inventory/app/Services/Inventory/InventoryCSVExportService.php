@@ -42,7 +42,7 @@ class InventoryCSVExportService
                 }
 
                 $csv .= sprintf(
-                    '"%s","%s",%s,%s,%s,"%s"' . "\n",
+                    '"%s","%s",%s,%s,%s,"%s"'."\n",
                     $this->escapeCsvValue($productData['product_name'] ?? ''),
                     $this->escapeCsvValue($productData['product_sku'] ?? $productData['sku'] ?? ''),
                     number_format($productData['quantity'], 4),
@@ -76,7 +76,7 @@ class InventoryCSVExportService
         if (isset($data['buckets']) && is_array($data['buckets'])) {
             foreach ($data['buckets'] as $bucketLabel => $bucketData) {
                 $csv .= sprintf(
-                    '"%s",%s,%s' . "\n",
+                    '"%s",%s,%s'."\n",
                     $this->escapeCsvValue($bucketLabel),
                     number_format($bucketData['quantity'], 4),
                     $this->formatMoney($bucketData['value'])
@@ -87,7 +87,7 @@ class InventoryCSVExportService
         // Add summary row
         $csv .= "\nSummary\n";
         $csv .= sprintf(
-            '"Total",%s,%s' . "\n",
+            '"Total",%s,%s'."\n",
             number_format($data['total_quantity'] ?? 0, 4),
             $this->formatMoney($data['total_value'] ?? Money::of(0, 'IQD'))
         );
@@ -113,27 +113,27 @@ class InventoryCSVExportService
 
         // Add turnover metrics
         $csv .= sprintf(
-            '"Period Start","%s"' . "\n",
+            '"Period Start","%s"'."\n",
             $data['period_start']->format('Y-m-d')
         );
         $csv .= sprintf(
-            '"Period End","%s"' . "\n",
+            '"Period End","%s"'."\n",
             $data['period_end']->format('Y-m-d')
         );
         $csv .= sprintf(
-            '"Total COGS",%s' . "\n",
+            '"Total COGS",%s'."\n",
             $this->formatMoney($data['total_cogs'])
         );
         $csv .= sprintf(
-            '"Average Inventory Value",%s' . "\n",
+            '"Average Inventory Value",%s'."\n",
             $this->formatMoney($data['average_inventory_value'])
         );
         $csv .= sprintf(
-            '"Inventory Turnover Ratio",%s' . "\n",
+            '"Inventory Turnover Ratio",%s'."\n",
             number_format($data['inventory_turnover_ratio'], 2)
         );
         $csv .= sprintf(
-            '"Days Sales Inventory",%s' . "\n",
+            '"Days Sales Inventory",%s'."\n",
             number_format($data['days_sales_inventory'], 0)
         );
 
@@ -160,7 +160,7 @@ class InventoryCSVExportService
         if (isset($data['below_minimum']) && is_array($data['below_minimum'])) {
             foreach ($data['below_minimum'] as $item) {
                 $csv .= sprintf(
-                    '"%s","%s",%s,%s,%s,%s,%s,%s,%s,"%s"' . "\n",
+                    '"%s","%s",%s,%s,%s,%s,%s,%s,%s,"%s"'."\n",
                     $this->escapeCsvValue($item['product_name'] ?? ''),
                     $this->escapeCsvValue($item['location_name'] ?? ''),
                     number_format($item['current_qty'], 4),
@@ -180,19 +180,19 @@ class InventoryCSVExportService
             $csv .= "\nSummary\n";
             $csv .= "Metric,Value\n";
             $csv .= sprintf(
-                '"Total On Hand",%s' . "\n",
+                '"Total On Hand",%s'."\n",
                 number_format($data['summary']['total_on_hand'], 4)
             );
             $csv .= sprintf(
-                '"Total Reserved",%s' . "\n",
+                '"Total Reserved",%s'."\n",
                 number_format($data['summary']['total_reserved'], 4)
             );
             $csv .= sprintf(
-                '"Total Available",%s' . "\n",
+                '"Total Available",%s'."\n",
                 number_format($data['summary']['total_available'], 4)
             );
             $csv .= sprintf(
-                '"Reorder Warnings",%d' . "\n",
+                '"Reorder Warnings",%d'."\n",
                 $data['summary']['reorder_warnings_count']
             );
         }
@@ -216,14 +216,14 @@ class InventoryCSVExportService
         // Add lot summary
         $csv .= "Lot Information\n";
         $csv .= "Field,Value\n";
-        $csv .= sprintf('"Lot Code","%s"' . "\n", $this->escapeCsvValue($data['lot_code'] ?? ''));
-        $csv .= sprintf('"Product","%s"' . "\n", $this->escapeCsvValue($data['product_name'] ?? ''));
+        $csv .= sprintf('"Lot Code","%s"'."\n", $this->escapeCsvValue($data['lot_code'] ?? ''));
+        $csv .= sprintf('"Product","%s"'."\n", $this->escapeCsvValue($data['product_name'] ?? ''));
         $csv .= sprintf(
-            '"Expiration Date","%s"' . "\n",
+            '"Expiration Date","%s"'."\n",
             isset($data['expiration_date']) ? $data['expiration_date']->format('Y-m-d') : 'N/A'
         );
-        $csv .= sprintf('"Current Quantity",%s' . "\n", number_format($data['current_quantity'] ?? 0, 4));
-        $csv .= sprintf('"Total Value",%s' . "\n", $this->formatMoney($data['total_value'] ?? Money::of(0, 'IQD')));
+        $csv .= sprintf('"Current Quantity",%s'."\n", number_format($data['current_quantity'] ?? 0, 4));
+        $csv .= sprintf('"Total Value",%s'."\n", $this->formatMoney($data['total_value'] ?? Money::of(0, 'IQD')));
 
         // Add movements section
         $csv .= "\nMovement History\n";
@@ -232,7 +232,7 @@ class InventoryCSVExportService
         if (isset($data['movements']) && is_array($data['movements'])) {
             foreach ($data['movements'] as $movement) {
                 $csv .= sprintf(
-                    '"%s","%s",%s,"%s","%s","%s"' . "\n",
+                    '"%s","%s",%s,"%s","%s","%s"'."\n",
                     $movement['move_date']->format('Y-m-d'),
                     $this->escapeCsvValue($movement['move_type'] ?? ''),
                     number_format($movement['quantity'] ?? 0, 4),
@@ -252,32 +252,33 @@ class InventoryCSVExportService
     private function generateMetadata(string $reportTitle, array $data): string
     {
         $metadata = '';
-        $metadata .= $reportTitle . "\n";
-        $metadata .= "Generated on: " . Carbon::now()->format('Y-m-d H:i:s') . "\n";
+        $metadata .= $reportTitle."\n";
+        $metadata .= 'Generated on: '.Carbon::now()->format('Y-m-d H:i:s')."\n";
 
         // Try to get company name from current tenant
         try {
             $company = Filament::getTenant();
             if ($company && method_exists($company, 'getAttribute')) {
-                $metadata .= "Company: " . $company->name . "\n";
+                $metadata .= 'Company: '.$company->name."\n";
             }
         } catch (Exception $e) {
             // Fallback if no tenant context
-            $metadata .= "Company: " . (config('app.name') ?? 'Unknown') . "\n";
+            $metadata .= 'Company: '.(config('app.name') ?? 'Unknown')."\n";
         }
 
         // Add report-specific metadata
         if (isset($data['as_of_date'])) {
-            $metadata .= "As of Date: " . $data['as_of_date']->format('Y-m-d') . "\n";
+            $metadata .= 'As of Date: '.$data['as_of_date']->format('Y-m-d')."\n";
         }
         if (isset($data['period_start']) && isset($data['period_end'])) {
-            $metadata .= "Period: " . $data['period_start']->format('Y-m-d') . " to " . $data['period_end']->format('Y-m-d') . "\n";
+            $metadata .= 'Period: '.$data['period_start']->format('Y-m-d').' to '.$data['period_end']->format('Y-m-d')."\n";
         }
         if (isset($data['currency'])) {
-            $metadata .= "Currency: " . $data['currency'] . "\n";
+            $metadata .= 'Currency: '.$data['currency']."\n";
         }
 
         $metadata .= "\n";
+
         return $metadata;
     }
 
@@ -296,6 +297,7 @@ class InventoryCSVExportService
     {
         // Convert to float and format with 2 decimal places, no thousands separator
         $amount = $money->getAmount()->toFloat() / 1000; // Assuming minor units
+
         return number_format($amount, 2, '.', '');
     }
 }

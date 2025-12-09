@@ -20,6 +20,5 @@ readonly class UpdateVendorBillDTO
         public ?string $due_date,
         public array $lines,
         public int $updated_by_user_id,
-    ) {
-    }
+    ) {}
 }

@@ -3,9 +3,8 @@
 namespace Modules\Foundation\Database\Factories;
 
 use App\Models\User;
-use Modules\Foundation\Models\AuditLog;
 use Illuminate\Database\Eloquent\Factories\Factory;
-
+use Modules\Foundation\Models\AuditLog;
 
 /**
  * @extends Factory<AuditLog>

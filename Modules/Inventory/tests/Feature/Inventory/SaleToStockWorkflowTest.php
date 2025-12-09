@@ -3,26 +3,25 @@
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
 use Brick\Money\Money;
-use Modules\Sales\Models\Invoice;
-use Modules\Product\Models\Product;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Partner;
-use Modules\Inventory\Models\StockMove;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Inventory\Models\StockQuant;
-use Modules\Sales\Services\InvoiceService;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Inventory\Models\StockMoveValuation;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Foundation\Enums\Partners\PartnerType;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Foundation\Models\Partner;
 use Modules\Inventory\Enums\Inventory\StockLocationType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveValuation;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Product\Models\Product;
 use Modules\Sales\Actions\Sales\CreateInvoiceLineAction;
 use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Services\InvoiceService;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

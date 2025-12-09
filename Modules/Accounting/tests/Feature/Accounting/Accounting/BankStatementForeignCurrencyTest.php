@@ -1,14 +1,14 @@
 <?php
 
 use Brick\Money\Money;
-use Modules\Foundation\Models\Currency;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Models\BankStatement;
-use Modules\Accounting\Models\Journal;
-use Modules\Accounting\Enums\Accounting\JournalType;
 use Modules\Accounting\Actions\Accounting\CreateBankStatementAction;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateBankStatementDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateBankStatementLineDTO;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Models\Currency;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(WithConfiguredCompany::class);
 
@@ -102,7 +102,7 @@ describe('Bank Statement Foreign Currency Transactions', function () {
 
     it('validates that foreign currency and foreign amount must be provided together', function () {
         // Test case 1: Foreign currency provided but no foreign amount
-        expect(fn() => new CreateBankStatementLineDTO(
+        expect(fn () => new CreateBankStatementLineDTO(
             date: now()->format('Y-m-d'),
             description: 'Test transaction',
             amount: Money::of(100, 'IQD'),
@@ -112,7 +112,7 @@ describe('Bank Statement Foreign Currency Transactions', function () {
         ))->toThrow(\InvalidArgumentException::class, 'Foreign amount is required when a foreign currency is specified.');
 
         // Test case 2: Foreign amount provided but no foreign currency
-        expect(fn() => new CreateBankStatementLineDTO(
+        expect(fn () => new CreateBankStatementLineDTO(
             date: now()->format('Y-m-d'),
             description: 'Test transaction',
             amount: Money::of(100, 'IQD'),

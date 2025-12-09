@@ -2,11 +2,11 @@
 
 namespace Modules\Accounting\Database\Factories;
 
-use App\Models\User;
 use App\Models\Company;
-use Modules\Accounting\Models\Reconciliation;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Accounting\Enums\Reconciliation\ReconciliationType;
+use Modules\Accounting\Models\Reconciliation;
 
 /**
  * @extends Factory<Reconciliation>
@@ -37,7 +37,7 @@ class ReconciliationFactory extends Factory
      */
     public function manualArAp(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'reconciliation_type' => ReconciliationType::ManualArAp,
         ]);
     }
@@ -47,7 +47,7 @@ class ReconciliationFactory extends Factory
      */
     public function bankStatement(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'reconciliation_type' => ReconciliationType::BankStatement,
         ]);
     }
@@ -57,7 +57,7 @@ class ReconciliationFactory extends Factory
      */
     public function manualGeneral(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'reconciliation_type' => ReconciliationType::ManualGeneral,
         ]);
     }
@@ -67,7 +67,7 @@ class ReconciliationFactory extends Factory
      */
     public function withReference(?string $reference = null): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'reference' => $reference ?? $this->faker->regexify('[A-Z]{3}-[0-9]{4}'),
         ]);
     }
@@ -77,7 +77,7 @@ class ReconciliationFactory extends Factory
      */
     public function withDescription(?string $description = null): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'description' => $description ?? $this->faker->sentence(),
         ]);
     }

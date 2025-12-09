@@ -3,8 +3,8 @@
 namespace Modules\Accounting\Observers;
 
 use Illuminate\Support\Facades\Cache;
-use Modules\Accounting\Models\LockDate;
 use Modules\Accounting\Enums\Accounting\LockDateType;
+use Modules\Accounting\Models\LockDate;
 
 class LockDateObserver
 {

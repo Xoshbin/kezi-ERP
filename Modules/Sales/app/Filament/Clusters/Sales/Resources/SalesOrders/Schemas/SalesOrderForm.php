@@ -3,23 +3,22 @@
 namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Schemas;
 
 use Filament\Actions\Action;
-use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
-use Modules\Accounting\Models\Tax;
-use Modules\Product\Models\Product;
-use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\DatePicker;
-use Modules\Sales\Enums\Sales\SalesOrderStatus;
+use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
 use Modules\Accounting\Enums\Accounting\TaxType;
+use Modules\Accounting\Models\Tax;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
+use Modules\Product\Models\Product;
+use Modules\Sales\Enums\Sales\SalesOrderStatus;
 use Modules\Sales\Models\SalesOrder;
 
 class SalesOrderForm
@@ -31,10 +30,10 @@ class SalesOrderForm
                 Section::make(__('sales::sales_orders.sections.basic_info'))
                     ->schema([
                         Hidden::make('company_id')
-                            ->default(fn() => Auth::user()?->company_id),
+                            ->default(fn () => Auth::user()?->company_id),
 
                         Hidden::make('created_by_user_id')
-                            ->default(fn() => Auth::id()),
+                            ->default(fn () => Auth::id()),
 
                         Grid::make(2)
                             ->schema([
@@ -59,6 +58,7 @@ class SalesOrderForm
                                             foreach ($validTransitions as $status) {
                                                 $options[$status->value] = $status->label();
                                             }
+
                                             return $options;
                                         }
 
@@ -74,7 +74,7 @@ class SalesOrderForm
                                         // In edit mode, allow editing if status allows flexibility
                                         if ($operation === 'edit' && $record) {
                                             // Allow editing for active statuses that might need manual adjustment
-                                            return !in_array($record->status, [
+                                            return ! in_array($record->status, [
                                                 SalesOrderStatus::Draft,
                                                 SalesOrderStatus::Sent,
                                                 SalesOrderStatus::Confirmed,
@@ -123,7 +123,7 @@ class SalesOrderForm
                                     ->preload()
                                     ->required()
                                     ->createOptionAction(
-                                        fn(Action $action) => $action
+                                        fn (Action $action) => $action
                                             ->modalHeading(__('foundation::partner.create_customer'))
                                             ->modalSubmitActionLabel(__('foundation::partner.create'))
                                             ->modalWidth('lg')
@@ -135,7 +135,7 @@ class SalesOrderForm
                                     ->searchable()
                                     ->preload()
                                     ->required()
-                                    ->default(fn() => Filament::getTenant()?->currency_id),
+                                    ->default(fn () => Filament::getTenant()?->currency_id),
                             ]),
 
                         Grid::make(2)
@@ -182,7 +182,7 @@ class SalesOrderForm
                                         }
                                     })
                                     ->createOptionAction(
-                                        fn(Action $action) => $action
+                                        fn (Action $action) => $action
                                             ->modalHeading(__('product::product.create'))
                                             ->modalSubmitActionLabel(__('product::product.create'))
                                             ->modalWidth('lg')
@@ -229,7 +229,7 @@ class SalesOrderForm
                             ->addActionLabel(__('sales::sales_orders.actions.add_line'))
                             ->reorderableWithButtons()
                             ->collapsible()
-                            ->itemLabel(fn(array $state): ?string => $state['description'] ?? null),
+                            ->itemLabel(fn (array $state): ?string => $state['description'] ?? null),
                     ]),
 
                 Section::make(__('sales::sales_orders.sections.additional_info'))

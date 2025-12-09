@@ -2,12 +2,10 @@
 
 namespace Modules\Inventory\tests\Feature;
 
+use App\Models\Company;
+use Modules\Inventory\Models\StockLocation;
 use Modules\Inventory\Models\StockQuant;
 use Modules\Product\Models\Product;
-use Modules\Inventory\Models\StockLocation;
-use App\Models\Company;
-
-
 
 it('updates product quantity on hand when stock quant is created', function () {
     $company = Company::factory()->create();

@@ -3,42 +3,42 @@
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves;
 
 use BackedEnum;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Resources\Resource;
-use Modules\Sales\Models\Invoice;
-use Filament\Actions\DeleteAction;
-use Filament\Tables\Filters\Filter;
-use Modules\Product\Models\Product;
-use Filament\Actions\BulkActionGroup;
-use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Grid;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\TextColumn;
-use Modules\Inventory\Models\StockMove;
-use Modules\Purchase\Models\VendorBill;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\DatePicker;
-use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Database\Eloquent\Builder;
-use Modules\Inventory\Models\StockLocation;
-use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\RepeatableEntry;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Modules\Foundation\Filament\Components\CostPreviewComponent;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\EditStockMove;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ViewStockMove;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ListStockMoves;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\CreateStockMove;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Actions\ConfirmStockMoveAction;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\CreateStockMove;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\EditStockMove;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ListStockMoves;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ViewStockMove;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Models\StockMove;
+use Modules\Product\Models\Product;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class StockMoveResource extends Resource
 {
@@ -148,11 +148,12 @@ class StockMoveResource extends Resource
                                                 ->pluck('display', 'id')
                                                 ->all();
                                         }
+
                                         return [];
                                     })
                                     ->searchable()
                                     ->preload()
-                                    ->disabled(fn(callable $get) => ! $get('source_type')),
+                                    ->disabled(fn (callable $get) => ! $get('source_type')),
                             ]),
                             Textarea::make('description')
                                 ->label(__('inventory::stock_move.line_description'))
@@ -164,8 +165,7 @@ class StockMoveResource extends Resource
                         ->reorderable()
                         ->collapsible()
                         ->itemLabel(
-                            fn(array $state): ?string =>
-                            isset($state['product_id'])
+                            fn (array $state): ?string => isset($state['product_id'])
                                 ? Product::find($state['product_id'])?->name ?? __('inventory::stock_move.new_product_line')
                                 : __('inventory::stock_move.new_product_line')
                         ),
@@ -178,7 +178,7 @@ class StockMoveResource extends Resource
                 ->schema([
                     CostPreviewComponent::forStockMove(),
                 ])
-                ->visible(fn(callable $get) => $get('move_type') === StockMoveType::Incoming->value),
+                ->visible(fn (callable $get) => $get('move_type') === StockMoveType::Incoming->value),
 
             Section::make(__('inventory::stock_move.movement_details'))
                 ->description(__('inventory::stock_move.movement_details_description'))
@@ -190,7 +190,7 @@ class StockMoveResource extends Resource
                             ->required()
                             ->options(
                                 collect(StockMoveType::cases())
-                                    ->mapWithKeys(fn(StockMoveType $type) => [$type->value => $type->label()])
+                                    ->mapWithKeys(fn (StockMoveType $type) => [$type->value => $type->label()])
                             )
                             ->searchable(),
                         Select::make('status')
@@ -198,7 +198,7 @@ class StockMoveResource extends Resource
                             ->required()
                             ->options(
                                 collect(StockMoveStatus::cases())
-                                    ->mapWithKeys(fn(StockMoveStatus $status) => [$status->value => $status->label()])
+                                    ->mapWithKeys(fn (StockMoveStatus $status) => [$status->value => $status->label()])
                             )
                             ->default(StockMoveStatus::Draft->value)
                             ->searchable(),
@@ -243,9 +243,11 @@ class StockMoveResource extends Resource
                         }
                         if ($count === 1) {
                             $productLine = $record->productLines()->first();
+
                             return $productLine ? $productLine->product->name : '-';
                         }
-                        return "{$count} " . __('inventory::stock_move.products_count');
+
+                        return "{$count} ".__('inventory::stock_move.products_count');
                     })
                     ->searchable(query: function (Builder $query, string $search): Builder {
                         return $query->whereHas('productLines.product', function (Builder $query) use ($search) {
@@ -256,6 +258,7 @@ class StockMoveResource extends Resource
                     ->label(__('inventory::stock_move.total_quantity'))
                     ->formatStateUsing(function (StockMove $record): string {
                         $total = $record->productLines()->sum('quantity');
+
                         return number_format($total, 4);
                     })
                     ->sortable(query: function (Builder $query, string $direction): Builder {
@@ -265,8 +268,8 @@ class StockMoveResource extends Resource
                 TextColumn::make('move_type')
                     ->label(__('inventory::stock_move.move_type'))
                     ->badge()
-                    ->formatStateUsing(fn(StockMoveType $state): string => $state->label())
-                    ->color(fn(StockMoveType $state): string => match ($state) {
+                    ->formatStateUsing(fn (StockMoveType $state): string => $state->label())
+                    ->color(fn (StockMoveType $state): string => match ($state) {
                         StockMoveType::Incoming => 'success',
                         StockMoveType::Outgoing => 'danger',
                         StockMoveType::InternalTransfer => 'info',
@@ -275,8 +278,8 @@ class StockMoveResource extends Resource
                 TextColumn::make('status')
                     ->label(__('inventory::stock_move.status'))
                     ->badge()
-                    ->formatStateUsing(fn(StockMoveStatus $state): string => $state->label())
-                    ->color(fn(StockMoveStatus $state): string => match ($state) {
+                    ->formatStateUsing(fn (StockMoveStatus $state): string => $state->label())
+                    ->color(fn (StockMoveStatus $state): string => match ($state) {
                         StockMoveStatus::Draft => 'gray',
                         StockMoveStatus::Confirmed => 'warning',
                         StockMoveStatus::Done => 'success',
@@ -284,7 +287,7 @@ class StockMoveResource extends Resource
                     }),
                 TextColumn::make('source_type')
                     ->label(__('inventory::stock_move.source'))
-                    ->formatStateUsing(fn(?string $state): string => $state ? class_basename($state) : '-')
+                    ->formatStateUsing(fn (?string $state): string => $state ? class_basename($state) : '-')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label(__('inventory::stock_move.created_at'))
@@ -321,14 +324,14 @@ class StockMoveResource extends Resource
                     ->label(__('inventory::stock_move.move_type'))
                     ->options(
                         collect(StockMoveType::cases())
-                            ->mapWithKeys(fn(StockMoveType $type) => [$type->value => $type->label()])
+                            ->mapWithKeys(fn (StockMoveType $type) => [$type->value => $type->label()])
                     )
                     ->multiple(),
                 SelectFilter::make('status')
                     ->label(__('inventory::stock_move.status'))
                     ->options(
                         collect(StockMoveStatus::cases())
-                            ->mapWithKeys(fn(StockMoveStatus $status) => [$status->value => $status->label()])
+                            ->mapWithKeys(fn (StockMoveStatus $status) => [$status->value => $status->label()])
                     )
                     ->multiple(),
                 Filter::make('move_date')
@@ -342,11 +345,11 @@ class StockMoveResource extends Resource
                         return $query
                             ->when(
                                 $data['from'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('move_date', '>=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('move_date', '>=', $date),
                             )
                             ->when(
                                 $data['until'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('move_date', '<=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('move_date', '<=', $date),
                             );
                     }),
             ])
@@ -355,12 +358,12 @@ class StockMoveResource extends Resource
                     ->icon('heroicon-o-eye'),
                 EditAction::make()
                     ->icon('heroicon-o-pencil-square')
-                    ->visible(fn(StockMove $record): bool => $record->status === StockMoveStatus::Draft),
+                    ->visible(fn (StockMove $record): bool => $record->status === StockMoveStatus::Draft),
                 ConfirmStockMoveAction::make()
-                    ->visible(fn(StockMove $record): bool => $record->status === StockMoveStatus::Draft),
+                    ->visible(fn (StockMove $record): bool => $record->status === StockMoveStatus::Draft),
                 DeleteAction::make()
                     ->icon('heroicon-o-trash')
-                    ->visible(fn(StockMove $record): bool => $record->status === StockMoveStatus::Draft),
+                    ->visible(fn (StockMove $record): bool => $record->status === StockMoveStatus::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -387,7 +390,7 @@ class StockMoveResource extends Resource
                         TextEntry::make('status')
                             ->label(__('inventory::stock_move.status'))
                             ->badge()
-                            ->color(fn(StockMoveStatus $state): string => match ($state) {
+                            ->color(fn (StockMoveStatus $state): string => match ($state) {
                                 StockMoveStatus::Draft => 'gray',
                                 StockMoveStatus::Done => 'success',
                                 StockMoveStatus::Cancelled => 'danger',
@@ -397,7 +400,7 @@ class StockMoveResource extends Resource
                         TextEntry::make('move_type')
                             ->label(__('inventory::stock_move.move_type'))
                             ->badge()
-                            ->color(fn(StockMoveType $state): string => match ($state) {
+                            ->color(fn (StockMoveType $state): string => match ($state) {
                                 StockMoveType::Incoming => 'success',
                                 StockMoveType::Outgoing => 'danger',
                                 StockMoveType::InternalTransfer => 'info',
@@ -434,7 +437,7 @@ class StockMoveResource extends Resource
                         ])
                         ->columns(1),
                 ])
-                ->visible(fn(StockMove $record): bool => $record->productLines()->exists()),
+                ->visible(fn (StockMove $record): bool => $record->productLines()->exists()),
 
             Section::make(__('inventory::stock_move.audit_information'))
                 ->description(__('inventory::stock_move.audit_information_description'))

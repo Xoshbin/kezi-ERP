@@ -2,16 +2,15 @@
 
 namespace Modules\Sales\Actions\Sales;
 
-use Exception;
-use Carbon\Carbon;
-use Brick\Money\Money;
-
 use App\Models\Company;
-use Modules\Sales\Models\Invoice;
+use Brick\Money\Money;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Modules\Foundation\Models\Currency;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Models\Invoice;
 
 class CreateInvoiceAction
 {

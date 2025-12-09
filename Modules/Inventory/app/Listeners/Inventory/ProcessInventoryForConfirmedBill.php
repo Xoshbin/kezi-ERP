@@ -2,8 +2,8 @@
 
 namespace Modules\Inventory\Listeners\Inventory;
 
-use Modules\Purchase\Events\VendorBillConfirmed;
 use Modules\Inventory\Actions\Inventory\UpdateProductInventoryStatsAction;
+use Modules\Purchase\Events\VendorBillConfirmed;
 
 class ProcessInventoryForConfirmedBill
 {
@@ -12,6 +12,6 @@ class ProcessInventoryForConfirmedBill
     public function handle(VendorBillConfirmed $event): void
     {
         // Phase 1: No-op. Stock move creation and valuation are handled during posting via StockMoveConfirmed events.
-        return;
+
     }
 }

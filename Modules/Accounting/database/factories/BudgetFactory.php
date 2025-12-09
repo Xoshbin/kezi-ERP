@@ -3,10 +3,10 @@
 namespace Modules\Accounting\Database\Factories;
 
 use App\Models\Company;
-use Modules\Foundation\Models\Currency;
-use Modules\Accounting\Enums\Budgets\BudgetType;
-use Modules\Accounting\Enums\Budgets\BudgetStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Accounting\Enums\Budgets\BudgetStatus;
+use Modules\Accounting\Enums\Budgets\BudgetType;
+use Modules\Foundation\Models\Currency;
 
 /**
  * @extends Factory<Budget>

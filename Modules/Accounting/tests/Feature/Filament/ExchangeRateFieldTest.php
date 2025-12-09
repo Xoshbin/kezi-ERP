@@ -1,28 +1,28 @@
 <?php
 
-use Carbon\Carbon;
 use Brick\Money\Money;
-use Livewire\Livewire;
-use Modules\Sales\Models\Invoice;
-use Modules\Product\Models\Product;
-use Modules\Sales\Models\InvoiceLine;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Partner;
-use Modules\Foundation\Models\Currency;
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Sales\Services\InvoiceService;
-use Modules\Foundation\Models\CurrencyRate;
-use Modules\Purchase\Models\VendorBillLine;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Modules\Purchase\Services\VendorBillService;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Livewire\Livewire;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Purchase\Services\VendorBillService;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
+use Modules\Sales\Services\InvoiceService;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -308,8 +308,8 @@ describe('Service Behavior with Manual Exchange Rates', function () {
 
         // Calculate expected amounts using custom rate (1310) not stored rate (1500)
         // $100 USD * 1310 = 131,000 IQD = 131,000,000 fils (IQD has 3 decimal places)
-        $expectedAmountWithCustomRate = (int)(100 * $customRate * 1000); // 131,000,000 fils
-        $expectedAmountWithStoredRate = (int)(100 * $storedRate * 1000); // 150,000,000 fils
+        $expectedAmountWithCustomRate = (int) (100 * $customRate * 1000); // 131,000,000 fils
+        $expectedAmountWithStoredRate = (int) (100 * $storedRate * 1000); // 150,000,000 fils
 
         // Verify journal entry totals use the CUSTOM rate, not the stored rate
         expect($journalEntry->total_debit->getMinorAmount()->toInt())->toBe($expectedAmountWithCustomRate);

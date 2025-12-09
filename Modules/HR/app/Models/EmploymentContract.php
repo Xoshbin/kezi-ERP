@@ -2,19 +2,16 @@
 
 namespace Modules\HR\Models;
 
+use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use App\Models\Company;
-use Illuminate\Support\Carbon;
-use Modules\HR\Models\Employee;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Models\Currency;
 use Database\Factories\EmploymentContractFactory;
-use Modules\Foundation\Observers\AuditLogObserver;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
+use Modules\Foundation\Models\Currency;
 
 /**
  * Class EmploymentContract
@@ -293,7 +290,7 @@ class EmploymentContract extends Model
 
         // Get the next sequential number for this year
         $lastContract = static::where('company_id', $company->id)
-            ->where('contract_number', 'like', $prefix . $year . '%')
+            ->where('contract_number', 'like', $prefix.$year.'%')
             ->orderBy('contract_number', 'desc')
             ->first();
 
@@ -304,6 +301,6 @@ class EmploymentContract extends Model
             $nextNumber = 1;
         }
 
-        return $prefix . $year . str_pad((string) $nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix.$year.str_pad((string) $nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

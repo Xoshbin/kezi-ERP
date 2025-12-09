@@ -10,15 +10,6 @@ use Carbon\Carbon;
  */
 readonly class CreatePurchaseOrderLineDTO
 {
-    /**
-     * @param int $product_id
-     * @param string $description
-     * @param float $quantity
-     * @param Money $unit_price
-     * @param int|null $tax_id
-     * @param Carbon|null $expected_delivery_date
-     * @param string|null $notes
-     */
     public function __construct(
         public int $product_id,
         public string $description,
@@ -27,8 +18,7 @@ readonly class CreatePurchaseOrderLineDTO
         public ?int $tax_id = null,
         public ?Carbon $expected_delivery_date = null,
         public ?string $notes = null,
-    ) {
-    }
+    ) {}
 
     /**
      * Create from array data

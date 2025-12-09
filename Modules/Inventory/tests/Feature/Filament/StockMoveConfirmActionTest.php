@@ -1,20 +1,17 @@
 <?php
 
+use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-
-
-use App\Models\Company;
 use Filament\Facades\Filament;
-use Modules\Product\Models\Product;
-use Modules\Inventory\Models\StockMove;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Inventory\Models\StockMoveProductLine;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Enums\Inventory\ValuationMethod;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Actions\ConfirmStockMoveAction;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveProductLine;
+use Modules\Product\Models\Product;
 
 beforeEach(function () {
     $this->company = Company::factory()->create();

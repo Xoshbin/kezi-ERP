@@ -2,15 +2,15 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\Schemas;
 
-use Filament\Schemas\Schema;
-use Modules\HR\Models\Department;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Textarea;
-use Modules\Foundation\Models\Currency;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
+use Modules\Foundation\Models\Currency;
+use Modules\HR\Models\Department;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PositionForm

@@ -2,8 +2,8 @@
 
 namespace Modules\Payment\Observers;
 
-use Modules\Payment\Models\Payment;
 use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Payment\Models\Payment;
 
 class PaymentObserver
 {

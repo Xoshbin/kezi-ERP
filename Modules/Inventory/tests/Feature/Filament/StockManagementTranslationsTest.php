@@ -2,16 +2,12 @@
 
 namespace Modules\Inventory\Tests\Feature\Filament;
 
-
-
-
-
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\ValuationMethod;
 use Modules\Inventory\Enums\Inventory\StockLocationType;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Tests\TestCase;
 
 class StockManagementTranslationsTest extends TestCase
 {

@@ -2,22 +2,21 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages;
 
-use Exception;
 use Brick\Money\Money;
-use InvalidArgumentException;
+use Exception;
 use Filament\Facades\Filament;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Models\Currency;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Collection;
-use Modules\Foundation\Filament\Actions\DocsAction;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use InvalidArgumentException;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Payments\PaymentResource;
-
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Payment\Enums\Payments\PaymentMethod;
-use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Modules\Foundation\Filament\Actions\DocsAction;
+use Modules\Foundation\Models\Currency;
 use Modules\Payment\Actions\Payments\CreatePaymentAction;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\Enums\Payments\PaymentType;
 
 class CreatePayment extends CreateRecord
 {

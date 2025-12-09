@@ -1,25 +1,24 @@
 <?php
 
 use Brick\Money\Money;
-use Modules\Sales\Models\Invoice;
-use Modules\Product\Models\Product;
-use Illuminate\Support\Facades\Event;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Partner;
-use Modules\Accounting\Models\LockDate;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Sales\Events\InvoiceConfirmed;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
-use Modules\Sales\DataTransferObjects\Sales\UpdateInvoiceDTO;
-use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-
-use Modules\Sales\Services\InvoiceService;
-use Modules\Sales\Actions\Sales\UpdateInvoiceAction;
-use Modules\Sales\Actions\Sales\CreateInvoiceLineAction;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Modules\Product\Enums\Products\ProductType;
+use Illuminate\Support\Facades\Event;
 use Modules\Accounting\Enums\Accounting\LockDateType;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\LockDate;
+use Modules\Foundation\Models\Partner;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
+use Modules\Sales\Actions\Sales\CreateInvoiceLineAction;
+use Modules\Sales\Actions\Sales\UpdateInvoiceAction;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use Modules\Sales\DataTransferObjects\Sales\UpdateInvoiceDTO;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Events\InvoiceConfirmed;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Services\InvoiceService;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -109,7 +108,7 @@ test('a posted invoice cannot be updated', function () {
     );
 
     // Assert: Expect the Action to throw the exception because the invoice is posted.
-    expect(fn() => app(UpdateInvoiceAction::class)->execute($updateDto))
+    expect(fn () => app(UpdateInvoiceAction::class)->execute($updateDto))
         ->toThrow(\Modules\Foundation\Exceptions\UpdateNotAllowedException::class, 'Cannot modify a non-draft invoice.');
 
     // Assert: Double-check that the customer_id was not changed in the database.
@@ -131,7 +130,7 @@ test('a posted invoice cannot be deleted', function () {
     ]);
 
     // Assert: Expect the service's delete method to throw our specific exception.
-    expect(fn() => (app(InvoiceService::class))->delete($invoice))
+    expect(fn () => (app(InvoiceService::class))->delete($invoice))
         ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a posted invoice.');
 
     // Assert: As a final check, confirm the model still exists.
@@ -205,7 +204,7 @@ test('an invoice cannot be created or posted in a locked period', function () {
     }
     */
     // With the above (assumed) change to CreateInvoiceAction, this test will pass.
-    expect(fn() => (app(\Modules\Sales\Actions\Sales\CreateInvoiceAction::class))->execute($invoiceDto))
+    expect(fn () => (app(\Modules\Sales\Actions\Sales\CreateInvoiceAction::class))->execute($invoiceDto))
         ->toThrow(\Modules\Accounting\Exceptions\PeriodIsLockedException::class);
 
     // Arrange: Create a draft invoice with a date in the future (not locked).
@@ -219,6 +218,6 @@ test('an invoice cannot be created or posted in a locked period', function () {
     $draftInvoice->invoice_date = now()->subMonth()->toDateString();
 
     // Assert: Expect that trying to CONFIRM an invoice in a locked period also fails.
-    expect(fn() => (app(InvoiceService::class))->confirm($draftInvoice, $this->user))
+    expect(fn () => (app(InvoiceService::class))->confirm($draftInvoice, $this->user))
         ->toThrow(\Modules\Accounting\Exceptions\PeriodIsLockedException::class);
 });

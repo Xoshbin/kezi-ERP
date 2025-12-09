@@ -2,15 +2,12 @@
 
 namespace Modules\Inventory\Actions\Inventory;
 
-
-
 use App\Models\User;
-use RuntimeException;
-
 use Illuminate\Support\Facades\DB;
-use Modules\Inventory\Models\StockMove;
 use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Models\StockMove;
 use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use RuntimeException;
 
 class CreateJournalEntryForStockMoveAction
 {
@@ -26,7 +23,7 @@ class CreateJournalEntryForStockMoveAction
             foreach ($stockMove->productLines as $productLine) {
                 $product = $productLine->product;
 
-                if (!$product) {
+                if (! $product) {
                     throw new RuntimeException("Product not found for product line ID {$productLine->id}");
                 }
 

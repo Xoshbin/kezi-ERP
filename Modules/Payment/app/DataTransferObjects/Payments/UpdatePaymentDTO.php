@@ -3,9 +3,9 @@
 namespace Modules\Payment\DataTransferObjects\Payments;
 
 use Brick\Money\Money;
-use Modules\Payment\Models\Payment;
-use Modules\Payment\Enums\Payments\PaymentType;
 use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Models\Payment;
 
 class UpdatePaymentDTO
 {

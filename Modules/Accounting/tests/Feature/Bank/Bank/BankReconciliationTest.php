@@ -1,13 +1,12 @@
 <?php
 
 use Brick\Money\Money;
-use Modules\Payment\Models\Payment;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Models\Account;
-use Tests\Traits\WithConfiguredCompany;
 use Modules\Accounting\Models\BankStatement;
 use Modules\Payment\Enums\Payments\PaymentStatus;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Services\BankReconciliationService;
+use Modules\Payment\Models\Payment;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

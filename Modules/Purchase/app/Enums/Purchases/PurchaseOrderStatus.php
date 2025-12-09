@@ -15,22 +15,22 @@ enum PurchaseOrderStatus: string
     case RFQ = 'rfq';                           // Request for Quotation
     case RFQSent = 'rfq_sent';                  // RFQ sent to vendor(s)
 
-        // Commitment phase
+    // Commitment phase
     case Draft = 'draft';                       // PO being prepared
     case Sent = 'sent';                         // PO sent to vendor
     case Confirmed = 'confirmed';               // PO confirmed by vendor
 
-        // Fulfillment phase
+    // Fulfillment phase
     case ToReceive = 'to_receive';              // Waiting for delivery
     case PartiallyReceived = 'partially_received';
     case FullyReceived = 'fully_received';
 
-        // Billing phase
+    // Billing phase
     case ToBill = 'to_bill';                    // Goods received, waiting for bill
     case PartiallyBilled = 'partially_billed';
     case FullyBilled = 'fully_billed';
 
-        // Final states
+    // Final states
     case Done = 'done';                         // Complete and closed
     case Cancelled = 'cancelled';
 
@@ -253,7 +253,7 @@ enum PurchaseOrderStatus: string
      */
     public function isCommitted(): bool
     {
-        return !in_array($this, [self::RFQ, self::RFQSent, self::Cancelled]);
+        return ! in_array($this, [self::RFQ, self::RFQSent, self::Cancelled]);
     }
 
     /**
@@ -307,7 +307,7 @@ enum PurchaseOrderStatus: string
     /**
      * Check if transition to another status is allowed (forward progression only).
      *
-     * @param PurchaseOrderStatus $newStatus The target status to transition to
+     * @param  PurchaseOrderStatus  $newStatus  The target status to transition to
      * @return bool True if the transition is allowed
      */
     public function canTransitionTo(PurchaseOrderStatus $newStatus): bool

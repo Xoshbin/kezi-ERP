@@ -2,7 +2,6 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Widgets;
 
-
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Cache;
 use Modules\Inventory\Services\Inventory\InventoryReportingService;
@@ -11,7 +10,7 @@ class InventoryAgingChartWidget extends ChartWidget
 {
     protected static ?int $sort = 4;
 
-    protected int | string | array $columnSpan = [
+    protected int|string|array $columnSpan = [
         'md' => 2,
         'xl' => 1,
     ];
@@ -34,7 +33,7 @@ class InventoryAgingChartWidget extends ChartWidget
     protected function getData(): array
     {
         $filters = $this->getFilters();
-        $cacheKey = 'inventory_aging_chart_' . md5(serialize($filters));
+        $cacheKey = 'inventory_aging_chart_'.md5(serialize($filters));
 
         return Cache::remember($cacheKey, 300, function () use ($filters) {
             $aging = $this->getReportingService()->ageing([

@@ -3,16 +3,15 @@
 namespace Modules\Inventory\Observers;
 
 use Illuminate\Support\Facades\Auth;
-use Modules\Foundation\Models\AuditLog;
-use Modules\Inventory\Models\StockMove;
-use Modules\Purchase\Models\VendorBill;
-
 use Modules\Accounting\Models\JournalEntry;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Services\Inventory\StockQuantService;
-use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use Modules\Foundation\Models\AuditLog;
 use Modules\Inventory\Actions\Inventory\CreateJournalEntryForStockMoveAction;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use Modules\Inventory\Services\Inventory\StockQuantService;
+use Modules\Purchase\Models\VendorBill;
 
 class StockMoveObserver
 {
@@ -35,7 +34,7 @@ class StockMoveObserver
                 $user = Auth::user();
                 if ($user) {
                     // Check if this is a truly manual stock move (not linked to any source document)
-                    if (!$stockMove->source_type || !$stockMove->source_id) {
+                    if (! $stockMove->source_type || ! $stockMove->source_id) {
                         // Use consolidated approach for manual stock moves to create a single journal entry
                         $inventoryValuationService = app(InventoryValuationService::class);
                         $inventoryValuationService->createConsolidatedManualStockMoveJournalEntry($stockMove);
@@ -49,7 +48,7 @@ class StockMoveObserver
                             ->where('reference', 'LIKE', 'STOCK-IN-%')
                             ->first();
 
-                        if (!$existingJournalEntry) {
+                        if (! $existingJournalEntry) {
                             // Get all stock moves for the same vendor bill
                             $allStockMoves = StockMove::where('source_type', VendorBill::class)
                                 ->where('source_id', $stockMove->source_id)

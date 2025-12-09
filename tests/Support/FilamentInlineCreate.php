@@ -2,9 +2,7 @@
 
 namespace Tests\Support;
 
-
 use App\Models\Company;
-
 use Filament\Facades\Filament;
 use Illuminate\Support\Arr;
 use Modules\Foundation\Enums\Partners\PartnerType;

@@ -1,20 +1,15 @@
 <?php
 
+use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use App\Models\Company;
-use Modules\Sales\Models\Invoice;
-
-use Modules\Sales\Models\InvoiceLine;
 use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Partner;
 use Modules\Foundation\Models\Currency;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Foundation\Models\Partner;
 use Modules\Sales\Actions\Sales\GenerateInvoicePdfAction;
-
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
 
 beforeEach(function () {
     $this->user = User::factory()->create();

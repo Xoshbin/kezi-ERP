@@ -3,19 +3,16 @@
 namespace Modules\Foundation\Casts;
 
 use Brick\Money\Money;
-use InvalidArgumentException;
-use Modules\Sales\Models\Invoice;
-use Modules\Payment\Models\Payment;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Casts\MoneyCast;
-use Modules\Foundation\Models\Currency;
-use Modules\Purchase\Models\VendorBill;
-
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
 use Modules\Accounting\Models\BankStatement;
+use Modules\Foundation\Models\Currency;
 use Modules\Inventory\Models\AdjustmentDocument;
-
+use Modules\Payment\Models\Payment;
 use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 
 /**
  * DocumentCurrencyMoneyCast - Uses the document's stated currency.
@@ -172,7 +169,7 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             }
         }
 
-        throw new InvalidArgumentException('Could not resolve document currency for model ' . get_class($model) . '. Please ensure the model has a valid parent document relationship.');
+        throw new InvalidArgumentException('Could not resolve document currency for model '.get_class($model).'. Please ensure the model has a valid parent document relationship.');
     }
 
     /**

@@ -3,10 +3,9 @@
 namespace Modules\Foundation\Casts;
 
 use Exception;
-use InvalidArgumentException;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Casts\MoneyCast;
+use InvalidArgumentException;
 use Modules\Foundation\Models\Currency;
 
 /**
@@ -135,6 +134,6 @@ class BaseCurrencyMoneyCast extends MoneyCast
         }
 
         // If we still can't resolve the currency, throw an exception
-        throw new InvalidArgumentException('Could not resolve base currency for model ' . get_class($model) . '. Please ensure the model has a valid company relationship.');
+        throw new InvalidArgumentException('Could not resolve base currency for model '.get_class($model).'. Please ensure the model has a valid company relationship.');
     }
 }

@@ -1,20 +1,19 @@
 <?php
 
-use Modules\Sales\Models\Invoice;
-use function Pest\Livewire\livewire;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ListInvoices;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ListVendorBills;
 use Modules\Accounting\Models\Journal;
 use Modules\Foundation\Models\Partner;
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
 use Modules\Foundation\Models\PaymentTerm;
-
 use Modules\Foundation\Models\PaymentTermLine;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Foundation\Enums\PaymentTerms\PaymentTermType;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ListInvoices;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ListVendorBills;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
+use Tests\Traits\WithConfiguredCompany;
+
+use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

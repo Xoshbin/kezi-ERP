@@ -1,11 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
 
-return new class() extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */

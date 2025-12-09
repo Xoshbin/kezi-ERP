@@ -1,31 +1,27 @@
 <?php
 
-use Modules\Payment\Actions\Payments\CreatePaymentAction;
-use Modules\Purchase\Actions\Purchases\CreateVendorBillAction;
+use Brick\Money\Money;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Inventory\Services\AdjustmentDocumentService;
+use Modules\Payment\Actions\Payments\CreatePaymentAction;
 use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Services\PaymentService;
+use Modules\Purchase\Actions\Purchases\CreateVendorBillAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Services\VendorBillService;
 use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
 use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-
-
-
-
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Modules\Inventory\Services\AdjustmentDocumentService;
 use Modules\Sales\Services\InvoiceService;
-use Modules\Purchase\Services\VendorBillService;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Payment\Enums\Payments\PaymentMethod;
-use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
-use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
-use Modules\Payment\Services\PaymentService;
-use Brick\Money\Money;
-use Modules\Inventory\Models\AdjustmentDocument;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class, WithConfiguredCompany::class);

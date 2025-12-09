@@ -6,7 +6,6 @@ use App\Models\Company;
 use Illuminate\Database\Seeder;
 use Modules\Foundation\Models\PaymentTerm;
 use Modules\Foundation\Models\PaymentTermLine;
-use Modules\Foundation\Enums\PaymentTerms\PaymentTermType;
 
 class PaymentTermsSeeder extends Seeder
 {

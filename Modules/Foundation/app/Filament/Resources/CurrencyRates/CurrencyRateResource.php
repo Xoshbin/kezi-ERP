@@ -2,19 +2,19 @@
 
 namespace Modules\Foundation\Filament\Resources\CurrencyRates;
 
-use BackedEnum;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Resources\Resource;
-use Filament\Support\Icons\Heroicon;
-use Modules\Foundation\Models\CurrencyRate;
 use App\Filament\Clusters\Settings\SettingsCluster;
+use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\Foundation\Filament\Resources\CurrencyRates\Pages\CreateCurrencyRate;
 use Modules\Foundation\Filament\Resources\CurrencyRates\Pages\EditCurrencyRate;
 use Modules\Foundation\Filament\Resources\CurrencyRates\Pages\ListCurrencyRates;
-use Modules\Foundation\Filament\Resources\CurrencyRates\Pages\CreateCurrencyRate;
 use Modules\Foundation\Filament\Resources\CurrencyRates\Schemas\CurrencyRateForm;
 use Modules\Foundation\Filament\Resources\CurrencyRates\Tables\CurrencyRatesTable;
+use Modules\Foundation\Models\CurrencyRate;
 
 class CurrencyRateResource extends Resource
 {

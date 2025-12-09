@@ -2,26 +2,27 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Pages;
 
-use Exception;
 use BackedEnum;
-use Filament\Pages\Page;
+use Exception;
 use Filament\Actions\Action;
-use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
-use Modules\Inventory\Models\Lot;
-use Modules\Product\Models\Product;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
+use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
-use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Schemas\Schema;
 use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
+use Modules\Inventory\Models\Lot;
 use Modules\Inventory\Services\Inventory\InventoryCSVExportService;
 use Modules\Inventory\Services\Inventory\InventoryReportingService;
+use Modules\Product\Models\Product;
 
 class LotTraceabilityReport extends Page implements HasForms
 {
     use InteractsWithForms;
+
     protected static ?string $cluster = InventoryCluster::class;
 
     protected string $view = 'inventory::filament.clusters.inventory.pages.lot-traceability-report';
@@ -90,7 +91,7 @@ class LotTraceabilityReport extends Page implements HasForms
                             ->label(__('inventory::inventory_reports.lot_trace.filters.lot'))
                             ->options(function ($get) {
                                 $productId = $get('product_id');
-                                if (!$productId) {
+                                if (! $productId) {
                                     return [];
                                 }
 
@@ -105,7 +106,7 @@ class LotTraceabilityReport extends Page implements HasForms
                                 $this->selectedLot = $state ? Lot::find($state) : null;
                                 $this->generateReport();
                             })
-                            ->disabled(fn($get) => !$get('product_id')),
+                            ->disabled(fn ($get) => ! $get('product_id')),
                     ])
                     ->columns(2),
             ])
@@ -114,8 +115,9 @@ class LotTraceabilityReport extends Page implements HasForms
 
     public function generateReport(): void
     {
-        if (!$this->selectedProduct || !$this->selectedLot) {
+        if (! $this->selectedProduct || ! $this->selectedLot) {
             $this->reportData = null;
+
             return;
         }
 
@@ -127,7 +129,7 @@ class LotTraceabilityReport extends Page implements HasForms
 
     public function getMovementsByType(): array
     {
-        if (!$this->reportData || empty($this->reportData['movements'])) {
+        if (! $this->reportData || empty($this->reportData['movements'])) {
             return [
                 'incoming' => [],
                 'outgoing' => [],
@@ -147,18 +149,21 @@ class LotTraceabilityReport extends Page implements HasForms
     public function getTotalIncoming(): float
     {
         $movements = $this->getMovementsByType();
+
         return collect($movements['incoming'])->sum('quantity');
     }
 
     public function getTotalOutgoing(): float
     {
         $movements = $this->getMovementsByType();
+
         return collect($movements['outgoing'])->sum('quantity');
     }
 
     public function getTotalInternal(): float
     {
         $movements = $this->getMovementsByType();
+
         return collect($movements['internal'])->sum('quantity');
     }
 
@@ -188,13 +193,14 @@ class LotTraceabilityReport extends Page implements HasForms
             Action::make('export')
                 ->label(__('inventory::inventory_reports.lot_trace.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
-                ->disabled(fn() => !$this->reportData)
+                ->disabled(fn () => ! $this->reportData)
                 ->action(function () {
-                    if (!$this->reportData) {
+                    if (! $this->reportData) {
                         Notification::make()
                             ->title(__('inventory::inventory_reports.lot_trace.no_data_to_export'))
                             ->danger()
                             ->send();
+
                         return;
                     }
 
@@ -204,7 +210,7 @@ class LotTraceabilityReport extends Page implements HasForms
                             'include_metadata' => true,
                         ]);
 
-                        $filename = 'lot-traceability-' . ($this->reportData['lot_code'] ?? 'report') . '-' . now()->format('Y-m-d-H-i-s') . '.csv';
+                        $filename = 'lot-traceability-'.($this->reportData['lot_code'] ?? 'report').'-'.now()->format('Y-m-d-H-i-s').'.csv';
 
                         Notification::make()
                             ->title(__('inventory::inventory_reports.lot_trace.export_started'))
@@ -229,7 +235,7 @@ class LotTraceabilityReport extends Page implements HasForms
                 ->label(__('inventory::inventory_reports.lot_trace.actions.refresh'))
                 ->icon('heroicon-o-arrow-path')
                 ->action('generateReport')
-                ->disabled(fn() => !$this->selectedProduct || !$this->selectedLot),
+                ->disabled(fn () => ! $this->selectedProduct || ! $this->selectedLot),
         ];
     }
 

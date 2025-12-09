@@ -2,11 +2,10 @@
 
 namespace Tests\Traits;
 
-
-use Modules\Inventory\Models\StockLocation;
-use Modules\Inventory\Enums\Inventory\StockLocationType;
 use App\Models\User;
 use Filament\Facades\Filament;
+use Modules\Inventory\Enums\Inventory\StockLocationType;
+use Modules\Inventory\Models\StockLocation;
 use Tests\Builders\CompanyBuilder;
 
 trait WithConfiguredCompany

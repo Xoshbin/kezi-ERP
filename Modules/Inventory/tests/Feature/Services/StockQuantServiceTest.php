@@ -1,13 +1,13 @@
 <?php
 
 use Brick\Money\Money;
-use Modules\Product\Models\Product;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Inventory\Models\StockQuant;
-use Modules\Product\Enums\Products\ProductType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Models\StockQuant;
 use Modules\Inventory\Services\Inventory\StockQuantService;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -61,10 +61,10 @@ it('prevents negative quantities and over-reservation', function () {
     $this->service->adjust($this->company->id, $this->product->id, $this->stockLocation->id, 5);
 
     // Cannot reserve more than available
-    expect(fn() => $this->service->reserve($this->company->id, $this->product->id, $this->stockLocation->id, 6))
+    expect(fn () => $this->service->reserve($this->company->id, $this->product->id, $this->stockLocation->id, 6))
         ->toThrow(\RuntimeException::class);
 
     // Cannot adjust below zero
-    expect(fn() => $this->service->adjust($this->company->id, $this->product->id, $this->stockLocation->id, -10))
+    expect(fn () => $this->service->adjust($this->company->id, $this->product->id, $this->stockLocation->id, -10))
         ->toThrow(\RuntimeException::class);
 });

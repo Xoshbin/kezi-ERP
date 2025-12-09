@@ -21,7 +21,7 @@ class CurrencyRatesTable
             ->columns([
                 TextColumn::make('currency.name')
                     ->label(__('foundation::currency.exchange_rates.currency'))
-                    ->formatStateUsing(fn($record) => "{$record->currency->name} ({$record->currency->code})")
+                    ->formatStateUsing(fn ($record) => "{$record->currency->name} ({$record->currency->code})")
                     ->sortable(['currency.name'])
                     ->searchable(['currency.name', 'currency.code']),
 
@@ -38,8 +38,8 @@ class CurrencyRatesTable
                 TextColumn::make('source')
                     ->label(__('foundation::currency.exchange_rates.source'))
                     ->badge()
-                    ->formatStateUsing(fn(string $state): string => __("foundation::currency.exchange_rates.sources.{$state}"))
-                    ->color(fn(string $state): string => match ($state) {
+                    ->formatStateUsing(fn (string $state): string => __("foundation::currency.exchange_rates.sources.{$state}"))
+                    ->color(fn (string $state): string => match ($state) {
                         'api' => 'success',
                         'manual' => 'warning',
                         'bank' => 'primary',
@@ -74,7 +74,7 @@ class CurrencyRatesTable
 
                 Filter::make('recent')
                     ->label(__('foundation::currency.exchange_rates.recent_filter'))
-                    ->query(fn(Builder $query): Builder => $query->where('effective_date', '>=', Carbon::now()->subDays(30))),
+                    ->query(fn (Builder $query): Builder => $query->where('effective_date', '>=', Carbon::now()->subDays(30))),
             ])
             ->recordActions([
                 EditAction::make(),

@@ -2,13 +2,13 @@
 
 namespace Modules\Accounting\Rules;
 
-use Closure;
-use Carbon\Carbon;
-use InvalidArgumentException;
-use Filament\Facades\Filament;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Company;
+use Carbon\Carbon;
+use Closure;
+use Filament\Facades\Filament;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\Auth;
+use InvalidArgumentException;
 
 class NotInLockedPeriod implements ValidationRule
 {

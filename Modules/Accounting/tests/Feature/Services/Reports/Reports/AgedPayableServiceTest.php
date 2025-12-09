@@ -6,13 +6,12 @@ use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Foundation\Models\Partner;
+use Modules\Payment\Enums\Payments\PaymentStatus;
 use Modules\Payment\Models\Payment;
+use Modules\Payment\Models\PaymentDocumentLink;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 use Modules\Purchase\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
-use Modules\Payment\Enums\Payments\PaymentStatus;
-use Modules\Payment\Models\PaymentDocumentLink;
-
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

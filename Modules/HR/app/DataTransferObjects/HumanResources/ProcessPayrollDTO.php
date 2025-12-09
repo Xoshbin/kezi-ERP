@@ -40,6 +40,5 @@ readonly class ProcessPayrollDTO
         /** @var array<string, mixed>|null */
         public ?array $adjustments,
         public int $processed_by_user_id,
-    ) {
-    }
+    ) {}
 }

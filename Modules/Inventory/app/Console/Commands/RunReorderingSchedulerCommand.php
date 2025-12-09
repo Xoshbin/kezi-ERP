@@ -56,7 +56,7 @@ class RunReorderingSchedulerCommand extends Command
 
             return Command::SUCCESS;
         } catch (Exception $e) {
-            $this->error('Reordering scheduler failed: ' . $e->getMessage());
+            $this->error('Reordering scheduler failed: '.$e->getMessage());
 
             return Command::FAILURE;
         }

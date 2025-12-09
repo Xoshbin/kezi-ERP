@@ -1,15 +1,15 @@
 <?php
 
-use function Pest\Livewire\livewire;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages\CreatePartner;
+use Modules\Foundation\Database\Seeders\PartnerCustomFieldSeeder;
+use Modules\Foundation\Enums\Partners\PartnerType;
 use Modules\Foundation\Models\Partner;
 use Tests\Traits\WithConfiguredCompany;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Foundation\Enums\Partners\PartnerType;
+use Xoshbin\CustomFields\Filament\Tables\Components\CustomFieldTableColumns;
 use Xoshbin\CustomFields\Models\CustomFieldDefinition;
 
-use Modules\Foundation\Database\Seeders\PartnerCustomFieldSeeder;
-use Xoshbin\CustomFields\Filament\Tables\Components\CustomFieldTableColumns;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages\CreatePartner;
+use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

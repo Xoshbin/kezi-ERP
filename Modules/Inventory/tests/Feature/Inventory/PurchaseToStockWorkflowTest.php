@@ -3,18 +3,18 @@
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
 use Brick\Money\Money;
-use Modules\Product\Models\Product;
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Purchase\Services\VendorBillService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Accounting\Models\JournalEntry;
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillLineAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Services\VendorBillService;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -103,7 +103,7 @@ it('correctly processes an incoming storable product, creating a stock move and 
     ]);
 
     // Separate Valuation JE: Dr Inventory, Cr Stock Input
-    $valuationReference = 'STOCK-IN-VendorBill-' . $vendorBill->id;
+    $valuationReference = 'STOCK-IN-VendorBill-'.$vendorBill->id;
     $valuationEntry = JournalEntry::where('reference', $valuationReference)->first();
     expect($valuationEntry)->not->toBeNull();
 

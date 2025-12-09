@@ -2,21 +2,18 @@
 
 namespace Modules\Accounting\Models;
 
-use Eloquent;
 use App\Models\Company;
-use Illuminate\Support\Carbon;
-use Modules\Accounting\Models\Budget;
-use Illuminate\Database\Eloquent\Model;
-use Spatie\Translatable\HasTranslations;
-use Illuminate\Database\Eloquent\Builder;
 use Database\Factories\AnalyticPlanFactory;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Modules\Accounting\Models\AnalyticAccount;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Modules\Accounting\Models\AnalyticAccountPlanPivot;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Spatie\Translatable\HasTranslations;
 
 /**
  * Class AnalyticPlan
@@ -52,6 +49,7 @@ class AnalyticPlan extends Model
 {
     /** @use HasFactory<AnalyticPlanFactory> */
     use HasFactory;
+
     use HasTranslations;
 
     /** @var array<int, string> */

@@ -3,15 +3,14 @@
 namespace Modules\Product\Tests\Feature;
 
 use Brick\Money\Money;
-use Modules\Product\Models\Product;
-use function Pest\Livewire\livewire;
-use Modules\Accounting\Models\Account;
-use Tests\Traits\WithConfiguredCompany;
-
-use Modules\Product\Enums\Products\ProductType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
 use Modules\Inventory\Enums\Inventory\ValuationMethod;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
+use Modules\Product\Models\Product;
+use Tests\Traits\WithConfiguredCompany;
+
+use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

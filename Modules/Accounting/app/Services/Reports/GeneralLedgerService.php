@@ -2,16 +2,16 @@
 
 namespace Modules\Accounting\Services\Reports;
 
-use Carbon\Carbon;
+use App\Models\Company;
 use Brick\Money\Money;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Modules\Accounting\Models\Account;
-use App\Models\Company;
-use Modules\Accounting\Models\JournalEntryLine;
-use Modules\Accounting\DataTransferObjects\Reports\GeneralLedgerDTO;
 use Modules\Accounting\DataTransferObjects\Reports\GeneralLedgerAccountDTO;
+use Modules\Accounting\DataTransferObjects\Reports\GeneralLedgerDTO;
 use Modules\Accounting\DataTransferObjects\Reports\GeneralLedgerTransactionLineDTO;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\JournalEntryLine;
 
 class GeneralLedgerService
 {
@@ -29,7 +29,7 @@ class GeneralLedgerService
 
         /** @var Collection<int, Account> $accounts */
         $accounts = $accountsQuery->orderBy('code')->get();
-        $reportAccounts = new Collection();
+        $reportAccounts = new Collection;
 
         foreach ($accounts as $account) {
             $openingBalance = $this->getOpeningBalance($account, $startDate, $currency);
@@ -41,7 +41,7 @@ class GeneralLedgerService
 
             $runningBalance = $openingBalance;
             /** @var Collection<int, GeneralLedgerTransactionLineDTO> $transactionLines */
-            $transactionLines = new Collection();
+            $transactionLines = new Collection;
 
             foreach ($transactions as $line) {
                 $debit = $line->debit; // Already a Money object due to MoneyCast

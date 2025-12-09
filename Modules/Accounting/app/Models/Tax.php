@@ -2,22 +2,20 @@
 
 namespace Modules\Accounting\Models;
 
-use Eloquent;
 use App\Models\Company;
-use Illuminate\Support\Carbon;
-
-use Modules\Sales\Models\InvoiceLine;
-use Modules\Accounting\Models\Account;
-use Illuminate\Database\Eloquent\Model;
-use Spatie\Translatable\HasTranslations;
-use Illuminate\Database\Eloquent\Builder;
-use Modules\Purchase\Models\VendorBillLine;
-use Modules\Accounting\Observers\TaxObserver;
-use Modules\Accounting\Enums\Accounting\TaxType;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Modules\Accounting\Enums\Accounting\TaxType;
+use Modules\Accounting\Observers\TaxObserver;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Sales\Models\InvoiceLine;
+use Spatie\Translatable\HasTranslations;
 
 // The SoftDeletes trait is intentionally omitted for the Tax model.
 // As per accounting principles, tax records, once used, should not be physically deleted.

@@ -3,19 +3,18 @@
 namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders;
 
 use BackedEnum;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
-use Modules\Purchase\Models\PurchaseOrder;
+use Filament\Schemas\Schema;
+use Filament\Tables\Table;
 use Modules\Purchase\Filament\Clusters\Purchases\PurchasesCluster;
-use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\EditPurchaseOrder;
-use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\ViewPurchaseOrder;
-use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\ListPurchaseOrders;
 use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\CreatePurchaseOrder;
+use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\EditPurchaseOrder;
+use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\ListPurchaseOrders;
+use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\ViewPurchaseOrder;
+use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\RelationManagers\VendorBillsRelationManager;
 use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Schemas\PurchaseOrderForm;
 use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Tables\PurchaseOrdersTable;
-use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\RelationManagers\VendorBillsRelationManager;
-
+use Modules\Purchase\Models\PurchaseOrder;
 
 class PurchaseOrderResource extends Resource
 {

@@ -2,9 +2,8 @@
 
 namespace Modules\Payment\Tests\Unit\Enums;
 
-
-use Tests\TestCase;
 use Modules\Payment\Enums\Payments\PaymentMethod;
+use Tests\TestCase;
 
 class PaymentMethodTest extends TestCase
 {
@@ -23,7 +22,7 @@ class PaymentMethodTest extends TestCase
             'online_payment',
         ];
 
-        $actualValues = array_map(fn(PaymentMethod $method) => $method->value, PaymentMethod::cases());
+        $actualValues = array_map(fn (PaymentMethod $method) => $method->value, PaymentMethod::cases());
 
         $this->assertEquals($expectedValues, $actualValues);
     }

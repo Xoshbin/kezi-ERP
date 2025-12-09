@@ -2,11 +2,11 @@
 
 namespace Modules\Foundation\Database\Factories;
 
-use Carbon\Carbon;
 use App\Models\Company;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
-use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<CurrencyRate>
@@ -41,7 +41,7 @@ class CurrencyRateFactory extends Factory
      */
     public function today(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'effective_date' => Carbon::today(),
         ]);
     }
@@ -51,7 +51,7 @@ class CurrencyRateFactory extends Factory
      */
     public function forDate(Carbon $date): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'effective_date' => $date,
         ]);
     }
@@ -61,7 +61,7 @@ class CurrencyRateFactory extends Factory
      */
     public function fromApi(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'source' => 'api',
         ]);
     }
@@ -71,7 +71,7 @@ class CurrencyRateFactory extends Factory
      */
     public function manual(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'source' => 'manual',
         ]);
     }

@@ -2,7 +2,6 @@
 
 namespace Modules\Inventory\DataTransferObjects\Inventory;
 
-
 use Brick\Money\Money;
 use Modules\Inventory\Enums\Inventory\CostSource;
 
@@ -86,7 +85,7 @@ readonly class CostPreviewResult
      */
     public function hasWarnings(): bool
     {
-        return !empty($this->warnings);
+        return ! empty($this->warnings);
     }
 
     /**
@@ -102,7 +101,7 @@ readonly class CostPreviewResult
      */
     public function getDescription(): string
     {
-        if (!$this->isValid) {
+        if (! $this->isValid) {
             return $this->message;
         }
 
@@ -112,12 +111,12 @@ readonly class CostPreviewResult
             $description .= " from {$this->costSource->label()}";
         }
 
-        if (!empty($this->costSourceReference)) {
+        if (! empty($this->costSourceReference)) {
             $description .= " ({$this->costSourceReference})";
         }
 
         if ($this->hasWarnings()) {
-            $description .= " - Warnings: " . implode(', ', $this->warnings);
+            $description .= ' - Warnings: '.implode(', ', $this->warnings);
         }
 
         return $description;

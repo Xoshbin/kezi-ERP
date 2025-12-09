@@ -2,33 +2,32 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use Carbon\Carbon;
 use Brick\Money\Money;
-use Modules\Inventory\Models\Lot;
-use Modules\Sales\Models\Invoice;
-use Modules\Product\Models\Product;
-use Modules\Accounting\Models\Account;
-use Modules\Foundation\Models\Partner;
-use Modules\Inventory\Models\StockMove;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Inventory\Models\StockQuant;
-use Modules\Inventory\Models\StockPicking;
-use Modules\Sales\Services\InvoiceService;
-use Modules\Inventory\Models\StockMoveLine;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Inventory\Models\InventoryCostLayer;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
 use Modules\Foundation\Enums\Partners\PartnerType;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Inventory\Enums\Inventory\StockPickingType;
-use Modules\Inventory\Enums\Inventory\StockPickingState;
-use Modules\Sales\Actions\Sales\CreateInvoiceLineAction;
-use Modules\Inventory\Services\Inventory\StockQuantService;
+use Modules\Foundation\Models\Partner;
 use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Models\InventoryCostLayer;
+use Modules\Inventory\Models\Lot;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveLine;
+use Modules\Inventory\Models\StockPicking;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Inventory\Services\Inventory\StockQuantService;
 use Modules\Inventory\Services\Inventory\StockReservationService;
+use Modules\Product\Models\Product;
+use Modules\Sales\Actions\Sales\CreateInvoiceLineAction;
 use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Services\InvoiceService;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

@@ -3,19 +3,19 @@
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
 use Brick\Money\Money;
-use Modules\Product\Models\Product;
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Inventory\Models\StockQuant;
-use Modules\Inventory\Models\StockPicking;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Purchase\Services\VendorBillService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Inventory\Enums\Inventory\StockPickingType;
 use Modules\Inventory\Enums\Inventory\StockPickingState;
+use Modules\Inventory\Enums\Inventory\StockPickingType;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Models\StockPicking;
+use Modules\Inventory\Models\StockQuant;
+use Modules\Product\Enums\Products\ProductType;
+use Modules\Product\Models\Product;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillLineAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Services\VendorBillService;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

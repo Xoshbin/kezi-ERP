@@ -3,8 +3,8 @@
 namespace Modules\Accounting\Filament\Resources\Accounts\Pages;
 
 use Filament\Facades\Filament;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Model;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
 use Modules\Accounting\Filament\Resources\Accounts\AccountResource;
@@ -24,7 +24,7 @@ class CreateAccount extends CreateRecord
 
     public function getTitle(): string
     {
-        return __('filament.actions.create') . ' ' . __('accounting::account.label');
+        return __('filament.actions.create').' '.__('accounting::account.label');
     }
 
     protected function mutateFormDataBeforeCreate(array $data): array
@@ -37,7 +37,7 @@ class CreateAccount extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        $accountService = new \Modules\Accounting\Services\AccountService();
+        $accountService = new \Modules\Accounting\Services\AccountService;
 
         return $accountService->create($data);
     }

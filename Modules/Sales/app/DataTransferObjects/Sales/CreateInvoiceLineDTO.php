@@ -13,6 +13,5 @@ class CreateInvoiceLineDTO
         public readonly int $income_account_id,
         public readonly ?int $product_id,
         public readonly ?int $tax_id,
-    ) {
-    }
+    ) {}
 }

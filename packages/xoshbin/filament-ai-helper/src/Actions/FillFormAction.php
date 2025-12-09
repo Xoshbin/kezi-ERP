@@ -12,8 +12,7 @@ class FillFormAction
 {
     public function __construct(
         private GeminiService $aiService
-    ) {
-    }
+    ) {}
 
     public function execute(AIHelperContextDTO $context): FormManipulationResponseDTO
     {

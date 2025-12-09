@@ -2,21 +2,18 @@
 
 namespace Modules\HR\Models;
 
-use RuntimeException;
-use Brick\Money\Money;
 use App\Models\Company;
-use Illuminate\Support\Carbon;
-use Modules\HR\Models\Employee;
-use Modules\HR\Models\Department;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Models\Currency;
-use Spatie\Translatable\HasTranslations;
-use Modules\HR\Models\EmploymentContract;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Collection;
-use Modules\HR\Casts\SalaryCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Modules\Foundation\Models\Currency;
+use Modules\HR\Casts\SalaryCurrencyMoneyCast;
+use RuntimeException;
+use Spatie\Translatable\HasTranslations;
 
 /**
  * Class Position
@@ -192,19 +189,19 @@ class Position extends Model
         }
 
         if ($this->min_salary && $this->max_salary) {
-            return $this->min_salary->formatTo($this->salaryCurrency->code) . ' - ' .
+            return $this->min_salary->formatTo($this->salaryCurrency->code).' - '.
                 $this->max_salary->formatTo($this->salaryCurrency->code);
         }
 
         if ($this->min_salary) {
-            return 'From ' . $this->min_salary->formatTo($this->salaryCurrency->code);
+            return 'From '.$this->min_salary->formatTo($this->salaryCurrency->code);
         }
 
         if (! $this->max_salary) {
             throw new RuntimeException('Position max salary not found');
         }
 
-        return 'Up to ' . $this->max_salary->formatTo($this->salaryCurrency->code);
+        return 'Up to '.$this->max_salary->formatTo($this->salaryCurrency->code);
     }
 
     /**

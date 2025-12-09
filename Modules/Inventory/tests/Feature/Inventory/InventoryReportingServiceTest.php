@@ -2,24 +2,23 @@
 
 namespace Modules\Inventory\Tests\Feature\Inventory;
 
-use Carbon\Carbon;
 use Brick\Money\Money;
-use Modules\Inventory\Models\Lot;
-use Modules\Product\Models\Product;
-use Modules\Accounting\Models\Account;
-use Modules\Inventory\Models\StockMove;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Inventory\Models\StockQuant;
-use Modules\Inventory\Models\ReorderingRule;
-use Modules\Product\Enums\Products\ProductType;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
+use Modules\Accounting\Models\Account;
 use Modules\Inventory\Enums\Inventory\ReorderingRoute;
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Inventory\Services\Inventory\StockQuantService;
+use Modules\Inventory\Models\Lot;
+use Modules\Inventory\Models\ReorderingRule;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockQuant;
 use Modules\Inventory\Services\Inventory\InventoryReportingService;
 use Modules\Inventory\Services\Inventory\InventoryValuationService;
+use Modules\Inventory\Services\Inventory\StockQuantService;
+use Modules\Product\Models\Product;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -300,7 +299,7 @@ function createStockReceipt($testCase, Product $product, float $quantity, Money 
         'move_type' => StockMoveType::Incoming,
         'status' => StockMoveStatus::Done,
         'move_date' => $date,
-        'reference' => 'TEST-RECEIPT-' . $date->format('Ymd'),
+        'reference' => 'TEST-RECEIPT-'.$date->format('Ymd'),
         'source_type' => 'Test',
         'source_id' => 1,
         'created_by_user_id' => $testCase->user->id,
@@ -327,7 +326,7 @@ function createStockDelivery($testCase, Product $product, float $quantity, Carbo
         'move_type' => StockMoveType::Outgoing,
         'status' => StockMoveStatus::Done,
         'move_date' => $date,
-        'reference' => 'TEST-DELIVERY-' . $date->format('Ymd'),
+        'reference' => 'TEST-DELIVERY-'.$date->format('Ymd'),
         'source_type' => 'Test',
         'source_id' => 1,
         'created_by_user_id' => $testCase->user->id,
@@ -354,7 +353,7 @@ function createStockReceiptWithLot($testCase, Product $product, Lot $lot, float 
         'move_type' => StockMoveType::Incoming,
         'status' => StockMoveStatus::Done,
         'move_date' => $date,
-        'reference' => 'TEST-RECEIPT-LOT-' . $date->format('Ymd'),
+        'reference' => 'TEST-RECEIPT-LOT-'.$date->format('Ymd'),
         'source_type' => 'Test',
         'source_id' => 1,
         'created_by_user_id' => $testCase->user->id,
@@ -366,7 +365,7 @@ function createStockReceiptWithLot($testCase, Product $product, Lot $lot, float 
     // Create stock move line for lot tracking
     // The factory should have created a product line, but let's ensure it exists
     $productLine = $stockMove->productLines()->first();
-    if (!$productLine) {
+    if (! $productLine) {
         // Fallback: create product line manually
         $productLine = $stockMove->productLines()->create([
             'company_id' => $product->company_id,
@@ -401,7 +400,7 @@ function createStockDeliveryWithLot($testCase, Product $product, Lot $lot, float
         'move_type' => StockMoveType::Outgoing,
         'status' => StockMoveStatus::Done,
         'move_date' => $date,
-        'reference' => 'TEST-DELIVERY-LOT-' . $date->format('Ymd'),
+        'reference' => 'TEST-DELIVERY-LOT-'.$date->format('Ymd'),
         'source_type' => 'Test',
         'source_id' => 1,
         'created_by_user_id' => $testCase->user->id,

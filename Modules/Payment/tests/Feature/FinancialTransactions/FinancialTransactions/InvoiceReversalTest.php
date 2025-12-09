@@ -1,16 +1,16 @@
 <?php
 
 use Brick\Money\Money;
-use Tests\Traits\MocksTime;
-use Modules\Sales\Models\Invoice;
-use Modules\Accounting\Models\Account;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Sales\Services\InvoiceService;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Sales\Actions\Sales\CreateInvoiceLineAction;
 use Modules\Accounting\Enums\Accounting\JournalEntryState;
+use Modules\Accounting\Models\Account;
+use Modules\Sales\Actions\Sales\CreateInvoiceLineAction;
 use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Services\InvoiceService;
+use Tests\Traits\MocksTime;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class, MocksTime::class);
 
@@ -55,6 +55,6 @@ test('cancelling a posted invoice creates a reversing journal entry and an audit
         'auditable_id' => $invoice->id,
         'user_id' => $this->user->id,
         'event_type' => 'cancellation',
-        'description' => 'Invoice Cancelled: ' . $cancellationReason,
+        'description' => 'Invoice Cancelled: '.$cancellationReason,
     ]);
 });

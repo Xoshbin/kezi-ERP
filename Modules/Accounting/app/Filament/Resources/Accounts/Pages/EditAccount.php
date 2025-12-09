@@ -4,12 +4,12 @@ namespace Modules\Accounting\Filament\Resources\Accounts\Pages;
 
 use Exception;
 use Filament\Actions\DeleteAction;
-use Modules\Accounting\Models\Account;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
 use Modules\Accounting\Filament\Resources\Accounts\AccountResource;
+use Modules\Accounting\Models\Account;
 
 class EditAccount extends EditRecord
 {
@@ -26,7 +26,7 @@ class EditAccount extends EditRecord
                     if (! $record instanceof Account) {
                         throw new Exception('Invalid record type');
                     }
-                    $accountService = new \Modules\Accounting\Services\AccountService();
+                    $accountService = new \Modules\Accounting\Services\AccountService;
                     $accountService->delete($record);
                     $this->redirect(AccountResource::getUrl('index'));
                 }),
@@ -39,7 +39,7 @@ class EditAccount extends EditRecord
             throw new Exception('Invalid record type');
         }
 
-        $accountService = new \Modules\Accounting\Services\AccountService();
+        $accountService = new \Modules\Accounting\Services\AccountService;
 
         return $accountService->update($record, $data);
     }

@@ -17,6 +17,5 @@ readonly class CreateInvoiceFromSalesOrderDTO
         public int $default_income_account_id,
         public ?int $fiscal_position_id = null,
         public ?int $payment_term_id = null,
-    ) {
-    }
+    ) {}
 }

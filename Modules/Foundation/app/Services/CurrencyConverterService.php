@@ -2,10 +2,10 @@
 
 namespace Modules\Foundation\Services;
 
+use App\Models\Company;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use InvalidArgumentException;
-use App\Models\Company;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
 
@@ -23,7 +23,7 @@ class CurrencyConverterService
      * effective on a specific date.
      *
      * @param  Money  $amount  The amount to convert
-     * @param Currency $toCurrency The target currency
+     * @param  Currency  $toCurrency  The target currency
      * @param  Carbon|string  $date  The date for which to use the exchange rate
      * @param  Company  $company  The company context for base currency
      * @return Money The converted amount

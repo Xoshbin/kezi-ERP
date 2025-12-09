@@ -4,10 +4,9 @@ namespace Modules\Inventory\Services\Inventory;
 
 use App\Models\Company;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-
-use Modules\Product\Models\Product;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Modules\Product\Models\Product;
 
 class InventoryQueryOptimizationService
 {
@@ -21,7 +20,7 @@ class InventoryQueryOptimizationService
      */
     public function getBulkStockQuantities(Company $company, array $productIds, ?int $locationId = null): Collection
     {
-        $cacheKey = "stock_quantities_{$company->id}_" . implode(',', $productIds) . "_{$locationId}";
+        $cacheKey = "stock_quantities_{$company->id}_".implode(',', $productIds)."_{$locationId}";
 
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($company, $productIds, $locationId) {
             // Updated to use stock_move_product_lines structure
@@ -54,7 +53,7 @@ class InventoryQueryOptimizationService
     {
         $cacheKey = "lot_availability_{$company->id}_{$productId}_{$locationId}";
 
-        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($company, $productId, $locationId) {
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($company, $productId) {
             // Simplified version using lots table only
             return DB::table('lots as l')
                 ->join('products as p', 'l.product_id', '=', 'p.id')
@@ -84,7 +83,7 @@ class InventoryQueryOptimizationService
      */
     public function getOptimizedMoveHistory(Company $company, array $filters = []): Collection
     {
-        $cacheKey = "move_history_{$company->id}_" . md5(serialize($filters));
+        $cacheKey = "move_history_{$company->id}_".md5(serialize($filters));
 
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($company, $filters) {
             $query = DB::table('stock_moves as sm')
@@ -143,7 +142,7 @@ class InventoryQueryOptimizationService
      */
     public function getOptimizedValuationData(Company $company, string $asOfDate, array $productIds = []): Collection
     {
-        $cacheKey = "valuation_data_{$company->id}_{$asOfDate}_" . implode(',', $productIds);
+        $cacheKey = "valuation_data_{$company->id}_{$asOfDate}_".implode(',', $productIds);
 
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($company, $asOfDate, $productIds) {
             $query = DB::table('stock_move_valuations as smv')
@@ -161,7 +160,7 @@ class InventoryQueryOptimizationService
                 ->where('sm.move_date', '<=', $asOfDate)
                 ->where('sm.status', 'done');
 
-            if (!empty($productIds)) {
+            if (! empty($productIds)) {
                 $query->whereIn('smv.product_id', $productIds);
             }
 
@@ -175,9 +174,9 @@ class InventoryQueryOptimizationService
      */
     public function getOptimizedAgingData(Company $company, array $buckets = []): Collection
     {
-        $cacheKey = "aging_data_{$company->id}_" . md5(serialize($buckets));
+        $cacheKey = "aging_data_{$company->id}_".md5(serialize($buckets));
 
-        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($company, $buckets) {
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($company) {
             return DB::table('inventory_cost_layers as icl')
                 ->join('products as p', 'icl.product_id', '=', 'p.id')
                 ->select([

@@ -2,14 +2,14 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Schemas;
 
-use Filament\Schemas\Schema;
-use Modules\HR\Models\Employee;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Modules\Foundation\Models\Currency;
 use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\DatePicker;
+use Filament\Schemas\Schema;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
+use Modules\Foundation\Models\Currency;
+use Modules\HR\Models\Employee;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PayrollForm
@@ -24,9 +24,9 @@ class PayrollForm
                     Select::make('employee_id')
                         ->label(__('hr::payroll.fields.employee'))
                         ->relationship('employee', 'first_name')
-                        ->getOptionLabelFromRecordUsing(fn(Employee $record): string => $record->full_name . ' (' . $record->employee_number . ')')
+                        ->getOptionLabelFromRecordUsing(fn (Employee $record): string => $record->full_name.' ('.$record->employee_number.')')
                         ->getSearchResultsUsing(
-                            fn(string $search): array => Employee::where('is_active', true)
+                            fn (string $search): array => Employee::where('is_active', true)
                                 ->where('employment_status', 'active')
                                 ->where(function ($query) use ($search) {
                                     $query->where('first_name', 'like', "%{$search}%")
@@ -35,8 +35,8 @@ class PayrollForm
                                 })
                                 ->limit(50)
                                 ->get()
-                                ->mapWithKeys(fn(Employee $employee): array => [
-                                    $employee->id => $employee->full_name . ' (' . $employee->employee_number . ')',
+                                ->mapWithKeys(fn (Employee $employee): array => [
+                                    $employee->id => $employee->full_name.' ('.$employee->employee_number.')',
                                 ])
                                 ->toArray()
                         )
@@ -59,7 +59,7 @@ class PayrollForm
                             return "{$currencyName} ({$record->code})";
                         })
                         ->required()
-                        ->default(fn() => Currency::where('code', 'IQD')->first()?->id)
+                        ->default(fn () => Currency::where('code', 'IQD')->first()?->id)
                         ->columnSpan(1),
 
                     DatePicker::make('period_start_date')

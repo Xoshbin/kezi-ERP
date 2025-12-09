@@ -2,35 +2,29 @@
 
 namespace Modules\Sales\Models;
 
-
-use Eloquent;
-use Brick\Money\Money;
 use App\Models\Company;
-use Illuminate\Support\Carbon;
-use Modules\Payment\Models\Payment;
-use Modules\Sales\Models\SalesOrder;
-use Modules\Sales\Models\InvoiceLine;
-use Modules\Foundation\Models\Partner;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Models\Currency;
-use Illuminate\Database\Eloquent\Builder;
-use Modules\Foundation\Models\PaymentTerm;
-use Modules\Accounting\Models\JournalEntry;
-use Illuminate\Database\Eloquent\Collection;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Modules\Accounting\Models\FiscalPosition;
-use Modules\Payment\Models\PaymentInstallment;
-use Modules\Payment\Models\PaymentDocumentLink;
-use Modules\Inventory\Models\AdjustmentDocument;
-use Modules\Foundation\Observers\AuditLogObserver;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Brick\Money\Money;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Modules\Accounting\Models\FiscalPosition;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Foundation\Models\PaymentTerm;
+use Modules\Inventory\Models\AdjustmentDocument;
 use Modules\Payment\Enums\PaymentInstallments\InstallmentStatus;
+use Modules\Payment\Models\Payment;
+use Modules\Payment\Models\PaymentDocumentLink;
+use Modules\Payment\Models\PaymentInstallment;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
 
 /**
  * Class Invoice
@@ -333,7 +327,7 @@ class Invoice extends Model
      */
     public function getFullReferenceAttribute(): string
     {
-        return $this->invoice_number . ' - ' . $this->invoice_date->format('Y-m-d');
+        return $this->invoice_number.' - '.$this->invoice_date->format('Y-m-d');
     }
 
     /**
@@ -385,18 +379,19 @@ class Invoice extends Model
         $zero = Money::of(0, $currencyCode);
 
         $totalTax = $this->invoiceLines->reduce(
-            fn(Money $carry, InvoiceLine $line) => $carry->plus($line->total_line_tax ?? Money::of(0, $currencyCode)),
+            fn (Money $carry, InvoiceLine $line) => $carry->plus($line->total_line_tax ?? Money::of(0, $currencyCode)),
             Money::of(0, $currencyCode)
         );
 
         $subtotal = $this->invoiceLines->reduce(
-            fn(Money $carry, InvoiceLine $line) => $carry->plus($line->subtotal ?? Money::of(0, $currencyCode)),
+            fn (Money $carry, InvoiceLine $line) => $carry->plus($line->subtotal ?? Money::of(0, $currencyCode)),
             Money::of(0, $currencyCode)
         );
 
         $this->total_tax = $totalTax;
         $this->total_amount = $subtotal->plus($totalTax);
     }
+
     protected static function newFactory(): \Modules\Sales\Database\Factories\InvoiceFactory
     {
         return \Modules\Sales\Database\Factories\InvoiceFactory::new();

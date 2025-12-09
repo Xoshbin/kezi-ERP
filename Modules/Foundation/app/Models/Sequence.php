@@ -3,10 +3,10 @@
 namespace Modules\Foundation\Models;
 
 use App\Models\Company;
-use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 
 /**
  * Sequence Model
@@ -78,7 +78,7 @@ class Sequence extends Model
         $this->refresh();
 
         // Format the number with prefix and padding
-        return $this->prefix . '-' . str_pad((string) $this->current_number, $this->padding, '0', STR_PAD_LEFT);
+        return $this->prefix.'-'.str_pad((string) $this->current_number, $this->padding, '0', STR_PAD_LEFT);
     }
 
     /**

@@ -3,9 +3,9 @@
 namespace Modules\Purchase\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Tax;
 use Modules\Product\Models\Product;
-use Modules\Accounting\Models\Account;
 use Modules\Purchase\Models\VendorBill;
 use Modules\Purchase\Models\VendorBillLine;
 

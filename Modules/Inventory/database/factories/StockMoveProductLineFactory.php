@@ -3,12 +3,11 @@
 namespace Modules\Inventory\Database\Factories;
 
 use App\Models\Company;
-
-use Modules\Product\Models\Product;
-use Modules\Inventory\Models\StockMove;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Inventory\Models\StockMoveProductLine;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveProductLine;
+use Modules\Product\Models\Product;
 
 /**
  * @extends Factory<StockMoveProductLine>

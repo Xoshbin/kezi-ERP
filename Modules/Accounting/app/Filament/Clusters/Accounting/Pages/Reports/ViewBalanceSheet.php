@@ -99,21 +99,21 @@ class ViewBalanceSheet extends Page
 
         // Convert to array format that Livewire can handle
         $this->reportData = [
-            'assetLines' => $report->assetLines->map(fn($line) => [
+            'assetLines' => $report->assetLines->map(fn ($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
                 'balance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
-            'liabilityLines' => $report->liabilityLines->map(fn($line) => [
+            'liabilityLines' => $report->liabilityLines->map(fn ($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
                 'balance' => \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($line->balance),
                 'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
-            'equityLines' => $report->equityLines->map(fn($line) => [
+            'equityLines' => $report->equityLines->map(fn ($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,

@@ -3,8 +3,8 @@
 namespace Modules\Foundation\Tests\Unit\Livewire\Synthesizers;
 
 use Brick\Money\Money;
-use PHPUnit\Framework\TestCase;
 use Modules\Foundation\Livewire\Synthesizers\MoneySynth;
+use PHPUnit\Framework\TestCase;
 
 class MoneySynthTest extends TestCase
 {
@@ -13,7 +13,7 @@ class MoneySynthTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->synthesizer = new MoneySynth();
+        $this->synthesizer = new MoneySynth;
     }
 
     /** @test */

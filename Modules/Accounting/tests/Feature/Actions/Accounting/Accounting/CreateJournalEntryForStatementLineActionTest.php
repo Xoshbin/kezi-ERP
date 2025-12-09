@@ -1,21 +1,21 @@
 <?php
 
-use Carbon\Carbon;
+use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use App\Models\Company;
-use Illuminate\Support\Facades\DB;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Currency;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Foundation\Models\CurrencyRate;
-use Modules\Accounting\Models\BankStatement;
-use Modules\Accounting\Models\BankStatementLine;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Modules\Accounting\Actions\Accounting\CreateJournalEntryForStatementLineAction;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryForStatementLineDTO;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\BankStatement;
+use Modules\Accounting\Models\BankStatementLine;
+use Modules\Accounting\Models\Journal;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 

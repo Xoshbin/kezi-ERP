@@ -2,12 +2,11 @@
 
 namespace Modules\Accounting\Services\Reports;
 
-use Carbon\Carbon;
+use App\Models\Company;
 use Brick\Money\Money;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use App\Models\Company;
-use Modules\Accounting\Enums\Accounting\AccountType;
 use Modules\Accounting\DataTransferObjects\Reports\TrialBalanceDTO;
 use Modules\Accounting\DataTransferObjects\Reports\TrialBalanceLineDTO;
 

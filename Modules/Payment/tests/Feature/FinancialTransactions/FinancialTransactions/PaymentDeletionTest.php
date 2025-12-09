@@ -2,12 +2,11 @@
 
 namespace Modules\Payment\Tests\Feature\FinancialTransactions;
 
-use Modules\Payment\Models\Payment;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Payment\Services\PaymentService;
-use Modules\Payment\Enums\Payments\PaymentStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Foundation\Exceptions\DeletionNotAllowedException;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Payment\Models\Payment;
+use Modules\Payment\Services\PaymentService;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
@@ -22,7 +21,7 @@ test('it prevents deletion of a confirmed payment', function () {
     ]);
 
     // Act & Assert: Attempting to delete it should throw our specific exception.
-    expect(fn() => $this->paymentService->delete($payment))
+    expect(fn () => $this->paymentService->delete($payment))
         ->toThrow(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class);
 
     // Verify: The payment must still exist in the database.

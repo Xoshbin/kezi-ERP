@@ -4,14 +4,12 @@ namespace Modules\HR\Actions\HumanResources;
 
 use App\Models\User;
 use InvalidArgumentException;
-use Modules\HR\Models\Payroll;
 use Modules\Accounting\Models\Journal;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\HR\Models\Payroll;
 use Modules\Payment\Actions\Payments\CreatePaymentAction;
 use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
-
-
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\Enums\Payments\PaymentType;
 
 class CreatePaymentFromPayrollAction
 {

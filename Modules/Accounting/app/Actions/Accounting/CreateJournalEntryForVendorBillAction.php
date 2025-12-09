@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Actions\Accounting;
 
+use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -9,7 +10,6 @@ use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Modules\Accounting\Models\AssetCategory;
 use Modules\Accounting\Models\JournalEntry;
-use App\Models\User;
 use Modules\Purchase\Models\VendorBill;
 use RuntimeException;
 
@@ -42,6 +42,7 @@ class CreateJournalEntryForVendorBillAction
                 if ($vendorBillCurrency->id === $companyCurrency->id) {
                     return $amount;
                 }
+
                 return $this->currencyConverter->convertWithRate(
                     $amount,
                     $exchangeRate,
@@ -59,7 +60,7 @@ class CreateJournalEntryForVendorBillAction
                 $taxAmountCompanyCurrency = Money::of(0, $companyCurrency->code);
                 if ($line->tax_id && $line->total_line_tax->isPositive() && $line->tax) {
                     $taxAmountCompanyCurrency = $convertToCompanyCurrency($line->total_line_tax);
-                    $taxShouldBeCapitalized = !$line->tax->is_recoverable;
+                    $taxShouldBeCapitalized = ! $line->tax->is_recoverable;
                 }
 
                 if ($isStorable && $line->product) {
@@ -146,7 +147,7 @@ class CreateJournalEntryForVendorBillAction
 
                 // Taxes: Only create separate tax entries for recoverable taxes
                 // Non-recoverable taxes are already capitalized into the cost above
-                if ($line->tax_id && $line->total_line_tax->isPositive() && !$taxShouldBeCapitalized) {
+                if ($line->tax_id && $line->total_line_tax->isPositive() && ! $taxShouldBeCapitalized) {
                     $taxAccountId = $company->default_tax_receivable_id ?? $company->default_tax_account_id;
                     if (! $taxAccountId) {
                         throw new RuntimeException('Default input tax account not configured for company.');
@@ -155,7 +156,7 @@ class CreateJournalEntryForVendorBillAction
                         account_id: $taxAccountId,
                         debit: $taxAmountCompanyCurrency,
                         credit: Money::of(0, $companyCurrency->code),
-                        description: 'Input tax: ' . $line->description,
+                        description: 'Input tax: '.$line->description,
                         partner_id: null,
                         analytic_account_id: null,
                         original_currency_amount: $line->total_line_tax,
@@ -187,7 +188,7 @@ class CreateJournalEntryForVendorBillAction
                 currency_id: $companyCurrency->id, // Use company's functional currency
                 entry_date: $vendorBill->accounting_date,
                 reference: $vendorBill->bill_reference,
-                description: 'Vendor Bill ' . $vendorBill->bill_reference,
+                description: 'Vendor Bill '.$vendorBill->bill_reference,
                 source_type: VendorBill::class,
                 source_id: $vendorBill->id,
                 created_by_user_id: $user->id,

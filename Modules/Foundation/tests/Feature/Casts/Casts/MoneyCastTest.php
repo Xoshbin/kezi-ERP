@@ -2,19 +2,19 @@
 
 namespace Modules\Foundation\Tests\Feature\Casts;
 
-use Brick\Money\Money;
 use App\Models\Company;
-use Modules\Sales\Models\Invoice;
+use Brick\Money\Money;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Assets\DepreciationEntryStatus;
 use Modules\Accounting\Models\Asset;
-use Modules\Sales\Models\InvoiceLine;
+use Modules\Accounting\Models\DepreciationEntry;
+use Modules\Accounting\Models\JournalEntry;
+use Modules\Accounting\Models\JournalEntryLine;
 use Modules\Foundation\Models\Currency;
 use Modules\Purchase\Models\VendorBill;
-use Modules\Accounting\Models\JournalEntry;
 use Modules\Purchase\Models\VendorBillLine;
-use Modules\Accounting\Models\JournalEntryLine;
-use Modules\Accounting\Models\DepreciationEntry;
-use Modules\Accounting\Enums\Assets\DepreciationEntryStatus;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\InvoiceLine;
 
 uses(RefreshDatabase::class);
 

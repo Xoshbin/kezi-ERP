@@ -260,7 +260,7 @@ class BankStatementResource extends Resource
                             MoneyInput::make('amount_in_foreign_currency')
                                 ->label(__('accounting::bank_statement.amount_in_foreign_currency'))
                                 ->currencyField('foreign_currency_id')
-                                ->visible(fn($get) => $get('foreign_currency_id'))
+                                ->visible(fn ($get) => $get('foreign_currency_id'))
                                 ->helperText(__('accounting::bank_statement.original_transaction_amount'))
                                 ->columnSpan(3),
                         ])
@@ -335,8 +335,8 @@ class BankStatementResource extends Resource
                     ->label(__('accounting::bank_statement.reconcile'))
                     ->icon('heroicon-o-scale')
                     ->color('success')
-                    ->url(fn(BankStatement $record): string => static::getUrl('reconcile', ['record' => $record]))
-                    ->visible(fn(): bool => Filament::getTenant()->enable_reconciliation ?? false),
+                    ->url(fn (BankStatement $record): string => static::getUrl('reconcile', ['record' => $record]))
+                    ->visible(fn (): bool => Filament::getTenant()->enable_reconciliation ?? false),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

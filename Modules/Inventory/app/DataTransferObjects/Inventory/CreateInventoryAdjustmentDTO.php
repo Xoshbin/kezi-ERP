@@ -7,7 +7,7 @@ use Carbon\Carbon;
 readonly class CreateInventoryAdjustmentDTO
 {
     /**
-     * @param array<InventoryAdjustmentLineDTO> $lines
+     * @param  array<InventoryAdjustmentLineDTO>  $lines
      */
     public function __construct(
         public int $company_id,
@@ -16,6 +16,5 @@ readonly class CreateInventoryAdjustmentDTO
         public string $reason,
         public array $lines,
         public int $created_by_user_id,
-    ) {
-    }
+    ) {}
 }

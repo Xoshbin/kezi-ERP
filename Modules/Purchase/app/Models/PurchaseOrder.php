@@ -2,24 +2,19 @@
 
 namespace Modules\Purchase\Models;
 
+use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use App\Models\Company;
-use Illuminate\Support\Carbon;
-use Modules\Foundation\Models\Partner;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Models\Currency;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Inventory\Models\StockLocation;
-use Illuminate\Database\Eloquent\Collection;
-use Modules\Purchase\Models\PurchaseOrderLine;
-use Modules\Foundation\Observers\AuditLogObserver;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Inventory\Models\StockLocation;
 use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
 
 /**
@@ -182,7 +177,7 @@ class PurchaseOrder extends Model
      */
     public function calculateTotalsFromLines(): void
     {
-        if (!$this->relationLoaded('lines')) {
+        if (! $this->relationLoaded('lines')) {
             $this->load('lines');
         }
 
@@ -237,12 +232,12 @@ class PurchaseOrder extends Model
     public function canCreateBill(): bool
     {
         // First check if status allows bill creation
-        if (!$this->status->canCreateBill()) {
+        if (! $this->status->canCreateBill()) {
             return false;
         }
 
         // Then check if bills already exist for this PO
-        return !$this->hasBills();
+        return ! $this->hasBills();
     }
 
     /**
@@ -291,6 +286,7 @@ class PurchaseOrder extends Model
     public function isPartiallyReceived(): bool
     {
         $received = $this->getTotalQuantityReceived();
+
         return $received > 0 && $received < $this->getTotalQuantityOrdered();
     }
 
@@ -298,7 +294,7 @@ class PurchaseOrder extends Model
      * Update the status based on received quantities.
      * This method should only be called from inventory/warehouse operations.
      *
-     * @param bool $fromInventoryOperation Whether this is called from a legitimate inventory operation
+     * @param  bool  $fromInventoryOperation  Whether this is called from a legitimate inventory operation
      */
     public function updateStatusBasedOnReceipts(bool $fromInventoryOperation = false): void
     {
@@ -310,12 +306,13 @@ class PurchaseOrder extends Model
         }
 
         // Only allow receive status updates from inventory operations
-        if (!$fromInventoryOperation) {
+        if (! $fromInventoryOperation) {
             // If not from inventory operation, only allow transition to ToReceive
             // but not to PartiallyReceived or FullyReceived
             if ($this->status->isCommitted() && $this->getTotalQuantityReceived() === 0.0) {
                 $this->status = PurchaseOrderStatus::ToReceive;
             }
+
             return;
         }
 
@@ -372,6 +369,7 @@ class PurchaseOrder extends Model
             $this->save();
         }
     }
+
     protected static function newFactory(): \Modules\Purchase\Database\Factories\PurchaseOrderFactory
     {
         return \Modules\Purchase\Database\Factories\PurchaseOrderFactory::new();

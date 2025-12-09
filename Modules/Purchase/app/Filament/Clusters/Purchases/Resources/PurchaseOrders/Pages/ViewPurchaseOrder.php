@@ -2,18 +2,15 @@
 
 namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages;
 
-
-
-use Exception;
 use Carbon\Carbon;
+use Exception;
 use Filament\Actions\Action;
-use Filament\Schemas\Schema;
-use Filament\Facades\Filament;
 use Filament\Actions\EditAction;
-use Illuminate\Support\Facades\Auth;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
-use Modules\Foundation\Services\SequenceService;
+use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
 use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\PurchaseOrderResource;
@@ -42,7 +39,7 @@ class ViewPurchaseOrder extends ViewRecord
             ->label(__('purchase::purchase_orders.actions.create_bill'))
             ->icon('heroicon-o-document-plus')
             ->color('success')
-            ->visible(fn() => $this->record->status->canCreateBill())
+            ->visible(fn () => $this->record->status->canCreateBill())
             ->requiresConfirmation()
             ->modalHeading(__('purchase::purchase_orders.actions.create_bill_confirmation_title'))
             ->modalDescription(__('purchase::purchase_orders.actions.create_bill_confirmation_description'))

@@ -2,20 +2,20 @@
 
 namespace Modules\Payment\Actions\Payments;
 
-use Carbon\Carbon;
+use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use App\Models\Company;
-use InvalidArgumentException;
-use Modules\Sales\Models\Invoice;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Modules\Payment\Models\Payment;
+use InvalidArgumentException;
 use Modules\Foundation\Models\Currency;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Payment\Enums\Payments\PaymentStatus;
 use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Modules\Payment\Enums\Payments\PaymentStatus;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Models\Payment;
 use Modules\Payment\Services\Payments\Strategies\SettlementStrategy;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
 
 class CreatePaymentAction
 {

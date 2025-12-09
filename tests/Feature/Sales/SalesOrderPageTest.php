@@ -1,8 +1,8 @@
 <?php
 
 use App\Models\User;
+
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\get;
 
 it('loads sales order create page without error', function () {
     $company = \App\Models\Company::factory()->create();

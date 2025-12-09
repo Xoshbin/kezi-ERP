@@ -1,4 +1,5 @@
 <?php
+
 use Coolsam\Modules\Enums\ConfigMode;
 use Filament\Support\Icons\Heroicon;
 

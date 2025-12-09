@@ -66,7 +66,7 @@ class InventoryOverview extends Page
         ];
     }
 
-    public function getColumns(): int | array
+    public function getColumns(): int|array
     {
         return [
             'md' => 2,

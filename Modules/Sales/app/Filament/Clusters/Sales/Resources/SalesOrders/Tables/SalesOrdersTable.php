@@ -2,7 +2,6 @@
 
 namespace Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Tables;
 
-
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -48,6 +47,7 @@ class SalesOrdersTable
                     ->badge()
                     ->color(function ($record): string {
                         $invoicesCount = $record->invoices()->count();
+
                         return match ($invoicesCount) {
                             0 => 'warning',
                             1 => 'success',
@@ -56,6 +56,7 @@ class SalesOrdersTable
                     })
                     ->icon(function ($record): string {
                         $invoicesCount = $record->invoices()->count();
+
                         return match ($invoicesCount) {
                             0 => 'heroicon-m-exclamation-triangle',
                             1 => 'heroicon-m-check-circle',
@@ -66,10 +67,11 @@ class SalesOrdersTable
 
                 TextColumn::make('delivery_progress')
                     ->label(__('sales::sales_orders.fields.delivery_progress'))
-                    ->getStateUsing(fn($record) => number_format($record->getDeliveryProgress(), 1) . '%')
+                    ->getStateUsing(fn ($record) => number_format($record->getDeliveryProgress(), 1).'%')
                     ->badge()
                     ->color(function ($record): string {
                         $progress = $record->getDeliveryProgress();
+
                         return match (true) {
                             $progress == 0 => 'gray',
                             $progress < 100 => 'warning',
@@ -92,7 +94,7 @@ class SalesOrdersTable
 
                 TextColumn::make('total_amount')
                     ->label(__('sales::sales_orders.fields.total_amount'))
-                    ->money(fn($record) => $record->currency->code)
+                    ->money(fn ($record) => $record->currency->code)
                     ->sortable(),
 
                 TextColumn::make('currency.code')

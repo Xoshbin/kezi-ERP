@@ -1,25 +1,25 @@
 <?php
 
 use Brick\Money\Money;
-use Modules\Sales\Models\Invoice;
-use Modules\Payment\Models\Payment;
-use Modules\Purchase\Models\VendorBill;
-use Tests\Traits\WithConfiguredCompany;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Payment\Models\PaymentDocumentLink;
-use Modules\Payment\Enums\Payments\PaymentMethod;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
-use Modules\Payment\DataTransferObjects\Payments\UpdatePaymentDTO;
-use Modules\Payment\Services\Payments\Strategies\SettlementStrategy;
 use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
 use Modules\Payment\DataTransferObjects\Payments\UpdatePaymentDocumentLinkDTO;
+use Modules\Payment\DataTransferObjects\Payments\UpdatePaymentDTO;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Models\Payment;
+use Modules\Payment\Models\PaymentDocumentLink;
+use Modules\Payment\Services\Payments\Strategies\SettlementStrategy;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Sales\Models\Invoice;
+use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
-    $this->strategy = new SettlementStrategy();
+    $this->strategy = new SettlementStrategy;
 });
 
 test('it creates payment document links for settlement payment creation', function () {

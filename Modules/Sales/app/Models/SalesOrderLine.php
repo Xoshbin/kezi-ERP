@@ -3,17 +3,13 @@
 namespace Modules\Sales\Models;
 
 use Brick\Money\Money;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Modules\Accounting\Models\Tax;
 use Modules\Product\Models\Product;
-use Modules\Sales\Models\SalesOrder;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Foundation\Observers\AuditLogObserver;
-use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
 
 /**
  * Sales Order Line Model
@@ -260,6 +256,7 @@ class SalesOrderLine extends Model
     {
         return $this->getRemainingToInvoice() > 0;
     }
+
     protected static function newFactory(): \Modules\Sales\Database\Factories\SalesOrderLineFactory
     {
         return \Modules\Sales\Database\Factories\SalesOrderLineFactory::new();

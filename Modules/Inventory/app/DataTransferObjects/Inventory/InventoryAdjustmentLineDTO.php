@@ -10,8 +10,7 @@ readonly class InventoryAdjustmentLineDTO
         public float $counted_quantity,
         public float $current_quantity,
         public ?int $lot_id = null,
-    ) {
-    }
+    ) {}
 
     /**
      * Calculate the adjustment quantity (positive for increase, negative for decrease)

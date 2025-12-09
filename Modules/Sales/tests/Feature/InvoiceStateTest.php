@@ -1,15 +1,14 @@
 <?php
 
-use Modules\Sales\Models\Invoice;
-use Modules\Sales\Models\InvoiceLine;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Accounting\Enums\Accounting\AccountType;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
-use function Pest\Livewire\livewire;
-use Modules\Sales\Database\Factories\InvoiceFactory;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Journal;
-use Modules\Accounting\Enums\Accounting\JournalType;
-use Modules\Accounting\Enums\Accounting\AccountType;
+use Modules\Sales\Database\Factories\InvoiceFactory;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Models\Invoice;
+
+use function Pest\Livewire\livewire;
 
 it('updates invoice status to posted in UI after confirmation', function () {
     // 1. Setup Data
@@ -39,7 +38,7 @@ it('updates invoice status to posted in UI after confirmation', function () {
     ]);
 
     // Create Invoice linked to this company
-    // Currency ID is handled by factory or defaults to company currency if not specified? 
+    // Currency ID is handled by factory or defaults to company currency if not specified?
     // InvoiceFactory usually sets currency_id. We should match company currency to avoid exchange rate complexity in this test.
 
     $invoice = Invoice::factory()

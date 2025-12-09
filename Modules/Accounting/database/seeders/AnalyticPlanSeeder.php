@@ -2,8 +2,8 @@
 
 namespace Modules\Accounting\Database\Seeders;
 
-use Exception;
 use App\Models\Company;
+use Exception;
 use Illuminate\Database\Seeder;
 use Modules\Accounting\Models\AnalyticPlan;
 

@@ -2,12 +2,11 @@
 
 namespace Modules\Accounting\Tests\Feature;
 
-use Modules\Accounting\Models\Tax;
-use Modules\Accounting\Enums\Accounting\TaxType;
 use App\Models\Company;
-use App\Models\User;
-use Modules\Accounting\Models\Account;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Enums\Accounting\TaxType;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Tax;
 use Tests\TestCase;
 
 class TaxRateTest extends TestCase

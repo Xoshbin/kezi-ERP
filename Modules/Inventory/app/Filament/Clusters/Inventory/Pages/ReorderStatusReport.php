@@ -2,31 +2,30 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Pages;
 
-
-
-use Exception;
 use BackedEnum;
-use Brick\Money\Money;
-use Filament\Pages\Page;
 use Brick\Money\Currency;
+use Brick\Money\Money;
+use Exception;
 use Filament\Actions\Action;
-use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
-use Modules\Product\Models\Product;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
+use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
-use Modules\Inventory\Models\StockLocation;
-use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Schemas\Schema;
 use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
+use Modules\Inventory\Models\StockLocation;
 use Modules\Inventory\Services\Inventory\InventoryCSVExportService;
 use Modules\Inventory\Services\Inventory\InventoryReportingService;
+use Modules\Product\Models\Product;
 
 class ReorderStatusReport extends Page implements HasForms
 {
     use InteractsWithForms;
+
     protected static ?string $cluster = InventoryCluster::class;
 
     protected string $view = 'inventory::filament.clusters.inventory.pages.reorder-status-report';
@@ -86,7 +85,7 @@ class ReorderStatusReport extends Page implements HasForms
                             ->searchable()
                             ->preload()
                             ->live()
-                            ->afterStateUpdated(fn() => $this->generateReport()),
+                            ->afterStateUpdated(fn () => $this->generateReport()),
 
                         Select::make('location_ids')
                             ->label(__('inventory::inventory_reports.reorder.filters.locations'))
@@ -99,19 +98,19 @@ class ReorderStatusReport extends Page implements HasForms
                             ->searchable()
                             ->preload()
                             ->live()
-                            ->afterStateUpdated(fn() => $this->generateReport()),
+                            ->afterStateUpdated(fn () => $this->generateReport()),
 
                         Toggle::make('include_suggested_orders')
                             ->label(__('inventory::inventory_reports.reorder.filters.include_suggested_orders'))
                             ->default(true)
                             ->live()
-                            ->afterStateUpdated(fn() => $this->generateReport()),
+                            ->afterStateUpdated(fn () => $this->generateReport()),
 
                         Toggle::make('include_overstock')
                             ->label(__('inventory::inventory_reports.reorder.filters.include_overstock'))
                             ->default(true)
                             ->live()
-                            ->afterStateUpdated(fn() => $this->generateReport()),
+                            ->afterStateUpdated(fn () => $this->generateReport()),
                     ])
                     ->columns(2),
             ])
@@ -135,7 +134,7 @@ class ReorderStatusReport extends Page implements HasForms
 
     public function getReordersByStatus(): array
     {
-        if (!$this->reportData || empty($this->reportData['products'])) {
+        if (! $this->reportData || empty($this->reportData['products'])) {
             return [
                 'critical' => [],
                 'low' => [],
@@ -182,7 +181,7 @@ class ReorderStatusReport extends Page implements HasForms
 
     public function getTotalSuggestedValue()
     {
-        if (!$this->reportData || empty($this->reportData['products'])) {
+        if (! $this->reportData || empty($this->reportData['products'])) {
             return Money::zero(Currency::of('USD'));
         }
 
@@ -202,13 +201,14 @@ class ReorderStatusReport extends Page implements HasForms
             Action::make('export')
                 ->label(__('inventory::inventory_reports.reorder.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')
-                ->disabled(fn() => !$this->reportData)
+                ->disabled(fn () => ! $this->reportData)
                 ->action(function () {
-                    if (!$this->reportData) {
+                    if (! $this->reportData) {
                         Notification::make()
                             ->title(__('inventory::inventory_reports.reorder.no_data_to_export'))
                             ->danger()
                             ->send();
+
                         return;
                     }
 
@@ -218,7 +218,7 @@ class ReorderStatusReport extends Page implements HasForms
                             'include_metadata' => true,
                         ]);
 
-                        $filename = 'inventory-reorder-status-' . now()->format('Y-m-d-H-i-s') . '.csv';
+                        $filename = 'inventory-reorder-status-'.now()->format('Y-m-d-H-i-s').'.csv';
 
                         Notification::make()
                             ->title(__('inventory::inventory_reports.reorder.export_started'))

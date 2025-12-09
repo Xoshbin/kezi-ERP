@@ -2,17 +2,17 @@
 
 namespace Modules\Purchase\Observers;
 
-use RuntimeException;
-use Brick\Money\Money;
 use Brick\Math\RoundingMode;
+use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Models\StockMove;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 use Modules\Purchase\Models\VendorBill;
 use Modules\Purchase\Models\VendorBillLine;
 use Modules\Purchase\Services\VendorBillService;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use RuntimeException;
 
 class VendorBillObserver
 {
@@ -87,10 +87,10 @@ class VendorBillObserver
         }
 
         // Include capitalized tax in the unit cost if tax is non-recoverable
-        if ($line->tax_id && $line->total_line_tax->isPositive() && $line->tax && !$line->tax->is_recoverable) {
+        if ($line->tax_id && $line->total_line_tax->isPositive() && $line->tax && ! $line->tax->is_recoverable) {
             // Convert tax to company currency if needed
             $taxInCompanyCurrency = $line->total_line_tax_company_currency ?? $line->total_line_tax;
-            if (!$line->total_line_tax_company_currency && $vendorBill->currency_id !== $company->currency_id) {
+            if (! $line->total_line_tax_company_currency && $vendorBill->currency_id !== $company->currency_id) {
                 $exchangeRate = $vendorBill->exchange_rate_at_creation ?? 1.0;
                 $taxInCompanyCurrency = Money::of(
                     $line->total_line_tax->getAmount()->toFloat() * $exchangeRate,

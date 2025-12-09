@@ -2,29 +2,28 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages;
 
-use Exception;
-use Brick\Money\Money;
 use Brick\Math\RoundingMode;
+use Brick\Money\Money;
+use Exception;
 use Filament\Actions\Action;
-use InvalidArgumentException;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Select;
+use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
-use Filament\Forms\Components\Select;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
-use Modules\Foundation\Models\Currency;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Purchase\Models\PurchaseOrder;
-use Filament\Resources\Pages\CreateRecord;
-
-use Illuminate\Database\Eloquent\Collection;
-use Modules\Purchase\Models\VendorBillAttachment;
+use InvalidArgumentException;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
 use Modules\Foundation\Filament\Actions\DocsAction;
+use Modules\Foundation\Models\Currency;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Models\VendorBill;
+use Modules\Purchase\Models\VendorBillAttachment;
 
 class CreateVendorBill extends CreateRecord
 {
@@ -50,7 +49,7 @@ class CreateVendorBill extends CreateRecord
         // Ensure we have a single Currency model, not a collection
         if ($currency instanceof Collection) {
             $currency = $currency->first();
-            if (!$currency) {
+            if (! $currency) {
                 throw new InvalidArgumentException('Currency not found');
             }
         }
@@ -145,17 +144,18 @@ class CreateVendorBill extends CreateRecord
         $purchaseOrder = PurchaseOrder::with(['lines.product', 'vendor', 'currency'])
             ->find($purchaseOrderId);
 
-        if (!$purchaseOrder) {
+        if (! $purchaseOrder) {
             return;
         }
 
         // Validate that the PO can be billed
-        if (!$purchaseOrder->status->canCreateBill()) {
+        if (! $purchaseOrder->status->canCreateBill()) {
             \Filament\Notifications\Notification::make()
                 ->title(__('vendor_bill.errors.cannot_create_bill_title'))
                 ->body(__('vendor_bill.errors.cannot_create_bill_body', ['status' => $purchaseOrder->status->label()]))
                 ->warning()
                 ->send();
+
             return;
         }
 
@@ -207,14 +207,14 @@ class CreateVendorBill extends CreateRecord
                         // Use getRawState() to avoid triggering validation
                         $vendorId = $this->form->getRawState()['vendor_id'] ?? null;
 
-                        if (!$vendorId) {
+                        if (! $vendorId) {
                             return [];
                         }
 
                         return PurchaseOrder::where('vendor_id', $vendorId)
                             ->whereIn('status', ['confirmed', 'to_receive', 'partially_received', 'fully_received', 'to_bill', 'partially_billed'])
                             ->get()
-                            ->mapWithKeys(fn($po) => [$po->id => "{$po->po_number} - {$po->reference}"])
+                            ->mapWithKeys(fn ($po) => [$po->id => "{$po->po_number} - {$po->reference}"])
                             ->toArray();
                     })
                     ->searchable()
@@ -228,7 +228,8 @@ class CreateVendorBill extends CreateRecord
                 // Use getRawState() to avoid triggering validation
                 try {
                     $formState = $this->form->getRawState();
-                    return !empty($formState['vendor_id']) && empty($formState['purchase_order_id']);
+
+                    return ! empty($formState['vendor_id']) && empty($formState['purchase_order_id']);
                 } catch (Exception $e) {
                     // If form state can't be retrieved, hide the action
                     return false;

@@ -2,31 +2,29 @@
 
 namespace Modules\Product\Models;
 
-use Eloquent;
-use Brick\Money\Money;
 use App\Models\Company;
-use Illuminate\Support\Carbon;
-use Modules\Sales\Models\InvoiceLine;
-use Modules\Accounting\Models\Account;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Inventory\Models\StockMove;
-use Spatie\Translatable\HasTranslations;
-use Illuminate\Database\Eloquent\Builder;
-use Modules\Purchase\Models\VendorBillLine;
-use Modules\Inventory\Models\ReorderingRule;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Validation\ValidationException;
-use Modules\Product\Observers\ProductObserver;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Inventory\Models\InventoryCostLayer;
-use Modules\Inventory\Models\StockMoveProductLine;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Brick\Money\Money;
+use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
+use Illuminate\Validation\ValidationException;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Modules\Inventory\Enums\Inventory\ValuationMethod;
+use Modules\Inventory\Models\InventoryCostLayer;
+use Modules\Inventory\Models\ReorderingRule;
+use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveProductLine;
+use Modules\Purchase\Models\VendorBillLine;
+use Modules\Sales\Models\InvoiceLine;
+use Spatie\Translatable\HasTranslations;
 
 /**
  * @property int $id
@@ -283,6 +281,7 @@ class Product extends Model
 
     /**
      * Get stock moves that contain this product through product lines
+     *
      * @return HasManyThrough<StockMove, StockMoveProductLine, static>
      */
     public function stockMoves(): HasManyThrough

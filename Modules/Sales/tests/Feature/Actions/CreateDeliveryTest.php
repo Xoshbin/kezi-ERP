@@ -2,26 +2,29 @@
 
 namespace Modules\Sales\Tests\Feature\Actions;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Company;
+use App\Models\User;
 use Brick\Money\Money;
-use Modules\Sales\Models\SalesOrder;
-use Modules\Product\Models\Product;
-use Modules\Sales\Models\SalesOrderLine;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Inventory\Enums\Inventory\StockLocationType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Inventory\Enums\Inventory\StockLocationType;
+use Modules\Inventory\Models\StockLocation;
+use Modules\Product\Models\Product;
 use Modules\Sales\Actions\Sales\CreateDeliveryFromSalesOrderAction;
 use Modules\Sales\DataTransferObjects\Sales\CreateDeliveryFromSalesOrderDTO;
+use Modules\Sales\Models\SalesOrder;
+use Modules\Sales\Models\SalesOrderLine;
+use Tests\TestCase;
 
 class CreateDeliveryTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $user;
+
     protected Company $company;
+
     protected Product $product;
+
     protected StockLocation $warehouse;
 
     protected function setUp(): void

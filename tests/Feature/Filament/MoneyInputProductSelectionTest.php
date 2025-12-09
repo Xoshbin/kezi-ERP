@@ -17,10 +17,15 @@ class MoneyInputProductSelectionTest extends TestCase
     use RefreshDatabase;
 
     private Company $company;
+
     private User $user;
+
     private \Modules\Foundation\Models\Currency $currency;
+
     private \Modules\Foundation\Models\Partner $vendor;
+
     private \Modules\Product\Models\Product $product;
+
     private \Modules\Accounting\Models\Account $expenseAccount;
 
     protected function setUp(): void

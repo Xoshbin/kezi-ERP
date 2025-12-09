@@ -3,15 +3,12 @@
 namespace Modules\Inventory\Models;
 
 use App\Models\Company;
-use Modules\Inventory\Models\Lot;
-use Modules\Product\Models\Product;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Inventory\Models\StockLocation;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
-use Modules\Inventory\Observers\StockQuantObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Inventory\Observers\StockQuantObserver;
+use Modules\Product\Models\Product;
 
 #[ObservedBy(StockQuantObserver::class)]
 class StockQuant extends Model
