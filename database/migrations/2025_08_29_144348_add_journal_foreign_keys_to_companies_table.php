@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -65,7 +64,7 @@ return new class extends Migration
                     $table->dropForeign(['company_id']);
                     $table->dropForeign(['currency_id']);
                 });
-            } catch (\Exception) {
+            } catch (Exception) {
                 // If the foreign key doesn't exist, continue with the migration rollback
             }
         }
@@ -75,7 +74,7 @@ return new class extends Migration
                 Schema::table('audit_logs', function (Blueprint $table) {
                     $table->dropForeign(['company_id']);
                 });
-            } catch (\Exception) {
+            } catch (Exception) {
                 // If the foreign key doesn't exist, continue with the migration rollback
             }
         }

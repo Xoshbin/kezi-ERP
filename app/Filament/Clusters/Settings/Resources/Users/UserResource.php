@@ -7,6 +7,7 @@ use App\Filament\Clusters\Settings\Resources\Users\Pages\EditUser;
 use App\Filament\Clusters\Settings\Resources\Users\Pages\ListUsers;
 use App\Filament\Clusters\Settings\SettingsCluster;
 use App\Models\User;
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -25,7 +26,7 @@ class UserResource extends Resource
 
     protected static ?string $model = User::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
     protected static ?int $navigationSort = 1;
 
