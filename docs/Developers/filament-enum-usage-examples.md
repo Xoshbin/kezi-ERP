@@ -81,7 +81,7 @@ Forms\Components\Select::make('status')
 ### JournalType in JournalResource
 
 ```php
-use App\Enums\Accounting\JournalType;
+
 
 Forms\Components\Select::make('type')
     ->label(__('journal.type'))
@@ -144,7 +144,7 @@ Tables\Columns\SelectColumn::make('type')
 
 ## Migration Notes
 
-- Replace `EnumClass::class` with the new pattern
-- Replace `Model::getTypes()` static methods with enum pattern
-- Update any hardcoded options arrays
-- Ensure proper enum imports in resource files
+-   Replace `EnumClass::class` with the new pattern
+-   Replace `Model::getTypes()` static methods with enum pattern
+-   Update any hardcoded options arrays
+-   Ensure proper enum imports in resource files

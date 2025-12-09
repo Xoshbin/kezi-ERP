@@ -1,10 +1,16 @@
 <?php
 
-use App\Models\Company;
 use App\Models\Invoice;
+use App\Models\JournalEntry;
 use App\Models\Partner;
-use App\Models\User;
+use App\Models\VendorBill;
 use Tests\Traits\WithConfiguredCompany;
+use Xoshbin\FilamentAiHelper\Actions\FillFormAction;
+use Xoshbin\FilamentAiHelper\Actions\GetAIAssistantResponseAction;
+use Xoshbin\FilamentAiHelper\Actions\UpdateFormAction;
+use Xoshbin\FilamentAiHelper\Http\Controllers\AiChatController;
+use Xoshbin\FilamentAiHelper\Services\FormSchemaExtractor;
+use Xoshbin\FilamentAiHelper\Services\GeminiService;
 
 uses(WithConfiguredCompany::class);
 
@@ -14,8 +20,8 @@ beforeEach(function () {
 
 it('can load filament panel with ai helper plugin registered', function () {
     // Check if the AI Helper plugin is properly registered by checking if the service provider is loaded
-    expect(app()->bound(\Xoshbin\FilamentAiHelper\Services\GeminiService::class))->toBeTrue();
-    expect(app()->bound(\Xoshbin\FilamentAiHelper\Services\FormSchemaExtractor::class))->toBeTrue();
+    expect(app()->bound(GeminiService::class))->toBeTrue();
+    expect(app()->bound(FormSchemaExtractor::class))->toBeTrue();
     expect(config('filament-ai-helper'))->not->toBeNull();
 });
 
@@ -45,7 +51,7 @@ it('can access invoice edit page with ai helper trait', function () {
 
 it('can access journal entry edit page with ai helper trait', function () {
     // Create a journal entry using your existing factory or service
-    $journalEntry = \App\Models\JournalEntry::factory()->create([
+    $journalEntry = JournalEntry::factory()->create([
         'company_id' => $this->company->id,
     ]);
 
@@ -60,7 +66,7 @@ it('can access journal entry edit page with ai helper trait', function () {
 it('can access vendor bill edit page with ai helper trait', function () {
     // Create test data
     $partner = Partner::factory()->create(['company_id' => $this->company->id]);
-    $vendorBill = \App\Models\VendorBill::factory()->create([
+    $vendorBill = VendorBill::factory()->create([
         'company_id' => $this->company->id,
         'vendor_id' => $partner->id,
     ]);
@@ -152,7 +158,7 @@ it('works correctly with multi-tenancy context', function () {
 
 it('can handle form fill requests on create pages', function () {
     // Mock the AI service to return form manipulation response
-    $this->mock(\Xoshbin\FilamentAiHelper\Services\GeminiService::class, function ($mock) {
+    $this->mock(GeminiService::class, function ($mock) {
         $mock->shouldReceive('generateResponse')
             ->andReturn('{"action": "fill_form", "fields": {"partner_id": "1", "amount": "1000", "date": "2024-01-15"}, "explanation": "Created invoice for customer with amount 1000", "warnings": []}');
     });
@@ -192,7 +198,7 @@ it('can handle form fill requests on create pages', function () {
 
 it('can handle form update requests on edit pages', function () {
     // Mock the AI service to return form manipulation response
-    $this->mock(\Xoshbin\FilamentAiHelper\Services\GeminiService::class, function ($mock) {
+    $this->mock(GeminiService::class, function ($mock) {
         $mock->shouldReceive('generateResponse')
             ->andReturn('{"action": "update_form", "fields": {"amount": "1500", "due_date": "2024-02-15"}, "explanation": "Updated invoice amount and due date", "warnings": ["This will affect the payment schedule"]}');
     });
@@ -233,14 +239,14 @@ it('can handle form update requests on edit pages', function () {
 });
 
 it('can detect form manipulation keywords in messages', function () {
-    $controller = new \Xoshbin\FilamentAiHelper\Http\Controllers\AiChatController(
-        app(\Xoshbin\FilamentAiHelper\Actions\GetAIAssistantResponseAction::class),
-        app(\Xoshbin\FilamentAiHelper\Actions\FillFormAction::class),
-        app(\Xoshbin\FilamentAiHelper\Actions\UpdateFormAction::class),
-        app(\Xoshbin\FilamentAiHelper\Services\FormSchemaExtractor::class)
+    $controller = new AiChatController(
+        app(GetAIAssistantResponseAction::class),
+        app(FillFormAction::class),
+        app(UpdateFormAction::class),
+        app(FormSchemaExtractor::class)
     );
 
-    $reflection = new \ReflectionClass($controller);
+    $reflection = new ReflectionClass($controller);
     $method = $reflection->getMethod('isFormManipulationRequest');
     $method->setAccessible(true);
 
@@ -258,7 +264,7 @@ it('can detect form manipulation keywords in messages', function () {
 });
 
 it('validates form data against schema correctly', function () {
-    $extractor = app(\Xoshbin\FilamentAiHelper\Services\FormSchemaExtractor::class);
+    $extractor = app(FormSchemaExtractor::class);
 
     $schema = [
         'partner_id' => ['type' => 'select', 'required' => true],

@@ -1,31 +1,27 @@
 <?php
 
-use App\Actions\Accounting\CreateJournalEntryAction;
-use App\Actions\Payments\CreatePaymentAction;
-use App\Actions\Purchases\CreateVendorBillAction;
-use App\Actions\Sales\CreateInvoiceAction;
-use App\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use App\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use App\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
-use App\DataTransferObjects\Payments\CreatePaymentDTO;
-use App\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use App\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use App\DataTransferObjects\Sales\CreateInvoiceDTO;
-use App\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-use App\Enums\Adjustments\AdjustmentDocumentStatus;
-use App\Enums\Adjustments\AdjustmentDocumentType;
-use App\Enums\Partners\PartnerType;
-use App\Enums\Payments\PaymentMethod;
-use App\Enums\Payments\PaymentType;
-use App\Enums\Sales\InvoiceStatus;
-use App\Models\Account;
-use App\Models\Invoice;
-use App\Models\Partner;
-use App\Services\AdjustmentDocumentService;
-use App\Services\InvoiceService;
-use App\Services\PaymentService;
-use App\Services\VendorBillService;
 use Brick\Money\Money;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
+use Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Inventory\Services\AdjustmentDocumentService;
+use Modules\Payment\Actions\Payments\CreatePaymentAction;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Modules\Payment\Enums\Payments\PaymentMethod;
+use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Services\PaymentService;
+use Modules\Purchase\Actions\Purchases\CreateVendorBillAction;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Modules\Purchase\Services\VendorBillService;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
+use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Modules\Sales\Services\InvoiceService;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class, WithConfiguredCompany::class);
@@ -37,10 +33,10 @@ test('the entire accounting workflow from setup to credit note', function () {
     $currencyCode = $currency->code;
     $bankAccount = $this->company->defaultBankAccount;
     $arAccount = $this->company->defaultAccountsReceivable;
-    $itEquipmentAccount = Account::factory()->for($this->company)->create(['type' => 'current_assets']);
+    $itEquipmentAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'current_assets']);
     $apAccount = $this->company->defaultAccountsPayable;
-    $equityAccount = Account::factory()->for($this->company)->create(['type' => 'equity']);
-    $revenueAccount = Account::factory()->for($this->company)->create(['type' => 'income']);
+    $equityAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'equity']);
+    $revenueAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income']);
     $salesDiscountAccount = $this->company->defaultSalesDiscountAccount;
     $bankJournal = $this->company->defaultBankJournal;
 
@@ -51,7 +47,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     $goodwillDiscount = Money::of(500_000, $currencyCode);
 
     // Step 3: Capital Injection
-    $createJournalEntryAction = app(CreateJournalEntryAction::class);
+    $createJournalEntryAction = app(\Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class);
     $capitalEntryDto = new CreateJournalEntryDTO(
         company_id: $this->company->id,
         journal_id: $bankJournal->id,
@@ -88,7 +84,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($capitalEntry->total_credit->isEqualTo($initialCapitalInvestment))->toBeTrue();
 
     // Step 4: Purchasing a Fixed Asset
-    $vendor = Partner::factory()->for($this->company)->create(['name' => 'Paykar Tech Supplies', 'type' => PartnerType::Vendor]);
+    $vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Paykar Tech Supplies', 'type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor]);
     // Arrange: Prepare the DTOs for the Action.
     $lineDto = new CreateVendorBillLineDTO(
         description: 'High-End Laptop for Business Use',
@@ -132,7 +128,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($purchaseEntry->lines->where('account_id', $apAccount->id)->first()->credit->isEqualTo($highEndLaptopCost))->toBeTrue();
 
     // Step 5: Providing a Service & Invoicing
-    $customer = Partner::factory()->for($this->company)->create(['name' => 'Hawre Trading Group', 'type' => PartnerType::Customer]);
+    $customer = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Hawre Trading Group', 'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer]);
     $lineDto = new CreateInvoiceLineDTO(
         description: 'On-site IT Infrastructure Setup',
         quantity: 1,
@@ -153,7 +149,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     );
 
     // Act: Create the invoice using the Action.
-    $invoice = (app(CreateInvoiceAction::class))->execute($invoiceDto);
+    $invoice = (app(\Modules\Sales\Actions\Sales\CreateInvoiceAction::class))->execute($invoiceDto);
 
     // The rest of the test remains the same...
     $invoiceService = app(InvoiceService::class);
@@ -238,12 +234,12 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($vendorPaymentEntry->total_debit->isEqualTo($highEndLaptopCost))->toBeTrue();
     expect($vendorPaymentEntry->lines->where('account_id', $apAccount->id)->first()->debit->isEqualTo($highEndLaptopCost))->toBeTrue();
     expect($vendorPaymentEntry->lines->where('account_id', $bankAccount->id)->first()->credit->isEqualTo($highEndLaptopCost))->toBeTrue();
-    expect($vendorBill->fresh()->status)->toBe(\App\Enums\Purchases\VendorBillStatus::Paid);
+    expect($vendorBill->fresh()->status)->toBe(VendorBillStatus::Paid);
 
     // Step 8: Handling a Correction (Credit Note)
     $adjustmentService = app(AdjustmentDocumentService::class);
 
-    $creditNote = \App\Models\AdjustmentDocument::factory()->create([
+    $creditNote = AdjustmentDocument::factory()->create([
         'company_id' => $this->company->id,
         'currency_id' => $this->company->currency_id,
         'reference_number' => 'CN-001',

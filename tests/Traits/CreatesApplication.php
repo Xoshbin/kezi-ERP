@@ -2,10 +2,8 @@
 
 namespace Tests\Traits;
 
-use App\Models\Account;
 use App\Models\Company;
-use App\Models\Currency;
-use App\Models\Journal;
+use Illuminate\Contracts\Console\Kernel;
 
 trait CreatesApplication
 {
@@ -13,25 +11,25 @@ trait CreatesApplication
     {
         $app = require __DIR__.'/../../bootstrap/app.php';
 
-        $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+        $app->make(Kernel::class)->bootstrap();
 
         return $app;
     }
 
     protected function createConfiguredCompany(): Company
     {
-        $currency = Currency::firstOrCreate(['code' => 'IQD'], ['name' => 'Iraqi Dinar', 'symbol' => 'IQD', 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => 3]);
+        $currency = \Modules\Foundation\Models\Currency::firstOrCreate(['code' => 'IQD'], ['name' => 'Iraqi Dinar', 'symbol' => 'IQD', 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => 3]);
         $company = Company::factory()->create(['currency_id' => $currency->id]);
 
         // Create all necessary accounts first.
         $accounts = [
-            'default_accounts_payable_id' => Account::factory()->for($company)->create(['type' => 'Liability', 'name' => 'Accounts Payable']),
-            'default_tax_receivable_id' => Account::factory()->for($company)->create(['type' => 'Asset', 'name' => 'Tax Receivable']),
-            'default_accounts_receivable_id' => Account::factory()->for($company)->create(['type' => 'Asset', 'name' => 'Accounts Receivable']),
-            'default_sales_discount_account_id' => Account::factory()->for($company)->create(['type' => 'Expense', 'name' => 'Sales Discount']),
-            'default_tax_account_id' => Account::factory()->for($company)->create(['type' => 'Liability', 'name' => 'Tax Payable']),
-            'default_bank_account_id' => Account::factory()->for($company)->create(['type' => 'bank_and_cash', 'name' => 'Bank']),
-            'default_outstanding_receipts_account_id' => Account::factory()->for($company)->create(['type' => 'current_assets', 'name' => 'Outstanding Receipts']),
+            'default_accounts_payable_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => 'Liability', 'name' => 'Accounts Payable']),
+            'default_tax_receivable_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => 'Asset', 'name' => 'Tax Receivable']),
+            'default_accounts_receivable_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => 'Asset', 'name' => 'Accounts Receivable']),
+            'default_sales_discount_account_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => 'Expense', 'name' => 'Sales Discount']),
+            'default_tax_account_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => 'Liability', 'name' => 'Tax Payable']),
+            'default_bank_account_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => 'bank_and_cash', 'name' => 'Bank']),
+            'default_outstanding_receipts_account_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => 'current_assets', 'name' => 'Outstanding Receipts']),
         ];
 
         $accountIds = collect($accounts)->mapWithKeys(fn ($account, $key) => [$key => $account->id])->all();
