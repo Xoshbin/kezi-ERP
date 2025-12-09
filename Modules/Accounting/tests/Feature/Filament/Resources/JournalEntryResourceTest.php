@@ -839,28 +839,28 @@ it('dynamically updates line currency when header currency changes', function ()
         ->fillForm([
             'company_id' => $this->company->id,
             // Default currency is usually IQD from company
-            'currency_id' => $this->company->currency_id, 
+            'currency_id' => $this->company->currency_id,
         ]);
-        
+
     $wire->set('data.currency_id', $usdCurrency->id);
-    
+
     // We expect the form to handle this change gracefully even with lines.
     // The previous bug caused issues or incorrect symbols, but here we enforce
     // that the structure is valid and we can interact with it.
     // Adding lines to ensure they are rendered with the new context.
-    
+
     $wire->set('data.lines', [
         [
             'account_id' => $this->company->default_bank_account_id,
             'debit' => 100,
             'credit' => 0,
-        ]
+        ],
     ]);
-    
+
     // Toggle back and forth
     $wire->set('data.currency_id', $this->company->currency_id)
         ->assertHasNoFormErrors();
-        
+
     $wire->set('data.currency_id', $usdCurrency->id)
         ->assertHasNoFormErrors();
 });
