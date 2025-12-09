@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use Modules\Accounting\Enums\Accounting\TaxType;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Tax;
+use Modules\Foundation\Enums\Partners\PartnerType;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Modules\Foundation\Models\Currency;
 use Modules\Product\Models\Product;
@@ -147,6 +148,14 @@ class PurchaseOrderForm
                                             ->required(),
                                         TextInput::make('email')
                                             ->email(),
+                                        Select::make('type')
+                                            ->label(__('foundation::partners.type'))
+                                            ->options(
+                                                collect(PartnerType::cases())
+                                                    ->mapWithKeys(fn (PartnerType $type) => [$type->value => $type->label()])
+                                            )
+                                            ->default(PartnerType::Both)
+                                            ->required(),
                                     ]),
 
                                 Select::make('currency_id')
