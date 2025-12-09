@@ -2,6 +2,7 @@
 
 namespace Xoshbin\FilamentAiHelper\DTOs;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 
 class AIHelperContextDTO
@@ -17,7 +18,8 @@ class AIHelperContextDTO
         public readonly ?array $formSchema = null,
         public readonly ?array $currentFormData = null,
         public readonly ?string $pageType = null
-    ) {}
+    ) {
+    }
 
     /**
      * Create a new instance from array data
@@ -72,7 +74,7 @@ class AIHelperContextDTO
 
         try {
             return $this->modelClass::find($this->modelId);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
     }

@@ -2,13 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Invoice;
-use App\Models\Payment;
 use App\Models\User;
-use App\Models\VendorBill;
-use App\Services\InvoiceService;
-use App\Services\PaymentService;
-use App\Services\VendorBillService;
 use Exception;
 use Illuminate\Database\Seeder;
 
@@ -38,7 +32,7 @@ class PostTransactionsSeeder extends Seeder
 
         // Post some invoices to create customer receivables
         // Only post 1 invoice to leave enough draft invoices for tests
-        $invoicesToPost = Invoice::where('status', 'draft')
+        $invoicesToPost = \Modules\Sales\Models\Invoice::where('status', 'draft')
             ->whereIn('invoice_number', ['INV-001'])
             ->get();
 
@@ -52,7 +46,7 @@ class PostTransactionsSeeder extends Seeder
         }
 
         // Post some vendor bills to create vendor payables
-        $vendorBillsToPost = VendorBill::where('status', 'draft')
+        $vendorBillsToPost = \Modules\Purchase\Models\VendorBill::where('status', 'draft')
             ->limit(2)
             ->get();
 
@@ -67,7 +61,7 @@ class PostTransactionsSeeder extends Seeder
 
         // Confirm some payments to create payment transactions
         // Reduce to 2 payments to keep the seeder minimal but still demonstrate functionality
-        $paymentsToConfirm = Payment::whereNull('status')
+        $paymentsToConfirm = \Modules\Payment\Models\Payment::whereNull('status')
             ->orWhere('status', 'draft')
             ->limit(2)
             ->get();

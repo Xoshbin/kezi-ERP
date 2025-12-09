@@ -2,6 +2,7 @@
 
 namespace Xoshbin\FilamentAiHelper\Actions;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -17,7 +18,8 @@ class GetAIAssistantResponseAction
     public function __construct(
         protected GeminiService $geminiService,
         private readonly DeepContextService $deepContextService
-    ) {}
+    ) {
+    }
 
     /**
      * Execute the action and get AI response
@@ -54,7 +56,7 @@ class GetAIAssistantResponseAction
                 success: true,
                 response: $result->response ?? $result->answer ?? 'No response available'
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('AI Assistant Request failed', [
                 'error' => $e->getMessage(),
                 'question' => $request->question,
@@ -93,7 +95,7 @@ class GetAIAssistantResponseAction
             ]);
 
             return $this->getFallbackResponse($context);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('AI Assistant unexpected error', [
                 'error' => $e->getMessage(),
                 'context' => $context->toArray(),
@@ -185,7 +187,7 @@ class GetAIAssistantResponseAction
                 if (method_exists($model, Str::before($relationship, '.'))) {
                     $model->load($relationship);
                 }
-            } catch (\Exception) {
+            } catch (Exception) {
                 // Silently continue if relationship doesn't exist
                 continue;
             }

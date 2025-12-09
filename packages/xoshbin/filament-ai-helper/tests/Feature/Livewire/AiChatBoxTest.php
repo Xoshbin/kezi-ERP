@@ -17,7 +17,7 @@ class TestInvoice extends Model
     public static function find($id)
     {
         if ($id === 1) {
-            $model = new static;
+            $model = new static();
             $model->id = 1;
             $model->number = 'INV-001';
             $model->total = 1000;
@@ -158,7 +158,7 @@ it('handles api errors gracefully', function () {
     // Mock an error response
     $this->mock(GetAIAssistantResponseAction::class, function ($mock) {
         $mock->shouldReceive('execute')
-            ->andThrow(new \Exception('API Error'));
+            ->andThrow(new Exception('API Error'));
         $mock->shouldReceive('generateWelcomeMessage')
             ->andReturn('Welcome message');
     });

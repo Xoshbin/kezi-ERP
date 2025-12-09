@@ -1,0 +1,95 @@
+<?php
+
+namespace Modules\Accounting\Services\Reports;
+
+use Carbon\Carbon;
+use Brick\Money\Money;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use App\Models\Company;
+use Modules\Accounting\Enums\Accounting\AccountType;
+use Modules\Accounting\DataTransferObjects\Reports\TrialBalanceDTO;
+use Modules\Accounting\DataTransferObjects\Reports\TrialBalanceLineDTO;
+
+class TrialBalanceService
+{
+    public function generate(Company $company, Carbon $asOfDate): TrialBalanceDTO
+    {
+        $currency = $company->currency->code;
+        $zero = Money::zero($currency);
+
+        /** @var Collection<int, object{account_id: int, account_code: string, account_name: string, account_type: string, total_debit: string|null, total_credit: string|null}> $queryResults */
+        $queryResults = DB::table('journal_entry_lines')
+            ->select([
+                'accounts.id as account_id',
+                'accounts.code as account_code',
+                'accounts.name as account_name',
+                'accounts.type as account_type',
+                DB::raw('SUM(journal_entry_lines.debit) as total_debit'),
+                DB::raw('SUM(journal_entry_lines.credit) as total_credit'),
+            ])
+            ->join('accounts', 'journal_entry_lines.account_id', '=', 'accounts.id')
+            ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
+            ->where('accounts.company_id', $company->id)
+            ->where('journal_entries.state', 'posted')
+            ->where('journal_entries.entry_date', '<=', $asOfDate->toDateString())
+            ->groupBy('accounts.id', 'accounts.code', 'accounts.name', 'accounts.type')
+            ->orderBy('accounts.code')
+            ->get();
+
+        // Calculate balance in PHP and filter out zero balances
+        $results = $queryResults->map(function ($result) {
+            /** @var object{account_id: int, account_code: string, account_name: string, account_type: string, total_debit: string|null, total_credit: string|null} $result */
+            $totalDebit = (int) ($result->total_debit ?: 0);
+            $totalCredit = (int) ($result->total_credit ?: 0);
+            $balance = $totalDebit - $totalCredit;
+
+            return (object) [
+                'account_id' => $result->account_id,
+                'account_code' => $result->account_code,
+                'account_name' => $result->account_name,
+                'account_type' => $result->account_type,
+                'total_debit' => $result->total_debit,
+                'total_credit' => $result->total_credit,
+                'balance' => $balance,
+            ];
+        })->filter(function ($result) {
+            return $result->balance != 0;
+        });
+
+        $totalDebit = $zero;
+        $totalCredit = $zero;
+
+        $reportLines = $results->map(function (object $row) use ($currency, $zero, &$totalDebit, &$totalCredit) {
+            $balance = Money::ofMinor((int) $row->balance, $currency);
+            $debit = $zero;
+            $credit = $zero;
+
+            if ($balance->isPositive()) {
+                $debit = $balance;
+            } else {
+                // Credits are negative, so we negate them to show a positive number in the credit column.
+                $credit = $balance->negated();
+            }
+
+            $totalDebit = $totalDebit->plus($debit);
+            $totalCredit = $totalCredit->plus($credit);
+
+            return new TrialBalanceLineDTO(
+                accountId: $row->account_id,
+                accountCode: $row->account_code,
+                accountName: $row->account_name,
+                accountType: \Modules\Accounting\Enums\Accounting\AccountType::from($row->account_type),
+                debit: $debit,
+                credit: $credit
+            );
+        });
+
+        return new TrialBalanceDTO(
+            reportLines: $reportLines,
+            totalDebit: $totalDebit,
+            totalCredit: $totalCredit,
+            isBalanced: $totalDebit->isEqualTo($totalCredit)
+        );
+    }
+}

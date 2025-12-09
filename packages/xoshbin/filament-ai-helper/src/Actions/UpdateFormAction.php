@@ -2,6 +2,7 @@
 
 namespace Xoshbin\FilamentAiHelper\Actions;
 
+use Exception;
 use Illuminate\Support\Facades\Log;
 use Xoshbin\FilamentAiHelper\DTOs\AIHelperContextDTO;
 use Xoshbin\FilamentAiHelper\DTOs\FormManipulationResponseDTO;
@@ -11,7 +12,8 @@ class UpdateFormAction
 {
     public function __construct(
         private GeminiService $aiService
-    ) {}
+    ) {
+    }
 
     public function execute(AIHelperContextDTO $context): FormManipulationResponseDTO
     {
@@ -34,7 +36,7 @@ class UpdateFormAction
                 error: null
             );
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Form update action failed', [
                 'error' => $e->getMessage(),
                 'context' => $context->toArray(),
@@ -196,19 +198,19 @@ IMPORTANT:
         $jsonEnd = strrpos($response, '}');
 
         if ($jsonStart === false || $jsonEnd === false) {
-            throw new \Exception('Invalid AI response format - no JSON found');
+            throw new Exception('Invalid AI response format - no JSON found');
         }
 
         $jsonString = substr($response, $jsonStart, $jsonEnd - $jsonStart + 1);
         $decoded = json_decode($jsonString, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception('Invalid JSON in AI response: '.json_last_error_msg());
+            throw new Exception('Invalid JSON in AI response: '.json_last_error_msg());
         }
 
         // Validate required fields
         if (! isset($decoded['action']) || ! isset($decoded['fields'])) {
-            throw new \Exception('AI response missing required fields (action, fields)');
+            throw new Exception('AI response missing required fields (action, fields)');
         }
 
         return $decoded;

@@ -2,6 +2,8 @@
 
 namespace Xoshbin\FilamentAiHelper\Http\Controllers;
 
+use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -20,7 +22,8 @@ class AiChatController extends Controller
         private readonly FillFormAction $fillFormAction,
         private readonly UpdateFormAction $updateFormAction,
         private readonly FormSchemaExtractor $formSchemaExtractor
-    ) {}
+    ) {
+    }
 
     /**
      * Handle chat message and return AI response
@@ -98,7 +101,7 @@ class AiChatController extends Controller
                 'timestamp' => now()->toISOString(),
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('AI Chat error', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -115,7 +118,7 @@ class AiChatController extends Controller
     /**
      * Get the record from the request context
      */
-    private function getRecordFromRequest(array $validated): ?\Illuminate\Database\Eloquent\Model
+    private function getRecordFromRequest(array $validated): ?Model
     {
         if (empty($validated['model_class']) || empty($validated['model_id'])) {
             return null;
@@ -129,7 +132,7 @@ class AiChatController extends Controller
             }
 
             return $modelClass::find($validated['model_id']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::warning('Failed to load record for AI context', [
                 'model_class' => $validated['model_class'] ?? 'unknown',
                 'model_id' => $validated['model_id'] ?? 'unknown',
@@ -167,7 +170,7 @@ class AiChatController extends Controller
 
             // For now, return null - this would be enhanced to extract from Livewire component
             return null;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::warning('Failed to extract form schema', ['error' => $e->getMessage()]);
 
             return null;
@@ -187,7 +190,7 @@ class AiChatController extends Controller
 
             // For now, return null - this would be enhanced to extract from Livewire component
             return null;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::warning('Failed to extract current form data', ['error' => $e->getMessage()]);
 
             return null;
@@ -274,7 +277,7 @@ class AiChatController extends Controller
                 'timestamp' => now()->toISOString(),
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Form manipulation failed', [
                 'error' => $e->getMessage(),
                 'context' => $context->toArray(),
