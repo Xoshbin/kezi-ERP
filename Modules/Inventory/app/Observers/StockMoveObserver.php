@@ -15,6 +15,13 @@ use Modules\Purchase\Models\VendorBill;
 
 class StockMoveObserver
 {
+    public function creating(StockMove $stockMove): void
+    {
+        if (empty($stockMove->reference)) {
+            $stockMove->reference = 'SM-'.str_pad((string) random_int(1, 999999), 6, '0', STR_PAD_LEFT);
+        }
+    }
+
     public function created(StockMove $stockMove): void
     {
         $this->logAction('created', $stockMove);
