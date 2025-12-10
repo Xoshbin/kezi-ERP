@@ -1,4 +1,9 @@
-# Lot Tracking: Complete Traceability and Expiration Management
+---
+title: Lot Tracking
+icon: heroicon-o-tag
+order: 6
+---
+
 
 This comprehensive guide explains how to implement and manage lot tracking in your inventory system, covering lot creation, FEFO allocation, expiration management, and complete traceability. Written for all users — accountants and non‑accountants — it provides practical guidance for industries requiring detailed product traceability.
 

@@ -6,7 +6,17 @@ This document establishes the comprehensive standard for creating consistent, hi
 
 ## Document Structure Template
 
-### 1. Document Header
+### 1. Metadata (Frontmatter)
+Start every document with YAML frontmatter:
+```yaml
+---
+title: [Feature Name]
+icon: [Heroicon Name] # Optional, e.g. heroicon-o-book-open
+order: [Sort Order] # Optional integer
+---
+```
+
+### 2. Document Header
 ```markdown
 # [Feature Name]: [Brief Descriptive Subtitle]
 
@@ -23,7 +33,7 @@ This [comprehensive/detailed] guide explains how [feature name] work[s] in [the/
 - Reference accounting best practices where applicable
 - Use three dashes (---) as section separators
 
-### 2. Core Content Sections (Required)
+### 3. Core Content Sections (Required)
 
 #### A. What is [Feature Name]? Section
 ```markdown
@@ -99,7 +109,7 @@ Navigate to **[Full Menu Path]**
 [Completion instructions]
 ```
 
-### 3. Advanced Features (When Applicable)
+### 4. Advanced Features (When Applicable)
 
 #### A. Multi-Currency Handling
 ```markdown
@@ -135,7 +145,7 @@ Navigate to **[Full Menu Path]**
 **Important**: [Key restriction or workflow rule]
 ```
 
-### 4. Accounting Impact (Required for Financial Features)
+### 5. Accounting Impact (Required for Financial Features)
 
 ```markdown
 ## Journal Entry Impact
@@ -162,7 +172,7 @@ Dr. [Account Name]         $[Amount]
 - Include dollar amounts or variables
 - Explain the accounting logic behind entries
 
-### 5. Examples Section (Required for Complex Features)
+### 6. Examples Section (Required for Complex Features)
 
 ```markdown
 ## Common Scenarios
@@ -188,7 +198,7 @@ Dr. [Account Name]         $[Amount]
 - [Result]: [What happens]
 ```
 
-### 6. Best Practices Section (Required)
+### 7. Best Practices Section (Required)
 
 ```markdown
 ## Best Practices
@@ -209,7 +219,7 @@ Dr. [Account Name]         $[Amount]
 - **[Documentation Practice]**: [Description and benefit]
 ```
 
-### 7. Troubleshooting Section (Required)
+### 8. Troubleshooting Section (Required)
 
 ```markdown
 ## Troubleshooting
@@ -235,7 +245,7 @@ A: [Detailed solution with steps]
 - [Cause and resolution]
 ```
 
-### 8. FAQ Section (Optional but Recommended)
+### 9. FAQ Section (Optional but Recommended)
 
 ```markdown
 ## Frequently Asked Questions
@@ -250,7 +260,7 @@ A: [Detailed answer with examples or steps]
 A: [Answer with business context]
 ```
 
-### 9. Glossary Section (Recommended for Complex Features)
+### 10. Glossary Section (Recommended for Complex Features)
 
 ```markdown
 ## Glossary
@@ -261,7 +271,7 @@ A: [Answer with business context]
 - **[Accounting Term]**: [Definition with accounting context]
 ```
 
-### 10. Related Documentation (Required)
+### 11. Related Documentation (Required)
 
 ```markdown
 ## Related Documentation
@@ -344,17 +354,37 @@ Use triple backticks for:
 
 ### 5. Visual Elements
 
-#### Callouts
-- **⚠️ Important**: For critical warnings
-- **✅ Tip**: For helpful suggestions  
-- **📝 Note**: For additional information
-- **❌ Warning**: For things to avoid
+#### Alerts (GFM)
+Use GitHub Flavored Markdown alerts for emphasis.
 
-#### Status Indicators
-- ✅ **Requirement met**
-- ❌ **Problem/Error**
-- ⚠️ **Caution needed**
-- 📋 **Information**
+> [!NOTE]
+> Useful information that users should know, even when skimming.
+
+> [!TIP]
+> Helpful advice for doing things better or faster.
+
+> [!IMPORTANT]
+> Key information users need to know to achieve their goal.
+
+> [!WARNING]
+> Urgent info that needs immediate user attention to avoid problems.
+
+> [!CAUTION]
+> Negative consequences of an action.
+
+#### Diagrams (Mermaid)
+Use Mermaid diagrams for workflows and critical paths.
+
+```mermaid
+graph TD;
+    Draft -->|Confirm| Posted;
+    Posted -->|Register Payment| Paid;
+```
+
+#### Screenshots
+- Store images in `docs/assets/`.
+- Use descriptive filenames: `[feature]-[context].png`
+- Format: `![Description](docs/assets/filename.png)`
 
 ---
 

@@ -1,4 +1,9 @@
-# Stock Picking Guide
+---
+title: Stock Picking
+icon: heroicon-o-clipboard-document-list
+order: 13
+---
+
 
 This guide explains how to manage stock movements using Stock Pickings (Receipts, Delivery Orders, and Internal Transfers).
 
