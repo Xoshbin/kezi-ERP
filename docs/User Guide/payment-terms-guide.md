@@ -1,4 +1,9 @@
-# Payment Terms: Standardized Payment Conditions and Due Date Management
+---
+title: Payment Terms
+icon: heroicon-o-calendar-days
+order: 8
+---
+
 
 This comprehensive guide explains how payment terms work in your accounting system, covering setup, configuration, automatic due date calculations, and installment generation. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 

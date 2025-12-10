@@ -1,4 +1,9 @@
-# Customer Invoices: Sales Documentation and Revenue Recognition
+---
+title: Customer Invoices
+icon: heroicon-o-document-text
+order: 3
+---
+
 
 This comprehensive guide explains how customer invoices work in your accounting system, covering creation, payment processing, multi-currency support, and revenue recognition. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 

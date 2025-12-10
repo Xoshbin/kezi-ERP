@@ -1,4 +1,9 @@
-# Stock Management: Inventory Tracking and Valuation
+---
+title: Stock Management
+icon: heroicon-o-archive-box
+order: 11
+---
+
 
 This comprehensive guide explains how stock management works in your accounting system, covering inventory configuration, valuation methods, warehouse locations, and movement tracking. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 

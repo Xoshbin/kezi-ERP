@@ -1,4 +1,9 @@
-# Vendor Bills: Purchase Documentation and Expense Recognition
+---
+title: Vendor Bills
+icon: heroicon-o-document-text
+order: 14
+---
+
 
 This comprehensive guide explains how vendor bills work in your accounting system, covering creation, approval workflows, payment processing, and expense recognition. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 
