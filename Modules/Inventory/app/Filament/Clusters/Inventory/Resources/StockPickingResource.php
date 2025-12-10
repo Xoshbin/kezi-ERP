@@ -270,6 +270,7 @@ class StockPickingResource extends Resource
             'create' => CreateStockPicking::route('/create'),
             'view' => ViewStockPicking::route('/{record}'),
             'edit' => EditStockPicking::route('/{record}/edit'),
+            'validate' => \Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ValidateStockPicking::route('/{record}/validate'),
         ];
     }
 }
