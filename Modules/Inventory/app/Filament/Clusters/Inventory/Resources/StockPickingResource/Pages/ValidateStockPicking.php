@@ -133,7 +133,11 @@ class ValidateStockPicking extends Page
                 ->label('Validate (Done)')
                 ->color('success')
                 ->icon('heroicon-o-check')
-                ->action('validatePicking'),
+                ->icon('heroicon-o-check')
+                ->action(function () {
+                    // dd('Closure Running');
+                    $this->validatePicking();
+                }),
 
             Action::make('create_backorder')
                 ->label('Create Backorder')
@@ -145,10 +149,16 @@ class ValidateStockPicking extends Page
 
     public function validatePicking(): void
     {
+        // dd('validatePicking called', $this->form->getState());
+        \Illuminate\Support\Facades\Log::info("validatePicking called");
         $data = $this->form->getState();
+        // dd('Data Retrieved', $data);
+        if (empty($data['moves'])) {
+            // dd('Moves Empty inside action');
+        }
         $this->processValidation($data, false);
     }
-
+    
     public function createBackorder(): void
     {
         $data = $this->form->getState();
@@ -164,6 +174,7 @@ class ValidateStockPicking extends Page
 
         try {
             DB::transaction(function () use ($data, $createBackorder) {
+                // Debug removed from here
                 \Illuminate\Support\Facades\Log::info("Validation Start: " . json_encode($data));
                 
                 // 1. Prepare Backorder Data
