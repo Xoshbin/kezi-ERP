@@ -120,8 +120,8 @@ class EditVendorBill extends EditRecord
                     ]);
                 }),
 
-            Action::make('confirm')
-                ->label(__('vendor_bill.confirm'))
+            Action::make('post')
+                ->label(__('vendor_bill.post'))
                 ->color('success')
                 ->requiresConfirmation()
                 ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft)
@@ -133,7 +133,7 @@ class EditVendorBill extends EditRecord
                         if (! $user) {
                             throw new Exception('User must be authenticated to confirm vendor bill');
                         }
-                        $vendorBillService->confirm($record, $user);
+                        $vendorBillService->post($record, $user);
                         Notification::make()->title(__('vendor_bill.notification_bill_confirmed_success'))->success()->send();
                         $this->redirect($this->getResource()::getUrl('edit', ['record' => $record]));
                     } catch (Exception $e) {

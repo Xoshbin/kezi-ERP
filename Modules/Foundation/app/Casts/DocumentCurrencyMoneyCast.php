@@ -13,6 +13,7 @@ use Modules\Payment\Models\Payment;
 use Modules\Purchase\Models\PurchaseOrder;
 use Modules\Purchase\Models\VendorBill;
 use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\SalesOrder;
 
 /**
  * DocumentCurrencyMoneyCast - Uses the document's stated currency.
@@ -211,6 +212,9 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             }
             if (! $currency && isset($attributes['purchase_order_id'])) {
                 $currency = optional(PurchaseOrder::find($attributes['purchase_order_id']))->currency;
+            }
+            if (! $currency && isset($attributes['sales_order_id'])) {
+                $currency = optional(SalesOrder::find($attributes['sales_order_id']))->currency;
             }
 
             if (! $currency) {

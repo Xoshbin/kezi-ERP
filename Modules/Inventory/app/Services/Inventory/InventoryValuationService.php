@@ -958,8 +958,8 @@ class InventoryValuationService
                     $costResult
                 );
                 
-                // Update stock quants (moved from original code location to here for consistency)
-                $this->stockQuantService->applyForIncomingProductLine($productLine);
+                // Stock quantities are updated via StockMoveObserver check
+                // $this->stockQuantService->applyForIncomingProductLine($productLine);
             }
         }
 

@@ -268,7 +268,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     livewire(EditVendorBill::class, [
         'record' => $vendorBill->getRouteKey(),
     ])
-        ->callAction('confirm')
+        ->callAction('post')
         ->assertHasNoErrors();
 
     $vendorBill->refresh();
@@ -351,7 +351,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     livewire(EditInvoice::class, [
         'record' => $invoice->getRouteKey(),
     ])
-        ->callAction('confirm')
+        ->callAction('post')
         ->assertHasNoErrors();
 
     $invoice->refresh();
@@ -603,7 +603,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     livewire(EditVendorBill::class, [
         'record' => $inventoryBill->getRouteKey(),
     ])
-        ->callAction('confirm')
+        ->callAction('post')
         ->assertHasNoErrors();
 
     $inventoryBill->refresh();

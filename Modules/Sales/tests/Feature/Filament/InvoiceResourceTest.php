@@ -143,7 +143,7 @@ it('can confirm an invoice', function () {
     livewire(EditInvoice::class, [
         'record' => $invoice->getRouteKey(),
     ])
-        ->callAction('confirm')
+        ->callAction('post')
         ->assertHasNoErrors();
 
     $invoice->refresh();
@@ -223,10 +223,10 @@ describe('Invoice Confirmation Business Rules', function () {
             'record' => $invoice->getRouteKey(),
         ]);
 
-        $editWire->assertActionVisible('confirm');
-        $editWire->assertActionDisabled('confirm');
+        $editWire->assertActionVisible('post');
+        $editWire->assertActionDisabled('post');
 
-        $editWire->callAction('confirm')->assertNotified();
+        $editWire->callAction('post')->assertNotified();
 
         $invoice->refresh();
         expect($invoice->status)->toBe(InvoiceStatus::Draft);
@@ -323,7 +323,7 @@ describe('Invoice Confirmation Business Rules', function () {
             'record' => $invoice->getRouteKey(),
         ]);
 
-        $editWire->assertActionVisible('confirm');
-        $editWire->assertActionEnabled('confirm');
+        $editWire->assertActionVisible('post');
+        $editWire->assertActionEnabled('post');
     });
 });
