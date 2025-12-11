@@ -129,7 +129,7 @@ class SalesOrderForm
                                             ->modalWidth('lg')
                                     ),
 
-                                Select::make('currency_code')
+                                Select::make('currency_id')
                                     ->label(__('sales::sales_orders.fields.currency'))
                                     ->relationship('currency', 'code')
                                     ->searchable()
@@ -140,7 +140,7 @@ class SalesOrderForm
 
                         Grid::make(2)
                             ->schema([
-                                DatePicker::make('order_date')
+                                DatePicker::make('so_date')
                                     ->label(__('sales::sales_orders.fields.order_date'))
                                     ->required()
                                     ->default(now())
@@ -163,11 +163,10 @@ class SalesOrderForm
                             ->label(__('sales::sales_orders.fields.expiration')),
                         Repeater::make('lines')
                             ->label(__('sales::sales_orders.fields.lines'))
-                            ->relationship()
                             ->schema([
                                 Select::make('product_id')
                                     ->label(__('sales::sales_orders.fields.product'))
-                                    ->relationship('product', 'name')
+                                    ->options(Product::pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
                                     ->required()
@@ -207,7 +206,7 @@ class SalesOrderForm
 
                                 Select::make('tax_id')
                                     ->label(__('sales::sales_orders.fields.tax'))
-                                    ->relationship('tax', 'name')
+                                    ->options(Tax::pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
                                     ->options(function () {

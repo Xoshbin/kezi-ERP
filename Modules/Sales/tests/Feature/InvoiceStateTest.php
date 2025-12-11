@@ -58,14 +58,14 @@ it('updates invoice status to posted in UI after confirmation', function () {
         'record' => $invoice->getRouteKey(),
     ]);
 
-    // 3. Trigger Confirm Action
-    $component->callAction('confirm');
+    // 3. Trigger Post Action
+    $component->callAction('post');
 
     // 4. Verify Database State
     $invoice->refresh();
     expect($invoice->status)->toBe(InvoiceStatus::Posted);
 
     // 5. Verify Component State
-    $component->assertActionHidden('confirm');
+    $component->assertActionHidden('post');
     $component->assertActionVisible('register_payment');
 });

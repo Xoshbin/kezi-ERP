@@ -285,10 +285,10 @@ it('can confirm a vendor bill via Filament action', function () {
     ]);
 
     // Verify the confirm action is visible for draft bills
-    $editWire->assertActionVisible('confirm');
+    $editWire->assertActionVisible('post');
 
     // Call the confirm action
-    $editWire->callAction('confirm');
+    $editWire->callAction('post');
 
     // Verify the bill was confirmed
     $vendorBill->refresh();
@@ -303,7 +303,7 @@ it('can confirm a vendor bill via Filament action', function () {
     $editWire = livewire(EditVendorBill::class, [
         'record' => $vendorBill->getRouteKey(),
     ]);
-    $editWire->assertActionHidden('confirm');
+    $editWire->assertActionHidden('post');
 });
 
 it('can delete a vendor bill', function () {
@@ -365,7 +365,7 @@ it('prevents confirming vendor bill without lines', function () {
     livewire(EditVendorBill::class, [
         'record' => $vendorBill->getRouteKey(),
     ])
-        ->callAction('confirm')
+        ->callAction('post')
         ->assertNotified(); // Should show error notification
 
     // Verify the bill was NOT confirmed (the service should handle this gracefully)
@@ -393,7 +393,7 @@ it('cannot confirm already posted vendor bill', function () {
     ]);
 
     // Verify the confirm action is hidden for posted bills
-    $editWire->assertActionHidden('confirm');
+    $editWire->assertActionHidden('post');
 });
 
 it('can create and confirm vendor bill following complete workflow', function () {
@@ -474,10 +474,10 @@ it('can create and confirm vendor bill following complete workflow', function ()
     ]);
 
     // Verify the confirm action is visible for draft bills
-    $editWire->assertActionVisible('confirm');
+    $editWire->assertActionVisible('post');
 
     // Call the confirm action
-    $editWire->callAction('confirm');
+    $editWire->callAction('post');
 
     // Assert: Verify confirmation was successful
     $vendorBill->refresh();
@@ -505,7 +505,7 @@ it('can create and confirm vendor bill following complete workflow', function ()
     $editWire = livewire(EditVendorBill::class, [
         'record' => $vendorBill->getRouteKey(),
     ]);
-    $editWire->assertActionHidden('confirm');
+    $editWire->assertActionHidden('post');
 });
 
 it('shows error and keeps draft when storable product lacks inventory account', function () {
@@ -550,7 +550,7 @@ it('shows error and keeps draft when storable product lacks inventory account', 
     livewire(EditVendorBill::class, [
         'record' => $vendorBill->getRouteKey(),
     ])
-        ->callAction('confirm')
+        ->callAction('post')
         ->assertNotified(); // Should show error notification
 
     // Assert: Verify the bill was NOT confirmed and remains in draft status
