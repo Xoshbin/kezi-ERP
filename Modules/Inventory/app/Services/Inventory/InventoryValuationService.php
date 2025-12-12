@@ -792,10 +792,10 @@ class InventoryValuationService
             if (! $product->default_inventory_account_id) {
                 throw new Exception("Product {$product->id} does not have an inventory account configured");
             }
-            
+
             if ($isOutgoing) {
                 // Outgoing Move Logic (COGS)
-                 if (! $product->default_cogs_account_id) {
+                if (! $product->default_cogs_account_id) {
                     throw new Exception("Product {$product->id} does not have a COGS account configured");
                 }
 
@@ -805,10 +805,11 @@ class InventoryValuationService
 
                 if ($cogsAmount->isZero()) {
                     Log::warning("COGS amount is zero for product {$product->id}, skipping line in consolidated entry");
+
                     continue;
                 }
 
-                 // Add debit line for COGS account
+                // Add debit line for COGS account
                 $journalEntryLines[] = new CreateJournalEntryLineDTO(
                     account_id: $product->default_cogs_account_id,
                     debit: $cogsAmount,
@@ -867,22 +868,22 @@ class InventoryValuationService
                     original_currency_amount: $this->getOriginalCurrencyAmount($stockMove, $productTotalCost),
                     exchange_rate_at_transaction: $this->getExchangeRateFromSource($stockMove),
                 );
-                
+
                 // Process inventory valuation for this product (without creating journal entry)
                 $this->processIncomingStockWithoutJournalEntry($product, $quantity, $costResult->cost, Carbon::parse($stockMove->move_date), $stockMove);
             }
-            
+
             $productNames[] = $product->name;
         }
-        
+
         if (empty($journalEntryLines)) {
-             Log::warning("No journal entry lines generated for stock move {$stockMove->id}");
-             // Return a dummy or handle gracefully? For now, re-fetch strict allows throwing if we want.
-             // But let's check if we should return null or existing?
-             // Since method signature returns JournalEntry, we must create one or find one.
-             // If empty lines, it means likely zero value.
-             // To avoid breaking, we might need a zero value entry or just exception?
-             // Let's assume there's always value if quantity > 0.
+            Log::warning("No journal entry lines generated for stock move {$stockMove->id}");
+            // Return a dummy or handle gracefully? For now, re-fetch strict allows throwing if we want.
+            // But let's check if we should return null or existing?
+            // Since method signature returns JournalEntry, we must create one or find one.
+            // If empty lines, it means likely zero value.
+            // To avoid breaking, we might need a zero value entry or just exception?
+            // Let's assume there's always value if quantity > 0.
         }
 
         $referencePrefix = $isOutgoing ? 'STOCK-OUT' : 'STOCK-IN';
@@ -909,17 +910,17 @@ class InventoryValuationService
 
         // Create stock move valuations linking to the consolidated journal entry (Outgoing Only - Incoming handled in loop for valuation updates)
         if ($isOutgoing) {
-             foreach ($stockMove->productLines as $productLine) {
+            foreach ($stockMove->productLines as $productLine) {
                 // Re-calculate simply for valuation record or pass from above?
                 // For outgoing, we need to consume stock.
                 // processOutgoingStock already does this? No, we are creating manual entry here.
                 // We need to act like processOutgoingStock but consolidated.
-                
+
                 $product = $productLine->product;
                 $quantity = $productLine->quantity;
-                 // Re-calculate COGS locally as we didn't store it per line above easily
+                // Re-calculate COGS locally as we didn't store it per line above easily
                 $cogsAmount = $this->calculateCOGS($product, $quantity);
-                
+
                 $this->createStockMoveValuation(
                     $product,
                     $quantity,
@@ -928,21 +929,21 @@ class InventoryValuationService
                     $stockMove,
                     $stockMove->move_type // Use actual type
                 );
-                
+
                 // Update product quantity on hand for outgoing stock
                 $product->forceFill([
                     'quantity_on_hand' => max(0, $product->quantity_on_hand - $quantity),
                 ])->save();
-             }
+            }
         } else {
-             // For Incoming, we already called processIncomingStockWithoutJournalEntry for valuation updates.
-             // But we still need the Valuation Record created linked to THIS journal entry.
-             // The loop above called processIncomingStockWithoutJournalEntry which does NOT create valuation record?
-             // Wait, processIncomingStockWithoutJournalEntry DOES NOT create valuation record?
-             // Checking source... processIncomingStockWithoutJournalEntry calls processIncomingStockAVCO/FIFO which updates cost/layers.
-             // It does NOT create StockMoveValuation.
-             // So we need to create it here similar to original code.
-             
+            // For Incoming, we already called processIncomingStockWithoutJournalEntry for valuation updates.
+            // But we still need the Valuation Record created linked to THIS journal entry.
+            // The loop above called processIncomingStockWithoutJournalEntry which does NOT create valuation record?
+            // Wait, processIncomingStockWithoutJournalEntry DOES NOT create valuation record?
+            // Checking source... processIncomingStockWithoutJournalEntry calls processIncomingStockAVCO/FIFO which updates cost/layers.
+            // It does NOT create StockMoveValuation.
+            // So we need to create it here similar to original code.
+
             foreach ($stockMove->productLines as $productLine) {
                 $product = $productLine->product;
                 $quantity = $productLine->quantity;
@@ -957,7 +958,7 @@ class InventoryValuationService
                     $stockMove,
                     $costResult
                 );
-                
+
                 // Stock quantities are updated via StockMoveObserver check
                 // $this->stockQuantService->applyForIncomingProductLine($productLine);
             }

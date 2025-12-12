@@ -16,7 +16,7 @@ class CreateSalesOrderLineAction
      */
     public function execute(SalesOrder $salesOrder, CreateSalesOrderLineDTO $dto): SalesOrderLine
     {
-        $line = new SalesOrderLine();
+        $line = new SalesOrderLine;
         $line->sales_order_id = $salesOrder->id;
         $line->fill([
             'product_id' => $dto->product_id,
