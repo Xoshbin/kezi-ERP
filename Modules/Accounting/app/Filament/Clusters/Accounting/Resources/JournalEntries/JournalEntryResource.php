@@ -104,6 +104,7 @@ class JournalEntryResource extends Resource
 
                     TextInput::make('reference')
                         ->label(__('accounting::journal_entry.reference'))
+                        ->required()
                         ->maxLength(255)
                         ->columnSpan(2),
                     Textarea::make('description')
@@ -164,6 +165,7 @@ class JournalEntryResource extends Resource
                         ->columns(18)
                         ->columnSpanFull()
                         ->live()
+                        ->minItems(2)
                         ->defaultItems(0)
                         ->afterStateUpdated(function (callable $set, $state) {
                             self::updateTotals($set, $state);
