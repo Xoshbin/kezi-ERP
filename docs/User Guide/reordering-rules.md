@@ -1,4 +1,9 @@
-# Reordering Rules: Automated Inventory Replenishment
+---
+title: Reordering Rules
+icon: heroicon-o-arrow-path
+order: 10
+---
+
 
 This comprehensive guide explains how to set up and manage automated reordering rules in your inventory system, covering min/max rules, safety stock calculations, lead time management, and procurement automation. Written for all users — accountants and non‑accountants — it provides practical guidance for optimizing inventory levels and reducing stockouts.
 

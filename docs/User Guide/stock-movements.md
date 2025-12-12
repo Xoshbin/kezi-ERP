@@ -1,4 +1,9 @@
-# Stock Movements: Complete Movement Processing Guide
+---
+title: Stock Movements
+icon: heroicon-o-arrows-right-left
+order: 12
+---
+
 
 This comprehensive guide explains how to create, manage, and track all types of stock movements in your inventory system. Written for all users — accountants and non‑accountants — it provides practical guidance for processing receipts, deliveries, transfers, and adjustments following double‑entry accounting best practices.
 

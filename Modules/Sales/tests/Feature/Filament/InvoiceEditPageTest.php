@@ -128,7 +128,7 @@ test('edit page shows all expected actions', function () {
     // Assert - Check that all expected actions exist
     $component->assertActionExists('viewPdf');
     $component->assertActionExists('downloadPdf');
-    $component->assertActionExists('confirm'); // For draft invoices
+    $component->assertActionExists('post'); // For draft invoices
 });
 
 // TODO:: In future if you pland to add back the reset button just enable the test below and enable the action button in the Invoice resource

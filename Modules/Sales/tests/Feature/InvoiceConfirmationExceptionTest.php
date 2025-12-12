@@ -45,7 +45,7 @@ it('shows unhelpful error message when validation exception occurs (current beha
     ]);
 
     // 3. Trigger Confirm Action
-    $component->callAction('confirm');
+    $component->callAction('post');
 
     // 4. Verify Notification is present
     $component->assertNotified();

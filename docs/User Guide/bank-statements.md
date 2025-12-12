@@ -1,4 +1,9 @@
-# Bank Statements: Cash Flow Documentation and Reconciliation Foundation
+---
+title: Bank Statements
+icon: heroicon-o-document-text
+order: 2
+---
+
 
 This comprehensive guide explains how bank statements work in your accounting system, covering creation, transaction entry, multi-currency support, and validation processes. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 
