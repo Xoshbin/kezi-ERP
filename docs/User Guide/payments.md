@@ -1,4 +1,9 @@
-# Payments: Money Movement and Cash Flow Management
+---
+title: Payments
+icon: heroicon-o-credit-card
+order: 9
+---
+
 
 This comprehensive guide explains how payments work in the accounting system, covering creation, management, multi-currency support, and reconciliation. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 

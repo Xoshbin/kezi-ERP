@@ -1,4 +1,9 @@
-# Getting Started: Your Complete Guide to the Accounting System
+---
+title: Getting Started
+icon: heroicon-o-rocket-launch
+order: 0
+---
+
 
 This comprehensive guide helps you get started with your accounting system, covering initial setup, essential configuration, and basic workflows. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 

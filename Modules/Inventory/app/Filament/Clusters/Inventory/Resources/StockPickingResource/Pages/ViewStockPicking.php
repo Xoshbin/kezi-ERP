@@ -13,7 +13,6 @@ use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\AssignPickingAction;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\CancelPickingAction;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ConfirmPickingAction;
-use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\CreateBackorderAction;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ValidatePickingAction;
 use Modules\Inventory\Models\StockPicking;
 
@@ -92,7 +91,10 @@ class ViewStockPicking extends ViewRecord
                                     $lotInfo = $move->stockMoveLines
                                         ->where('stock_move_product_line_id', $productLine->id)
                                         ->map(function ($line) {
-                                            return "Lot: {$line->lot->lot_code} (Qty: ".number_format($line->quantity, 2).')';
+                                            $lotCode = $line->lot?->lot_code;
+                                            $qty = number_format($line->quantity, 2);
+
+                                            return $lotCode ? "Lot: {$lotCode} (Qty: {$qty})" : "Qty: {$qty}";
                                         })->join(', ');
 
                                     $lotDisplay = $lotInfo ? " - {$lotInfo}" : '';
@@ -133,7 +135,7 @@ class ViewStockPicking extends ViewRecord
 
             case StockPickingState::Assigned:
                 $actions[] = ValidatePickingAction::make();
-                $actions[] = CreateBackorderAction::make();
+
                 $actions[] = CancelPickingAction::make();
                 break;
         }

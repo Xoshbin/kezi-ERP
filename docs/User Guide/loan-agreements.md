@@ -1,3 +1,8 @@
+---
+title: Loan Agreements
+icon: heroicon-o-banknotes
+order: 5
+---
 
 # Loan Agreements: Comprehensive Loan Management and Accounting
 

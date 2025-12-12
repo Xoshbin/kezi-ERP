@@ -1,4 +1,9 @@
-# Opening Balances: Setting Up Your Financial Foundation
+---
+title: Opening Balances
+icon: heroicon-o-scale
+order: 7
+---
+
 
 This comprehensive guide explains how opening balances work in your accounting system, covering chart of accounts preparation, journal entry creation, and balance validation. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 
