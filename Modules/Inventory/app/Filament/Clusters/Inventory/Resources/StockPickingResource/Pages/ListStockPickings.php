@@ -15,6 +15,7 @@ class ListStockPickings extends ListRecords
         return [
             CreateAction::make()
                 ->icon('heroicon-o-plus'),
+            \Modules\Foundation\Filament\Actions\DocsAction::make('stock-picking'),
         ];
     }
 }

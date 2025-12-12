@@ -125,9 +125,9 @@ class StockMoveService
 
     public function updateMoveWithProductLines(StockMove $move, UpdateStockMoveWithProductLinesDTO $dto): StockMove
     {
+        // 1. Update fields except status
         $move->update([
             'move_type' => $dto->move_type,
-            'status' => $dto->status,
             'move_date' => $dto->move_date,
             'reference' => $dto->reference,
             'description' => $dto->description,
@@ -135,10 +135,9 @@ class StockMoveService
             'source_id' => $dto->source_id,
         ]);
 
-        // Delete existing product lines
+        // 2. Refresh product lines
         $move->productLines()->delete();
 
-        // Create new product lines
         foreach ($dto->product_lines as $productLineDTO) {
             $move->productLines()->create([
                 'company_id' => $move->company_id,
@@ -150,6 +149,12 @@ class StockMoveService
                 'source_type' => $productLineDTO->source_type,
                 'source_id' => $productLineDTO->source_id,
             ]);
+        }
+
+        // 3. Update status last to trigger observers with new lines
+        if ($move->status !== $dto->status) {
+            $move->status = $dto->status;
+            $move->save();
         }
 
         return $move->load('productLines');

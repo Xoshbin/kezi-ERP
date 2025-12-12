@@ -198,7 +198,7 @@ class VendorBillConfirmationTest extends TestCase
         $bill->calculateTotalsFromLines();
 
         Livewire::test(FilamentEditVendorBill::class, ['record' => $bill->getKey()])
-            ->callAction('confirm')
+            ->callAction('post')
             ->assertHasNoErrors()
             ->assertNotified();
 

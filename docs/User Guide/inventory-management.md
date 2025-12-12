@@ -1,3 +1,9 @@
+---
+title: Inventory Management
+icon: heroicon-o-cube
+order: 4
+---
+
 # Inventory Management: Complete System Overview
 
 This comprehensive guide explains how the complete inventory management system works in your accounting system, covering all aspects from basic stock tracking to advanced lot management and reporting. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.

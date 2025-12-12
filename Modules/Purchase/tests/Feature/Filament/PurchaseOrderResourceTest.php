@@ -160,3 +160,45 @@ test('confirm action transitions to ToReceive status', function () {
     expect($purchaseOrder->status)->not->toBe(PurchaseOrderStatus::FullyReceived);
     expect($purchaseOrder->confirmed_at)->not->toBeNull();
 });
+
+test('dynamically updates line currency when header currency changes', function () {
+    // Arrange: Create USD currency
+    $usdCurrency = \Modules\Foundation\Models\Currency::firstOrCreate(
+        ['code' => 'USD'],
+        [
+            'name' => ['en' => 'US Dollar'],
+            'symbol' => '$',
+            'is_active' => true,
+            'decimal_places' => 2,
+        ]
+    );
+
+    // Act
+    $wire = Livewire::test(CreatePurchaseOrder::class, ['tenant' => $this->company])
+        ->fillForm([
+            'vendor_id' => $this->vendor->id,
+            'currency_id' => $this->company->currency_id,
+            'po_date' => now()->format('Y-m-d'),
+        ]);
+
+    // Set a different currency
+    $wire->set('data.currency_id', $usdCurrency->id);
+
+    // Add a line item
+    $product = Product::factory()->create(['company_id' => $this->company->id]);
+    $wire->set('data.lines', [
+        [
+            'product_id' => $product->id,
+            'quantity' => 1,
+            'unit_price' => 10,
+        ],
+    ]);
+
+    // Verify no errors when switching back and forth
+    // This implicit verification checks if the paths are resolvable
+    $wire->set('data.currency_id', $this->company->currency_id)
+        ->assertHasNoFormErrors();
+
+    $wire->set('data.currency_id', $usdCurrency->id)
+        ->assertHasNoFormErrors();
+});

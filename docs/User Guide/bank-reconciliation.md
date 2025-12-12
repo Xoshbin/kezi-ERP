@@ -1,4 +1,9 @@
-# Bank Reconciliation: Ensuring Cash Accuracy and Financial Control
+---
+title: Bank Reconciliation
+icon: heroicon-o-scale
+order: 1
+---
+
 
 This comprehensive guide explains how bank reconciliation works in your accounting system, covering the matching process, write-offs, and multi-currency handling. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 

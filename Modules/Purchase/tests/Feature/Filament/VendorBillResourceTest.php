@@ -45,13 +45,13 @@ describe('Vendor Bill Confirmation Business Rules', function () {
         ]);
 
         // The confirm action should be visible for draft bills
-        $editWire->assertActionVisible('confirm');
+        $editWire->assertActionVisible('post');
 
         // The confirm action should be disabled when no line items exist
-        $editWire->assertActionDisabled('confirm');
+        $editWire->assertActionDisabled('post');
 
         // Attempt to call the confirm action - should show error notification
-        $editWire->callAction('confirm')
+        $editWire->callAction('post')
             ->assertNotified(); // Should show error notification
 
         // Verify the bill was NOT confirmed
@@ -155,7 +155,7 @@ describe('Vendor Bill Confirmation Business Rules', function () {
         ]);
 
         // Call the confirm action and verify error notification is shown
-        $editWire->callAction('confirm')
+        $editWire->callAction('post')
             ->assertNotified(); // Should show error notification with user-friendly message
 
         // The error message should be user-friendly and clearly explain why the action failed
@@ -241,8 +241,8 @@ describe('Vendor Bill Confirmation Business Rules', function () {
             'record' => $vendorBill->getRouteKey(),
         ]);
 
-        $editWire->assertActionVisible('confirm');
-        $editWire->assertActionEnabled('confirm');
+        $editWire->assertActionVisible('post');
+        $editWire->assertActionEnabled('post');
     });
 
     it('successfully confirms vendor bill with storable products via Filament UI', function () {
@@ -317,8 +317,8 @@ describe('Vendor Bill Confirmation Business Rules', function () {
         ]);
 
         // Verify confirm action is available and enabled
-        $editWire->assertActionVisible('confirm');
-        $editWire->assertActionEnabled('confirm');
+        $editWire->assertActionVisible('post');
+        $editWire->assertActionEnabled('post');
 
         // First test: Try confirming via service layer directly to ensure it works
         $vendorBillService = app(VendorBillService::class);
@@ -364,7 +364,7 @@ describe('Vendor Bill Confirmation Business Rules', function () {
         ]);
 
         // Perform the confirmation action
-        $editWire->callAction('confirm');
+        $editWire->callAction('post');
 
         // Check if there were any error notifications
         // The action should succeed without errors
@@ -470,7 +470,7 @@ describe('Vendor Bill Confirmation Business Rules', function () {
         ]);
 
         // Perform the confirmation action - should use fallback exchange rate
-        $editWire->callAction('confirm');
+        $editWire->callAction('post');
 
         // Verify success notification (no exchange rate error)
         $editWire->assertNotified();

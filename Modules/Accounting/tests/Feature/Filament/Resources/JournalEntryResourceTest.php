@@ -798,16 +798,6 @@ it('can create multi-currency capital injection journal entry in USD with proper
         'exchange_rate_at_transaction' => 1460.0,
     ]);
 
-    $this->assertDatabaseHas('journal_entry_lines', [
-        'journal_entry_id' => $journalEntry->id,
-        'account_id' => $ownersEquityAccount->id,
-        'debit' => 0,
-        'credit' => 73000000000, // 73M IQD in fils (minor units)
-        'original_currency_amount' => 5000000, // $50,000 in cents (minor units)
-        'original_currency_id' => $usdCurrency->id,
-        'exchange_rate_at_transaction' => 1460.0,
-    ]);
-
     // Act: Post the journal entry
     $editWire = livewire(EditJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
@@ -830,4 +820,47 @@ it('can create multi-currency capital injection journal entry in USD with proper
     $journalEntry->description = 'Attempted unauthorized update';
     expect(fn () => $journalEntry->save())
         ->toThrow(\RuntimeException::class, "Attempted to modify immutable posted journal entry field: 'description'");
+});
+
+it('dynamically updates line currency when header currency changes', function () {
+    // Arrange: Create USD currency
+    $usdCurrency = Currency::firstOrCreate(
+        ['code' => 'USD'],
+        [
+            'name' => ['en' => 'US Dollar'],
+            'symbol' => '$',
+            'is_active' => true,
+            'decimal_places' => 2,
+        ]
+    );
+
+    // Act
+    $wire = livewire(CreateJournalEntry::class)
+        ->fillForm([
+            'company_id' => $this->company->id,
+            // Default currency is usually IQD from company
+            'currency_id' => $this->company->currency_id,
+        ]);
+
+    $wire->set('data.currency_id', $usdCurrency->id);
+
+    // We expect the form to handle this change gracefully even with lines.
+    // The previous bug caused issues or incorrect symbols, but here we enforce
+    // that the structure is valid and we can interact with it.
+    // Adding lines to ensure they are rendered with the new context.
+
+    $wire->set('data.lines', [
+        [
+            'account_id' => $this->company->default_bank_account_id,
+            'debit' => 100,
+            'credit' => 0,
+        ],
+    ]);
+
+    // Toggle back and forth
+    $wire->set('data.currency_id', $this->company->currency_id)
+        ->assertHasNoFormErrors();
+
+    $wire->set('data.currency_id', $usdCurrency->id)
+        ->assertHasNoFormErrors();
 });

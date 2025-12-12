@@ -139,7 +139,7 @@ class EditInvoice extends EditRecord
                     ]);
                 }),
 
-            Action::make('confirm')
+            Action::make('post')
                 ->label(__('sales::invoice.confirm_invoice'))
                 ->color('success')
                 ->requiresConfirmation()

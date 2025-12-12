@@ -53,7 +53,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
             Livewire::test(EditInvoice::class, [
                 'record' => $invoice->getRouteKey(),
             ])
-                ->callAction('confirm')
+                ->callAction('post')
                 ->assertHasNoErrors();
 
             // Refresh the invoice to get updated data
@@ -120,7 +120,7 @@ class WebInterfaceInvoicePostingTest extends TestCase
             Livewire::test(EditInvoice::class, [
                 'record' => $invoice->getRouteKey(),
             ])
-                ->callAction('confirm')
+                ->callAction('post')
                 ->assertHasNoErrors();
         }
 
