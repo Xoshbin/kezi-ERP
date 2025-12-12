@@ -93,6 +93,7 @@ class ViewStockPicking extends ViewRecord
                                         ->map(function ($line) {
                                             $lotCode = $line->lot?->lot_code;
                                             $qty = number_format($line->quantity, 2);
+
                                             return $lotCode ? "Lot: {$lotCode} (Qty: {$qty})" : "Qty: {$qty}";
                                         })->join(', ');
 
