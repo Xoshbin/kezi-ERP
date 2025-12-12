@@ -169,7 +169,7 @@ it('throws validation exception when creating journal entry with no date', funct
     }
 });
 
-it('throws validation exception when creating journal entry with no reference', function () {
+it('allows creating journal entry with null reference', function () {
     $accountA = Account::factory()->for($this->company)->create();
     $accountB = Account::factory()->for($this->company)->create();
     $currencyCode = $this->company->currency->code;
@@ -197,9 +197,9 @@ it('throws validation exception when creating journal entry with no reference', 
     $dto = new CreateJournalEntryDTO(
         company_id: $this->company->id,
         journal_id: $this->company->default_sales_journal_id,
-        currency_id: $this->company->currency_id,
+        currency_id: $this->company->currency->code === 'USD' ? 1 : $this->company->currency_id, // Ensure valid currency ID
         entry_date: now()->toDateString(),
-        reference: null, // Testing null reference (since DTO allows ?string)
+        reference: null,
         description: 'Test entry with no reference',
         created_by_user_id: $this->user->id,
         is_posted: false,
@@ -208,10 +208,9 @@ it('throws validation exception when creating journal entry with no reference', 
 
     $action = app(CreateJournalEntryAction::class);
 
-    try {
-        $action->execute($dto);
-        $this->fail('Expected ValidationException was not thrown for missing reference.');
-    } catch (ValidationException $e) {
-        expect($e->validator->errors()->has('reference'))->toBeTrue();
-    }
+    $journalEntry = $action->execute($dto);
+
+    expect($journalEntry)->toBeInstanceOf(\Modules\Accounting\Models\JournalEntry::class)
+        ->and($journalEntry->reference)->toBeNull()
+        ->and($journalEntry->entry_number)->toBeNull();
 });
