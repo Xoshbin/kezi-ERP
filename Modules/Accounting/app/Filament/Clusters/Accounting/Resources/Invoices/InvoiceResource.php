@@ -327,12 +327,11 @@ class InvoiceResource extends Resource
                                     Textarea::make('description')
                                         ->label(__('product::product.description'))
                                         ->columnSpanFull(),
-                                    TranslatableSelect::make('default_inventory_account_id')
-                                        ->relationship('inventoryAccount', 'name')
+                                    TranslatableSelect::forModel('default_inventory_account_id', Account::class, 'name')
                                         ->label(__('product::product.default_inventory_account'))
                                         ->searchable()
                                         ->preload()
-                                        ->searchableFields(['name'])
+                                        ->searchableFields(['name', 'code'])
                                         ->visible(fn ($get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
                                         ->required(fn ($get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
                                         ->rules(['required_if:type,'.\Modules\Product\Enums\Products\ProductType::Storable->value])
@@ -366,9 +365,11 @@ class InvoiceResource extends Resource
                                     MoneyInput::make('unit_price')
                                         ->label(__('product::product.unit_price'))
                                         ->currencyField('../../currency_id'),
-                                    Select::make('income_account_id')
-                                        ->relationship('incomeAccount', 'name')
+                                    TranslatableSelect::forModel('income_account_id', Account::class, 'name')
                                         ->label(__('product::product.income_account'))
+                                        ->searchable()
+                                        ->preload()
+                                        ->searchableFields(['name', 'code'])
                                         ->required(),
                                 ])
                                 ->createOptionModalHeading(__('common.modal_title_create_product'))
