@@ -24,8 +24,26 @@ class CreateJournalEntryAction
 
     public function execute(CreateJournalEntryDTO $dto): JournalEntry
     {
+        if (empty($dto->reference)) {
+            throw ValidationException::withMessages([
+                'reference' => 'The reference is required.',
+            ]);
+        }
+
+        if (empty($dto->entry_date)) {
+            throw ValidationException::withMessages([
+                'entry_date' => 'The entry date is required.',
+            ]);
+        }
+
         $company = Company::findOrFail($dto->company_id);
         $this->lockDateService->enforce($company, Carbon::parse($dto->entry_date));
+
+        if (count($dto->lines) < 2) {
+            throw ValidationException::withMessages([
+                'lines' => 'The journal entry must have at least 2 lines.',
+            ]);
+        }
 
         $currency = Currency::find($dto->currency_id);
         if (! $currency) {
