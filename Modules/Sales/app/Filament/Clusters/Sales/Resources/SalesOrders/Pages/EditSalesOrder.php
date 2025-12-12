@@ -51,7 +51,7 @@ class EditSalesOrder extends EditRecord
                         default_income_account_id: $data['default_income_account_id'],
                     );
                     app(\Modules\Sales\Actions\Sales\CreateInvoiceFromSalesOrderAction::class)->execute($dto);
-                    
+
                     $this->redirect($this->getResource()::getUrl('edit', ['record' => $record]));
                 })
                 ->visible(fn (SalesOrder $record) => $record->canCreateInvoice()),
