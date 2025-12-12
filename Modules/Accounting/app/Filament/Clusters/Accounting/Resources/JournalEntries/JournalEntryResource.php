@@ -102,9 +102,14 @@ class JournalEntryResource extends Resource
                         ->default(now())
                         ->columnSpan(2),
 
+                    TextInput::make('entry_number')
+                        ->label(__('accounting::journal_entry.entry_number'))
+                        ->readOnly()
+                        ->hiddenOn('create')
+                        ->columnSpan(2),
                     TextInput::make('reference')
                         ->label(__('accounting::journal_entry.reference'))
-                        ->required()
+                        ->helperText(__('accounting::journal_entry.reference_helper'))
                         ->maxLength(255)
                         ->columnSpan(2),
                     Textarea::make('description')
@@ -206,7 +211,12 @@ class JournalEntryResource extends Resource
     {
         return $table
             ->columns([
-                // Reference (most important for identification)
+                TextColumn::make('entry_number')
+                    ->label(__('accounting::journal_entry.entry_number'))
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
+                // Reference (external link)
                 TextColumn::make('reference')
                     ->label(__('accounting::journal_entry.reference'))
                     ->searchable()

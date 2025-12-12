@@ -24,11 +24,6 @@ class CreateJournalEntryAction
 
     public function execute(CreateJournalEntryDTO $dto): JournalEntry
     {
-        if (empty($dto->reference)) {
-            throw ValidationException::withMessages([
-                'reference' => 'The reference is required.',
-            ]);
-        }
 
         if (empty($dto->entry_date)) {
             throw ValidationException::withMessages([
