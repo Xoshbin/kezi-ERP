@@ -11,7 +11,6 @@ use Modules\Inventory\Enums\Inventory\StockPickingType;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\AssignPickingAction;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\CancelPickingAction;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ConfirmPickingAction;
-
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ValidatePickingAction;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ListStockPickings;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking;
@@ -167,8 +166,6 @@ it('can validate picking and complete moves', function () {
     // Test the action exists
     expect(ValidatePickingAction::getDefaultName())->toBe('validate');
 });
-
-
 
 it('can cancel picking and release reservations', function () {
     $picking = StockPicking::factory()->create([

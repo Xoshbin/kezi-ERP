@@ -191,7 +191,7 @@ test('dynamically updates line currency when header currency changes', function 
             'product_id' => $product->id,
             'quantity' => 1,
             'unit_price' => 10,
-        ]
+        ],
     ]);
 
     // Verify no errors when switching back and forth
