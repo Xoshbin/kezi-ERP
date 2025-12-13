@@ -17,6 +17,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -32,6 +34,7 @@ use Modules\Accounting\Models\JournalEntry;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\CurrencyRate;
 use Modules\Foundation\Models\Partner;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
@@ -83,9 +86,20 @@ class JournalEntryResource extends Resource
                         ->label(__('accounting::journal_entry.currency'))
                         ->required()
                         ->searchable()
+                        ->searchable()
                         ->preload()
                         ->live()
                         ->default(fn () => (Filament::getTenant() instanceof Company) ? Filament::getTenant()->currency_id : null)
+                        ->afterStateUpdated(function (Set $set, Get $get, $state) {
+                            $company = Filament::getTenant();
+                            if ($company instanceof Company && $state) {
+                                $rate = CurrencyRate::getLatestRate((int) $state, $company->id) ?? 1;
+                                $set('exchange_rate', $rate);
+                            } else {
+                                $set('exchange_rate', 1);
+                            }
+                            self::updateTotals($set, $get('lines') ?? [], $get('exchange_rate') ?? 1);
+                        })
                         ->createOptionForm([
                             TextInput::make('code')->label(__('currency.code'))->required()->maxLength(255),
                             TextInput::make('name')->label(__('currency.name'))->required()->maxLength(255),
@@ -96,14 +110,34 @@ class JournalEntryResource extends Resource
                         ->createOptionModalHeading(__('common.modal_title_create_currency'))
                         ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
                         ->columnSpan(2),
+                    TextInput::make('exchange_rate')
+                        ->label(__('accounting::journal_entry.exchange_rate'))
+                        ->numeric()
+                        ->default(1)
+                        ->required()
+                        ->live(onBlur: true)
+                        ->columnSpan(2)
+                        ->dehydrated()
+                        ->hidden(fn (Get $get) => ! $get('currency_id') ||
+                            ($get('currency_id') == (Filament::getTenant() instanceof Company ? Filament::getTenant()->currency_id : null))
+                        )
+                        ->afterStateUpdated(function (Set $set, Get $get, $state) {
+                            self::updateTotals($set, $get('lines') ?? [], (float) $state);
+                        }),
                     DatePicker::make('entry_date')
                         ->label(__('accounting::journal_entry.entry_date'))
                         ->required()
                         ->default(now())
                         ->columnSpan(2),
 
+                    TextInput::make('entry_number')
+                        ->label(__('accounting::journal_entry.entry_number'))
+                        ->readOnly()
+                        ->hiddenOn('create')
+                        ->columnSpan(2),
                     TextInput::make('reference')
                         ->label(__('accounting::journal_entry.reference'))
+                        ->helperText(__('accounting::journal_entry.reference_helper'))
                         ->maxLength(255)
                         ->columnSpan(2),
                     Textarea::make('description')
@@ -164,9 +198,10 @@ class JournalEntryResource extends Resource
                         ->columns(18)
                         ->columnSpanFull()
                         ->live()
+                        ->minItems(2)
                         ->defaultItems(0)
-                        ->afterStateUpdated(function (callable $set, $state) {
-                            self::updateTotals($set, $state);
+                        ->afterStateUpdated(function (callable $set, Get $get, $state) {
+                            self::updateTotals($set, $state, (float) ($get('exchange_rate') ?? 1));
                         }),
                 ])
                 ->columnSpanFull(),
@@ -204,7 +239,12 @@ class JournalEntryResource extends Resource
     {
         return $table
             ->columns([
-                // Reference (most important for identification)
+                TextColumn::make('entry_number')
+                    ->label(__('accounting::journal_entry.entry_number'))
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
+                // Reference (external link)
                 TextColumn::make('reference')
                     ->label(__('accounting::journal_entry.reference'))
                     ->searchable()
@@ -289,15 +329,19 @@ class JournalEntryResource extends Resource
     /**
      * @param  array<int, array{debit?: float|string, credit?: float|string}>  $state
      */
-    protected static function updateTotals(callable $set, array $state): void
+    protected static function updateTotals(callable $set, array $state, float $exchangeRate = 1): void
     {
         $lines = $state;
         $totalDebit = 0;
         $totalCredit = 0;
 
         foreach ($lines as $line) {
-            $totalDebit += (float) ($line['debit'] ?? 0);
-            $totalCredit += (float) ($line['credit'] ?? 0);
+            $lineDebit = (float) ($line['debit'] ?? 0);
+            $lineCredit = (float) ($line['credit'] ?? 0);
+
+            // Convert foreign currency input to base currency for the headers
+            $totalDebit += $lineDebit * $exchangeRate;
+            $totalCredit += $lineCredit * $exchangeRate;
         }
 
         $set('total_debit', (float) $totalDebit);
