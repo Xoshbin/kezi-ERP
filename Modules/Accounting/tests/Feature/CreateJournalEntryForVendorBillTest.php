@@ -23,14 +23,14 @@ test('correctly creates journal entry for vendor bill with currency conversion',
     // 2. Setup Company with IQD base
     $company = Company::factory()->create([
         'currency_id' => $iqd->id,
-        'name' => 'IQD Company'
+        'name' => 'IQD Company',
     ]);
-    
+
     // Setup Accounts
     $apAccount = Account::factory()->create(['company_id' => $company->id, 'code' => '200000', 'name' => 'AP']);
     $expenseAccount = Account::factory()->create(['company_id' => $company->id, 'code' => '600000', 'name' => 'Expense']);
     $taxAccount = Account::factory()->create(['company_id' => $company->id, 'code' => '100000', 'name' => 'Tax']);
-    
+
     $company->update([
         'default_accounts_payable_id' => $apAccount->id,
         'default_tax_account_id' => $taxAccount->id,
@@ -42,7 +42,7 @@ test('correctly creates journal entry for vendor bill with currency conversion',
 
     // 3. Setup Vendor Bill
     $vendor = \Modules\Foundation\Models\Partner::factory()->create(['company_id' => $company->id, 'payable_account_id' => $apAccount->id]);
-    
+
     $bill = VendorBill::create([
         'company_id' => $company->id,
         'vendor_id' => $vendor->id,
@@ -71,7 +71,7 @@ test('correctly creates journal entry for vendor bill with currency conversion',
 
     // 4. Run the Action
     $user = User::factory()->create();
-    
+
     // Create exchange rate in DB too
     CurrencyRate::create([
         'company_id' => $company->id,
@@ -86,11 +86,11 @@ test('correctly creates journal entry for vendor bill with currency conversion',
     // 5. Verification
     // Journal Entry should be in Company Currency (IQD)
     expect($journalEntry->currency_id)->toBe($iqd->id);
-    
+
     // Total Debit should be 1,460,000 IQD
     $totalDebit = $journalEntry->total_debit;
-    
-    echo "\nTotal Debit: " . $totalDebit->getAmount() . " " . $totalDebit->getCurrency()->getCurrencyCode() . "\n";
-    
+
+    echo "\nTotal Debit: ".$totalDebit->getAmount().' '.$totalDebit->getCurrency()->getCurrencyCode()."\n";
+
     expect($totalDebit->getAmount()->toFloat())->toBe(1460000.0);
 });

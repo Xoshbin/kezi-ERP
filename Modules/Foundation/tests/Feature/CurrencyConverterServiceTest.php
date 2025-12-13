@@ -144,7 +144,7 @@ test('can calculate exchange difference', function () {
 test('convertWithRate correctly handles 1000 USD to IQD at 1460', function () {
     $service = app(\Modules\Foundation\Services\CurrencyConverterService::class);
     // 1000 USD (Major units)
-    $amount = Money::of(1000, 'USD'); 
+    $amount = Money::of(1000, 'USD');
     $rate = 1460.0;
 
     // Convert to IQD (Base)
@@ -160,7 +160,7 @@ test('reproduces 1000 USD to IQD conversion bug', function () {
     // Setup IQD as base currency with 3 decimal places
     $baseCurrency = Currency::factory()->create(['code' => 'IQD', 'decimal_places' => 3]);
     $company = Company::factory()->create(['currency_id' => $baseCurrency->id]);
-    
+
     // Setup USD as foreign currency with 2 decimal places
     $usdCurrency = Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
 
@@ -173,7 +173,7 @@ test('reproduces 1000 USD to IQD conversion bug', function () {
     ]);
 
     // 1000 USD
-    $amount = Money::of(1000, 'USD'); 
+    $amount = Money::of(1000, 'USD');
     $service = app(\Modules\Foundation\Services\CurrencyConverterService::class);
 
     // Convert to Base (IQD)
