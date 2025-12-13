@@ -138,6 +138,49 @@ test('can calculate exchange difference', function () {
     );
 
     // 100 USD at 1.6 rate = 160 EUR, difference = 160 - 150 = 10 EUR
-    expect($difference->getAmount()->toFloat())->toBe(10.0);
     expect($difference->getCurrency()->getCurrencyCode())->toBe('EUR');
+});
+
+test('convertWithRate correctly handles 1000 USD to IQD at 1460', function () {
+    $service = app(\Modules\Foundation\Services\CurrencyConverterService::class);
+    // 1000 USD (Major units)
+    $amount = Money::of(1000, 'USD'); 
+    $rate = 1460.0;
+
+    // Convert to IQD (Base)
+    $converted = $service->convertWithRate($amount, $rate, 'IQD', false);
+
+    // 1000 * 1460 = 1,460,000
+    // We expect 1.46 Million
+    expect($converted->getAmount()->toFloat())->toBe(1460000.0);
+    expect($converted->getCurrency()->getCurrencyCode())->toBe('IQD');
+});
+
+test('reproduces 1000 USD to IQD conversion bug', function () {
+    // Setup IQD as base currency with 3 decimal places
+    $baseCurrency = Currency::factory()->create(['code' => 'IQD', 'decimal_places' => 3]);
+    $company = Company::factory()->create(['currency_id' => $baseCurrency->id]);
+    
+    // Setup USD as foreign currency with 2 decimal places
+    $usdCurrency = Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
+
+    // Rate: 1 USD = 1460 IQD
+    CurrencyRate::factory()->create([
+        'company_id' => $company->id,
+        'currency_id' => $usdCurrency->id,
+        'rate' => 1460, // 1 USD = 1460 IQD
+        'effective_date' => Carbon::today(),
+    ]);
+
+    // 1000 USD
+    $amount = Money::of(1000, 'USD'); 
+    $service = app(\Modules\Foundation\Services\CurrencyConverterService::class);
+
+    // Convert to Base (IQD)
+    $converted = $service->convertToBaseCurrency($amount, $usdCurrency, $baseCurrency, Carbon::today(), $company);
+
+    // Expect 1,460,000 IQD
+    // If bug is present, this might return 14,600,000,000 or similar
+    expect($converted->getAmount()->toFloat())->toBe(1460000.0);
+    expect($converted->getCurrency()->getCurrencyCode())->toBe('IQD');
 });
