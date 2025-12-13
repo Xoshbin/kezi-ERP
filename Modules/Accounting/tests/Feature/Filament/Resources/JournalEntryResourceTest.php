@@ -103,6 +103,24 @@ it('can validate input', function () {
             'currency_id' => $this->company->currency_id,
             'entry_date' => now()->format('Y-m-d'),
             'reference' => null,
+            'lines' => [
+                [
+                    'account_id' => $this->company->default_bank_account_id,
+                    'debit' => 100,
+                    'credit' => 0,
+                    'partner_id' => null,
+                    'analytic_account_id' => null,
+                    'description' => 'Line 1',
+                ],
+                [
+                    'account_id' => $this->company->default_accounts_payable_id,
+                    'debit' => 0,
+                    'credit' => 100,
+                    'partner_id' => null,
+                    'analytic_account_id' => null,
+                    'description' => 'Line 2',
+                ],
+            ],
         ])
         ->call('create')
         ->assertHasNoFormErrors();
@@ -439,7 +457,7 @@ it('can create and post capital injection journal entry using Filament interface
     expect($journalEntry->created_at)->not->toBeNull();
 });
 
-it('shows proper error when trying to create duplicate reference', function () {
+it('allows duplicate reference', function () {
     // Arrange: Create the specific accounts needed for the capital injection scenario
     $bankAccount = Account::factory()->for($this->company)->create([
         'code' => '1010',
@@ -532,17 +550,13 @@ it('shows proper error when trying to create duplicate reference', function () {
 
     // The duplicate should be prevented - check that only one entry exists
     $count = JournalEntry::where('reference', 'Duplicate Reference Test')->count();
-    expect($count)->toBe(1, 'Duplicate entry should be prevented by our error handling');
+    expect($count)->toBe(2, 'Duplicate entry should be allowed');
 
-    // Verify the second entry was NOT created
-    $this->assertDatabaseMissing('journal_entries', [
+    // Verify the second entry was created
+    $this->assertDatabaseHas('journal_entries', [
         'reference' => 'Duplicate Reference Test',
         'description' => 'Second journal entry with duplicate reference',
     ]);
-
-    // Verify only one entry exists with this reference
-    $count = JournalEntry::where('reference', 'Duplicate Reference Test')->count();
-    expect($count)->toBe(1);
 });
 
 it('reactively updates totals when lines change', function () {

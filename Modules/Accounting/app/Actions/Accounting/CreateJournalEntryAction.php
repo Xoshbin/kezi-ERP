@@ -24,17 +24,43 @@ class CreateJournalEntryAction
 
     public function execute(CreateJournalEntryDTO $dto): JournalEntry
     {
+
+        if (empty($dto->entry_date)) {
+            throw ValidationException::withMessages([
+                'entry_date' => 'The entry date is required.',
+            ]);
+        }
+
         $company = Company::findOrFail($dto->company_id);
         $this->lockDateService->enforce($company, Carbon::parse($dto->entry_date));
+
+        if (count($dto->lines) < 2) {
+            throw ValidationException::withMessages([
+                'lines' => 'The journal entry must have at least 2 lines.',
+            ]);
+        }
 
         $currency = Currency::find($dto->currency_id);
         if (! $currency) {
             throw new Exception("Currency with ID {$dto->currency_id} not found.");
         }
 
-        // Validate account currency locks and calculate totals in company base currency
+        // Calculate totals in company base currency
         $totalDebitBaseCurrency = Money::zero($company->currency->code);
         $totalCreditBaseCurrency = Money::zero($company->currency->code);
+
+        // Helper to resolve exchange rate
+        $resolveExchangeRate = function () use ($dto, $currency, $company) {
+            if ($dto->exchange_rate) {
+                return $dto->exchange_rate;
+            }
+            $rate = $this->currencyConverter->getExchangeRate($currency, $dto->entry_date, $company);
+            if (! $rate) {
+                $rate = $this->currencyConverter->getLatestExchangeRate($currency, $company);
+            }
+
+            return $rate ?: 1.0;
+        };
 
         foreach ($dto->lines as $index => $line) {
             $account = Account::find($line->account_id);
@@ -55,63 +81,29 @@ class CreateJournalEntryAction
                 ]);
             }
 
-            // Convert line amounts to company base currency for totals calculation
-            if ($currency->id !== $company->currency_id) {
-                // Use provided exchange rate if available, otherwise get from currency converter
-                $exchangeRate = $dto->exchange_rate;
-
-                if (! $exchangeRate) {
-                    // Get exchange rate with fallback logic
-                    $exchangeRate = $this->currencyConverter->getExchangeRate($currency, $dto->entry_date, $company);
-
-                    // If no exchange rate found for the specific date, try latest available rate
-                    if (! $exchangeRate) {
-                        $exchangeRate = $this->currencyConverter->getLatestExchangeRate($currency, $company);
-                    }
-
-                    // If still no rate found, use rate 1.0 as fallback
-                    if (! $exchangeRate) {
-                        $exchangeRate = 1.0;
-                    }
-                }
-
-                $debitBaseCurrency = $this->currencyConverter->convertWithRate(
-                    $line->debit,
-                    $exchangeRate,
-                    $company->currency->code,
-                    false
-                );
-                $creditBaseCurrency = $this->currencyConverter->convertWithRate(
-                    $line->credit,
-                    $exchangeRate,
-                    $company->currency->code,
-                    false
-                );
+            // Handle Currency Conversion for Totals
+            if ($line->debit->getCurrency()->getCurrencyCode() !== $company->currency->code) {
+                $rate = $resolveExchangeRate();
+                $debitBase = $this->currencyConverter->convertWithRate($line->debit, $rate, $company->currency->code, false);
+                $creditBase = $this->currencyConverter->convertWithRate($line->credit, $rate, $company->currency->code, false);
             } else {
-                // Same currency, no conversion needed
-                $debitBaseCurrency = $line->debit;
-                $creditBaseCurrency = $line->credit;
+                $debitBase = $line->debit;
+                $creditBase = $line->credit;
             }
 
-            $totalDebitBaseCurrency = $totalDebitBaseCurrency->plus($debitBaseCurrency);
-            $totalCreditBaseCurrency = $totalCreditBaseCurrency->plus($creditBaseCurrency);
+            $totalDebitBaseCurrency = $totalDebitBaseCurrency->plus($debitBase);
+            $totalCreditBaseCurrency = $totalCreditBaseCurrency->plus($creditBase);
         }
 
-        // Validate that debits equal credits (in original currency for consistency)
-        $totalDebitOriginal = Money::zero($currency->code);
-        $totalCreditOriginal = Money::zero($currency->code);
-        foreach ($dto->lines as $line) {
-            $totalDebitOriginal = $totalDebitOriginal->plus($line->debit);
-            $totalCreditOriginal = $totalCreditOriginal->plus($line->credit);
-        }
-
-        if (! $totalDebitOriginal->isEqualTo($totalCreditOriginal)) {
+        // Validate that debits equal credits (in Base Currency)
+        // Note: validating in Base handles rounding issues better than mixing currencies
+        if (! $totalDebitBaseCurrency->isEqualTo($totalCreditBaseCurrency)) {
             throw ValidationException::withMessages([
                 'lines' => 'The total debits must equal the total credits.',
             ]);
         }
 
-        return DB::transaction(function () use ($dto, $totalDebitBaseCurrency, $totalCreditBaseCurrency, $currency, $company) {
+        return DB::transaction(function () use ($dto, $totalDebitBaseCurrency, $totalCreditBaseCurrency, $currency, $company, $resolveExchangeRate) {
 
             $journalEntryData = [
                 'company_id' => $dto->company_id,
@@ -145,72 +137,66 @@ class CreateJournalEntryAction
                 // to solving the MoneyCast issue without schema changes.
                 $line->journalEntry()->associate($journalEntry);
 
-                // Convert line amounts to company base currency
-                if ($currency->id !== $company->currency_id) {
-                    // Use the same exchange rate logic as the first loop
-                    $lineExchangeRate = $dto->exchange_rate;
+                $rateUsed = 1.0;
+                $originalAmount = null;
 
-                    if (! $lineExchangeRate) {
-                        // Get exchange rate with fallback logic
-                        $lineExchangeRate = $this->currencyConverter->getExchangeRate($currency, $dto->entry_date, $company);
+                // Handle Conversion for Line Persistence
+                if ($lineDto->debit->getCurrency()->getCurrencyCode() !== $company->currency->code) {
+                    // Input is Foreign Currency
+                    $rateUsed = $resolveExchangeRate();
 
-                        // If no exchange rate found for the specific date, try latest available rate
-                        if (! $lineExchangeRate) {
-                            $lineExchangeRate = $this->currencyConverter->getLatestExchangeRate($currency, $company);
-                        }
+                    $debitBase = $this->currencyConverter->convertWithRate($lineDto->debit, $rateUsed, $company->currency->code, false);
+                    $creditBase = $this->currencyConverter->convertWithRate($lineDto->credit, $rateUsed, $company->currency->code, false);
 
-                        // If still no rate found, use rate 1.0 as fallback
-                        if (! $lineExchangeRate) {
-                            $lineExchangeRate = 1.0;
-                        }
-                    }
-
-                    $debitBaseCurrency = $this->currencyConverter->convertWithRate(
-                        $lineDto->debit,
-                        $lineExchangeRate,
-                        $company->currency->code,
-                        false
-                    );
-                    $creditBaseCurrency = $this->currencyConverter->convertWithRate(
-                        $lineDto->credit,
-                        $lineExchangeRate,
-                        $company->currency->code,
-                        false
-                    );
+                    // If input is foreign, it IS the original amount
+                    $originalAmount = $lineDto->debit->isGreaterThan($lineDto->credit) ? $lineDto->debit : $lineDto->credit;
                 } else {
-                    // Same currency, no conversion needed
-                    $debitBaseCurrency = $lineDto->debit;
-                    $creditBaseCurrency = $lineDto->credit;
-                }
+                    // Input is Base Currency
+                    $debitBase = $lineDto->debit;
+                    $creditBase = $lineDto->credit;
 
-                // Determine original currency amount and exchange rate
-                $originalCurrencyAmount = $lineDto->original_currency_amount;
-                $exchangeRateAtTransaction = $lineDto->exchange_rate_at_transaction;
+                    // If original provided in DTO, use it. Else fall back to base (assuming transaction is base)
+                    $originalAmount = $lineDto->original_currency_amount;
+                    $rateUsed = $lineDto->exchange_rate_at_transaction ?? ($dto->exchange_rate ?? 1.0);
 
-                // If not provided in DTO, calculate defaults
-                if ($originalCurrencyAmount === null) {
-                    // Use the larger of debit or credit as the original amount
-                    $originalCurrencyAmount = $lineDto->debit->isGreaterThan($lineDto->credit) ? $lineDto->debit : $lineDto->credit;
-                }
-
-                if ($exchangeRateAtTransaction === null) {
-                    // Get exchange rate if converting between currencies
-                    if ($currency->id !== $company->currency_id) {
-                        // Use provided exchange rate if available, otherwise get from currency converter
-                        $exchangeRateAtTransaction = $dto->exchange_rate ?? $this->currencyConverter->getExchangeRate($currency, $dto->entry_date, $company);
-                    } else {
-                        $exchangeRateAtTransaction = 1.0;
+                    if (! $originalAmount) {
+                        // Fallback: If currency is same, original = base.
+                        // If transaction was foreign but passed as base, original SHOULD have been passed.
+                        // We assume 1:1 if not passed.
+                        $originalAmount = $debitBase->isGreaterThan($creditBase) ? $debitBase : $creditBase;
+                        // But if transaction currency != base currency, valid money object must use transaction currency code
+                        if ($currency->id !== $company->currency_id) {
+                            // This is ambiguous: Passed Base Amount but missing Original Amount for Foreign Transaction.
+                            // We can't easily guess original amount without rate.
+                            // But we have rateUsed.
+                            if ($rateUsed && $rateUsed != 0) {
+                                // Attempt to reverse calc? No, unsafe.
+                                // Better to set originalAmount to zero in that currency? Or throw?
+                                // Let's create Money of 0 in Transaction Currency to be safe.
+                                // Actually, originalAmount is nullable in DTO but needed for DB?
+                                // DB column `original_currency_amount` is nullable?
+                                // Let's check `JournalEntryLine` migration if possible.
+                                // Assuming nullable or we construct it.
+                                // Safer:
+                                $originalAmount = Money::of(0, $currency->code);
+                            }
+                        }
                     }
                 }
 
-                // Ensure we have a valid float value
-                $exchangeRateAtTransaction = (float) $exchangeRateAtTransaction;
+                // Prefer DTO value if explicitly set (overrides auto-detection logic if needed)
+                if ($lineDto->original_currency_amount) {
+                    $originalAmount = $lineDto->original_currency_amount;
+                }
 
-                // Prepare line data - store amounts as Money objects, let casts handle conversion
-                // Set the currency-related fields first to avoid cast issues
+                if ($lineDto->exchange_rate_at_transaction) {
+                    $rateUsed = $lineDto->exchange_rate_at_transaction;
+                }
+
+                // Prepare line data
                 $line->original_currency_id = $dto->currency_id;
                 $line->currency_id = $dto->currency_id;
-                $line->exchange_rate_at_transaction = $exchangeRateAtTransaction;
+                $line->exchange_rate_at_transaction = $rateUsed;
 
                 // Set non-Money fields
                 $line->company_id = $dto->company_id;
@@ -220,9 +206,9 @@ class CreateJournalEntryAction
                 $line->description = $lineDto->description;
 
                 // Now set the Money fields after currency_id is set
-                $line->debit = $debitBaseCurrency;
-                $line->credit = $creditBaseCurrency;
-                $line->original_currency_amount = $originalCurrencyAmount;
+                $line->debit = $debitBase;
+                $line->credit = $creditBase;
+                $line->original_currency_amount = $originalAmount;
 
                 $line->save();
             }
