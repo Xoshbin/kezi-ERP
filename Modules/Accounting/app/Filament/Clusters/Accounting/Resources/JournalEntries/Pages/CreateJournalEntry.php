@@ -34,14 +34,30 @@ class CreateJournalEntry extends CreateRecord
                     throw new InvalidArgumentException('Currency not found');
                 }
             }
+            $company = Filament::getTenant();
+            $baseCurrency = $company->currency;
+
+            $rate = (float) ($data['exchange_rate'] ?? 1);
+
             foreach ($data['lines'] as $line) {
+                $inputDebit = (float) ($line['debit'] ?? 0);
+                $inputCredit = (float) ($line['credit'] ?? 0);
+
+                // Calculate Base Amounts
+                $baseDebit = $inputDebit * $rate;
+                $baseCredit = $inputCredit * $rate;
+
+                $originalAmount = ($inputDebit > 0) ? $inputDebit : $inputCredit;
+
                 $lineDTOs[] = new CreateJournalEntryLineDTO(
                     account_id: $line['account_id'],
-                    debit: Money::of($line['debit'] ?? 0, $currency->code),
-                    credit: Money::of($line['credit'] ?? 0, $currency->code),
+                    debit: Money::of($baseDebit, $baseCurrency->code),
+                    credit: Money::of($baseCredit, $baseCurrency->code),
                     description: $line['description'] ?? null,
                     partner_id: $line['partner_id'] ?? null,
-                    analytic_account_id: $line['analytic_account_id'] ?? null
+                    analytic_account_id: $line['analytic_account_id'] ?? null,
+                    original_currency_amount: Money::of($originalAmount, $currency->code),
+                    exchange_rate_at_transaction: $rate,
                 );
             }
         }

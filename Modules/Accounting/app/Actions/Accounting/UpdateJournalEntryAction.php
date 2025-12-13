@@ -40,13 +40,19 @@ class UpdateJournalEntryAction
         if (! $currency) {
             throw new InvalidArgumentException('Currency not found');
         }
-        $totalDebit = Money::zero($currency->code);
-        $totalCredit = Money::zero($currency->code);
+        $companyCurrency = $company->currency;
+        if (! $companyCurrency) {
+            throw new InvalidArgumentException('Company base currency not found');
+        }
+
+        $totalDebit = Money::zero($companyCurrency->code);
+        $totalCredit = Money::zero($companyCurrency->code);
 
         foreach ($dto->lines as $line) {
             // Handle different types of input for debit and credit
-            $debitMoney = $this->convertToMoney($line->debit, $currency->code);
-            $creditMoney = $this->convertToMoney($line->credit, $currency->code);
+            // These MUST be in Company Base Currency
+            $debitMoney = $this->convertToMoney($line->debit, $companyCurrency->code);
+            $creditMoney = $this->convertToMoney($line->credit, $companyCurrency->code);
 
             $totalDebit = $totalDebit->plus($debitMoney);
             $totalCredit = $totalCredit->plus($creditMoney);
@@ -59,7 +65,7 @@ class UpdateJournalEntryAction
         }
 
         // 2. Perform the update within a database transaction.
-        return DB::transaction(function () use ($dto, $journalEntry, $currency) {
+        return DB::transaction(function () use ($dto, $journalEntry, $currency, $companyCurrency) {
             // Update the parent model's main fields
             $journalEntry->update([
                 'journal_id' => $dto->journal_id,
@@ -90,18 +96,24 @@ class UpdateJournalEntryAction
                     // Now, fill the attributes. The MoneyCast on 'debit' and 'credit' will be
                     // triggered here, but it can now successfully call getCurrencyIdAttribute()
                     // because the journalEntry relationship is established.
+
+                    // DEBIT/CREDIT are in Base Currency
+                    $debitMoney = $this->convertToMoney($lineDto->debit, $companyCurrency->code);
+                    $creditMoney = $this->convertToMoney($lineDto->credit, $companyCurrency->code);
+
+                    // Original Currency Amount
+                    $originalMoney = $this->convertToMoney($lineDto->original_currency_amount ?? 0, $currency->code);
+
                     $line->fill([
                         'company_id' => $journalEntry->company_id,
                         'account_id' => $lineDto->account_id,
                         'partner_id' => $lineDto->partner_id,
                         'analytic_account_id' => $lineDto->analytic_account_id,
                         'description' => $lineDto->description,
-                        'debit' => Money::of($lineDto->debit, $currency->code),
-                        'credit' => Money::of($lineDto->credit, $currency->code),
-                        'original_currency_amount' => Money::of(
-                            max($lineDto->debit, $lineDto->credit),
-                            $currency->code
-                        ),
+                        'debit' => $debitMoney,
+                        'credit' => $creditMoney,
+                        'original_currency_amount' => $originalMoney,
+                        'exchange_rate_at_transaction' => $lineDto->exchange_rate_at_transaction ?? 1.0,
                     ]);
 
                     // Finally, save the fully prepared line.

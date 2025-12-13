@@ -71,14 +71,18 @@ class Sequence extends Model
      */
     public function getNextNumber(): string
     {
-        // Use atomic increment to prevent race conditions
-        $this->increment('current_number');
+        return \Illuminate\Support\Facades\DB::transaction(function () {
+            // Lock the row to ensure exclusive access
+            /** @var Sequence $sequence */
+            $sequence = static::where('id', $this->id)->lockForUpdate()->first();
 
-        // Reload to get the updated value
-        $this->refresh();
+            // Increment locally and save
+            $sequence->current_number++;
+            $sequence->save();
 
-        // Format the number with prefix and padding
-        return $this->prefix.'-'.str_pad((string) $this->current_number, $this->padding, '0', STR_PAD_LEFT);
+            // Format the number with prefix and padding
+            return $sequence->prefix.'-'.str_pad((string) $sequence->current_number, $sequence->padding, '0', STR_PAD_LEFT);
+        });
     }
 
     /**

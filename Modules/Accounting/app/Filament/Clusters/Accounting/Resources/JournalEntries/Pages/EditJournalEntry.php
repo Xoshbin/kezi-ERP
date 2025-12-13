@@ -6,6 +6,7 @@ use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -140,6 +141,18 @@ class EditJournalEntry extends EditRecord
         $data['total_credit'] = $totalCredit->getAmount()->__toString();
         $data['balance'] = $totalDebit->minus($totalCredit)->getAmount()->__toString();
 
+        // Populate exchange rate
+        // We assume the rate is consistent across lines for a single transaction in this simple model
+        $exchangeRate = 1.0;
+        if ($record->lines->isNotEmpty()) {
+            if ($record->currency_id != $record->company->currency_id) {
+                // Determine rate from the first non-base currency line if possible, or just the first line
+                $firstMultiCurrencyLine = $record->lines->first(fn ($line) => $line->original_currency_id != $record->company->currency_id);
+                $exchangeRate = $firstMultiCurrencyLine?->exchange_rate_at_transaction ?? $record->lines->first()->exchange_rate_at_transaction ?? 1.0;
+            }
+        }
+        $data['exchange_rate'] = $exchangeRate;
+
         return $data;
     }
 
@@ -153,14 +166,28 @@ class EditJournalEntry extends EditRecord
 
         // Handle case where lines might not be present in the data (e.g., when calling actions)
         if (isset($data['lines']) && is_array($data['lines'])) {
+            $company = Filament::getTenant(); // Context is always tenant
+            $rate = (float) ($data['exchange_rate'] ?? 1);
+
             foreach ($data['lines'] as $line) {
+                $inputDebit = (float) ($line['debit'] ?? 0);
+                $inputCredit = (float) ($line['credit'] ?? 0);
+
+                // Calculate Base Amounts
+                $baseDebit = $inputDebit * $rate;
+                $baseCredit = $inputCredit * $rate;
+
+                $originalAmount = ($inputDebit > 0) ? $inputDebit : $inputCredit;
+
                 $lineDTOs[] = new UpdateJournalEntryLineDTO(
                     account_id: $line['account_id'],
-                    debit: $this->convertMoneyToString($line['debit']),
-                    credit: $this->convertMoneyToString($line['credit']),
+                    debit: (string) $baseDebit,
+                    credit: (string) $baseCredit,
                     description: $line['description'] ?? null,
                     partner_id: $line['partner_id'] ?? null,
-                    analytic_account_id: $line['analytic_account_id'] ?? null
+                    analytic_account_id: $line['analytic_account_id'] ?? null,
+                    original_currency_amount: (string) $originalAmount,
+                    exchange_rate_at_transaction: $rate
                 );
             }
         } else {
@@ -173,7 +200,9 @@ class EditJournalEntry extends EditRecord
                     credit: $this->convertMoneyToString($line->credit),
                     description: $line->description,
                     partner_id: $line->partner_id,
-                    analytic_account_id: $line->analytic_account_id
+                    analytic_account_id: $line->analytic_account_id,
+                    original_currency_amount: $this->convertMoneyToString($line->original_currency_amount),
+                    exchange_rate_at_transaction: $line->exchange_rate_at_transaction
                 );
             }
         }

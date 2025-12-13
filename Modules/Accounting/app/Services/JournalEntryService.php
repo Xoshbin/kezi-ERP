@@ -15,12 +15,14 @@ use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Services\CurrencyConverterService;
+use Modules\Foundation\Services\SequenceService;
 
 class JournalEntryService
 {
     public function __construct(
         protected Accounting\LockDateService $lockDateService,
         protected CurrencyConverterService $currencyConverter,
+        protected SequenceService $sequenceService,
     ) {}
 
     public function post(JournalEntry $journalEntry): bool
@@ -49,6 +51,9 @@ class JournalEntryService
         // Add other checks here (lock dates, etc.)
 
         // 2. Update the totals and post the entry.
+        if (empty($journalEntry->entry_number)) {
+            $journalEntry->entry_number = $this->sequenceService->getNextJournalEntryNumber($journalEntry->company);
+        }
         $journalEntry->total_debit = $totalDebit;
         $journalEntry->total_credit = $totalCredit;
         $journalEntry->is_posted = true;
