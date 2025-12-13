@@ -22,7 +22,7 @@ class ViewTaxReport extends Page
 
     public static function shouldRegisterNavigation(): bool
     {
-        return false;
+        return true;
     }
 
     protected static ?string $cluster = AccountingCluster::class;
