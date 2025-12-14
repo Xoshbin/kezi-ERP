@@ -28,6 +28,23 @@ class ViewSalesOrder extends ViewRecord
         return [
             Actions\EditAction::make(),
 
+            Action::make('confirm')
+                ->label(__('sales::sales_orders.actions.confirm'))
+                ->icon('heroicon-o-check-circle')
+                ->color('success')
+                ->requiresConfirmation()
+                ->action(function () {
+                    app(\Modules\Sales\Actions\Sales\ConfirmSalesOrderAction::class)->execute($this->record, auth()->user());
+
+                    Notification::make()
+                        ->title(__('sales::sales_orders.notifications.confirmed'))
+                        ->success()
+                        ->send();
+
+                    $this->refreshFormData(['status']);
+                })
+                ->visible(fn () => $this->record->status === \Modules\Sales\Enums\Sales\SalesOrderStatus::Draft),
+
             Action::make('create_invoice')
                 ->label(__('sales::sales_orders.actions.create_invoice'))
                 ->icon('heroicon-o-document-text')
