@@ -165,7 +165,80 @@ class PurchaseOrderForm
                                     ->preload()
                                     ->default(fn () => Auth::user()?->company?->currency_id)
                                     ->required()
-                                    ->live(),
+                                    ->live()
+                                    ->afterStateUpdated(function (callable $set, $state) {
+                                        $currencyId = $state;
+                                        if (! $currencyId) {
+                                            $set('exchange_rate_at_creation', 1);
+
+                                            return;
+                                        }
+
+                                        $company = Filament::getTenant();
+                                        if (! $company) {
+                                            // Fallback for tests or unexpected state
+                                            $company = Auth::user()?->company;
+                                        }
+
+                                        $currency = Currency::find($currencyId);
+                                        $baseCurrency = $company?->currency;
+
+                                        if ($currency && $baseCurrency) {
+                                            if ($currency->id === $baseCurrency->id) {
+                                                $set('exchange_rate_at_creation', 1);
+                                            } else {
+                                                $service = app(\Modules\Foundation\Services\CurrencyConverterService::class);
+                                                // We want the rate that converts from Foreign -> Base
+                                                // So we can do: Base Price / Rate = Foreign Price
+                                                // Wait.
+                                                // If we have 1500 IQD (Base) / 1 USD (Foreign).
+                                                // Rate is 1500.
+                                                // Product Price = 3000 IQD.
+                                                // Foreign Price = 3000 / 1500 = 2 USD.
+                                                // So we need the rate that represents "How much Base currency is 1 unit of Foreign currency".
+                                                // This is exactly what CurrencyRate stores (usually) and what getExchangeRate returns.
+                                                $rate = $service->getExchangeRate($currency, now(), $company) ?? $service->getLatestExchangeRate($currency, $company);
+                                                $set('exchange_rate_at_creation', $rate ?? 1);
+                                            }
+                                        }
+                                    }),
+
+                                TextInput::make('exchange_rate_at_creation')
+                                    ->label(__('purchase::purchase_orders.fields.exchange_rate'))
+                                    ->numeric()
+                                    ->required()
+                                    ->default(1)
+                                    ->live()
+                                    ->visible(function (callable $get) {
+                                        $currencyId = $get('currency_id');
+                                        $company = Filament::getTenant();
+                                        if (! $company) {
+                                            $company = Auth::user()?->company;
+                                        }
+
+                                        return $currencyId && $company instanceof \App\Models\Company && $currencyId != $company->currency_id;
+                                    })
+                                    ->helperText(function (callable $get) {
+                                        $currencyId = $get('currency_id');
+                                        $company = Filament::getTenant();
+                                        if (! $company) {
+                                            $company = Auth::user()?->company;
+                                        }
+
+                                        if ($currencyId && $company instanceof \App\Models\Company && $currencyId !== $company->currency_id) {
+                                            $currency = Currency::find($currencyId);
+                                            if ($currency) {
+                                                $service = app(\Modules\Foundation\Services\CurrencyConverterService::class);
+                                                $latestRate = $service->getExchangeRate($currency, now(), $company) ?? $service->getLatestExchangeRate($currency, $company);
+
+                                                if ($latestRate) {
+                                                    return __('purchase::purchase_orders.help.exchange_rate').' '.__('purchase::purchase_orders.help.current_rate', ['rate' => $latestRate]);
+                                                }
+                                            }
+                                        }
+
+                                        return __('purchase::purchase_orders.help.exchange_rate');
+                                    }),
                             ]),
                     ]),
 
@@ -212,17 +285,39 @@ class PurchaseOrderForm
                                     ->preload()
                                     ->required()
                                     ->reactive()
-                                    ->afterStateUpdated(function (callable $set, $state) {
+                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
                                         if ($state) {
                                             $product = Product::find($state);
                                             if ($product) {
                                                 $set('description', $product->description ?: $product->name);
-                                                // Convert Money object to string for MoneyInput component
+
+                                                // Get the exchange rate from the form state
+                                                $exchangeRate = (float) $get('../../exchange_rate_at_creation');
+                                                if ($exchangeRate <= 0) {
+                                                    $exchangeRate = 1;
+                                                }
+
+                                                // Product price is in base currency
                                                 $unitPrice = $product->unit_price;
+
                                                 if ($unitPrice instanceof Money) {
-                                                    $set('unit_price', $unitPrice->getAmount()->__toString());
+                                                    // Convert Money object to float
+                                                    $amount = $unitPrice->getAmount()->toFloat();
                                                 } else {
-                                                    $set('unit_price', $unitPrice);
+                                                    $amount = (float) $unitPrice;
+                                                }
+
+                                                // Calculate price in foreign currency: Base Price / Exchange Rate
+                                                // Example: 2,500,000 IQD / 1500 Rate = 1666.66 USD
+                                                // If rate is 1 (Base Currency), it stays standard.
+
+                                                // Ensure we don't divide by zero
+                                                if ($exchangeRate != 0) {
+                                                    $convertedPrice = $amount / $exchangeRate;
+                                                    // Format to appropriate decimals? MoneyInput handles it, but let's pass a clean float/string
+                                                    $set('unit_price', (string) $convertedPrice);
+                                                } else {
+                                                    $set('unit_price', 0);
                                                 }
                                             }
                                         }
@@ -290,6 +385,7 @@ class PurchaseOrderForm
                                     ->step(0.01)
                                     ->minValue(0.01)
                                     ->live(onBlur: true)
+                                    ->extraInputAttributes(['onclick' => 'this.select()'])
                                     ->afterStateUpdated(function (callable $set, $state, callable $get) {
                                         static::updateTotals($set, $get);
                                     })
