@@ -3,6 +3,7 @@
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Foundation\Models\Partner;
+use Modules\Product\Models\Product;
 use Modules\Sales\Enums\Sales\SalesOrderStatus;
 use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\EditSalesOrder;
 use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\ViewSalesOrder;
@@ -36,12 +37,29 @@ it('has confirm action on view page', function () {
         'created_by_user_id' => $this->user->id,
     ]);
 
+    /** @var Product $product */
+    $product = Product::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
+    ]);
+
+    $salesOrder->lines()->create([
+        'product_id' => $product->id,
+        'quantity' => 10,
+        'unit_price' => Money::of(100, $this->company->currency->code),
+        'subtotal' => Money::of(1000, $this->company->currency->code),
+        'total_line_tax' => Money::of(0, $this->company->currency->code),
+        'total' => Money::of(1000, $this->company->currency->code),
+        'company_id' => $this->company->id,
+        'description' => 'Test Product Line',
+    ]);
+
     livewire(ViewSalesOrder::class, [
         'record' => $salesOrder->getRouteKey(),
     ])
         ->assertActionExists('confirm')
         ->callAction('confirm')
-        ->assertNotified(); // Check for notification instead of redirect if we standardized it
+        ->assertNotified();
 
     expect($salesOrder->refresh()->status)->toBe(SalesOrderStatus::Confirmed);
 });
@@ -64,13 +82,30 @@ it('confirms sales order from edit page without redirecting', function () {
         'created_by_user_id' => $this->user->id,
     ]);
 
+    /** @var Product $product */
+    $product = Product::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
+    ]);
+
+    $salesOrder->lines()->create([
+        'product_id' => $product->id,
+        'quantity' => 10,
+        'unit_price' => Money::of(100, $this->company->currency->code),
+        'subtotal' => Money::of(1000, $this->company->currency->code),
+        'total_line_tax' => Money::of(0, $this->company->currency->code),
+        'total' => Money::of(1000, $this->company->currency->code),
+        'company_id' => $this->company->id,
+        'description' => 'Test Product Line',
+    ]);
+
     livewire(EditSalesOrder::class, [
         'record' => $salesOrder->getRouteKey(),
     ])
         ->assertActionExists('confirm')
         ->callAction('confirm')
-        ->assertNotified() // Should notify success
-        ->assertStatus(200); // Should stay on page (no redirect exception)
+        ->assertNotified()
+        ->assertStatus(200);
 
     expect($salesOrder->refresh()->status)->toBe(SalesOrderStatus::Confirmed);
 });
