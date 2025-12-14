@@ -95,9 +95,6 @@ class CreateDeliveryFromSalesOrderAction
 
                         $stockMoves->push($stockMove);
 
-                        // Update the sales order line's delivered quantity
-                        $line->updateDeliveredQuantity($line->quantity_delivered + $remainingQuantity);
-
                         // If we're in automatic mode, mark the move as done and dispatch event
                         if ($dto->autoConfirm) {
                             $stockMove->update(['status' => StockMoveStatus::Done]);
@@ -196,7 +193,12 @@ class CreateDeliveryFromSalesOrderAction
                 $salesOrder->status = SalesOrderStatus::FullyDelivered;
             }
         } else {
-            $salesOrder->status = SalesOrderStatus::PartiallyDelivered;
+            // Check if any quantity has been delivered
+            $hasDelivery = $salesOrder->lines->sum('quantity_delivered') > 0;
+
+            $salesOrder->status = $hasDelivery
+                ? SalesOrderStatus::PartiallyDelivered
+                : SalesOrderStatus::Confirmed;
         }
 
         $salesOrder->save();
