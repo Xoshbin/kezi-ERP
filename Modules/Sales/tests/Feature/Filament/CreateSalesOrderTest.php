@@ -66,3 +66,38 @@ it('can create a sales order', function () {
     expect($salesOrder->total_amount->getAmount()->toFloat())->toBe(200.0);
     expect($salesOrder->created_by_user_id)->toBe($this->user->id); // Verify user is set
 });
+
+it('auto populates unit price when product is selected', function () {
+    /** @var Partner $customer */
+    $customer = Partner::factory()->customer()->create([
+        'company_id' => $this->company->id,
+    ]);
+
+    /** @var Product $product */
+    $product = Product::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'Test Product For Auto Populate',
+        'unit_price' => Money::of(150, $this->company->currency->code),
+    ]);
+
+    $uuid = (string) \Illuminate\Support\Str::uuid();
+
+    livewire(CreateSalesOrder::class)
+        ->fillForm([
+            'customer_id' => $customer->id,
+            'currency_id' => $this->company->currency_id,
+        ])
+        // Manually set the lines state with a UUID key to simulate adding a row
+        ->set('data.lines', [
+            $uuid => [
+                'product_id' => null,
+                'quantity' => 1,
+            ],
+        ])
+        // Now set the product_id on that specific line to trigger the auto-population logic
+        ->set("data.lines.$uuid.product_id", $product->id)
+        // Check if unit_price is populated correctly
+        ->assertFormSet([
+            "lines.$uuid.unit_price" => '150.000', // Expecting formatted string or just 150
+        ]);
+});

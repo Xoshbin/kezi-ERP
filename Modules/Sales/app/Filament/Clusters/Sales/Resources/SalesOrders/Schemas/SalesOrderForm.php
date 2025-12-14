@@ -190,9 +190,11 @@ class SalesOrderForm
                                             foreach ($lines as $uuid => $line) {
                                                 if (isset($line['product_id'])) {
                                                     $product = Product::find($line['product_id']);
-                                                    // For Sales Orders, we use sale_price
-                                                    if ($product && $product->sale_price) {
-                                                        $basePrice = $product->sale_price->getAmount()->toBigDecimal();
+                                                    // For Sales Orders, we use unit_price
+                                                    if ($product && $product->unit_price) {
+                                                        $basePrice = $product->unit_price instanceof \Brick\Money\Money
+                                                            ? $product->unit_price->getAmount()->toBigDecimal()
+                                                            : \Brick\Math\BigDecimal::of($product->unit_price);
 
                                                         if ($newRate == 1.0) {
                                                             // Reverting to base currency
@@ -301,7 +303,14 @@ class SalesOrderForm
 
                                                 // Handle Price Conversion
                                                 $exchangeRate = (float) $get('../../exchange_rate_at_creation') ?: 1.0;
-                                                $basePrice = $product->sale_price?->getAmount()->toBigDecimal() ?? \Brick\Math\BigDecimal::zero();
+
+                                                // Prepare base price from Product unit_price
+                                                $basePrice = \Brick\Math\BigDecimal::zero();
+                                                if ($product->unit_price) {
+                                                    $basePrice = $product->unit_price instanceof \Brick\Money\Money
+                                                        ? $product->unit_price->getAmount()->toBigDecimal()
+                                                        : \Brick\Math\BigDecimal::of($product->unit_price);
+                                                }
 
                                                 if ($exchangeRate > 0 && $exchangeRate != 1.0) {
                                                     $converted = $basePrice->dividedBy($exchangeRate, 6, \Brick\Math\RoundingMode::HALF_UP);
