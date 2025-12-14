@@ -34,10 +34,10 @@ class CreateSalesOrder extends CreateRecord
 
         // Create the main DTO
         $dto = new CreateSalesOrderDTO(
-            company_id: $data['company_id'],
+            company_id: $data['company_id'] ?? \Filament\Facades\Filament::getTenant()->id,
             customer_id: $data['customer_id'],
             currency_id: $data['currency_id'],
-            created_by_user_id: $data['created_by_user_id'],
+            created_by_user_id: $data['created_by_user_id'] ?? auth()->id(),
             reference: $data['reference'] ?? null,
             so_date: Carbon::parse($data['so_date']),
             expected_delivery_date: $data['expected_delivery_date'] ? Carbon::parse($data['expected_delivery_date']) : null,
