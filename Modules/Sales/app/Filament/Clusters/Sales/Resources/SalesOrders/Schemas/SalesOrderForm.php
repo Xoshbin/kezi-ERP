@@ -135,7 +135,101 @@ class SalesOrderForm
                                     ->searchable()
                                     ->preload()
                                     ->required()
-                                    ->default(fn () => Filament::getTenant()?->currency_id),
+                                    ->default(fn () => Filament::getTenant()?->currency_id)
+                                    ->live()
+                                    ->afterStateUpdated(function (callable $set, callable $get, $state) {
+                                        $currencyId = $state;
+                                        if (! $currencyId) {
+                                            $set('exchange_rate_at_creation', 1);
+
+                                            return;
+                                        }
+
+                                        $company = Filament::getTenant();
+                                        if (! $company) {
+                                            $company = Auth::user()?->company;
+                                        }
+
+                                        $currency = \Modules\Foundation\Models\Currency::find($currencyId);
+                                        $baseCurrency = $company?->currency;
+                                        $newRate = 1.0;
+
+                                        if ($currency && $baseCurrency) {
+                                            if ($currency->id === $baseCurrency->id) {
+                                                $set('exchange_rate_at_creation', 1);
+                                                $newRate = 1.0;
+                                            } else {
+                                                $service = app(\Modules\Foundation\Services\CurrencyConverterService::class);
+                                                $rate = $service->getExchangeRate($currency, now(), $company) ?? $service->getLatestExchangeRate($currency, $company);
+                                                $newRate = $rate ?? 1.0;
+                                                $set('exchange_rate_at_creation', $newRate);
+                                            }
+                                        }
+
+                                        // Recalculate prices for existing lines
+                                        $lines = $get('lines') ?? [];
+                                        if (! empty($lines)) {
+                                            foreach ($lines as $uuid => $line) {
+                                                if (isset($line['product_id'])) {
+                                                    $product = Product::find($line['product_id']);
+                                                    // For Sales Orders, we use sale_price
+                                                    if ($product && $product->sale_price) {
+                                                        $basePrice = $product->sale_price->getAmount()->toBigDecimal();
+
+                                                        if ($newRate == 1.0) {
+                                                            // Reverting to base currency
+                                                            $lines[$uuid]['unit_price'] = (string) $basePrice;
+                                                        } else {
+                                                            // Converting to foreign currency
+                                                            if ($newRate > 0) {
+                                                                $converted = \Brick\Math\BigDecimal::of($basePrice)->dividedBy($newRate, 6, \Brick\Math\RoundingMode::HALF_UP);
+                                                                $lines[$uuid]['unit_price'] = (string) $converted;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            $set('lines', $lines);
+                                        }
+                                    }),
+
+                                TextInput::make('exchange_rate_at_creation')
+                                    ->label(__('sales::sales_orders.fields.exchange_rate'))
+                                    ->numeric()
+                                    ->required()
+                                    ->default(1)
+                                    ->live()
+                                    ->visible(function (callable $get) {
+                                        $currencyId = $get('currency_id');
+                                        $company = Filament::getTenant();
+                                        if (! $company) {
+                                            $company = Auth::user()?->company;
+                                        }
+
+                                        return $currencyId && $company instanceof \App\Models\Company && $currencyId != $company->currency_id;
+                                    })
+                                    ->helperText(function (callable $get) {
+                                        $currencyId = $get('currency_id');
+                                        $company = Filament::getTenant();
+                                        if (! $company) {
+                                            $company = Auth::user()?->company;
+                                        }
+
+                                        if ($currencyId && $company instanceof \App\Models\Company && $currencyId !== $company->currency_id) {
+                                            $currency = \Modules\Foundation\Models\Currency::find($currencyId);
+                                            if ($currency) {
+                                                $service = app(\Modules\Foundation\Services\CurrencyConverterService::class);
+                                                $latestRate = $service->getExchangeRate($currency, now(), $company) ?? $service->getLatestExchangeRate($currency, $company);
+
+                                                if ($latestRate) {
+                                                    // Using purchase keys as generic fallback or similar structure should typically be in sales lang but using hardcoded or generic if key missing
+                                                    return __('sales::sales_orders.help.exchange_rate') ?? 'Exchange Rate';
+                                                }
+                                            }
+                                        }
+
+                                        return __('sales::sales_orders.help.exchange_rate') ?? 'Exchange Rate';
+                                    }),
                             ]),
 
                         Grid::make(2)
@@ -171,12 +265,22 @@ class SalesOrderForm
                                     ->preload()
                                     ->required()
                                     ->live()
-                                    ->afterStateUpdated(function ($state, callable $set) {
+                                    ->afterStateUpdated(function (callable $set, callable $get, $state) {
                                         if ($state) {
                                             $product = Product::find($state);
                                             if ($product) {
                                                 $set('description', $product->name);
-                                                $set('unit_price', $product->sale_price?->getAmount() ?? 0);
+
+                                                // Handle Price Conversion
+                                                $exchangeRate = (float) $get('../../exchange_rate_at_creation') ?: 1.0;
+                                                $basePrice = $product->sale_price?->getAmount()->toBigDecimal() ?? \Brick\Math\BigDecimal::zero();
+
+                                                if ($exchangeRate > 0 && $exchangeRate != 1.0) {
+                                                    $converted = $basePrice->dividedBy($exchangeRate, 6, \Brick\Math\RoundingMode::HALF_UP);
+                                                    $set('unit_price', (string) $converted);
+                                                } else {
+                                                    $set('unit_price', (string) $basePrice);
+                                                }
                                             }
                                         }
                                     })
@@ -198,7 +302,8 @@ class SalesOrderForm
                                     ->required()
                                     ->default(1)
                                     ->minValue(0.01)
-                                    ->step(0.01),
+                                    ->step(0.01)
+                                    ->extraInputAttributes(['onclick' => 'this.select()']),
 
                                 MoneyInput::make('unit_price')
                                     ->label(__('sales::sales_orders.fields.unit_price'))
