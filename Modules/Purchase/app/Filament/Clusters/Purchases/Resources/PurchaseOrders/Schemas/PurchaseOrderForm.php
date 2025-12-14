@@ -166,7 +166,7 @@ class PurchaseOrderForm
                                     ->default(fn () => Auth::user()?->company?->currency_id)
                                     ->required()
                                     ->live()
-                                    ->afterStateUpdated(function (callable $set, $state) {
+                                    ->afterStateUpdated(function (callable $set, callable $get, $state) {
                                         $currencyId = $state;
                                         if (! $currencyId) {
                                             $set('exchange_rate_at_creation', 1);
@@ -176,30 +176,52 @@ class PurchaseOrderForm
 
                                         $company = Filament::getTenant();
                                         if (! $company) {
-                                            // Fallback for tests or unexpected state
                                             $company = Auth::user()?->company;
                                         }
 
                                         $currency = Currency::find($currencyId);
                                         $baseCurrency = $company?->currency;
+                                        $newRate = 1.0;
 
                                         if ($currency && $baseCurrency) {
                                             if ($currency->id === $baseCurrency->id) {
                                                 $set('exchange_rate_at_creation', 1);
+                                                $newRate = 1.0;
                                             } else {
                                                 $service = app(\Modules\Foundation\Services\CurrencyConverterService::class);
-                                                // We want the rate that converts from Foreign -> Base
-                                                // So we can do: Base Price / Rate = Foreign Price
-                                                // Wait.
-                                                // If we have 1500 IQD (Base) / 1 USD (Foreign).
-                                                // Rate is 1500.
-                                                // Product Price = 3000 IQD.
-                                                // Foreign Price = 3000 / 1500 = 2 USD.
-                                                // So we need the rate that represents "How much Base currency is 1 unit of Foreign currency".
-                                                // This is exactly what CurrencyRate stores (usually) and what getExchangeRate returns.
                                                 $rate = $service->getExchangeRate($currency, now(), $company) ?? $service->getLatestExchangeRate($currency, $company);
-                                                $set('exchange_rate_at_creation', $rate ?? 1);
+                                                $newRate = $rate ?? 1.0;
+                                                $set('exchange_rate_at_creation', $newRate);
                                             }
+                                        }
+
+                                        // Recalculate prices for existing lines
+                                        $lines = $get('lines') ?? [];
+                                        if (! empty($lines)) {
+                                            foreach ($lines as $uuid => $line) {
+                                                if (isset($line['product_id'])) {
+                                                    $product = Product::find($line['product_id']);
+                                                    if ($product && $product->unit_price) {
+                                                        // Get the underlying decimal amount from the Money object or value
+                                                        $basePrice = $product->unit_price instanceof Money
+                                                            ? $product->unit_price->getAmount()->toBigDecimal()
+                                                            : $product->unit_price;
+
+                                                        if ($newRate == 1.0) {
+                                                            // Reverting to base currency: use original base price
+                                                            $lines[$uuid]['unit_price'] = (string) $basePrice;
+                                                        } else {
+                                                            // Converting to foreign currency: Base / Rate
+                                                            // We use standard division here. In a robust system, we might check for 0.
+                                                            if ($newRate > 0) {
+                                                                $converted = \Brick\Math\BigDecimal::of($basePrice)->dividedBy($newRate, 6, \Brick\Math\RoundingMode::HALF_UP);
+                                                                $lines[$uuid]['unit_price'] = (string) $converted;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            $set('lines', $lines);
                                         }
                                     }),
 
