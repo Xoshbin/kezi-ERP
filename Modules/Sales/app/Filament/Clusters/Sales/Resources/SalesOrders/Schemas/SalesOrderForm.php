@@ -111,9 +111,27 @@ class SalesOrderForm
 
                                         return null;
                                     })
-                                    ->native(false),
+                                    ->native(false)
+                                    ->required(),
                             ]),
 
+                        Grid::make(2)
+                            ->schema([
+                                DatePicker::make('so_date')
+                                    ->label(__('sales::sales_orders.fields.order_date'))
+                                    ->required()
+                                    ->default(now())
+                                    ->native(false),
+
+                                TextInput::make('reference')
+                                    ->label(__('sales::sales_orders.fields.reference'))
+                                    ->maxLength(255)
+                                    ->helperText(__('sales::sales_orders.help.reference')),
+                            ]),
+                    ]),
+
+                Section::make(__('sales::sales_orders.sections.customer_details'))
+                    ->schema([
                         Grid::make(2)
                             ->schema([
                                 Select::make('customer_id')
@@ -222,41 +240,51 @@ class SalesOrderForm
                                                 $latestRate = $service->getExchangeRate($currency, now(), $company) ?? $service->getLatestExchangeRate($currency, $company);
 
                                                 if ($latestRate) {
-                                                    // Using purchase keys as generic fallback or similar structure should typically be in sales lang but using hardcoded or generic if key missing
-                                                    return __('sales::sales_orders.help.exchange_rate') ?? 'Exchange Rate';
+                                                    return __('sales::sales_orders.help.exchange_rate').' '.__('sales::sales_orders.help.current_rate', ['rate' => $latestRate]);
                                                 }
                                             }
                                         }
 
-                                        return __('sales::sales_orders.help.exchange_rate') ?? 'Exchange Rate';
+                                        return __('sales::sales_orders.help.exchange_rate');
                                     }),
                             ]),
+                    ]),
 
+                Section::make(__('sales::sales_orders.sections.delivery_info'))
+                    ->schema([
                         Grid::make(2)
                             ->schema([
-                                DatePicker::make('so_date')
-                                    ->label(__('sales::sales_orders.fields.order_date'))
-                                    ->required()
-                                    ->default(now())
-                                    ->native(false),
-
                                 DatePicker::make('expected_delivery_date')
                                     ->label(__('sales::sales_orders.fields.expected_delivery_date'))
                                     ->native(false),
-                            ]),
 
-                        TextInput::make('reference')
-                            ->label(__('sales::sales_orders.fields.reference'))
-                            ->maxLength(255)
-                            ->helperText(__('sales::sales_orders.help.reference')),
+                                Select::make('delivery_location_id')
+                                    ->label(__('sales::sales_orders.fields.delivery_location'))
+                                    ->relationship('deliveryLocation', 'name')
+                                    ->searchable()
+                                    ->preload(),
+                            ]),
                     ]),
 
                 Section::make(__('sales::sales_orders.sections.line_items'))
+                    ->description(__('sales::sales_orders.sections.line_items_description'))
                     ->schema([
-                        DatePicker::make('expiration')
-                            ->label(__('sales::sales_orders.fields.expiration')),
                         Repeater::make('lines')
                             ->label(__('sales::sales_orders.fields.lines'))
+                            ->table([
+                                Repeater\TableColumn::make(__('sales::sales_orders.fields.product'))->width('20%'),
+                                Repeater\TableColumn::make(__('sales::sales_orders.fields.description'))->width('20%'),
+                                Repeater\TableColumn::make(__('sales::sales_orders.fields.quantity'))->width('10%'),
+                                Repeater\TableColumn::make(__('sales::sales_orders.fields.unit_price'))->width('15%'),
+                                Repeater\TableColumn::make(__('sales::sales_orders.fields.tax'))->width('15%'),
+                                Repeater\TableColumn::make(__('sales::sales_orders.fields.expected_delivery_date'))->width('15%'),
+                            ])
+                            ->live()
+                            ->reorderable(true)
+                            ->minItems(1)
+                            ->afterStateUpdated(function (callable $set, $state, callable $get) {
+                                static::updateTotals($set, $get);
+                            })
                             ->schema([
                                 Select::make('product_id')
                                     ->label(__('sales::sales_orders.fields.product'))
@@ -283,18 +311,21 @@ class SalesOrderForm
                                                 }
                                             }
                                         }
+                                        static::updateTotals($set, $get);
                                     })
                                     ->createOptionAction(
                                         fn (Action $action) => $action
                                             ->modalHeading(__('product::product.create'))
                                             ->modalSubmitActionLabel(__('product::product.create'))
                                             ->modalWidth('lg')
-                                    ),
+                                    )
+                                    ->columnSpan(3),
 
                                 TextInput::make('description')
                                     ->label(__('sales::sales_orders.fields.description'))
                                     ->required()
-                                    ->maxLength(255),
+                                    ->maxLength(255)
+                                    ->columnSpan(4),
 
                                 TextInput::make('quantity')
                                     ->label(__('sales::sales_orders.fields.quantity'))
@@ -303,11 +334,22 @@ class SalesOrderForm
                                     ->default(1)
                                     ->minValue(0.01)
                                     ->step(0.01)
-                                    ->extraInputAttributes(['onclick' => 'this.select()']),
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
+                                        static::updateTotals($set, $get);
+                                    })
+                                    ->extraInputAttributes(['onclick' => 'this.select()'])
+                                    ->columnSpan(2),
 
                                 MoneyInput::make('unit_price')
                                     ->label(__('sales::sales_orders.fields.unit_price'))
-                                    ->required(),
+                                    ->currencyField('../../currency_id')
+                                    ->required()
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
+                                        static::updateTotals($set, $get);
+                                    })
+                                    ->columnSpan(3),
 
                                 Select::make('tax_id')
                                     ->label(__('sales::sales_orders.fields.tax'))
@@ -318,46 +360,108 @@ class SalesOrderForm
                                         return Tax::where('company_id', Filament::getTenant()?->id)
                                             ->where('type', TaxType::Sales)
                                             ->pluck('name', 'id');
-                                    }),
+                                    })
+                                    ->live()
+                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
+                                        static::updateTotals($set, $get);
+                                    })
+                                    ->columnSpan(3),
 
                                 DatePicker::make('expected_delivery_date')
                                     ->label(__('sales::sales_orders.fields.line_expected_delivery_date'))
-                                    ->native(false),
-
-                                Textarea::make('notes')
-                                    ->label(__('sales::sales_orders.fields.line_notes'))
-                                    ->rows(2),
+                                    ->native(false)
+                                    ->columnSpan(3),
                             ])
-                            ->columns(2)
-                            ->defaultItems(1)
-                            ->addActionLabel(__('sales::sales_orders.actions.add_line'))
-                            ->reorderableWithButtons()
-                            ->collapsible()
-                            ->itemLabel(fn (array $state): ?string => $state['description'] ?? null),
-                    ]),
+                            ->columns(18),
+                    ])->columnSpanFull(),
 
-                Section::make(__('sales::sales_orders.sections.additional_info'))
+                Section::make(__('sales::sales_orders.sections.totals'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                Select::make('delivery_location_id')
-                                    ->label(__('sales::sales_orders.fields.delivery_location'))
-                                    ->relationship('deliveryLocation', 'name')
-                                    ->searchable()
-                                    ->preload(),
+                                MoneyInput::make('total_tax')
+                                    ->label(__('sales::sales_orders.fields.total_tax'))
+                                    ->currencyField('currency_id')
+                                    ->disabled()
+                                    ->dehydrated(false),
 
-                                // Add payment terms, fiscal position, etc. here if needed
+                                MoneyInput::make('total_amount')
+                                    ->label(__('sales::sales_orders.fields.total_amount'))
+                                    ->currencyField('currency_id')
+                                    ->disabled()
+                                    ->dehydrated(false),
                             ]),
+                    ])
+                    ->collapsible()
+                    ->collapsed(false),
 
+                Section::make(__('sales::sales_orders.sections.notes'))
+                    ->schema([
                         Textarea::make('notes')
                             ->label(__('sales::sales_orders.fields.notes'))
-                            ->rows(3),
+                            ->rows(3)
+                            ->columnSpanFull(),
 
                         Textarea::make('terms_and_conditions')
                             ->label(__('sales::sales_orders.fields.terms_and_conditions'))
-                            ->rows(3),
+                            ->rows(3)
+                            ->columnSpanFull(),
                     ])
                     ->collapsible(),
             ]);
+    }
+
+    public static function updateTotals(callable $set, callable $get): void
+    {
+        $lines = $get('lines') ?? [];
+        $currencyId = $get('currency_id');
+
+        if (! $currencyId || empty($lines)) {
+            $set('total_amount', 0);
+            $set('total_tax', 0);
+
+            return;
+        }
+
+        // Get currency for calculations
+        $currency = \Modules\Foundation\Models\Currency::find($currencyId);
+        if (! $currency) {
+            return;
+        }
+
+        $totalAmount = 0;
+        $totalTax = 0;
+
+        foreach ($lines as $line) {
+            $quantity = (float) ($line['quantity'] ?? 0);
+            $unitPrice = (float) ($line['unit_price'] ?? 0);
+            $taxId = $line['tax_id'] ?? null;
+
+            if ($quantity <= 0 || $unitPrice <= 0) {
+                continue;
+            }
+
+            // Calculate line subtotal
+            $lineSubtotal = $quantity * $unitPrice;
+
+            // Calculate line tax
+            $lineTax = 0;
+            if ($taxId) {
+                $tax = Tax::find($taxId);
+                if ($tax) {
+                    $lineTax = $lineSubtotal * ($tax->rate / 100);
+                }
+            }
+
+            // Calculate line total
+            $lineTotal = $lineSubtotal + $lineTax;
+
+            $totalAmount += $lineTotal;
+            $totalTax += $lineTax;
+        }
+
+        // Set the totals
+        $set('total_amount', $totalAmount);
+        $set('total_tax', $totalTax);
     }
 }
