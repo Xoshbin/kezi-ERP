@@ -12,6 +12,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
 use Modules\Accounting\Models\Account;
 use Modules\Sales\Actions\Sales\CreateDeliveryFromSalesOrderAction;
 use Modules\Sales\Actions\Sales\CreateInvoiceFromSalesOrderAction;
@@ -90,7 +91,7 @@ class ViewSalesOrder extends ViewRecord
                             ->success()
                             ->send();
 
-                        return redirect()->route('filament.admin.resources.invoices.view', $invoice);
+                        return redirect()->to(InvoiceResource::getUrl('edit', ['record' => $invoice]));
                     } catch (Exception $e) {
                         Notification::make()
                             ->title(__('sales::sales_orders.notifications.invoice_creation_failed'))
