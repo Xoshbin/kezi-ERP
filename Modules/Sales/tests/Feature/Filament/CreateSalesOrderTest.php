@@ -44,7 +44,7 @@ it('can create a sales order', function () {
                 'product_id' => $product->id,
                 'description' => 'Test Product Line',
                 'quantity' => 2,
-                'unit_price' => $product->unit_price->getMinorAmount()->toInt(),
+                'unit_price' => $product->unit_price->getAmount()->toFloat(),
                 'tax_id' => null,
             ],
         ])
