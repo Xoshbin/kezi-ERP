@@ -67,7 +67,7 @@ class ViewSalesOrder extends ViewRecord
                         ->label(__('sales::invoice.income_account'))
                         ->options(function () {
                             return Account::where('company_id', Filament::getTenant()?->id)
-                                ->where('account_type', 'income')
+                                ->where('type', 'income')
                                 ->pluck('name', 'id');
                         })
                         ->required()
