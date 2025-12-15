@@ -51,10 +51,9 @@ class ConfirmPickingAction extends Action
                     'status' => StockMoveStatus::Confirmed,
                 ]);
 
-                // Dispatch events for confirmed moves if needed
+                // Dispatch events for confirmed moves to update delivered quantities
                 foreach ($picking->stockMoves as $move) {
-                    // You can dispatch events here if needed
-                    // event(new StockMoveConfirmed($move));
+                    event(new StockMoveConfirmed($move));
                 }
             });
 
