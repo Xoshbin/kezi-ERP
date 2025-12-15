@@ -21,8 +21,22 @@ class EditSalesOrder extends EditRecord
                 ->requiresConfirmation()
                 ->color('success')
                 ->action(function (SalesOrder $record) {
-                    app(ConfirmSalesOrderAction::class)->execute($record, auth()->user());
-                    $this->redirect($this->getResource()::getUrl('edit', ['record' => $record]));
+                    try {
+                        app(ConfirmSalesOrderAction::class)->execute($record, auth()->user());
+
+                        \Filament\Notifications\Notification::make()
+                            ->title(__('sales::sales_orders.notifications.confirmed'))
+                            ->success()
+                            ->send();
+
+                        $this->refreshFormData(['status']);
+                    } catch (\Exception $e) {
+                        \Filament\Notifications\Notification::make()
+                            ->title('Error')
+                            ->body($e->getMessage())
+                            ->danger()
+                            ->send();
+                    }
                 })
                 ->visible(fn (SalesOrder $record) => $record->status === SalesOrderStatus::Draft),
             Actions\Action::make('create_invoice')

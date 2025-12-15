@@ -43,7 +43,7 @@ beforeEach(function () {
         'company_id' => $this->company->id,
         'currency_id' => $this->usd->id,
         'rate' => 1500.00, // 1 USD = 1500 IQD
-        'date' => now()->startOfDay(),
+        'effective_date' => now()->startOfDay(),
     ]);
 });
 
@@ -78,14 +78,22 @@ test('product price is converted using system exchange rate', function () {
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->usd->id,
         ])
+        ->assertFormSet([
+            'exchange_rate_at_creation' => 1500.00,
+        ])
+        // We need to set the product_id specifically to trigger the afterStateUpdated hook
+        // Since minItems(1) is set, we can assume the first item exists or we add one.
+        // However, Filament tests might need us to initialize the repeater structure if it's not auto-filled in test env.
+        // Let's try setting the array first to ensure structure, then updating the specific field to trigger the hook.
         ->set('data.lines', [
             [
-                'product_id' => $product->id,
+                'product_id' => null, // Start empty
                 'quantity' => 1,
             ],
         ])
+        ->set('data.lines.0.product_id', $product->id)
         ->assertFormSet([
-            'lines.0.unit_price' => '1000.00',
+            'lines.0.unit_price' => '1000',
         ]);
 });
 
@@ -104,15 +112,14 @@ test('product price is converted using COMPLETED manual exchange rate', function
             'currency_id' => $this->usd->id,
             'exchange_rate_at_creation' => 1000,
         ])
-        // Simulate reacting to exchange rate change if we implement that,
-        // OR just proceed to select product after setting rate.
         ->set('data.lines', [
             [
-                'product_id' => $product->id,
+                'product_id' => null,
                 'quantity' => 1,
             ],
         ])
+        ->set('data.lines.0.product_id', $product->id)
         ->assertFormSet([
-            'lines.0.unit_price' => '1500.00',
+            'lines.0.unit_price' => '1500',
         ]);
 });

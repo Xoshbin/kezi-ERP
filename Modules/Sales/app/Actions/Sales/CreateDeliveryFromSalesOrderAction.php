@@ -58,6 +58,10 @@ class CreateDeliveryFromSalesOrderAction
                 return $stockMoves;
             }
 
+            // Refresh to get the latest SO number (set during confirmation)
+            $salesOrder->refresh();
+            $soNumber = $salesOrder->so_number ?? $salesOrder->id;
+
             // Create a picking for this delivery
             $picking = StockPicking::create([
                 'company_id' => $salesOrder->company_id,
@@ -65,8 +69,8 @@ class CreateDeliveryFromSalesOrderAction
                 'state' => StockPickingState::Draft,
                 'partner_id' => $salesOrder->customer_id,
                 'scheduled_date' => $dto->scheduled_date ?? now(),
-                'reference' => "OUT/{$salesOrder->so_number}",
-                'origin' => "Sales Order: {$salesOrder->so_number}",
+                'reference' => "OUT/{$soNumber}",
+                'origin' => "Sales Order: {$soNumber}",
                 'created_by_user_id' => $user->id,
             ]);
 
@@ -94,9 +98,6 @@ class CreateDeliveryFromSalesOrderAction
                         $reservationService->reserveForMove($stockMove, $locations['warehouse']->id);
 
                         $stockMoves->push($stockMove);
-
-                        // Update the sales order line's delivered quantity
-                        $line->updateDeliveredQuantity($line->quantity_delivered + $remainingQuantity);
 
                         // If we're in automatic mode, mark the move as done and dispatch event
                         if ($dto->autoConfirm) {
@@ -131,12 +132,14 @@ class CreateDeliveryFromSalesOrderAction
                 ->first();
         }
 
-        // Get customer location (create if doesn't exist)
+        // Get customer-specific location by name (create if doesn't exist)
+        // Each customer/partner has their own location for proper tracking
+        $customerLocationName = "Customer: {$salesOrder->customer->name}";
         $customerLocation = StockLocation::firstOrCreate([
             'company_id' => $company->id,
             'type' => StockLocationType::Customer,
+            'name' => $customerLocationName,
         ], [
-            'name' => "Customer: {$salesOrder->customer->name}",
             'is_active' => true,
         ]);
 
@@ -196,7 +199,12 @@ class CreateDeliveryFromSalesOrderAction
                 $salesOrder->status = SalesOrderStatus::FullyDelivered;
             }
         } else {
-            $salesOrder->status = SalesOrderStatus::PartiallyDelivered;
+            // Check if any quantity has been delivered
+            $hasDelivery = $salesOrder->lines->sum('quantity_delivered') > 0;
+
+            $salesOrder->status = $hasDelivery
+                ? SalesOrderStatus::PartiallyDelivered
+                : SalesOrderStatus::Confirmed;
         }
 
         $salesOrder->save();
