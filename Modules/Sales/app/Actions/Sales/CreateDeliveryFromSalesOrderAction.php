@@ -58,6 +58,10 @@ class CreateDeliveryFromSalesOrderAction
                 return $stockMoves;
             }
 
+            // Refresh to get the latest SO number (set during confirmation)
+            $salesOrder->refresh();
+            $soNumber = $salesOrder->so_number ?? $salesOrder->id;
+
             // Create a picking for this delivery
             $picking = StockPicking::create([
                 'company_id' => $salesOrder->company_id,
@@ -65,8 +69,8 @@ class CreateDeliveryFromSalesOrderAction
                 'state' => StockPickingState::Draft,
                 'partner_id' => $salesOrder->customer_id,
                 'scheduled_date' => $dto->scheduled_date ?? now(),
-                'reference' => "OUT/{$salesOrder->so_number}",
-                'origin' => "Sales Order: {$salesOrder->so_number}",
+                'reference' => "OUT/{$soNumber}",
+                'origin' => "Sales Order: {$soNumber}",
                 'created_by_user_id' => $user->id,
             ]);
 
@@ -128,12 +132,14 @@ class CreateDeliveryFromSalesOrderAction
                 ->first();
         }
 
-        // Get customer location (create if doesn't exist)
+        // Get customer-specific location by name (create if doesn't exist)
+        // Each customer/partner has their own location for proper tracking
+        $customerLocationName = "Customer: {$salesOrder->customer->name}";
         $customerLocation = StockLocation::firstOrCreate([
             'company_id' => $company->id,
             'type' => StockLocationType::Customer,
+            'name' => $customerLocationName,
         ], [
-            'name' => "Customer: {$salesOrder->customer->name}",
             'is_active' => true,
         ]);
 
