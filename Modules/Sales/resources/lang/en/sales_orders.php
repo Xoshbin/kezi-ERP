@@ -44,6 +44,8 @@ return [
         'confirm' => 'Confirm',
         'cancel' => 'Cancel',
         'create_invoice' => 'Create Invoice',
+        'create_delivery' => 'Create Delivery',
+        'view_delivery' => 'View Delivery',
         'preview' => 'Preview',
     ],
     'help' => [
