@@ -109,3 +109,102 @@ it('confirms sales order from edit page without redirecting', function () {
 
     expect($salesOrder->refresh()->status)->toBe(SalesOrderStatus::Confirmed);
 });
+
+it('assigns so_number on confirmation', function () {
+    /** @var Partner $customer */
+    $customer = Partner::factory()->customer()->create([
+        'company_id' => $this->company->id,
+    ]);
+
+    /** @var SalesOrder $salesOrder */
+    $salesOrder = SalesOrder::create([
+        'company_id' => $this->company->id,
+        'customer_id' => $customer->id,
+        'currency_id' => $this->company->currency_id,
+        'so_date' => now(),
+        'so_number' => null, // Explicitly null before confirmation
+        'status' => SalesOrderStatus::Draft,
+        'total_amount' => Money::of(0, $this->company->currency->code),
+        'created_by_user_id' => $this->user->id,
+    ]);
+
+    /** @var Product $product */
+    $product = Product::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
+    ]);
+
+    $salesOrder->lines()->create([
+        'product_id' => $product->id,
+        'quantity' => 5,
+        'unit_price' => Money::of(500, $this->company->currency->code),
+        'subtotal' => Money::of(2500, $this->company->currency->code),
+        'total_line_tax' => Money::of(0, $this->company->currency->code),
+        'total' => Money::of(2500, $this->company->currency->code),
+        'company_id' => $this->company->id,
+        'description' => 'Test Product',
+    ]);
+
+    expect($salesOrder->so_number)->toBeNull();
+
+    livewire(ViewSalesOrder::class, [
+        'record' => $salesOrder->getRouteKey(),
+    ])
+        ->callAction('confirm')
+        ->assertNotified();
+
+    $salesOrder->refresh();
+
+    expect($salesOrder->status)->toBe(SalesOrderStatus::Confirmed);
+    expect($salesOrder->so_number)->not->toBeNull();
+    expect($salesOrder->so_number)->toStartWith('SO-');
+});
+
+it('sets confirmed_at timestamp on confirmation', function () {
+    /** @var Partner $customer */
+    $customer = Partner::factory()->customer()->create([
+        'company_id' => $this->company->id,
+    ]);
+
+    /** @var SalesOrder $salesOrder */
+    $salesOrder = SalesOrder::create([
+        'company_id' => $this->company->id,
+        'customer_id' => $customer->id,
+        'currency_id' => $this->company->currency_id,
+        'so_date' => now(),
+        'status' => SalesOrderStatus::Draft,
+        'total_amount' => Money::of(0, $this->company->currency->code),
+        'created_by_user_id' => $this->user->id,
+    ]);
+
+    /** @var Product $product */
+    $product = Product::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => \Modules\Product\Enums\Products\ProductType::Storable,
+    ]);
+
+    $salesOrder->lines()->create([
+        'product_id' => $product->id,
+        'quantity' => 5,
+        'unit_price' => Money::of(500, $this->company->currency->code),
+        'subtotal' => Money::of(2500, $this->company->currency->code),
+        'total_line_tax' => Money::of(0, $this->company->currency->code),
+        'total' => Money::of(2500, $this->company->currency->code),
+        'company_id' => $this->company->id,
+        'description' => 'Test Product',
+    ]);
+
+    expect($salesOrder->confirmed_at)->toBeNull();
+
+    livewire(ViewSalesOrder::class, [
+        'record' => $salesOrder->getRouteKey(),
+    ])
+        ->callAction('confirm')
+        ->assertNotified();
+
+    $salesOrder->refresh();
+
+    expect($salesOrder->status)->toBe(SalesOrderStatus::Confirmed);
+    expect($salesOrder->confirmed_at)->not->toBeNull();
+    expect($salesOrder->confirmed_at)->toBeInstanceOf(\Carbon\Carbon::class);
+});
