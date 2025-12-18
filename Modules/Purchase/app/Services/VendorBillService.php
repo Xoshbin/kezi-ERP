@@ -9,7 +9,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Modules\Accounting\Actions\Accounting\BuildVendorBillPostingPreviewAction;
-use Modules\Accounting\Actions\Accounting\CreateJournalEntryForVendorBillAction;
+use Modules\Accounting\Contracts\VendorBillJournalEntryCreatorContract;
 use Modules\Accounting\Services\JournalEntryService;
 use Modules\Foundation\Models\AuditLog;
 use Modules\Foundation\Models\Currency;
@@ -37,6 +37,7 @@ class VendorBillService
     public function __construct(
         protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         protected JournalEntryService $journalEntryService,
+        protected VendorBillJournalEntryCreatorContract $vendorBillJournalEntryCreator,
         protected \Modules\Inventory\Actions\Inventory\CreateStockMoveAction $createStockMoveAction,
         protected CurrencyConverterService $currencyConverter,
         protected ExchangeRateService $exchangeRateService,
@@ -107,7 +108,7 @@ class VendorBillService
             }
 
             // Create a single combined JE for all lines (storable, asset, expense)
-            $journalEntry = app(CreateJournalEntryForVendorBillAction::class)->execute($vendorBill, $user);
+            $journalEntry = $this->vendorBillJournalEntryCreator->execute($vendorBill, $user);
 
             // Associate the created journal entry with the bill
             // Journal entry is always created
