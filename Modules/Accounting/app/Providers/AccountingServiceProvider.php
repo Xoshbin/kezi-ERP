@@ -56,6 +56,12 @@ class AccountingServiceProvider extends ServiceProvider
             \Modules\Accounting\Contracts\VendorBillJournalEntryCreatorContract::class,
             \Modules\Accounting\Actions\Accounting\CreateJournalEntryForVendorBillAction::class
         );
+
+        // Bind the AdjustmentJournalEntryCreatorContract to the concrete implementation
+        $this->app->bind(
+            \Modules\Accounting\Contracts\AdjustmentJournalEntryCreatorContract::class,
+            \Modules\Accounting\Actions\Accounting\CreateJournalEntryForAdjustmentAction::class
+        );
     }
 
     /**

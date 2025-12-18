@@ -16,16 +16,6 @@ use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Services\CurrencyConverterService;
 use Modules\Foundation\Services\ExchangeRateService;
 use Modules\Foundation\Services\SequenceService;
-use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
-use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
-use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockPickingState;
-use Modules\Inventory\Enums\Inventory\StockPickingType;
-use Modules\Inventory\Models\StockMove;
-use Modules\Inventory\Models\StockPicking;
-use Modules\Inventory\Services\Inventory\InventoryValuationService;
 use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 use Modules\Purchase\Events\VendorBillConfirmed;
 use Modules\Purchase\Models\VendorBill;
@@ -38,7 +28,6 @@ class VendorBillService
         protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         protected JournalEntryService $journalEntryService,
         protected VendorBillJournalEntryCreatorContract $vendorBillJournalEntryCreator,
-        protected \Modules\Inventory\Actions\Inventory\CreateStockMoveAction $createStockMoveAction,
         protected CurrencyConverterService $currencyConverter,
         protected ExchangeRateService $exchangeRateService,
         protected SequenceService $sequenceService,
@@ -71,41 +60,9 @@ class VendorBillService
             $vendorBill->posted_at = now();
             $vendorBill->save();
 
-            // Create stock moves and inventory journal entries based on company's inventory accounting mode
-            $company = $vendorBill->company;
-            $storableLines = $vendorBill->lines()->with('product')->get()
-                ->filter(fn (VendorBillLine $l) => $l->product?->type === \Modules\Product\Enums\Products\ProductType::Storable);
-
-            if ($storableLines->isNotEmpty()) {
-                // Check the company's inventory accounting mode
-                if ($company->inventory_accounting_mode === InventoryAccountingMode::AUTO_RECORD_ON_BILL) {
-                    // Mode 1: Auto-record all inventory on bill confirmation
-                    $picking = StockPicking::create([
-                        'company_id' => $vendorBill->company_id,
-                        'type' => StockPickingType::Receipt,
-                        'state' => StockPickingState::Done,
-                        'partner_id' => $vendorBill->vendor_id,
-                        'scheduled_date' => $vendorBill->bill_date,
-                        'completed_at' => now(),
-                        'reference' => $vendorBill->bill_reference,
-                        'origin' => 'VendorBill#'.$vendorBill->getKey(),
-                        'created_by_user_id' => $user->id,
-                    ]);
-
-                    // Create one stock move with multiple product lines
-                    if (! empty($storableLines)) {
-                        $stockMove = $this->createStockMoveForLines($vendorBill, $storableLines, $user, $picking);
-
-                        // Create consolidated inventory journal entry for all storable products
-                        app(InventoryValuationService::class)->createConsolidatedIncomingStockJournalEntry([$stockMove], $vendorBill);
-                    }
-                } else {
-                    // Mode 2: Manual inventory recording
-                    // Stock moves and inventory journal entries will be created separately
-                    // through the inventory module when goods are actually received
-                    // No stock moves or inventory valuation entries are created here
-                }
-            }
+            // Stock moves and inventory journal entries are now created by the Inventory module's
+            // CreateStockMovesOnVendorBillConfirmed listener (Event-Driven Architecture)
+            // This decouples Purchase from Inventory, improving modularity.
 
             // Create a single combined JE for all lines (storable, asset, expense)
             $journalEntry = $this->vendorBillJournalEntryCreator->execute($vendorBill, $user);
@@ -116,52 +73,6 @@ class VendorBillService
         });
 
         VendorBillConfirmed::dispatch($vendorBill, $user);
-    }
-
-    /**
-     * Creates a stock move with multiple product lines for vendor bill lines.
-     */
-    private function createStockMoveForLines(VendorBill $vendorBill, $storableLines, User $user, StockPicking $picking): StockMove
-    {
-        $company = $vendorBill->company;
-
-        if (! $company->vendorLocation || ! $company->defaultStockLocation) {
-            throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->getKey()}.");
-        }
-
-        // Create product line DTOs for all storable lines
-        $productLineDtos = [];
-        foreach ($storableLines as $line) {
-            $productLineDtos[] = new CreateStockMoveProductLineDTO(
-                product_id: $line->product_id,
-                quantity: (float) $line->quantity,
-                from_location_id: $company->vendorLocation->getKey(),
-                to_location_id: $company->defaultStockLocation->getKey(),
-                description: $line->description,
-                source_type: VendorBill::class,
-                source_id: $vendorBill->getKey()
-            );
-        }
-
-        $dto = new CreateStockMoveDTO(
-            company_id: $company->getKey(),
-            product_lines: $productLineDtos,
-            move_type: StockMoveType::Incoming,
-            status: StockMoveStatus::Done, // Moves from bills are immediately 'done'
-            move_date: $vendorBill->bill_date,
-            reference: $vendorBill->bill_reference,
-            description: "Stock receipt from vendor bill {$vendorBill->bill_reference}",
-            source_type: VendorBill::class,
-            source_id: $vendorBill->getKey(),
-            created_by_user_id: $user->id
-        );
-
-        $stockMove = $this->createStockMoveAction->execute($dto);
-
-        // Attach move to the picking
-        $stockMove->update(['picking_id' => $picking->getKey()]);
-
-        return $stockMove;
     }
 
     /**
