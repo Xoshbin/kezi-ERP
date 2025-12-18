@@ -38,6 +38,24 @@ class AccountingServiceProvider extends ServiceProvider
     {
         $this->app->register(EventServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
+
+        // Bind the JournalEntryCreatorContract to the concrete implementation
+        $this->app->bind(
+            \Modules\Accounting\Contracts\JournalEntryCreatorContract::class,
+            \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class
+        );
+
+        // Bind the InvoiceJournalEntryCreatorContract to the concrete implementation
+        $this->app->bind(
+            \Modules\Accounting\Contracts\InvoiceJournalEntryCreatorContract::class,
+            \Modules\Accounting\Actions\Accounting\CreateJournalEntryForInvoiceAction::class
+        );
+
+        // Bind the VendorBillJournalEntryCreatorContract to the concrete implementation
+        $this->app->bind(
+            \Modules\Accounting\Contracts\VendorBillJournalEntryCreatorContract::class,
+            \Modules\Accounting\Actions\Accounting\CreateJournalEntryForVendorBillAction::class
+        );
     }
 
     /**
