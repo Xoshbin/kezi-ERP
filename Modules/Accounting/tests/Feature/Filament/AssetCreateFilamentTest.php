@@ -4,6 +4,7 @@ use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Enums\Assets\DepreciationMethod;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages\CreateAsset;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages\EditAsset;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Asset;
 use Tests\Traits\WithConfiguredCompany;
@@ -49,4 +50,44 @@ test('asset can be created via filament form with string date', function () {
     $asset = Asset::where('name', 'Test Asset From Filament')->first();
     expect($asset)->not->toBeNull();
     expect($asset->purchase_date->format('Y-m-d'))->toBe('2024-01-15');
+});
+
+test('asset can be updated via filament form with string date', function () {
+    // Create an asset first using the factory
+    $currencyCode = $this->company->currency->code;
+    $asset = Asset::factory()->for($this->company)->create([
+        'name' => 'Original Asset Name',
+        'purchase_date' => now()->subYear(),
+        'purchase_value' => \Brick\Money\Money::of(10000, $currencyCode),
+        'salvage_value' => \Brick\Money\Money::of(1000, $currencyCode),
+        'useful_life_years' => 5,
+        'depreciation_method' => DepreciationMethod::StraightLine,
+        'asset_account_id' => $this->assetAccount->id,
+        'depreciation_expense_account_id' => $this->depreciationExpenseAccount->id,
+        'accumulated_depreciation_account_id' => $this->accumulatedDepreciationAccount->id,
+    ]);
+
+    // Test editing the asset via Filament form
+    livewire(EditAsset::class, ['record' => $asset->id])
+        ->fillForm([
+            'company_id' => $this->company->id, // Form includes company_id but DTO doesn't accept it
+            'name' => 'Updated Asset Name',
+            'purchase_date' => '2024-06-20', // String format from DatePicker
+            'purchase_value' => 15000, // Updated value in major units
+            'salvage_value' => 2000, // Updated salvage value
+            'useful_life_years' => 7,
+            'depreciation_method' => DepreciationMethod::StraightLine->value,
+            'asset_account_id' => $this->assetAccount->id,
+            'depreciation_expense_account_id' => $this->depreciationExpenseAccount->id,
+            'accumulated_depreciation_account_id' => $this->accumulatedDepreciationAccount->id,
+            'currency_id' => $this->company->currency_id,
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    // Verify asset was updated
+    $asset->refresh();
+    expect($asset->name)->toBe('Updated Asset Name');
+    expect($asset->purchase_date->format('Y-m-d'))->toBe('2024-06-20');
+    expect($asset->useful_life_years)->toBe(7);
 });
