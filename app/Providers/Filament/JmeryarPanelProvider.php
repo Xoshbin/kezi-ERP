@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use App\Filament\Pages\Tenancy\EditCompanyProfile;
 use App\Filament\Pages\Tenancy\RegisterCompany;
 use App\Models\Company;
@@ -93,7 +94,9 @@ class JmeryarPanelProvider extends PanelProvider
                 EnvironmentIndicatorPlugin::make()
                     ->showBadge(false)
                     ->showBorder(true),
-                CustomFieldsPlugin::make(),
+                CustomFieldsPlugin::make()
+                    ->cluster(SettingsCluster::class)
+                    ->navigationSort(5),
                 SpatieTranslatablePlugin::make()
                     ->defaultLocales(['en', 'ckb', 'ar']),
                 FilamentDeveloperLoginsPlugin::make()
