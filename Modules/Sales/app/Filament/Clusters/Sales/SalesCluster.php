@@ -17,4 +17,9 @@ class SalesCluster extends Cluster
     {
         return __('sales::navigation.sales');
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 }

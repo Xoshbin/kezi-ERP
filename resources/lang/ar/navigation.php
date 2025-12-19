@@ -18,4 +18,7 @@ return [
         'inventory' => 'إدارة المخزون',
         'human_resources' => 'الموارد البشرية',
     ],
+
+    // App Switcher
+    'app_switcher' => 'التطبيقات',
 ];

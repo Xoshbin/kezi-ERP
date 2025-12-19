@@ -20,4 +20,9 @@ class SettingsCluster extends Cluster
     {
         return __('navigation.clusters.settings');
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 }
