@@ -15,4 +15,7 @@ return [
         'settings' => 'ڕێکخستنەکان',
         'human_resources' => 'سەرچاوە مرۆییەکان',
     ],
+
+    // App Switcher
+    'app_switcher' => 'بەرنامەکان',
 ];
