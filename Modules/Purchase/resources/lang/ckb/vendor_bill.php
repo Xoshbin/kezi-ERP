@@ -77,4 +77,15 @@ return [
     // Validation Messages
     'validation_no_line_items' => 'ناکرێت پسوڵە پەسەند بکرێت بەبێ هیچ بەندێک',
     'validation_zero_total_amount' => 'ناکرێت پسوڵە پەسەند بکرێت بەبێ بڕی پارە',
+
+    // Notifications
+    'notification_confirm_success' => 'پسوڵەی فرۆشیار بە سەرکەوتوویی پەسەندکرا',
+    'notification_confirm_error' => 'هەڵە: نەتوانرا پسوڵەی فرۆشیار پەسەند بکرێت',
+    'notification_reset_success' => 'پسوڵەی فرۆشیار بە ڕەشنووس گەڕایەوە',
+    'notification_reset_error' => 'هەڵە: نەتوانرا پسوڵەی فرۆشیار بگەڕێتەوە',
+    'notification_bill_confirmed_success' => 'پسوڵە بە سەرکەوتوویی پەسەندکرا',
+    'notification_confirm_bill_error' => 'هەڵە لە پەسەندکردنی پسوڵە',
+    'notification_bill_reset_success' => 'پسوڵە بە ڕەشنووس گەڕایەوە',
+    'notification_reset_bill_error' => 'هەڵە لە گەڕاندنەوەی پسوڵە',
+    'notification_update_not_allowed' => 'نوێکردنەوە ڕێگەپێنەدراوە',
 ];
