@@ -253,6 +253,21 @@ class EditPurchaseOrder extends EditRecord
             status: isset($data['status']) ? PurchaseOrderStatus::from($data['status']) : null,
         );
 
-        return app(UpdatePurchaseOrderAction::class)->execute($dto);
+        try {
+            return app(UpdatePurchaseOrderAction::class)->execute($dto);
+        } catch (\Modules\Foundation\Exceptions\UpdateNotAllowedException $e) {
+            Notification::make()
+                ->title(__('purchase::purchase_orders.notifications.update_not_allowed'))
+                ->body($e->getMessage())
+                ->warning()
+                ->persistent()
+                ->send();
+
+            // Halt the update process
+            $this->halt();
+
+            // This line will never be reached due to halt(), but satisfies the return type
+            throw $e;
+        }
     }
 }
