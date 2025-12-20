@@ -8,6 +8,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Support\TranslatableHelper;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class CurrencyRateForm
@@ -24,7 +25,7 @@ class CurrencyRateForm
                         if (! $record) {
                             return '';
                         }
-                        $currencyName = is_array($record->name) ? ($record->name['en'] ?? (empty($record->name) ? '' : (string) array_values($record->name)[0])) : (string) $record->name;
+                        $currencyName = TranslatableHelper::getLocalizedValue($record->name);
 
                         return "{$currencyName} ({$record->code})";
                     })
