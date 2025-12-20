@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6ce87504fc270078bf0e87991692c058",
+    "content-hash": "c230a7c716f5c8f4a669e08f9e6559ec",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -9292,21 +9292,21 @@
         },
         {
             "name": "xoshbin/filament-custom-fields",
-            "version": "dev-main",
+            "version": "v0.0.1-beta",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Xoshbin/filament-custom-fields.git",
-                "reference": "37644ac12ee1ae37dc25f4b4ab5a71f623357051"
+                "reference": "5f199d552994740a8cadc7a7d3f0424d0287aafb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Xoshbin/filament-custom-fields/zipball/37644ac12ee1ae37dc25f4b4ab5a71f623357051",
-                "reference": "37644ac12ee1ae37dc25f4b4ab5a71f623357051",
+                "url": "https://api.github.com/repos/Xoshbin/filament-custom-fields/zipball/5f199d552994740a8cadc7a7d3f0424d0287aafb",
+                "reference": "5f199d552994740a8cadc7a7d3f0424d0287aafb",
                 "shasum": ""
             },
             "require": {
                 "filament/filament": "^4.0",
-                "php": "^8.2",
+                "php": "^8.3",
                 "spatie/laravel-package-tools": "^1.15.0"
             },
             "require-dev": {
@@ -9321,7 +9321,6 @@
                 "phpstan/phpstan-deprecation-rules": "^2.0",
                 "phpstan/phpstan-phpunit": "^2.0"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -9369,7 +9368,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-12-19T20:46:05+00:00"
+            "time": "2025-12-20T08:08:51+00:00"
         },
         {
             "name": "xoshbin/filament-translatable-select",
@@ -15024,7 +15023,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "xoshbin/filament-custom-fields": 20,
+        "xoshbin/filament-custom-fields": 10,
         "xoshbin/filament-translatable-select": 20
     },
     "prefer-stable": true,
