@@ -12,6 +12,7 @@ use Modules\Accounting\DataTransferObjects\Reports\GeneralLedgerDTO;
 use Modules\Accounting\DataTransferObjects\Reports\GeneralLedgerTransactionLineDTO;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\JournalEntryLine;
+use Modules\Foundation\Support\TranslatableHelper;
 
 class GeneralLedgerService
 {
@@ -60,7 +61,7 @@ class GeneralLedgerService
                 ));
             }
 
-            $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
+            $accountName = TranslatableHelper::getLocalizedValue($account->name);
             $reportAccounts->push(new GeneralLedgerAccountDTO(
                 accountId: $account->id,
                 accountCode: $account->code,
@@ -117,12 +118,7 @@ class GeneralLedgerService
 
         /** @var Collection<int, string> $names */
         $names = $otherLines->map(function (JournalEntryLine $l): string {
-            $accountName = $l->account->name;
-            if (is_array($accountName)) {
-                return $accountName['en'] ?? (empty($accountName) ? '' : (string) array_values($accountName)[0]);
-            }
-
-            return (string) ($accountName ?: '');
+            return TranslatableHelper::getLocalizedValue($l->account->name);
         });
 
         return $names->filter()->implode(', ');

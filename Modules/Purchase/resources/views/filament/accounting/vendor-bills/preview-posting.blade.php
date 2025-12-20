@@ -2,6 +2,7 @@
 @use(Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\AssetResource)
 @use(Modules\Accounting\Filament\Resources\Accounts\AccountResource)
 @use(App\Filament\Clusters\Settings\Resources\Companies\CompanyResource)
+@use(Modules\Foundation\Support\TranslatableHelper)
 
 <div>
     @if(!empty($preview['issues']))
@@ -48,8 +49,8 @@
                     <tr class="border-b">
                         <td class="py-2 pr-2">
                             @php
-                                $accCode = is_array($l['account_code'] ?? null) ? (string) (reset($l['account_code']) ?: '') : (string) ($l['account_code'] ?? '');
-                                $accName = is_array($l['account_name'] ?? null) ? (string) (reset($l['account_name']) ?: '') : (string) ($l['account_name'] ?? '');
+                                $accCode = TranslatableHelper::getLocalizedValue($l['account_code'] ?? null);
+                                $accName = TranslatableHelper::getLocalizedValue($l['account_name'] ?? null);
                                 $label = trim($accCode . ' ' . $accName);
                             @endphp
                             @if(!empty($l['account_id']))
@@ -62,8 +63,7 @@
                             @endif
                         </td>
                         <td class="py-2 pr-2">
-                            @php $desc = $l['description'] ?? '';
-                            $desc = is_array($desc) ? (string) (reset($desc) ?: '') : (string) $desc; @endphp
+                            @php $desc = TranslatableHelper::getLocalizedValue($l['description'] ?? null); @endphp
                             {{ $desc }}
                         </td>
                         <td class="py-2 pr-2 text-right">{{ number_format(($l['debit_minor'] ?? 0) / 100, 2) }}</td>

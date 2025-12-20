@@ -7,6 +7,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Translation\PotentiallyTranslatedString;
 use Modules\Accounting\Models\Account;
+use Modules\Foundation\Support\TranslatableHelper;
 
 class ActiveAccount implements ValidationRule
 {
@@ -24,7 +25,7 @@ class ActiveAccount implements ValidationRule
         }
 
         if ($account && $account->is_deprecated) {
-            $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
+            $accountName = TranslatableHelper::getLocalizedValue($account->name);
             $fail("The account '{$accountName}' is deprecated and cannot be used.");
         }
     }

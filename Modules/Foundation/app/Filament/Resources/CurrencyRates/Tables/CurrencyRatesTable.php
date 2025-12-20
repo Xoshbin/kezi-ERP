@@ -12,6 +12,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Support\TranslatableHelper;
 
 class CurrencyRatesTable
 {
@@ -58,7 +59,7 @@ class CurrencyRatesTable
                     ->label(__('foundation::currency.exchange_rates.currency'))
                     ->relationship('currency', 'name')
                     ->getOptionLabelFromRecordUsing(function (Currency $record): string {
-                        $currencyName = is_array($record->name) ? ($record->name['en'] ?? (empty($record->name) ? '' : (string) array_values($record->name)[0])) : (string) $record->name;
+                        $currencyName = TranslatableHelper::getLocalizedValue($record->name);
 
                         return "{$currencyName} ({$record->code})";
                     }),
