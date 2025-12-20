@@ -9,6 +9,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Support\TranslatableHelper;
 use Modules\HR\Models\Employee;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
@@ -54,7 +55,7 @@ class PayrollForm
                             if (! $record) {
                                 return '';
                             }
-                            $currencyName = is_array($record->name) ? ($record->name['en'] ?? (empty($record->name) ? '' : (string) array_values($record->name)[0])) : (string) $record->name;
+                            $currencyName = TranslatableHelper::getLocalizedValue($record->name);
 
                             return "{$currencyName} ({$record->code})";
                         })
