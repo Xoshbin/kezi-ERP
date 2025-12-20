@@ -1,0 +1,98 @@
+<?php
+
+namespace Modules\Purchase\Actions\Purchases;
+
+use Brick\Money\Money;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Modules\Purchase\DataTransferObjects\Purchases\UpdatePurchaseOrderDTO;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Models\PurchaseOrderLine;
+
+/**
+ * Action for updating an existing Purchase Order
+ */
+class UpdatePurchaseOrderAction
+{
+    public function __construct(
+        protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
+    ) {}
+
+    /**
+     * Execute the action to update a purchase order
+     */
+    public function execute(UpdatePurchaseOrderDTO $dto): PurchaseOrder
+    {
+        $purchaseOrder = $dto->purchaseOrder;
+
+        // Ensure the PO can be edited
+        if (! $purchaseOrder->canBeEdited()) {
+            throw new \Modules\Foundation\Exceptions\UpdateNotAllowedException(
+                'This purchase order cannot be edited in its current status.'
+            );
+        }
+
+        $this->lockDateService->enforce(
+            $purchaseOrder->company,
+            Carbon::parse($dto->po_date)
+        );
+
+        return DB::transaction(function () use ($dto, $purchaseOrder) {
+            // Update the purchase order header
+            $purchaseOrder->update([
+                'vendor_id' => $dto->vendor_id,
+                'currency_id' => $dto->currency_id,
+                'reference' => $dto->reference,
+                'po_date' => $dto->po_date,
+                'expected_delivery_date' => $dto->expected_delivery_date,
+                'exchange_rate_at_creation' => $dto->exchange_rate_at_creation,
+                'notes' => $dto->notes,
+                'terms_and_conditions' => $dto->terms_and_conditions,
+                'delivery_location_id' => $dto->delivery_location_id,
+                'status' => $dto->status ?? $purchaseOrder->status,
+            ]);
+
+            // Delete existing lines
+            $purchaseOrder->lines()->delete();
+
+            // Create new lines from DTO
+            $lines = [];
+            foreach ($dto->lines as $lineDto) {
+                $line = new PurchaseOrderLine([
+                    'purchase_order_id' => $purchaseOrder->id,
+                    'product_id' => $lineDto->product_id,
+                    'tax_id' => $lineDto->tax_id,
+                    'description' => $lineDto->description,
+                    'quantity' => $lineDto->quantity,
+                    'quantity_received' => 0,
+                    'unit_price' => $lineDto->unit_price,
+                    'subtotal' => Money::of(0, $purchaseOrder->currency->code),
+                    'total_line_tax' => Money::of(0, $purchaseOrder->currency->code),
+                    'total' => Money::of(0, $purchaseOrder->currency->code),
+                    'expected_delivery_date' => $lineDto->expected_delivery_date,
+                    'notes' => $lineDto->notes,
+                ]);
+
+                $lines[] = $line;
+            }
+
+            // Set relation and calculate totals
+            $purchaseOrder->setRelation('lines', collect($lines));
+            $purchaseOrder->calculateTotalsFromLines();
+            $purchaseOrder->save();
+
+            // Save all lines
+            foreach ($lines as $line) {
+                $line->purchase_order_id = $purchaseOrder->id;
+                // Load the tax relationship if needed for calculation
+                if ($line->tax_id) {
+                    $line->load('tax');
+                }
+                $line->calculateTotals();
+                $line->save();
+            }
+
+            return $purchaseOrder;
+        });
+    }
+}
