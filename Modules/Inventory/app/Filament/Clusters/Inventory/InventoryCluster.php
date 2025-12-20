@@ -15,4 +15,9 @@ class InventoryCluster extends Cluster
     {
         return __('navigation.clusters.inventory');
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 }
