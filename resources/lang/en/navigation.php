@@ -18,4 +18,7 @@ return [
         'inventory' => 'Inventory Management',
         'human_resources' => 'Human Resources',
     ],
+
+    // App Switcher
+    'app_switcher' => 'Apps',
 ];
