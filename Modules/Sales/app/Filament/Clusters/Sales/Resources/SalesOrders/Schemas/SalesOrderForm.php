@@ -284,6 +284,10 @@ class SalesOrderForm
                             ->live()
                             ->reorderable(true)
                             ->minItems(1)
+                            ->afterStateHydrated(function (callable $set, callable $get) {
+                                // Calculate totals when form is first loaded (e.g., on edit page or page refresh)
+                                static::updateTotals($set, $get);
+                            })
                             ->afterStateUpdated(function (callable $set, $state, callable $get) {
                                 static::updateTotals($set, $get);
                             })
