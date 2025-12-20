@@ -147,6 +147,21 @@ class EditSalesOrder extends EditRecord
             status: isset($data['status']) ? SalesOrderStatus::from($data['status']) : null,
         );
 
-        return app(UpdateSalesOrderAction::class)->execute($dto);
+        try {
+            return app(UpdateSalesOrderAction::class)->execute($dto);
+        } catch (\Modules\Foundation\Exceptions\UpdateNotAllowedException $e) {
+            \Filament\Notifications\Notification::make()
+                ->title(__('sales::sales_orders.notifications.update_not_allowed'))
+                ->body($e->getMessage())
+                ->warning()
+                ->persistent()
+                ->send();
+
+            // Halt the update process
+            $this->halt();
+
+            // This line will never be reached due to halt(), but satisfies the return type
+            throw $e;
+        }
     }
 }
