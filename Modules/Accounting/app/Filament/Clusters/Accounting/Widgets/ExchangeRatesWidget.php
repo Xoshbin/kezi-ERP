@@ -7,6 +7,7 @@ use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
+use Modules\Foundation\Support\TranslatableHelper;
 
 class ExchangeRatesWidget extends StatsOverviewWidget
 {
@@ -61,7 +62,7 @@ class ExchangeRatesWidget extends StatsOverviewWidget
                 }
             }
 
-            $currencyName = is_array($currency->name) ? ($currency->name['en'] ?? (empty($currency->name) ? '' : (string) array_values($currency->name)[0])) : (string) $currency->name;
+            $currencyName = TranslatableHelper::getLocalizedValue($currency->name);
             $stat = Stat::make(
                 $currency->code,
                 number_format((float) $latestRate->rate, 6)
