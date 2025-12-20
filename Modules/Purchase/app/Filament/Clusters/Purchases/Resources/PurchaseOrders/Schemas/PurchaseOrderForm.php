@@ -269,7 +269,18 @@ class PurchaseOrderForm
                         Grid::make(2)
                             ->schema([
                                 DatePicker::make('expected_delivery_date')
-                                    ->label(__('purchase::purchase_orders.fields.expected_delivery_date')),
+                                    ->label(__('purchase::purchase_orders.fields.expected_delivery_date'))
+                                    ->live()
+                                    ->afterStateUpdated(function (callable $set, callable $get, $state) {
+                                        // Update all line items' expected_delivery_date to match the header
+                                        $lines = $get('lines') ?? [];
+                                        if (! empty($lines)) {
+                                            foreach ($lines as $uuid => $line) {
+                                                $lines[$uuid]['expected_delivery_date'] = $state;
+                                            }
+                                            $set('lines', $lines);
+                                        }
+                                    }),
 
                                 Select::make('delivery_location_id')
                                     ->label(__('purchase::purchase_orders.fields.delivery_location'))
@@ -477,6 +488,7 @@ class PurchaseOrderForm
 
                                 DatePicker::make('expected_delivery_date')
                                     ->label(__('purchase::purchase_orders.fields.expected_delivery_date'))
+                                    ->default(fn (callable $get) => $get('../../expected_delivery_date'))
                                     ->columnSpan(3),
 
                                 Textarea::make('notes')
