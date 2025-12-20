@@ -78,11 +78,13 @@ return [
         'cancelled' => 'Cancelled',
     ],
     'notifications' => [
+        'confirmed' => 'Sales order confirmed successfully',
         'invoice_created' => 'Invoice created successfully',
         'invoice_creation_failed' => 'Failed to create invoice',
         'delivery_created' => 'Delivery created successfully',
         'delivery_created_count' => ':count delivery item(s) created',
         'delivery_creation_failed' => 'Failed to create delivery',
+        'update_not_allowed' => 'Update Not Allowed',
     ],
     'invoicing_status' => [
         'not_invoiced' => 'Not Invoiced',

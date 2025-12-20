@@ -141,6 +141,7 @@ return [
         'bill_created_successfully' => 'Vendor Bill Created Successfully',
         'bill_created_body' => 'Vendor bill :reference has been created and is ready for review.',
         'bill_creation_failed' => 'Failed to Create Vendor Bill',
+        'update_not_allowed' => 'Update Not Allowed',
     ],
 
     'help' => [
