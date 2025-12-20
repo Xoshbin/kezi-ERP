@@ -11,6 +11,7 @@ use Modules\Accounting\DataTransferObjects\Reports\ProfitAndLossStatementDTO;
 use Modules\Accounting\DataTransferObjects\Reports\ReportLineDTO;
 use Modules\Accounting\Enums\Accounting\JournalEntryState;
 use Modules\Accounting\Models\Account;
+use Modules\Foundation\Support\TranslatableHelper;
 
 class ProfitAndLossStatementService
 {
@@ -79,7 +80,9 @@ class ProfitAndLossStatementService
                 $balance = Money::ofMinor(-(int) $row->balance, $currency);
                 /** @var Account|null $account */
                 $account = $accounts->get($row->account_id);
-                $accountName = $account ? (is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name) : (string) $row->account_name;
+                $accountName = $account !== null
+                    ? TranslatableHelper::getLocalizedValue($account->name)
+                    : TranslatableHelper::getLocalizedValue($row->account_name);
 
                 return new ReportLineDTO(
                     accountId: $row->account_id,
@@ -100,7 +103,9 @@ class ProfitAndLossStatementService
                 $balance = Money::ofMinor((int) $row->balance, $currency);
                 /** @var Account|null $account */
                 $account = $accounts->get($row->account_id);
-                $accountName = $account ? (is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name) : (string) $row->account_name;
+                $accountName = $account !== null
+                    ? TranslatableHelper::getLocalizedValue($account->name)
+                    : TranslatableHelper::getLocalizedValue($row->account_name);
 
                 return new ReportLineDTO(
                     accountId: $row->account_id,

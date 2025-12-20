@@ -15,6 +15,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Models\Account;
+use Modules\Foundation\Support\TranslatableHelper;
 use Xoshbin\TranslatableSelect\Services\LocaleResolver;
 use Xoshbin\TranslatableSelect\Services\TranslatableSearchService;
 
@@ -115,7 +116,7 @@ class ViewGeneralLedger extends Page
                                 return Account::whereIn('id', $values)
                                     ->get()
                                     ->mapWithKeys(function (Account $account) {
-                                        $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
+                                        $accountName = TranslatableHelper::getLocalizedValue($account->name);
 
                                         return [$account->id => "{$account->code} - {$accountName}"];
                                     })

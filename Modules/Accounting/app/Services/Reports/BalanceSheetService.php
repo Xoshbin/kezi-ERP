@@ -12,6 +12,7 @@ use Modules\Accounting\DataTransferObjects\Reports\ReportLineDTO;
 use Modules\Accounting\Enums\Accounting\JournalEntryState;
 use Modules\Accounting\Exceptions\BalanceSheetNotBalancedException;
 use Modules\Accounting\Models\Account;
+use Modules\Foundation\Support\TranslatableHelper;
 
 class BalanceSheetService
 {
@@ -169,7 +170,9 @@ class BalanceSheetService
                 $balance = Money::ofMinor($row->balance, $currency);
                 $account = $accounts->get($row->account_id);
 
-                $accountName = $account ? (is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name) : $row->account_name;
+                $accountName = $account !== null
+                    ? TranslatableHelper::getLocalizedValue($account->name)
+                    : TranslatableHelper::getLocalizedValue($row->account_name);
 
                 return new ReportLineDTO(
                     accountId: $row->account_id,
