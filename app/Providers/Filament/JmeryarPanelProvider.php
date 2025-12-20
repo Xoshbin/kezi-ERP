@@ -95,6 +95,14 @@ class JmeryarPanelProvider extends PanelProvider
                     ->showBadge(false)
                     ->showBorder(true),
                 CustomFieldsPlugin::make()
+                    ->modelTypes([
+                        \Modules\Foundation\Models\Partner::class => __('Partners'),
+                        \Modules\Product\Models\Product::class => __('Products'),
+                        \Modules\HR\Models\Employee::class => __('Employees'),
+                        \Modules\HR\Models\Department::class => __('Departments'),
+                        \Modules\HR\Models\Position::class => __('Positions'),
+                        \Modules\Accounting\Models\Asset::class => __('Assets'),
+                    ])
                     ->cluster(SettingsCluster::class)
                     ->navigationSort(5),
                 SpatieTranslatablePlugin::make()
