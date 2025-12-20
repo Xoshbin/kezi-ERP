@@ -2,6 +2,7 @@
 
 namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages;
 
+use Brick\Money\Money;
 use Carbon\Carbon;
 use Exception;
 use Filament\Actions\Action;
@@ -11,7 +12,10 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
+use Modules\Purchase\Actions\Purchases\UpdatePurchaseOrderAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
+use Modules\Purchase\DataTransferObjects\Purchases\PurchaseOrderLineDTO;
+use Modules\Purchase\DataTransferObjects\Purchases\UpdatePurchaseOrderDTO;
 use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
 use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\PurchaseOrderResource;
 use Modules\Purchase\Models\PurchaseOrder;
@@ -209,5 +213,46 @@ class EditPurchaseOrder extends EditRecord
         $data['lines'] = $linesData;
 
         return $data;
+    }
+
+    protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
+    {
+        if (! $record instanceof PurchaseOrder) {
+            throw new \InvalidArgumentException('Expected PurchaseOrder record');
+        }
+
+        // Create line DTOs from form data
+        $lineDTOs = [];
+        foreach ($data['lines'] as $line) {
+            $lineDTOs[] = new PurchaseOrderLineDTO(
+                product_id: $line['product_id'],
+                description: $line['description'],
+                quantity: (float) $line['quantity'],
+                unit_price: Money::of($line['unit_price'], $record->currency->code),
+                tax_id: $line['tax_id'] ?? null,
+                expected_delivery_date: isset($line['expected_delivery_date'])
+                    ? Carbon::parse($line['expected_delivery_date'])
+                    : null,
+                notes: $line['notes'] ?? null,
+            );
+        }
+
+        // Create the update DTO
+        $dto = new UpdatePurchaseOrderDTO(
+            purchaseOrder: $record,
+            vendor_id: $data['vendor_id'],
+            currency_id: $data['currency_id'],
+            po_date: $data['po_date'],
+            lines: $lineDTOs,
+            reference: $data['reference'] ?? null,
+            expected_delivery_date: $data['expected_delivery_date'] ?? null,
+            exchange_rate_at_creation: $data['exchange_rate_at_creation'] ?? null,
+            notes: $data['notes'] ?? null,
+            terms_and_conditions: $data['terms_and_conditions'] ?? null,
+            delivery_location_id: $data['delivery_location_id'] ?? null,
+            status: isset($data['status']) ? PurchaseOrderStatus::from($data['status']) : null,
+        );
+
+        return app(UpdatePurchaseOrderAction::class)->execute($dto);
     }
 }

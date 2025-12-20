@@ -202,3 +202,75 @@ test('dynamically updates line currency when header currency changes', function 
     $wire->set('data.currency_id', $usdCurrency->id)
         ->assertHasNoFormErrors();
 });
+
+test('can update purchase order lines through filament edit page', function () {
+    // Create a product
+    $product = Product::factory()->create(['company_id' => $this->company->id]);
+    $product2 = Product::factory()->create(['company_id' => $this->company->id]);
+
+    // Create a purchase order with a line
+    $purchaseOrder = PurchaseOrder::factory()->create([
+        'company_id' => $this->company->id,
+        'vendor_id' => $this->vendor->id,
+        'currency_id' => $this->company->currency_id,
+        'created_by_user_id' => $this->user->id,
+        'status' => PurchaseOrderStatus::Draft,
+    ]);
+
+    PurchaseOrderLine::factory()->create([
+        'purchase_order_id' => $purchaseOrder->id,
+        'product_id' => $product->id,
+        'quantity' => 5,
+        'unit_price' => 100,
+        'description' => 'Original product line',
+    ]);
+
+    // Edit the purchase order - change quantity and add a new line
+    $livewire = Livewire::test(EditPurchaseOrder::class, [
+        'record' => $purchaseOrder->getRouteKey(),
+        'tenant' => $this->company,
+    ]);
+
+    $livewire->set('data.lines', [
+        [
+            'product_id' => $product->id,
+            'description' => 'Updated product line',
+            'quantity' => 10, // Changed from 5 to 10
+            'unit_price' => '150.00', // Changed from 100 to 150
+            'tax_id' => null,
+        ],
+        [
+            'product_id' => $product2->id,
+            'description' => 'New second line',
+            'quantity' => 3,
+            'unit_price' => '50.00',
+            'tax_id' => null,
+        ],
+    ]);
+
+    $livewire->fillForm([
+        'reference' => 'UPDATED-REF-001',
+    ]);
+
+    $livewire->call('save')
+        ->assertHasNoFormErrors();
+
+    // Verify the changes were saved
+    $purchaseOrder->refresh();
+    $purchaseOrder->load('lines');
+
+    expect($purchaseOrder->reference)->toBe('UPDATED-REF-001');
+    expect($purchaseOrder->lines)->toHaveCount(2);
+
+    // Check the first line was updated
+    $firstLine = $purchaseOrder->lines->where('product_id', $product->id)->first();
+    expect($firstLine)->not->toBeNull();
+    expect($firstLine->quantity)->toBe(10.0);
+    expect($firstLine->description)->toBe('Updated product line');
+
+    // Check the second line was added
+    $secondLine = $purchaseOrder->lines->where('product_id', $product2->id)->first();
+    expect($secondLine)->not->toBeNull();
+    expect($secondLine->quantity)->toBe(3.0);
+    expect($secondLine->description)->toBe('New second line');
+});
