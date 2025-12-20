@@ -100,6 +100,7 @@ return [
         'bill_created_successfully' => 'تم إنشاء فاتورة المورد بنجاح',
         'bill_created_body' => 'تم إنشاء فاتورة المورد :reference وهي جاهزة للمراجعة.',
         'bill_creation_failed' => 'فشل في إنشاء فاتورة المورد',
+        'update_not_allowed' => 'التحديث غير مسموح',
     ],
 
     'status' => [
