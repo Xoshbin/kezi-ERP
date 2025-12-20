@@ -121,7 +121,7 @@ it('cannot update confirmed sales order', function () {
         'description' => 'Original product line',
     ]);
 
-    // Try to update the confirmed sales order - should throw exception
+    // Try to update the confirmed sales order - should show notification and halt
     $livewire = livewire(EditSalesOrder::class, [
         'record' => $salesOrder->getRouteKey(),
     ]);
@@ -136,9 +136,9 @@ it('cannot update confirmed sales order', function () {
         ],
     ]);
 
-    // Expect the exception to be thrown
-    expect(fn () => $livewire->call('save'))
-        ->toThrow(\Modules\Foundation\Exceptions\UpdateNotAllowedException::class);
+    // The save action should be halted and a notification shown
+    $livewire->call('save')
+        ->assertNotified();
 
     // The order should not have been updated due to status restriction
     $salesOrder->refresh();
