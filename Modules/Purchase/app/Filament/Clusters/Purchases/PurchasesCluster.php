@@ -19,4 +19,9 @@ class PurchasesCluster extends Cluster
     {
         return __('purchase::purchases.navigation.label');
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 }

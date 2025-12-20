@@ -13,4 +13,9 @@ class HumanResourcesCluster extends Cluster
     {
         return __('navigation.clusters.human_resources');
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 }

@@ -646,16 +646,16 @@
         },
         {
             "name": "coolsam/modules",
-            "version": "v5.0.8",
+            "version": "v5.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/savannabits/filament-modules.git",
-                "reference": "304fe495c913a1ba675840c283efa588aea54455"
+                "reference": "ea57bf65ceb9508ebfa997c4d7877777ab91c92e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/savannabits/filament-modules/zipball/304fe495c913a1ba675840c283efa588aea54455",
-                "reference": "304fe495c913a1ba675840c283efa588aea54455",
+                "url": "https://api.github.com/repos/savannabits/filament-modules/zipball/ea57bf65ceb9508ebfa997c4d7877777ab91c92e",
+                "reference": "ea57bf65ceb9508ebfa997c4d7877777ab91c92e",
                 "shasum": ""
             },
             "require": {
@@ -719,20 +719,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-09-10T05:40:30+00:00"
+            "time": "2025-12-16T11:41:28+00:00"
         },
         {
             "name": "craft-forge/filament-language-switcher",
-            "version": "1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/craft-forge/filament-language-switcher.git",
-                "reference": "cd3beffb18110319f43f9fd32decb4a038a8feec"
+                "reference": "369cc3aad56e85382a0ab92b4e1c83f7c9700706"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/craft-forge/filament-language-switcher/zipball/cd3beffb18110319f43f9fd32decb4a038a8feec",
-                "reference": "cd3beffb18110319f43f9fd32decb4a038a8feec",
+                "url": "https://api.github.com/repos/craft-forge/filament-language-switcher/zipball/369cc3aad56e85382a0ab92b4e1c83f7c9700706",
+                "reference": "369cc3aad56e85382a0ab92b4e1c83f7c9700706",
                 "shasum": ""
             },
             "require": {
@@ -780,7 +780,7 @@
                 "issues": "https://github.com/craft-forge/filament-language-switcher/issues",
                 "source": "https://github.com/craft-forge/filament-language-switcher"
             },
-            "time": "2025-09-16T11:01:08+00:00"
+            "time": "2025-12-05T01:21:01+00:00"
         },
         {
             "name": "danharrin/date-format-converter",
@@ -2515,16 +2515,16 @@
         },
         {
             "name": "kirschbaum-development/eloquent-power-joins",
-            "version": "4.2.10",
+            "version": "4.2.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kirschbaum-development/eloquent-power-joins.git",
-                "reference": "ccda351a75701f5b0a6f94586d9a40f1114302b4"
+                "reference": "0e3e3372992e4bf82391b3c7b84b435c3db73588"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kirschbaum-development/eloquent-power-joins/zipball/ccda351a75701f5b0a6f94586d9a40f1114302b4",
-                "reference": "ccda351a75701f5b0a6f94586d9a40f1114302b4",
+                "url": "https://api.github.com/repos/kirschbaum-development/eloquent-power-joins/zipball/0e3e3372992e4bf82391b3c7b84b435c3db73588",
+                "reference": "0e3e3372992e4bf82391b3c7b84b435c3db73588",
                 "shasum": ""
             },
             "require": {
@@ -2572,9 +2572,9 @@
             ],
             "support": {
                 "issues": "https://github.com/kirschbaum-development/eloquent-power-joins/issues",
-                "source": "https://github.com/kirschbaum-development/eloquent-power-joins/tree/4.2.10"
+                "source": "https://github.com/kirschbaum-development/eloquent-power-joins/tree/4.2.11"
             },
-            "time": "2025-11-13T14:57:49+00:00"
+            "time": "2025-12-17T00:37:48+00:00"
         },
         {
             "name": "lara-zeus/spatie-translatable",
@@ -2636,16 +2636,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v12.42.0",
+            "version": "v12.43.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "509b33095564c5165366d81bbaa0afaac28abe75"
+                "reference": "195b893593a9298edee177c0844132ebaa02102f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/509b33095564c5165366d81bbaa0afaac28abe75",
-                "reference": "509b33095564c5165366d81bbaa0afaac28abe75",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/195b893593a9298edee177c0844132ebaa02102f",
+                "reference": "195b893593a9298edee177c0844132ebaa02102f",
                 "shasum": ""
             },
             "require": {
@@ -2854,7 +2854,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-12-09T15:51:23+00:00"
+            "time": "2025-12-16T18:53:08+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -3779,16 +3779,16 @@
         },
         {
             "name": "livewire/livewire",
-            "version": "v3.7.1",
+            "version": "v3.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/livewire/livewire.git",
-                "reference": "214da8f3a1199a88b56ab2fe901d4a607f784805"
+                "reference": "a5384df9fbd3eaf02e053bc49aabc8ace293fc1c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/livewire/livewire/zipball/214da8f3a1199a88b56ab2fe901d4a607f784805",
-                "reference": "214da8f3a1199a88b56ab2fe901d4a607f784805",
+                "url": "https://api.github.com/repos/livewire/livewire/zipball/a5384df9fbd3eaf02e053bc49aabc8ace293fc1c",
+                "reference": "a5384df9fbd3eaf02e053bc49aabc8ace293fc1c",
                 "shasum": ""
             },
             "require": {
@@ -3843,7 +3843,7 @@
             "description": "A front-end framework for Laravel.",
             "support": {
                 "issues": "https://github.com/livewire/livewire/issues",
-                "source": "https://github.com/livewire/livewire/tree/v3.7.1"
+                "source": "https://github.com/livewire/livewire/tree/v3.7.3"
             },
             "funding": [
                 {
@@ -3851,7 +3851,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-12-03T22:41:13+00:00"
+            "time": "2025-12-19T02:00:29+00:00"
         },
         {
             "name": "masterminds/html5",
@@ -5358,16 +5358,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.12.17",
+            "version": "v0.12.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "85fbbd9f3064e157fc21fe4362b2b5c19f2ea631"
+                "reference": "ddff0ac01beddc251786fe70367cd8bbdb258196"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/85fbbd9f3064e157fc21fe4362b2b5c19f2ea631",
-                "reference": "85fbbd9f3064e157fc21fe4362b2b5c19f2ea631",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/ddff0ac01beddc251786fe70367cd8bbdb258196",
+                "reference": "ddff0ac01beddc251786fe70367cd8bbdb258196",
                 "shasum": ""
             },
             "require": {
@@ -5431,9 +5431,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bobthecow/psysh/issues",
-                "source": "https://github.com/bobthecow/psysh/tree/v0.12.17"
+                "source": "https://github.com/bobthecow/psysh/tree/v0.12.18"
             },
-            "time": "2025-12-15T04:55:34+00:00"
+            "time": "2025-12-17T14:35:46+00:00"
         },
         {
             "name": "pxlrbt/filament-environment-indicator",
@@ -9296,12 +9296,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Xoshbin/filament-custom-fields.git",
-                "reference": "35f51a492063681abbc9b2919f4e5e3734cd5156"
+                "reference": "37644ac12ee1ae37dc25f4b4ab5a71f623357051"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Xoshbin/filament-custom-fields/zipball/35f51a492063681abbc9b2919f4e5e3734cd5156",
-                "reference": "35f51a492063681abbc9b2919f4e5e3734cd5156",
+                "url": "https://api.github.com/repos/Xoshbin/filament-custom-fields/zipball/37644ac12ee1ae37dc25f4b4ab5a71f623357051",
+                "reference": "37644ac12ee1ae37dc25f4b4ab5a71f623357051",
                 "shasum": ""
             },
             "require": {
@@ -9369,7 +9369,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-09-17T14:49:27+00:00"
+            "time": "2025-12-19T20:46:05+00:00"
         },
         {
             "name": "xoshbin/filament-translatable-select",
@@ -11740,25 +11740,25 @@
         },
         {
             "name": "laravel/boost",
-            "version": "v1.8.5",
+            "version": "v1.8.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/boost.git",
-                "reference": "99c15c392f3c6f049f0671dd5dc7b6e9a75cfe7e"
+                "reference": "7a5709a8134ed59d3e7f34fccbd74689830e296c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/boost/zipball/99c15c392f3c6f049f0671dd5dc7b6e9a75cfe7e",
-                "reference": "99c15c392f3c6f049f0671dd5dc7b6e9a75cfe7e",
+                "url": "https://api.github.com/repos/laravel/boost/zipball/7a5709a8134ed59d3e7f34fccbd74689830e296c",
+                "reference": "7a5709a8134ed59d3e7f34fccbd74689830e296c",
                 "shasum": ""
             },
             "require": {
                 "guzzlehttp/guzzle": "^7.9",
-                "illuminate/console": "^10.49.0|^11.45.3|^12.28.1",
-                "illuminate/contracts": "^10.49.0|^11.45.3|^12.28.1",
-                "illuminate/routing": "^10.49.0|^11.45.3|^12.28.1",
-                "illuminate/support": "^10.49.0|^11.45.3|^12.28.1",
-                "laravel/mcp": "^0.4.1",
+                "illuminate/console": "^10.49.0|^11.45.3|^12.41.1",
+                "illuminate/contracts": "^10.49.0|^11.45.3|^12.41.1",
+                "illuminate/routing": "^10.49.0|^11.45.3|^12.41.1",
+                "illuminate/support": "^10.49.0|^11.45.3|^12.41.1",
+                "laravel/mcp": "^0.5.1",
                 "laravel/prompts": "0.1.25|^0.3.6",
                 "laravel/roster": "^0.2.9",
                 "php": "^8.1"
@@ -11802,20 +11802,20 @@
                 "issues": "https://github.com/laravel/boost/issues",
                 "source": "https://github.com/laravel/boost"
             },
-            "time": "2025-12-08T21:54:49+00:00"
+            "time": "2025-12-19T15:04:12+00:00"
         },
         {
             "name": "laravel/mcp",
-            "version": "v0.4.2",
+            "version": "v0.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/mcp.git",
-                "reference": "1c7878be3931a19768f791ddf141af29f43fb4ef"
+                "reference": "10dedea054fa4eeaa9ef2ccbfdad6c3e1dbd17a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/mcp/zipball/1c7878be3931a19768f791ddf141af29f43fb4ef",
-                "reference": "1c7878be3931a19768f791ddf141af29f43fb4ef",
+                "url": "https://api.github.com/repos/laravel/mcp/zipball/10dedea054fa4eeaa9ef2ccbfdad6c3e1dbd17a4",
+                "reference": "10dedea054fa4eeaa9ef2ccbfdad6c3e1dbd17a4",
                 "shasum": ""
             },
             "require": {
@@ -11875,7 +11875,7 @@
                 "issues": "https://github.com/laravel/mcp/issues",
                 "source": "https://github.com/laravel/mcp"
             },
-            "time": "2025-12-07T15:49:15+00:00"
+            "time": "2025-12-17T06:14:23+00:00"
         },
         {
             "name": "laravel/pail",

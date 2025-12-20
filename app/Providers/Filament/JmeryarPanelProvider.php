@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use App\Filament\Pages\Tenancy\EditCompanyProfile;
 use App\Filament\Pages\Tenancy\RegisterCompany;
 use App\Models\Company;
@@ -16,12 +17,14 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
 use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
@@ -74,6 +77,10 @@ class JmeryarPanelProvider extends PanelProvider
             ->tenant(Company::class)
             ->tenantRegistration(RegisterCompany::class)
             ->tenantProfile(EditCompanyProfile::class)
+            ->renderHook(
+                PanelsRenderHook::TOPBAR_LOGO_AFTER,
+                fn (): string => Blade::render('<x-app-switcher />')
+            )
             ->plugins([
                 // JmeryarTheme::make(),
                 ModulesPlugin::make(),
@@ -87,7 +94,9 @@ class JmeryarPanelProvider extends PanelProvider
                 EnvironmentIndicatorPlugin::make()
                     ->showBadge(false)
                     ->showBorder(true),
-                CustomFieldsPlugin::make(),
+                CustomFieldsPlugin::make()
+                    ->cluster(SettingsCluster::class)
+                    ->navigationSort(5),
                 SpatieTranslatablePlugin::make()
                     ->defaultLocales(['en', 'ckb', 'ar']),
                 FilamentDeveloperLoginsPlugin::make()
