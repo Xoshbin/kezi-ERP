@@ -2,6 +2,7 @@
 @php use Modules\Foundation\Filament\Resources\Accounts\AccountResource; @endphp
 @php use Modules\Foundation\Filament\Resources\Companies\CompanyResource; @endphp
 @php use Modules\Foundation\Filament\Resources\Taxes\TaxResource; @endphp
+@php use Modules\Foundation\Support\TranslatableHelper; @endphp
 <div>
     @if(!empty($preview['issues']))
         <div class="p-3 mb-3 rounded bg-[var(--color-danger-50)] text-[var(--color-danger-800)]">
@@ -48,8 +49,8 @@
                 <tr class="border-b">
                     <td class="py-2 pr-2">
                         @php
-                            $accCode = is_array($l['account_code'] ?? null) ? (string) (reset($l['account_code']) ?: '') : (string) ($l['account_code'] ?? '');
-                            $accName = is_array($l['account_name'] ?? null) ? (string) (reset($l['account_name']) ?: '') : (string) ($l['account_name'] ?? '');
+                            $accCode = TranslatableHelper::getLocalizedValue($l['account_code'] ?? null);
+                            $accName = TranslatableHelper::getLocalizedValue($l['account_name'] ?? null);
                             $label = trim($accCode . ' ' . $accName);
                         @endphp
                         @if(!empty($l['account_id']))
@@ -60,7 +61,7 @@
                         @endif
                     </td>
                     <td class="py-2 pr-2">
-                        @php $desc = $l['description'] ?? ''; $desc = is_array($desc) ? (string) (reset($desc) ?: '') : (string) $desc; @endphp
+                        @php $desc = TranslatableHelper::getLocalizedValue($l['description'] ?? null); @endphp
                         {{ $desc }}
                     </td>
                     <td class="text-right py-2 pr-2">{{ number_format(($l['debit_minor'] ?? 0) / 100, 2) }}</td>
