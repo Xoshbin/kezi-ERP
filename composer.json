@@ -51,7 +51,14 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
-            "Modules\\": "Modules/"
+            "Modules\\Accounting\\": "Modules/Accounting/app/",
+            "Modules\\Foundation\\": "Modules/Foundation/app/",
+            "Modules\\HR\\": "Modules/HR/app/",
+            "Modules\\Inventory\\": "Modules/Inventory/app/",
+            "Modules\\Payment\\": "Modules/Payment/app/",
+            "Modules\\Product\\": "Modules/Product/app/",
+            "Modules\\Purchase\\": "Modules/Purchase/app/",
+            "Modules\\Sales\\": "Modules/Sales/app/"
         }
     },
     "autoload-dev": {
