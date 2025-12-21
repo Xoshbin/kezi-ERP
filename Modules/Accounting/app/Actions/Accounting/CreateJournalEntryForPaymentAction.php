@@ -79,7 +79,7 @@ class CreateJournalEntryForPaymentAction
                     debit: $zeroAmount,
                     credit: $paymentAmountInBase,
                     description: null,
-                    partner_id: null,
+                    partner_id: $payment->paid_to_from_partner_id,
                     analytic_account_id: null,
                 );
             } else { // Outbound
@@ -94,7 +94,7 @@ class CreateJournalEntryForPaymentAction
                     debit: $paymentAmountInBase,
                     credit: $zeroAmount,
                     description: null,
-                    partner_id: null,
+                    partner_id: $payment->paid_to_from_partner_id,
                     analytic_account_id: null,
                 );
                 $lines[] = new CreateJournalEntryLineDTO(

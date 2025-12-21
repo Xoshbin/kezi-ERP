@@ -12,6 +12,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
 use Modules\Accounting\Models\Account;
 use Modules\Sales\Actions\Sales\CreateDeliveryFromSalesOrderAction;
 use Modules\Sales\Actions\Sales\CreateInvoiceFromSalesOrderAction;
@@ -27,6 +28,23 @@ class ViewSalesOrder extends ViewRecord
     {
         return [
             Actions\EditAction::make(),
+
+            Action::make('confirm')
+                ->label(__('sales::sales_orders.actions.confirm'))
+                ->icon('heroicon-o-check-circle')
+                ->color('success')
+                ->requiresConfirmation()
+                ->action(function () {
+                    app(\Modules\Sales\Actions\Sales\ConfirmSalesOrderAction::class)->execute($this->record, auth()->user());
+
+                    Notification::make()
+                        ->title(__('sales::sales_orders.notifications.confirmed'))
+                        ->success()
+                        ->send();
+
+                    $this->refreshFormData(['status']);
+                })
+                ->visible(fn () => $this->record->status === \Modules\Sales\Enums\Sales\SalesOrderStatus::Draft),
 
             Action::make('create_invoice')
                 ->label(__('sales::sales_orders.actions.create_invoice'))
@@ -50,7 +68,7 @@ class ViewSalesOrder extends ViewRecord
                         ->label(__('sales::invoice.income_account'))
                         ->options(function () {
                             return Account::where('company_id', Filament::getTenant()?->id)
-                                ->where('account_type', 'income')
+                                ->where('type', 'income')
                                 ->pluck('name', 'id');
                         })
                         ->required()
@@ -73,7 +91,7 @@ class ViewSalesOrder extends ViewRecord
                             ->success()
                             ->send();
 
-                        return redirect()->route('filament.admin.resources.invoices.view', $invoice);
+                        return redirect()->to(InvoiceResource::getUrl('edit', ['record' => $invoice]));
                     } catch (Exception $e) {
                         Notification::make()
                             ->title(__('sales::sales_orders.notifications.invoice_creation_failed'))

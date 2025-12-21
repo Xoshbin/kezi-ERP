@@ -43,4 +43,7 @@ return [
         'details' => 'تفاصيل الشركة',
         'defaults' => 'إعدادات الشركة الافتراضية',
     ],
+
+    'enable_reconciliation' => 'Enable Reconciliation',
+    'enable_reconciliation_help' => 'Enable reconciliation functionality for this company. When disabled, all reconciliation features will be hidden.',
 ];

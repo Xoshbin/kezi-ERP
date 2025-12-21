@@ -5,6 +5,7 @@
     @php
         use Filament\Support\Facades\FilamentColor;
         use Filament\Support\Colors\Color as FsColor;
+        use Modules\Foundation\Support\TranslatableHelper;
         $gray = FilamentColor::getColor('gray');
         $danger = FilamentColor::getColor('danger');
         $g100 = FsColor::convertToRgb($gray[100]);
@@ -47,10 +48,9 @@
     <tbody>
     @foreach($preview['lines'] as $l)
         @php
-            $accCode = is_array($l['account_code'] ?? null) ? (string) (reset($l['account_code']) ?: '') : (string) ($l['account_code'] ?? '');
-            $accName = is_array($l['account_name'] ?? null) ? (string) (reset($l['account_name']) ?: '') : (string) ($l['account_name'] ?? '');
-            $desc = $l['description'] ?? '';
-            $desc = is_array($desc) ? (string) (reset($desc) ?: '') : (string) $desc;
+            $accCode = TranslatableHelper::getLocalizedValue($l['account_code'] ?? null);
+            $accName = TranslatableHelper::getLocalizedValue($l['account_name'] ?? null);
+            $desc = TranslatableHelper::getLocalizedValue($l['description'] ?? null);
         @endphp
         <tr>
             <td>{{ trim($accCode.' '.$accName) }}</td>

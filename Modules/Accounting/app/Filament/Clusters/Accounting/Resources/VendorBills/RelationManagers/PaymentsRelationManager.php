@@ -12,6 +12,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
@@ -35,85 +36,87 @@ class PaymentsRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('vendor_bill.payments_relation_manager.title');
+        return __('accounting::vendor_bill.payments_relation_manager.title');
     }
 
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make(__('vendor_bill.payments_relation_manager.payment_details'))
+                Section::make(__('accounting::vendor_bill.payments_relation_manager.payment_details'))
                     ->schema([
-                        Select::make('company_id')
-                            ->relationship('company', 'name')
-                            ->label(__('vendor_bill.payments_relation_manager.company'))
-                            ->required()
-                            ->default(function (): ?int {
-                                $owner = $this->getOwnerRecord();
+                        Grid::make(2)
+                            ->schema([
+                                Select::make('company_id')
+                                    ->relationship('company', 'name')
+                                    ->label(__('accounting::vendor_bill.payments_relation_manager.company'))
+                                    ->required()
+                                    ->default(function (): ?int {
+                                        $owner = $this->getOwnerRecord();
 
-                                return $owner instanceof VendorBill ? $owner->company_id : null;
-                            }),
+                                        return $owner instanceof VendorBill ? $owner->company_id : null;
+                                    }),
 
-                        Select::make('journal_id')
-                            ->relationship('journal', 'name')
-                            ->label(__('vendor_bill.payments_relation_manager.journal'))
-                            ->required(),
+                                Select::make('journal_id')
+                                    ->relationship('journal', 'name')
+                                    ->label(__('accounting::vendor_bill.payments_relation_manager.journal'))
+                                    ->required(),
 
-                        Select::make('currency_id')
-                            ->relationship('currency', 'name')
-                            ->label(__('vendor_bill.payments_relation_manager.currency'))
-                            ->required()
-                            ->default(function (): ?int {
-                                $owner = $this->getOwnerRecord();
+                                Select::make('currency_id')
+                                    ->relationship('currency', 'name')
+                                    ->label(__('accounting::vendor_bill.payments_relation_manager.currency'))
+                                    ->required()
+                                    ->default(function (): ?int {
+                                        $owner = $this->getOwnerRecord();
 
-                                return $owner instanceof VendorBill ? $owner->currency_id : null;
-                            }),
+                                        return $owner instanceof VendorBill ? $owner->currency_id : null;
+                                    }),
 
-                        DatePicker::make('payment_date')
-                            ->label(__('vendor_bill.payments_relation_manager.payment_date'))
-                            ->required()
-                            ->default(now()),
+                                DatePicker::make('payment_date')
+                                    ->label(__('accounting::vendor_bill.payments_relation_manager.payment_date'))
+                                    ->required()
+                                    ->default(now()),
 
-                        TextInput::make('amount')
-                            ->label(__('vendor_bill.payments_relation_manager.amount'))
-                            ->required()
-                            ->numeric()
-                            ->step(0.01),
+                                TextInput::make('amount')
+                                    ->label(__('accounting::vendor_bill.payments_relation_manager.amount'))
+                                    ->required()
+                                    ->numeric()
+                                    ->step(0.01),
 
-                        Select::make('payment_type')
-                            ->label(__('vendor_bill.payments_relation_manager.payment_type'))
-                            ->options([
-                                PaymentType::Inbound->value => PaymentType::Inbound->label(),
-                                PaymentType::Outbound->value => PaymentType::Outbound->label(),
-                            ])
-                            ->required()
-                            ->default(PaymentType::Outbound->value),
+                                Select::make('payment_type')
+                                    ->label(__('accounting::vendor_bill.payments_relation_manager.payment_type'))
+                                    ->options([
+                                        PaymentType::Inbound->value => PaymentType::Inbound->label(),
+                                        PaymentType::Outbound->value => PaymentType::Outbound->label(),
+                                    ])
+                                    ->required()
+                                    ->default(PaymentType::Outbound->value),
 
-                        TextInput::make('reference')
-                            ->label(__('vendor_bill.payments_relation_manager.reference'))
-                            ->maxLength(255),
+                                TextInput::make('reference')
+                                    ->label(__('accounting::vendor_bill.payments_relation_manager.reference'))
+                                    ->maxLength(255),
 
-                        Select::make('status')
-                            ->label(__('vendor_bill.payments_relation_manager.status'))
-                            ->options([
-                                PaymentStatus::Draft->value => PaymentStatus::Draft->label(),
-                                PaymentStatus::Confirmed->value => PaymentStatus::Confirmed->label(),
-                                PaymentStatus::Reconciled->value => PaymentStatus::Reconciled->label(),
-                                PaymentStatus::Canceled->value => PaymentStatus::Canceled->label(),
-                            ])
-                            ->required()
-                            ->default(PaymentStatus::Draft->value),
-                    ])
-                    ->columns(2),
+                                Select::make('status')
+                                    ->label(__('accounting::vendor_bill.payments_relation_manager.status'))
+                                    ->options([
+                                        PaymentStatus::Draft->value => PaymentStatus::Draft->label(),
+                                        PaymentStatus::Confirmed->value => PaymentStatus::Confirmed->label(),
+                                        PaymentStatus::Reconciled->value => PaymentStatus::Reconciled->label(),
+                                        PaymentStatus::Canceled->value => PaymentStatus::Canceled->label(),
+                                    ])
+                                    ->required()
+                                    ->default(PaymentStatus::Draft->value),
+                            ]),
+                    ]),
 
-                Section::make(__('vendor_bill.payments_relation_manager.application_details'))
+                Section::make(__('accounting::vendor_bill.payments_relation_manager.application_details'))
                     ->schema([
                         TextInput::make('pivot.amount_applied')
-                            ->label(__('vendor_bill.payments_relation_manager.amount_applied'))
+                            ->label(__('accounting::vendor_bill.payments_relation_manager.amount_applied'))
                             ->required()
                             ->numeric()
                             ->step(0.01)
-                            ->helperText(__('vendor_bill.payments_relation_manager.amount_applied_help')),
+                            ->helperText(__('accounting::vendor_bill.payments_relation_manager.amount_applied_help')),
                     ]),
             ]);
     }
@@ -124,25 +127,25 @@ class PaymentsRelationManager extends RelationManager
             ->recordTitleAttribute('reference')
             ->columns([
                 TextColumn::make('payment_date')
-                    ->label(__('vendor_bill.payments_relation_manager.payment_date'))
+                    ->label(__('accounting::vendor_bill.payments_relation_manager.payment_date'))
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('reference')
-                    ->label(__('vendor_bill.payments_relation_manager.reference'))
+                    ->label(__('accounting::vendor_bill.payments_relation_manager.reference'))
                     ->searchable()
-                    ->placeholder(__('vendor_bill.payments_relation_manager.no_reference')),
+                    ->placeholder(__('accounting::vendor_bill.payments_relation_manager.no_reference')),
 
                 MoneyColumn::make('amount')
-                    ->label(__('vendor_bill.payments_relation_manager.amount'))
+                    ->label(__('accounting::vendor_bill.payments_relation_manager.amount'))
                     ->sortable(),
 
                 MoneyColumn::make('pivot.amount_applied')
-                    ->label(__('vendor_bill.payments_relation_manager.amount_applied'))
+                    ->label(__('accounting::vendor_bill.payments_relation_manager.amount_applied'))
                     ->sortable(),
 
                 TextColumn::make('payment_type')
-                    ->label(__('vendor_bill.payments_relation_manager.payment_type'))
+                    ->label(__('accounting::vendor_bill.payments_relation_manager.payment_type'))
                     ->formatStateUsing(fn (PaymentType $state): string => $state->label())
                     ->badge()
                     ->color(fn (PaymentType $state): string => match ($state) {
@@ -151,7 +154,7 @@ class PaymentsRelationManager extends RelationManager
                     }),
 
                 TextColumn::make('status')
-                    ->label(__('vendor_bill.payments_relation_manager.status'))
+                    ->label(__('accounting::vendor_bill.payments_relation_manager.status'))
                     ->formatStateUsing(fn (PaymentStatus $state): string => $state->label())
                     ->badge()
                     ->color(fn (PaymentStatus $state): string => match ($state) {
@@ -162,17 +165,17 @@ class PaymentsRelationManager extends RelationManager
                     }),
 
                 TextColumn::make('journal.name')
-                    ->label(__('vendor_bill.payments_relation_manager.journal'))
+                    ->label(__('accounting::vendor_bill.payments_relation_manager.journal'))
                     ->toggleable(),
 
                 TextColumn::make('journalEntry.id')
-                    ->label(__('vendor_bill.payments_relation_manager.journal_entry'))
-                    ->placeholder(__('vendor_bill.payments_relation_manager.no_journal_entry'))
+                    ->label(__('accounting::vendor_bill.payments_relation_manager.journal_entry'))
+                    ->placeholder(__('accounting::vendor_bill.payments_relation_manager.no_journal_entry'))
                     ->toggleable(),
 
                 TextColumn::make('bankStatementLines.description')
-                    ->label(__('vendor_bill.payments_relation_manager.bank_statement_reference'))
-                    ->placeholder(__('vendor_bill.payments_relation_manager.not_reconciled'))
+                    ->label(__('accounting::vendor_bill.payments_relation_manager.bank_statement_reference'))
+                    ->placeholder(__('accounting::vendor_bill.payments_relation_manager.not_reconciled'))
                     ->limit(30)
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
@@ -185,13 +188,13 @@ class PaymentsRelationManager extends RelationManager
                     ->toggleable(),
 
                 TextColumn::make('bankStatementLines.date')
-                    ->label(__('vendor_bill.payments_relation_manager.reconciliation_date'))
+                    ->label(__('accounting::vendor_bill.payments_relation_manager.reconciliation_date'))
                     ->date()
-                    ->placeholder(__('vendor_bill.payments_relation_manager.not_reconciled'))
+                    ->placeholder(__('accounting::vendor_bill.payments_relation_manager.not_reconciled'))
                     ->toggleable(),
 
                 IconColumn::make('is_reconciled')
-                    ->label(__('vendor_bill.payments_relation_manager.reconciliation_status'))
+                    ->label(__('accounting::vendor_bill.payments_relation_manager.reconciliation_status'))
                     ->getStateUsing(fn (Payment $record): bool => $record->status === PaymentStatus::Reconciled)
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
@@ -201,14 +204,14 @@ class PaymentsRelationManager extends RelationManager
                     ->toggleable(),
 
                 TextColumn::make('created_at')
-                    ->label(__('vendor_bill.payments_relation_manager.created_at'))
+                    ->label(__('accounting::vendor_bill.payments_relation_manager.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->label(__('vendor_bill.payments_relation_manager.filter_status'))
+                    ->label(__('accounting::vendor_bill.payments_relation_manager.filter_status'))
                     ->options([
                         PaymentStatus::Draft->value => PaymentStatus::Draft->label(),
                         PaymentStatus::Confirmed->value => PaymentStatus::Confirmed->label(),
@@ -217,17 +220,17 @@ class PaymentsRelationManager extends RelationManager
                     ]),
 
                 SelectFilter::make('payment_type')
-                    ->label(__('vendor_bill.payments_relation_manager.filter_payment_type'))
+                    ->label(__('accounting::vendor_bill.payments_relation_manager.filter_payment_type'))
                     ->options([
                         PaymentType::Inbound->value => PaymentType::Inbound->label(),
                         PaymentType::Outbound->value => PaymentType::Outbound->label(),
                     ]),
 
                 TernaryFilter::make('is_reconciled')
-                    ->label(__('vendor_bill.payments_relation_manager.filter_reconciliation_status'))
-                    ->placeholder(__('vendor_bill.payments_relation_manager.filter_all_reconciliation'))
-                    ->trueLabel(__('vendor_bill.payments_relation_manager.filter_reconciled'))
-                    ->falseLabel(__('vendor_bill.payments_relation_manager.filter_not_reconciled'))
+                    ->label(__('accounting::vendor_bill.payments_relation_manager.filter_reconciliation_status'))
+                    ->placeholder(__('accounting::vendor_bill.payments_relation_manager.filter_all_reconciliation'))
+                    ->trueLabel(__('accounting::vendor_bill.payments_relation_manager.filter_reconciled'))
+                    ->falseLabel(__('accounting::vendor_bill.payments_relation_manager.filter_not_reconciled'))
                     ->queries(
                         true: fn (Builder $query) => $query->where('status', PaymentStatus::Reconciled),
                         false: fn (Builder $query) => $query->where('status', '!=', PaymentStatus::Reconciled),
@@ -235,7 +238,7 @@ class PaymentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label(__('vendor_bill.payments_relation_manager.create_payment'))
+                    ->label(__('accounting::vendor_bill.payments_relation_manager.create_payment'))
                     ->mutateDataUsing(function (array $data): array {
                         $owner = $this->getOwnerRecord();
                         $data['paid_to_from_partner_id'] = $owner instanceof VendorBill ? $owner->vendor_id : null;
@@ -247,13 +250,13 @@ class PaymentsRelationManager extends RelationManager
                 ViewAction::make(),
                 EditAction::make(),
                 DetachAction::make()
-                    ->label(__('vendor_bill.payments_relation_manager.detach'))
+                    ->label(__('accounting::vendor_bill.payments_relation_manager.detach'))
                     ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DetachBulkAction::make()
-                        ->label(__('vendor_bill.payments_relation_manager.detach_selected')),
+                        ->label(__('accounting::vendor_bill.payments_relation_manager.detach_selected')),
                 ]),
             ])
             ->defaultSort('payment_date', 'desc');

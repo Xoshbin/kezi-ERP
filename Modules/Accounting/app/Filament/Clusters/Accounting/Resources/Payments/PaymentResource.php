@@ -135,7 +135,7 @@ class PaymentResource extends Resource
                                 ->searchable()
                                 ->relationship('journal', 'name')
                                 ->label(__('payment::payment.form.journal_id'))
-                                ->searchableFields(['name', 'code'])
+                                ->searchableFields(['name', 'short_code'])
                                 ->preload()
                                 ->required()
                                 ->columnSpanFull(),

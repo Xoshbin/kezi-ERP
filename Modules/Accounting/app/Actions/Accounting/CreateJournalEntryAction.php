@@ -8,14 +8,16 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Modules\Accounting\Contracts\JournalEntryCreatorContract;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Accounting\Models\JournalEntryLine;
 use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Support\TranslatableHelper;
 use RuntimeException;
 
-class CreateJournalEntryAction
+class CreateJournalEntryAction implements JournalEntryCreatorContract
 {
     public function __construct(
         private readonly \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
@@ -65,7 +67,7 @@ class CreateJournalEntryAction
         foreach ($dto->lines as $index => $line) {
             $account = Account::find($line->account_id);
             if ($account && $account->is_deprecated) {
-                $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
+                $accountName = TranslatableHelper::getLocalizedValue($account->name);
                 throw ValidationException::withMessages([
                     "lines.{$index}.account_id" => "Account '{$accountName}' is deprecated and cannot be used.",
                 ]);
@@ -74,7 +76,7 @@ class CreateJournalEntryAction
             // Enforce account currency lock
             if ($account && $account->currency_id && $account->currency_id !== $dto->currency_id) {
                 $accountCurrency = Currency::findOrFail($account->currency_id);
-                $accountName = is_array($account->name) ? ($account->name['en'] ?? (empty($account->name) ? '' : (string) array_values($account->name)[0])) : (string) $account->name;
+                $accountName = TranslatableHelper::getLocalizedValue($account->name);
                 $accountCurrencyCode = $accountCurrency->code;
                 throw ValidationException::withMessages([
                     "lines.{$index}.account_id" => "Account '{$accountName}' is locked to {$accountCurrencyCode} currency but transaction is in {$currency->code}.",

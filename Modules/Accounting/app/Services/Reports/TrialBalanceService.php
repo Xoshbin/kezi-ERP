@@ -9,6 +9,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Modules\Accounting\DataTransferObjects\Reports\TrialBalanceDTO;
 use Modules\Accounting\DataTransferObjects\Reports\TrialBalanceLineDTO;
+use Modules\Accounting\Models\Account;
+use Modules\Foundation\Support\TranslatableHelper;
 
 class TrialBalanceService
 {
@@ -56,10 +58,15 @@ class TrialBalanceService
             return $result->balance != 0;
         });
 
+        // Get account models to access translated names via HasTranslations trait
+        $accountIds = $results->pluck('account_id')->unique();
+        /** @var \Illuminate\Database\Eloquent\Collection<int, Account> $accounts */
+        $accounts = $company->accounts()->whereIn('id', $accountIds)->get()->keyBy('id');
+
         $totalDebit = $zero;
         $totalCredit = $zero;
 
-        $reportLines = $results->map(function (object $row) use ($currency, $zero, &$totalDebit, &$totalCredit) {
+        $reportLines = $results->map(function (object $row) use ($currency, $zero, &$totalDebit, &$totalCredit, $accounts) {
             $balance = Money::ofMinor((int) $row->balance, $currency);
             $debit = $zero;
             $credit = $zero;
@@ -74,10 +81,16 @@ class TrialBalanceService
             $totalDebit = $totalDebit->plus($debit);
             $totalCredit = $totalCredit->plus($credit);
 
+            // Get the localized account name from the Eloquent model (HasTranslations trait)
+            $account = $accounts->get($row->account_id);
+            $accountName = $account !== null
+                ? TranslatableHelper::getLocalizedValue($account->name)
+                : TranslatableHelper::getLocalizedValue($row->account_name);
+
             return new TrialBalanceLineDTO(
                 accountId: $row->account_id,
                 accountCode: $row->account_code,
-                accountName: $row->account_name,
+                accountName: $accountName,
                 accountType: \Modules\Accounting\Enums\Accounting\AccountType::from($row->account_type),
                 debit: $debit,
                 credit: $credit

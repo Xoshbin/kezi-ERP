@@ -76,11 +76,13 @@ return [
         'cancelled' => 'هەڵوەشاوە',
     ],
     'notifications' => [
+        'confirmed' => 'داواکاری فرۆشتن بە سەرکەوتوویی پەسەندکرا',
         'invoice_created' => 'پسوڵە بە سەرکەوتوویی دروستکرا',
         'invoice_creation_failed' => 'نەتوانرا پسوڵە دروست بکرێت',
         'delivery_created' => 'گەیاندن بە سەرکەوتوویی دروستکرا',
         'delivery_created_count' => ':count بڕگەی گەیاندن دروستکرا',
         'delivery_creation_failed' => 'نەتوانرا گەیاندن دروست بکرێت',
+        'update_not_allowed' => 'نوێکردنەوە ڕێگەپێنەدراوە',
     ],
     'invoicing_status' => [
         'not_invoiced' => 'پسوڵە نەکراوە',

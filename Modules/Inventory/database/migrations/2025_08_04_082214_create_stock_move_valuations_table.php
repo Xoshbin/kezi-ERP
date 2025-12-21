@@ -17,7 +17,8 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products');
             $table->foreignId('stock_move_id')->constrained('stock_moves');
             $table->decimal('quantity', 15, 4);
-            $table->decimal('cost_impact', 15, 4);
+            $table->bigInteger('cost_impact');
+
             $table->string('valuation_method');
             $table->string('move_type');
             $table->foreignId('journal_entry_id')->nullable()->constrained('journal_entries');
