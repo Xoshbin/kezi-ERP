@@ -14,6 +14,7 @@ use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Foundation\Enums\Partners\PartnerType;
 use Modules\Foundation\Models\Partner;
+use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
 use Modules\Inventory\Enums\Inventory\StockPickingState;
 use Modules\Inventory\Models\StockPicking;
 use Modules\Product\Enums\Products\ProductType;
@@ -40,6 +41,11 @@ beforeEach(function () {
         ->withDefaultJournals()
         ->withDefaultStockLocations()
         ->create();
+
+    // Set to MANUAL mode since this E2E test requires stock picking creation from PO confirmation
+    $this->company->update([
+        'inventory_accounting_mode' => InventoryAccountingMode::MANUAL_INVENTORY_RECORDING,
+    ]);
 
     $this->usd = $this->company->currency;
     $this->user = User::factory()->create();
