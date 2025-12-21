@@ -4,13 +4,14 @@ namespace Modules\Accounting\Actions\Accounting;
 
 use App\Models\User;
 use Brick\Money\Money;
+use Modules\Accounting\Contracts\AdjustmentJournalEntryCreatorContract;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Inventory\Models\AdjustmentDocument;
 use RuntimeException;
 
-class CreateJournalEntryForAdjustmentAction
+class CreateJournalEntryForAdjustmentAction implements AdjustmentJournalEntryCreatorContract
 {
     public function __construct(private readonly CreateJournalEntryAction $createJournalEntryAction) {}
 

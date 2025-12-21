@@ -3,6 +3,8 @@
 return [
     // Labels
     'label' => 'مستخدم',
+    'singular' => 'User',
+    'plural' => 'Users',
     'plural_label' => 'مستخدمون',
 
     // Forms
@@ -59,4 +61,30 @@ return [
     'email_unique' => 'البريد الإلكتروني مستخدم بالفعل',
     'password_min' => 'كلمة المرور يجب أن تكون 8 أحرف على الأقل',
     'password_confirmed' => 'تأكيد كلمة المرور غير متطابق',
+
+    'column' => [
+        'name' => 'Name',
+        'email' => 'Email',
+        'roles' => 'Roles',
+        'created_at' => 'Created At',
+        'company' => [
+            'name' => 'Company',
+        ],
+        'email_verified_at' => 'Email Verified At',
+        'updated_at' => 'Updated At',
+    ],
+
+    'page' => [
+        'profile' => 'Profile',
+        'settings' => 'Settings',
+        'index' => [
+            'title' => 'Users',
+        ],
+        'create' => [
+            'title' => 'Create User',
+        ],
+        'edit' => [
+            'title' => 'Edit User',
+        ],
+    ],
 ];

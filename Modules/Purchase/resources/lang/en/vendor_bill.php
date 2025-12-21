@@ -79,6 +79,7 @@ return [
     'notification_confirm_bill_error' => 'Error confirming bill',
     'notification_bill_reset_success' => 'Bill reset to draft',
     'notification_reset_bill_error' => 'Error resetting bill',
+    'notification_update_not_allowed' => 'Update Not Allowed',
 
     // Validation Messages
     'validation_no_line_items' => 'Cannot confirm vendor bill without line items',

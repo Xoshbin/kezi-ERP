@@ -5,7 +5,7 @@
 
 /**
  * A helper file for Laravel, to provide autocomplete information to your IDE
- * Generated for Laravel 12.41.1.
+ * Generated for Laravel 12.43.1.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
@@ -1217,8 +1217,6 @@ namespace Illuminate\Support\Facades {
         /**
          * Define a contextual binding based on an attribute.
          *
-         * @param string $attribute
-         * @param \Closure $handler
          * @return void
          * @static
          */
@@ -1237,7 +1235,6 @@ namespace Illuminate\Support\Facades {
          * `has($id)` returning true does not mean that `get($id)` will not throw an exception.
          * It does however mean that `get($id)` will not throw a `NotFoundExceptionInterface`.
          *
-         * @return bool
          * @param string $id Identifier of the entry to look for.
          * @return bool
          * @static
@@ -1449,7 +1446,6 @@ namespace Illuminate\Support\Facades {
          * "Extend" an abstract type in the container.
          *
          * @param string $abstract
-         * @param \Closure $closure
          * @return void
          * @throws \InvalidArgumentException
          * @static
@@ -1526,7 +1522,6 @@ namespace Illuminate\Support\Facades {
          * Bind a new callback to an abstract's rebind event.
          *
          * @param string $abstract
-         * @param \Closure $callback
          * @return mixed
          * @static
          */
@@ -1556,8 +1551,6 @@ namespace Illuminate\Support\Facades {
         /**
          * Wrap the given closure such that its dependencies will be injected when executed.
          *
-         * @param \Closure $callback
-         * @param array $parameters
          * @return \Closure
          * @static
          */
@@ -1605,7 +1598,6 @@ namespace Illuminate\Support\Facades {
          *
          * @template TClass of object
          * @param string|class-string<TClass>|callable $abstract
-         * @param array $parameters
          * @return ($abstract is class-string<TClass> ? TClass : mixed)
          * @throws \Illuminate\Contracts\Container\BindingResolutionException
          * @static
@@ -1652,7 +1644,6 @@ namespace Illuminate\Support\Facades {
         /**
          * Resolve a dependency based on an attribute.
          *
-         * @param \ReflectionAttribute $attribute
          * @return mixed
          * @static
          */
@@ -1667,7 +1658,6 @@ namespace Illuminate\Support\Facades {
          * Register a new before resolving callback for all types.
          *
          * @param \Closure|string $abstract
-         * @param \Closure|null $callback
          * @return void
          * @static
          */
@@ -1682,7 +1672,6 @@ namespace Illuminate\Support\Facades {
          * Register a new resolving callback.
          *
          * @param \Closure|string $abstract
-         * @param \Closure|null $callback
          * @return void
          * @static
          */
@@ -1697,7 +1686,6 @@ namespace Illuminate\Support\Facades {
          * Register a new after resolving callback for all types.
          *
          * @param \Closure|string $abstract
-         * @param \Closure|null $callback
          * @return void
          * @static
          */
@@ -1711,8 +1699,6 @@ namespace Illuminate\Support\Facades {
         /**
          * Register a new after resolving attribute callback for all types.
          *
-         * @param string $attribute
-         * @param \Closure $callback
          * @return void
          * @static
          */
@@ -1875,7 +1861,6 @@ namespace Illuminate\Support\Facades {
         /**
          * Set the shared instance of the container.
          *
-         * @param \Illuminate\Contracts\Container\Container|null $container
          * @return \Illuminate\Contracts\Container\Container|static
          * @static
          */
@@ -1889,7 +1874,6 @@ namespace Illuminate\Support\Facades {
          * Determine if a given offset exists.
          *
          * @param string $key
-         * @return bool
          * @static
          */
         public static function offsetExists($key)
@@ -1903,7 +1887,6 @@ namespace Illuminate\Support\Facades {
          * Get the value at a given offset.
          *
          * @param string $key
-         * @return mixed
          * @static
          */
         public static function offsetGet($key)
@@ -1918,28 +1901,26 @@ namespace Illuminate\Support\Facades {
          *
          * @param string $key
          * @param mixed $value
-         * @return void
          * @static
          */
         public static function offsetSet($key, $value)
         {
             //Method inherited from \Illuminate\Container\Container 
             /** @var \Illuminate\Foundation\Application $instance */
-            $instance->offsetSet($key, $value);
+            return $instance->offsetSet($key, $value);
         }
 
         /**
          * Unset the value at a given offset.
          *
          * @param string $key
-         * @return void
          * @static
          */
         public static function offsetUnset($key)
         {
             //Method inherited from \Illuminate\Container\Container 
             /** @var \Illuminate\Foundation\Application $instance */
-            $instance->offsetUnset($key);
+            return $instance->offsetUnset($key);
         }
 
         /**
@@ -4213,7 +4194,7 @@ namespace Illuminate\Support\Facades {
         /**
          * Create a new assertion about a chained batch.
          *
-         * @param \Closure $callback
+         * @param \Closure(\Illuminate\Bus\PendingBatch):  bool  $callback
          * @return \Illuminate\Support\Testing\Fakes\ChainedBatchTruthTest
          * @static
          */
@@ -4226,7 +4207,7 @@ namespace Illuminate\Support\Facades {
         /**
          * Assert if a batch was dispatched based on a truth-test callback.
          *
-         * @param callable $callback
+         * @param callable(\Illuminate\Bus\PendingBatch):  bool  $callback
          * @return void
          * @static
          */
@@ -4318,8 +4299,8 @@ namespace Illuminate\Support\Facades {
         /**
          * Get all of the pending batches matching a truth-test callback.
          *
-         * @param callable $callback
-         * @return \Illuminate\Support\Collection
+         * @param callable(\Illuminate\Bus\PendingBatch):  bool  $callback
+         * @return \Illuminate\Support\Collection<int, \Illuminate\Bus\PendingBatch>
          * @static
          */
         public static function batched($callback)
@@ -6172,12 +6153,13 @@ namespace Illuminate\Support\Facades {
         }
 
         /**
+         * @template TReturn of mixed
+         * 
          * Run the callback function with the given context values and restore the original context state when complete.
-         *
-         * @param callable $callback
+         * @param (callable(): TReturn) $callback
          * @param array<string, mixed> $data
          * @param array<string, mixed> $hidden
-         * @return mixed
+         * @return TReturn
          * @throws \Throwable
          * @static
          */
@@ -9151,7 +9133,7 @@ namespace Illuminate\Support\Facades {
         }
 
         /**
-         * Guess the file extension from the mime-type of a given file.
+         * Guess the file extension from the MIME type of a given file.
          *
          * @param string $path
          * @return string|null
@@ -9178,7 +9160,7 @@ namespace Illuminate\Support\Facades {
         }
 
         /**
-         * Get the mime-type of a given file.
+         * Get the MIME type of a given file.
          *
          * @param string $path
          * @return string|false
@@ -10171,21 +10153,22 @@ namespace Illuminate\Support\Facades {
      * @method static \Illuminate\Http\Client\PendingRequest withMiddleware(callable $middleware)
      * @method static \Illuminate\Http\Client\PendingRequest withRequestMiddleware(callable $middleware)
      * @method static \Illuminate\Http\Client\PendingRequest withResponseMiddleware(callable $middleware)
+     * @method static \Illuminate\Http\Client\PendingRequest withAttributes(array $attributes)
      * @method static \Illuminate\Http\Client\PendingRequest beforeSending(callable $callback)
      * @method static \Illuminate\Http\Client\PendingRequest throw(callable|null $callback = null)
      * @method static \Illuminate\Http\Client\PendingRequest throwIf(callable|bool $condition)
      * @method static \Illuminate\Http\Client\PendingRequest throwUnless(callable|bool $condition)
      * @method static \Illuminate\Http\Client\PendingRequest dump()
      * @method static \Illuminate\Http\Client\PendingRequest dd()
-     * @method static \Illuminate\Http\Client\Response|\GuzzleHttp\Promise\PromiseInterface get(string $url, array|string|null $query = null)
-     * @method static \Illuminate\Http\Client\Response|\GuzzleHttp\Promise\PromiseInterface head(string $url, array|string|null $query = null)
-     * @method static \Illuminate\Http\Client\Response|\GuzzleHttp\Promise\PromiseInterface post(string $url, array|\JsonSerializable|\Illuminate\Contracts\Support\Arrayable $data = [])
-     * @method static \Illuminate\Http\Client\Response|\GuzzleHttp\Promise\PromiseInterface patch(string $url, array|\JsonSerializable|\Illuminate\Contracts\Support\Arrayable $data = [])
-     * @method static \Illuminate\Http\Client\Response|\GuzzleHttp\Promise\PromiseInterface put(string $url, array|\JsonSerializable|\Illuminate\Contracts\Support\Arrayable $data = [])
-     * @method static \Illuminate\Http\Client\Response|\GuzzleHttp\Promise\PromiseInterface delete(string $url, array|\JsonSerializable|\Illuminate\Contracts\Support\Arrayable $data = [])
+     * @method static void get(string $url, array|string|null $query = null)
+     * @method static void head(string $url, array|string|null $query = null)
+     * @method static void post(string $url, array|\JsonSerializable|\Illuminate\Contracts\Support\Arrayable $data = [])
+     * @method static void patch(string $url, array|\JsonSerializable|\Illuminate\Contracts\Support\Arrayable $data = [])
+     * @method static void put(string $url, array|\JsonSerializable|\Illuminate\Contracts\Support\Arrayable $data = [])
+     * @method static void delete(string $url, array|\JsonSerializable|\Illuminate\Contracts\Support\Arrayable $data = [])
      * @method static array pool(callable $callback, int|null $concurrency = null)
      * @method static \Illuminate\Http\Client\Batch batch(callable $callback)
-     * @method static \Illuminate\Http\Client\Response send(string $method, string $url, array $options = [])
+     * @method static void send(string $method, string $url, array $options = [])
      * @method static \GuzzleHttp\Client buildClient()
      * @method static \GuzzleHttp\Client createClient(\GuzzleHttp\HandlerStack $handlerStack)
      * @method static \GuzzleHttp\HandlerStack buildHandlerStack()
@@ -11514,6 +11497,20 @@ namespace Illuminate\Support\Facades {
         {
             /** @var \Illuminate\Support\Testing\Fakes\MailFake $instance */
             $instance->assertSent($mailable, $callback);
+        }
+
+        /**
+         * Assert if a mailable was sent a number of times.
+         *
+         * @param string $mailable
+         * @param int $times
+         * @return void
+         * @static
+         */
+        public static function assertSentTimes($mailable, $times = 1)
+        {
+            /** @var \Illuminate\Support\Testing\Fakes\MailFake $instance */
+            $instance->assertSentTimes($mailable, $times);
         }
 
         /**
@@ -15007,7 +15004,7 @@ namespace Illuminate\Support\Facades {
          * 
          * Suppose this request is instantiated from /mysite on localhost:
          * 
-         *  * http://localhost/mysite              returns an empty string
+         *  * http://localhost/mysite              returns '/'
          *  * http://localhost/mysite/about        returns '/about'
          *  * http://localhost/mysite/enco%20ded   returns '/enco%20ded'
          *  * http://localhost/mysite/about?var=1  returns '/about'
@@ -18567,6 +18564,40 @@ namespace Illuminate\Support\Facades {
             //Method inherited from \Illuminate\Database\Schema\Builder 
             /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
             $instance->whenTableDoesntHaveColumn($table, $column, $callback);
+        }
+
+        /**
+         * Execute a table builder callback if the given table has a given index.
+         *
+         * @param string $table
+         * @param string|array $index
+         * @param \Closure $callback
+         * @param string|null $type
+         * @return void
+         * @static
+         */
+        public static function whenTableHasIndex($table, $index, $callback, $type = null)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->whenTableHasIndex($table, $index, $callback, $type);
+        }
+
+        /**
+         * Execute a table builder callback if the given table doesn't have a given index.
+         *
+         * @param string $table
+         * @param string|array $index
+         * @param \Closure $callback
+         * @param string|null $type
+         * @return void
+         * @static
+         */
+        public static function whenTableDoesntHaveIndex($table, $index, $callback, $type = null)
+        {
+            //Method inherited from \Illuminate\Database\Schema\Builder 
+            /** @var \Illuminate\Database\Schema\MySqlBuilder $instance */
+            $instance->whenTableDoesntHaveIndex($table, $index, $callback, $type);
         }
 
         /**
@@ -23922,6 +23953,529 @@ namespace Livewire {
             }
     }
 
+namespace Nwidart\Modules\Facades {
+    /**
+     * @method static array getCached()
+     */
+    class Module extends \Nwidart\Modules\FileRepository {
+        /**
+         * Add other module location.
+         *
+         * @static
+         */
+        public static function addLocation($path)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->addLocation($path);
+        }
+
+        /**
+         * Get all additional paths.
+         *
+         * @static
+         */
+        public static function getPaths()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->getPaths();
+        }
+
+        /**
+         * Get scanned modules paths.
+         *
+         * @static
+         */
+        public static function getScanPaths()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->getScanPaths();
+        }
+
+        /**
+         * Get & scan all modules.
+         *
+         * @static
+         */
+        public static function scan()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->scan();
+        }
+
+        /**
+         * Get all modules.
+         *
+         * @static
+         */
+        public static function all()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->all();
+        }
+
+        /**
+         * Get all modules as collection instance.
+         *
+         * @static
+         */
+        public static function toCollection()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->toCollection();
+        }
+
+        /**
+         * Get modules by status.
+         *
+         * @static
+         */
+        public static function getByStatus($status)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->getByStatus($status);
+        }
+
+        /**
+         * Determine whether the given module exist.
+         *
+         * @static
+         */
+        public static function has($name)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->has($name);
+        }
+
+        /**
+         * Get list of enabled modules.
+         *
+         * @static
+         */
+        public static function allEnabled()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->allEnabled();
+        }
+
+        /**
+         * Get list of disabled modules.
+         *
+         * @static
+         */
+        public static function allDisabled()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->allDisabled();
+        }
+
+        /**
+         * Get count from all modules.
+         *
+         * @static
+         */
+        public static function count()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->count();
+        }
+
+        /**
+         * Get all ordered modules.
+         *
+         * @static
+         */
+        public static function getOrdered($direction = 'asc')
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->getOrdered($direction);
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * @static
+         */
+        public static function getPath()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->getPath();
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * @static
+         */
+        public static function register()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->register();
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * @static
+         */
+        public static function boot()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->boot();
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * @static
+         */
+        public static function find($name)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->find($name);
+        }
+
+        /**
+         * Find a specific module, if there return that, otherwise throw exception.
+         *
+         * @throws ModuleNotFoundException
+         * @static
+         */
+        public static function findOrFail($name)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->findOrFail($name);
+        }
+
+        /**
+         * Get all modules as laravel collection instance.
+         *
+         * @static
+         */
+        public static function collections($status = 1)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->collections($status);
+        }
+
+        /**
+         * Get module path for a specific module.
+         *
+         * @static
+         */
+        public static function getModulePath($module)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->getModulePath($module);
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * @static
+         */
+        public static function assetPath($module)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->assetPath($module);
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * @static
+         */
+        public static function config($key, $default = null)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->config($key, $default);
+        }
+
+        /**
+         * Get storage path for module used.
+         *
+         * @static
+         */
+        public static function getUsedStoragePath()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->getUsedStoragePath();
+        }
+
+        /**
+         * Set module used for cli session.
+         *
+         * @throws ModuleNotFoundException
+         * @static
+         */
+        public static function setUsed($name)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->setUsed($name);
+        }
+
+        /**
+         * Forget the module used for cli session.
+         *
+         * @static
+         */
+        public static function forgetUsed()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->forgetUsed();
+        }
+
+        /**
+         * Get module used for cli session.
+         *
+         * @throws \Nwidart\Modules\Exceptions\ModuleNotFoundException
+         * @static
+         */
+        public static function getUsedNow()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->getUsedNow();
+        }
+
+        /**
+         * Get laravel filesystem instance.
+         *
+         * @static
+         */
+        public static function getFiles()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->getFiles();
+        }
+
+        /**
+         * Get module assets path.
+         *
+         * @static
+         */
+        public static function getAssetsPath()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->getAssetsPath();
+        }
+
+        /**
+         * Get asset url from a specific module.
+         *
+         * @throws InvalidAssetPath
+         * @static
+         */
+        public static function asset($asset)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->asset($asset);
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * @static
+         */
+        public static function isEnabled($name)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->isEnabled($name);
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * @static
+         */
+        public static function isDisabled($name)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->isDisabled($name);
+        }
+
+        /**
+         * Enabling a specific module.
+         *
+         * @throws \Nwidart\Modules\Exceptions\ModuleNotFoundException
+         * @static
+         */
+        public static function enable($name)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->enable($name);
+        }
+
+        /**
+         * Disabling a specific module.
+         *
+         * @throws \Nwidart\Modules\Exceptions\ModuleNotFoundException
+         * @static
+         */
+        public static function disable($name)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->disable($name);
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * @static
+         */
+        public static function delete($name)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->delete($name);
+        }
+
+        /**
+         * Update dependencies for the specified module.
+         *
+         * @static
+         */
+        public static function update($module)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->update($module);
+        }
+
+        /**
+         * Install the specified module.
+         *
+         * @static
+         */
+        public static function install($name, $version = 'dev-master', $type = 'composer', $subtree = false)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->install($name, $version, $type, $subtree);
+        }
+
+        /**
+         * Get stub path.
+         *
+         * @static
+         */
+        public static function getStubPath()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->getStubPath();
+        }
+
+        /**
+         * Set stub path.
+         *
+         * @static
+         */
+        public static function setStubPath($stubPath)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->setStubPath($stubPath);
+        }
+
+        /**
+         * @static
+         */
+        public static function resetModules()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            /** @var \Nwidart\Modules\Laravel\LaravelFileRepository $instance */
+            return $instance->resetModules();
+        }
+
+        /**
+         * Register a custom macro.
+         *
+         * @param string $name
+         * @param object|callable $macro
+         * @param-closure-this static  $macro
+         * @return void
+         * @static
+         */
+        public static function macro($name, $macro)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            \Nwidart\Modules\Laravel\LaravelFileRepository::macro($name, $macro);
+        }
+
+        /**
+         * Mix another object into the class.
+         *
+         * @param object $mixin
+         * @param bool $replace
+         * @return void
+         * @throws \ReflectionException
+         * @static
+         */
+        public static function mixin($mixin, $replace = true)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            \Nwidart\Modules\Laravel\LaravelFileRepository::mixin($mixin, $replace);
+        }
+
+        /**
+         * Checks if macro is registered.
+         *
+         * @param string $name
+         * @return bool
+         * @static
+         */
+        public static function hasMacro($name)
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            return \Nwidart\Modules\Laravel\LaravelFileRepository::hasMacro($name);
+        }
+
+        /**
+         * Flush the existing macros.
+         *
+         * @return void
+         * @static
+         */
+        public static function flushMacros()
+        {
+            //Method inherited from \Nwidart\Modules\FileRepository 
+            \Nwidart\Modules\Laravel\LaravelFileRepository::flushMacros();
+        }
+
+            }
+    }
+
 namespace Xoshbin\CustomFields\Facades {
     /**
      * @see \Xoshbin\CustomFields\CustomFields
@@ -24027,6 +24581,102 @@ namespace Illuminate\Http {
         public static function hasValidRelativeSignatureWhileIgnoring($ignoreQuery = [])
         {
             return \Illuminate\Http\Request::hasValidRelativeSignatureWhileIgnoring($ignoreQuery);
+        }
+
+            }
+    }
+
+namespace Nwidart\Modules {
+    /**
+     */
+    class Module {
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @param string|null $relativeNamespace
+         * @static
+         */
+        public static function namespace($relativeNamespace = '')
+        {
+            return \Nwidart\Modules\Module::namespace($relativeNamespace);
+        }
+
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @static
+         */
+        public static function getTitle()
+        {
+            return \Nwidart\Modules\Module::getTitle();
+        }
+
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @param string $relativeNamespace
+         * @static
+         */
+        public static function appNamespace($relativeNamespace = '')
+        {
+            return \Nwidart\Modules\Module::appNamespace($relativeNamespace);
+        }
+
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @param string $relativePath
+         * @static
+         */
+        public static function appPath($relativePath = '')
+        {
+            return \Nwidart\Modules\Module::appPath($relativePath);
+        }
+
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @param string $relativePath
+         * @static
+         */
+        public static function databasePath($relativePath = '')
+        {
+            return \Nwidart\Modules\Module::databasePath($relativePath);
+        }
+
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @param string $relativePath
+         * @static
+         */
+        public static function resourcesPath($relativePath = '')
+        {
+            return \Nwidart\Modules\Module::resourcesPath($relativePath);
+        }
+
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @param string $relativePath
+         * @static
+         */
+        public static function migrationsPath($relativePath = '')
+        {
+            return \Nwidart\Modules\Module::migrationsPath($relativePath);
+        }
+
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @param string $relativePath
+         * @static
+         */
+        public static function seedersPath($relativePath = '')
+        {
+            return \Nwidart\Modules\Module::seedersPath($relativePath);
+        }
+
+        /**
+         * @see \Coolsam\Modules\ModulesServiceProvider::registerModuleMacros()
+         * @param string $relativePath
+         * @static
+         */
+        public static function factoriesPath($relativePath = '')
+        {
+            return \Nwidart\Modules\Module::factoriesPath($relativePath);
         }
 
             }
@@ -24313,23 +24963,6 @@ namespace Illuminate\Database\Eloquent\Factories {
         public static function translations($locales, $value)
         {
             return \Illuminate\Database\Eloquent\Factories\Factory::translations($locales, $value);
-        }
-
-            }
-    }
-
-namespace Illuminate\Routing {
-    /**
-     */
-    class Route {
-        /**
-         * @see \Livewire\Features\SupportLazyLoading\SupportLazyLoading::registerRouteMacro()
-         * @param mixed $enabled
-         * @static
-         */
-        public static function lazy($enabled = true)
-        {
-            return \Illuminate\Routing\Route::lazy($enabled);
         }
 
             }
@@ -26960,6 +27593,30 @@ namespace Livewire\Features\SupportTesting {
             return \Livewire\Features\SupportTesting\Testable::assertTableColumnSummarizerExists($columnName, $summarizerId);
         }
 
+            }
+    }
+
+namespace Illuminate\Routing {
+    /**
+     */
+    class Route {
+        /**
+         * @see \Livewire\Features\SupportLazyLoading\SupportLazyLoading::registerRouteMacro()
+         * @param mixed $enabled
+         * @static
+         */
+        public static function lazy($enabled = true)
+        {
+            return \Illuminate\Routing\Route::lazy($enabled);
+        }
+
+            }
+    }
+
+namespace Nwidart\Modules\Laravel {
+    /**
+     */
+    class Module extends \Nwidart\Modules\Module {
             }
     }
 
@@ -32395,6 +33052,7 @@ namespace  {
     class PDF extends \Barryvdh\DomPDF\Facade\Pdf {}
     class Pdf extends \Barryvdh\DomPDF\Facade\Pdf {}
     class Livewire extends \Livewire\Livewire {}
+    class Module extends \Nwidart\Modules\Facades\Module {}
     class CustomFields extends \Xoshbin\CustomFields\Facades\CustomFields {}
 }
 

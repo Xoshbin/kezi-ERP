@@ -194,4 +194,28 @@ return [
         'date' => 'تاريخ',
         'select' => 'اختيار',
     ],
+
+    'reordering_route' => [
+        'buy' => 'Buy',
+        'manufacture' => 'Manufacture',
+        'min_max' => 'Min/Max Reordering',
+        'mto' => 'Make-to-Order',
+    ],
+
+    'stock_picking_state' => [
+        'draft' => 'Draft',
+        'waiting' => 'Waiting',
+        'confirmed' => 'Confirmed',
+        'assigned' => 'Assigned',
+        'done' => 'Done',
+        'cancelled' => 'Cancelled',
+    ],
+
+    'stock_picking_type' => [
+        'incoming' => 'Incoming',
+        'outgoing' => 'Outgoing',
+        'internal' => 'Internal',
+        'receipt' => 'Receipt',
+        'delivery' => 'Delivery',
+    ],
 ];

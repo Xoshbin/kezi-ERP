@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Cache;
 use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Models\StockMove;
 
 class InventoryTurnoverChartWidget extends ChartWidget
 {
@@ -47,15 +46,21 @@ class InventoryTurnoverChartWidget extends ChartWidget
                 $labels[] = $currentDate->format('M j').' - '.$weekEnd->format('M j');
 
                 // Get receipts for this week
-                $weekReceipts = StockMove::where('move_type', StockMoveType::Incoming)
-                    ->whereBetween('move_date', [$currentDate, $weekEnd])
+                $weekReceipts = \Modules\Inventory\Models\StockMoveProductLine::query()
+                    ->whereHas('stockMove', function ($query) use ($currentDate, $weekEnd) {
+                        $query->where('move_type', StockMoveType::Incoming)
+                            ->whereBetween('move_date', [$currentDate, $weekEnd]);
+                    })
                     ->when($filters['location_id'] ?? null, fn ($q, $locationId) => $q->where('to_location_id', $locationId))
                     ->when($filters['product_ids'] ?? null, fn ($q, $productIds) => $q->whereIn('product_id', $productIds))
                     ->sum('quantity');
 
                 // Get deliveries for this week
-                $weekDeliveries = StockMove::where('move_type', StockMoveType::Outgoing)
-                    ->whereBetween('move_date', [$currentDate, $weekEnd])
+                $weekDeliveries = \Modules\Inventory\Models\StockMoveProductLine::query()
+                    ->whereHas('stockMove', function ($query) use ($currentDate, $weekEnd) {
+                        $query->where('move_type', StockMoveType::Outgoing)
+                            ->whereBetween('move_date', [$currentDate, $weekEnd]);
+                    })
                     ->when($filters['location_id'] ?? null, fn ($q, $locationId) => $q->where('from_location_id', $locationId))
                     ->when($filters['product_ids'] ?? null, fn ($q, $productIds) => $q->whereIn('product_id', $productIds))
                     ->sum('quantity');

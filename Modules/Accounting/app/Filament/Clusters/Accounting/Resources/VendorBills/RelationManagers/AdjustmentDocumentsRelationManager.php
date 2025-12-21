@@ -33,18 +33,18 @@ class AdjustmentDocumentsRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('vendor_bill.adjustment_documents_relation_manager.title');
+        return __('purchase::vendor_bill.adjustment_documents_relation_manager.title');
     }
 
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make(__('vendor_bill.adjustment_documents_relation_manager.document_details'))
+                Section::make(__('purchase::vendor_bill.adjustment_documents_relation_manager.document_details'))
                     ->schema([
                         Select::make('company_id')
                             ->relationship('company', 'name')
-                            ->label(__('vendor_bill.adjustment_documents_relation_manager.company'))
+                            ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.company'))
                             ->required()
                             ->default(function (): ?int {
                                 $owner = $this->getOwnerRecord();
@@ -54,7 +54,7 @@ class AdjustmentDocumentsRelationManager extends RelationManager
 
                         Select::make('currency_id')
                             ->relationship('currency', 'name')
-                            ->label(__('vendor_bill.adjustment_documents_relation_manager.currency'))
+                            ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.currency'))
                             ->required()
                             ->default(function (): ?int {
                                 $owner = $this->getOwnerRecord();
@@ -63,7 +63,7 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                             }),
 
                         Select::make('type')
-                            ->label(__('vendor_bill.adjustment_documents_relation_manager.type'))
+                            ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.type'))
                             ->options([
                                 AdjustmentDocumentType::DebitNote->value => AdjustmentDocumentType::DebitNote->label(),
                                 AdjustmentDocumentType::Miscellaneous->value => AdjustmentDocumentType::Miscellaneous->label(),
@@ -72,18 +72,18 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                             ->default(AdjustmentDocumentType::DebitNote->value),
 
                         DatePicker::make('date')
-                            ->label(__('vendor_bill.adjustment_documents_relation_manager.date'))
+                            ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.date'))
                             ->required()
                             ->default(now()),
 
                         TextInput::make('reference_number')
-                            ->label(__('vendor_bill.adjustment_documents_relation_manager.reference_number'))
+                            ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.reference_number'))
                             ->required()
                             ->maxLength(255)
                             ->placeholder('e.g., DN-2024-001'),
 
                         Select::make('status')
-                            ->label(__('vendor_bill.adjustment_documents_relation_manager.status'))
+                            ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.status'))
                             ->options([
                                 AdjustmentDocumentStatus::Draft->value => AdjustmentDocumentStatus::Draft->label(),
                                 AdjustmentDocumentStatus::Posted->value => AdjustmentDocumentStatus::Posted->label(),
@@ -93,11 +93,16 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                             ->default(AdjustmentDocumentStatus::Draft->value),
 
                         Textarea::make('reason')
-                            ->label(__('vendor_bill.adjustment_documents_relation_manager.reason'))
+                            ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.reason'))
                             ->required()
                             ->rows(3)
                             ->columnSpanFull()
-                            ->placeholder(__('vendor_bill.adjustment_documents_relation_manager.reason_placeholder')),
+                            ->placeholder(__('purchase::vendor_bill.adjustment_documents_relation_manager.reason_placeholder')),
+
+                        \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('subtotal')
+                            ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.amount'))
+                            ->required()
+                            ->currencyField('currency_id'),
                     ])
                     ->columns(2),
             ]);
@@ -109,12 +114,12 @@ class AdjustmentDocumentsRelationManager extends RelationManager
             ->recordTitleAttribute('reference_number')
             ->columns([
                 TextColumn::make('reference_number')
-                    ->label(__('vendor_bill.adjustment_documents_relation_manager.reference_number'))
+                    ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.reference_number'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('type')
-                    ->label(__('vendor_bill.adjustment_documents_relation_manager.type'))
+                    ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.type'))
                     ->formatStateUsing(fn (AdjustmentDocumentType $state): string => $state->label())
                     ->badge()
                     ->color(fn (AdjustmentDocumentType $state): string => match ($state) {
@@ -124,20 +129,20 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                     }),
 
                 TextColumn::make('date')
-                    ->label(__('vendor_bill.adjustment_documents_relation_manager.date'))
+                    ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.date'))
                     ->date()
                     ->sortable(),
 
                 MoneyColumn::make('total_amount')
-                    ->label(__('vendor_bill.adjustment_documents_relation_manager.total_amount'))
+                    ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.total_amount'))
                     ->sortable(),
 
                 MoneyColumn::make('total_tax')
-                    ->label(__('vendor_bill.adjustment_documents_relation_manager.total_tax'))
+                    ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.total_tax'))
                     ->sortable(),
 
                 TextColumn::make('status')
-                    ->label(__('vendor_bill.adjustment_documents_relation_manager.status'))
+                    ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.status'))
                     ->formatStateUsing(fn (AdjustmentDocumentStatus $state): string => $state->label())
                     ->badge()
                     ->color(fn (AdjustmentDocumentStatus $state): string => match ($state) {
@@ -147,7 +152,7 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                     }),
 
                 TextColumn::make('reason')
-                    ->label(__('vendor_bill.adjustment_documents_relation_manager.reason'))
+                    ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.reason'))
                     ->limit(50)
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
@@ -159,32 +164,32 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                     }),
 
                 TextColumn::make('journalEntry.id')
-                    ->label(__('vendor_bill.adjustment_documents_relation_manager.journal_entry'))
-                    ->placeholder(__('vendor_bill.adjustment_documents_relation_manager.no_journal_entry'))
+                    ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.journal_entry'))
+                    ->placeholder(__('purchase::vendor_bill.adjustment_documents_relation_manager.no_journal_entry'))
                     ->toggleable(),
 
                 TextColumn::make('posted_at')
-                    ->label(__('vendor_bill.adjustment_documents_relation_manager.posted_at'))
+                    ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.posted_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')
-                    ->label(__('vendor_bill.adjustment_documents_relation_manager.created_at'))
+                    ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('type')
-                    ->label(__('vendor_bill.adjustment_documents_relation_manager.filter_type'))
+                    ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.filter_type'))
                     ->options([
                         AdjustmentDocumentType::DebitNote->value => AdjustmentDocumentType::DebitNote->label(),
                         AdjustmentDocumentType::Miscellaneous->value => AdjustmentDocumentType::Miscellaneous->label(),
                     ]),
 
                 SelectFilter::make('status')
-                    ->label(__('vendor_bill.adjustment_documents_relation_manager.filter_status'))
+                    ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.filter_status'))
                     ->options([
                         AdjustmentDocumentStatus::Draft->value => AdjustmentDocumentStatus::Draft->label(),
                         AdjustmentDocumentStatus::Posted->value => AdjustmentDocumentStatus::Posted->label(),
@@ -193,12 +198,41 @@ class AdjustmentDocumentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label(__('vendor_bill.adjustment_documents_relation_manager.create_adjustment'))
-                    ->mutateDataUsing(function (array $data): array {
+                    ->label(__('purchase::vendor_bill.adjustment_documents_relation_manager.create_adjustment'))
+                    ->using(function (array $data, string $model): Model {
+                        /** @var VendorBill $owner */
                         $owner = $this->getOwnerRecord();
-                        $data['original_vendor_bill_id'] = $owner instanceof VendorBill ? $owner->getKey() : null;
 
-                        return $data;
+                        $currency = \Modules\Foundation\Models\Currency::find($data['currency_id']);
+
+                        // Create a single line DTO for the adjustment amount
+                        // We need an account ID. For now, we'll fetch a default expense/adjustment account
+                        // In a real scenario, this might need to be selected by the user.
+                        // Let's try to find a suitable account or fallback to the first available expense account.
+                        $account = \Modules\Accounting\Models\Account::where('code', 'like', '5%')->first(); // Expense account
+
+                        $lineDto = new \Modules\Inventory\DataTransferObjects\Adjustments\CreateAdjustmentDocumentLineDTO(
+                            description: $data['reason'],
+                            quantity: 1,
+                            unit_price: \Brick\Money\Money::of($data['subtotal'], $currency->code),
+                            account_id: $account?->id ?? 1, // Fallback if no account found
+                            product_id: null,
+                            tax_id: null,
+                        );
+
+                        $dto = new \Modules\Inventory\DataTransferObjects\Adjustments\CreateAdjustmentDocumentDTO(
+                            company_id: (int) \Filament\Facades\Filament::getTenant()->id,
+                            type: \Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType::from($data['type']),
+                            date: $data['date'],
+                            reference_number: $data['reference_number'],
+                            reason: $data['reason'],
+                            currency_id: (int) $data['currency_id'],
+                            original_invoice_id: null,
+                            original_vendor_bill_id: $owner instanceof VendorBill ? $owner->getKey() : null,
+                            lines: [$lineDto],
+                        );
+
+                        return app(\Modules\Inventory\Actions\Adjustments\CreateAdjustmentDocumentAction::class)->execute($dto);
                     }),
             ])
             ->recordActions([

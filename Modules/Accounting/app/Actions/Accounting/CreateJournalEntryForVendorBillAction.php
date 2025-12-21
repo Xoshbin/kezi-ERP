@@ -6,6 +6,7 @@ use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Modules\Accounting\Contracts\VendorBillJournalEntryCreatorContract;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Modules\Accounting\Models\AssetCategory;
@@ -13,7 +14,7 @@ use Modules\Accounting\Models\JournalEntry;
 use Modules\Purchase\Models\VendorBill;
 use RuntimeException;
 
-class CreateJournalEntryForVendorBillAction
+class CreateJournalEntryForVendorBillAction implements VendorBillJournalEntryCreatorContract
 {
     public function __construct(
         private readonly CreateJournalEntryAction $createJournalEntryAction,
