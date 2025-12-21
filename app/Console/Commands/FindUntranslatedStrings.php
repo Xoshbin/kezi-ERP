@@ -28,6 +28,7 @@ class FindUntranslatedStrings extends Command
 
     protected string $baseLangPath;
 
+    /** @var array<string, array<int, array{key: string, type: string, base_value: string|mixed, target_value?: string|mixed}>> */
     protected array $missingTranslations = [];
 
     protected int $totalMissing = 0;
@@ -84,7 +85,8 @@ class FindUntranslatedStrings extends Command
         $this->newLine();
 
         // Get base translations
-        $baseTranslations = $this->loadTranslations($baseLocale, $includeVendor);
+        /** @var string $baseLocale */
+        $baseTranslations = $this->loadTranslations($baseLocale, (bool) $includeVendor);
 
         if (empty($baseTranslations)) {
             $this->warn("No translations found for base locale '{$baseLocale}'");
@@ -94,8 +96,9 @@ class FindUntranslatedStrings extends Command
 
         // Compare with each target locale
         foreach ($targetLocales as $locale) {
+            /** @var string $locale */
             $this->info("Checking locale: {$locale}");
-            $targetTranslations = $this->loadTranslations($locale, $includeVendor);
+            $targetTranslations = $this->loadTranslations($locale, (bool) $includeVendor);
             $missing = $this->findMissingKeys($baseTranslations, $targetTranslations, $locale);
 
             if (! empty($missing)) {
@@ -108,6 +111,7 @@ class FindUntranslatedStrings extends Command
 
         // Save results to file (unless --no-save is specified)
         if (! $this->option('no-save')) {
+            /** @var string $format */
             $format = $this->option('format');
             $savedPath = $this->saveResults($format);
 
@@ -122,6 +126,8 @@ class FindUntranslatedStrings extends Command
 
     /**
      * Get all available locales from the lang directory.
+     *
+     * @return array<int, string>
      */
     protected function getAvailableLocales(): array
     {
@@ -141,6 +147,8 @@ class FindUntranslatedStrings extends Command
 
     /**
      * Load all translations for a given locale.
+     *
+     * @return array<string, mixed>
      */
     protected function loadTranslations(string $locale, bool $includeVendor = false): array
     {
@@ -187,6 +195,10 @@ class FindUntranslatedStrings extends Command
 
     /**
      * Find missing translation keys by comparing base and target translations.
+     *
+     * @param  array<string, mixed>  $base
+     * @param  array<string, mixed>  $target
+     * @return array<int, array{key: string, type: string, base_value: string|mixed, target_value?: string|mixed}>
      */
     protected function findMissingKeys(array $base, array $target, string $locale, string $prefix = ''): array
     {
@@ -308,12 +320,13 @@ class FindUntranslatedStrings extends Command
         if (empty($this->missingTranslations)) {
             // Save a "clean" report when no issues found
             if ($format === 'json') {
-                File::put($filePath, json_encode([
+                $json = json_encode([
                     'scanned_at' => now()->toIso8601String(),
                     'status' => 'clean',
                     'message' => 'No missing translations found',
                     'missing_translations' => [],
-                ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+                ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                File::put($filePath, $json !== false ? $json : '');
             } elseif ($format === 'md') {
                 $content = "# Translation Status Report\n\n";
                 $content .= '**Scanned at:** '.now()->toDateTimeString()."\n\n";
@@ -334,24 +347,27 @@ class FindUntranslatedStrings extends Command
                 'affected_locales' => array_keys($this->missingTranslations),
                 'missing_translations' => $this->missingTranslations,
             ];
-            File::put($filePath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            File::put($filePath, $json !== false ? $json : '');
         } elseif ($format === 'csv') {
             $csv = fopen($filePath, 'w');
-            fputcsv($csv, ['Locale', 'Key', 'Type', 'Base Value', 'Target Value']);
+            if ($csv !== false) {
+                fputcsv($csv, ['Locale', 'Key', 'Type', 'Base Value', 'Target Value']);
 
-            foreach ($this->missingTranslations as $locale => $missing) {
-                foreach ($missing as $item) {
-                    fputcsv($csv, [
-                        $locale,
-                        $item['key'],
-                        $item['type'],
-                        $item['base_value'],
-                        $item['target_value'] ?? '',
-                    ]);
+                foreach ($this->missingTranslations as $locale => $missing) {
+                    foreach ($missing as $item) {
+                        fputcsv($csv, [
+                            $locale,
+                            $item['key'],
+                            $item['type'],
+                            $item['base_value'],
+                            $item['target_value'] ?? '',
+                        ]);
+                    }
                 }
-            }
 
-            fclose($csv);
+                fclose($csv);
+            }
         } elseif ($format === 'md') {
             $content = $this->generateMarkdownReport();
             File::put($filePath, $content);
@@ -383,7 +399,7 @@ class FindUntranslatedStrings extends Command
             $groupedByFile = [];
             foreach ($missing as $item) {
                 $parts = explode('.', $item['key']);
-                $file = $parts[0] ?? 'unknown';
+                $file = $parts[0];
                 $groupedByFile[$file][] = $item;
             }
 
