@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
+use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
 use Modules\Inventory\Enums\Inventory\StockLocationType;
 use Modules\Inventory\Enums\Inventory\StockPickingType;
 use Modules\Inventory\Models\StockLocation;
@@ -39,6 +40,12 @@ class PurchaseOrderConfirmationTest extends TestCase
         $this->user = User::factory()->create();
         $this->company = Company::factory()->create();
         $this->user->companies()->attach($this->company);
+
+        // Set to MANUAL mode since these tests verify stock picking/move creation
+        // which only happens in MANUAL_INVENTORY_RECORDING mode
+        $this->company->update([
+            'inventory_accounting_mode' => InventoryAccountingMode::MANUAL_INVENTORY_RECORDING,
+        ]);
 
         $this->actingAs($this->user);
 
