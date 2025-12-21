@@ -90,7 +90,5 @@ test('correctly creates journal entry for vendor bill with currency conversion',
     // Total Debit should be 1,460,000 IQD
     $totalDebit = $journalEntry->total_debit;
 
-    echo "\nTotal Debit: ".$totalDebit->getAmount().' '.$totalDebit->getCurrency()->getCurrencyCode()."\n";
-
     expect($totalDebit->getAmount()->toFloat())->toBe(1460000.0);
 });

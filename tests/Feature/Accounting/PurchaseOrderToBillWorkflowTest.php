@@ -180,6 +180,4 @@ test('Purchase Order to Vendor Bill Workflow (Double Entry Verification)', funct
 
     // Verify Hash integrity (Basic check)
     expect($je->hash)->not->toBeNull();
-
-    echo "\nVerification Successful: PO -> Bill -> Journal Entry creates correct Double Entry records.\n";
 });
