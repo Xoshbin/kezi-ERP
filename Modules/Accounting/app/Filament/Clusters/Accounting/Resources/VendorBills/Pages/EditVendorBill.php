@@ -304,7 +304,22 @@ class EditVendorBill extends EditRecord
             updated_by_user_id: (int) Auth::id()
         );
 
-        $updatedVendorBill = app(UpdateVendorBillAction::class)->execute($vendorBillDTO);
+        try {
+            $updatedVendorBill = app(UpdateVendorBillAction::class)->execute($vendorBillDTO);
+        } catch (\Modules\Foundation\Exceptions\UpdateNotAllowedException $e) {
+            Notification::make()
+                ->title(__('vendor_bill.notification_update_not_allowed'))
+                ->body($e->getMessage())
+                ->warning()
+                ->persistent()
+                ->send();
+
+            // Halt the update process
+            $this->halt();
+
+            // This line will never be reached due to halt(), but satisfies the return type
+            throw $e;
+        }
 
         // Handle exchange_rate_at_creation separately since it's not in the DTO
         if (isset($data['exchange_rate_at_creation'])) {

@@ -10,6 +10,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -26,12 +27,10 @@ use Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages\Creat
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages\EditAsset;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages\ListAssets;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\RelationManagers\DepreciationEntryRelationManager;
-use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Asset;
 use Modules\Accounting\Rules\NotInLockedPeriod;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class AssetResource extends Resource
 {
@@ -69,13 +68,18 @@ class AssetResource extends Resource
             Section::make(__('accounting::asset.asset_currency_info'))
                 ->description(__('accounting::asset.asset_currency_info_description'))
                 ->schema([
+                    Hidden::make('company_id')
+                        ->default(fn () => Filament::getTenant()->id)
+                        ->dehydrated(),
+
                     TextInput::make('name')
                         ->label(__('accounting::asset.name'))
                         ->required()
                         ->maxLength(255)
                         ->columnSpan(2),
 
-                    TranslatableSelect::forModel('currency_id', Currency::class)
+                    Select::make('currency_id')
+                        ->relationship('currency', 'name')
                         ->label(__('accounting::asset.currency'))
                         ->required()
                         ->searchable()
@@ -182,10 +186,10 @@ class AssetResource extends Resource
                         ->required()
                         ->columnSpan(1),
 
-                    TranslatableSelect::forModel('asset_account_id', Account::class)
+                    Select::make('asset_account_id')
+                        ->relationship('assetAccount', 'name')
                         ->label(__('accounting::asset.asset_account'))
-                        ->searchableFields(['name', 'code'])
-                        ->searchable()
+                        ->searchable(['name', 'code'])
                         ->preload()
                         ->createOptionForm([
                             Select::make('company_id')
@@ -209,10 +213,10 @@ class AssetResource extends Resource
                         ->required()
                         ->columnSpan(1),
 
-                    TranslatableSelect::forModel('depreciation_expense_account_id', Account::class)
+                    Select::make('depreciation_expense_account_id')
+                        ->relationship('depreciationExpenseAccount', 'name')
                         ->label(__('accounting::asset.depreciation_expense_account'))
-                        ->searchableFields(['name', 'code'])
-                        ->searchable()
+                        ->searchable(['name', 'code'])
                         ->preload()
                         ->createOptionForm([
                             Select::make('company_id')
@@ -236,10 +240,10 @@ class AssetResource extends Resource
                         ->required()
                         ->columnSpan(1),
 
-                    TranslatableSelect::forModel('accumulated_depreciation_account_id', Account::class)
+                    Select::make('accumulated_depreciation_account_id')
+                        ->relationship('accumulatedDepreciationAccount', 'name')
                         ->label(__('accounting::asset.accumulated_depreciation_account'))
-                        ->searchableFields(['name', 'code'])
-                        ->searchable()
+                        ->searchable(['name', 'code'])
                         ->preload()
                         ->createOptionForm([
                             Select::make('company_id')

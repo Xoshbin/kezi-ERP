@@ -162,10 +162,13 @@ class SalesOrder extends Model
 
     /**
      * Calculate and update the total amounts for this sales order.
+     *
+     * Also calculates company currency totals using the exchange rate.
      */
     public function calculateTotals(): void
     {
         $currency = $this->currency ?? $this->currency()->first();
+        $company = $this->company ?? $this->company()->first();
 
         $totalAmount = Money::of(0, $currency->code);
         $totalTax = Money::of(0, $currency->code);
@@ -177,6 +180,29 @@ class SalesOrder extends Model
 
         $this->total_amount = $totalAmount;
         $this->total_tax = $totalTax;
+
+        // Calculate company currency totals
+        $baseCurrencyCode = $company->currency->code ?? 'IQD';
+        $exchangeRate = $this->exchange_rate_at_creation ?? 1.0;
+
+        // If same currency, exchange rate is 1
+        if ($currency->id === $company->currency_id) {
+            $exchangeRate = 1.0;
+            $this->exchange_rate_at_creation = 1.0;
+        }
+
+        // Convert to company currency
+        $totalAmountCompany = Money::of(
+            $totalAmount->getAmount()->toFloat() * $exchangeRate,
+            $baseCurrencyCode
+        );
+        $totalTaxCompany = Money::of(
+            $totalTax->getAmount()->toFloat() * $exchangeRate,
+            $baseCurrencyCode
+        );
+
+        $this->total_amount_company_currency = $totalAmountCompany;
+        $this->total_tax_company_currency = $totalTaxCompany;
     }
 
     /**

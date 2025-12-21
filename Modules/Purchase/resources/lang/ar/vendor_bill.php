@@ -79,6 +79,7 @@ return [
     'notification_confirm_bill_error' => 'خطأ في تأكيد الفاتورة',
     'notification_bill_reset_success' => 'تم إعادة الفاتورة إلى المسودة',
     'notification_reset_bill_error' => 'خطأ في إعادة الفاتورة',
+    'notification_update_not_allowed' => 'التحديث غير مسموح',
 
     // Validation Messages
     'validation_no_line_items' => 'لا يمكن تأكيد فاتورة المورد بدون بنود',

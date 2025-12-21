@@ -82,13 +82,10 @@ class CurrencyConverterService
         }
 
         // Convert using the rate (rate represents how much base currency = 1 foreign currency)
-        $convertedAmount = $amount->getAmount()->toFloat() * $rate;
+        $convertedAmount = $amount->getAmount()->toBigDecimal()->multipliedBy($rate);
 
         // Create Money object using the target currency's decimal precision
-        return Money::ofMinor(
-            (int) round($convertedAmount * pow(10, $baseCurrency->decimal_places)),
-            $baseCurrency->code
-        );
+        return Money::of($convertedAmount, $baseCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP);
     }
 
     /**
@@ -113,13 +110,10 @@ class CurrencyConverterService
         }
 
         // Convert from base currency (divide by rate)
-        $convertedAmount = $amount->getAmount()->toFloat() / $rate;
+        $convertedAmount = $amount->getAmount()->toBigDecimal()->dividedBy($rate, $toCurrency->decimal_places + 6, \Brick\Math\RoundingMode::HALF_UP);
 
         // Create Money object using the target currency's decimal precision
-        return Money::ofMinor(
-            (int) round($convertedAmount * pow(10, $toCurrency->decimal_places)),
-            $toCurrency->code
-        );
+        return Money::of($convertedAmount, $toCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP);
     }
 
     /**
@@ -146,18 +140,20 @@ class CurrencyConverterService
      * This method is useful when you already have the rate and don't need to look it up.
      *
      * @param  bool  $isFromBaseCurrency  Whether converting from base currency (divide) or to base currency (multiply)
+     * @param  bool  $isFromBaseCurrency  Whether converting from base currency (divide) or to base currency (multiply)
      */
     public function convertWithRate(Money $amount, float $rate, string $toCurrencyCode, bool $isFromBaseCurrency = false): Money
     {
         if ($isFromBaseCurrency) {
             // Converting from base currency to foreign currency (divide by rate)
-            $convertedAmount = $amount->getAmount()->toFloat() / $rate;
+            // Use rounding mode for division to avoid infinite recursion on repeating decimals
+            $convertedAmount = $amount->getAmount()->toBigDecimal()->dividedBy($rate, $amount->getCurrency()->getDefaultFractionDigits() + 6, \Brick\Math\RoundingMode::HALF_UP);
         } else {
             // Converting from foreign currency to base currency (multiply by rate)
-            $convertedAmount = $amount->getAmount()->toFloat() * $rate;
+            $convertedAmount = $amount->getAmount()->toBigDecimal()->multipliedBy($rate);
         }
 
-        return Money::of($convertedAmount, $toCurrencyCode);
+        return Money::of($convertedAmount, $toCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
     }
 
     /**

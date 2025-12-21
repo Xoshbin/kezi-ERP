@@ -165,7 +165,102 @@ class PurchaseOrderForm
                                     ->preload()
                                     ->default(fn () => Auth::user()?->company?->currency_id)
                                     ->required()
-                                    ->live(),
+                                    ->live()
+                                    ->afterStateUpdated(function (callable $set, callable $get, $state) {
+                                        $currencyId = $state;
+                                        if (! $currencyId) {
+                                            $set('exchange_rate_at_creation', 1);
+
+                                            return;
+                                        }
+
+                                        $company = Filament::getTenant();
+                                        if (! $company) {
+                                            $company = Auth::user()?->company;
+                                        }
+
+                                        $currency = Currency::find($currencyId);
+                                        $baseCurrency = $company?->currency;
+                                        $newRate = 1.0;
+
+                                        if ($currency && $baseCurrency) {
+                                            if ($currency->id === $baseCurrency->id) {
+                                                $set('exchange_rate_at_creation', 1);
+                                                $newRate = 1.0;
+                                            } else {
+                                                $service = app(\Modules\Foundation\Services\CurrencyConverterService::class);
+                                                $rate = $service->getExchangeRate($currency, now(), $company) ?? $service->getLatestExchangeRate($currency, $company);
+                                                $newRate = $rate ?? 1.0;
+                                                $set('exchange_rate_at_creation', $newRate);
+                                            }
+                                        }
+
+                                        // Recalculate prices for existing lines
+                                        $lines = $get('lines') ?? [];
+                                        if (! empty($lines)) {
+                                            foreach ($lines as $uuid => $line) {
+                                                if (isset($line['product_id'])) {
+                                                    $product = Product::find($line['product_id']);
+                                                    if ($product && $product->unit_price) {
+                                                        // Get the underlying decimal amount from the Money object or value
+                                                        $basePrice = $product->unit_price instanceof Money
+                                                            ? $product->unit_price->getAmount()->toBigDecimal()
+                                                            : $product->unit_price;
+
+                                                        if ($newRate == 1.0) {
+                                                            // Reverting to base currency: use original base price
+                                                            $lines[$uuid]['unit_price'] = (string) $basePrice;
+                                                        } else {
+                                                            // Converting to foreign currency: Base / Rate
+                                                            // We use standard division here. In a robust system, we might check for 0.
+                                                            if ($newRate > 0) {
+                                                                $converted = \Brick\Math\BigDecimal::of($basePrice)->dividedBy($newRate, 6, \Brick\Math\RoundingMode::HALF_UP);
+                                                                $lines[$uuid]['unit_price'] = (string) $converted;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            $set('lines', $lines);
+                                        }
+                                    }),
+
+                                TextInput::make('exchange_rate_at_creation')
+                                    ->label(__('purchase::purchase_orders.fields.exchange_rate'))
+                                    ->numeric()
+                                    ->required()
+                                    ->default(1)
+                                    ->live()
+                                    ->visible(function (callable $get) {
+                                        $currencyId = $get('currency_id');
+                                        $company = Filament::getTenant();
+                                        if (! $company) {
+                                            $company = Auth::user()?->company;
+                                        }
+
+                                        return $currencyId && $company instanceof \App\Models\Company && $currencyId != $company->currency_id;
+                                    })
+                                    ->helperText(function (callable $get) {
+                                        $currencyId = $get('currency_id');
+                                        $company = Filament::getTenant();
+                                        if (! $company) {
+                                            $company = Auth::user()?->company;
+                                        }
+
+                                        if ($currencyId && $company instanceof \App\Models\Company && $currencyId !== $company->currency_id) {
+                                            $currency = Currency::find($currencyId);
+                                            if ($currency) {
+                                                $service = app(\Modules\Foundation\Services\CurrencyConverterService::class);
+                                                $latestRate = $service->getExchangeRate($currency, now(), $company) ?? $service->getLatestExchangeRate($currency, $company);
+
+                                                if ($latestRate) {
+                                                    return __('purchase::purchase_orders.help.exchange_rate').' '.__('purchase::purchase_orders.help.current_rate', ['rate' => $latestRate]);
+                                                }
+                                            }
+                                        }
+
+                                        return __('purchase::purchase_orders.help.exchange_rate');
+                                    }),
                             ]),
                     ]),
 
@@ -174,7 +269,18 @@ class PurchaseOrderForm
                         Grid::make(2)
                             ->schema([
                                 DatePicker::make('expected_delivery_date')
-                                    ->label(__('purchase::purchase_orders.fields.expected_delivery_date')),
+                                    ->label(__('purchase::purchase_orders.fields.expected_delivery_date'))
+                                    ->live()
+                                    ->afterStateUpdated(function (callable $set, callable $get, $state) {
+                                        // Update all line items' expected_delivery_date to match the header
+                                        $lines = $get('lines') ?? [];
+                                        if (! empty($lines)) {
+                                            foreach ($lines as $uuid => $line) {
+                                                $lines[$uuid]['expected_delivery_date'] = $state;
+                                            }
+                                            $set('lines', $lines);
+                                        }
+                                    }),
 
                                 Select::make('delivery_location_id')
                                     ->label(__('purchase::purchase_orders.fields.delivery_location'))
@@ -201,6 +307,10 @@ class PurchaseOrderForm
                             ->live()
                             ->reorderable(true)
                             ->minItems(1)
+                            ->afterStateHydrated(function (callable $set, callable $get) {
+                                // Calculate totals when form is first loaded (e.g., on edit page or page refresh)
+                                static::updateTotals($set, $get);
+                            })
                             ->afterStateUpdated(function (callable $set, $state, callable $get) {
                                 static::updateTotals($set, $get);
                             })
@@ -212,17 +322,39 @@ class PurchaseOrderForm
                                     ->preload()
                                     ->required()
                                     ->reactive()
-                                    ->afterStateUpdated(function (callable $set, $state) {
+                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
                                         if ($state) {
                                             $product = Product::find($state);
                                             if ($product) {
                                                 $set('description', $product->description ?: $product->name);
-                                                // Convert Money object to string for MoneyInput component
+
+                                                // Get the exchange rate from the form state
+                                                $exchangeRate = (float) $get('../../exchange_rate_at_creation');
+                                                if ($exchangeRate <= 0) {
+                                                    $exchangeRate = 1;
+                                                }
+
+                                                // Product price is in base currency
                                                 $unitPrice = $product->unit_price;
+
                                                 if ($unitPrice instanceof Money) {
-                                                    $set('unit_price', $unitPrice->getAmount()->__toString());
+                                                    // Convert Money object to float
+                                                    $amount = $unitPrice->getAmount()->toFloat();
                                                 } else {
-                                                    $set('unit_price', $unitPrice);
+                                                    $amount = (float) $unitPrice;
+                                                }
+
+                                                // Calculate price in foreign currency: Base Price / Exchange Rate
+                                                // Example: 2,500,000 IQD / 1500 Rate = 1666.66 USD
+                                                // If rate is 1 (Base Currency), it stays standard.
+
+                                                // Ensure we don't divide by zero
+                                                if ($exchangeRate != 0) {
+                                                    $convertedPrice = $amount / $exchangeRate;
+                                                    // Format to appropriate decimals? MoneyInput handles it, but let's pass a clean float/string
+                                                    $set('unit_price', (string) $convertedPrice);
+                                                } else {
+                                                    $set('unit_price', 0);
                                                 }
                                             }
                                         }
@@ -290,6 +422,7 @@ class PurchaseOrderForm
                                     ->step(0.01)
                                     ->minValue(0.01)
                                     ->live(onBlur: true)
+                                    ->extraInputAttributes(['onclick' => 'this.select()'])
                                     ->afterStateUpdated(function (callable $set, $state, callable $get) {
                                         static::updateTotals($set, $get);
                                     })
@@ -359,6 +492,7 @@ class PurchaseOrderForm
 
                                 DatePicker::make('expected_delivery_date')
                                     ->label(__('purchase::purchase_orders.fields.expected_delivery_date'))
+                                    ->default(fn (callable $get) => $get('../../expected_delivery_date'))
                                     ->columnSpan(3),
 
                                 Textarea::make('notes')

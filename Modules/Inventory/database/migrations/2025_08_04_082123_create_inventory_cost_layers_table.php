@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->constrained('products');
             $table->decimal('quantity', 15, 4);
-            $table->decimal('cost_per_unit', 15, 4);
+            $table->bigInteger('cost_per_unit');
+
             $table->decimal('remaining_quantity', 15, 4);
             $table->date('purchase_date');
             $table->morphs('source');

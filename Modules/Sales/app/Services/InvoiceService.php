@@ -9,30 +9,25 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Modules\Accounting\Actions\Accounting\BuildInvoicePostingPreviewAction;
-use Modules\Accounting\Actions\Accounting\CreateJournalEntryForInvoiceAction;
+use Modules\Accounting\Contracts\InvoiceJournalEntryCreatorContract;
 use Modules\Accounting\Services\JournalEntryService;
 use Modules\Foundation\Models\AuditLog;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Services\CurrencyConverterService;
 use Modules\Foundation\Services\ExchangeRateService;
 use Modules\Foundation\Services\SequenceService;
-use Modules\Sales\Actions\Sales\CreateStockMovesForInvoiceAction;
-use Modules\Sales\DataTransferObjects\Sales\CreateStockMovesForInvoiceDTO;
 use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Modules\Sales\Events\InvoiceConfirmed;
 use Modules\Sales\Models\Invoice;
 use Modules\Sales\Models\InvoiceLine;
 use RuntimeException;
 
-// Add this import
-
 class InvoiceService
 {
     public function __construct(
         protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         protected JournalEntryService $journalEntryService,
-        protected CreateJournalEntryForInvoiceAction $createJournalEntryForInvoiceAction,
-        protected CreateStockMovesForInvoiceAction $createStockMovesForInvoiceAction,
+        protected InvoiceJournalEntryCreatorContract $invoiceJournalEntryCreator,
         protected SequenceService $sequenceService,
         protected CurrencyConverterService $currencyConverter,
         protected ExchangeRateService $exchangeRateService,
@@ -72,20 +67,14 @@ class InvoiceService
             $invoice->status = InvoiceStatus::Posted;
             $invoice->posted_at = now();
 
-            $journalEntry = $this->createJournalEntryForInvoiceAction->execute($invoice, $user);
+            $journalEntry = $this->invoiceJournalEntryCreator->execute($invoice, $user);
             $invoice->journal_entry_id = $journalEntry->id;
 
             $invoice->save();
 
-            // Create stock moves for storable products only if:
-            // Invoice is not linked to a sales order (sales orders handle their own deliveries)
-            // Note: Unlike vendor bills, invoices always create stock moves regardless of inventory mode
-            // for proper lot tracking, FEFO allocation, and inventory management
-            if (! $invoice->sales_order_id) {
-                $this->createStockMovesForInvoiceAction->execute(
-                    new CreateStockMovesForInvoiceDTO($invoice, $user)
-                );
-            }
+            // Stock moves are now created by the Inventory module's
+            // CreateStockMovesOnInvoiceConfirmed listener (Event-Driven Architecture)
+            // This decouples Sales from Inventory, improving modularity.
 
             InvoiceConfirmed::dispatch($invoice);
         });
