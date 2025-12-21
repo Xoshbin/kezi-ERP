@@ -2,6 +2,7 @@
 
 namespace Modules\Inventory\Listeners\Purchase;
 
+use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
 use Modules\Inventory\Enums\Inventory\StockLocationType;
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
 use Modules\Inventory\Enums\Inventory\StockMoveType;
@@ -18,10 +19,20 @@ class CreateStockPickingForPurchaseOrder
 {
     /**
      * Handle the event.
+     *
+     * In AUTO_RECORD_ON_BILL mode, stock moves are created when the Vendor Bill is posted,
+     * so we skip creation here to avoid duplicate stock moves.
+     * In MANUAL_INVENTORY_RECORDING mode, we create draft stock moves for warehouse tracking.
      */
     public function handle(PurchaseOrderConfirmed $event): void
     {
         $po = $event->purchaseOrder;
+
+        // In AUTO mode, bill posting will create stock moves automatically
+        // So we skip PO-based stock move creation to avoid duplicates
+        if ($po->company->inventory_accounting_mode === InventoryAccountingMode::AUTO_RECORD_ON_BILL) {
+            return;
+        }
 
         // Filter lines for storable products
         $storableLines = $po->lines->filter(function ($line) {
