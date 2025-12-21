@@ -9,7 +9,7 @@
     ],
     "license": "AGPL-3.0-or-later",
     "require": {
-        "php": "^8.3",
+        "php": "^8.4",
         "barryvdh/laravel-dompdf": "^3.1",
         "brick/money": "^0.10.1",
         "coolsam/modules": "^5.0",
@@ -21,10 +21,16 @@
         "laravel/tinker": "^2.10.1",
         "nwidart/laravel-modules": "^11.0",
         "pxlrbt/filament-environment-indicator": "^3.2",
-        "xoshbin/filament-custom-fields": "^0.0.1@beta",
+        "xoshbin/filament-custom-fields": "^0.0.2@beta",
         "xoshbin/filament-translatable-select": "dev-main",
         "xoshbin/pertuk": "^0.0.4"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/xoshbin/filament-custom-fields"
+        }
+    ],
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.6",
         "fakerphp/faker": "^1.23",
