@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
                 \Modules\Foundation\Database\Seeders\CurrencySeeder::class,
                 CompanySeeder::class,
                 \Modules\Foundation\Database\Seeders\CurrencyRateSeeder::class,
+                \Modules\Accounting\Database\Seeders\AccountGroupSeeder::class,
                 \Modules\Accounting\Database\Seeders\AccountSeeder::class,
                 \Modules\Accounting\Database\Seeders\JournalSeeder::class,
                 UpdateCompanyDefaultsSeeder::class,
