@@ -8,6 +8,7 @@ return [
     // Basic Information
     'company' => 'Company',
     'code' => 'Code',
+    'code_help' => 'Auto-generated from group selection. You can modify if needed.',
     'name' => 'Name',
     'type' => 'Type',
     'is_deprecated' => 'Is Deprecated',
@@ -31,4 +32,15 @@ return [
     // Section
     'basic_information' => 'Basic Information',
     'basic_information_description' => 'Account code, name, type, and options.',
+    'is_deprecated_help' => 'Mark this account as deprecated if no longer in use.',
+
+    // Wizard Steps
+    'wizard' => [
+        'step_group' => 'Account Group',
+        'step_group_description' => 'Select which account group this belongs to.',
+        'step_details' => 'Account Details',
+        'step_details_description' => 'Enter the account code, name, and type.',
+        'step_options' => 'Options',
+        'step_options_description' => 'Configure additional account settings.',
+    ],
 ];
