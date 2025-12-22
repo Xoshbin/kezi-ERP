@@ -3,6 +3,7 @@
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Foundation\Models\Partner;
+use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
 use Modules\Product\Models\Product;
 use Modules\Sales\Enums\Sales\SalesOrderStatus;
 use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\EditSalesOrder;
@@ -17,6 +18,11 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
     $this->actingAs($this->user);
+
+    // Set company to manual mode so delivery auto-confirmation doesn't change the status
+    $this->company->update([
+        'inventory_accounting_mode' => InventoryAccountingMode::MANUAL_INVENTORY_RECORDING,
+    ]);
 });
 
 it('has confirm action on view page', function () {
