@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id');
+            $table->foreignId('account_group_id')->nullable();
             $table->string('code');
             $table->json('name');
             $allowedTypes = collect(AccountType::cases())->pluck('value')->all();
