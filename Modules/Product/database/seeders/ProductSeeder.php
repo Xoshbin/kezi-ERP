@@ -66,6 +66,7 @@ class ProductSeeder extends Seeder
                 'unit_price' => 2500000,
                 'default_inventory_account_id' => $inventoryAccount->id,
                 'default_stock_input_account_id' => $stockInputAccount->id,
+                'default_cogs_account_id' => $costOfRevenue->id,
                 'income_account_id' => $incomeAccount->id,
                 'expense_account_id' => $costOfRevenue->id,
                 'lot_tracking_enabled' => true, // Serial number tracking
@@ -82,6 +83,7 @@ class ProductSeeder extends Seeder
                 'unit_price' => 400000,
                 'default_inventory_account_id' => $inventoryAccount->id,
                 'default_stock_input_account_id' => $stockInputAccount->id,
+                'default_cogs_account_id' => $costOfRevenue->id,
                 'income_account_id' => $incomeAccount->id,
                 'expense_account_id' => $costOfRevenue->id,
                 'lot_tracking_enabled' => true, // Batch tracking
@@ -98,6 +100,7 @@ class ProductSeeder extends Seeder
                 'unit_price' => 300000,
                 'default_inventory_account_id' => $inventoryAccount->id,
                 'default_stock_input_account_id' => $stockInputAccount->id,
+                'default_cogs_account_id' => $costOfRevenue->id,
                 'income_account_id' => $incomeAccount->id,
                 'expense_account_id' => $costOfRevenue->id,
                 'lot_tracking_enabled' => true, // Batch tracking with expiration dates
