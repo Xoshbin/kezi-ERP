@@ -1,0 +1,89 @@
+<?php
+
+namespace Modules\Accounting\Services;
+
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\AccountGroup;
+
+/**
+ * Service for managing account groups and auto-assignment of accounts.
+ */
+class AccountGroupService
+{
+    /**
+     * Auto-assign account to the most specific matching group based on code.
+     */
+    public function assignAccountToGroup(Account $account): void
+    {
+        $group = AccountGroup::where('company_id', $account->company_id)
+            ->where('code_prefix_start', '<=', $account->code)
+            ->where('code_prefix_end', '>=', $account->code)
+            ->orderBy('level', 'desc') // Most specific group first
+            ->first();
+
+        if ($group && $account->account_group_id !== $group->id) {
+            $account->account_group_id = $group->id;
+            $account->saveQuietly(); // Avoid observer recursion
+        }
+    }
+
+    /**
+     * Validate group code range doesn't overlap with existing groups at the same level.
+     */
+    public function validateNoOverlap(
+        int $companyId,
+        string $start,
+        string $end,
+        ?int $excludeId = null
+    ): bool {
+        $query = AccountGroup::where('company_id', $companyId)
+            ->where(function ($q) use ($start, $end) {
+                // Check if new range overlaps with existing ranges
+                $q->where(function ($inner) use ($start, $end) {
+                    $inner->where('code_prefix_start', '<=', $end)
+                        ->where('code_prefix_end', '>=', $start);
+                });
+            });
+
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        return ! $query->exists();
+    }
+
+    /**
+     * Calculate the appropriate level for a new group.
+     */
+    public function calculateLevel(int $companyId, string $start, string $end): int
+    {
+        // Find parent group that fully contains this range
+        $parent = AccountGroup::where('company_id', $companyId)
+            ->where('code_prefix_start', '<=', $start)
+            ->where('code_prefix_end', '>=', $end)
+            ->orderBy('level', 'desc')
+            ->first();
+
+        return $parent ? $parent->level + 1 : 0;
+    }
+
+    /**
+     * Reassign all accounts in company to their appropriate groups.
+     * Useful after bulk group changes.
+     */
+    public function reassignAllAccounts(int $companyId): int
+    {
+        $accounts = Account::where('company_id', $companyId)->get();
+        $count = 0;
+
+        foreach ($accounts as $account) {
+            $oldGroupId = $account->account_group_id;
+            $this->assignAccountToGroup($account);
+            if ($account->account_group_id !== $oldGroupId) {
+                $count++;
+            }
+        }
+
+        return $count;
+    }
+}

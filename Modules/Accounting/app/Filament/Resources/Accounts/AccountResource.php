@@ -68,6 +68,13 @@ class AccountResource extends Resource
                                     ->mapWithKeys(fn (\Modules\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
                             )
                             ->searchable(),
+                        Select::make('account_group_id')
+                            ->label(__('accounting::account.group'))
+                            ->relationship('accountGroup', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->nullable()
+                            ->helperText(__('accounting::account.group_help')),
                         Toggle::make('is_deprecated')
                             ->label(__('accounting::account.is_deprecated'))
                             ->required(),
@@ -95,6 +102,10 @@ class AccountResource extends Resource
                     ->label(__('accounting::account.type'))
                     ->formatStateUsing(fn ($state) => $state instanceof \Modules\Accounting\Enums\Accounting\AccountType ? $state->label() : $state)
                     ->searchable(),
+                TextColumn::make('accountGroup.name')
+                    ->label(__('accounting::account.group'))
+                    ->searchable()
+                    ->toggleable(),
                 IconColumn::make('is_deprecated')
                     ->label(__('accounting::account.is_deprecated'))
                     ->boolean(),
