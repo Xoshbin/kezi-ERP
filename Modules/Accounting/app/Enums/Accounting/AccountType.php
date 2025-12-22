@@ -143,4 +143,35 @@ enum AccountType: string
             self::equityTypes()
         );
     }
+
+    /**
+     * Get the GAAP root type for this account type.
+     */
+    public function rootType(): RootAccountType
+    {
+        return match (true) {
+            $this->isAsset() => RootAccountType::Asset,
+            $this->isLiability() => RootAccountType::Liability,
+            $this->isEquity() => RootAccountType::Equity,
+            $this->isIncome() => RootAccountType::Income,
+            $this->isExpense() => RootAccountType::Expense,
+            default => RootAccountType::Expense, // Off-balance-sheet fallback
+        };
+    }
+
+    /**
+     * Check if the account type is Income.
+     */
+    public function isIncome(): bool
+    {
+        return in_array($this, [self::Income, self::OtherIncome]);
+    }
+
+    /**
+     * Check if the account type is an Expense.
+     */
+    public function isExpense(): bool
+    {
+        return in_array($this, [self::Expense, self::Depreciation, self::CostOfRevenue]);
+    }
 }
