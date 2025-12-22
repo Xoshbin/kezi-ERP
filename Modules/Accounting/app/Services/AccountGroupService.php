@@ -86,4 +86,38 @@ class AccountGroupService
 
         return $count;
     }
+
+    /**
+     * Get the next available account code within a group's prefix range.
+     * Returns null if no more codes are available.
+     */
+    public function getNextAccountCode(AccountGroup $group): ?string
+    {
+        $start = $group->code_prefix_start;
+        $end = $group->code_prefix_end;
+        $codeLength = strlen($start);
+
+        // Find the highest existing code within this group's range
+        $highestCode = Account::where('company_id', $group->company_id)
+            ->where('code', '>=', $start)
+            ->where('code', '<=', $end)
+            ->orderByRaw('CAST(code AS UNSIGNED) DESC')
+            ->value('code');
+
+        if ($highestCode === null) {
+            // No accounts exist in this range, return the start code
+            return $start;
+        }
+
+        // Increment the highest code
+        $nextCodeNum = ((int) $highestCode) + 1;
+        $nextCode = str_pad((string) $nextCodeNum, $codeLength, '0', STR_PAD_LEFT);
+
+        // Check if next code is still within range
+        if ($nextCode > $end) {
+            return null; // No more codes available
+        }
+
+        return $nextCode;
+    }
 }
