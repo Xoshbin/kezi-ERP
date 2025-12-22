@@ -3,9 +3,26 @@
 namespace Modules\Accounting\Observers;
 
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Services\AccountGroupService;
 
 class AccountObserver
 {
+    public function __construct(
+        private readonly AccountGroupService $accountGroupService
+    ) {}
+
+    /**
+     * Handle the Account "saving" event.
+     * Auto-assign account to the most specific matching group based on code.
+     */
+    public function saving(Account $account): void
+    {
+        // Only assign to group if the account has a code
+        if (! empty($account->code)) {
+            $this->accountGroupService->assignAccountToGroup($account);
+        }
+    }
+
     /**
      * Handle the Account "created" event.
      */

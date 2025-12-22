@@ -11,6 +11,8 @@ return [
     'name' => 'Name',
     'type' => 'Type',
     'is_deprecated' => 'Is Deprecated',
+    'group' => 'Group',
+    'group_help' => 'Accounts are auto-assigned based on code, but you can override manually.',
     'allow_reconciliation' => 'Allow Reconciliation',
     'allow_reconciliation_help' => 'Allow this account to be used in reconciliation processes (A/R, A/P, Bank).',
     'created_at' => 'Created At',
