@@ -98,13 +98,20 @@ class CreateDeliveryFromSalesOrderAction
                         $reservationService->reserveForMove($stockMove, $locations['warehouse']->id);
 
                         $stockMoves->push($stockMove);
-
-                        // If we're in automatic mode, mark the move as done and dispatch event
-                        if ($dto->autoConfirm) {
-                            $stockMove->update(['status' => StockMoveStatus::Done]);
-                            StockMoveConfirmed::dispatch($stockMove);
-                        }
                     }
+                }
+            }
+
+            // If we're in automatic mode, mark the picking and all moves as done
+            if ($dto->autoConfirm && $stockMoves->isNotEmpty()) {
+                $picking->update([
+                    'state' => StockPickingState::Done,
+                    'completed_at' => now(),
+                ]);
+
+                foreach ($stockMoves as $stockMove) {
+                    $stockMove->update(['status' => StockMoveStatus::Done]);
+                    StockMoveConfirmed::dispatch($stockMove);
                 }
             }
 
