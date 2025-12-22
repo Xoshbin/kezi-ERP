@@ -371,3 +371,123 @@ it('creates COGS journal entry when ProcessOutgoingStockJob is processed', funct
         $this->markTestIncomplete('COGS calculation not yet implemented in InventoryValuationService.processOutgoingStock()');
     }
 });
+
+it('auto-confirms delivery when company inventory_accounting_mode is automatic', function () {
+    // Arrange: Set company to auto-record mode
+    $this->company->update([
+        'inventory_accounting_mode' => \Modules\Inventory\Enums\Inventory\InventoryAccountingMode::AUTO_RECORD_ON_BILL,
+    ]);
+
+    $quantity = 5;
+    $sellingPrice = Money::of(1000, $this->company->currency->code);
+
+    // Create initial inventory
+    StockQuant::factory()->create([
+        'company_id' => $this->company->id,
+        'product_id' => $this->product->id,
+        'location_id' => $this->warehouseLocation->id,
+        'quantity' => 10.0,
+        'reserved_quantity' => 0.0,
+    ]);
+
+    // Create a sales order
+    $salesOrder = \Modules\Sales\Models\SalesOrder::factory()->for($this->company)->create([
+        'customer_id' => $this->customer->id,
+        'status' => \Modules\Sales\Enums\Sales\SalesOrderStatus::Draft,
+        'currency_id' => $this->company->currency_id,
+        'created_by_user_id' => $this->user->id,
+    ]);
+
+    // Add sales order line
+    \Modules\Sales\Models\SalesOrderLine::factory()->create([
+        'sales_order_id' => $salesOrder->id,
+        'product_id' => $this->product->id,
+        'description' => 'Test Product Sale',
+        'quantity' => $quantity,
+        'unit_price' => $sellingPrice,
+    ]);
+
+    $salesOrder->refresh();
+
+    // Act: Confirm the sales order
+    $confirmAction = app(\Modules\Sales\Actions\Sales\ConfirmSalesOrderAction::class);
+    $confirmAction->execute($salesOrder, $this->user);
+
+    // Assert: Stock picking was created and is in 'done' state
+    $stockPicking = \Modules\Inventory\Models\StockPicking::where('origin', 'LIKE', '%'.$salesOrder->so_number.'%')->first();
+    expect($stockPicking)->not->toBeNull();
+    expect($stockPicking->state)->toBe(\Modules\Inventory\Enums\Inventory\StockPickingState::Done);
+
+    // Assert: Stock move was created and is in 'done' status
+    $stockMove = StockMove::where('source_type', \Modules\Sales\Models\SalesOrder::class)
+        ->where('source_id', $salesOrder->id)
+        ->first();
+    expect($stockMove)->not->toBeNull();
+    expect($stockMove->status)->toBe(StockMoveStatus::Done);
+
+    // Assert: COGS journal entry should exist (via StockMoveConfirmed event)
+    $this->artisan('queue:work --once');
+
+    $stockMoveValuation = StockMoveValuation::where('stock_move_id', $stockMove->id)->first();
+    if ($stockMoveValuation) {
+        expect($stockMoveValuation->journal_entry_id)->not->toBeNull();
+    }
+});
+
+it('does not auto-confirm delivery when company inventory_accounting_mode is manual', function () {
+    // Arrange: Set company to manual recording mode
+    $this->company->update([
+        'inventory_accounting_mode' => \Modules\Inventory\Enums\Inventory\InventoryAccountingMode::MANUAL_INVENTORY_RECORDING,
+    ]);
+
+    $quantity = 5;
+    $sellingPrice = Money::of(1000, $this->company->currency->code);
+
+    // Create initial inventory
+    StockQuant::factory()->create([
+        'company_id' => $this->company->id,
+        'product_id' => $this->product->id,
+        'location_id' => $this->warehouseLocation->id,
+        'quantity' => 10.0,
+        'reserved_quantity' => 0.0,
+    ]);
+
+    // Create a sales order
+    $salesOrder = \Modules\Sales\Models\SalesOrder::factory()->for($this->company)->create([
+        'customer_id' => $this->customer->id,
+        'status' => \Modules\Sales\Enums\Sales\SalesOrderStatus::Draft,
+        'currency_id' => $this->company->currency_id,
+        'created_by_user_id' => $this->user->id,
+    ]);
+
+    // Add sales order line
+    \Modules\Sales\Models\SalesOrderLine::factory()->create([
+        'sales_order_id' => $salesOrder->id,
+        'product_id' => $this->product->id,
+        'description' => 'Test Product Sale',
+        'quantity' => $quantity,
+        'unit_price' => $sellingPrice,
+    ]);
+
+    $salesOrder->refresh();
+
+    // Act: Confirm the sales order
+    $confirmAction = app(\Modules\Sales\Actions\Sales\ConfirmSalesOrderAction::class);
+    $confirmAction->execute($salesOrder, $this->user);
+
+    // Assert: Stock picking was created and is in 'draft' state (NOT done)
+    $stockPicking = \Modules\Inventory\Models\StockPicking::where('origin', 'LIKE', '%'.$salesOrder->so_number.'%')->first();
+    expect($stockPicking)->not->toBeNull();
+    expect($stockPicking->state)->toBe(\Modules\Inventory\Enums\Inventory\StockPickingState::Draft);
+
+    // Assert: Stock move was created but is in 'draft' status (NOT done)
+    $stockMove = StockMove::where('source_type', \Modules\Sales\Models\SalesOrder::class)
+        ->where('source_id', $salesOrder->id)
+        ->first();
+    expect($stockMove)->not->toBeNull();
+    expect($stockMove->status)->toBe(StockMoveStatus::Draft);
+
+    // Assert: NO COGS journal entry (stock move not confirmed)
+    $stockMoveValuation = StockMoveValuation::where('stock_move_id', $stockMove->id)->first();
+    expect($stockMoveValuation)->toBeNull();
+});
