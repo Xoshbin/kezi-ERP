@@ -111,6 +111,7 @@ class Account extends Model
      */
     protected $fillable = [
         'company_id',
+        'account_group_id',
         'currency_id',
         'code',
         'name',
@@ -167,6 +168,16 @@ class Account extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * Get the account group this account belongs to.
+     *
+     * @return BelongsTo<AccountGroup, static>
+     */
+    public function accountGroup(): BelongsTo
+    {
+        return $this->belongsTo(AccountGroup::class);
     }
 
     /**
@@ -338,5 +349,23 @@ class Account extends Model
     public function canBeDeleted(): bool
     {
         return $this->journalEntryLines()->doesntExist();
+    }
+
+    /**
+     * Get the GAAP root type for this account.
+     */
+    public function getRootTypeAttribute(): \Modules\Accounting\Enums\Accounting\RootAccountType
+    {
+        return $this->type->rootType();
+    }
+
+    /**
+     * Check if this account can receive journal entries.
+     * All accounts in the Account table are postable.
+     * (Groups are in a separate AccountGroup table)
+     */
+    public function isPostable(): bool
+    {
+        return true;
     }
 }
