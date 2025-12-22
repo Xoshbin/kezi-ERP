@@ -15,11 +15,6 @@ use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Journal;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\Partner;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\StockPickingState;
-use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
-use Modules\Inventory\Models\StockMove;
-use Modules\Inventory\Models\StockPicking;
 use Modules\Payment\Actions\Payments\CreatePaymentAction;
 use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
@@ -40,7 +35,6 @@ use Modules\Sales\Actions\Sales\CreateSalesOrderAction;
 use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
 use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderDTO;
 use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderLineDTO;
-use Modules\Sales\Models\SalesOrder;
 use Modules\Sales\Services\InvoiceService;
 
 /**
@@ -264,37 +258,9 @@ class ScenarioTwoSeeder extends Seeder
             $salesOrder->refresh();
             $this->command->info("   ✓ Sales order confirmed (SO#: {$salesOrder->so_number})");
 
-            // ============================================================
-            // STEP 5.5: Confirm Sales Order Delivery (triggers COGS)
-            // ============================================================
-            $this->command->info('Step 5.5: Confirming sales order delivery...');
-
-            // Find the stock move for this sales order (linked via source_type/source_id)
-            $stockMove = StockMove::where('source_type', SalesOrder::class)
-                ->where('source_id', $salesOrder->id)
-                ->first();
-
-            if ($stockMove && $stockMove->picking_id) {
-                /** @var StockPicking $deliveryPicking */
-                $deliveryPicking = StockPicking::find($stockMove->picking_id);
-
-                if ($deliveryPicking) {
-                    DB::transaction(function () use ($deliveryPicking) {
-                        // Mark picking as done
-                        $deliveryPicking->update([
-                            'state' => StockPickingState::Done,
-                            'completed_at' => now(),
-                        ]);
-
-                        // Confirm all stock moves and dispatch events
-                        foreach ($deliveryPicking->stockMoves as $move) {
-                            $move->update(['status' => StockMoveStatus::Done]);
-                            StockMoveConfirmed::dispatch($move);
-                        }
-                    });
-                    $this->command->info("   ✓ Delivery confirmed (Picking#: {$deliveryPicking->id})");
-                }
-            }
+            // Note: In auto_record_on_bill mode, the delivery picking and stock moves
+            // are automatically confirmed when the sales order is confirmed.
+            // This triggers the COGS journal entry via the StockMoveConfirmed event.
 
             // ============================================================
             // STEP 6: Create Invoice from Sales Order and Post

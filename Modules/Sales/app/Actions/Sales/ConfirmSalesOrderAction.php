@@ -38,7 +38,8 @@ class ConfirmSalesOrderAction
             $dto = new CreateDeliveryFromSalesOrderDTO(
                 salesOrder: $salesOrder,
                 user: $user,
-                scheduled_date: $salesOrder->expected_delivery_date
+                scheduled_date: $salesOrder->expected_delivery_date,
+                autoConfirm: $salesOrder->company->inventory_accounting_mode->autoRecordsInventory(),
             );
 
             $this->createDeliveryAction->execute($dto);
