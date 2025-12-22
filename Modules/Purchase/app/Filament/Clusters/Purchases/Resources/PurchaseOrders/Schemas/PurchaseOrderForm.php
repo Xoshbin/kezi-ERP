@@ -2,6 +2,7 @@
 
 namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Schemas;
 
+use App\Models\Company;
 use Brick\Money\Money;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -158,12 +159,11 @@ class PurchaseOrderForm
                                             ->required(),
                                     ]),
 
-                                Select::make('currency_id')
+                                TranslatableSelect::forModel('currency_id', Currency::class, 'name')
                                     ->label(__('purchase::purchase_orders.fields.currency'))
-                                    ->relationship('currency', 'name')
                                     ->searchable()
                                     ->preload()
-                                    ->default(fn () => Auth::user()?->company?->currency_id)
+                                    ->default(fn () => Filament::getTenant() instanceof Company ? Filament::getTenant()->currency_id : null)
                                     ->required()
                                     ->live()
                                     ->afterStateUpdated(function (callable $set, callable $get, $state) {
