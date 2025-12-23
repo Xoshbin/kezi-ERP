@@ -55,12 +55,12 @@ class BuildVendorBillPostingPreviewAction
 
         $apAccountId = $vendorBill->vendor->payable_account_id ?? $company->default_accounts_payable_id;
         if (! $apAccountId) {
-            $msg = 'Company default Accounts Payable account is not configured.';
+            $msg = __('accounting::bill.posting_preview.errors.ap_account_missing');
             $errors[] = $msg;
             $issues[] = ['type' => 'ap_account_missing', 'message' => $msg];
         }
         if (! $company->default_purchase_journal_id) {
-            $msg = 'Company default purchase journal is not configured.';
+            $msg = __('accounting::bill.posting_preview.errors.purchase_journal_missing');
             $errors[] = $msg;
             $issues[] = ['type' => 'purchase_journal_missing', 'message' => $msg];
         }
@@ -77,7 +77,7 @@ class BuildVendorBillPostingPreviewAction
                 /** @var Account|null $inventoryAccount */
                 $inventoryAccount = $line->product->inventoryAccount;
                 if (! $inventoryAccount) {
-                    $msg = "Product ID {$line->product_id} is missing its inventory account.";
+                    $msg = __('accounting::bill.posting_preview.errors.inventory_account_missing', ['product_id' => $line->product_id]);
                     $errors[] = $msg;
                     $issues[] = ['type' => 'inventory_account_missing', 'message' => $msg, 'product_id' => $line->product_id];
                 } else {
@@ -95,7 +95,7 @@ class BuildVendorBillPostingPreviewAction
             } elseif ($isAsset) {
                 $category = AssetCategory::find($line->asset_category_id);
                 if (! $category) {
-                    $msg = 'Invalid asset category selected on a bill line.';
+                    $msg = __('accounting::bill.posting_preview.errors.asset_category_invalid');
                     $errors[] = $msg;
                     $issues[] = ['type' => 'asset_category_invalid', 'message' => $msg];
                 } else {
@@ -128,7 +128,7 @@ class BuildVendorBillPostingPreviewAction
             if ($line->tax_id && $line->total_line_tax->isPositive()) {
                 $taxAccountId = $company->default_tax_receivable_id ?? $company->default_tax_account_id;
                 if (! $taxAccountId) {
-                    $msg = 'Company input tax account is not configured but taxable lines exist.';
+                    $msg = __('accounting::bill.posting_preview.errors.input_tax_missing');
                     $errors[] = $msg;
                     $issues[] = ['type' => 'input_tax_missing', 'message' => $msg];
                 } else {
