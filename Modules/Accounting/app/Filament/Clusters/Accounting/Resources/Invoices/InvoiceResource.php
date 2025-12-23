@@ -127,7 +127,7 @@ class InvoiceResource extends Resource
                                 ->label(__('foundation::partner.address'))
                                 ->columnSpanFull(),
                         ])
-                        ->createOptionModalHeading(__('common.modal_title_create_partner'))
+                        ->createOptionModalHeading(__('foundation::common.modal_title_create_partner'))
                         ->createOptionAction(function (Action $action) {
                             return $action
                                 ->modalWidth('lg');
@@ -172,7 +172,7 @@ class InvoiceResource extends Resource
                                 ->required()
                                 ->default(true),
                         ])
-                        ->createOptionModalHeading(__('common.modal_title_create_currency'))
+                        ->createOptionModalHeading(__('foundation::common.modal_title_create_currency'))
                         ->createOptionAction(function (Action $action) {
                             return $action
                                 ->modalWidth('lg');
@@ -358,7 +358,7 @@ class InvoiceResource extends Resource
                                                 ->label(__('accounting::account.is_deprecated'))
                                                 ->default(false),
                                         ])
-                                        ->createOptionModalHeading(__('common.modal_title_create_account'))
+                                        ->createOptionModalHeading(__('foundation::common.modal_title_create_account'))
                                         ->createOptionAction(function (Action $action) {
                                             return $action->modalWidth('lg');
                                         }),
@@ -372,7 +372,7 @@ class InvoiceResource extends Resource
                                         ->searchableFields(['name', 'code'])
                                         ->required(),
                                 ])
-                                ->createOptionModalHeading(__('common.modal_title_create_product'))
+                                ->createOptionModalHeading(__('foundation::common.modal_title_create_product'))
                                 ->createOptionAction(function (Action $action) {
                                     return $action
                                         ->modalWidth('lg');
@@ -436,7 +436,7 @@ class InvoiceResource extends Resource
 
                                     return $tax->getKey();
                                 })
-                                ->createOptionModalHeading(__('common.modal_title_create_tax'))
+                                ->createOptionModalHeading(__('foundation::common.modal_title_create_tax'))
                                 ->createOptionAction(function (Action $action) {
                                     return $action
                                         ->modalWidth('lg');
@@ -615,14 +615,14 @@ class InvoiceResource extends Resource
                 EditAction::make(),
                 ActionGroup::make([
                     Action::make('viewPdf')
-                        ->label(__('View PDF'))
+                        ->label(__('sales::invoice.view_pdf'))
                         ->icon('heroicon-o-document-text')
                         ->color('info')
                         ->url(fn (Invoice $record) => route('invoices.pdf', $record))
                         ->openUrlInNewTab(),
 
                     Action::make('downloadPdf')
-                        ->label(__('Download PDF'))
+                        ->label(__('sales::invoice.download_pdf'))
                         ->icon('heroicon-o-arrow-down-tray')
                         ->color('success')
                         ->url(fn (Invoice $record) => route('invoices.pdf.download', $record)),
@@ -696,7 +696,7 @@ class InvoiceResource extends Resource
                             ->required(),
                         TextInput::make('reference')
                             ->label(__('payment::payment.form.reference'))
-                            ->placeholder(__('Optional reference')),
+                            ->placeholder(__('sales::invoice.optional_reference')),
                         Hidden::make('currency_id')
                             ->default(fn (Invoice $record) => $record->currency_id),
                     ])

@@ -52,32 +52,32 @@ class EditInvoice extends EditRecord
             // PDF Actions - Available for all invoices (draft and posted)
             ActionGroup::make([
                 Action::make('viewPdf')
-                    ->label(__('View PDF'))
+                    ->label(__('sales::invoice.view_pdf'))
                     ->icon('heroicon-o-document-text')
                     ->color('info')
                     ->url(fn (Invoice $record) => route('invoices.pdf', $record))
                     ->openUrlInNewTab(),
 
                 Action::make('downloadPdf')
-                    ->label(__('Download PDF'))
+                    ->label(__('sales::invoice.download_pdf'))
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('success')
                     ->url(fn (Invoice $record) => route('invoices.pdf.download', $record)),
             ])
-                ->label(__('PDF'))
+                ->label(__('sales::invoice.pdf'))
                 ->icon('heroicon-o-document-text')
                 ->color('gray')
                 ->button(),
 
             Action::make('preview_posting')
-                ->label(__('Preview Posting'))
+                ->label(__('sales::invoice.preview_posting'))
                 ->icon('heroicon-o-eye')
                 ->color('info')
                 ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft)
                 ->requiresConfirmation()
-                ->modalHeading(__('Posting Preview'))
+                ->modalHeading(__('sales::invoice.posting_preview'))
                 ->modalSubmitAction(false)
-                ->modalCancelActionLabel(__('Close'))
+                ->modalCancelActionLabel(__('sales::invoice.close'))
                 ->modalWidth('7xl')
                 ->modalContent(function (Invoice $record) {
                     $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
@@ -89,7 +89,7 @@ class EditInvoice extends EditRecord
                 }),
 
             Action::make('export_preview_csv')
-                ->label(__('Export Preview (CSV)'))
+                ->label(__('sales::invoice.export_preview_csv'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('gray')
                 ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
@@ -120,7 +120,7 @@ class EditInvoice extends EditRecord
                 }),
 
             Action::make('export_preview_pdf')
-                ->label(__('Export Preview (PDF)'))
+                ->label(__('sales::invoice.export_preview_pdf'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
                 ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
