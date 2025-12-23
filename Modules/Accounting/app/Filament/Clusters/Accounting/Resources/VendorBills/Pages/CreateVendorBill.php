@@ -151,8 +151,8 @@ class CreateVendorBill extends CreateRecord
         // Validate that the PO can be billed
         if (! $purchaseOrder->status->canCreateBill()) {
             \Filament\Notifications\Notification::make()
-                ->title(__('vendor_bill.errors.cannot_create_bill_title'))
-                ->body(__('vendor_bill.errors.cannot_create_bill_body', ['status' => $purchaseOrder->status->label()]))
+                ->title(__('accounting::bill.errors.cannot_create_bill_title'))
+                ->body(__('accounting::bill.errors.cannot_create_bill_body', ['status' => $purchaseOrder->status->label()]))
                 ->warning()
                 ->send();
 
@@ -194,7 +194,7 @@ class CreateVendorBill extends CreateRecord
     protected function getLoadFromPurchaseOrderAction(): Action
     {
         return Action::make('loadFromPurchaseOrder')
-            ->label(__('vendor_bill.actions.load_from_purchase_order'))
+            ->label(__('accounting::bill.actions.load_from_purchase_order'))
             ->icon('heroicon-o-document-arrow-down')
             ->color('info')
             ->fillForm([
@@ -202,7 +202,7 @@ class CreateVendorBill extends CreateRecord
             ])
             ->schema([
                 Select::make('purchase_order_id')
-                    ->label(__('vendor_bill.purchase_order'))
+                    ->label(__('accounting::bill.purchase_order'))
                     ->options(function (): array {
                         // Use getRawState() to avoid triggering validation
                         $vendorId = $this->form->getRawState()['vendor_id'] ?? null;
