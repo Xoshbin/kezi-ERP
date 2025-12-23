@@ -190,4 +190,27 @@ return [
         'more' => 'more',
         'various' => 'Various',
     ],
+
+    // Modal Titles
+    'modal_title_create_partner' => 'Create Customer',
+    'modal_title_create_currency' => 'Create Currency',
+    'modal_title_create_account' => 'Create Account',
+    'modal_title_create_product' => 'Create Product',
+    'modal_title_create_tax' => 'Create Tax',
+
+    // Product Fields (for inline product creation)
+    'product_name' => 'Name',
+    'product_sku' => 'SKU',
+    'product_type' => 'Type',
+    'product_description' => 'Description',
+    'product_default_inventory_account' => 'Default Inventory Account',
+    'product_unit_price' => 'Unit Price',
+    'product_income_account' => 'Income Account',
+
+    // Currency Fields (for inline currency creation)
+    'currency_code' => 'Code',
+    'currency_label' => 'Name',
+    'currency_symbol' => 'Symbol',
+    'currency_exchange_rate' => 'Exchange Rate',
+    'currency_is_active' => 'Is Active',
 ];

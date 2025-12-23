@@ -127,7 +127,7 @@ class InvoiceResource extends Resource
                                 ->label(__('accounting::partner.address'))
                                 ->columnSpanFull(),
                         ])
-                        ->createOptionModalHeading(__('foundation::common.modal_title_create_partner'))
+                        ->createOptionModalHeading(__('accounting::invoice.modal_title_create_partner'))
                         ->createOptionAction(function (Action $action) {
                             return $action
                                 ->modalWidth('lg');
@@ -151,28 +151,28 @@ class InvoiceResource extends Resource
                         })
                         ->createOptionForm([
                             TextInput::make('code')
-                                ->label(__('foundation::currency.code'))
+                                ->label(__('accounting::invoice.currency_code'))
                                 ->required()
                                 ->maxLength(255),
                             TextInput::make('name')
-                                ->label(__('foundation::currency.name'))
+                                ->label(__('accounting::invoice.currency_label'))
                                 ->required()
                                 ->maxLength(255),
                             TextInput::make('symbol')
-                                ->label(__('foundation::currency.symbol'))
+                                ->label(__('accounting::invoice.currency_symbol'))
                                 ->required()
                                 ->maxLength(5),
                             TextInput::make('exchange_rate')
-                                ->label(__('foundation::currency.exchange_rate'))
+                                ->label(__('accounting::invoice.currency_exchange_rate'))
                                 ->required()
                                 ->numeric()
                                 ->default(1),
                             Toggle::make('is_active')
-                                ->label(__('foundation::currency.is_active'))
+                                ->label(__('accounting::invoice.currency_is_active'))
                                 ->required()
                                 ->default(true),
                         ])
-                        ->createOptionModalHeading(__('foundation::common.modal_title_create_currency'))
+                        ->createOptionModalHeading(__('accounting::invoice.modal_title_create_currency'))
                         ->createOptionAction(function (Action $action) {
                             return $action
                                 ->modalWidth('lg');
@@ -311,14 +311,14 @@ class InvoiceResource extends Resource
                                     Hidden::make('company_id')
                                         ->default(fn () => Filament::getTenant()?->getKey()),
                                     TextInput::make('name')
-                                        ->label(__('product::product.name'))
+                                        ->label(__('accounting::invoice.product_name'))
                                         ->required()
                                         ->maxLength(255),
                                     TextInput::make('sku')
-                                        ->label(__('product::product.sku'))
+                                        ->label(__('accounting::invoice.product_sku'))
                                         ->maxLength(255),
                                     Select::make('type')
-                                        ->label(__('product::product.type'))
+                                        ->label(__('accounting::invoice.product_type'))
                                         ->required()
                                         ->live()
                                         ->options(
@@ -326,10 +326,10 @@ class InvoiceResource extends Resource
                                                 ->mapWithKeys(fn (\Modules\Product\Enums\Products\ProductType $type) => [$type->value => $type->label()])
                                         ),
                                     Textarea::make('description')
-                                        ->label(__('product::product.description'))
+                                        ->label(__('accounting::invoice.product_description'))
                                         ->columnSpanFull(),
                                     TranslatableSelect::forModel('default_inventory_account_id', Account::class, 'name')
-                                        ->label(__('product::product.default_inventory_account'))
+                                        ->label(__('accounting::invoice.product_default_inventory_account'))
                                         ->searchable()
                                         ->preload()
                                         ->searchableFields(['name', 'code'])
@@ -359,21 +359,21 @@ class InvoiceResource extends Resource
                                                 ->label(__('accounting::account.is_deprecated'))
                                                 ->default(false),
                                         ])
-                                        ->createOptionModalHeading(__('foundation::common.modal_title_create_account'))
+                                        ->createOptionModalHeading(__('accounting::invoice.modal_title_create_account'))
                                         ->createOptionAction(function (Action $action) {
                                             return $action->modalWidth('lg');
                                         }),
                                     MoneyInput::make('unit_price')
-                                        ->label(__('product::product.unit_price'))
+                                        ->label(__('accounting::invoice.product_unit_price'))
                                         ->currencyField('../../currency_id'),
                                     TranslatableSelect::forModel('income_account_id', Account::class, 'name')
-                                        ->label(__('product::product.income_account'))
+                                        ->label(__('accounting::invoice.product_income_account'))
                                         ->searchable()
                                         ->preload()
                                         ->searchableFields(['name', 'code'])
                                         ->required(),
                                 ])
-                                ->createOptionModalHeading(__('foundation::common.modal_title_create_product'))
+                                ->createOptionModalHeading(__('accounting::invoice.modal_title_create_product'))
                                 ->createOptionAction(function (Action $action) {
                                     return $action
                                         ->modalWidth('lg');
@@ -437,7 +437,7 @@ class InvoiceResource extends Resource
 
                                     return $tax->getKey();
                                 })
-                                ->createOptionModalHeading(__('foundation::common.modal_title_create_tax'))
+                                ->createOptionModalHeading(__('accounting::invoice.modal_title_create_tax'))
                                 ->createOptionAction(function (Action $action) {
                                     return $action
                                         ->modalWidth('lg');
