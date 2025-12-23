@@ -25,8 +25,8 @@ class SettlementSummaryWidget extends BaseWidget
         // Only show settlement summary for posted vendor bills
         if ($vendorBill->status !== VendorBillStatus::Posted) {
             return [
-                Stat::make(__('vendor_bill.settlement_widget.status'), __('vendor_bill.settlement_widget.not_posted'))
-                    ->description(__('vendor_bill.settlement_widget.not_posted_desc'))
+                Stat::make(__('accounting::bill.settlement_widget.status'), __('accounting::bill.settlement_widget.not_posted'))
+                    ->description(__('accounting::bill.settlement_widget.not_posted_desc'))
                     ->color('gray'),
             ];
         }
@@ -36,33 +36,33 @@ class SettlementSummaryWidget extends BaseWidget
         $outstandingBalance = $totalAmount->minus($paidAmount);
 
         return [
-            Stat::make(__('vendor_bill.settlement_widget.total_amount'), $this->formatMoney($totalAmount))
-                ->description(__('vendor_bill.settlement_widget.bill_total'))
+            Stat::make(__('accounting::bill.settlement_widget.total_amount'), $this->formatMoney($totalAmount))
+                ->description(__('accounting::bill.settlement_widget.bill_total'))
                 ->color('info')
                 ->icon('heroicon-o-document-text'),
 
-            Stat::make(__('vendor_bill.settlement_widget.paid_amount'), $this->formatMoney($paidAmount))
-                ->description(__('vendor_bill.settlement_widget.total_paid'))
+            Stat::make(__('accounting::bill.settlement_widget.paid_amount'), $this->formatMoney($paidAmount))
+                ->description(__('accounting::bill.settlement_widget.total_paid'))
                 ->color('success')
                 ->icon('heroicon-o-banknotes'),
 
-            Stat::make(__('vendor_bill.settlement_widget.outstanding_balance'), $this->formatMoney($outstandingBalance))
-                ->description(__('vendor_bill.settlement_widget.remaining_due'))
+            Stat::make(__('accounting::bill.settlement_widget.outstanding_balance'), $this->formatMoney($outstandingBalance))
+                ->description(__('accounting::bill.settlement_widget.remaining_due'))
                 ->color($outstandingBalance->isZero() ? 'success' : 'warning')
                 ->icon('heroicon-o-exclamation-triangle'),
 
-            // Stat::make(__('vendor_bill.settlement_widget.last_payment'), $lastPaymentDate)
-            //     ->description(__('vendor_bill.settlement_widget.most_recent_payment'))
-            //     ->color($lastPaymentDate === __('vendor_bill.settlement_widget.no_payments') ? 'gray' : 'info')
+            // Stat::make(__('accounting::bill.settlement_widget.last_payment'), $lastPaymentDate)
+            //     ->description(__('accounting::bill.settlement_widget.most_recent_payment'))
+            //     ->color($lastPaymentDate === __('accounting::bill.settlement_widget.no_payments') ? 'gray' : 'info')
             //     ->icon('heroicon-o-clock'),
 
-            // Stat::make(__('vendor_bill.settlement_widget.payment_count'), $this->getPaymentCount($vendorBill))
-            //     ->description(__('vendor_bill.settlement_widget.total_payments'))
+            // Stat::make(__('accounting::bill.settlement_widget.payment_count'), $this->getPaymentCount($vendorBill))
+            //     ->description(__('accounting::bill.settlement_widget.total_payments'))
             //     ->color('info')
             //     ->icon('heroicon-o-list-bullet'),
 
-            // Stat::make(__('vendor_bill.settlement_widget.payment_methods'), $paymentMethodBreakdown)
-            //     ->description(__('vendor_bill.settlement_widget.payment_breakdown'))
+            // Stat::make(__('accounting::bill.settlement_widget.payment_methods'), $paymentMethodBreakdown)
+            //     ->description(__('accounting::bill.settlement_widget.payment_breakdown'))
             //     ->color('info')
             //     ->icon('heroicon-o-credit-card'),
         ];

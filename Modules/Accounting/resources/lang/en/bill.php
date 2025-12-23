@@ -58,6 +58,7 @@ return [
     'exchange_rate_manual_helper' => 'Set a custom exchange rate or leave empty to use the current rate when posting',
     'total_amount_company_currency' => 'Total Amount (Company Currency)',
     'total_tax_company_currency' => 'Total Tax (Company Currency)',
+    'current_rate' => 'Current rate: :rate',
 
     // Actions
     'confirm' => 'Confirm',
@@ -69,6 +70,10 @@ return [
     // Fields
     'purchase_order' => 'Purchase Order',
     'no_purchase_order' => 'No PO',
+    'payment_term' => 'Payment Term',
+    'date' => 'Date',
+    'total' => 'Total',
+    'reference' => 'Reference',
 
     // Notifications
     'notification_confirm_success' => 'Vendor bill confirmed successfully',
