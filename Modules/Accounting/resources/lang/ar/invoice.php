@@ -190,4 +190,27 @@ return [
         'more' => 'المزيد',
         'various' => 'متعدد',
     ],
+
+    // Modal Titles
+    'modal_title_create_partner' => 'إنشاء عميل',
+    'modal_title_create_currency' => 'إنشاء عملة',
+    'modal_title_create_account' => 'إنشاء حساب',
+    'modal_title_create_product' => 'إنشاء منتج',
+    'modal_title_create_tax' => 'إنشاء ضريبة',
+
+    // Product Fields (for inline product creation)
+    'product_name' => 'الاسم',
+    'product_sku' => 'رمز المنتج',
+    'product_type' => 'النوع',
+    'product_description' => 'الوصف',
+    'product_default_inventory_account' => 'حساب المخزون الافتراضي',
+    'product_unit_price' => 'سعر الوحدة',
+    'product_income_account' => 'حساب الإيرادات',
+
+    // Currency Fields (for inline currency creation)
+    'currency_code' => 'الرمز',
+    'currency_label' => 'الاسم',
+    'currency_symbol' => 'الرمز',
+    'currency_exchange_rate' => 'سعر الصرف',
+    'currency_is_active' => 'نشط',
 ];
