@@ -11,6 +11,21 @@ use Modules\Foundation\Models\Partner;
 use Modules\Inventory\Enums\Inventory\StockPickingState;
 use Modules\Inventory\Enums\Inventory\StockPickingType;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property StockPickingType $type
+ * @property StockPickingState $state
+ * @property int|null $partner_id
+ * @property \Carbon\Carbon|null $scheduled_date
+ * @property \Carbon\Carbon|null $completed_at
+ * @property string|null $reference
+ * @property string|null $origin
+ * @property int|null $created_by_user_id
+ * @property-read Company $company
+ * @property-read Partner|null $partner
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, StockMove> $stockMoves
+ */
 class StockPicking extends Model
 {
     use HasFactory;
