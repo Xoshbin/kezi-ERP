@@ -35,18 +35,18 @@ class PaymentsRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('sales::invoice.payments_relation_manager.title');
+        return __('accounting::invoice.payments_relation_manager.title');
     }
 
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make(__('sales::invoice.payments_relation_manager.payment_details'))
+                Section::make(__('accounting::invoice.payments_relation_manager.payment_details'))
                     ->schema([
                         Select::make('company_id')
                             ->relationship('company', 'name')
-                            ->label(__('sales::invoice.payments_relation_manager.company'))
+                            ->label(__('accounting::invoice.payments_relation_manager.company'))
                             ->required()
                             ->default(function (): ?int {
                                 $owner = $this->getOwnerRecord();
@@ -56,12 +56,12 @@ class PaymentsRelationManager extends RelationManager
 
                         Select::make('journal_id')
                             ->relationship('journal', 'name')
-                            ->label(__('sales::invoice.payments_relation_manager.journal'))
+                            ->label(__('accounting::invoice.payments_relation_manager.journal'))
                             ->required(),
 
                         Select::make('currency_id')
                             ->relationship('currency', 'name')
-                            ->label(__('sales::invoice.payments_relation_manager.currency'))
+                            ->label(__('accounting::invoice.payments_relation_manager.currency'))
                             ->required()
                             ->default(function (): ?int {
                                 $owner = $this->getOwnerRecord();
@@ -70,18 +70,18 @@ class PaymentsRelationManager extends RelationManager
                             }),
 
                         DatePicker::make('payment_date')
-                            ->label(__('sales::invoice.payments_relation_manager.payment_date'))
+                            ->label(__('accounting::invoice.payments_relation_manager.payment_date'))
                             ->required()
                             ->default(now()),
 
                         TextInput::make('amount')
-                            ->label(__('sales::invoice.payments_relation_manager.amount'))
+                            ->label(__('accounting::invoice.payments_relation_manager.amount'))
                             ->required()
                             ->numeric()
                             ->step(0.01),
 
                         Select::make('payment_type')
-                            ->label(__('sales::invoice.payments_relation_manager.payment_type'))
+                            ->label(__('accounting::invoice.payments_relation_manager.payment_type'))
                             ->options([
                                 PaymentType::Inbound->value => PaymentType::Inbound->label(),
                                 PaymentType::Outbound->value => PaymentType::Outbound->label(),
@@ -90,11 +90,11 @@ class PaymentsRelationManager extends RelationManager
                             ->default(PaymentType::Inbound->value),
 
                         TextInput::make('reference')
-                            ->label(__('sales::invoice.payments_relation_manager.reference'))
+                            ->label(__('accounting::invoice.payments_relation_manager.reference'))
                             ->maxLength(255),
 
                         Select::make('status')
-                            ->label(__('sales::invoice.payments_relation_manager.status'))
+                            ->label(__('accounting::invoice.payments_relation_manager.status'))
                             ->options([
                                 PaymentStatus::Draft->value => PaymentStatus::Draft->label(),
                                 PaymentStatus::Confirmed->value => PaymentStatus::Confirmed->label(),
@@ -106,14 +106,14 @@ class PaymentsRelationManager extends RelationManager
                     ])
                     ->columns(2),
 
-                Section::make(__('sales::invoice.payments_relation_manager.application_details'))
+                Section::make(__('accounting::invoice.payments_relation_manager.application_details'))
                     ->schema([
                         TextInput::make('pivot.amount_applied')
-                            ->label(__('sales::invoice.payments_relation_manager.amount_applied'))
+                            ->label(__('accounting::invoice.payments_relation_manager.amount_applied'))
                             ->required()
                             ->numeric()
                             ->step(0.01)
-                            ->helperText(__('sales::invoice.payments_relation_manager.amount_applied_help')),
+                            ->helperText(__('accounting::invoice.payments_relation_manager.amount_applied_help')),
                     ]),
             ]);
     }
@@ -124,25 +124,25 @@ class PaymentsRelationManager extends RelationManager
             ->recordTitleAttribute('reference')
             ->columns([
                 TextColumn::make('payment_date')
-                    ->label(__('sales::invoice.payments_relation_manager.payment_date'))
+                    ->label(__('accounting::invoice.payments_relation_manager.payment_date'))
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('reference')
-                    ->label(__('sales::invoice.payments_relation_manager.reference'))
+                    ->label(__('accounting::invoice.payments_relation_manager.reference'))
                     ->searchable()
-                    ->placeholder(__('sales::invoice.payments_relation_manager.no_reference')),
+                    ->placeholder(__('accounting::invoice.payments_relation_manager.no_reference')),
 
                 MoneyColumn::make('amount')
-                    ->label(__('sales::invoice.payments_relation_manager.amount'))
+                    ->label(__('accounting::invoice.payments_relation_manager.amount'))
                     ->sortable(),
 
                 MoneyColumn::make('pivot.amount_applied')
-                    ->label(__('sales::invoice.payments_relation_manager.amount_applied'))
+                    ->label(__('accounting::invoice.payments_relation_manager.amount_applied'))
                     ->sortable(),
 
                 TextColumn::make('payment_type')
-                    ->label(__('sales::invoice.payments_relation_manager.payment_type'))
+                    ->label(__('accounting::invoice.payments_relation_manager.payment_type'))
                     ->formatStateUsing(fn (PaymentType $state): string => $state->label())
                     ->badge()
                     ->color(fn (PaymentType $state): string => match ($state) {
@@ -151,7 +151,7 @@ class PaymentsRelationManager extends RelationManager
                     }),
 
                 TextColumn::make('status')
-                    ->label(__('sales::invoice.payments_relation_manager.status'))
+                    ->label(__('accounting::invoice.payments_relation_manager.status'))
                     ->formatStateUsing(fn (PaymentStatus $state): string => $state->label())
                     ->badge()
                     ->color(fn (PaymentStatus $state): string => match ($state) {
@@ -162,17 +162,17 @@ class PaymentsRelationManager extends RelationManager
                     }),
 
                 TextColumn::make('journal.name')
-                    ->label(__('sales::invoice.payments_relation_manager.journal'))
+                    ->label(__('accounting::invoice.payments_relation_manager.journal'))
                     ->toggleable(),
 
                 TextColumn::make('journalEntry.id')
-                    ->label(__('sales::invoice.payments_relation_manager.journal_entry'))
-                    ->placeholder(__('sales::invoice.payments_relation_manager.no_journal_entry'))
+                    ->label(__('accounting::invoice.payments_relation_manager.journal_entry'))
+                    ->placeholder(__('accounting::invoice.payments_relation_manager.no_journal_entry'))
                     ->toggleable(),
 
                 TextColumn::make('bankStatementLines.description')
-                    ->label(__('sales::invoice.payments_relation_manager.bank_statement_reference'))
-                    ->placeholder(__('sales::invoice.payments_relation_manager.not_reconciled'))
+                    ->label(__('accounting::invoice.payments_relation_manager.bank_statement_reference'))
+                    ->placeholder(__('accounting::invoice.payments_relation_manager.not_reconciled'))
                     ->limit(30)
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
@@ -185,13 +185,13 @@ class PaymentsRelationManager extends RelationManager
                     ->toggleable(),
 
                 TextColumn::make('bankStatementLines.date')
-                    ->label(__('sales::invoice.payments_relation_manager.reconciliation_date'))
+                    ->label(__('accounting::invoice.payments_relation_manager.reconciliation_date'))
                     ->date()
-                    ->placeholder(__('sales::invoice.payments_relation_manager.not_reconciled'))
+                    ->placeholder(__('accounting::invoice.payments_relation_manager.not_reconciled'))
                     ->toggleable(),
 
                 IconColumn::make('is_reconciled')
-                    ->label(__('sales::invoice.payments_relation_manager.reconciliation_status'))
+                    ->label(__('accounting::invoice.payments_relation_manager.reconciliation_status'))
                     ->getStateUsing(fn (Payment $record): bool => $record->status === PaymentStatus::Reconciled)
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
@@ -201,14 +201,14 @@ class PaymentsRelationManager extends RelationManager
                     ->toggleable(),
 
                 TextColumn::make('created_at')
-                    ->label(__('sales::invoice.payments_relation_manager.created_at'))
+                    ->label(__('accounting::invoice.payments_relation_manager.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->label(__('sales::invoice.payments_relation_manager.filter_status'))
+                    ->label(__('accounting::invoice.payments_relation_manager.filter_status'))
                     ->options([
                         PaymentStatus::Draft->value => PaymentStatus::Draft->label(),
                         PaymentStatus::Confirmed->value => PaymentStatus::Confirmed->label(),
@@ -217,17 +217,17 @@ class PaymentsRelationManager extends RelationManager
                     ]),
 
                 SelectFilter::make('payment_type')
-                    ->label(__('sales::invoice.payments_relation_manager.filter_payment_type'))
+                    ->label(__('accounting::invoice.payments_relation_manager.filter_payment_type'))
                     ->options([
                         PaymentType::Inbound->value => PaymentType::Inbound->label(),
                         PaymentType::Outbound->value => PaymentType::Outbound->label(),
                     ]),
 
                 TernaryFilter::make('is_reconciled')
-                    ->label(__('sales::invoice.payments_relation_manager.filter_reconciliation_status'))
-                    ->placeholder(__('sales::invoice.payments_relation_manager.filter_all_reconciliation'))
-                    ->trueLabel(__('sales::invoice.payments_relation_manager.filter_reconciled'))
-                    ->falseLabel(__('sales::invoice.payments_relation_manager.filter_not_reconciled'))
+                    ->label(__('accounting::invoice.payments_relation_manager.filter_reconciliation_status'))
+                    ->placeholder(__('accounting::invoice.payments_relation_manager.filter_all_reconciliation'))
+                    ->trueLabel(__('accounting::invoice.payments_relation_manager.filter_reconciled'))
+                    ->falseLabel(__('accounting::invoice.payments_relation_manager.filter_not_reconciled'))
                     ->queries(
                         true: fn (Builder $query) => $query->where('status', PaymentStatus::Reconciled),
                         false: fn (Builder $query) => $query->where('status', '!=', PaymentStatus::Reconciled),
@@ -235,7 +235,7 @@ class PaymentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label(__('sales::invoice.payments_relation_manager.create_payment'))
+                    ->label(__('accounting::invoice.payments_relation_manager.create_payment'))
                     ->mutateDataUsing(function (array $data): array {
                         $owner = $this->getOwnerRecord();
                         $data['paid_to_from_partner_id'] = $owner instanceof Invoice ? $owner->customer_id : null;
@@ -247,13 +247,13 @@ class PaymentsRelationManager extends RelationManager
                 ViewAction::make(),
                 EditAction::make(),
                 DetachAction::make()
-                    ->label(__('sales::invoice.payments_relation_manager.detach'))
+                    ->label(__('accounting::invoice.payments_relation_manager.detach'))
                     ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DetachBulkAction::make()
-                        ->label(__('sales::invoice.payments_relation_manager.detach_selected')),
+                        ->label(__('accounting::invoice.payments_relation_manager.detach_selected')),
                 ]),
             ])
             ->defaultSort('payment_date', 'desc');
