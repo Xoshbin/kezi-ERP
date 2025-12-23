@@ -23,12 +23,12 @@ class InvoiceLinesRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                Select::make('product_id')->relationship('product', 'name')->label(__('invoice.product')),
-                TextInput::make('description')->label(__('invoice.description'))->required()->maxLength(255),
-                TextInput::make('quantity')->label(__('invoice.quantity'))->required()->numeric(),
-                TextInput::make('unit_price')->label(__('invoice.unit_price'))->required()->numeric(),
-                Select::make('tax_id')->relationship('tax', 'name')->label(__('invoice.tax')),
-                Select::make('income_account_id')->relationship('incomeAccount', 'name')->label(__('invoice.income_account'))->required(),
+                Select::make('product_id')->relationship('product', 'name')->label(__('sales::invoice.product')),
+                TextInput::make('description')->label(__('sales::invoice.description'))->required()->maxLength(255),
+                TextInput::make('quantity')->label(__('sales::invoice.quantity'))->required()->numeric(),
+                TextInput::make('unit_price')->label(__('sales::invoice.unit_price'))->required()->numeric(),
+                Select::make('tax_id')->relationship('tax', 'name')->label(__('sales::invoice.tax')),
+                Select::make('income_account_id')->relationship('incomeAccount', 'name')->label(__('sales::invoice.income_account'))->required(),
             ]);
     }
 
@@ -38,11 +38,11 @@ class InvoiceLinesRelationManager extends RelationManager
             ->recordTitleAttribute('description')
             ->modifyQueryUsing(fn (Builder $query) => $query->with(['invoice.currency', 'product', 'tax', 'incomeAccount']))
             ->columns([
-                TextColumn::make('product.name')->label(__('invoice.product')),
-                TextColumn::make('description')->label(__('invoice.description')),
-                TextColumn::make('quantity')->label(__('invoice.quantity')),
-                TextColumn::make('unit_price')->label(__('invoice.unit_price')),
-                TextColumn::make('tax.name')->label(__('invoice.tax')),
+                TextColumn::make('product.name')->label(__('sales::invoice.product')),
+                TextColumn::make('description')->label(__('sales::invoice.description')),
+                TextColumn::make('quantity')->label(__('sales::invoice.quantity')),
+                TextColumn::make('unit_price')->label(__('sales::invoice.unit_price')),
+                TextColumn::make('tax.name')->label(__('sales::invoice.tax')),
             ])
             ->filters([
                 //

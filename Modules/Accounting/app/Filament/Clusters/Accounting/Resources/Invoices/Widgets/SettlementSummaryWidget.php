@@ -25,8 +25,8 @@ class SettlementSummaryWidget extends BaseWidget
         // Only show settlement summary for posted invoices
         if ($invoice->status !== InvoiceStatus::Posted) {
             return [
-                Stat::make(__('invoice.settlement_widget.status'), __('invoice.settlement_widget.not_posted'))
-                    ->description(__('invoice.settlement_widget.not_posted_desc'))
+                Stat::make(__('sales::invoice.settlement_widget.status'), __('sales::invoice.settlement_widget.not_posted'))
+                    ->description(__('sales::invoice.settlement_widget.not_posted_desc'))
                     ->color('gray'),
             ];
         }
@@ -36,18 +36,18 @@ class SettlementSummaryWidget extends BaseWidget
         $outstandingBalance = $totalAmount->minus($paidAmount);
 
         return [
-            Stat::make(__('invoice.settlement_widget.total_amount'), $this->formatMoney($totalAmount))
-                ->description(__('invoice.settlement_widget.invoice_total'))
+            Stat::make(__('sales::invoice.settlement_widget.total_amount'), $this->formatMoney($totalAmount))
+                ->description(__('sales::invoice.settlement_widget.invoice_total'))
                 ->color('info')
                 ->icon('heroicon-o-document-text'),
 
-            Stat::make(__('invoice.settlement_widget.paid_amount'), $this->formatMoney($paidAmount))
-                ->description(__('invoice.settlement_widget.total_paid'))
+            Stat::make(__('sales::invoice.settlement_widget.paid_amount'), $this->formatMoney($paidAmount))
+                ->description(__('sales::invoice.settlement_widget.total_paid'))
                 ->color('success')
                 ->icon('heroicon-o-banknotes'),
 
-            Stat::make(__('invoice.settlement_widget.outstanding_balance'), $this->formatMoney($outstandingBalance))
-                ->description(__('invoice.settlement_widget.remaining_due'))
+            Stat::make(__('sales::invoice.settlement_widget.outstanding_balance'), $this->formatMoney($outstandingBalance))
+                ->description(__('sales::invoice.settlement_widget.remaining_due'))
                 ->color($outstandingBalance->isZero() ? 'success' : 'warning')
                 ->icon('heroicon-o-exclamation-triangle'),
 

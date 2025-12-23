@@ -59,12 +59,21 @@ return [
     'total_tax_company_currency' => 'Total Tax (Company Currency)',
     'payment_term' => 'Payment Term',
     'reference' => 'Reference',
+    'optional_reference' => 'Optional reference',
 
     // Actions
     'confirm' => 'Confirm',
     'confirm_invoice' => 'Confirm Invoice',
     'reset_to_draft' => 'Reset to Draft',
     'register_payment' => 'Register Payment',
+    'view_pdf' => 'View PDF',
+    'download_pdf' => 'Download PDF',
+    'pdf' => 'PDF',
+    'preview_posting' => 'Preview Posting',
+    'posting_preview' => 'Posting Preview',
+    'close' => 'Close',
+    'export_preview_csv' => 'Export Preview (CSV)',
+    'export_preview_pdf' => 'Export Preview (PDF)',
 
     // Notifications
     'invoice_confirmed_successfully' => 'Invoice confirmed successfully',
