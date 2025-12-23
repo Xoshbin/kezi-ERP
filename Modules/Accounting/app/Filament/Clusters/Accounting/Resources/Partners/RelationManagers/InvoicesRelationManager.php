@@ -23,7 +23,7 @@ class InvoicesRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('partner.invoices_relation_manager.title');
+        return __('accounting::partner.invoices_relation_manager.title');
     }
 
     public function form(Schema $schema): Schema
@@ -31,21 +31,21 @@ class InvoicesRelationManager extends RelationManager
         return $schema
             ->components([
                 TextInput::make('invoice_number')
-                    ->label(__('partner.invoices_relation_manager.invoice_number'))
+                    ->label(__('accounting::partner.invoices_relation_manager.invoice_number'))
                     ->maxLength(255),
                 DatePicker::make('invoice_date')
-                    ->label(__('partner.invoices_relation_manager.invoice_date'))
+                    ->label(__('accounting::partner.invoices_relation_manager.invoice_date'))
                     ->required(),
                 DatePicker::make('due_date')
-                    ->label(__('partner.invoices_relation_manager.due_date'))
+                    ->label(__('accounting::partner.invoices_relation_manager.due_date'))
                     ->required(),
                 TextInput::make('status')
-                    ->label(__('partner.invoices_relation_manager.status'))
+                    ->label(__('accounting::partner.invoices_relation_manager.status'))
                     ->required()
                     ->maxLength(255)
                     ->default(InvoiceStatus::Draft->value),
                 TextInput::make('total_amount')
-                    ->label(__('partner.invoices_relation_manager.total_amount'))
+                    ->label(__('accounting::partner.invoices_relation_manager.total_amount'))
                     ->required()
                     ->numeric(),
             ]);
@@ -57,17 +57,17 @@ class InvoicesRelationManager extends RelationManager
             ->recordTitleAttribute('invoice_number')
             ->columns([
                 TextColumn::make('invoice_number')
-                    ->label(__('partner.invoices_relation_manager.invoice_number')),
+                    ->label(__('accounting::partner.invoices_relation_manager.invoice_number')),
                 TextColumn::make('invoice_date')
-                    ->label(__('partner.invoices_relation_manager.invoice_date'))
+                    ->label(__('accounting::partner.invoices_relation_manager.invoice_date'))
                     ->date(),
                 TextColumn::make('due_date')
-                    ->label(__('partner.invoices_relation_manager.due_date'))
+                    ->label(__('accounting::partner.invoices_relation_manager.due_date'))
                     ->date(),
                 TextColumn::make('status')
-                    ->label(__('partner.invoices_relation_manager.status')),
+                    ->label(__('accounting::partner.invoices_relation_manager.status')),
                 TextColumn::make('total_amount')
-                    ->label(__('partner.invoices_relation_manager.total_amount')),
+                    ->label(__('accounting::partner.invoices_relation_manager.total_amount')),
             ])
             ->filters([
                 //
