@@ -145,7 +145,7 @@ class VendorBillConfirmationTest extends TestCase
         $this->assertContains('Company default purchase journal is not configured.', $result['errors']);
 
         // Assert view renders without error even with missing config
-        $view = view('purchase::filament.accounting.vendor-bills.preview-posting', ['preview' => $result, 'bill' => $bill]);
+        $view = view('accounting::filament.clusters.accounting.resources.vendor-bills.pages.preview-posting', ['preview' => $result, 'bill' => $bill]);
         $rendered = $view->render();
         $this->assertStringContainsString('Company default Accounts Payable account is not configured', $rendered);
     }

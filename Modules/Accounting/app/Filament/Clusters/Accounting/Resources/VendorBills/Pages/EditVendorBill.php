@@ -64,7 +64,7 @@ class EditVendorBill extends EditRecord
                 ->modalContent(function (VendorBill $record) {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
 
-                    return view('purchase::filament.accounting.vendor-bills.preview-posting', [
+                    return view('accounting::filament.clusters.accounting.resources.vendor-bills.pages.preview-posting', [
                         'preview' => $preview,
                         'bill' => $record,
                     ]);
@@ -107,7 +107,7 @@ class EditVendorBill extends EditRecord
                 ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
                 ->action(function (VendorBill $record): StreamedResponse {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
-                    $pdf = Pdf::loadView('filament/accounting/vendor-bills/preview-posting-pdf', [
+                    $pdf = Pdf::loadView('accounting::filament.clusters.accounting.resources.vendor-bills.pages.preview-posting-pdf', [
                         'preview' => $preview,
                         'bill' => $record,
                     ]);
