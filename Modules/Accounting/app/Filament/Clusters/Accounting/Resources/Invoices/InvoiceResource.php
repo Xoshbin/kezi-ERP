@@ -103,28 +103,28 @@ class InvoiceResource extends Resource
                         ->columnSpan(2)
                         ->createOptionForm([
                             TextInput::make('name')
-                                ->label(__('foundation::partner.name'))
+                                ->label(__('accounting::partner.name'))
                                 ->required()
                                 ->maxLength(255),
                             Select::make('type')
-                                ->label(__('foundation::partner.type'))
+                                ->label(__('accounting::partner.type'))
                                 ->required()
                                 ->options(
                                     collect(\Modules\Foundation\Enums\Partners\PartnerType::cases())
                                         ->mapWithKeys(fn (\Modules\Foundation\Enums\Partners\PartnerType $type) => [$type->value => $type->label()])
                                 ),
                             TextInput::make('contact_person')
-                                ->label(__('foundation::partner.contact_person'))
+                                ->label(__('accounting::partner.contact_person'))
                                 ->maxLength(255),
                             TextInput::make('email')
-                                ->label(__('foundation::partner.email'))
+                                ->label(__('accounting::partner.email'))
                                 ->email()
                                 ->maxLength(255),
                             TextInput::make('phone')
-                                ->label(__('foundation::partner.phone'))
+                                ->label(__('accounting::partner.phone'))
                                 ->maxLength(255),
                             Textarea::make('address')
-                                ->label(__('foundation::partner.address'))
+                                ->label(__('accounting::partner.address'))
                                 ->columnSpanFull(),
                         ])
                         ->createOptionModalHeading(__('foundation::common.modal_title_create_partner'))
