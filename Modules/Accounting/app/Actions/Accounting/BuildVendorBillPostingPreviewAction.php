@@ -41,14 +41,14 @@ class BuildVendorBillPostingPreviewAction
 
         // Validate that vendor bill has line items
         if ($vendorBill->lines->isEmpty()) {
-            $msg = __('purchase::vendor_bill.validation_no_line_items');
+            $msg = __('accounting::bill.validation_no_line_items');
             $errors[] = $msg;
             $issues[] = ['type' => 'no_line_items', 'message' => $msg];
         }
 
         // Validate that vendor bill has non-zero total amount
         if ($vendorBill->total_amount->isZero()) {
-            $msg = __('purchase::vendor_bill.validation_zero_total_amount');
+            $msg = __('accounting::bill.validation_zero_total_amount');
             $errors[] = $msg;
             $issues[] = ['type' => 'zero_total_amount', 'message' => $msg];
         }
