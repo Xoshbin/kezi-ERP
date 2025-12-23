@@ -190,4 +190,27 @@ return [
         'more' => 'زیاتر',
         'various' => 'جۆراوجۆر',
     ],
+
+    // Modal Titles
+    'modal_title_create_partner' => 'دروستکردنی کڕیار',
+    'modal_title_create_currency' => 'دروستکردنی پارە',
+    'modal_title_create_account' => 'دروستکردنی هەژمار',
+    'modal_title_create_product' => 'دروستکردنی بەرهەم',
+    'modal_title_create_tax' => 'دروستکردنی باج',
+
+    // Product Fields (for inline product creation)
+    'product_name' => 'ناو',
+    'product_sku' => 'کۆدی بەرهەم',
+    'product_type' => 'جۆر',
+    'product_description' => 'وەسف',
+    'product_default_inventory_account' => 'هەژماری کۆگای بنەڕەتی',
+    'product_unit_price' => 'نرخی یەکە',
+    'product_income_account' => 'هەژماری داهات',
+
+    // Currency Fields (for inline currency creation)
+    'currency_code' => 'کۆد',
+    'currency_label' => 'ناو',
+    'currency_symbol' => 'هێما',
+    'currency_exchange_rate' => 'نرخی ئاڵوگۆڕ',
+    'currency_is_active' => 'چالاک',
 ];
