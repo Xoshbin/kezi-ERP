@@ -43,6 +43,7 @@ return [
     // Stock Information
     'stock_moves' => 'حركات المخزون',
     'inventory_cost_layers' => 'طبقات التكلفة',
+    'quantity_on_hand' => 'الكمية المتوفرة',
 
     // Status
     'status' => 'حالة',
