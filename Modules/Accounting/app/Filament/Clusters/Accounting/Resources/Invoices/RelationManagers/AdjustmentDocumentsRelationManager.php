@@ -33,18 +33,18 @@ class AdjustmentDocumentsRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('invoice.adjustment_documents_relation_manager.title');
+        return __('accounting::invoice.adjustment_documents_relation_manager.title');
     }
 
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make(__('invoice.adjustment_documents_relation_manager.document_details'))
+                Section::make(__('accounting::invoice.adjustment_documents_relation_manager.document_details'))
                     ->schema([
                         Select::make('company_id')
                             ->relationship('company', 'name')
-                            ->label(__('invoice.adjustment_documents_relation_manager.company'))
+                            ->label(__('accounting::invoice.adjustment_documents_relation_manager.company'))
                             ->required()
                             ->default(function (): ?int {
                                 $owner = $this->getOwnerRecord();
@@ -54,7 +54,7 @@ class AdjustmentDocumentsRelationManager extends RelationManager
 
                         Select::make('currency_id')
                             ->relationship('currency', 'name')
-                            ->label(__('invoice.adjustment_documents_relation_manager.currency'))
+                            ->label(__('accounting::invoice.adjustment_documents_relation_manager.currency'))
                             ->required()
                             ->default(function (): ?int {
                                 $owner = $this->getOwnerRecord();
@@ -63,7 +63,7 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                             }),
 
                         Select::make('type')
-                            ->label(__('invoice.adjustment_documents_relation_manager.type'))
+                            ->label(__('accounting::invoice.adjustment_documents_relation_manager.type'))
                             ->options([
                                 AdjustmentDocumentType::CreditNote->value => AdjustmentDocumentType::CreditNote->label(),
                                 AdjustmentDocumentType::Miscellaneous->value => AdjustmentDocumentType::Miscellaneous->label(),
@@ -72,18 +72,18 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                             ->default(AdjustmentDocumentType::CreditNote->value),
 
                         DatePicker::make('date')
-                            ->label(__('invoice.adjustment_documents_relation_manager.date'))
+                            ->label(__('accounting::invoice.adjustment_documents_relation_manager.date'))
                             ->required()
                             ->default(now()),
 
                         TextInput::make('reference_number')
-                            ->label(__('invoice.adjustment_documents_relation_manager.reference_number'))
+                            ->label(__('accounting::invoice.adjustment_documents_relation_manager.reference_number'))
                             ->required()
                             ->maxLength(255)
                             ->placeholder('e.g., CN-2024-001'),
 
                         Select::make('status')
-                            ->label(__('invoice.adjustment_documents_relation_manager.status'))
+                            ->label(__('accounting::invoice.adjustment_documents_relation_manager.status'))
                             ->options([
                                 AdjustmentDocumentStatus::Draft->value => AdjustmentDocumentStatus::Draft->label(),
                                 AdjustmentDocumentStatus::Posted->value => AdjustmentDocumentStatus::Posted->label(),
@@ -93,11 +93,11 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                             ->default(AdjustmentDocumentStatus::Draft->value),
 
                         Textarea::make('reason')
-                            ->label(__('invoice.adjustment_documents_relation_manager.reason'))
+                            ->label(__('accounting::invoice.adjustment_documents_relation_manager.reason'))
                             ->required()
                             ->rows(3)
                             ->columnSpanFull()
-                            ->placeholder(__('invoice.adjustment_documents_relation_manager.reason_placeholder')),
+                            ->placeholder(__('accounting::invoice.adjustment_documents_relation_manager.reason_placeholder')),
                     ])
                     ->columns(2),
             ]);
@@ -109,12 +109,12 @@ class AdjustmentDocumentsRelationManager extends RelationManager
             ->recordTitleAttribute('reference_number')
             ->columns([
                 TextColumn::make('reference_number')
-                    ->label(__('invoice.adjustment_documents_relation_manager.reference_number'))
+                    ->label(__('accounting::invoice.adjustment_documents_relation_manager.reference_number'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('type')
-                    ->label(__('invoice.adjustment_documents_relation_manager.type'))
+                    ->label(__('accounting::invoice.adjustment_documents_relation_manager.type'))
                     ->formatStateUsing(fn (AdjustmentDocumentType $state): string => $state->label())
                     ->badge()
                     ->color(fn (AdjustmentDocumentType $state): string => match ($state) {
@@ -124,20 +124,20 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                     }),
 
                 TextColumn::make('date')
-                    ->label(__('invoice.adjustment_documents_relation_manager.date'))
+                    ->label(__('accounting::invoice.adjustment_documents_relation_manager.date'))
                     ->date()
                     ->sortable(),
 
                 MoneyColumn::make('total_amount')
-                    ->label(__('invoice.adjustment_documents_relation_manager.total_amount'))
+                    ->label(__('accounting::invoice.adjustment_documents_relation_manager.total_amount'))
                     ->sortable(),
 
                 MoneyColumn::make('total_tax')
-                    ->label(__('invoice.adjustment_documents_relation_manager.total_tax'))
+                    ->label(__('accounting::invoice.adjustment_documents_relation_manager.total_tax'))
                     ->sortable(),
 
                 TextColumn::make('status')
-                    ->label(__('invoice.adjustment_documents_relation_manager.status'))
+                    ->label(__('accounting::invoice.adjustment_documents_relation_manager.status'))
                     ->formatStateUsing(fn (AdjustmentDocumentStatus $state): string => $state->label())
                     ->badge()
                     ->color(fn (AdjustmentDocumentStatus $state): string => match ($state) {
@@ -147,7 +147,7 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                     }),
 
                 TextColumn::make('reason')
-                    ->label(__('invoice.adjustment_documents_relation_manager.reason'))
+                    ->label(__('accounting::invoice.adjustment_documents_relation_manager.reason'))
                     ->limit(50)
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
@@ -159,32 +159,32 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                     }),
 
                 TextColumn::make('journalEntry.id')
-                    ->label(__('invoice.adjustment_documents_relation_manager.journal_entry'))
-                    ->placeholder(__('invoice.adjustment_documents_relation_manager.no_journal_entry'))
+                    ->label(__('accounting::invoice.adjustment_documents_relation_manager.journal_entry'))
+                    ->placeholder(__('accounting::invoice.adjustment_documents_relation_manager.no_journal_entry'))
                     ->toggleable(),
 
                 TextColumn::make('posted_at')
-                    ->label(__('invoice.adjustment_documents_relation_manager.posted_at'))
+                    ->label(__('accounting::invoice.adjustment_documents_relation_manager.posted_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')
-                    ->label(__('invoice.adjustment_documents_relation_manager.created_at'))
+                    ->label(__('accounting::invoice.adjustment_documents_relation_manager.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('type')
-                    ->label(__('invoice.adjustment_documents_relation_manager.filter_type'))
+                    ->label(__('accounting::invoice.adjustment_documents_relation_manager.filter_type'))
                     ->options([
                         AdjustmentDocumentType::CreditNote->value => AdjustmentDocumentType::CreditNote->label(),
                         AdjustmentDocumentType::Miscellaneous->value => AdjustmentDocumentType::Miscellaneous->label(),
                     ]),
 
                 SelectFilter::make('status')
-                    ->label(__('invoice.adjustment_documents_relation_manager.filter_status'))
+                    ->label(__('accounting::invoice.adjustment_documents_relation_manager.filter_status'))
                     ->options([
                         AdjustmentDocumentStatus::Draft->value => AdjustmentDocumentStatus::Draft->label(),
                         AdjustmentDocumentStatus::Posted->value => AdjustmentDocumentStatus::Posted->label(),
@@ -193,7 +193,7 @@ class AdjustmentDocumentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label(__('invoice.adjustment_documents_relation_manager.create_adjustment'))
+                    ->label(__('accounting::invoice.adjustment_documents_relation_manager.create_adjustment'))
                     ->mutateDataUsing(function (array $data): array {
                         $owner = $this->getOwnerRecord();
                         $data['original_invoice_id'] = $owner instanceof Invoice ? $owner->getKey() : null;

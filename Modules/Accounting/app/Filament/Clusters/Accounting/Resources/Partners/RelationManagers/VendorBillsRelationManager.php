@@ -23,7 +23,7 @@ class VendorBillsRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('partner.vendor_bills_relation_manager.title');
+        return __('accounting::partner.vendor_bills_relation_manager.title');
     }
 
     public function form(Schema $schema): Schema
@@ -31,24 +31,24 @@ class VendorBillsRelationManager extends RelationManager
         return $schema
             ->components([
                 TextInput::make('bill_reference')
-                    ->label(__('partner.vendor_bills_relation_manager.bill_reference'))
+                    ->label(__('accounting::partner.vendor_bills_relation_manager.bill_reference'))
                     ->required()
                     ->maxLength(255),
                 DatePicker::make('bill_date')
-                    ->label(__('partner.vendor_bills_relation_manager.bill_date'))
+                    ->label(__('accounting::partner.vendor_bills_relation_manager.bill_date'))
                     ->required(),
                 DatePicker::make('accounting_date')
-                    ->label(__('partner.vendor_bills_relation_manager.accounting_date'))
+                    ->label(__('accounting::partner.vendor_bills_relation_manager.accounting_date'))
                     ->required(),
                 DatePicker::make('due_date')
-                    ->label(__('partner.vendor_bills_relation_manager.due_date')),
+                    ->label(__('accounting::partner.vendor_bills_relation_manager.due_date')),
                 TextInput::make('status')
-                    ->label(__('partner.vendor_bills_relation_manager.status'))
+                    ->label(__('accounting::partner.vendor_bills_relation_manager.status'))
                     ->required()
                     ->maxLength(255)
                     ->default(VendorBillStatus::Draft->value),
                 TextInput::make('total_amount')
-                    ->label(__('partner.vendor_bills_relation_manager.total_amount'))
+                    ->label(__('accounting::partner.vendor_bills_relation_manager.total_amount'))
                     ->required()
                     ->numeric(),
             ]);
@@ -60,17 +60,17 @@ class VendorBillsRelationManager extends RelationManager
             ->recordTitleAttribute('bill_reference')
             ->columns([
                 TextColumn::make('bill_reference')
-                    ->label(__('partner.vendor_bills_relation_manager.bill_reference')),
+                    ->label(__('accounting::partner.vendor_bills_relation_manager.bill_reference')),
                 TextColumn::make('bill_date')
-                    ->label(__('partner.vendor_bills_relation_manager.bill_date'))
+                    ->label(__('accounting::partner.vendor_bills_relation_manager.bill_date'))
                     ->date(),
                 TextColumn::make('due_date')
-                    ->label(__('partner.vendor_bills_relation_manager.due_date'))
+                    ->label(__('accounting::partner.vendor_bills_relation_manager.due_date'))
                     ->date(),
                 TextColumn::make('status')
-                    ->label(__('partner.vendor_bills_relation_manager.status')),
+                    ->label(__('accounting::partner.vendor_bills_relation_manager.status')),
                 TextColumn::make('total_amount')
-                    ->label(__('partner.vendor_bills_relation_manager.total_amount')),
+                    ->label(__('accounting::partner.vendor_bills_relation_manager.total_amount')),
             ])
             ->filters([
                 //

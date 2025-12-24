@@ -23,7 +23,7 @@ class PaymentsRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('partner.payments_relation_manager.title');
+        return __('accounting::partner.payments_relation_manager.title');
     }
 
     public function form(Schema $schema): Schema
@@ -31,21 +31,21 @@ class PaymentsRelationManager extends RelationManager
         return $schema
             ->components([
                 DatePicker::make('payment_date')
-                    ->label(__('partner.payments_relation_manager.payment_date'))
+                    ->label(__('accounting::partner.payments_relation_manager.payment_date'))
                     ->required(),
                 TextInput::make('amount')
-                    ->label(__('partner.payments_relation_manager.amount'))
+                    ->label(__('accounting::partner.payments_relation_manager.amount'))
                     ->required()
                     ->numeric(),
                 TextInput::make('payment_type')
-                    ->label(__('partner.payments_relation_manager.payment_type'))
+                    ->label(__('accounting::partner.payments_relation_manager.payment_type'))
                     ->required()
                     ->maxLength(255),
                 TextInput::make('reference')
-                    ->label(__('partner.payments_relation_manager.reference'))
+                    ->label(__('accounting::partner.payments_relation_manager.reference'))
                     ->maxLength(255),
                 TextInput::make('status')
-                    ->label(__('partner.payments_relation_manager.status'))
+                    ->label(__('accounting::partner.payments_relation_manager.status'))
                     ->required()
                     ->maxLength(255)
                     ->default('Draft'),
@@ -58,16 +58,16 @@ class PaymentsRelationManager extends RelationManager
             ->recordTitleAttribute('reference')
             ->columns([
                 TextColumn::make('payment_date')
-                    ->label(__('partner.payments_relation_manager.payment_date'))
+                    ->label(__('accounting::partner.payments_relation_manager.payment_date'))
                     ->date(),
                 TextColumn::make('amount')
-                    ->label(__('partner.payments_relation_manager.amount')),
+                    ->label(__('accounting::partner.payments_relation_manager.amount')),
                 TextColumn::make('payment_type')
-                    ->label(__('partner.payments_relation_manager.payment_type')),
+                    ->label(__('accounting::partner.payments_relation_manager.payment_type')),
                 TextColumn::make('reference')
-                    ->label(__('partner.payments_relation_manager.reference')),
+                    ->label(__('accounting::partner.payments_relation_manager.reference')),
                 TextColumn::make('status')
-                    ->label(__('partner.payments_relation_manager.status')),
+                    ->label(__('accounting::partner.payments_relation_manager.status')),
             ])
             ->filters([
                 //
