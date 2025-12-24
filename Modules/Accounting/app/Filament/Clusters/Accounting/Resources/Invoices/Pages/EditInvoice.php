@@ -52,32 +52,32 @@ class EditInvoice extends EditRecord
             // PDF Actions - Available for all invoices (draft and posted)
             ActionGroup::make([
                 Action::make('viewPdf')
-                    ->label(__('View PDF'))
+                    ->label(__('accounting::invoice.view_pdf'))
                     ->icon('heroicon-o-document-text')
                     ->color('info')
                     ->url(fn (Invoice $record) => route('invoices.pdf', $record))
                     ->openUrlInNewTab(),
 
                 Action::make('downloadPdf')
-                    ->label(__('Download PDF'))
+                    ->label(__('accounting::invoice.download_pdf'))
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('success')
                     ->url(fn (Invoice $record) => route('invoices.pdf.download', $record)),
             ])
-                ->label(__('PDF'))
+                ->label(__('accounting::invoice.pdf'))
                 ->icon('heroicon-o-document-text')
                 ->color('gray')
                 ->button(),
 
             Action::make('preview_posting')
-                ->label(__('Preview Posting'))
+                ->label(__('accounting::invoice.preview_posting'))
                 ->icon('heroicon-o-eye')
                 ->color('info')
                 ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft)
                 ->requiresConfirmation()
-                ->modalHeading(__('Posting Preview'))
+                ->modalHeading(__('accounting::invoice.posting_preview'))
                 ->modalSubmitAction(false)
-                ->modalCancelActionLabel(__('Close'))
+                ->modalCancelActionLabel(__('accounting::invoice.close'))
                 ->modalWidth('7xl')
                 ->modalContent(function (Invoice $record) {
                     $preview = app(BuildInvoicePostingPreviewAction::class)->execute($record);
@@ -89,7 +89,7 @@ class EditInvoice extends EditRecord
                 }),
 
             Action::make('export_preview_csv')
-                ->label(__('Export Preview (CSV)'))
+                ->label(__('accounting::invoice.export_preview_csv'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('gray')
                 ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
@@ -120,7 +120,7 @@ class EditInvoice extends EditRecord
                 }),
 
             Action::make('export_preview_pdf')
-                ->label(__('Export Preview (PDF)'))
+                ->label(__('accounting::invoice.export_preview_pdf'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
                 ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft && config('app.debug') && ! app()->environment('production'))
@@ -140,7 +140,7 @@ class EditInvoice extends EditRecord
                 }),
 
             Action::make('post')
-                ->label(__('sales::invoice.confirm_invoice'))
+                ->label(__('accounting::invoice.confirm_invoice'))
                 ->color('success')
                 ->requiresConfirmation()
                 ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Draft)
@@ -154,11 +154,11 @@ class EditInvoice extends EditRecord
                             throw new Exception('User must be authenticated to confirm invoice');
                         }
                         $service->confirm($record, $user);
-                        Notification::make()->title(__('sales::invoice.invoice_confirmed_successfully'))->success()->send();
+                        Notification::make()->title(__('accounting::invoice.invoice_confirmed_successfully'))->success()->send();
                         $this->redirect(InvoiceResource::getUrl('edit', ['record' => $record]));
                     } catch (ValidationException $e) {
                         Notification::make()
-                            ->title(__('sales::invoice.error_confirming_invoice'))
+                            ->title(__('accounting::invoice.error_confirming_invoice'))
                             ->body(implode("\n", Arr::flatten($e->errors())))
                             ->danger()
                             ->send();
@@ -168,16 +168,16 @@ class EditInvoice extends EditRecord
                             'error' => $e->getMessage(),
                             'trace' => $e->getTraceAsString(),
                         ]);
-                        Notification::make()->title(__('sales::invoice.error_confirming_invoice'))->body($e->getMessage())->danger()->send();
+                        Notification::make()->title(__('accounting::invoice.error_confirming_invoice'))->body($e->getMessage())->danger()->send();
                     }
                 }),
 
             Action::make('register_payment')
-                ->label(__('sales::invoice.register_payment'))
+                ->label(__('accounting::invoice.register_payment'))
                 ->icon('heroicon-o-banknotes')
                 ->color('warning')
-                ->modalHeading(__('sales::invoice.register_payment'))
-                ->modalDescription(__('sales::invoice.payments_relation_manager.payment_details'))
+                ->modalHeading(__('accounting::invoice.register_payment'))
+                ->modalDescription(__('accounting::invoice.payments_relation_manager.payment_details'))
                 ->schema([
                     Select::make('journal_id')
                         ->label(__('payment::payment.form.journal_id'))

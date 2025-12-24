@@ -31,7 +31,7 @@ class UnreconciledEntriesRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('partner.unreconciled_entries_relation_manager.title');
+        return __('accounting::partner.unreconciled_entries_relation_manager.title');
     }
 
     public function isReadOnly(): bool
@@ -77,29 +77,29 @@ class UnreconciledEntriesRelationManager extends RelationManager
             ->modifyQueryUsing(fn (Builder $query) => $this->modifyQuery($query))
             ->columns([
                 TextColumn::make('journalEntry.entry_date')
-                    ->label(__('partner.unreconciled_entries_relation_manager.entry_date'))
+                    ->label(__('accounting::partner.unreconciled_entries_relation_manager.entry_date'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('journalEntry.reference')
-                    ->label(__('partner.unreconciled_entries_relation_manager.reference'))
+                    ->label(__('accounting::partner.unreconciled_entries_relation_manager.reference'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('account.code')
-                    ->label(__('partner.unreconciled_entries_relation_manager.account_code'))
+                    ->label(__('accounting::partner.unreconciled_entries_relation_manager.account_code'))
                     ->searchable(),
                 TextColumn::make('account.name')
-                    ->label(__('partner.unreconciled_entries_relation_manager.account_name'))
+                    ->label(__('accounting::partner.unreconciled_entries_relation_manager.account_name'))
                     ->searchable(),
                 TextColumn::make('description')
-                    ->label(__('partner.unreconciled_entries_relation_manager.description'))
+                    ->label(__('accounting::partner.unreconciled_entries_relation_manager.description'))
                     ->limit(50)
                     ->searchable(),
                 TextColumn::make('debit')
-                    ->label(__('partner.unreconciled_entries_relation_manager.debit'))
+                    ->label(__('accounting::partner.unreconciled_entries_relation_manager.debit'))
                     ->money(fn (JournalEntryLine $record) => $record->journalEntry->company->currency->code)
                     ->alignEnd(),
                 TextColumn::make('credit')
-                    ->label(__('partner.unreconciled_entries_relation_manager.credit'))
+                    ->label(__('accounting::partner.unreconciled_entries_relation_manager.credit'))
                     ->money(fn (JournalEntryLine $record) => $record->journalEntry->company->currency->code)
                     ->alignEnd(),
             ])
@@ -108,19 +108,19 @@ class UnreconciledEntriesRelationManager extends RelationManager
             ])
             ->headerActions([
                 Action::make('reconcile_selected')
-                    ->label(__('partner.unreconciled_entries_relation_manager.reconcile_selected'))
+                    ->label(__('accounting::partner.unreconciled_entries_relation_manager.reconcile_selected'))
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->visible(fn () => $this->isReconciliationEnabled())
                     ->requiresConfirmation()
-                    ->modalHeading(__('partner.unreconciled_entries_relation_manager.reconcile_modal_heading'))
-                    ->modalDescription(__('partner.unreconciled_entries_relation_manager.reconcile_modal_description'))
+                    ->modalHeading(__('accounting::partner.unreconciled_entries_relation_manager.reconcile_modal_heading'))
+                    ->modalDescription(__('accounting::partner.unreconciled_entries_relation_manager.reconcile_modal_description'))
                     ->schema([
                         TextInput::make('reference')
-                            ->label(__('partner.unreconciled_entries_relation_manager.reconcile_reference'))
+                            ->label(__('accounting::partner.unreconciled_entries_relation_manager.reconcile_reference'))
                             ->maxLength(255),
                         Textarea::make('description')
-                            ->label(__('partner.unreconciled_entries_relation_manager.reconcile_description'))
+                            ->label(__('accounting::partner.unreconciled_entries_relation_manager.reconcile_description'))
                             ->rows(3),
                     ])
                     ->action(function (array $data) {
@@ -130,27 +130,27 @@ class UnreconciledEntriesRelationManager extends RelationManager
             ])
             ->toolbarActions([
                 BulkAction::make('reconcile')
-                    ->label(__('partner.unreconciled_entries_relation_manager.reconcile'))
+                    ->label(__('accounting::partner.unreconciled_entries_relation_manager.reconcile'))
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->visible(fn () => $this->isReconciliationEnabled())
                     ->requiresConfirmation()
-                    ->modalHeading(__('partner.unreconciled_entries_relation_manager.reconcile_modal_heading'))
-                    ->modalDescription(__('partner.unreconciled_entries_relation_manager.reconcile_modal_description'))
+                    ->modalHeading(__('accounting::partner.unreconciled_entries_relation_manager.reconcile_modal_heading'))
+                    ->modalDescription(__('accounting::partner.unreconciled_entries_relation_manager.reconcile_modal_description'))
                     ->schema([
                         TextInput::make('reference')
-                            ->label(__('partner.unreconciled_entries_relation_manager.reconcile_reference'))
+                            ->label(__('accounting::partner.unreconciled_entries_relation_manager.reconcile_reference'))
                             ->maxLength(255),
                         Textarea::make('description')
-                            ->label(__('partner.unreconciled_entries_relation_manager.reconcile_description'))
+                            ->label(__('accounting::partner.unreconciled_entries_relation_manager.reconcile_description'))
                             ->rows(3),
                     ])
                     ->action(function (Collection $records, array $data) {
                         $this->reconcileEntries($records, $data);
                     }),
             ])
-            ->emptyStateHeading(__('partner.unreconciled_entries_relation_manager.empty_state_heading'))
-            ->emptyStateDescription(__('partner.unreconciled_entries_relation_manager.empty_state_description'))
+            ->emptyStateHeading(__('accounting::partner.unreconciled_entries_relation_manager.empty_state_heading'))
+            ->emptyStateDescription(__('accounting::partner.unreconciled_entries_relation_manager.empty_state_description'))
             ->emptyStateIcon('heroicon-o-check-circle');
     }
 
@@ -198,7 +198,7 @@ class UnreconciledEntriesRelationManager extends RelationManager
         // This would be called from the header action
         // Implementation would depend on how we track selected records
         Notification::make()
-            ->title(__('partner.unreconciled_entries_relation_manager.use_bulk_action'))
+            ->title(__('accounting::partner.unreconciled_entries_relation_manager.use_bulk_action'))
             ->warning()
             ->send();
     }
@@ -223,8 +223,8 @@ class UnreconciledEntriesRelationManager extends RelationManager
                 );
 
                 Notification::make()
-                    ->title(__('partner.unreconciled_entries_relation_manager.reconciliation_success'))
-                    ->body(__('partner.unreconciled_entries_relation_manager.reconciliation_success_body', [
+                    ->title(__('accounting::partner.unreconciled_entries_relation_manager.reconciliation_success'))
+                    ->body(__('accounting::partner.unreconciled_entries_relation_manager.reconciliation_success_body', [
                         'count' => $records->count(),
                         'reference' => $reconciliation->reference ?? $reconciliation->id,
                     ]))
@@ -236,14 +236,14 @@ class UnreconciledEntriesRelationManager extends RelationManager
             $this->resetTable();
         } catch (ReconciliationException $e) {
             Notification::make()
-                ->title(__('partner.unreconciled_entries_relation_manager.reconciliation_error'))
+                ->title(__('accounting::partner.unreconciled_entries_relation_manager.reconciliation_error'))
                 ->body($e->getMessage())
                 ->danger()
                 ->send();
         } catch (Exception $e) {
             Notification::make()
-                ->title(__('partner.unreconciled_entries_relation_manager.reconciliation_error'))
-                ->body(__('partner.unreconciled_entries_relation_manager.reconciliation_error_generic'))
+                ->title(__('accounting::partner.unreconciled_entries_relation_manager.reconciliation_error'))
+                ->body(__('accounting::partner.unreconciled_entries_relation_manager.reconciliation_error_generic'))
                 ->danger()
                 ->send();
         }

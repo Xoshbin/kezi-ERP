@@ -33,8 +33,8 @@ class CustomerFinancialWidget extends BaseWidget
         $stats = [];
 
         // Total Outstanding - like "Total To Pay" in image
-        $overdueText = $overdueBalance->isZero() ? '' : __('partner.widgets.includes_overdue', ['amount' => $overdueBalance->formatTo('en_US')]);
-        $stats[] = Stat::make(__('partner.widgets.total_outstanding'), $outstandingBalance->formatTo('en_US'))
+        $overdueText = $overdueBalance->isZero() ? '' : __('accounting::partner.widgets.includes_overdue', ['amount' => $overdueBalance->formatTo('en_US')]);
+        $stats[] = Stat::make(__('accounting::partner.widgets.total_outstanding'), $outstandingBalance->formatTo('en_US'))
             ->description($overdueText)
             ->descriptionIcon('heroicon-m-banknotes')
             ->color($outstandingBalance->isZero() ? 'gray' : 'success')
@@ -43,8 +43,8 @@ class CustomerFinancialWidget extends BaseWidget
             ]);
 
         // Due Within 7 Days - like in image
-        $stats[] = Stat::make(__('partner.widgets.due_within_7_days'), $dueIn7Days->formatTo('en_US'))
-            ->description(__('partner.widgets.immediate_attention'))
+        $stats[] = Stat::make(__('accounting::partner.widgets.due_within_7_days'), $dueIn7Days->formatTo('en_US'))
+            ->description(__('accounting::partner.widgets.immediate_attention'))
             ->descriptionIcon('heroicon-m-clock')
             ->color($dueIn7Days->isZero() ? 'gray' : 'warning')
             ->extraAttributes([
@@ -56,8 +56,8 @@ class CustomerFinancialWidget extends BaseWidget
                            ($avgPaymentDays <= 30 ? 'success' :
                            ($avgPaymentDays <= 60 ? 'warning' : 'danger'));
 
-        $stats[] = Stat::make(__('partner.widgets.average_payment_time'), $avgPaymentDays.' '.__('partner.widgets.days'))
-            ->description(__('partner.widgets.payment_performance'))
+        $stats[] = Stat::make(__('accounting::partner.widgets.average_payment_time'), $avgPaymentDays.' '.__('accounting::partner.widgets.days'))
+            ->description(__('accounting::partner.widgets.payment_performance'))
             ->descriptionIcon('heroicon-m-chart-bar')
             ->color($paymentTimeColor)
             ->extraAttributes([
@@ -66,8 +66,8 @@ class CustomerFinancialWidget extends BaseWidget
 
         // This Month Received - simplified version
         $monthlyReceived = $partner->getMonthlyTransactionValue();
-        $stats[] = Stat::make(__('partner.widgets.received_this_month'), $monthlyReceived->formatTo('en_US'))
-            ->description(__('partner.widgets.current_month_activity'))
+        $stats[] = Stat::make(__('accounting::partner.widgets.received_this_month'), $monthlyReceived->formatTo('en_US'))
+            ->description(__('accounting::partner.widgets.current_month_activity'))
             ->descriptionIcon('heroicon-m-arrow-trending-up')
             ->color($monthlyReceived->isZero() ? 'gray' : 'success')
             ->extraAttributes([

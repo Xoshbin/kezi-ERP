@@ -150,7 +150,7 @@ class PurchaseOrderForm
                                         TextInput::make('email')
                                             ->email(),
                                         Select::make('type')
-                                            ->label(__('foundation::partners.type'))
+                                            ->label(__('purchase::partner.type'))
                                             ->options(
                                                 collect(PartnerType::cases())
                                                     ->mapWithKeys(fn (PartnerType $type) => [$type->value => $type->label()])
