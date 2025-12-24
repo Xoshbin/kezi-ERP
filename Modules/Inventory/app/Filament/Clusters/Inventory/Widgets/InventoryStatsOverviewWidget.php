@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\HtmlString;
 use Modules\Inventory\Services\Inventory\InventoryReportingService;
 
 class InventoryStatsOverviewWidget extends BaseWidget
@@ -61,7 +62,10 @@ class InventoryStatsOverviewWidget extends BaseWidget
 
     private function createTotalValueStat(Money $totalValue): Stat
     {
-        return Stat::make(__('inventory::inventory_dashboard.stats.total_value'), $totalValue->formatTo('en_US'))
+        return Stat::make(
+            __('inventory::inventory_dashboard.stats.total_value'),
+            new HtmlString('<span class="text-xl font-bold">'.$totalValue->formatTo('en_US').'</span>')
+        )
             ->description(__('inventory::inventory_dashboard.stats.total_value_description'))
             ->descriptionIcon('heroicon-m-currency-dollar')
             ->color('success')

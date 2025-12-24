@@ -11,10 +11,7 @@ class InventoryTurnoverChartWidget extends ChartWidget
 {
     protected static ?int $sort = 3;
 
-    protected int|string|array $columnSpan = [
-        'md' => 2,
-        'xl' => 1,
-    ];
+    protected int|string|array $columnSpan = 'full';
 
     public function getHeading(): ?string
     {
