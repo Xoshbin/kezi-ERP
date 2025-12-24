@@ -142,8 +142,8 @@ class SalesOrderForm
                                     ->required()
                                     ->createOptionAction(
                                         fn (Action $action) => $action
-                                            ->modalHeading(__('foundation::partner.create_customer'))
-                                            ->modalSubmitActionLabel(__('foundation::partner.create'))
+                                            ->modalHeading(__('sales::partner.create_customer'))
+                                            ->modalSubmitActionLabel(__('sales::partner.create'))
                                             ->modalWidth('lg')
                                     ),
 
