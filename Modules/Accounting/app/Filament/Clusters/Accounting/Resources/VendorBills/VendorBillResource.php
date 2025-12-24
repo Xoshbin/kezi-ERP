@@ -72,28 +72,28 @@ class VendorBillResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('purchase::vendor_bill.label');
+        return __('accounting::bill.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('purchase::vendor_bill.plural_label');
+        return __('accounting::bill.plural_label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('purchase::vendor_bill.plural_label');
+        return __('accounting::bill.plural_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make(__('purchase::vendor_bill.vendor_currency_info'))
-                ->description(__('purchase::vendor_bill.vendor_currency_info_description'))
+            Section::make(__('accounting::bill.vendor_currency_info'))
+                ->description(__('accounting::bill.vendor_currency_info_description'))
                 ->schema([
                     TranslatableSelect::make('vendor_id')
                         ->relationship('vendor', 'name')
-                        ->label(__('purchase::vendor_bill.vendor'))
+                        ->label(__('accounting::bill.vendor'))
                         ->searchableFields(['name', 'email', 'contact_person'])
                         ->searchable()
                         ->preload()
@@ -131,7 +131,7 @@ class VendorBillResource extends Resource
                                 ->modalWidth('lg');
                         }),
                     TranslatableSelect::forModel('currency_id', Currency::class, 'name')
-                        ->label(__('purchase::vendor_bill.currency'))
+                        ->label(__('accounting::bill.currency'))
                         ->required()
                         ->live()
                         ->searchable()
@@ -191,7 +191,7 @@ class VendorBillResource extends Resource
                                 ->modalWidth('lg');
                         }),
                     TextInput::make('exchange_rate_at_creation')
-                        ->label(__('purchase::vendor_bill.exchange_rate_at_creation'))
+                        ->label(__('accounting::bill.exchange_rate_at_creation'))
                         ->numeric()
                         ->columnSpan(1)
                         ->visible(function (callable $get) {
@@ -209,62 +209,62 @@ class VendorBillResource extends Resource
                                 if ($currency) {
                                     $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
                                     if ($latestRate) {
-                                        return __('purchase::vendor_bill.exchange_rate_helper').' '.__('purchase::vendor_bill.current_rate', ['rate' => $latestRate]);
+                                        return __('accounting::bill.exchange_rate_helper').' '.__('accounting::bill.current_rate', ['rate' => $latestRate]);
                                     }
                                 }
                             }
 
-                            return __('purchase::vendor_bill.exchange_rate_helper');
+                            return __('accounting::bill.exchange_rate_helper');
                         }),
                     Hidden::make('purchase_order_id'),
                 ])
                 ->columns(4)
                 ->columnSpanFull(),
 
-            Section::make(__('purchase::vendor_bill.bill_details'))
-                ->description(__('purchase::vendor_bill.bill_details_description'))
+            Section::make(__('accounting::bill.bill_details'))
+                ->description(__('accounting::bill.bill_details_description'))
                 ->schema([
                     TextInput::make('bill_reference')
-                        ->label(__('purchase::vendor_bill.bill_reference'))
+                        ->label(__('accounting::bill.bill_reference'))
                         ->required()
                         ->maxLength(255)
                         ->columnSpan(1),
                     DatePicker::make('bill_date')
-                        ->label(__('purchase::vendor_bill.bill_date'))
+                        ->label(__('accounting::bill.bill_date'))
                         ->default(now())
                         ->required()
                         ->rules([new NotInLockedPeriod])
                         ->columnSpan(1),
                     DatePicker::make('accounting_date')
                         ->default(now())
-                        ->label(__('purchase::vendor_bill.accounting_date'))
+                        ->label(__('accounting::bill.accounting_date'))
                         ->required()
                         ->rules([new NotInLockedPeriod])
                         ->columnSpan(1),
                     DatePicker::make('due_date')
-                        ->label(__('purchase::vendor_bill.due_date'))
+                        ->label(__('accounting::bill.due_date'))
                         ->columnSpan(1),
                     TranslatableSelect::make('payment_term_id')
                         ->relationship('paymentTerm', 'name')
-                        ->label(__('purchase::vendor_bill.payment_term'))
+                        ->label(__('accounting::bill.payment_term'))
                         ->searchable()
                         ->preload()
                         ->columnSpan(1),
                 ])
                 ->columns(4)
                 ->columnSpanFull(),
-            Section::make(__('purchase::vendor_bill.line_items'))
-                ->description(__('purchase::vendor_bill.line_items_description'))
+            Section::make(__('accounting::bill.line_items'))
+                ->description(__('accounting::bill.line_items_description'))
                 ->schema([
                     Repeater::make('lines')
-                        ->label(__('purchase::vendor_bill.lines'))
+                        ->label(__('accounting::bill.lines'))
                         ->table([
-                            TableColumn::make(__('purchase::vendor_bill.product'))->width('18%'),
-                            TableColumn::make(__('purchase::vendor_bill.description'))->width('12%'),
-                            TableColumn::make(__('purchase::vendor_bill.quantity'))->width('8%'),
-                            TableColumn::make(__('purchase::vendor_bill.unit_price'))->width('12%'),
-                            TableColumn::make(__('purchase::vendor_bill.expense_account'))->width('18%'),
-                            TableColumn::make(__('purchase::vendor_bill.tax'))->width('18%'),
+                            TableColumn::make(__('accounting::bill.product'))->width('18%'),
+                            TableColumn::make(__('accounting::bill.description'))->width('12%'),
+                            TableColumn::make(__('accounting::bill.quantity'))->width('8%'),
+                            TableColumn::make(__('accounting::bill.unit_price'))->width('12%'),
+                            TableColumn::make(__('accounting::bill.expense_account'))->width('18%'),
+                            TableColumn::make(__('accounting::bill.tax'))->width('18%'),
                             TableColumn::make(__('accounting::asset.category'))->width('18%'),
                         ])
                         ->live()
@@ -274,7 +274,7 @@ class VendorBillResource extends Resource
                         ->deletable(fn (?VendorBill $record) => $record === null || $record->status === VendorBillStatus::Draft)
                         ->schema([
                             TranslatableSelect::forModel('product_id', Product::class, 'name')
-                                ->label(__('purchase::vendor_bill.product'))
+                                ->label(__('accounting::bill.product'))
                                 ->searchableFields(['name', 'sku', 'description'])
                                 ->searchable()
                                 ->preload()
@@ -334,30 +334,30 @@ class VendorBillResource extends Resource
                                 })
                                 ->columnSpan(3),
                             TextInput::make('description')
-                                ->label(__('purchase::vendor_bill.description'))
+                                ->label(__('accounting::bill.description'))
                                 ->maxLength(255)
                                 ->required()
                                 ->columnSpan(4),
                             TextInput::make('quantity')
-                                ->label(__('purchase::vendor_bill.quantity'))
+                                ->label(__('accounting::bill.quantity'))
                                 ->required()
                                 ->numeric()
                                 ->default(1)
                                 ->columnSpan(2),
                             MoneyInput::make('unit_price')
-                                ->label(__('purchase::vendor_bill.unit_price'))
+                                ->label(__('accounting::bill.unit_price'))
                                 ->currencyField('../../currency_id')
                                 ->required()
                                 ->columnSpan(3),
                             TranslatableSelect::forModel('expense_account_id', Account::class, 'name')
-                                ->label(__('purchase::vendor_bill.expense_account'))
+                                ->label(__('accounting::bill.expense_account'))
                                 ->searchableFields(['name', 'code'])
                                 ->searchable()
                                 ->preload()
                                 ->required()
                                 ->columnSpan(3),
                             TranslatableSelect::forModel('tax_id', Tax::class, 'name')
-                                ->label(__('purchase::vendor_bill.tax'))
+                                ->label(__('accounting::bill.tax'))
                                 ->options(function () {
                                     return Tax::where('company_id', Filament::getTenant()?->getKey())
                                         ->where('is_active', true)
@@ -449,11 +449,11 @@ class VendorBillResource extends Resource
                         ])
                         ->columns(18),
                 ])->columnSpanFull(),
-            Section::make(__('purchase::vendor_bill.attachments'))
-                ->description(__('purchase::vendor_bill.attachments_description'))
+            Section::make(__('accounting::bill.attachments'))
+                ->description(__('accounting::bill.attachments_description'))
                 ->schema([
                     FileUpload::make('attachments')
-                        ->label(__('purchase::vendor_bill.attachments'))
+                        ->label(__('accounting::bill.attachments'))
                         ->multiple()
                         ->disk('local')
                         ->directory('vendor-bill-attachments')
@@ -472,7 +472,7 @@ class VendorBillResource extends Resource
                         ->maxSize(10240) // 10MB max file size
                         ->maxFiles(10)
                         ->disabled(fn (?VendorBill $record) => $record ? $record->status !== VendorBillStatus::Draft : false)
-                        ->helperText(__('purchase::vendor_bill.attachments_helper'))
+                        ->helperText(__('accounting::bill.attachments_helper'))
                         ->downloadable()
                         ->openable()
                         ->deletable(fn (?VendorBill $record) => $record === null || $record->status === VendorBillStatus::Draft)
@@ -482,22 +482,22 @@ class VendorBillResource extends Resource
                 ->columnSpanFull()
                 ->collapsed(fn (?VendorBill $record) => $record && $record->attachments()->count() === 0),
 
-            Section::make(__('purchase::vendor_bill.company_currency_totals'))
+            Section::make(__('accounting::bill.company_currency_totals'))
                 ->schema([
                     TextInput::make('exchange_rate_at_creation')
-                        ->label(__('purchase::vendor_bill.exchange_rate_at_creation'))
+                        ->label(__('accounting::bill.exchange_rate_at_creation'))
                         ->numeric()
                         ->disabled()
                         ->visible(fn (?VendorBill $record) => $record && $record->exchange_rate_at_creation),
 
                     MoneyInput::make('total_amount_company_currency')
-                        ->label(__('purchase::vendor_bill.total_amount_company_currency'))
+                        ->label(__('accounting::bill.total_amount_company_currency'))
                         ->currencyField('../../company.currency_id')
                         ->disabled()
                         ->visible(fn (?VendorBill $record) => $record && $record->total_amount_company_currency),
 
                     MoneyInput::make('total_tax_company_currency')
-                        ->label(__('purchase::vendor_bill.total_tax_company_currency'))
+                        ->label(__('accounting::bill.total_tax_company_currency'))
                         ->currencyField('../../company.currency_id')
                         ->disabled()
                         ->visible(fn (?VendorBill $record) => $record && $record->total_tax_company_currency),
@@ -513,7 +513,7 @@ class VendorBillResource extends Resource
             ->columns([
                 // Most important: Reference number (always visible)
                 TextColumn::make('reference')
-                    ->label(__('purchase::vendor_bill.reference'))
+                    ->label(__('accounting::bill.reference'))
                     ->searchable(['bill_reference'])
                     ->getStateUsing(function (VendorBill $record): string {
                         if ($record->bill_reference) {
@@ -529,14 +529,14 @@ class VendorBillResource extends Resource
 
                 // Vendor (critical for identification)
                 TextColumn::make('vendor.name')
-                    ->label(__('purchase::vendor_bill.vendor'))
+                    ->label(__('accounting::bill.vendor'))
                     ->searchable()
                     ->sortable()
                     ->weight('medium'),
 
                 // Purchase Order Reference (important for audit trail)
                 TextColumn::make('purchaseOrder.po_number')
-                    ->label(__('purchase::vendor_bill.purchase_order'))
+                    ->label(__('accounting::bill.purchase_order'))
                     ->searchable()
                     ->sortable()
                     ->badge()
@@ -551,13 +551,13 @@ class VendorBillResource extends Resource
                         : null
                     )
                     ->openUrlInNewTab()
-                    ->placeholder(__('purchase::vendor_bill.no_purchase_order'))
+                    ->placeholder(__('accounting::bill.no_purchase_order'))
                     ->toggleable(),
 
                 // Status (critical for workflow)
                 TextColumn::make('status')
                     ->badge()
-                    ->label(__('purchase::vendor_bill.status'))
+                    ->label(__('accounting::bill.status'))
                     ->colors([
                         'success' => VendorBillStatus::Posted,
                         'danger' => VendorBillStatus::Cancelled,
@@ -573,85 +573,85 @@ class VendorBillResource extends Resource
 
                 // Bill Date (important for chronological sorting)
                 TextColumn::make('bill_date')
-                    ->label(__('purchase::vendor_bill.date'))
+                    ->label(__('accounting::bill.date'))
                     ->date()
                     ->sortable()
                     ->toggleable(),
 
                 // Due Date (critical for cash flow management)
                 TextColumn::make('due_date')
-                    ->label(__('purchase::vendor_bill.due_date'))
+                    ->label(__('accounting::bill.due_date'))
                     ->date()
                     ->sortable()
                     ->toggleable(),
 
                 // Payment Terms
                 TextColumn::make('paymentTerm.name')
-                    ->label(__('purchase::vendor_bill.payment_term'))
+                    ->label(__('accounting::bill.payment_term'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
 
                 // Payment State (critical for cash flow)
                 TextColumn::make('paymentState')
-                    ->label(__('purchase::vendor_bill.payment_state'))
+                    ->label(__('accounting::bill.payment_state'))
                     ->formatStateUsing(fn (\Modules\Foundation\Enums\Shared\PaymentState $state): string => $state->label())
                     ->badge()
                     ->color(fn (\Modules\Foundation\Enums\Shared\PaymentState $state): string => $state->color()),
 
                 // Total Amount (critical financial information)
                 MoneyColumn::make('total_amount')
-                    ->label(__('purchase::vendor_bill.total'))
+                    ->label(__('accounting::bill.total'))
                     ->sortable()
                     ->weight('bold')
                     ->size('lg'),
 
                 // Currency (important for multi-currency)
                 TextColumn::make('currency.code')
-                    ->label(__('purchase::vendor_bill.currency'))
+                    ->label(__('accounting::bill.currency'))
                     ->badge()
                     ->toggleable(),
 
                 // Company (for multi-company setups)
                 TextColumn::make('company.name')
-                    ->label(__('purchase::vendor_bill.company'))
+                    ->label(__('accounting::bill.company'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 
                 TextColumn::make('exchange_rate_at_creation')
-                    ->label(__('purchase::vendor_bill.exchange_rate'))
+                    ->label(__('accounting::bill.exchange_rate'))
                     ->numeric(decimalPlaces: 6)
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
 
                 MoneyColumn::make('total_amount_company_currency')
-                    ->label(__('purchase::vendor_bill.total_amount_company_currency'))
+                    ->label(__('accounting::bill.total_amount_company_currency'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->visible(fn ($record) => $record && $record->total_amount_company_currency),
 
                 // Post Date (important for audit trail)
                 TextColumn::make('posted_at')
-                    ->label(__('purchase::vendor_bill.posted_at'))
+                    ->label(__('accounting::bill.posted_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
 
                 // Additional columns (hidden by default for cleaner view)
                 MoneyColumn::make('total_tax')
-                    ->label(__('purchase::vendor_bill.tax'))
+                    ->label(__('accounting::bill.tax'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')
-                    ->label(__('purchase::vendor_bill.created_at'))
+                    ->label(__('accounting::bill.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
-                    ->label(__('purchase::vendor_bill.updated_at'))
+                    ->label(__('accounting::bill.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
