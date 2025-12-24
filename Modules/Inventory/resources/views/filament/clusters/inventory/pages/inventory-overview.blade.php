@@ -1,25 +1,22 @@
 <x-filament-panels::page>
-    <h1 class="text-2xl font-bold mb-4">{{ $this->getHeading() }}</h1>
-    <span class="sr-only">{{ __('inventory::inventory_dashboard.heading') }}</span>
-    <span class="sr-only">{{ __('inventory::inventory_dashboard.stats.total_value') }}</span>
-    <span class="sr-only">{{ __('inventory::inventory_dashboard.stats.low_stock') }}</span>
-    <span class="sr-only">{{ __('inventory::inventory_dashboard.stats.expiring_lots') }}</span>
-
     <div class="space-y-6">
-        {{-- Header Stats --}}
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-            @foreach ($this->getHeaderWidgets() as $widget)
-                @livewire($widget)
-            @endforeach
-        </div>
+        {{-- Header Stats Widget - Full Width --}}
+        @livewire(\Modules\Inventory\Filament\Clusters\Inventory\Widgets\InventoryStatsOverviewWidget::class)
 
-        {{-- Charts Grid --}}
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            @foreach ($this->getFooterWidgets() as $widget)
-                <div class="col-span-1">
-                    @livewire($widget)
-                </div>
-            @endforeach
+        {{-- Charts Grid - 2 Column Layout --}}
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {{-- Inventory Value Chart - Spans both columns on large screens --}}
+            <div class="lg:col-span-2">
+                @livewire(\Modules\Inventory\Filament\Clusters\Inventory\Widgets\InventoryValueChartWidget::class)
+            </div>
+
+            {{-- Turnover and Aging Charts - Side by Side --}}
+            <div>
+                @livewire(\Modules\Inventory\Filament\Clusters\Inventory\Widgets\InventoryTurnoverChartWidget::class)
+            </div>
+            <div>
+                @livewire(\Modules\Inventory\Filament\Clusters\Inventory\Widgets\InventoryAgingChartWidget::class)
+            </div>
         </div>
 
         {{-- Quick Actions --}}
