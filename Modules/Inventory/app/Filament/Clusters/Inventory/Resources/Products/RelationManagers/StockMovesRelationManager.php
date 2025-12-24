@@ -21,7 +21,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
 use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveProductLine;
 use Modules\Product\Models\Product;
 
 class StockMovesRelationManager extends RelationManager
@@ -155,6 +155,7 @@ class StockMovesRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
+                    ->label(__('inventory::stock_move.add_product_line'))
                     ->icon('heroicon-o-plus')
                     ->mutateDataUsing(function (array $data): array {
                         /** @var Product $owner */
@@ -171,10 +172,10 @@ class StockMovesRelationManager extends RelationManager
                     ->icon('heroicon-o-eye'),
                 EditAction::make()
                     ->icon('heroicon-o-pencil-square')
-                    ->visible(fn (StockMove $record): bool => $record->status === StockMoveStatus::Draft),
+                    ->visible(fn (StockMoveProductLine $record): bool => $record->stockMove?->status === StockMoveStatus::Draft),
                 DeleteAction::make()
                     ->icon('heroicon-o-trash')
-                    ->visible(fn (StockMove $record): bool => $record->status === StockMoveStatus::Draft),
+                    ->visible(fn (StockMoveProductLine $record): bool => $record->stockMove?->status === StockMoveStatus::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
