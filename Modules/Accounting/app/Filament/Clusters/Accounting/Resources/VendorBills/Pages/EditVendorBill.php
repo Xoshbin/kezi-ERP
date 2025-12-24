@@ -64,7 +64,7 @@ class EditVendorBill extends EditRecord
                 ->modalContent(function (VendorBill $record) {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
 
-                    return view('purchase::filament.accounting.vendor-bills.preview-posting', [
+                    return view('accounting::filament.clusters.accounting.resources.vendor-bills.pages.preview-posting', [
                         'preview' => $preview,
                         'bill' => $record,
                     ]);
@@ -107,7 +107,7 @@ class EditVendorBill extends EditRecord
                 ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft && config('app.debug') && ! app()->environment('production'))
                 ->action(function (VendorBill $record): StreamedResponse {
                     $preview = app(BuildVendorBillPostingPreviewAction::class)->execute($record);
-                    $pdf = Pdf::loadView('filament/accounting/vendor-bills/preview-posting-pdf', [
+                    $pdf = Pdf::loadView('accounting::filament.clusters.accounting.resources.vendor-bills.pages.preview-posting-pdf', [
                         'preview' => $preview,
                         'bill' => $record,
                     ]);
@@ -121,7 +121,7 @@ class EditVendorBill extends EditRecord
                 }),
 
             Action::make('post')
-                ->label(__('vendor_bill.post'))
+                ->label(__('accounting::bill.post'))
                 ->color('success')
                 ->requiresConfirmation()
                 ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft)
@@ -134,28 +134,28 @@ class EditVendorBill extends EditRecord
                             throw new Exception('User must be authenticated to confirm vendor bill');
                         }
                         $vendorBillService->post($record, $user);
-                        Notification::make()->title(__('vendor_bill.notification_bill_confirmed_success'))->success()->send();
+                        Notification::make()->title(__('accounting::bill.notification_bill_confirmed_success'))->success()->send();
                         $this->redirect($this->getResource()::getUrl('edit', ['record' => $record]));
                     } catch (Exception $e) {
-                        Notification::make()->title(__('vendor_bill.notification_confirm_bill_error'))->body($e->getMessage())->danger()->persistent()->send();
+                        Notification::make()->title(__('accounting::bill.notification_confirm_bill_error'))->body($e->getMessage())->danger()->persistent()->send();
                     }
                 }),
 
             // Actions\Action::make('resetToDraft')
-            //     ->label(__('vendor_bill.reset_to_draft'))
+            //     ->label(__('accounting::bill.reset_to_draft'))
             //     ->color('warning')
             //     ->requiresConfirmation()
             //     ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Posted)
             //     ->form([
-            //         Forms\Components\Textarea::make('reason')->label(__('vendor_bill.reason'))->required(),
+            //         Forms\Components\Textarea::make('reason')->label(__('accounting::bill.reason'))->required(),
             //     ])
             //     ->action(function (VendorBill $record, array $data): void {
             //         $vendorBillService = app(VendorBillService::class);
             //         try {
             //             $vendorBillService->resetToDraft($record, Auth::user(), $data['reason']);
-            //             Notification::make()->title(__('vendor_bill.notification_bill_reset_success'))->success()->send();
+            //             Notification::make()->title(__('accounting::bill.notification_bill_reset_success'))->success()->send();
             //         } catch (\Exception $e) {
-            //             Notification::make()->title(__('vendor_bill.notification_reset_bill_error'))->body($e->getMessage())->danger()->send();
+            //             Notification::make()->title(__('accounting::bill.notification_reset_bill_error'))->body($e->getMessage())->danger()->send();
             //         }
             //     }),
 
@@ -308,7 +308,7 @@ class EditVendorBill extends EditRecord
             $updatedVendorBill = app(UpdateVendorBillAction::class)->execute($vendorBillDTO);
         } catch (\Modules\Foundation\Exceptions\UpdateNotAllowedException $e) {
             Notification::make()
-                ->title(__('vendor_bill.notification_update_not_allowed'))
+                ->title(__('accounting::bill.notification_update_not_allowed'))
                 ->body($e->getMessage())
                 ->warning()
                 ->persistent()

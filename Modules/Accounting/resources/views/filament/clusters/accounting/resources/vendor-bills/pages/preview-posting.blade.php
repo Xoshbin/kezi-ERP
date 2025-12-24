@@ -7,7 +7,7 @@
 <div>
     @if(!empty($preview['issues']))
         <div class="p-3 mb-3 rounded bg-[var(--color-danger-50)] text-[var(--color-danger-800)]">
-            <div class="font-semibold mb-1">{{ __('posting_preview.errors_title') }}</div>
+            <div class="font-semibold mb-1">{{ __('accounting::bill.posting_preview.errors_title') }}</div>
             <ul class="list-disc pl-5 space-y-1">
                 @foreach($preview['issues'] as $issue)
                     <li>
@@ -15,18 +15,18 @@
                         @php $t = $issue['type'] ?? ''; @endphp
                         @if($t === 'ap_account_missing')
                             <a href="{{ AccountResource::getUrl() }}" class="ml-2 underline"
-                                target="_blank">{{ __('posting_preview.links.fix_in_accounts') }}</a>
+                                target="_blank">{{ __('accounting::bill.posting_preview.links.fix_in_accounts') }}</a>
                             <a href="{{ CompanyResource::getUrl('edit', ['record' => $bill->company_id]) }}" class="ml-2 underline"
-                                target="_blank">{{ __('posting_preview.links.open_company') }}</a>
+                                target="_blank">{{ __('accounting::bill.posting_preview.links.open_company') }}</a>
                         @elseif($t === 'input_tax_missing')
                             <a href="{{ AccountResource::getUrl() }}" class="ml-2 underline"
-                                target="_blank">{{ __('posting_preview.links.fix_input_tax') }}</a>
+                                target="_blank">{{ __('accounting::bill.posting_preview.links.fix_input_tax') }}</a>
                         @elseif($t === 'inventory_account_missing' && !empty($issue['product_id']))
                             <a href="{{ ProductResource::getUrl('edit', ['record' => $issue['product_id']]) }}"
-                                class="ml-2 underline" target="_blank">{{ __('posting_preview.links.open_product') }}</a>
+                                class="ml-2 underline" target="_blank">{{ __('accounting::bill.posting_preview.links.open_product') }}</a>
                         @elseif($t === 'asset_category_invalid')
                             <a href="{{ AssetResource::getUrl() }}" class="ml-2 underline"
-                                target="_blank">{{ __('posting_preview.links.open_assets') }}</a>
+                                target="_blank">{{ __('accounting::bill.posting_preview.links.open_assets') }}</a>
                         @endif
                     </li>
                 @endforeach
@@ -77,9 +77,9 @@
     <div class="mt-3 flex items-center justify-between">
         <div>
             <a href="{{ AccountResource::getUrl('index') }}" class="underline text-gray-700"
-                target="_blank">{{ __('posting_preview.links.open_accounts') }}</a>
+                target="_blank">{{ __('accounting::bill.posting_preview.links.open_accounts') }}</a>
             <a href="{{ CompanyResource::getUrl('edit', ['record' => $bill->company_id]) }}"
-                class="underline text-gray-700 ml-4" target="_blank">{{ __('posting_preview.links.open_company') }}</a>
+                class="underline text-gray-700 ml-4" target="_blank">{{ __('accounting::bill.posting_preview.links.open_company') }}</a>
         </div>
         <div class="text-right">
             @php($totals = $preview['totals'])

@@ -26,8 +26,8 @@ class AgingAnalysisWidget extends BaseWidget
         // Only show aging for posted invoices that are not fully paid
         if ($invoice->status !== InvoiceStatus::Posted || $invoice->paymentState === \Modules\Foundation\Enums\Shared\PaymentState::Paid) {
             return [
-                Stat::make(__('invoice.aging_widget.status'), __('invoice.aging_widget.not_applicable'))
-                    ->description(__('invoice.aging_widget.not_applicable_desc'))
+                Stat::make(__('accounting::invoice.aging_widget.status'), __('accounting::invoice.aging_widget.not_applicable'))
+                    ->description(__('accounting::invoice.aging_widget.not_applicable_desc'))
                     ->color('gray'),
             ];
         }
@@ -37,23 +37,23 @@ class AgingAnalysisWidget extends BaseWidget
         $agingBucket = $this->getAgingBucket($daysOutstanding);
 
         return [
-            Stat::make(__('invoice.aging_widget.days_outstanding'), $daysOutstanding)
-                ->description(__('invoice.aging_widget.days_since_due'))
+            Stat::make(__('accounting::invoice.aging_widget.days_outstanding'), $daysOutstanding)
+                ->description(__('accounting::invoice.aging_widget.days_since_due'))
                 ->color($this->getDaysOutstandingColor($daysOutstanding))
                 ->icon('heroicon-o-clock'),
 
-            Stat::make(__('invoice.aging_widget.outstanding_amount'), $this->formatMoney($outstandingAmount))
-                ->description(__('invoice.aging_widget.remaining_balance'))
+            Stat::make(__('accounting::invoice.aging_widget.outstanding_amount'), $this->formatMoney($outstandingAmount))
+                ->description(__('accounting::invoice.aging_widget.remaining_balance'))
                 ->color($this->getOutstandingAmountColor($daysOutstanding))
                 ->icon('heroicon-o-currency-dollar'),
 
-            Stat::make(__('invoice.aging_widget.aging_bucket'), $agingBucket['label'])
-                ->description(__('invoice.aging_widget.aging_category'))
+            Stat::make(__('accounting::invoice.aging_widget.aging_bucket'), $agingBucket['label'])
+                ->description(__('accounting::invoice.aging_widget.aging_category'))
                 ->color($agingBucket['color'])
                 ->icon('heroicon-o-chart-bar'),
 
-            Stat::make(__('invoice.aging_widget.payment_progress'), $this->getPaymentProgress($invoice))
-                ->description(__('invoice.aging_widget.payment_status'))
+            Stat::make(__('accounting::invoice.aging_widget.payment_progress'), $this->getPaymentProgress($invoice))
+                ->description(__('accounting::invoice.aging_widget.payment_status'))
                 ->color($this->getPaymentProgressColor($invoice))
                 ->icon('heroicon-o-banknotes'),
         ];
@@ -84,27 +84,27 @@ class AgingAnalysisWidget extends BaseWidget
     {
         if ($daysOutstanding <= 0) {
             return [
-                'label' => __('invoice.aging_widget.current'),
+                'label' => __('accounting::invoice.aging_widget.current'),
                 'color' => 'success',
             ];
         } elseif ($daysOutstanding <= 30) {
             return [
-                'label' => __('invoice.aging_widget.bucket_1_30'),
+                'label' => __('accounting::invoice.aging_widget.bucket_1_30'),
                 'color' => 'warning',
             ];
         } elseif ($daysOutstanding <= 60) {
             return [
-                'label' => __('invoice.aging_widget.bucket_31_60'),
+                'label' => __('accounting::invoice.aging_widget.bucket_31_60'),
                 'color' => 'danger',
             ];
         } elseif ($daysOutstanding <= 90) {
             return [
-                'label' => __('invoice.aging_widget.bucket_61_90'),
+                'label' => __('accounting::invoice.aging_widget.bucket_61_90'),
                 'color' => 'danger',
             ];
         } else {
             return [
-                'label' => __('invoice.aging_widget.bucket_90_plus'),
+                'label' => __('accounting::invoice.aging_widget.bucket_90_plus'),
                 'color' => 'gray',
             ];
         }

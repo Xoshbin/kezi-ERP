@@ -58,31 +58,31 @@ class PartnerResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('foundation::partner.label');
+        return __('accounting::partner.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('foundation::partner.plural_label');
+        return __('accounting::partner.plural_label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('foundation::partner.plural_label');
+        return __('accounting::partner.plural_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make(__('foundation::partner.basic_information'))
-                    ->description(__('foundation::partner.basic_information_description'))
+                Section::make(__('accounting::partner.basic_information'))
+                    ->description(__('accounting::partner.basic_information_description'))
                     ->icon('heroicon-m-user')
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('name')
-                                    ->label(__('foundation::partner.name'))
+                                    ->label(__('accounting::partner.name'))
                                     ->required()
                                     ->maxLength(255)
                                     ->prefixIcon('heroicon-m-building-office'),
@@ -90,7 +90,7 @@ class PartnerResource extends Resource
                         Grid::make(3)
                             ->schema([
                                 Select::make('type')
-                                    ->label(__('foundation::partner.type'))
+                                    ->label(__('accounting::partner.type'))
                                     ->required()
                                     ->searchable()
                                     ->options(
@@ -128,7 +128,7 @@ class PartnerResource extends Resource
                                     })
                                     ->prefixIcon('heroicon-m-document-text'),
                                 Toggle::make('is_active')
-                                    ->label(__('foundation::partner.is_active'))
+                                    ->label(__('accounting::partner.is_active'))
                                     ->default(true)
                                     ->required()
                                     ->inline(false),
@@ -137,24 +137,24 @@ class PartnerResource extends Resource
                     ->columnSpanFull()
                     ->collapsible(),
 
-                Section::make(__('foundation::partner.contact_information'))
-                    ->description(__('foundation::partner.contact_information_description'))
+                Section::make(__('accounting::partner.contact_information'))
+                    ->description(__('accounting::partner.contact_information_description'))
                     ->icon('heroicon-m-phone')
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('contact_person')
-                                    ->label(__('foundation::partner.contact_person'))
+                                    ->label(__('accounting::partner.contact_person'))
                                     ->maxLength(255)
                                     ->prefixIcon('heroicon-m-user'),
                                 TextInput::make('email')
-                                    ->label(__('foundation::partner.email'))
+                                    ->label(__('accounting::partner.email'))
                                     ->email()
                                     ->maxLength(255)
                                     ->prefixIcon('heroicon-m-envelope'),
                             ]),
                         TextInput::make('phone')
-                            ->label(__('foundation::partner.phone'))
+                            ->label(__('accounting::partner.phone'))
                             ->tel()
                             ->maxLength(255)
                             ->prefixIcon('heroicon-m-phone')
@@ -164,38 +164,38 @@ class PartnerResource extends Resource
                     ->columnSpanFull()
                     ->collapsible(),
 
-                Section::make(__('foundation::partner.address_information'))
-                    ->description(__('foundation::partner.address_information_description'))
+                Section::make(__('accounting::partner.address_information'))
+                    ->description(__('accounting::partner.address_information_description'))
                     ->icon('heroicon-m-map-pin')
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('address_line_1')
-                                    ->label(__('foundation::partner.address_line_1'))
+                                    ->label(__('accounting::partner.address_line_1'))
                                     ->maxLength(255)
                                     ->prefixIcon('heroicon-m-home'),
                                 TextInput::make('address_line_2')
-                                    ->label(__('foundation::partner.address_line_2'))
+                                    ->label(__('accounting::partner.address_line_2'))
                                     ->maxLength(255)
                                     ->prefixIcon('heroicon-m-home'),
                             ]),
                         Grid::make(3)
                             ->schema([
                                 TextInput::make('city')
-                                    ->label(__('foundation::partner.city'))
+                                    ->label(__('accounting::partner.city'))
                                     ->maxLength(255)
                                     ->prefixIcon('heroicon-m-building-office-2'),
                                 TextInput::make('state')
-                                    ->label(__('foundation::partner.state'))
+                                    ->label(__('accounting::partner.state'))
                                     ->maxLength(255)
                                     ->prefixIcon('heroicon-m-map'),
                                 TextInput::make('zip_code')
-                                    ->label(__('foundation::partner.zip_code'))
+                                    ->label(__('accounting::partner.zip_code'))
                                     ->maxLength(255)
                                     ->prefixIcon('heroicon-m-hashtag'),
                             ]),
                         TextInput::make('country')
-                            ->label(__('foundation::partner.country'))
+                            ->label(__('accounting::partner.country'))
                             ->maxLength(255)
                             ->prefixIcon('heroicon-m-globe-alt')
                             ->columnSpan(1),
@@ -204,8 +204,8 @@ class PartnerResource extends Resource
                     ->columnSpanFull()
                     ->collapsible(),
 
-                Section::make(__('foundation::partner.accounting_configuration'))
-                    ->description(__('foundation::partner.accounting_configuration_description'))
+                Section::make(__('accounting::partner.accounting_configuration'))
+                    ->description(__('accounting::partner.accounting_configuration_description'))
                     ->icon('heroicon-m-calculator')
                     ->schema([
                         Grid::make(2)
@@ -234,8 +234,8 @@ class PartnerResource extends Resource
                                             ->default(\Modules\Accounting\Enums\Accounting\AccountType::Receivable->value)
                                             ->required(),
                                     ])
-                                    ->createOptionModalHeading(__('foundation::partner.create_receivable_account'))
-                                    ->helperText(__('foundation::partner.receivable_account_help'))
+                                    ->createOptionModalHeading(__('accounting::partner.create_receivable_account'))
+                                    ->helperText(__('accounting::partner.receivable_account_help'))
                                     ->prefixIcon('heroicon-m-arrow-trending-up'),
 
                                 TranslatableSelect::forModel('payable_account_id', Account::class)
@@ -263,8 +263,8 @@ class PartnerResource extends Resource
                                             ->default(\Modules\Accounting\Enums\Accounting\AccountType::Payable->value)
                                             ->required(),
                                     ])
-                                    ->createOptionModalHeading(__('foundation::partner.create_payable_account'))
-                                    ->helperText(__('foundation::partner.payable_account_help'))
+                                    ->createOptionModalHeading(__('accounting::partner.create_payable_account'))
+                                    ->helperText(__('accounting::partner.payable_account_help'))
                                     ->prefixIcon('heroicon-m-arrow-trending-down'),
                             ]),
                     ])
@@ -282,7 +282,7 @@ class PartnerResource extends Resource
             ->columns([
                 // Name (most important for identification)
                 TextColumn::make('name')
-                    ->label(__('foundation::partner.name'))
+                    ->label(__('accounting::partner.name'))
                     ->searchable()
                     ->sortable()
                     ->weight('bold')
@@ -290,7 +290,7 @@ class PartnerResource extends Resource
 
                 // Type (critical for categorization)
                 TextColumn::make('type')
-                    ->label(__('foundation::partner.type'))
+                    ->label(__('accounting::partner.type'))
                     ->formatStateUsing(fn (\Modules\Foundation\Enums\Partners\PartnerType $state): string => $state->label())
                     ->badge()
                     ->color(fn (\Modules\Foundation\Enums\Partners\PartnerType $state): string => match ($state) {
@@ -308,8 +308,8 @@ class PartnerResource extends Resource
 
                 // Status (important for active/inactive)
                 TextColumn::make('is_active')
-                    ->label(__('foundation::partner.status'))
-                    ->formatStateUsing(fn (bool $state): string => $state ? __('foundation::partner.active') : __('foundation::partner.inactive'))
+                    ->label(__('accounting::partner.status'))
+                    ->formatStateUsing(fn (bool $state): string => $state ? __('accounting::partner.active') : __('accounting::partner.inactive'))
                     ->badge()
                     ->color(fn (bool $state): string => $state ? 'success' : 'danger')
                     ->icon(fn (bool $state): string => $state ? 'heroicon-m-check-circle' : 'heroicon-m-x-circle')
@@ -317,7 +317,7 @@ class PartnerResource extends Resource
 
                 // Financial Information - Customer Balances
                 MoneyColumn::make('customer_balance')
-                    ->label(__('foundation::partner.customer_outstanding'))
+                    ->label(__('accounting::partner.customer_outstanding'))
                     ->getStateUsing(function (Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Customer, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
                             return null;
@@ -336,7 +336,7 @@ class PartnerResource extends Resource
                     ->sortable(false),
 
                 MoneyColumn::make('customer_overdue')
-                    ->label(__('foundation::partner.customer_overdue'))
+                    ->label(__('accounting::partner.customer_overdue'))
                     ->getStateUsing(function (Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Customer, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
                             return null;
@@ -356,7 +356,7 @@ class PartnerResource extends Resource
 
                 // Financial Information - Vendor Balances
                 MoneyColumn::make('vendor_balance')
-                    ->label(__('foundation::partner.vendor_outstanding'))
+                    ->label(__('accounting::partner.vendor_outstanding'))
                     ->getStateUsing(function (Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
                             return null;
@@ -375,7 +375,7 @@ class PartnerResource extends Resource
                     ->sortable(false),
 
                 MoneyColumn::make('vendor_overdue')
-                    ->label(__('foundation::partner.vendor_overdue'))
+                    ->label(__('accounting::partner.vendor_overdue'))
                     ->getStateUsing(function (Partner $record) {
                         if (! in_array($record->type, [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])) {
                             return null;
@@ -395,9 +395,9 @@ class PartnerResource extends Resource
 
                 // Last Activity
                 TextColumn::make('last_activity')
-                    ->label(__('foundation::partner.last_activity'))
+                    ->label(__('accounting::partner.last_activity'))
                     ->getStateUsing(
-                        fn (Partner $record): string => $record->getLastTransactionDate()?->format('M j, Y') ?? __('foundation::partner.no_activity')
+                        fn (Partner $record): string => $record->getLastTransactionDate()?->format('M j, Y') ?? __('accounting::partner.no_activity')
                     )
                     ->sortable(false)
                     ->toggleable(),
@@ -407,56 +407,56 @@ class PartnerResource extends Resource
 
                 // Contact Information (toggleable)
                 TextColumn::make('contact_person')
-                    ->label(__('foundation::partner.contact_person'))
+                    ->label(__('accounting::partner.contact_person'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('email')
-                    ->label(__('foundation::partner.email'))
+                    ->label(__('accounting::partner.email'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('phone')
-                    ->label(__('foundation::partner.phone'))
+                    ->label(__('accounting::partner.phone'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 // Address Information (toggleable)
                 TextColumn::make('address_line_1')
-                    ->label(__('foundation::partner.address_line_1'))
+                    ->label(__('accounting::partner.address_line_1'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('city')
-                    ->label(__('foundation::partner.city'))
+                    ->label(__('accounting::partner.city'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('country')
-                    ->label(__('foundation::partner.country'))
+                    ->label(__('accounting::partner.country'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('tax_id')
-                    ->label(__('foundation::partner.tax_id'))
+                    ->label(__('accounting::partner.tax_id'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 // Status
                 IconColumn::make('is_active')
-                    ->label(__('foundation::partner.is_active'))
+                    ->label(__('accounting::partner.is_active'))
                     ->boolean(),
 
                 // Timestamps (hidden by default)
                 TextColumn::make('created_at')
-                    ->label(__('foundation::partner.created_at'))
+                    ->label(__('accounting::partner.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label(__('foundation::partner.updated_at'))
+                    ->label(__('accounting::partner.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('type')
-                    ->label(__('foundation::partner.type'))
+                    ->label(__('accounting::partner.type'))
                     ->options([
                         'customer' => __('enums.partner_type.customer'),
                         'vendor' => __('enums.partner_type.vendor'),
@@ -464,7 +464,7 @@ class PartnerResource extends Resource
                     ]),
 
                 Filter::make('has_overdue')
-                    ->label(__('foundation::partner.has_overdue_amounts'))
+                    ->label(__('accounting::partner.has_overdue_amounts'))
                     ->query(
                         fn (Builder $query): Builder => $query->whereHas('invoices', function ($q) {
                             $q->whereIn('status', ['posted', 'paid'])
@@ -486,7 +486,7 @@ class PartnerResource extends Resource
                     ),
 
                 Filter::make('has_outstanding_balance')
-                    ->label(__('foundation::partner.has_outstanding_balance'))
+                    ->label(__('accounting::partner.has_outstanding_balance'))
                     ->query(
                         fn (Builder $query): Builder => $query->whereHas('invoices', function ($q) {
                             $q->whereIn('status', ['posted', 'paid'])
@@ -506,7 +506,7 @@ class PartnerResource extends Resource
                     ),
 
                 TernaryFilter::make('is_active')
-                    ->label(__('foundation::partner.is_active')),
+                    ->label(__('accounting::partner.is_active')),
             ])
             ->recordActions([
                 ViewAction::make(),
