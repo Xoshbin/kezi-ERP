@@ -2,51 +2,43 @@
 
 return [
     // General
-    'label' => 'Vendor Bill',
-    'plural_label' => 'Vendor Bills',
-    'vendor_bill' => 'Vendor Bill',
-    'vendor_bills' => 'Vendor Bills',
+    'label' => 'Invoice',
+    'plural_label' => 'Invoices',
+    'invoice' => 'Invoice',
+    'invoices' => 'Invoices',
 
-    // Fields
+    // Form Fields
     'company' => 'Company',
-    'vendor' => 'Vendor',
+    'customer' => 'Customer',
     'currency' => 'Currency',
-    'bill_reference' => 'Bill Reference',
-    'bill_date' => 'Bill Date',
-    'accounting_date' => 'Accounting Date',
+    'fiscal_position' => 'Fiscal Position',
+    'invoice_date' => 'Invoice Date',
+    'date' => 'Date',
     'due_date' => 'Due Date',
     'status' => 'Status',
     'payment_state' => 'Payment State',
-    'lines' => 'Lines',
-    'product' => 'Product',
-    'description' => 'Description',
-    'quantity' => 'Quantity',
-    'unit_price' => 'Unit Price',
-    'tax' => 'Tax',
-    'expense_account' => 'Expense Account',
-    'analytic_account' => 'Analytic Account',
     'total_amount' => 'Total Amount',
     'total_tax' => 'Total Tax',
-    'journal_entry_id' => 'Journal Entry ID',
+    'reason' => 'Reason',
+
+    // Section Titles and Descriptions
+    'customer_currency_info' => 'Customer & Currency Information',
+    'customer_currency_info_description' => 'Select the customer and currency for this invoice',
+    'invoice_details' => 'Invoice Details',
+    'invoice_details_description' => 'Enter invoice dates, fiscal position and status information',
+    'line_items' => 'Line Items',
+    'line_items_description' => 'Add products and services to this invoice',
+    'company_currency_totals' => 'Company Currency Totals',
+
+    'company_name' => 'Company',
+    'customer_name' => 'Customer',
+    'currency_name' => 'Currency',
+    'journal_entry' => 'Journal Entry',
+    'fiscal_position_name' => 'Fiscal Position',
+    'invoice_number' => 'Invoice Number',
     'posted_at' => 'Posted At',
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
-    'reason' => 'Reason',
-    'account' => 'Account',
-    'debit' => 'Debit',
-    'credit' => 'Credit',
-    'attachments' => 'Attachments',
-    'attachments_description' => 'Upload supporting documents for this vendor bill',
-    'attachments_helper' => 'Accepted formats: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, GIF, TXT. Maximum 10MB per file, up to 10 files.',
-
-    // Section Titles and Descriptions
-    'vendor_currency_info' => 'Vendor & Currency Information',
-    'vendor_currency_info_description' => 'Select the vendor and currency for this bill',
-    'bill_details' => 'Bill Details',
-    'bill_details_description' => 'Enter bill reference, dates and status information',
-    'line_items' => 'Line Items',
-    'line_items_description' => 'Add products and services to this vendor bill',
-    'company_currency_totals' => 'Company Currency Totals',
 
     // Exchange Rate Fields
     'current_exchange_rate' => 'Current Exchange Rate',
@@ -54,36 +46,50 @@ return [
     'exchange_rate_helper_with_current' => 'Current rate: :rate. Leave empty to use current rate, or enter a custom rate.',
     'exchange_rate' => 'Exchange Rate',
     'exchange_rate_at_creation' => 'Exchange Rate at Creation',
-    'exchange_rate_locked_helper' => 'Exchange rate is locked for non-draft vendor bills',
+    'exchange_rate_locked_helper' => 'Exchange rate is locked for non-draft invoices',
     'exchange_rate_manual_helper' => 'Set a custom exchange rate or leave empty to use the current rate when posting',
     'total_amount_company_currency' => 'Total Amount (Company Currency)',
     'total_tax_company_currency' => 'Total Tax (Company Currency)',
+    'payment_term' => 'Payment Term',
+    'reference' => 'Reference',
+    'optional_reference' => 'Optional reference',
 
     // Actions
     'confirm' => 'Confirm',
+    'confirm_invoice' => 'Confirm Invoice',
     'reset_to_draft' => 'Reset to Draft',
-    'confirm_bill' => 'Confirm Bill',
-    'load_from_purchase_order' => 'Load from Purchase Order',
-    'create_from_purchase_order' => 'Create Bill from PO',
-
-    // Fields
-    'purchase_order' => 'Purchase Order',
-    'no_purchase_order' => 'No PO',
+    'register_payment' => 'Register Payment',
+    'view_pdf' => 'View PDF',
+    'download_pdf' => 'Download PDF',
+    'pdf' => 'PDF',
+    'preview_posting' => 'Preview Posting',
+    'posting_preview' => 'Posting Preview',
+    'close' => 'Close',
+    'export_preview_csv' => 'Export Preview (CSV)',
+    'export_preview_pdf' => 'Export Preview (PDF)',
 
     // Notifications
-    'notification_confirm_success' => 'Vendor bill confirmed successfully',
-    'notification_confirm_error' => 'Error: Could not confirm vendor bill',
-    'notification_reset_success' => 'Vendor bill reset to draft successfully',
-    'notification_reset_error' => 'Error: Could not reset vendor bill',
-    'notification_bill_confirmed_success' => 'Bill confirmed successfully',
-    'notification_confirm_bill_error' => 'Error confirming bill',
-    'notification_bill_reset_success' => 'Bill reset to draft',
-    'notification_reset_bill_error' => 'Error resetting bill',
-    'notification_update_not_allowed' => 'Update Not Allowed',
+    'invoice_confirmed_successfully' => 'Invoice confirmed successfully',
+    'error_confirming_invoice' => 'Error confirming invoice',
+    'invoice_reset_to_draft_successfully' => 'Invoice reset to draft successfully',
+    'error_resetting_invoice_to_draft' => 'Error resetting invoice to draft',
+    'invoice_reset_to_draft' => 'Invoice reset to draft',
+    'error_resetting_invoice' => 'Error resetting invoice',
 
     // Validation Messages
-    'validation_no_line_items' => 'Cannot confirm vendor bill without line items',
-    'validation_zero_total_amount' => 'Cannot confirm vendor bill with zero total amount',
+    'validation_no_line_items' => 'Cannot confirm invoice without line items',
+    'validation_zero_total_amount' => 'Cannot confirm invoice with zero total amount',
+
+    // Invoice Lines
+    'invoice_lines' => 'Invoice Lines',
+    'invoice_line' => 'Invoice Line',
+    'add_invoice_line' => 'Add Invoice Line',
+    'product' => 'Product',
+    'description' => 'Description',
+    'quantity' => 'Quantity',
+    'unit_price' => 'Unit Price',
+    'tax' => 'Tax',
+    'income_account' => 'Income Account',
 
     // Payments Relation Manager
     'payments_relation_manager' => [
@@ -96,7 +102,7 @@ return [
         'payment_date' => 'Payment Date',
         'amount' => 'Amount',
         'amount_applied' => 'Amount Applied',
-        'amount_applied_help' => 'The amount of this payment applied to this vendor bill',
+        'amount_applied_help' => 'The amount of this payment applied to this invoice',
         'payment_type' => 'Payment Type',
         'reference' => 'Reference',
         'no_reference' => 'No Reference',
@@ -121,7 +127,7 @@ return [
 
     // Adjustment Documents Relation Manager
     'adjustment_documents_relation_manager' => [
-        'title' => 'Adjustments & Debit Notes',
+        'title' => 'Adjustments & Credit Notes',
         'document_details' => 'Document Details',
         'company' => 'Company',
         'currency' => 'Currency',
@@ -146,7 +152,7 @@ return [
     'aging_widget' => [
         'status' => 'Aging Status',
         'not_applicable' => 'Not Applicable',
-        'not_applicable_desc' => 'Aging analysis only applies to posted, unpaid vendor bills',
+        'not_applicable_desc' => 'Aging analysis only applies to posted, unpaid invoices',
         'days_outstanding' => 'Days Outstanding',
         'days_since_due' => 'Days since due date',
         'outstanding_amount' => 'Outstanding Amount',
@@ -166,13 +172,13 @@ return [
     'settlement_widget' => [
         'status' => 'Settlement Status',
         'not_posted' => 'Not Posted',
-        'not_posted_desc' => 'Settlement summary only available for posted vendor bills',
+        'not_posted_desc' => 'Settlement summary only available for posted invoices',
         'total_amount' => 'Total Amount',
-        'bill_total' => 'Original bill amount',
+        'invoice_total' => 'Original invoice amount',
         'paid_amount' => 'Paid Amount',
-        'total_paid' => 'Total amount paid',
+        'total_paid' => 'Total amount received',
         'outstanding_balance' => 'Outstanding Balance',
-        'remaining_due' => 'Amount still owed',
+        'remaining_due' => 'Amount still due',
         'last_payment' => 'Last Payment',
         'most_recent_payment' => 'Most recent payment date',
         'payment_count' => 'Payment Count',
@@ -184,4 +190,27 @@ return [
         'more' => 'more',
         'various' => 'Various',
     ],
+
+    // Modal Titles
+    'modal_title_create_partner' => 'Create Customer',
+    'modal_title_create_currency' => 'Create Currency',
+    'modal_title_create_account' => 'Create Account',
+    'modal_title_create_product' => 'Create Product',
+    'modal_title_create_tax' => 'Create Tax',
+
+    // Product Fields (for inline product creation)
+    'product_name' => 'Name',
+    'product_sku' => 'SKU',
+    'product_type' => 'Type',
+    'product_description' => 'Description',
+    'product_default_inventory_account' => 'Default Inventory Account',
+    'product_unit_price' => 'Unit Price',
+    'product_income_account' => 'Income Account',
+
+    // Currency Fields (for inline currency creation)
+    'currency_code' => 'Code',
+    'currency_label' => 'Name',
+    'currency_symbol' => 'Symbol',
+    'currency_exchange_rate' => 'Exchange Rate',
+    'currency_is_active' => 'Is Active',
 ];
