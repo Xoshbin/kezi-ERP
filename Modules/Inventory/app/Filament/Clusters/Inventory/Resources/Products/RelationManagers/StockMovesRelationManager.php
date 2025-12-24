@@ -90,11 +90,11 @@ class StockMovesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('reference')
             ->columns([
-                TextColumn::make('move_date')
+                TextColumn::make('stockMove.move_date')
                     ->label(__('inventory::stock_move.move_date'))
                     ->date()
                     ->sortable(),
-                TextColumn::make('reference')
+                TextColumn::make('stockMove.reference')
                     ->label(__('inventory::stock_move.reference'))
                     ->searchable()
                     ->copyable(),
@@ -108,7 +108,7 @@ class StockMovesRelationManager extends RelationManager
                     ->label(__('inventory::stock_move.quantity'))
                     ->numeric(decimalPlaces: 4)
                     ->sortable(),
-                TextColumn::make('move_type')
+                TextColumn::make('stockMove.move_type')
                     ->label(__('inventory::stock_move.move_type'))
                     ->badge()
                     ->formatStateUsing(fn (StockMoveType $state): string => $state->label())
@@ -118,7 +118,7 @@ class StockMovesRelationManager extends RelationManager
                         StockMoveType::InternalTransfer => 'info',
                         StockMoveType::Adjustment => 'warning',
                     }),
-                TextColumn::make('status')
+                TextColumn::make('stockMove.status')
                     ->label(__('inventory::stock_move.status'))
                     ->badge()
                     ->formatStateUsing(fn (StockMoveStatus $state): string => $state->label())
@@ -138,7 +138,7 @@ class StockMovesRelationManager extends RelationManager
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->defaultSort('move_date', 'desc')
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('move_type')
                     ->label(__('inventory::stock_move.move_type'))
