@@ -119,7 +119,7 @@ class ReorderingRulesRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('lead_time_days')
                     ->label(__('inventory::reordering_rule.fields.lead_time_days'))
-                    ->suffix(' days')
+                    ->suffix(' '.__('inventory::reordering_rule.days'))
                     ->sortable(),
                 IconColumn::make('active')
                     ->label(__('inventory::reordering_rule.fields.active'))
@@ -137,6 +137,7 @@ class ReorderingRulesRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
+                    ->label(__('inventory::reordering_rule.create'))
                     ->icon('heroicon-o-plus')
                     ->mutateDataUsing(function (array $data): array {
                         /** @var Product $owner */
