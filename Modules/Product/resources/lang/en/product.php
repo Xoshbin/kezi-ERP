@@ -44,6 +44,7 @@ return [
     // Stock Information
     'stock_moves' => 'Stock Movements',
     'inventory_cost_layers' => 'Cost Layers',
+    'quantity_on_hand' => 'Quantity On Hand',
 
     // Status
     'status' => 'Status',
