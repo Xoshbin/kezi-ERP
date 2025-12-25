@@ -3,6 +3,7 @@
 return [
     'label' => 'Reordering Rule',
     'plural_label' => 'Reordering Rules',
+    'create' => 'Add Reordering Rule',
 
     'sections' => [
         'basic_info' => 'Basic Information',

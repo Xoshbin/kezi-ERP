@@ -21,7 +21,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
 use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Models\StockMove;
+use Modules\Inventory\Models\StockMoveProductLine;
 use Modules\Product\Models\Product;
 
 class StockMovesRelationManager extends RelationManager
@@ -90,11 +90,11 @@ class StockMovesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('reference')
             ->columns([
-                TextColumn::make('move_date')
+                TextColumn::make('stockMove.move_date')
                     ->label(__('inventory::stock_move.move_date'))
                     ->date()
                     ->sortable(),
-                TextColumn::make('reference')
+                TextColumn::make('stockMove.reference')
                     ->label(__('inventory::stock_move.reference'))
                     ->searchable()
                     ->copyable(),
@@ -108,7 +108,7 @@ class StockMovesRelationManager extends RelationManager
                     ->label(__('inventory::stock_move.quantity'))
                     ->numeric(decimalPlaces: 4)
                     ->sortable(),
-                TextColumn::make('move_type')
+                TextColumn::make('stockMove.move_type')
                     ->label(__('inventory::stock_move.move_type'))
                     ->badge()
                     ->formatStateUsing(fn (StockMoveType $state): string => $state->label())
@@ -118,7 +118,7 @@ class StockMovesRelationManager extends RelationManager
                         StockMoveType::InternalTransfer => 'info',
                         StockMoveType::Adjustment => 'warning',
                     }),
-                TextColumn::make('status')
+                TextColumn::make('stockMove.status')
                     ->label(__('inventory::stock_move.status'))
                     ->badge()
                     ->formatStateUsing(fn (StockMoveStatus $state): string => $state->label())
@@ -138,7 +138,7 @@ class StockMovesRelationManager extends RelationManager
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->defaultSort('move_date', 'desc')
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('move_type')
                     ->label(__('inventory::stock_move.move_type'))
@@ -155,6 +155,7 @@ class StockMovesRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
+                    ->label(__('inventory::stock_move.add_product_line'))
                     ->icon('heroicon-o-plus')
                     ->mutateDataUsing(function (array $data): array {
                         /** @var Product $owner */
@@ -171,10 +172,10 @@ class StockMovesRelationManager extends RelationManager
                     ->icon('heroicon-o-eye'),
                 EditAction::make()
                     ->icon('heroicon-o-pencil-square')
-                    ->visible(fn (StockMove $record): bool => $record->status === StockMoveStatus::Draft),
+                    ->visible(fn (StockMoveProductLine $record): bool => $record->stockMove?->status === StockMoveStatus::Draft),
                 DeleteAction::make()
                     ->icon('heroicon-o-trash')
-                    ->visible(fn (StockMove $record): bool => $record->status === StockMoveStatus::Draft),
+                    ->visible(fn (StockMoveProductLine $record): bool => $record->stockMove?->status === StockMoveStatus::Draft),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
