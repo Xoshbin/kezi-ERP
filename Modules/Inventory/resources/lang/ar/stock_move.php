@@ -34,4 +34,22 @@ return [
     // Timestamps
     'created_at' => 'تاريخ الإنشاء',
     'updated_at' => 'تاريخ التحديث',
+
+    // Product Lines
+    'product_lines' => 'خطوط المنتجات',
+    'product_lines_description' => 'المنتجات المشاركة في هذه الحركة.',
+    'add_product_line' => 'إضافة خط منتج',
+    'new_product_line' => 'خط منتج جديد',
+    'line_description' => 'وصف الخط',
+    'source_type' => 'نوع المصدر',
+    'description' => 'الوصف',
+
+    'statuses' => [
+        'draft' => 'مسودة',
+        'waiting' => 'في الانتظار',
+        'confirmed' => 'مؤكد',
+        'assigned' => 'معين',
+        'done' => 'منتهي',
+        'cancelled' => 'ملغي',
+    ],
 ];

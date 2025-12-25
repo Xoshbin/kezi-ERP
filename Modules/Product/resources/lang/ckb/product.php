@@ -43,6 +43,7 @@ return [
     // Stock Information
     'stock_moves' => 'جووڵەی کۆگا',
     'inventory_cost_layers' => 'چینەکانی تێچوو',
+    'quantity_on_hand' => 'بڕی بەردەست',
 
     // Status
     'status' => 'دۆخ',

@@ -10,10 +10,7 @@ class InventoryAgingChartWidget extends ChartWidget
 {
     protected static ?int $sort = 4;
 
-    protected int|string|array $columnSpan = [
-        'md' => 2,
-        'xl' => 1,
-    ];
+    protected int|string|array $columnSpan = 'full';
 
     protected function getReportingService(): InventoryReportingService
     {
@@ -38,12 +35,12 @@ class InventoryAgingChartWidget extends ChartWidget
         return Cache::remember($cacheKey, 300, function () use ($filters) {
             $aging = $this->getReportingService()->ageing([
                 'buckets' => [
-                    ['min' => 0, 'max' => 30, 'label' => '0-30 days'],
-                    ['min' => 31, 'max' => 60, 'label' => '31-60 days'],
-                    ['min' => 61, 'max' => 90, 'label' => '61-90 days'],
-                    ['min' => 91, 'max' => 180, 'label' => '91-180 days'],
-                    ['min' => 181, 'max' => 365, 'label' => '181-365 days'],
-                    ['min' => 366, 'max' => 9999, 'label' => '365+ days'],
+                    ['min' => 0, 'max' => 30, 'label' => __('inventory::inventory_dashboard.stats.aging_intervals.0_30')],
+                    ['min' => 31, 'max' => 60, 'label' => __('inventory::inventory_dashboard.stats.aging_intervals.31_60')],
+                    ['min' => 61, 'max' => 90, 'label' => __('inventory::inventory_dashboard.stats.aging_intervals.61_90')],
+                    ['min' => 91, 'max' => 180, 'label' => __('inventory::inventory_dashboard.stats.aging_intervals.91_180')],
+                    ['min' => 181, 'max' => 365, 'label' => __('inventory::inventory_dashboard.stats.aging_intervals.181_365')],
+                    ['min' => 366, 'max' => 9999, 'label' => __('inventory::inventory_dashboard.stats.aging_intervals.365_plus')],
                 ],
                 ...$filters,
             ]);
