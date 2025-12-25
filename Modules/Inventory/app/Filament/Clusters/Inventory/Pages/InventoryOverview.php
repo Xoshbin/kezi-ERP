@@ -5,10 +5,6 @@ namespace Modules\Inventory\Filament\Clusters\Inventory\Pages;
 use BackedEnum;
 use Filament\Pages\Page;
 use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
-use Modules\Inventory\Filament\Clusters\Inventory\Widgets\InventoryAgingChartWidget;
-use Modules\Inventory\Filament\Clusters\Inventory\Widgets\InventoryStatsOverviewWidget;
-use Modules\Inventory\Filament\Clusters\Inventory\Widgets\InventoryTurnoverChartWidget;
-use Modules\Inventory\Filament\Clusters\Inventory\Widgets\InventoryValueChartWidget;
 
 class InventoryOverview extends Page
 {
@@ -38,39 +34,5 @@ class InventoryOverview extends Page
     public function getSubheading(): ?string
     {
         return __('inventory::inventory_dashboard.subheading');
-    }
-
-    protected function getHeaderWidgets(): array
-    {
-        return [
-            InventoryStatsOverviewWidget::class,
-        ];
-    }
-
-    protected function getFooterWidgets(): array
-    {
-        return [
-            InventoryValueChartWidget::class,
-            InventoryTurnoverChartWidget::class,
-            InventoryAgingChartWidget::class,
-        ];
-    }
-
-    public function getWidgets(): array
-    {
-        return [
-            InventoryStatsOverviewWidget::class,
-            InventoryValueChartWidget::class,
-            InventoryTurnoverChartWidget::class,
-            InventoryAgingChartWidget::class,
-        ];
-    }
-
-    public function getColumns(): int|array
-    {
-        return [
-            'md' => 2,
-            'xl' => 3,
-        ];
     }
 }

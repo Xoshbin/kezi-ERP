@@ -28,6 +28,15 @@ return [
 
         'expiring_lots' => 'Expiring Lots',
         'expiring_lots_description' => 'Lots expiring within 30 days',
+
+        'aging_intervals' => [
+            '0_30' => '0-30 days',
+            '31_60' => '31-60 days',
+            '61_90' => '61-90 days',
+            '91_180' => '91-180 days',
+            '181_365' => '181-365 days',
+            '365_plus' => '365+ days',
+        ],
     ],
 
     // Charts

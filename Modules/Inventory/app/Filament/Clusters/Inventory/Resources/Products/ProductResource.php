@@ -448,6 +448,16 @@ class ProductResource extends Resource
                     ->sortable()
                     ->visible(fn () => request()->has('inventory_view'))
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('quantity_on_hand')
+                    ->label(__('product.quantity_on_hand'))
+                    ->numeric(decimalPlaces: 2)
+                    ->sortable()
+                    ->badge()
+                    ->color(fn (float $state): string => match (true) {
+                        $state > 0 => 'success',
+                        $state < 0 => 'danger',
+                        default => 'gray',
+                    }),
                 TextColumn::make('incomeAccount.name')
                     ->label(__('product.income_account'))
                     ->sortable()
@@ -528,8 +538,7 @@ class ProductResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // TODO: Update StockMovesRelationManager to work with new multi-product architecture
-            // StockMovesRelationManager::class,
+            StockMovesRelationManager::class,
             InventoryCostLayersRelationManager::class,
             ReorderingRulesRelationManager::class,
         ];

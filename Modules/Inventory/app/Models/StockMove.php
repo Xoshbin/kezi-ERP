@@ -15,6 +15,27 @@ use Modules\Inventory\Enums\Inventory\StockMoveStatus;
 use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Observers\StockMoveObserver;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property StockMoveType $move_type
+ * @property StockMoveStatus $status
+ * @property \Illuminate\Support\Carbon $move_date
+ * @property string|null $reference
+ * @property string|null $description
+ * @property string|null $source_type
+ * @property int|null $source_id
+ * @property int|null $picking_id
+ * @property int|null $created_by_user_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read User|null $createdByUser
+ * @property-read StockPicking|null $picking
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, StockMoveProductLine> $productLines
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, StockMoveLine> $stockMoveLines
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, StockMoveValuation> $stockMoveValuations
+ */
 #[ObservedBy([StockMoveObserver::class])]
 class StockMove extends Model
 {
