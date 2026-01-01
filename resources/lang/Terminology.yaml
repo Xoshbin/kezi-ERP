@@ -622,6 +622,21 @@ categories:
         ar: "الكمية"
         ckb: "بڕ"
         notes: "Amount/number"
+      available:
+        en: "Available"
+        ar: "المتاح"
+        ckb: "بەردەست"
+        notes: "Amount/number"
+      reserved:
+        en: "Reserved"
+        ar: "المحجوز"
+        ckb: "گیراو"
+        notes: "Amount/number"
+      overselling:
+        en: "Overselling"
+        ar: "الفروش الزائد"
+        ckb: "زیادفرۆشتن"
+        notes: "Amount/number"
       cost_of_goods_sold:
         en: "Cost of Goods Sold"
         ar: "تكلفة البضاعة المباعة"
