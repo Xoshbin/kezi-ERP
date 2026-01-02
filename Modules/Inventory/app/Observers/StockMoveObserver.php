@@ -11,6 +11,7 @@ use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Models\StockMove;
 use Modules\Inventory\Services\Inventory\InventoryValuationService;
 use Modules\Inventory\Services\Inventory\StockQuantService;
+use Modules\Purchase\Models\PurchaseOrder;
 use Modules\Purchase\Models\VendorBill;
 
 class StockMoveObserver
@@ -66,11 +67,17 @@ class StockMoveObserver
                             $vendorBill = $stockMove->source;
                             $inventoryValuationService->createConsolidatedIncomingStockJournalEntry($allStockMoves->toArray(), $vendorBill);
                         }
-                    } else {
-                        // Use individual processing for other source document types
+                    } elseif ($stockMove->move_type === StockMoveType::Incoming) {
+                        // Only create journal entries for INCOMING stock moves here.
+                        // OUTGOING moves are handled by the StockMoveConfirmed event
+                        // via ProcessOutgoingStockJob → ProcessOutgoingStockAction.
+                        // This prevents COGS from being double-counted.
                         $createJournalEntryAction = app(CreateJournalEntryForStockMoveAction::class);
                         $createJournalEntryAction->execute($stockMove, $user);
                     }
+                    // Outgoing stock moves with source documents are intentionally skipped here.
+                    // Their COGS journal entries are created by the event-driven flow:
+                    // StockMoveConfirmed -> ProcessOutgoingStockJob -> ProcessOutgoingStockAction
                 }
             }
 
