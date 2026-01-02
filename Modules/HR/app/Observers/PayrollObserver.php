@@ -13,7 +13,7 @@ class PayrollObserver
     public function creating(Payroll $payroll): void
     {
         if (empty($payroll->payroll_number)) {
-            $payroll->payroll_number = $this->generatePayrollNumber($payroll->company_id);
+            $payroll->payroll_number = $this->generatePayrollNumber($payroll->company_id, $payroll->pay_date);
         }
 
         $this->calculatePayrollTotals($payroll);
@@ -54,11 +54,12 @@ class PayrollObserver
     /**
      * Generate a unique payroll number for the company.
      */
-    private function generatePayrollNumber(int $companyId): string
+    private function generatePayrollNumber(int $companyId, mixed $payDate): string
     {
         $prefix = 'PAY';
-        $year = now()->year;
-        $month = now()->format('m');
+        $date = $payDate instanceof \Carbon\Carbon ? $payDate : \Carbon\Carbon::parse($payDate);
+        $year = $date->year;
+        $month = $date->format('m');
 
         // Get the next sequential number for this month
         $lastPayroll = Payroll::where('company_id', $companyId)
