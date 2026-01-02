@@ -137,13 +137,20 @@ it('throws exception for manual stock moves when product has no cost information
         ->toThrow(InsufficientCostInformationException::class, 'Cannot determine cost for product');
 });
 
-it('throws exception for manual outgoing stock moves when product has no cost information', function () {
+it('throws exception for outgoing stock moves when product has no cost information via event-driven COGS', function () {
     // Arrange: Create a product with zero average cost and no cost layers
+    // Also needs a COGS account to pass validation
+    $cogsAccount = Account::factory()->for($this->company)->create([
+        'name' => 'COGS Test Account',
+        'type' => 'expense',
+    ]);
+
     $productWithoutCost = Product::factory()->for($this->company)->create([
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
         'inventory_valuation_method' => ValuationMethod::AVCO,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
+        'default_cogs_account_id' => $cogsAccount->id,
         'average_cost' => Money::of(0, $this->company->currency->code), // Zero average cost
         'quantity_on_hand' => 5.0, // Some stock available
     ]);
@@ -154,24 +161,27 @@ it('throws exception for manual outgoing stock moves when product has no cost in
         from_location_id: $this->stockLocation->id,
         to_location_id: $this->vendorLocation->id,
         description: 'Manual outgoing without cost',
-        source_type: 'Test',
-        source_id: 999,
     );
 
+    // Create move in draft first, then confirm separately
     $dto = new CreateStockMoveDTO(
         company_id: $this->company->id,
         move_type: StockMoveType::Outgoing,
-        status: StockMoveStatus::Done,
+        status: StockMoveStatus::Draft, // Create as draft first
         move_date: now(),
         created_by_user_id: $this->user->id,
         product_lines: [$lineDto],
         reference: 'SM-OUT-NO-COST',
         description: 'Manual outgoing stock without cost info',
-        source_type: 'Test',
-        source_id: 999,
     );
 
-    // Act & Assert: Should throw RuntimeException for COGS calculation (outgoing moves still use old logic)
-    expect(fn () => app(\Modules\Inventory\Actions\Inventory\CreateStockMoveAction::class)->execute($dto))
-        ->toThrow(\RuntimeException::class, 'Cannot calculate COGS for product');
+    // Create the move
+    $move = app(\Modules\Inventory\Actions\Inventory\CreateStockMoveAction::class)->execute($dto);
+
+    // Act & Assert: Confirming the move should throw RuntimeException for COGS calculation
+    // The event-driven path (StockMoveConfirmed → ProcessOutgoingStockJob → ProcessOutgoingStockAction)
+    // validates cost information before creating COGS journal entries.
+    expect(fn () => app(\Modules\Inventory\Services\Inventory\StockMoveService::class)->confirmMove(
+        new \Modules\Inventory\DataTransferObjects\Inventory\ConfirmStockMoveDTO(stock_move_id: $move->id)
+    ))->toThrow(\RuntimeException::class, 'Cannot calculate COGS for product');
 });
