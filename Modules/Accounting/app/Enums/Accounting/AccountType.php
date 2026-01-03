@@ -174,4 +174,72 @@ enum AccountType: string
     {
         return in_array($this, [self::Expense, self::Depreciation, self::CostOfRevenue]);
     }
+
+    /**
+     * Get all Cash and Bank account types for Cash Flow Statement.
+     *
+     * @return array<int, AccountType>
+     */
+    public static function cashAccountTypes(): array
+    {
+        return [self::BankAndCash];
+    }
+
+    /**
+     * Get account types affecting Operating Activities in Cash Flow Statement.
+     * These are current assets (excluding cash) - changes affect operating cash.
+     *
+     * @return array<int, AccountType>
+     */
+    public static function operatingAssetTypes(): array
+    {
+        return [
+            self::Receivable,
+            self::CurrentAssets,
+            self::Prepayments,
+        ];
+    }
+
+    /**
+     * Get liability types affecting Operating Activities in Cash Flow Statement.
+     * These are current liabilities - changes affect operating cash.
+     *
+     * @return array<int, AccountType>
+     */
+    public static function operatingLiabilityTypes(): array
+    {
+        return [
+            self::Payable,
+            self::CreditCard,
+            self::CurrentLiabilities,
+        ];
+    }
+
+    /**
+     * Get account types for Investing Activities in Cash Flow Statement.
+     * These are non-current assets - changes represent investing cash flows.
+     *
+     * @return array<int, AccountType>
+     */
+    public static function investingAssetTypes(): array
+    {
+        return [
+            self::NonCurrentAssets,
+            self::FixedAssets,
+        ];
+    }
+
+    /**
+     * Get account types for Financing Activities in Cash Flow Statement.
+     * These are equity and non-current liabilities.
+     *
+     * @return array<int, AccountType>
+     */
+    public static function financingTypes(): array
+    {
+        return [
+            self::Equity,
+            self::NonCurrentLiabilities,
+        ];
+    }
 }
