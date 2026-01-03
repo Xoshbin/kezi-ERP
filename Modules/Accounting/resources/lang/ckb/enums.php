@@ -21,4 +21,14 @@ return [
         'cost_of_revenue' => 'تێچووی داهات',
         'off_balance_sheet' => 'دەرەوەی تەرازووی پێداچوونەوە',
     ],
+    'fiscal_year_state' => [
+        'draft' => 'ڕەشنووس',
+        'open' => 'کراوە',
+        'closing' => 'دادەخرێت',
+        'closed' => 'داخراو',
+    ],
+    'fiscal_period_state' => [
+        'open' => 'کراوە',
+        'closed' => 'داخراو',
+    ],
 ];
