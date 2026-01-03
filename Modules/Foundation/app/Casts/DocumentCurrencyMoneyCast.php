@@ -13,6 +13,7 @@ use Modules\Payment\Models\Payment;
 use Modules\Purchase\Models\PurchaseOrder;
 use Modules\Purchase\Models\VendorBill;
 use Modules\Sales\Models\Invoice;
+use Modules\Sales\Models\Quote;
 use Modules\Sales\Models\SalesOrder;
 
 /**
@@ -108,6 +109,15 @@ class DocumentCurrencyMoneyCast extends MoneyCast
                 }
             }
         }
+        if (method_exists($model, 'quote') && $model->relationLoaded('quote')) {
+            $quote = $model->getRelation('quote');
+            if ($quote instanceof Model && method_exists($quote, 'currency')) {
+                $currency = $quote->relationLoaded('currency') ? $quote->getRelation('currency') : $quote->currency()->first();
+                if ($currency instanceof Currency) {
+                    return $currency;
+                }
+            }
+        }
         // Loan schedule: resolve via parent loan
         if (method_exists($model, 'loan') && $model->relationLoaded('loan')) {
             $loan = $model->getRelation('loan');
@@ -162,6 +172,11 @@ class DocumentCurrencyMoneyCast extends MoneyCast
 
             return $salesOrder->currency ?? throw new InvalidArgumentException('Sales order currency not found');
         }
+        if (method_exists($model, 'quote') && $model->getAttribute('quote_id')) {
+            $quote = $model->quote()->with('currency')->first();
+
+            return $quote->currency ?? throw new InvalidArgumentException('Quote currency not found');
+        }
         // Some models expose a direct currency() relationship (e.g., PaymentDocumentLink)
         if (method_exists($model, 'currency')) {
             $currency = $model->relationLoaded('currency') ? $model->getRelation('currency') : $model->currency()->first();
@@ -215,6 +230,9 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             }
             if (! $currency && isset($attributes['sales_order_id'])) {
                 $currency = optional(SalesOrder::find($attributes['sales_order_id']))->currency;
+            }
+            if (! $currency && isset($attributes['quote_id'])) {
+                $currency = optional(Quote::find($attributes['quote_id']))->currency;
             }
 
             if (! $currency) {
