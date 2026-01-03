@@ -39,4 +39,12 @@ return [
         'open_periods' => ':count خول هێشتا کراوەن. تکایە سەرەتا هەموو خولەکان دابخە.',
         'draft_entries' => ':count تۆماری رەشنووس هەیە لەم ساڵی داراییەدا. تکایە پۆستیان بکە یان بیانسڕەوە.',
     ],
+    'error' => [
+        'no_opening_balances' => 'هیچ هەژمارێکی "تەرازووی پێداچوونەوە" (Balance Sheet) نەدۆزرایەوە کە باڵانسیان هەبێت لە ساڵی پێشوودا.',
+    ],
+    'opening_balance_label' => 'باڵانسی دەستپێک :year',
+    'opening_entry_description' => 'تۆماری دەستپێک بۆ ساڵی :year',
+    'action_generate_opening' => 'دروستکردنی تۆماری دەستپێک',
+    'opening_in_progress' => 'دروستکردنی تۆماری دەستپێک لە پڕۆسەدایە...',
+    'opening_generated_successfully' => 'تۆماری دەستپێک بە سەرکەوتوویی دروستکرا.',
 ];

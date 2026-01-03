@@ -29,6 +29,7 @@ class EditFiscalYear extends EditRecord
         return [
             $this->getCloseFiscalYearAction(),
             $this->getReopenFiscalYearAction(),
+            $this->getGenerateOpeningEntryAction(),
         ];
     }
 
@@ -134,6 +135,73 @@ class EditFiscalYear extends EditRecord
                 } catch (FiscalYearNotReadyToCloseException $e) {
                     Notification::make()
                         ->title(__('accounting::fiscal_year.close_failed'))
+                        ->body($e->getMessage())
+                        ->danger()
+                        ->send();
+                }
+            });
+    }
+
+    /**
+     * Get the Generate Opening Entry action.
+     */
+    protected function getGenerateOpeningEntryAction(): Action
+    {
+        return Action::make('generateOpeningEntry')
+            ->label(__('accounting::fiscal_year.action_generate_opening'))
+            ->icon('heroicon-o-document-plus')
+            ->color('success')
+            ->visible(function (): bool {
+                $record = $this->getRecord();
+                // Visible if previous year exists and current year is NOT Closed (or maybe allowed?)
+                // Let's allow for Open/Draft years.
+                if ($record->state === FiscalYearState::Closed) {
+                    return false;
+                }
+
+                return FiscalYear::forCompany($record->company)
+                    ->where('end_date', '<', $record->start_date)
+                    ->exists();
+            })
+            ->requiresConfirmation()
+            ->action(function () {
+                try {
+                    /** @var FiscalYear $currentYear */
+                    $currentYear = $this->getRecord();
+
+                    $previousYear = FiscalYear::forCompany($currentYear->company)
+                        ->where('end_date', '<', $currentYear->start_date)
+                        ->orderBy('end_date', 'desc')
+                        ->first();
+
+                    if (! $previousYear) {
+                        Notification::make()
+                            ->title('No previous fiscal year found.')
+                            ->danger()
+                            ->send();
+
+                        return;
+                    }
+
+                    $dto = new \Modules\Accounting\DataTransferObjects\Accounting\CreateOpeningBalanceEntryDTO(
+                        newFiscalYear: $currentYear,
+                        previousFiscalYear: $previousYear,
+                        createdByUserId: auth()->id(),
+                    );
+
+                    $entry = app(\Modules\Accounting\Actions\Accounting\CreateOpeningBalanceEntryAction::class)->execute($dto);
+
+                    Notification::make()
+                        ->title(__('accounting::fiscal_year.opening_generated_successfully'))
+                        ->success()
+                        ->send();
+
+                    // Redirect to the new Journal Entry
+                    $this->redirect(\Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\JournalEntryResource::getUrl('edit', ['record' => $entry]));
+
+                } catch (\Exception $e) {
+                    Notification::make()
+                        ->title('Failed to generate opening entry')
                         ->body($e->getMessage())
                         ->danger()
                         ->send();
