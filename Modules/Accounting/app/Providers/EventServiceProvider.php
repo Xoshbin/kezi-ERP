@@ -15,6 +15,12 @@ class EventServiceProvider extends ServiceProvider
         \Modules\Purchase\Events\VendorBillConfirmed::class => [
             \Modules\Accounting\Listeners\Asset\CreateAssetFromVendorBillListener::class,
         ],
+        \Modules\Accounting\Events\FiscalYearClosed::class => [
+            \Modules\Accounting\Listeners\UpdateLockDateOnFiscalYearClose::class,
+        ],
+        \Modules\Accounting\Events\FiscalPeriodClosed::class => [
+            \Modules\Accounting\Listeners\UpdateLockDateOnFiscalPeriodClose::class,
+        ],
     ];
 
     /**

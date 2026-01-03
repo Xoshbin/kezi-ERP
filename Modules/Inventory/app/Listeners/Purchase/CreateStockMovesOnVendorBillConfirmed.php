@@ -96,6 +96,11 @@ class CreateStockMovesOnVendorBillConfirmed
         $stockMove = $this->createStockMoveForLines($vendorBill, $storableLines, $userId, $picking);
 
         // Create consolidated inventory journal entry for all storable products
+        // This handles cost layer creation (FIFO/LIFO), stock quant updates, and journal entry creation
+        // (Inventory Dr / Stock Input Cr) following Anglo-Saxon accounting
+        // Note: We do NOT dispatch StockMoveConfirmed here because createConsolidatedIncomingStockJournalEntry
+        // already fully handles valuation. Dispatching the event would cause HandleStockMoveConfirmation to
+        // also process incoming stock via ProcessIncomingStockJob, creating duplicate cost layers.
         $this->inventoryValuationService->createConsolidatedIncomingStockJournalEntry(
             [$stockMove],
             $vendorBill

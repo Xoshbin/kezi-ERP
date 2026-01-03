@@ -74,6 +74,13 @@ class ViewReports extends Page
                         'url' => $baseUrl.'/view-trial-balance',
                         'button_text' => __('accounting::reports.view_trial_balance'),
                     ],
+                    [
+                        'name' => __('accounting::reports.cash_flow_statement'),
+                        'description' => __('accounting::reports.cash_flow_statement_description'),
+                        'icon' => 'heroicon-o-banknotes',
+                        'url' => $baseUrl.'/view-cash-flow-statement',
+                        'button_text' => __('accounting::reports.view_cash_flow_statement'),
+                    ],
                 ],
             ],
             'detailed_reports' => [

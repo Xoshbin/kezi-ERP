@@ -133,6 +133,21 @@ class SequenceService
     }
 
     /**
+     * Generate the next RFQ number for a company.
+     */
+    public function getNextRFQNumber(Company $company): string
+    {
+        $sequence = Sequence::getOrCreateSequence(
+            companyId: $company->id,
+            documentType: 'rfq',
+            prefix: 'RFQ',
+            padding: 5
+        );
+
+        return $sequence->getNextNumber();
+    }
+
+    /**
      * Generate the next number for any document type.
      */
     public function getNextNumber(
