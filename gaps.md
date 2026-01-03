@@ -157,7 +157,7 @@ Your system demonstrates strong foundational architecture for accounting with ex
 |-----|----------|-------------|
 | **Incoming valuation bypasses InventoryValuationService** | Critical | VendorBill creates combined JE; doesn't create cost layers properly for FIFO/LIFO |
 | **Standard costing not implemented** | High | Enum value exists but logic branches missing; will behave incorrectly |
-| **No StockQuant for per-location inventory** | Critical | `Product.quantity_on_hand` is single counter; blocks multi-warehouse tracking |
+| ~~**No StockQuant for per-location inventory**~~ | ~~Critical~~ | ✅ **RESOLVED** - `StockQuant` is now the source of truth for per-location inventory; `Product.quantity_on_hand` is a computed accessor aggregating from `StockQuant` |
 | **Wrong sales destination location** | High | Sales moves go to Vendor location instead of Customer location (bug) |
 | **Adjustments don't create stock moves** | Medium | No location traceability for inventory adjustments |
 
@@ -241,7 +241,7 @@ Your system demonstrates strong foundational architecture for accounting with ex
 
 | Gap | Priority | Explanation |
 |-----|----------|-------------|
-| **StockQuant not fully integrated** | Critical | StockQuant model exists but `Product.quantity_on_hand` still used as source of truth |
+| ~~**StockQuant not fully integrated**~~ | ~~Critical~~ | ✅ **RESOLVED** - `StockQuant` is now the source of truth; `Product.quantity_on_hand` is a computed accessor; `VendorBillObserver`, `InventoryValuationService`, and `InventoryMovementValidationService` all use `StockQuantService` |
 | **Stock moves go directly to Done** | Critical | No draft/confirmed/assigned/done workflow; no reservations enforce availability |
 | **No serial number tracking** | High | Only lot tracking; individual unit serialization not supported |
 | **Reordering rules incomplete** | High | Model exists but no scheduler/job to auto-generate purchase orders |
@@ -468,7 +468,7 @@ Your system demonstrates strong foundational architecture for accounting with ex
 
 ### Critical Priority (Must Address First)
 
-1. **StockQuant integration** - Fix inventory tracking to use per-location quantities
+1. ~~**StockQuant integration**~~ ✅ **COMPLETED** - Inventory tracking now uses per-location quantities via `StockQuant`
 2. **Incoming inventory valuation** - Unify with `InventoryValuationService`
 3. **Cash Flow Statement** - Complete the financial statements set
 4. **RBAC/Permissions system** - Implement proper access controls
