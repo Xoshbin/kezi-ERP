@@ -11,6 +11,15 @@ use Modules\Accounting\Database\Factories\LockDateFactory;
 use Modules\Accounting\Enums\Accounting\LockDateType;
 use Modules\Accounting\Observers\LockDateObserver;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property LockDateType $lock_type
+ * @property \Carbon\Carbon $locked_until
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read Company $company
+ */
 #[ObservedBy([LockDateObserver::class])]
 class LockDate extends Model
 {

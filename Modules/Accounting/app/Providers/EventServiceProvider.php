@@ -18,6 +18,9 @@ class EventServiceProvider extends ServiceProvider
         \Modules\Accounting\Events\FiscalYearClosed::class => [
             \Modules\Accounting\Listeners\UpdateLockDateOnFiscalYearClose::class,
         ],
+        \Modules\Accounting\Events\FiscalPeriodClosed::class => [
+            \Modules\Accounting\Listeners\UpdateLockDateOnFiscalPeriodClose::class,
+        ],
     ];
 
     /**

@@ -158,7 +158,9 @@ class FiscalYearResource extends Resource
      */
     public static function getRelations(): array
     {
-        return [];
+        return [
+            RelationManagers\PeriodsRelationManager::class,
+        ];
     }
 
     /**
