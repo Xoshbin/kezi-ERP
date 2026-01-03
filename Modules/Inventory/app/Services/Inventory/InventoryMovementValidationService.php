@@ -17,15 +17,19 @@ class InventoryMovementValidationService
 {
     public function __construct(
         private ProductCostAnalysisService $costAnalysisService,
+        private StockQuantService $stockQuantService,
     ) {}
 
     /**
      * Validate that a product is ready for inventory movements
+     *
+     * @param  int|null  $locationId  Optional location ID for location-specific validation
      */
     public function validateMovement(
         Product $product,
         StockMoveType $moveType,
         float $quantity,
+        ?int $locationId = null,
     ): InventoryMovementValidationResult {
 
         $errors = [];
@@ -49,10 +53,18 @@ class InventoryMovementValidationService
             }
         }
 
-        // 3. Validate quantity for outgoing movements
+        // 3. Validate quantity for outgoing movements using StockQuant as source of truth
         if ($moveType === StockMoveType::Outgoing) {
-            if ($product->quantity_on_hand < $quantity) {
-                $errors[] = "Insufficient stock: Available {$product->quantity_on_hand}, Requested {$quantity}";
+            // Get available quantity from StockQuant (location-aware if location specified)
+            $availableQuantity = $this->stockQuantService->available(
+                $product->company_id,
+                $product->id,
+                $locationId
+            );
+
+            if ($availableQuantity < $quantity) {
+                $locationInfo = $locationId ? " at location {$locationId}" : '';
+                $errors[] = "Insufficient stock{$locationInfo}: Available {$availableQuantity}, Requested {$quantity}";
             }
 
             if (! $this->costAnalysisService->isReadyForInventoryMovements($product)) {
