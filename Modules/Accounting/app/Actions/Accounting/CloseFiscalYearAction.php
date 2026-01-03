@@ -88,7 +88,7 @@ class CloseFiscalYearAction
     /**
      * Get P&L account balances for the fiscal year.
      *
-     * @return Collection<int, object{account_id: int, account_type: string, balance: int}>
+     * @return Collection<int, \stdClass>
      */
     private function getProfitAndLossBalances(FiscalYear $fiscalYear): Collection
     {
@@ -125,6 +125,7 @@ class CloseFiscalYearAction
             ->groupBy('accounts.id', 'accounts.type')
             ->get();
 
+        /** @phpstan-ignore return.type (Collection generic covariance) */
         return $results->map(function ($row) {
             $totalDebit = (int) ($row->total_debit ?: 0);
             $totalCredit = (int) ($row->total_credit ?: 0);
@@ -141,7 +142,7 @@ class CloseFiscalYearAction
     /**
      * Create the closing journal entry.
      *
-     * @param  Collection<int, object{account_id: int, account_type: string, balance: int}>  $plBalances
+     * @param  Collection<int, \stdClass>  $plBalances
      */
     private function createClosingEntry(
         FiscalYear $fiscalYear,
