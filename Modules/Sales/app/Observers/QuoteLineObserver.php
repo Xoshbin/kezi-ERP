@@ -2,6 +2,7 @@
 
 namespace Modules\Sales\Observers;
 
+use Brick\Money\Money;
 use Modules\Sales\Exceptions\QuoteCannotBeModifiedException;
 use Modules\Sales\Models\QuoteLine;
 
@@ -30,7 +31,7 @@ class QuoteLineObserver
         $quote = $line->quote;
         if ($quote && ! $quote->isEditable()) {
             throw new QuoteCannotBeModifiedException(
-                'Cannot modify lines of a quote that is not editable.'
+                __('sales::quote.messages.modify_lines_not_editable')
             );
         }
 
@@ -82,8 +83,8 @@ class QuoteLineObserver
 
         // Get unit price as Money object
         $unitPrice = $line->unit_price;
-        if (! $unitPrice instanceof \Brick\Money\Money) {
-            $unitPrice = \Brick\Money\Money::of($line->unit_price ?? 0, $currency->code);
+        if (! $unitPrice instanceof Money) {
+            $unitPrice = Money::of($line->unit_price ?? 0, $currency->code);
         }
 
         // Calculate subtotal before discount
@@ -100,7 +101,7 @@ class QuoteLineObserver
         $line->subtotal = $subtotal;
 
         // Calculate tax
-        $taxAmount = \Brick\Money\Money::of(0, $currency->code);
+        $taxAmount = Money::of(0, $currency->code);
         if ($line->tax_id && $line->tax) {
             $taxRate = (float) ($line->tax->rate ?? 0);
             $taxAmount = $subtotal->multipliedBy($taxRate / 100);
@@ -116,23 +117,23 @@ class QuoteLineObserver
         $baseCurrencyCode = $company?->currency?->code ?? 'IQD';
 
         if ($currency->id !== $company?->currency_id) {
-            $line->unit_price_company_currency = \Brick\Money\Money::of(
+            $line->unit_price_company_currency = Money::of(
                 $unitPrice->getAmount()->toFloat() * $exchangeRate,
                 $baseCurrencyCode
             );
-            $line->discount_amount_company_currency = \Brick\Money\Money::of(
+            $line->discount_amount_company_currency = Money::of(
                 $discountAmount->getAmount()->toFloat() * $exchangeRate,
                 $baseCurrencyCode
             );
-            $line->subtotal_company_currency = \Brick\Money\Money::of(
+            $line->subtotal_company_currency = Money::of(
                 $subtotal->getAmount()->toFloat() * $exchangeRate,
                 $baseCurrencyCode
             );
-            $line->tax_amount_company_currency = \Brick\Money\Money::of(
+            $line->tax_amount_company_currency = Money::of(
                 $taxAmount->getAmount()->toFloat() * $exchangeRate,
                 $baseCurrencyCode
             );
-            $line->total_company_currency = \Brick\Money\Money::of(
+            $line->total_company_currency = Money::of(
                 $line->total->getAmount()->toFloat() * $exchangeRate,
                 $baseCurrencyCode
             );

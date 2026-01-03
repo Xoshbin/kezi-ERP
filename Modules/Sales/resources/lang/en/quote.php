@@ -92,4 +92,14 @@ return [
             'confirm' => 'Reject Quote',
         ],
     ],
+    'messages' => [
+        'converted_invoice_only_accepted' => 'Only accepted quotes that have not been converted can be converted to an invoice.',
+        'converted_order_only_accepted' => 'Only accepted quotes that have not been converted can be converted to a sales order.',
+        'only_sent_can_reject' => 'Only sent quotes can be rejected.',
+        'converted_no_modify' => 'Converted quotes cannot be modified.',
+        'cancelled_no_modify' => 'Cancelled quotes cannot be modified.',
+        'draft_delete_only' => 'Only draft quotes can be deleted. Use cancel or conversion instead.',
+        'cancel_validation' => 'Converted or already cancelled quotes cannot be cancelled.',
+        'modify_lines_not_editable' => 'Cannot modify lines of a quote that is not editable.',
+    ],
 ];

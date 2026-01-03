@@ -22,7 +22,7 @@ class RejectQuoteAction
         // Validate quote can be rejected
         if (! $quote->status->canBeRejected()) {
             throw new QuoteCannotBeModifiedException(
-                'Only sent quotes can be rejected.'
+                __('sales::quote.messages.only_sent_can_reject')
             );
         }
 
