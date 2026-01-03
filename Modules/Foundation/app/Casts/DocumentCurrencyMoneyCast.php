@@ -11,6 +11,7 @@ use Modules\Foundation\Models\Currency;
 use Modules\Inventory\Models\AdjustmentDocument;
 use Modules\Payment\Models\Payment;
 use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Models\RequestForQuotation;
 use Modules\Purchase\Models\VendorBill;
 use Modules\Sales\Models\Invoice;
 use Modules\Sales\Models\Quote;
@@ -113,6 +114,15 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             $quote = $model->getRelation('quote');
             if ($quote instanceof Model && method_exists($quote, 'currency')) {
                 $currency = $quote->relationLoaded('currency') ? $quote->getRelation('currency') : $quote->currency()->first();
+                if ($currency instanceof Currency) {
+                    return $currency;
+                }
+            }
+        }
+        if (method_exists($model, 'rfq') && $model->relationLoaded('rfq')) {
+            $rfq = $model->getRelation('rfq');
+            if ($rfq instanceof Model && method_exists($rfq, 'currency')) {
+                $currency = $rfq->relationLoaded('currency') ? $rfq->getRelation('currency') : $rfq->currency()->first();
                 if ($currency instanceof Currency) {
                     return $currency;
                 }
@@ -233,6 +243,9 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             }
             if (! $currency && isset($attributes['quote_id'])) {
                 $currency = optional(Quote::find($attributes['quote_id']))->currency;
+            }
+            if (! $currency && isset($attributes['rfq_id'])) {
+                $currency = optional(RequestForQuotation::find($attributes['rfq_id']))->currency;
             }
 
             if (! $currency) {

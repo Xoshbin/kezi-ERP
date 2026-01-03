@@ -55,6 +55,11 @@ class RequestForQuotation extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected static function newFactory(): \Modules\Purchase\Database\Factories\RequestForQuotationFactory
+    {
+        return \Modules\Purchase\Database\Factories\RequestForQuotationFactory::new();
+    }
+
     protected $fillable = [
         'company_id',
         'vendor_id',

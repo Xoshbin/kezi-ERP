@@ -11,7 +11,7 @@ use Modules\Purchase\Services\RequestForQuotationService;
 it('creates an RFQ with correct default status', function () {
     $user = \App\Models\User::factory()->create();
     $company = \App\Models\Company::factory()->create();
-    $vendor = Partner::factory()->create(['company_id' => $company->id, 'is_vendor' => true]);
+    $vendor = Partner::factory()->vendor()->create(['company_id' => $company->id]);
     $currency = Currency::factory()->create(['code' => 'USD']);
 
     $dto = new \Modules\Purchase\DataTransferObjects\Purchases\CreateRFQDTO(
@@ -34,7 +34,7 @@ it('creates an RFQ with correct default status', function () {
 it('can send an RFQ', function () {
     $user = \App\Models\User::factory()->create();
     $company = \App\Models\Company::factory()->create();
-    $vendor = Partner::factory()->create(['company_id' => $company->id, 'is_vendor' => true]);
+    $vendor = Partner::factory()->vendor()->create(['company_id' => $company->id]);
     $currency = Currency::factory()->create(['code' => 'USD']);
 
     $rfq = RequestForQuotation::factory()->create([
@@ -52,26 +52,33 @@ it('can send an RFQ', function () {
 
 it('can convert RFQ to Purchase Order', function () {
     $user = \App\Models\User::factory()->create();
+    $this->actingAs($user);
     $company = \App\Models\Company::factory()->create();
-    $vendor = Partner::factory()->create(['company_id' => $company->id, 'is_vendor' => true]);
+    $vendor = Partner::factory()->vendor()->create(['company_id' => $company->id]);
     $currency = Currency::factory()->create(['code' => 'USD']);
 
     $rfq = RequestForQuotation::factory()->create([
         'company_id' => $company->id,
         'vendor_id' => $vendor->id,
         'currency_id' => $currency->id,
+        'created_by_user_id' => $user->id,
         'status' => RequestForQuotationStatus::BidReceived,
     ]);
     /* @var RequestForQuotation $rfq */
 
-    $rfq->lines()->create([
+    $line = new \Modules\Purchase\Models\RequestForQuotationLine;
+    $line->rfq()->associate($rfq);
+    $product = \Modules\Product\Models\Product::factory()->create();
+    $line->fill([
+        'product_id' => $product->id,
         'description' => 'Test Item',
         'quantity' => 10,
-        'unit_price' => 100, // minor units
-        'subtotal' => 1000,
-        'total' => 1000,
-        'tax_amount' => 0,
+        'unit_price' => \Brick\Money\Money::of(100, $currency->code),
+        'subtotal' => \Brick\Money\Money::of(1000, $currency->code),
+        'total' => \Brick\Money\Money::of(1000, $currency->code),
+        'tax_amount' => \Brick\Money\Money::of(0, $currency->code),
     ]);
+    $line->save();
 
     $dto = new \Modules\Purchase\DataTransferObjects\Purchases\ConvertRFQToPurchaseOrderDTO(
         rfqId: $rfq->id,

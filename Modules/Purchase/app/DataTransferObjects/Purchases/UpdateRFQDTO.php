@@ -11,6 +11,7 @@ readonly class UpdateRFQDTO
      */
     public function __construct(
         public int $rfqId,
+        public ?\Modules\Purchase\Models\RequestForQuotation $rfq = null,
         public ?int $vendorId = null,
         public ?int $currencyId = null,
         public ?Carbon $rfqDate = null,

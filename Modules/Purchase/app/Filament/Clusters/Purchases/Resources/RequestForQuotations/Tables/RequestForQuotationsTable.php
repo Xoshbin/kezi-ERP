@@ -38,12 +38,14 @@ class RequestForQuotationsTable
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                \Filament\Actions\ViewAction::make()
+                    ->url(fn (\Modules\Purchase\Models\RequestForQuotation $record): string => \Modules\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\RequestForQuotationResource::getUrl('view', ['record' => $record])),
+                \Filament\Actions\EditAction::make()
+                    ->url(fn (\Modules\Purchase\Models\RequestForQuotation $record): string => \Modules\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\RequestForQuotationResource::getUrl('edit', ['record' => $record])),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                \Filament\Actions\BulkActionGroup::make([
+                    \Filament\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
