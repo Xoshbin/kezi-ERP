@@ -62,7 +62,7 @@ class RequestForQuotationForm
                                     ->searchable()
                                     ->required()
                                     ->reactive()
-                                    ->afterStateUpdated(fn ($state, $set) => $set('unit_price', Product::find($state)?->cost_price?->getAmount()->toFloat() ?? 0)),
+                                    ->afterStateUpdated(fn ($state, $set) => $set('unit_price', Product::find($state)?->average_cost?->getAmount()->toFloat() ?? 0)),
                                 Forms\Components\TextInput::make('description')
                                     ->required(),
                                 Forms\Components\TextInput::make('quantity')
