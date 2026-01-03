@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Modules\Accounting\Contracts\JournalEntryCreatorContract;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\Enums\Accounting\JournalEntryState;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Accounting\Models\JournalEntryLine;
@@ -116,6 +117,7 @@ class CreateJournalEntryAction implements JournalEntryCreatorContract
                 'description' => $dto->description,
                 'created_by_user_id' => $dto->created_by_user_id,
                 'is_posted' => $dto->is_posted,
+                'state' => $dto->is_posted ? JournalEntryState::Posted : JournalEntryState::Draft,
                 'total_debit' => $totalDebitBaseCurrency,
                 'total_credit' => $totalCreditBaseCurrency,
                 'source_type' => $dto->source_type,

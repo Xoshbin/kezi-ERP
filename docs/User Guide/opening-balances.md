@@ -5,6 +5,15 @@ order: 7
 ---
 
 
+
+
+> [!NOTE]
+> **When to use this guide?**
+> Use this guide if you are setting up your company **for the first time**. 
+> If you already have a finished Fiscal Year in this system, you should use the **Generate Opening Entry** feature on the Fiscal Year page instead. See [Understanding Fiscal Years](understanding-fiscal-years.md).
+
+
+
 This comprehensive guide explains how opening balances work in your accounting system, covering chart of accounts preparation, journal entry creation, and balance validation. Written for all users — accountants and non‑accountants — it provides practical guidance following double‑entry accounting best practices.
 
 ---
