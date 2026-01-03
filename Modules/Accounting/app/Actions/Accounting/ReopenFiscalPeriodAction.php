@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Accounting\Actions\Accounting;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Modules\Accounting\Enums\Accounting\FiscalPeriodState;
@@ -10,25 +13,29 @@ use Modules\Accounting\Exceptions\FiscalPeriodCannotBeReopenedException;
 use Modules\Accounting\Models\FiscalPeriod;
 use Modules\Accounting\Models\LockDate;
 
-class ReopenFiscalPeriodAction
+/**
+ * Reopens a closed fiscal period and adjusts the lock date.
+ *
+ * When a period is reopened, the system finds the most recent remaining
+ * closed period and sets the lock date to its end date. If no closed
+ * periods remain, the lock is removed entirely.
+ */
+final class ReopenFiscalPeriodAction
 {
     /**
-     * Reopen a closed fiscal period.
+     * Execute the action to reopen a closed fiscal period.
      *
-     * @throws FiscalPeriodCannotBeReopenedException
+     * @throws FiscalPeriodCannotBeReopenedException When validation fails
      */
     public function execute(FiscalPeriod $fiscalPeriod): FiscalPeriod
     {
-        return DB::transaction(function () use ($fiscalPeriod) {
-            // Validate period can be reopened
-            $this->validateCanReopen($fiscalPeriod);
+        return DB::transaction(function () use ($fiscalPeriod): FiscalPeriod {
+            $this->ensureCanReopen($fiscalPeriod);
 
-            // Update state
             $fiscalPeriod->update([
                 'state' => FiscalPeriodState::Open,
             ]);
 
-            // Adjust lock date to the previous closed period's end date
             $this->adjustLockDate($fiscalPeriod);
 
             return $fiscalPeriod->refresh();
@@ -36,20 +43,18 @@ class ReopenFiscalPeriodAction
     }
 
     /**
-     * Validate that the fiscal period can be reopened.
+     * Ensure the fiscal period meets all requirements for reopening.
      *
      * @throws FiscalPeriodCannotBeReopenedException
      */
-    private function validateCanReopen(FiscalPeriod $fiscalPeriod): void
+    private function ensureCanReopen(FiscalPeriod $fiscalPeriod): void
     {
-        // Check state
         if (! $fiscalPeriod->isClosed()) {
             throw new FiscalPeriodCannotBeReopenedException(
                 __('accounting::fiscal_period.validation.not_closed')
             );
         }
 
-        // Check parent fiscal year is not closed
         if ($fiscalPeriod->fiscalYear->isClosed()) {
             throw new FiscalPeriodCannotBeReopenedException(
                 __('accounting::fiscal_period.validation.year_closed_reopen')
@@ -58,20 +63,15 @@ class ReopenFiscalPeriodAction
     }
 
     /**
-     * Adjust lock date to the latest closed period before this one.
+     * Adjust the lock date to the previous closed period's end date.
+     *
+     * If no closed periods remain, the lock is removed entirely.
      */
     private function adjustLockDate(FiscalPeriod $fiscalPeriod): void
     {
         $companyId = $fiscalPeriod->fiscalYear->company_id;
 
-        // Find the latest closed period BEFORE this one ends
-        $previousClosedPeriod = FiscalPeriod::whereHas('fiscalYear', function ($q) use ($companyId) {
-            $q->where('company_id', $companyId);
-        })
-            ->where('state', FiscalPeriodState::Closed)
-            ->where('end_date', '<', $fiscalPeriod->start_date)
-            ->orderBy('end_date', 'desc')
-            ->first();
+        $previousClosedPeriod = $this->findPreviousClosedPeriod($fiscalPeriod, $companyId);
 
         if ($previousClosedPeriod) {
             LockDate::updateOrCreate(
@@ -84,13 +84,34 @@ class ReopenFiscalPeriodAction
                 ]
             );
         } else {
-            // No previous closed period, remove the lock
-            LockDate::where('company_id', $companyId)
+            LockDate::query()
+                ->where('company_id', $companyId)
                 ->where('lock_type', LockDateType::AllUsers->value)
                 ->delete();
         }
 
-        // Clear cache
-        Cache::forget("lock_date_{$companyId}_".LockDateType::AllUsers->value);
+        $this->clearLockDateCache($companyId);
+    }
+
+    /**
+     * Find the most recent closed period before the given period.
+     */
+    private function findPreviousClosedPeriod(FiscalPeriod $fiscalPeriod, int $companyId): ?FiscalPeriod
+    {
+        return FiscalPeriod::query()
+            ->whereHas('fiscalYear', fn (Builder $query) => $query->where('company_id', $companyId))
+            ->where('state', FiscalPeriodState::Closed)
+            ->where('end_date', '<', $fiscalPeriod->start_date)
+            ->orderByDesc('end_date')
+            ->first();
+    }
+
+    /**
+     * Clear the cached lock date for a company.
+     */
+    private function clearLockDateCache(int $companyId): void
+    {
+        $cacheKey = "lock_date_{$companyId}_".LockDateType::AllUsers->value;
+        Cache::forget($cacheKey);
     }
 }

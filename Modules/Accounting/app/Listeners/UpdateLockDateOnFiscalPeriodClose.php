@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Accounting\Listeners;
 
 use Illuminate\Support\Facades\Cache;
@@ -7,40 +9,66 @@ use Modules\Accounting\Enums\Accounting\LockDateType;
 use Modules\Accounting\Events\FiscalPeriodClosed;
 use Modules\Accounting\Models\LockDate;
 
-class UpdateLockDateOnFiscalPeriodClose
+/**
+ * Updates the company lock date when a fiscal period is closed.
+ *
+ * This listener ensures the lock date advances (but never regresses)
+ * when periods are closed, preventing modifications to past transactions.
+ */
+final class UpdateLockDateOnFiscalPeriodClose
 {
     /**
-     * Handle the event.
-     *
-     * Automatically updates the lock date to the fiscal period end date
-     * when a fiscal period is closed.
+     * Handle the FiscalPeriodClosed event.
      */
     public function handle(FiscalPeriodClosed $event): void
     {
         $fiscalPeriod = $event->fiscalPeriod;
         $companyId = $fiscalPeriod->fiscalYear->company_id;
 
-        // Get current lock date
-        $currentLock = LockDate::where('company_id', $companyId)
+        if ($this->shouldUpdateLockDate($companyId, $fiscalPeriod->end_date)) {
+            $this->updateLockDate($companyId, $fiscalPeriod->end_date);
+            $this->clearCache($companyId);
+        }
+    }
+
+    /**
+     * Determine if the lock date should be updated.
+     *
+     * Only updates if the period's end date is after the current lock date.
+     * This prevents issues when closing periods out of order.
+     */
+    private function shouldUpdateLockDate(int $companyId, \Carbon\Carbon $periodEndDate): bool
+    {
+        $currentLock = LockDate::query()
+            ->where('company_id', $companyId)
             ->where('lock_type', LockDateType::AllUsers->value)
             ->first();
 
-        // Only update if this period's end date is AFTER the current lock date
-        // This prevents issues when closing periods out of order
-        if (! $currentLock || $fiscalPeriod->end_date->gt($currentLock->locked_until)) {
-            LockDate::updateOrCreate(
-                [
-                    'company_id' => $companyId,
-                    'lock_type' => LockDateType::AllUsers->value,
-                ],
-                [
-                    'locked_until' => $fiscalPeriod->end_date,
-                ]
-            );
+        return ! $currentLock || $periodEndDate->gt($currentLock->locked_until);
+    }
 
-            // Clear the lock date cache
-            $cacheKey = "lock_date_{$companyId}_".LockDateType::AllUsers->value;
-            Cache::forget($cacheKey);
-        }
+    /**
+     * Update or create the lock date record.
+     */
+    private function updateLockDate(int $companyId, \Carbon\Carbon $lockedUntil): void
+    {
+        LockDate::updateOrCreate(
+            [
+                'company_id' => $companyId,
+                'lock_type' => LockDateType::AllUsers->value,
+            ],
+            [
+                'locked_until' => $lockedUntil,
+            ]
+        );
+    }
+
+    /**
+     * Clear the cached lock date for the company.
+     */
+    private function clearCache(int $companyId): void
+    {
+        $cacheKey = "lock_date_{$companyId}_".LockDateType::AllUsers->value;
+        Cache::forget($cacheKey);
     }
 }
