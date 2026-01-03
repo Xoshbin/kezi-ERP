@@ -56,7 +56,7 @@ Your system demonstrates strong foundational architecture for accounting with ex
 
 | Gap | Priority | Explanation |
 |-----|----------|-------------|
-| **No Cash Flow Statement** | Critical | Listed in UI but `CashFlowStatementService` doesn't exist - essential for financial analysis |
+| ~~**No Cash Flow Statement**~~ | ~~Critical~~ | ✅ **COMPLETED** - `CashFlowStatementService` implemented using indirect method |
 | **No Statement of Changes in Equity** | High | Required for complete financial statements per accounting standards |
 | **No comparative period reports** | High | Cannot compare current period vs prior period side-by-side |
 | **No consolidated financial statements** | Medium | Multi-company exists but no consolidation/elimination logic |
@@ -470,7 +470,7 @@ Your system demonstrates strong foundational architecture for accounting with ex
 
 1. ~~**StockQuant integration**~~ ✅ **COMPLETED** - Inventory tracking now uses per-location quantities via `StockQuant`
 2. **Incoming inventory valuation** - Unify with `InventoryValuationService`
-3. **Cash Flow Statement** - Complete the financial statements set
+3. ~~**Cash Flow Statement**~~ ✅ **COMPLETED** - Implemented using indirect method with Operating/Investing/Financing sections
 4. **RBAC/Permissions system** - Implement proper access controls
 5. **Budget vs Actual report** - Core budgeting functionality
 6. **Sales Order → Delivery workflow** - Proper order fulfillment
