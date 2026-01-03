@@ -82,7 +82,7 @@ Your system demonstrates strong foundational architecture for accounting with ex
 | **No draft journal entry check UI** | Low | Service validates but no dashboard widget showing blocking issues |
 | **No automatic fiscal period creation** | Low | Periods must be manually created for each fiscal year |
 
-### 1.4 Multi-Currency Accounting ⚠️ Partially Complete
+### 1.4 Multi-Currency Accounting ✅ Complete
 
 **Implemented:**
 - `Currency` and `CurrencyRate` models
@@ -91,15 +91,17 @@ Your system demonstrates strong foundational architecture for accounting with ex
 - `ExchangeGainLossService` for realized gains/losses on payments
 - Document currency vs company base currency handling
 - `DocumentCurrencyMoneyCast` and `BaseCurrencyMoneyCast`
+- **Unrealized Exchange Gain/Loss Revaluation** (`CurrencyRevaluationService`, `PerformCurrencyRevaluationAction`) - Period-end revaluation of foreign currency AR/AP balances with automatic journal entry creation
+- **Automatic Exchange Rate Updates** (`FetchExchangeRatesCommand`, `ExchangeRateService`) - Scheduled rate fetching from multiple providers including exchangerate-api.com and Central Bank of Iraq
+- **Multi-Provider Exchange Rate Support** (`ExchangeRateApiProvider`, `CentralBankOfIraqProvider`) - Configurable provider selection with fallback support
+- **Exchange Rate Validation & Approval Workflow** (`ExchangeRateValidationService`, `ExchangeRateChange` model) - Significant rate change detection with approval workflow
+- **Currency Gain/Loss Report** (`CurrencyGainLossReportService`) - Comprehensive FX reporting with realized vs unrealized breakdown and period-over-period analysis
 
 **Gaps:**
 
 | Gap | Priority | Explanation |
 |-----|----------|-------------|
-| **No unrealized exchange gain/loss revaluation** | Critical | Cannot revalue foreign currency AR/AP at period-end for balance sheet accuracy |
-| **No automatic exchange rate updates** | High | Rates must be manually entered; no API integration for daily rates |
 | **No currency translation for consolidation** | Medium | Multi-company exists but no translation methods (current rate, temporal) |
-| **No currency gain/loss report** | Medium | ExchangeGainLossService creates entries but no summary report |
 
 ### 1.5 Tax Calculation and Reporting ⚠️ Partially Complete
 
