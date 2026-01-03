@@ -28,4 +28,3 @@ readonly class PerformRevaluationDTO
         public bool $auto_post = false,
     ) {}
 }
-

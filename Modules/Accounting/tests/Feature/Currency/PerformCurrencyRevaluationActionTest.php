@@ -166,4 +166,3 @@ test('revaluation can be modified when in draft status', function () {
     expect($revaluation->canBeModified())->toBeTrue();
     expect($revaluation->isDraft())->toBeTrue();
 });
-

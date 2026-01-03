@@ -176,4 +176,3 @@ class FxGainLossReportService
         return $lines->filter(fn ($line) => ! $line->gain_loss_amount->isZero());
     }
 }
-

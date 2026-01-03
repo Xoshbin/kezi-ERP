@@ -124,4 +124,3 @@ class CurrencyRevaluationLine extends Model
         return (($this->current_rate - $this->historical_rate) / $this->historical_rate) * 100;
     }
 }
-

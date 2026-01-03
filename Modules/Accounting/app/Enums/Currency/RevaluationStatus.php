@@ -59,4 +59,3 @@ enum RevaluationStatus: string
         return $this === self::Posted;
     }
 }
-

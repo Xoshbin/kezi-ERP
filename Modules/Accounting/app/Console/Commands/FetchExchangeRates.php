@@ -63,7 +63,7 @@ class FetchExchangeRates extends Command
 
             $baseCurrency = $company->currency;
             if (! $baseCurrency) {
-                $this->warn("  Company has no base currency configured, skipping");
+                $this->warn('  Company has no base currency configured, skipping');
 
                 continue;
             }
@@ -217,4 +217,3 @@ class FetchExchangeRates extends Command
         }
     }
 }
-

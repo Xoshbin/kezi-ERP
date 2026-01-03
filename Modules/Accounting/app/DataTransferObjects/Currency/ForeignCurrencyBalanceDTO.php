@@ -26,4 +26,3 @@ readonly class ForeignCurrencyBalanceDTO
         public float $weighted_avg_rate,
     ) {}
 }
-

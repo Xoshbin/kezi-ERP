@@ -41,4 +41,3 @@ readonly class FxGainLossReportDTO
         public Money $total_net_fx_impact,
     ) {}
 }
-

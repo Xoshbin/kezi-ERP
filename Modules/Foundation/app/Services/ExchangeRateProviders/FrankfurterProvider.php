@@ -86,4 +86,3 @@ class FrankfurterProvider implements ExchangeRateProviderContract
         }
     }
 }
-
