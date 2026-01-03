@@ -2,7 +2,6 @@
 
 namespace Modules\Sales\Actions\Sales;
 
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderDTO;
 use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderLineDTO;
@@ -53,7 +52,7 @@ class ConvertQuoteToSalesOrderAction
                 currency_id: $quote->currency_id,
                 created_by_user_id: $userId ?? $quote->created_by_user_id ?? 1,
                 reference: $quote->quote_number,
-                so_date: Carbon::now(),
+                so_date: now(),
                 exchange_rate_at_creation: $quote->exchange_rate,
                 notes: $quote->notes,
                 terms_and_conditions: $quote->terms_and_conditions,

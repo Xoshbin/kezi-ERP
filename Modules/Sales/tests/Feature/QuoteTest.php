@@ -19,6 +19,10 @@ use Modules\Sales\Exceptions\QuoteCannotBeModifiedException;
 use Modules\Sales\Models\Quote;
 use Tests\Traits\WithConfiguredCompany;
 
+/**
+ * @property \App\Models\Company $company
+ * @property \Modules\User\Models\User $user
+ */
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {

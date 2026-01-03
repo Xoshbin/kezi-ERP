@@ -28,7 +28,7 @@ class ConvertQuoteToInvoiceAction
         // Validate quote can be converted
         if (! $quote->canBeConverted()) {
             throw new QuoteCannotBeModifiedException(
-                'Only accepted quotes that have not been converted can be converted to an invoice.'
+                __('sales::quote.messages.converted_invoice_only_accepted')
             );
         }
 

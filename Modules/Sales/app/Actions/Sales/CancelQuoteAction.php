@@ -19,7 +19,7 @@ class CancelQuoteAction
         // Validate quote can be cancelled
         if (! $quote->status->canBeCancelled()) {
             throw new QuoteCannotBeModifiedException(
-                'Converted or already cancelled quotes cannot be cancelled.'
+                __('sales::quote.messages.cancel_validation')
             );
         }
 
