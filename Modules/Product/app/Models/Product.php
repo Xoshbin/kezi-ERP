@@ -22,6 +22,7 @@ use Modules\Inventory\Models\InventoryCostLayer;
 use Modules\Inventory\Models\ReorderingRule;
 use Modules\Inventory\Models\StockMove;
 use Modules\Inventory\Models\StockMoveProductLine;
+use Modules\Inventory\Models\StockQuant;
 use Modules\Purchase\Models\VendorBillLine;
 use Modules\Sales\Models\InvoiceLine;
 use Spatie\Translatable\HasTranslations;
@@ -103,7 +104,6 @@ class Product extends Model
         'default_stock_input_account_id',
         'default_price_difference_account_id',
         'average_cost',
-        'quantity_on_hand',
         'lot_tracking_enabled',
     ];
 
@@ -116,7 +116,6 @@ class Product extends Model
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
         'type' => \Modules\Product\Enums\Products\ProductType::class,
-        'quantity_on_hand' => 'float',
         'lot_tracking_enabled' => 'boolean',
     ];
 
@@ -303,5 +302,61 @@ class Product extends Model
     public function reorderingRules(): HasMany
     {
         return $this->hasMany(ReorderingRule::class);
+    }
+
+    /**
+     * Get all stock quants for this product across all locations.
+     *
+     * @return HasMany<StockQuant, static>
+     */
+    public function stockQuants(): HasMany
+    {
+        return $this->hasMany(StockQuant::class);
+    }
+
+    /**
+     * Get total quantity on hand across all locations from StockQuant.
+     * This is the single source of truth for inventory quantities.
+     */
+    public function getQuantityOnHandAttribute(): float
+    {
+        return (float) $this->stockQuants()->sum('quantity');
+    }
+
+    /**
+     * Get available quantity (total - reserved) across all locations.
+     */
+    public function getAvailableQuantityAttribute(): float
+    {
+        $total = $this->stockQuants()->sum('quantity');
+        $reserved = $this->stockQuants()->sum('reserved_quantity');
+
+        return (float) ($total - $reserved);
+    }
+
+    /**
+     * Get quantity on hand for a specific location.
+     */
+    public function getQuantityAtLocation(int $locationId): float
+    {
+        return (float) $this->stockQuants()
+            ->where('location_id', $locationId)
+            ->sum('quantity');
+    }
+
+    /**
+     * Get available quantity at a specific location.
+     */
+    public function getAvailableQuantityAtLocation(int $locationId): float
+    {
+        $quant = $this->stockQuants()
+            ->where('location_id', $locationId)
+            ->first();
+
+        if (! $quant) {
+            return 0.0;
+        }
+
+        return $quant->quantity - $quant->reserved_quantity;
     }
 }

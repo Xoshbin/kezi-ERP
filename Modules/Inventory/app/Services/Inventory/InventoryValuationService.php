@@ -196,10 +196,7 @@ class InventoryValuationService
             : StockMoveType::Outgoing;
         $this->createStockMoveValuation($product, $quantity, $cogsAmount, $journalEntry, $sourceDocument, $moveType);
 
-        // Update product quantity on hand for outgoing stock
-        $product->forceFill([
-            'quantity_on_hand' => max(0, $product->quantity_on_hand - $quantity),
-        ])->save();
+        // Note: Quantity is managed by StockQuant - no need to update product here
 
         Log::info("Successfully processed outgoing stock for product {$product->id}, COGS: {$cogsAmount->getAmount()}");
     }
@@ -481,10 +478,9 @@ class InventoryValuationService
             ? $totalValue->dividedBy($totalQuantity, RoundingMode::HALF_UP)
             : Money::of(0, $currencyCode);
 
-        // Update product's average cost and quantity on hand (bypass fillable)
+        // Update product's average cost only - quantity is managed by StockQuant
         $product->forceFill([
             'average_cost' => $newAverageCost,
-            'quantity_on_hand' => $totalQuantity,
         ])->save();
 
         Log::info("Updated AVCO for product {$product->id}: new average cost {$newAverageCost->getAmount()}, quantity {$totalQuantity}");
@@ -506,11 +502,7 @@ class InventoryValuationService
             'source_id' => $sourceDocument->id ?? null,
         ]);
 
-        // Update product quantity (bypass fillable)
-        $product->forceFill([
-            'quantity_on_hand' => $product->quantity_on_hand + $quantity,
-        ])->save();
-
+        // Note: Quantity is managed by StockQuant - no need to update product here
         Log::info("Created cost layer for product {$product->id}: quantity {$quantity}, unit cost {$costPerUnit->getAmount()}");
     }
 
@@ -1122,7 +1114,7 @@ class InventoryValuationService
         $warnings = [];
 
         // 1. Try vendor bill cost (highest priority)
-        if ($stockMove->source_type === 'Modules\Inventory\Models\VendorBill') {
+        if ($stockMove->source_type === 'Modules\Purchase\Models\VendorBill') {
             $attemptedSources[] = 'vendor_bill';
             $vendorBill = VendorBill::find($stockMove->source_id);
             if ($vendorBill) {
