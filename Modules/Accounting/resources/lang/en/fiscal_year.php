@@ -39,4 +39,12 @@ return [
         'open_periods' => ':count periods are still open. Please close all periods first.',
         'draft_entries' => 'There are :count draft journal entries in this fiscal year. Please post or delete them.',
     ],
+    'error' => [
+        'no_opening_balances' => 'No Balance Sheet accounts found with non-zero balances in the previous year.',
+    ],
+    'opening_balance_label' => 'Opening Balance :year',
+    'opening_entry_description' => 'Opening Balance Journal Entry for :year',
+    'action_generate_opening' => 'Generate Opening Entry',
+    'opening_in_progress' => 'Opening entry generation in progress...',
+    'opening_generated_successfully' => 'Opening entry generated successfully.',
 ];
