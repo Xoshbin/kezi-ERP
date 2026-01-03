@@ -1114,7 +1114,7 @@ class InventoryValuationService
         $warnings = [];
 
         // 1. Try vendor bill cost (highest priority)
-        if ($stockMove->source_type === 'Modules\Inventory\Models\VendorBill') {
+        if ($stockMove->source_type === 'Modules\Purchase\Models\VendorBill') {
             $attemptedSources[] = 'vendor_bill';
             $vendorBill = VendorBill::find($stockMove->source_id);
             if ($vendorBill) {
