@@ -61,7 +61,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Indexes
-            $table->index(['currency_revaluation_id', 'account_id']);
+            $table->index(['currency_revaluation_id', 'account_id'], 'cur_reval_id_acc_id_idx');
             $table->index(['account_id', 'currency_id']);
         });
     }
