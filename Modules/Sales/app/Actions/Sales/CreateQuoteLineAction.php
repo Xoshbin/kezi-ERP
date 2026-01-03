@@ -2,6 +2,7 @@
 
 namespace Modules\Sales\Actions\Sales;
 
+use Brick\Money\Money;
 use Modules\Sales\DataTransferObjects\Sales\CreateQuoteLineDTO;
 use Modules\Sales\Models\Quote;
 use Modules\Sales\Models\QuoteLine;

@@ -49,12 +49,12 @@ class QuoteObserver
 
         // Prevent updating converted quotes
         if ($originalStatus === QuoteStatus::Converted || $originalStatus === QuoteStatus::Converted->value) {
-            throw new QuoteCannotBeModifiedException('Converted quotes cannot be modified.');
+            throw new QuoteCannotBeModifiedException(__('sales::quote.messages.converted_no_modify'));
         }
 
         // Prevent updating cancelled quotes (except for specific status changes)
         if (($originalStatus === QuoteStatus::Cancelled || $originalStatus === QuoteStatus::Cancelled->value) && ! $quote->isDirty('status')) {
-            throw new QuoteCannotBeModifiedException('Cancelled quotes cannot be modified.');
+            throw new QuoteCannotBeModifiedException(__('sales::quote.messages.cancelled_no_modify'));
         }
     }
 
@@ -66,7 +66,7 @@ class QuoteObserver
         // Only allow deletion of draft quotes
         if ($quote->status !== QuoteStatus::Draft) {
             throw new QuoteCannotBeModifiedException(
-                'Only draft quotes can be deleted. Use cancel or conversion instead.'
+                __('sales::quote.messages.draft_delete_only')
             );
         }
     }
