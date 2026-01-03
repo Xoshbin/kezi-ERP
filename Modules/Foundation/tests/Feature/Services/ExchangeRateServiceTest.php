@@ -6,8 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
-use Modules\Foundation\Services\ExchangeRateService;
 use Modules\Foundation\Services\ExchangeRateProviders\FrankfurterProvider;
+use Modules\Foundation\Services\ExchangeRateService;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -195,4 +195,3 @@ test('it calculates rate volatility', function () {
     expect($volatility)->toHaveKeys(['min', 'max', 'avg', 'volatility']);
     expect($volatility['min'])->toBeLessThan($volatility['max']);
 });
-

@@ -7,9 +7,6 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Enums\Accounting\AccountType;
 use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Accounting\Models\JournalEntryLine;
 use Modules\Accounting\Services\CurrencyRevaluationService;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
@@ -220,4 +217,3 @@ test('it calculates unrealized loss when rate decreases', function () {
     expect($result['adjustment']->getMinorAmount()->toInt())->toBe(-200000);
     expect($result['adjustment']->isNegative())->toBeTrue();
 });
-

@@ -62,4 +62,3 @@ readonly class FxGainLossLineDTO
         return $this->type === 'unrealized';
     }
 }
-

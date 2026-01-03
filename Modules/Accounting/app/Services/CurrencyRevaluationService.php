@@ -13,7 +13,6 @@ use Modules\Accounting\DataTransferObjects\Currency\ForeignCurrencyBalanceDTO;
 use Modules\Accounting\Enums\Accounting\AccountType;
 use Modules\Accounting\Enums\Accounting\JournalEntryState;
 use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\CurrencyRevaluation;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Services\CurrencyConverterService;
 
@@ -183,4 +182,3 @@ class CurrencyRevaluationService
         ];
     }
 }
-
