@@ -156,7 +156,7 @@ class CurrencyRate extends Model
     {
         $rate = static::latestRateForDate($currencyId, $date, $companyId)->first();
 
-        return $rate?->rate;
+        return $rate ? (float) $rate->rate : null;
     }
 
     /**
@@ -169,6 +169,6 @@ class CurrencyRate extends Model
             ->orderBy('effective_date', 'desc')
             ->first();
 
-        return $rate?->rate;
+        return $rate ? (float) $rate->rate : null;
     }
 }
