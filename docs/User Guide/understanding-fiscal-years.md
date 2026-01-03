@@ -90,6 +90,18 @@ When you click "Close Fiscal Year," the system performs a magic trick called the
 4.  **Dates**: Select Start and End dates (usually Jan 1 - Dec 31).
 5.  **Generate Periods**: Turn this **ON** to automatically create 12 monthly periods (Jan, Feb, etc.). This helps you lock singular months (like "Close January") without closing the whole year.
 
+### Generating Opening Entries
+
+If you have a previous fiscal year in the system, you don't need to manually create opening balances. The system can calculate them for you.
+
+1.  **Requirement**: The previous year must exist in the system.
+2.  **Action**: Open your new Fiscal Year (e.g., "2026") and click **Generate Opening Entry**.
+3.  **Result**: 
+    *   The system takes all Assets, Liabilities, and Equity from the previous year.
+    *   It creates a new "Opening Balance" journal entry on the 1st day of the new year.
+    *   Income and Expense accounts are excluded (they reset to 0).
+    *   **Review**: The entry is created as a **Draft**, so you can check it before posting.
+
 ### Closing the Year (The Wizard)
 
 When you are ready to finish a year:
