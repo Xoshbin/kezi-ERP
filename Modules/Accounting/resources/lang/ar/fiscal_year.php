@@ -43,6 +43,7 @@ return [
         'no_opening_balances' => 'لم يتم العثور على حسابات ميزانية عمومية ذات أرصدة غير صفرية في العام السابق.',
     ],
     'opening_balance_label' => 'الرصيد الافتتاحي :year',
+    'unallocated_earnings_label' => 'الأرباح غير الموزعة :year',
     'opening_entry_description' => 'قيد الرصيد الافتتاحي لعام :year',
     'action_generate_opening' => 'إنشاء القيد الافتتاحي',
     'opening_in_progress' => 'جاري إنشاء القيد الافتتاحي...',
