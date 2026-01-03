@@ -64,6 +64,17 @@ class VendorBillObserver
             'created_by_user_id' => (int) $vendorBill->user_id,
         ]);
 
+        // Get StockQuantService to update quantities at location level
+        $stockQuantService = app(\Modules\Inventory\Services\Inventory\StockQuantService::class);
+
+        // Update StockQuant for destination location - this is now the source of truth
+        $stockQuantService->adjust(
+            $company->id,
+            $product->id,
+            $company->defaultStockLocation->id,
+            $line->quantity
+        );
+
         // Recalculate Average Cost (AVCO) using company currency amounts for consistency
         // Get the company's base currency for cost calculations
         $companyCurrency = $company->currency;
@@ -104,20 +115,23 @@ class VendorBillObserver
             );
         }
 
+        // Calculate AVCO using StockQuant totals as source of truth
+        // Note: We need to get the quantity BEFORE this line was added (current - this line)
+        $currentTotalQuantity = $stockQuantService->getTotalQuantity($company->id, $product->id);
+        $previousQuantity = $currentTotalQuantity - $line->quantity;
+
         $purchaseValue = $unitPriceInCompanyCurrency->multipliedBy($line->quantity);
-        $oldValue = ($product->average_cost ?? Money::zero($costCurrency))->multipliedBy($product->quantity_on_hand);
-        $totalQuantity = (float) $product->quantity_on_hand + (float) $line->quantity;
+        $oldValue = ($product->average_cost ?? Money::zero($costCurrency))->multipliedBy($previousQuantity);
         $totalValue = $oldValue->plus($purchaseValue);
 
-        $newAverageCost = $totalQuantity > 0
-            ? $totalValue->dividedBy($totalQuantity, RoundingMode::HALF_UP)
+        $newAverageCost = $currentTotalQuantity > 0
+            ? $totalValue->dividedBy($currentTotalQuantity, RoundingMode::HALF_UP)
             : Money::zero($costCurrency);
 
-        // Bypass Eloquent and update the database directly.
+        // Update only average_cost - quantity is now managed by StockQuant
         DB::table('products')
             ->where('id', $product->id)
             ->update([
-                'quantity_on_hand' => $totalQuantity,
                 'average_cost' => $newAverageCost->getMinorAmount()->toInt(),
             ]);
     }
