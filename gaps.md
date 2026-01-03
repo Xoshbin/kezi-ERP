@@ -155,7 +155,7 @@ Your system demonstrates strong foundational architecture for accounting with ex
 
 | Gap | Priority | Explanation |
 |-----|----------|-------------|
-| **Incoming valuation bypasses InventoryValuationService** | Critical | VendorBill creates combined JE; doesn't create cost layers properly for FIFO/LIFO |
+| ~~**Incoming valuation bypasses InventoryValuationService**~~ | ~~Critical~~ | ✅ **RESOLVED** - `CreateStockMovesOnVendorBillConfirmed` now correctly calls `createConsolidatedIncomingStockJournalEntry()` which creates FIFO/LIFO cost layers via `processIncomingStockWithoutJournalEntry()`. Fixed namespace bug in `calculateIncomingCostPerUnitEnhanced` (`Modules\Inventory\Models\VendorBill` → `Modules\Purchase\Models\VendorBill`). Tests: `VendorBillFIFOCostLayerTest.php`, `VendorBillFIFOCostLayerFilamentTest.php`. |
 | **Standard costing not implemented** | High | Enum value exists but logic branches missing; will behave incorrectly |
 | ~~**No StockQuant for per-location inventory**~~ | ~~Critical~~ | ✅ **RESOLVED** - `StockQuant` is now the source of truth for per-location inventory; `Product.quantity_on_hand` is a computed accessor aggregating from `StockQuant` |
 | **Wrong sales destination location** | High | Sales moves go to Vendor location instead of Customer location (bug) |
