@@ -16,11 +16,11 @@ class RequestForQuotationForm
     {
         return $schema
             ->components([
-                Forms\Components\Section::make('General Information')
+                \Filament\Schemas\Components\Section::make('General Information')
                     ->schema([
                         Forms\Components\Select::make('vendor_id')
                             ->label('Vendor')
-                            ->options(Partner::query()->where('is_vendor', true)->pluck('name', 'id')) // Assuming scope or attribute exists
+                            ->options(fn () => Partner::query()->whereIn('type', [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])->pluck('name', 'id'))
                             ->searchable()
                             ->required()
                             ->columnSpan(1),
@@ -37,7 +37,7 @@ class RequestForQuotationForm
                             ->label('Valid Until'),
                         Forms\Components\Select::make('currency_id')
                             ->label('Currency')
-                            ->options(Currency::all()->pluck('code', 'id'))
+                            ->options(fn () => Currency::all()->pluck('code', 'id'))
                             ->default(fn () => Currency::where('code', 'USD')->first()?->id) // Default logic could be better
                             ->required(),
                         Forms\Components\TextInput::make('exchange_rate')
@@ -52,18 +52,17 @@ class RequestForQuotationForm
                             ->dehydrated(),
                     ])->columns(2),
 
-                Forms\Components\Section::make('Details')
+                \Filament\Schemas\Components\Section::make('Details')
                     ->schema([
                         Forms\Components\Repeater::make('lines')
-                            ->relationship()
                             ->schema([
                                 Forms\Components\Select::make('product_id')
                                     ->label('Product')
-                                    ->options(Product::all()->pluck('name', 'id'))
+                                    ->options(fn () => Product::all()->pluck('name', 'id'))
                                     ->searchable()
                                     ->required()
                                     ->reactive()
-                                    ->afterStateUpdated(fn ($state, Forms\Set $set) => $set('unit_price', Product::find($state)?->cost_price?->getAmount()->toFloat() ?? 0)), // Dummy logic
+                                    ->afterStateUpdated(fn ($state, $set) => $set('unit_price', Product::find($state)?->cost_price?->getAmount()->toFloat() ?? 0)), // Dummy logic
                                 Forms\Components\TextInput::make('description')
                                     ->required(),
                                 Forms\Components\TextInput::make('quantity')
@@ -80,13 +79,13 @@ class RequestForQuotationForm
                                     ->prefix('$'), // Should be dynamic based on currency
                                 Forms\Components\Select::make('tax_id')
                                     ->label('Tax')
-                                    ->options(Tax::all()->pluck('name', 'id')),
+                                    ->options(fn () => Tax::all()->pluck('name', 'id')),
                             ])
                             ->columns(6)
                             ->defaultItems(1),
                     ]),
 
-                Forms\Components\Section::make('Notes')
+                \Filament\Schemas\Components\Section::make('Notes')
                     ->schema([
                         Forms\Components\Textarea::make('notes')
                             ->rows(3),
