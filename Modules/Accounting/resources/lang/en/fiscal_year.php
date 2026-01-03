@@ -43,6 +43,7 @@ return [
         'no_opening_balances' => 'No Balance Sheet accounts found with non-zero balances in the previous year.',
     ],
     'opening_balance_label' => 'Opening Balance :year',
+    'unallocated_earnings_label' => 'Unallocated Earnings :year',
     'opening_entry_description' => 'Opening Balance Journal Entry for :year',
     'action_generate_opening' => 'Generate Opening Entry',
     'opening_in_progress' => 'Opening entry generation in progress...',
