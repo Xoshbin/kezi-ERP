@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Accounting\Actions\Accounting;
 
 use Illuminate\Support\Facades\DB;
@@ -8,63 +10,78 @@ use Modules\Accounting\Enums\Accounting\JournalEntryState;
 use Modules\Accounting\Events\FiscalPeriodClosed;
 use Modules\Accounting\Exceptions\FiscalPeriodNotReadyToCloseException;
 use Modules\Accounting\Models\FiscalPeriod;
+use Modules\Accounting\Models\JournalEntry;
 
-class CloseFiscalPeriodAction
+/**
+ * Closes a fiscal period and triggers lock date updates.
+ *
+ * This action validates that a period is ready to be closed (no draft entries,
+ * parent year is open) before transitioning it to the Closed state and
+ * dispatching the FiscalPeriodClosed event.
+ */
+final class CloseFiscalPeriodAction
 {
     /**
-     * Close a fiscal period.
+     * Execute the action to close a fiscal period.
      *
-     * @throws FiscalPeriodNotReadyToCloseException
+     * @throws FiscalPeriodNotReadyToCloseException When validation fails
      */
     public function execute(FiscalPeriod $fiscalPeriod): FiscalPeriod
     {
-        return DB::transaction(function () use ($fiscalPeriod) {
-            // Validate period can be closed
-            $this->validateCanClose($fiscalPeriod);
+        return DB::transaction(function () use ($fiscalPeriod): FiscalPeriod {
+            $this->ensureCanClose($fiscalPeriod);
 
-            // Update state
             $fiscalPeriod->update([
                 'state' => FiscalPeriodState::Closed,
             ]);
 
-            // Dispatch event for lock date update
-            event(new FiscalPeriodClosed($fiscalPeriod));
+            FiscalPeriodClosed::dispatch($fiscalPeriod);
 
             return $fiscalPeriod->refresh();
         });
     }
 
     /**
-     * Validate that the fiscal period can be closed.
+     * Ensure the fiscal period meets all requirements for closing.
      *
      * @throws FiscalPeriodNotReadyToCloseException
      */
-    private function validateCanClose(FiscalPeriod $fiscalPeriod): void
+    private function ensureCanClose(FiscalPeriod $fiscalPeriod): void
     {
-        // Check state
         if (! $fiscalPeriod->canClose()) {
             throw new FiscalPeriodNotReadyToCloseException(
                 __('accounting::fiscal_period.validation.not_open')
             );
         }
 
-        // Check parent fiscal year is not closed
         if ($fiscalPeriod->fiscalYear->isClosed()) {
             throw new FiscalPeriodNotReadyToCloseException(
                 __('accounting::fiscal_period.validation.year_closed')
             );
         }
 
-        // Check for draft journal entries in this period
-        $draftEntries = DB::table('journal_entries')
+        $this->ensureNoDraftEntries($fiscalPeriod);
+    }
+
+    /**
+     * Verify no draft journal entries exist within the period.
+     *
+     * @throws FiscalPeriodNotReadyToCloseException
+     */
+    private function ensureNoDraftEntries(FiscalPeriod $fiscalPeriod): void
+    {
+        $draftCount = JournalEntry::query()
             ->where('company_id', $fiscalPeriod->fiscalYear->company_id)
-            ->whereBetween('entry_date', [$fiscalPeriod->start_date, $fiscalPeriod->end_date])
-            ->where('state', JournalEntryState::Draft->value)
+            ->whereBetween('entry_date', [
+                $fiscalPeriod->start_date,
+                $fiscalPeriod->end_date,
+            ])
+            ->where('state', JournalEntryState::Draft)
             ->count();
 
-        if ($draftEntries > 0) {
+        if ($draftCount > 0) {
             throw new FiscalPeriodNotReadyToCloseException(
-                __('accounting::fiscal_period.validation.draft_entries', ['count' => $draftEntries])
+                __('accounting::fiscal_period.validation.draft_entries', ['count' => $draftCount])
             );
         }
     }
