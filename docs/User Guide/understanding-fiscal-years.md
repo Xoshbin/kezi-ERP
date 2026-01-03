@@ -134,6 +134,42 @@ Did you make a mistake? Did the auditor find something huge?
 
 ---
 
+## Closing Individual Periods
+
+Sometimes you don't want to wait until year-end to lock your books. You can close **individual periods** (e.g., January) to prevent changes while the rest of the year stays open.
+
+### Why Close Periods?
+
+1.  **Monthly Compliance**: Many companies need to "lock" each month after their accountant reviews it.
+2.  **Mistake Prevention**: Once January is closed, nobody can accidentally post an invoice dated in January.
+3.  **Audit Trail**: Auditors like to see that old months cannot be modified.
+
+### How to Close a Period
+
+1.  Go to **Accounting** → **Fiscal Years**.
+2.  Open the Fiscal Year you want to manage.
+3.  Scroll down to the **Fiscal Periods** table.
+4.  Find the period you want to close (e.g., \"January 2024\").
+5.  Click the **Close Period** button.
+
+**What happens?**
+*   The period status changes to **Closed**.
+*   The system automatically updates the **Lock Date** to the period's end date.
+*   Any attempt to create or modify transactions before this date will be blocked.
+
+### Reopening a Period
+
+Made a mistake? You can reopen a closed period as long as the **parent Fiscal Year is still open**.
+
+1.  Find the closed period in the table.
+2.  Click the **Reopen Period** button.
+3.  The lock date will automatically adjust to the previous closed period's end date.
+
+> [!WARNING]
+> If the Fiscal Year itself is closed, you cannot reopen individual periods. You must reopen the entire year first.
+
+---
+
 ## Troubleshooting Common Questions
 
 **Q: Why does the system say "Validation Failed" when I try to close?**
