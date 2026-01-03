@@ -189,3 +189,122 @@ it('throws exception if no balance sheet accounts have balance', function () {
     expect(fn () => $action->execute($dto))
         ->toThrow(\RuntimeException::class);
 });
+
+it('handles unclosed previous year by simulating P&L closure and preserving partner grouping', function () {
+    // 1. Setup Open Previous Year (2024)
+    $year2024 = FiscalYear::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => '2024',
+        'start_date' => '2024-01-01',
+        'end_date' => '2024-12-31',
+        'state' => FiscalYearState::Open, // Not Closed!
+    ]);
+
+    // 2. Setup Accounts
+    $receivableAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => AccountType::Receivable,
+        'code' => '120000',
+        'name' => 'Account Receivable',
+    ]);
+
+    $salesAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => AccountType::Income,
+        'code' => '400000',
+    ]);
+
+    $retainedEarningsAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => AccountType::Equity,
+        'code' => '300000',
+        'name' => 'Retained Earnings',
+    ]);
+
+    // 3. Setup Partners
+    $partnerA = \Modules\Foundation\Models\Partner::factory()->create(['company_id' => $this->company->id, 'name' => 'Customer A']);
+    $partnerB = \Modules\Foundation\Models\Partner::factory()->create(['company_id' => $this->company->id, 'name' => 'Customer B']);
+
+    // 4. Create Transactions (Sales)
+    $entry = JournalEntry::factory()->create([
+        'company_id' => $this->company->id,
+        'entry_date' => '2024-06-01',
+        'state' => JournalEntryState::Posted,
+    ]);
+
+    // Sale to Partner A: Dr Receivable 1000, Cr Sales 1000
+    JournalEntryLine::factory()->create([
+        'journal_entry_id' => $entry->id,
+        'account_id' => $receivableAccount->id,
+        'partner_id' => $partnerA->id,
+        'debit' => 100000, // 1000.00
+        'credit' => 0,
+    ]);
+    JournalEntryLine::factory()->create([
+        'journal_entry_id' => $entry->id,
+        'account_id' => $salesAccount->id,
+        'debit' => 0,
+        'credit' => 100000, // 1000.00
+    ]);
+
+    // Sale to Partner B: Dr Receivable 500, Cr Sales 500
+    JournalEntryLine::factory()->create([
+        'journal_entry_id' => $entry->id,
+        'account_id' => $receivableAccount->id,
+        'partner_id' => $partnerB->id,
+        'debit' => 50000, // 500.00
+        'credit' => 0,
+    ]);
+    JournalEntryLine::factory()->create([
+        'journal_entry_id' => $entry->id,
+        'account_id' => $salesAccount->id,
+        'debit' => 0,
+        'credit' => 50000, // 500.00
+    ]);
+
+    // Total Income = 1500. Total Expense = 0. Net Income = 1500 (Credit Balance).
+    // AR Balance = 1500 (Debit Balance).
+    // Opening Entry should have:
+    // - AR Partner A: Dr 1000
+    // - AR Partner B: Dr 500
+    // - Retained Earnings (simulated): Cr 1500 (Profit)
+
+    // 5. Setup New Year (2025)
+    $year2025 = FiscalYear::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => '2025',
+        'start_date' => '2025-01-01',
+        'end_date' => '2025-12-31',
+        'state' => FiscalYearState::Open,
+    ]);
+
+    // 6. Execute Action
+    $dto = new CreateOpeningBalanceEntryDTO(
+        newFiscalYear: $year2025,
+        previousFiscalYear: $year2024,
+        createdByUserId: $this->user->id,
+    );
+
+    $action = app(CreateOpeningBalanceEntryAction::class);
+    $openingEntry = $action->execute($dto);
+
+    // 7. Assertions
+    $lines = $openingEntry->lines;
+
+    // Check Partner A Line
+    $lineA = $lines->where('account_id', $receivableAccount->id)->where('partner_id', $partnerA->id)->first();
+    expect($lineA)->not->toBeNull();
+    expect((string) $lineA->debit->getAmount())->toBe('100.000');
+
+    // Check Partner B Line
+    $lineB = $lines->where('account_id', $receivableAccount->id)->where('partner_id', $partnerB->id)->first();
+    expect($lineB)->not->toBeNull();
+    expect((string) $lineB->debit->getAmount())->toBe('50.000');
+
+    // Check Retained Earnings Line (Simulated Profit)
+    $lineRE = $lines->where('account_id', $retainedEarningsAccount->id)->first();
+    expect($lineRE)->not->toBeNull();
+    // Net Income 1500 Profit => Credit to Equity 1500
+    expect((string) $lineRE->credit->getAmount())->toBe('150.000');
+    expect($lineRE->description)->toContain('Unallocated Earnings');
+});

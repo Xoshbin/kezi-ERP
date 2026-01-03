@@ -152,7 +152,7 @@ class FiscalYearService
     /**
      * Get candidate accounts and their balances for opening entry.
      *
-     * @return Collection<int, array{account: Account, balance: Money}>
+     * @return Collection<int, array{account: Account, partner_id: int|null, balance: Money}>
      */
     public function getOpeningBalanceCandidates(FiscalYear $sourceYear): Collection
     {
@@ -162,6 +162,7 @@ class FiscalYearService
         $results = DB::table('journal_entry_lines')
             ->select([
                 'journal_entry_lines.account_id',
+                'journal_entry_lines.partner_id',
                 DB::raw('SUM(journal_entry_lines.debit) as total_debit'),
                 DB::raw('SUM(journal_entry_lines.credit) as total_credit'),
             ])
@@ -171,7 +172,7 @@ class FiscalYearService
             ->whereIn('accounts.type', $balanceSheetTypes)
             ->where('journal_entries.state', JournalEntryState::Posted->value)
             ->where('journal_entries.entry_date', '<=', $sourceYear->end_date)
-            ->groupBy('journal_entry_lines.account_id')
+            ->groupBy('journal_entry_lines.account_id', 'journal_entry_lines.partner_id')
             ->havingRaw('SUM(journal_entry_lines.debit) != SUM(journal_entry_lines.credit)')
             ->get();
 
@@ -181,7 +182,7 @@ class FiscalYearService
             return $candidates;
         }
 
-        $accountIds = $results->pluck('account_id')->toArray();
+        $accountIds = $results->pluck('account_id')->unique()->toArray();
         $accounts = Account::whereIn('id', $accountIds)->get()->keyBy('id');
 
         foreach ($results as $result) {
@@ -201,6 +202,7 @@ class FiscalYearService
 
             $candidates->push([
                 'account' => $account,
+                'partner_id' => $result->partner_id,
                 'balance' => $balance,
             ]);
         }
