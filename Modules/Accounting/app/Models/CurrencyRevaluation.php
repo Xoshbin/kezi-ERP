@@ -47,6 +47,11 @@ class CurrencyRevaluation extends Model
 
     protected $table = 'currency_revaluations';
 
+    protected static function newFactory(): \Modules\Accounting\Database\Factories\CurrencyRevaluationFactory
+    {
+        return \Modules\Accounting\Database\Factories\CurrencyRevaluationFactory::new();
+    }
+
     /** @var list<string> */
     protected $fillable = [
         'company_id',
@@ -149,4 +154,3 @@ class CurrencyRevaluation extends Model
         return $this->net_adjustment->isNegative();
     }
 }
-
