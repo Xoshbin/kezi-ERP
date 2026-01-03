@@ -18,11 +18,11 @@ class UpdateRequestForQuotationAction
 
         return DB::transaction(function () use ($dto, $rfq) {
             $rfq->update([
-                'vendor_id' => $dto->vendor_id,
-                'currency_id' => $dto->currency_id,
+                'vendor_id' => $dto->vendorId,
+                'currency_id' => $dto->currencyId,
                 'notes' => $dto->notes,
-                'rfq_date' => $dto->rfq_date,
-                'valid_until' => $dto->valid_until,
+                'rfq_date' => $dto->rfqDate,
+                'valid_until' => $dto->validUntil,
             ]);
 
             // Re-create lines to avoid complex update/cast issues

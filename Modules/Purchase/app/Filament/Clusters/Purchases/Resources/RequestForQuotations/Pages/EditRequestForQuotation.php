@@ -62,22 +62,6 @@ class EditRequestForQuotation extends EditRecord
             lines: $lines,
         );
 
-        // Add rfq property to DTO or Action accepts ID?
-        // Action accepts DTO. DTO has ID.
-        // Wait, Action expects DTO to have `rfq` property?
-        // UpdatePurchaseOrderAction expects DTO->purchaseOrder (Model).
-        // My UpdateRequestForQuotationAction (Step 1048) used `$dto->rfq`.
-        // UpdateRFQDTO (Step 1049) DOES NOT HAVE `rfq` property. It has `rfqId`.
-
-        // I MUST FIX Action or DTO.
-        // I will fix DTO to include `rfq` model? Or Action to find it?
-        // Let's modify Action to find RFQ using ID from DTO.
-        // Or better, EditRecord already gives me `$record`.
-
-        // I will pass `$record` to DTO? Or modifying DTO is cleaner.
-        // I'll check Action Step 1048 again.
-        // It uses `$dto->rfq`.
-
         return app(\Modules\Purchase\Actions\Purchases\UpdateRequestForQuotationAction::class)->execute($dto);
     }
 }

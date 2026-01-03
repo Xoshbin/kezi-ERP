@@ -38,7 +38,7 @@ class RequestForQuotationForm
                         Forms\Components\Select::make('currency_id')
                             ->label('Currency')
                             ->options(fn () => Currency::all()->pluck('code', 'id'))
-                            ->default(fn () => Currency::where('code', 'USD')->first()?->id) // Default logic could be better
+                            ->default(fn () => Currency::where('code', 'USD')->first()?->id)
                             ->required(),
                         Forms\Components\TextInput::make('exchange_rate')
                             ->label('Exchange Rate')
@@ -62,7 +62,7 @@ class RequestForQuotationForm
                                     ->searchable()
                                     ->required()
                                     ->reactive()
-                                    ->afterStateUpdated(fn ($state, $set) => $set('unit_price', Product::find($state)?->cost_price?->getAmount()->toFloat() ?? 0)), // Dummy logic
+                                    ->afterStateUpdated(fn ($state, $set) => $set('unit_price', Product::find($state)?->cost_price?->getAmount()->toFloat() ?? 0)),
                                 Forms\Components\TextInput::make('description')
                                     ->required(),
                                 Forms\Components\TextInput::make('quantity')
