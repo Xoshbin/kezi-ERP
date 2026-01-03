@@ -53,4 +53,3 @@ interface ExchangeRateProviderContract
      */
     public function getSupportedCurrencies(): array;
 }
-
