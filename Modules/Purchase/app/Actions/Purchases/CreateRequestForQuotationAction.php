@@ -37,6 +37,8 @@ class CreateRequestForQuotationAction
                 'total' => 0,
             ]);
 
+            $rfq->load('currency');
+
             foreach ($dto->lines as $lineDto) {
                 $this->createLineAction->execute($rfq, $lineDto);
             }

@@ -40,6 +40,11 @@ class RequestForQuotationLine extends Model
 {
     use HasFactory;
 
+    protected static function newFactory(): \Modules\Purchase\Database\Factories\RequestForQuotationLineFactory
+    {
+        return \Modules\Purchase\Database\Factories\RequestForQuotationLineFactory::new();
+    }
+
     protected $fillable = [
         'rfq_id',
         'product_id',
