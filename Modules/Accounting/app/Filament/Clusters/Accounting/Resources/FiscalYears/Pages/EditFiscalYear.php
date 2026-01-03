@@ -3,13 +3,13 @@
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\FiscalYears\Pages;
 
 use Filament\Actions\Action;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Filament\Schemas\Components\Decorations\Alert;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\TextEntry;
+use Filament\Schemas\Components\Wizard\Step;
 use Modules\Accounting\Actions\Accounting\CloseFiscalYearAction;
 use Modules\Accounting\Actions\Accounting\ReopenFiscalYearAction;
 use Modules\Accounting\DataTransferObjects\Accounting\CloseFiscalYearDTO;
@@ -44,7 +44,8 @@ class EditFiscalYear extends EditRecord
             ->visible(fn (): bool => $this->getRecord()->state === FiscalYearState::Open)
             ->steps([
                 // Step 1: Preview P&L summary
-                \Filament\Forms\Components\Wizard\Step::make(__('accounting::fiscal_year.wizard_step_preview'))
+
+                Step::make(__('accounting::fiscal_year.wizard_step_preview'))
                     ->description(__('accounting::fiscal_year.wizard_step_preview_desc'))
                     ->schema(function () {
                         /** @var FiscalYear $fiscalYear */
@@ -56,33 +57,36 @@ class EditFiscalYear extends EditRecord
                         $components = [];
 
                         if (! $validation['ready']) {
-                            $components[] = Alert::make()
-                                ->title(__('accounting::fiscal_year.validation_failed'))
-                                ->warning()
-                                ->body(implode("\n", $validation['issues']));
+                            $components[] = Section::make(__('accounting::fiscal_year.validation_failed'))
+                                ->schema([
+                                    Placeholder::make('validation_errors')
+                                        ->hiddenLabel()
+                                        ->content(implode("\n", $validation['issues']))
+                                        ->extraAttributes(['class' => 'text-danger-600']),
+                                ]);
                         }
 
                         $components[] = Section::make(__('accounting::fiscal_year.pl_summary'))
                             ->schema([
-                                TextEntry::make('total_income')
+                                Placeholder::make('total_income')
                                     ->label(__('accounting::fiscal_year.total_income'))
-                                    ->default($balances['income']->formatTo(app()->getLocale())),
+                                    ->content($balances['income']->formatTo(app()->getLocale())),
 
-                                TextEntry::make('total_expenses')
+                                Placeholder::make('total_expenses')
                                     ->label(__('accounting::fiscal_year.total_expenses'))
-                                    ->default($balances['expenses']->formatTo(app()->getLocale())),
+                                    ->content($balances['expenses']->formatTo(app()->getLocale())),
 
-                                TextEntry::make('net_income')
+                                Placeholder::make('net_income')
                                     ->label(__('accounting::fiscal_year.net_income'))
-                                    ->default($balances['netIncome']->formatTo(app()->getLocale()))
-                                    ->weight('bold'),
+                                    ->content($balances['netIncome']->formatTo(app()->getLocale()))
+                                    ->extraAttributes(['class' => 'font-bold']),
                             ]);
 
                         return $components;
                     }),
 
                 // Step 2: Select Retained Earnings account
-                \Filament\Forms\Components\Wizard\Step::make(__('accounting::fiscal_year.wizard_step_config'))
+                Step::make(__('accounting::fiscal_year.wizard_step_config'))
                     ->description(__('accounting::fiscal_year.wizard_step_config_desc'))
                     ->schema(function () {
                         $service = app(FiscalYearService::class);
