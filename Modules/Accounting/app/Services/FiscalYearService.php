@@ -150,6 +150,65 @@ class FiscalYearService
     }
 
     /**
+     * Get candidate accounts and their balances for opening entry.
+     *
+     * @return Collection<int, array{account: Account, balance: Money}>
+     */
+    public function getOpeningBalanceCandidates(FiscalYear $sourceYear): Collection
+    {
+        $currencyCode = $sourceYear->company->currency->code;
+        $balanceSheetTypes = array_map(fn ($type) => $type->value, AccountType::balanceSheetTypes());
+
+        $results = DB::table('journal_entry_lines')
+            ->select([
+                'journal_entry_lines.account_id',
+                DB::raw('SUM(journal_entry_lines.debit) as total_debit'),
+                DB::raw('SUM(journal_entry_lines.credit) as total_credit'),
+            ])
+            ->join('accounts', 'journal_entry_lines.account_id', '=', 'accounts.id')
+            ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
+            ->where('accounts.company_id', $sourceYear->company_id)
+            ->whereIn('accounts.type', $balanceSheetTypes)
+            ->where('journal_entries.state', JournalEntryState::Posted->value)
+            ->where('journal_entries.entry_date', '<=', $sourceYear->end_date)
+            ->groupBy('journal_entry_lines.account_id')
+            ->havingRaw('SUM(journal_entry_lines.debit) != SUM(journal_entry_lines.credit)')
+            ->get();
+
+        $candidates = collect();
+
+        if ($results->isEmpty()) {
+            return $candidates;
+        }
+
+        $accountIds = $results->pluck('account_id')->toArray();
+        $accounts = Account::whereIn('id', $accountIds)->get()->keyBy('id');
+
+        foreach ($results as $result) {
+            $account = $accounts->get($result->account_id);
+            if (! $account) {
+                continue;
+            }
+
+            $debit = (int) $result->total_debit;
+            $credit = (int) $result->total_credit;
+
+            // We calculate Net Debit Balance.
+            // Positive = Debit Balance
+            // Negative = Credit Balance
+            $netDebit = $debit - $credit;
+            $balance = Money::ofMinor($netDebit, $currencyCode);
+
+            $candidates->push([
+                'account' => $account,
+                'balance' => $balance,
+            ]);
+        }
+
+        return $candidates;
+    }
+
+    /**
      * Get the fiscal year containing a specific date.
      */
     public function getFiscalYearForDate(Company $company, Carbon $date): ?FiscalYear

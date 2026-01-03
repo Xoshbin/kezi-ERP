@@ -39,4 +39,12 @@ return [
         'open_periods' => 'هناك :count فترات لا تزال مفتوحة. يرجى إغلاق جميع الفترات أولاً.',
         'draft_entries' => 'يوجد :count قيود مسودة في هذه السنة المالية. يرجى ترحيلها أو حذفها.',
     ],
+    'error' => [
+        'no_opening_balances' => 'لم يتم العثور على حسابات ميزانية عمومية ذات أرصدة غير صفرية في العام السابق.',
+    ],
+    'opening_balance_label' => 'الرصيد الافتتاحي :year',
+    'opening_entry_description' => 'قيد الرصيد الافتتاحي لعام :year',
+    'action_generate_opening' => 'إنشاء القيد الافتتاحي',
+    'opening_in_progress' => 'جاري إنشاء القيد الافتتاحي...',
+    'opening_generated_successfully' => 'تم إنشاء القيد الافتتاحي بنجاح.',
 ];
