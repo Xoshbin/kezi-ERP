@@ -97,21 +97,21 @@ The JMeryar ERP is a headless accounting system built on Laravel 12 with Filamen
 ### Critical Gaps (High Priority)
 
 #### 1. **Credit Notes / Sales Returns**
-> [!CAUTION]
-> There are no Credit Note or Sales Return workflows. When a customer returns goods or a pricing correction is needed, users cannot issue a proper reversing document.
+> [!NOTE]
+> Implemented: Credit Note support added with journal entries and stock movement reversal.
 
-**Required:**
-- `CreditNote` model linked to original `Invoice`
-- Stock movement reversal on goods returns
+**Implemented:**
+- `AdjustmentDocument` with Type `CreditNote` linked to original `Invoice`
+- Stock movement reversal on goods returns (Customer -> Internal)
 - Journal entry for AR reduction and revenue reversal
 - Impact on inventory valuation
 
 #### 2. **Debit Notes / Purchase Returns**
-> [!CAUTION]  
-> No mechanism to return goods to vendors or correct vendor bills through debit notes.
+> [!NOTE]
+> Implemented: Debit Note support added with journal entries and stock movement reversal.
 
-**Required:**
-- `DebitNote` model linked to original `VendorBill`
+**Implemented:**
+- `AdjustmentDocument` with Type `DebitNote` linked to original `VendorBill`
 - Stock movement from internal to vendor location
 - Journal entry for AP reduction
 
@@ -246,10 +246,10 @@ PDF generation exists but verify:
 
 | Domain | Completeness | Status |
 |--------|--------------|--------|
-| Core Accounting | 85% | ⚠️ Missing Credit/Debit Notes |
+| Core Accounting | 90% | ⚠️ Missing Recurring Entries |
 | Financial Reports | 95% | ⚠️ Missing Consolidation |
-| Sales | 70% | ❌ No Credit Notes/Returns |
-| Purchase | 80% | ❌ No Debit Notes/Returns |
+| Sales | 85% | ✅ Credit Notes/Returns Implemented |
+| Purchase | 90% | ✅ Debit Notes/Returns Implemented |
 | Inventory | 85% | ⚠️ No Serial Tracking |
 | HR/Payroll | 75% | ⚠️ No Expense Claims |
 | Payment | 80% | ⚠️ No Cheque Management |
@@ -285,9 +285,8 @@ PDF generation exists but verify:
 
 The JMeryar ERP has a **solid foundation** with excellent implementation of core double-entry accounting, inventory valuation, and the Action-DTO-Service architecture. However, from a **complete accounting system perspective**, the most critical gaps are:
 
-1. **Credit Notes / Debit Notes** - Essential for proper revenue/expense reversal
-2. **Recurring Entries** - Needed for automation of routine transactions  
-3. **Consolidated Reporting** - Required for multi-company setups
+1. **Recurring Entries** - Needed for automation of routine transactions  
+2. **Consolidated Reporting** - Required for multi-company setups
 
 From an **ERP perspective**, the key missing features are:
 1. **Serial Number Tracking** - For unit-level inventory management
