@@ -55,6 +55,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     use HasFactory;
 
     use Notifiable;
+    use \Spatie\Permission\Traits\HasRoles;
 
     /**
      * The attributes that are mass assignable.

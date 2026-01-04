@@ -2,6 +2,7 @@
 
 use App\Models\Company;
 use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
 use Filament\Facades\Filament;
 use Livewire\Livewire;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
@@ -13,9 +14,14 @@ use Modules\Sales\Models\Invoice;
 use Modules\Sales\Models\InvoiceLine;
 
 beforeEach(function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
     $this->user = User::factory()->create();
     $this->company = Company::factory()->create();
     $this->user->companies()->attach($this->company);
+
+    setPermissionsTeamId($this->company->id);
+    $this->user->assignRole('super_admin');
+
     $this->actingAs($this->user);
 
     // Set up Filament tenant context
@@ -56,7 +62,7 @@ test('edit page shows pdf actions for draft invoice', function () {
     $component->assertActionExists('downloadPdf');
 });
 
-test('edit page shows pdf actions for posted invoice', function () {
+test('view page shows pdf actions for posted invoice', function () {
     // Arrange
     $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
@@ -73,7 +79,7 @@ test('edit page shows pdf actions for posted invoice', function () {
 
     // Action
     $component = Livewire::actingAs($this->user)
-        ->test(EditInvoice::class, [
+        ->test(\Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ViewInvoice::class, [
             'record' => $invoice->getRouteKey(),
         ]);
 

@@ -4,14 +4,15 @@ namespace Modules\Purchase\tests\Feature;
 
 use App\Models\Company;
 use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Modules\Accounting\Actions\Accounting\BuildVendorBillPostingPreviewAction;
 use Modules\Accounting\Enums\Accounting\AccountType;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill as FilamentEditVendorBill;
 use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Currency; // Adjust namespace if needed
+use Modules\Accounting\Models\Journal; // Adjust namespace if needed
+use Modules\Foundation\Models\Currency;
 use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 use Modules\Purchase\Models\VendorBill;
 use Modules\Purchase\Models\VendorBillLine;
@@ -38,9 +39,13 @@ class VendorBillConfirmationTest extends TestCase
     {
         parent::setUp();
 
+        $this->seed(RolesAndPermissionsSeeder::class);
         $this->user = User::factory()->create();
         $this->company = Company::factory()->create();
         $this->user->companies()->attach($this->company);
+
+        setPermissionsTeamId($this->company->id);
+        $this->user->assignRole('super_admin');
 
         $this->actingAs($this->user);
         \Filament\Facades\Filament::setTenant($this->company);

@@ -15,6 +15,12 @@ use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
+beforeEach(function () {
+    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    setPermissionsTeamId($this->company->id);
+    $this->user->assignRole('super_admin');
+});
+
 test('cancelling a posted vendor bill creates a reversing journal entry and an audit log', function () {
     // Arrange: Create a draft vendor bill to set up the test scenario.
     $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => 'draft']);
