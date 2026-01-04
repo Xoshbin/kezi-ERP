@@ -50,7 +50,9 @@ it('shows Register Payment action on posted invoice with balance', function () {
             'status' => InvoiceStatus::Posted,
         ]);
 
-    $this->get(InvoiceResource::getUrl('edit', ['record' => $invoice]))
+    $invoice->refresh();
+
+    $this->get(InvoiceResource::getUrl('view', ['record' => $invoice]))
         ->assertSee('Register Payment');
 });
 
@@ -62,6 +64,8 @@ it('shows Register Payment action on posted vendor bill with balance', function 
             'status' => VendorBillStatus::Posted,
         ]);
 
-    $this->get(VendorBillResource::getUrl('edit', ['record' => $bill]))
+    $bill->refresh();
+
+    $this->get(VendorBillResource::getUrl('view', ['record' => $bill]))
         ->assertSee('Register Payment');
 });
