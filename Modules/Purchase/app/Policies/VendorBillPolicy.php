@@ -3,6 +3,7 @@
 namespace Modules\Purchase\Policies;
 
 use App\Models\User;
+use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 use Modules\Purchase\Models\VendorBill;
 
 class VendorBillPolicy
@@ -12,8 +13,7 @@ class VendorBillPolicy
      */
     public function viewAny(User $user): bool
     {
-        // TODO: Change this to implement actual logic before deploying
-        return true;
+        return $user->can('view_any_vendor_bill');
     }
 
     /**
@@ -21,8 +21,7 @@ class VendorBillPolicy
      */
     public function view(User $user, VendorBill $vendorBill): bool
     {
-        // TODO: Change this to implement actual logic before deploying
-        return true;
+        return $user->can('view_vendor_bill');
     }
 
     /**
@@ -30,8 +29,7 @@ class VendorBillPolicy
      */
     public function create(User $user): bool
     {
-        // TODO: Change this to implement actual logic before deploying
-        return true;
+        return $user->can('create_vendor_bill');
     }
 
     /**
@@ -39,8 +37,8 @@ class VendorBillPolicy
      */
     public function update(User $user, VendorBill $vendorBill): bool
     {
-        // TODO: Change this to implement actual logic before deploying
-        return true;
+        // Immutability: Only Draft bills can be edited.
+        return $user->can('update_vendor_bill') && $vendorBill->isDraft();
     }
 
     /**
@@ -48,8 +46,8 @@ class VendorBillPolicy
      */
     public function delete(User $user, VendorBill $vendorBill): bool
     {
-        // TODO: Change this to implement actual logic before deploying
-        return true;
+        // Immutability: Only Draft bills can be deleted.
+        return $user->can('delete_vendor_bill') && $vendorBill->isDraft();
     }
 
     /**
@@ -57,8 +55,7 @@ class VendorBillPolicy
      */
     public function restore(User $user, VendorBill $vendorBill): bool
     {
-        // TODO: Change this to implement actual logic before deploying
-        return true;
+        return $user->can('restore_vendor_bill');
     }
 
     /**
@@ -66,8 +63,7 @@ class VendorBillPolicy
      */
     public function forceDelete(User $user, VendorBill $vendorBill): bool
     {
-        // TODO: Change this to implement actual logic before deploying
-        return true;
+        return $user->can('force_delete_vendor_bill');
     }
 
     /**
@@ -75,9 +71,7 @@ class VendorBillPolicy
      */
     public function post(User $user, VendorBill $vendorBill): bool
     {
-        // For now, we will allow it. In a real app, you might check for a specific role.
-        // TODO: Change this to implement actual logic before deploying
-        return true;
+        return $user->can('confirm_vendor_bill') && $vendorBill->isDraft();
     }
 
     /**
@@ -86,12 +80,12 @@ class VendorBillPolicy
      */
     public function resetToDraft(User $user, VendorBill $vendorBill): bool
     {
-        // In a real application, you would check if the user has a specific role,
-        // for example: return $user->hasRole('manager');
+        // Strictly prohibit resetting Posted bills.
+        if ($vendorBill->status === VendorBillStatus::Posted || $vendorBill->status === VendorBillStatus::Paid) {
+            return false;
+        }
 
-        // For the test to pass, we will simply allow it.
-        // TODO: Change this to implement actual logic before deploying
-        return true;
+        return $user->can('update_vendor_bill');
     }
 
     /**
@@ -99,9 +93,8 @@ class VendorBillPolicy
      */
     public function cancel(User $user, VendorBill $vendorBill): bool
     {
-        // For now, allow any logged-in user to cancel a posted vendor bill.
-        // We can add more specific role-based logic here later if needed.
-        // return $vendorBill->status === 'posted';
-        return true;
+        // Only Draft bills can be cancelled (Voided).
+        // Posted bills must be reversed via Debit Note.
+        return $user->can('update_vendor_bill') && $vendorBill->isDraft();
     }
 }
