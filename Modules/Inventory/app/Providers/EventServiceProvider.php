@@ -28,6 +28,9 @@ class EventServiceProvider extends ServiceProvider
         \Modules\Inventory\Events\GoodsReceiptValidated::class => [
             \Modules\Inventory\Listeners\Purchase\UpdatePurchaseOrderOnGoodsReceipt::class,
         ],
+        \Modules\Inventory\Events\AdjustmentDocumentPosted::class => [
+            \Modules\Inventory\Listeners\Adjustments\CreateStockMovesOnAdjustmentPosted::class,
+        ],
     ];
 
     /**
