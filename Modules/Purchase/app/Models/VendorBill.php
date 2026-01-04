@@ -19,11 +19,13 @@ use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\Partner;
 use Modules\Foundation\Models\PaymentTerm;
 use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Inventory\Models\StockPicking;
 use Modules\Payment\Enums\PaymentInstallments\InstallmentStatus;
 use Modules\Payment\Models\Payment;
 use Modules\Payment\Models\PaymentDocumentLink;
 use Modules\Payment\Models\PaymentInstallment;
 use Modules\Purchase\Database\Factories\VendorBillFactory;
+use Modules\Purchase\Enums\Purchases\ThreeWayMatchStatus;
 use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 use Modules\Purchase\Observers\VendorBillObserver;
 
@@ -40,7 +42,9 @@ use Modules\Purchase\Observers\VendorBillObserver;
  * @property int $vendor_id
  * @property int $currency_id
  * @property int|null $purchase_order_id
+ * @property int|null $stock_picking_id
  * @property int|null $journal_entry_id
+ * @property ThreeWayMatchStatus|null $three_way_match_status
  * @property string $bill_reference
  * @property Carbon $bill_date
  * @property Carbon $accounting_date
@@ -58,6 +62,7 @@ use Modules\Purchase\Observers\VendorBillObserver;
  * @property-read Collection<int, VendorBillLine> $lines
  * @property-read int|null $lines_count
  * @property-read PurchaseOrder|null $purchaseOrder
+ * @property-read StockPicking|null $stockPicking
  * @property-read Partner $vendor
  *
  * @method static \Modules\Purchase\Database\Factories\VendorBillFactory factory($count = null, $state = [])
@@ -113,6 +118,8 @@ class VendorBill extends Model
         'company_id',           // Foreign key to the Company model for multi-company support .
         'vendor_id',            // Foreign key to the Partner model, representing the supplier .
         'purchase_order_id',    // Foreign key to the PurchaseOrder model, linking bill to originating PO .
+        'stock_picking_id',     // Foreign key to the StockPicking model for three-way matching
+        'three_way_match_status', // Three-way matching status
         'bill_date',            // The date the vendor bill was issued by the supplier .
         'accounting_date',      // The date the bill is recognized in the company's books .
         'due_date',             // The date by which the payment is due .
@@ -145,6 +152,7 @@ class VendorBill extends Model
         'accounting_date' => 'date',       // Cast to date for consistency .
         'due_date' => 'date',       // Cast to date for consistency .
         'status' => VendorBillStatus::class,
+        'three_way_match_status' => ThreeWayMatchStatus::class,
         'exchange_rate_at_creation' => 'decimal:10',
         'total_amount' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,  // Document currency amounts
         'total_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,  // Document currency amounts
@@ -236,6 +244,17 @@ class VendorBill extends Model
     public function purchaseOrder(): BelongsTo
     {
         return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id');
+    }
+
+    /**
+     * Get the Goods Receipt (StockPicking) linked to this Vendor Bill.
+     * Used for three-way matching: PO → GRN → Bill.
+     *
+     * @return BelongsTo<StockPicking, static>
+     */
+    public function stockPicking(): BelongsTo
+    {
+        return $this->belongsTo(StockPicking::class, 'stock_picking_id');
     }
 
     /**
