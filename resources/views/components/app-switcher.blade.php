@@ -14,6 +14,11 @@
             break;
         }
     }
+    // List of clusters to hide from the app switcher
+    $hiddenClusters = [
+        'Modules\Payment\Filament\Clusters\Payment\PaymentCluster',
+        'Modules\Product\Filament\Clusters\Product\ProductCluster',
+    ];
 @endphp
 
 @if (count($clusters) > 0)
@@ -75,6 +80,9 @@
                 gap: 16px;
             ">
                 @foreach ($clusters as $cluster)
+                    @if (in_array($cluster, $hiddenClusters))
+                        @continue
+                    @endif
                     @php
                         $isActive = $currentCluster === $cluster;
                         $icon = $cluster::getNavigationIcon();
