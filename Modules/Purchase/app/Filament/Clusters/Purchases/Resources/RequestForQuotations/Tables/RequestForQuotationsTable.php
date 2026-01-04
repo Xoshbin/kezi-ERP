@@ -13,23 +13,23 @@ class RequestForQuotationsTable
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('rfq_number')
-                    ->label('RFQ Number')
+                    ->label(__('purchase::request_for_quotation.fields.rfq_number'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('vendor.name')
-                    ->label('Vendor')
+                    ->label(__('purchase::request_for_quotation.fields.vendor'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('rfq_date')
-                    ->label('Date')
+                    ->label(__('purchase::request_for_quotation.fields.date'))
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('valid_until')
-                    ->label('Valid Until')
+                    ->label(__('purchase::request_for_quotation.fields.valid_until'))
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total')
-                    ->label('Total')
+                    ->label(__('purchase::request_for_quotation.fields.total'))
                     ->money(fn (RequestForQuotation $record) => $record->currency->code),
                 Tables\Columns\TextColumn::make('status')
                     ->badge(),
