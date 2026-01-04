@@ -18,7 +18,7 @@ return [
     'shield_resource' => [
         'slug' => 'shield/roles',
         'show_model_path' => true,
-        'cluster' => null,
+        'cluster' => \App\Filament\Clusters\Settings\SettingsCluster::class,
         'tabs' => [
             'pages' => true,
             'widgets' => true,
