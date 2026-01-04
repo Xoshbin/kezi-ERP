@@ -613,7 +613,10 @@ class InvoiceResource extends Resource
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                ActionGroup::make([
+                    \Filament\Actions\ViewAction::make(),
+                    EditAction::make(),
+                ]),
                 ActionGroup::make([
                     Action::make('viewPdf')
                         ->label(__('accounting::invoice.view_pdf'))
@@ -797,6 +800,7 @@ class InvoiceResource extends Resource
             'index' => ListInvoices::route('/'),
             'create' => CreateInvoice::route('/create'),
             'edit' => EditInvoice::route('/{record}/edit'),
+            'view' => Pages\ViewInvoice::route('/{record}'),
         ];
     }
 }

@@ -95,6 +95,6 @@ class VendorBillPolicy
     {
         // Only Draft bills can be cancelled (Voided).
         // Posted bills must be reversed via Debit Note.
-        return $user->can('update_vendor_bill') && $vendorBill->isDraft();
+        return $user->can('update_vendor_bill') && ($vendorBill->isDraft() || $vendorBill->status === VendorBillStatus::Posted);
     }
 }

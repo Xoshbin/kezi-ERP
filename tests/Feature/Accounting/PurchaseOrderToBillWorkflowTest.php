@@ -36,6 +36,12 @@ test('Purchase Order to Vendor Bill Workflow (Double Entry Verification)', funct
     $user = User::factory()->create();
     $user->companies()->attach($company);
 
+    // Assign Permissions
+    app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    setPermissionsTeamId($company->id);
+    $user->assignRole('super_admin');
+
     $currency = Currency::where('code', $company->currency->code)->firstOrFail();
 
     // 2. Setup: Accounts (Asset, Payable, Expense)
