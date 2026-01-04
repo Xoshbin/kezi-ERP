@@ -267,13 +267,6 @@ class EditInvoice extends EditRecord
                     $res = $record->status === InvoiceStatus::Posted &&
                     ! $record->getRemainingAmount()->isZero();
 
-                    if (app()->runningUnitTests()) {
-                        dump('Visible Check: '.($res ? 'YES' : 'NO'));
-                        dump('Status: '.$record->status->value);
-                        dump('Remaining: '.$record->getRemainingAmount());
-                        dump('Is Zero: '.($record->getRemainingAmount()->isZero() ? 'YES' : 'NO'));
-                    }
-
                     return $res;
                 }),
 

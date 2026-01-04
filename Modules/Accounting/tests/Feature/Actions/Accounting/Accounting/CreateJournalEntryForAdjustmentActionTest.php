@@ -18,6 +18,7 @@ test('it creates a correct journal entry for a posted adjustment document (credi
             'total_tax' => Money::of(10, $this->company->currency->code),
             'posted_at' => now(),
             'reference_number' => 'TEST-CN-001',
+            'type' => \Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType::CreditNote,
         ]);
 
     // 2. Act
@@ -49,5 +50,62 @@ test('it creates a correct journal entry for a posted adjustment document (credi
         'journal_entry_id' => $journalEntry->id,
         'account_id' => $this->company->default_accounts_receivable_id,
         'credit' => 110000, // Total
+    ]);
+});
+
+test('it creates a correct journal entry for a posted debit note (vendor return)', function () {
+    // 1. Arrange
+    $vendorBill = \Modules\Purchase\Models\VendorBill::factory()
+        ->for($this->company)
+        ->create([
+            'currency_id' => $this->company->currency_id,
+        ]);
+
+    $adjustment = AdjustmentDocument::factory()
+        ->for($this->company)
+        ->create([
+            'currency_id' => $this->company->currency_id,
+            'type' => \Modules\Inventory\Enums\Adjustments\AdjustmentDocumentType::DebitNote,
+            'total_amount' => Money::of(220, $this->company->currency->code),
+            'total_tax' => Money::of(20, $this->company->currency->code),
+            'original_vendor_bill_id' => $vendorBill->id,
+            'posted_at' => now(),
+            'reference_number' => 'TEST-DN-001',
+        ]);
+
+    // 2. Act
+    $action = app(CreateJournalEntryForAdjustmentAction::class);
+    $journalEntry = $action->execute($adjustment, $this->user);
+
+    // 3. Assert
+    $this->assertNotNull($journalEntry);
+    $this->assertTrue($journalEntry->is_posted);
+    $this->assertEquals($this->company->default_purchase_journal_id, $journalEntry->journal_id);
+
+    // Assert correct totals (debits = credits)
+    $expectedTotal = Money::of(220, $this->company->currency->code);
+    $this->assertTrue($journalEntry->total_debit->isEqualTo($expectedTotal));
+    $this->assertTrue($journalEntry->total_credit->isEqualTo($expectedTotal));
+
+    // Assert correct accounts were used for Debit Note
+    // DEBIT Accounts Payable (reduces vendor debt)
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $journalEntry->id,
+        'account_id' => $this->company->default_accounts_payable_id,
+        'debit' => 220000, // Total amount
+    ]);
+
+    // CREDIT Purchase Returns (contra-expense)
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $journalEntry->id,
+        'account_id' => $this->company->default_purchase_returns_account_id,
+        'credit' => 200000, // Subtotal (220 - 20)
+    ]);
+
+    // CREDIT Tax Receivable (reduces tax asset)
+    $this->assertDatabaseHas('journal_entry_lines', [
+        'journal_entry_id' => $journalEntry->id,
+        'account_id' => $this->company->default_tax_receivable_id,
+        'credit' => 20000, // Tax
     ]);
 });

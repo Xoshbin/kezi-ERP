@@ -119,6 +119,7 @@ class Company extends Model
         'default_purchase_journal_id',
         'default_accounts_receivable_id',
         'default_sales_discount_account_id',
+        'default_purchase_returns_account_id',
         'default_tax_account_id',
         'default_sales_journal_id',
         'default_depreciation_journal_id',
@@ -465,6 +466,17 @@ class Company extends Model
     public function defaultTaxAccount(): BelongsTo
     {
         return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_tax_account_id');
+    }
+
+    /**
+     * Get the default Purchase Returns account.
+     * This contra-expense account is credited when posting Debit Notes (vendor returns).
+     *
+     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     */
+    public function defaultPurchaseReturnsAccount(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_purchase_returns_account_id');
     }
 
     /**
