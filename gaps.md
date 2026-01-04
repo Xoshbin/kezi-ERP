@@ -116,13 +116,13 @@ The JMeryar ERP is a headless accounting system built on Laravel 12 with Filamen
 - Journal entry for AP reduction
 
 #### 3. **Recurring Journal Entries / Invoices**
-> [!WARNING]
-> No automation for recurring transactions (monthly rent, subscriptions, depreciation postings beyond assets).
+> [!NOTE]
+> Implemented: RecurringTemplate model, Scheduler command, and Filament resource added.
 
-**Required:**
+**Implemented:**
 - `RecurringTemplate` model with schedule configuration
-- Scheduler to auto-generate entries based on templates
-- Support for both JournalEntry and Invoice templates
+- `accounting:process-recurring` scheduler command
+- Support for both JournalEntry and Invoice templates via JSON storage
 
 #### 4. **Consolidated Financial Statements**
 > [!IMPORTANT]
@@ -246,7 +246,7 @@ PDF generation exists but verify:
 
 | Domain | Completeness | Status |
 |--------|--------------|--------|
-| Core Accounting | 90% | ⚠️ Missing Recurring Entries |
+| Core Accounting | 95% | ✅ Recurring Entries Implemented |
 | Financial Reports | 95% | ⚠️ Missing Consolidation |
 | Sales | 85% | ✅ Credit Notes/Returns Implemented |
 | Purchase | 90% | ✅ Debit Notes/Returns Implemented |

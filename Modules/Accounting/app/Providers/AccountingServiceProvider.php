@@ -72,6 +72,7 @@ class AccountingServiceProvider extends ServiceProvider
         $this->commands([
             \Modules\Accounting\Console\Commands\ProcessDepreciations::class,
             \Modules\Accounting\Console\Commands\RevalueForeignCurrencyBalances::class,
+            \Modules\Accounting\Console\Commands\ProcessRecurringTransactionsCommand::class,
         ]);
     }
 
