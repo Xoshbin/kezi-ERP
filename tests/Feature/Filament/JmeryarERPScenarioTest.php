@@ -155,6 +155,12 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($user->companies->first()->id)->toBe($company->id);
 
     // Authenticate as the user
+    // Assign Super Admin to ensure they have permissions for all actions
+    app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    setPermissionsTeamId($company->id);
+    $user->assignRole('super_admin');
+
     $this->actingAs($user);
 
     // Step 4: Capital Injection (Owner's Investment)
@@ -385,7 +391,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($invoice->status)->toBe(InvoiceStatus::Posted);
     expect($invoice->getRemainingAmount()->isZero())->toBeFalse();
 
-    livewire(EditInvoice::class, [
+    livewire(\Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ViewInvoice::class, [
         'record' => $invoice->getRouteKey(),
     ])
         ->callAction('register_payment', [
@@ -409,7 +415,7 @@ test('Jmeryar ERP complete accounting scenario - Full Workflow', function () {
     expect($invoice->status)->toBe(InvoiceStatus::Paid);
 
     // Step 8: Paying a Vendor (using Register Payment action)
-    livewire(EditVendorBill::class, [
+    livewire(\Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ViewVendorBill::class, [
         'record' => $vendorBill->getRouteKey(),
     ])
         ->callAction('register_payment', [

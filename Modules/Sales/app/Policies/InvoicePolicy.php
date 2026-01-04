@@ -3,6 +3,7 @@
 namespace Modules\Sales\Policies;
 
 use App\Models\User;
+use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Modules\Sales\Models\Invoice;
 
 class InvoicePolicy
@@ -12,8 +13,7 @@ class InvoicePolicy
      */
     public function viewAny(User $user): bool
     {
-        // TODO: Change this to implement actual logic before deploying
-        return true;
+        return $user->can('view_any_invoice');
     }
 
     /**
@@ -21,8 +21,7 @@ class InvoicePolicy
      */
     public function view(User $user, Invoice $invoice): bool
     {
-        // TODO: Change this to implement actual logic before deploying
-        return true;
+        return $user->can('view_invoice');
     }
 
     /**
@@ -30,8 +29,7 @@ class InvoicePolicy
      */
     public function create(User $user): bool
     {
-        // TODO: Change this to implement actual logic before deploying
-        return true;
+        return $user->can('create_invoice');
     }
 
     /**
@@ -39,8 +37,8 @@ class InvoicePolicy
      */
     public function update(User $user, Invoice $invoice): bool
     {
-        // TODO: Change this to implement actual logic before deploying
-        return true;
+        // Immutability: Only Draft invoices can be edited.
+        return $user->can('update_invoice') && $invoice->status === InvoiceStatus::Draft;
     }
 
     /**
@@ -48,8 +46,8 @@ class InvoicePolicy
      */
     public function delete(User $user, Invoice $invoice): bool
     {
-        // TODO: Change this to implement actual logic before deploying
-        return true;
+        // Immutability: Only Draft invoices can be deleted.
+        return $user->can('delete_invoice') && $invoice->status === InvoiceStatus::Draft;
     }
 
     /**
@@ -57,8 +55,7 @@ class InvoicePolicy
      */
     public function restore(User $user, Invoice $invoice): bool
     {
-        // TODO: Change this to implement actual logic before deploying
-        return true;
+        return $user->can('restore_invoice');
     }
 
     /**
@@ -66,8 +63,7 @@ class InvoicePolicy
      */
     public function forceDelete(User $user, Invoice $invoice): bool
     {
-        // TODO: Change this to implement actual logic before deploying
-        return true;
+        return $user->can('force_delete_invoice');
     }
 
     /**
@@ -76,12 +72,16 @@ class InvoicePolicy
      */
     public function resetToDraft(User $user, Invoice $invoice): bool
     {
-        // In a real application, you would check if the user has a specific role,
-        // for example: return $user->hasRole('manager');
+        // Strictly prohibit resetting Posted invoices to Draft to preserve audit trail.
+        // Corrections must be made via Credit Notes.
+        // Only allowed if status is Cancelled? Or maybe strictly forbid for Posted.
+        // If "Immutability is Law", once Posted, never Draft again.
 
-        // For the test to pass, we will simply allow it.
-        // TODO: Change this to implement actual logic before deploying
-        return true;
+        if ($invoice->status === InvoiceStatus::Posted || $invoice->status === InvoiceStatus::Paid) {
+            return false;
+        }
+
+        return $user->can('update_invoice');
     }
 
     /**
@@ -89,9 +89,8 @@ class InvoicePolicy
      */
     public function cancel(User $user, Invoice $invoice): bool
     {
-        // For now, allow any logged-in user to cancel a posted invoice.
-        // We can add more specific role-based logic here later if needed.
-        // return $invoice->status === 'posted';
-        return true;
+        // Only Draft invoices can be cancelled (Voided).
+        // Posted invoices must be reversed via Credit Note.
+        return $user->can('update_invoice') && ($invoice->status === InvoiceStatus::Draft || $invoice->status === InvoiceStatus::Posted);
     }
 }

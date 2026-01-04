@@ -36,6 +36,13 @@ it('shows unhelpful error message when validation exception occurs (current beha
     ]);
 
     $user = \App\Models\User::factory()->create();
+
+    // Assign Permissions
+    app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    setPermissionsTeamId($company->id);
+    $user->assignRole('super_admin');
+
     $this->actingAs($user);
     \Filament\Facades\Filament::setTenant($company);
 
