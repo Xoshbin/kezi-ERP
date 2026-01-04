@@ -25,6 +25,9 @@ class EventServiceProvider extends ServiceProvider
         \Modules\Sales\Events\InvoiceConfirmed::class => [
             \Modules\Inventory\Listeners\Sales\CreateStockMovesOnInvoiceConfirmed::class,
         ],
+        \Modules\Inventory\Events\GoodsReceiptValidated::class => [
+            \Modules\Inventory\Listeners\Purchase\UpdatePurchaseOrderOnGoodsReceipt::class,
+        ],
     ];
 
     /**
