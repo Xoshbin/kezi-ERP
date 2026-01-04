@@ -7,6 +7,7 @@ use BackedEnum;
 use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
@@ -660,7 +661,10 @@ class VendorBillResource extends Resource
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                ActionGroup::make([
+                    \Filament\Actions\ViewAction::make(),
+                    EditAction::make(),
+                ]),
                 Action::make('register_payment')
                     ->label(__('Register Payment'))
                     ->icon('heroicon-o-banknotes')
@@ -779,6 +783,7 @@ class VendorBillResource extends Resource
             'index' => ListVendorBills::route('/'),
             'create' => CreateVendorBill::route('/create'),
             'edit' => EditVendorBill::route('/{record}/edit'),
+            'view' => Pages\ViewVendorBill::route('/{record}'),
         ];
     }
 }

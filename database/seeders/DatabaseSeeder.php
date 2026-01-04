@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
                 \Modules\Accounting\Database\Seeders\JournalSeeder::class,
                 UpdateCompanyDefaultsSeeder::class,
                 UserSeeder::class,
+                \Database\Seeders\RolesAndPermissionsSeeder::class,
 
                 // 2. Payment terms
                 // Common payment terms for all companies

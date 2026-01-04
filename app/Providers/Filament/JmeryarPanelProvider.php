@@ -6,6 +6,7 @@ use App\Filament\Clusters\Settings\SettingsCluster;
 use App\Filament\Pages\Tenancy\EditCompanyProfile;
 use App\Filament\Pages\Tenancy\RegisterCompany;
 use App\Models\Company;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Coolsam\Modules\ModulesPlugin;
 use CraftForge\FilamentLanguageSwitcher\FilamentLanguageSwitcherPlugin;
 use DutchCodingCompany\FilamentDeveloperLogins\FilamentDeveloperLoginsPlugin;
@@ -112,6 +113,7 @@ class JmeryarPanelProvider extends PanelProvider
                     ->users([
                         'Admin' => 'admin@jmeryar.com',
                     ]),
+                FilamentShieldPlugin::make(),
                 // FilamentAiHelperPlugin::make()
                 //     ->buttonLabel('AccounTech Pro')
                 //     ->buttonIcon('heroicon-o-sparkles')
