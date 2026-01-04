@@ -74,6 +74,11 @@ class SalesOrderAccountingFlowTest extends TestCase
         // But wait, if the app requires current_company_id, removing it might break tenant checks.
         // Let's assume for now removing it fixes the SQL error.
 
+        // Permission Setup
+        $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+        setPermissionsTeamId($this->company->id);
+        $this->user->assignRole('super_admin');
+
         $this->actingAs($this->user);
 
         \Filament\Facades\Filament::setTenant($this->company);
@@ -252,8 +257,8 @@ class SalesOrderAccountingFlowTest extends TestCase
         // ---------------------------------------------------------------------
         // 5. Register Payment & Verify Payment JE
         // ---------------------------------------------------------------------
-        // Action: 'register_payment' on EditInvoice
-        Livewire::test(EditInvoice::class, ['record' => $invoice->id])
+        // Action: 'register_payment' on ViewInvoice (was EditInvoice)
+        Livewire::test(\Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ViewInvoice::class, ['record' => $invoice->id])
             ->callAction('register_payment', data: [
                 'journal_id' => $this->bankJournal->id,
                 'payment_date' => now(),

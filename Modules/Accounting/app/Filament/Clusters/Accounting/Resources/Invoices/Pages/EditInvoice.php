@@ -263,10 +263,19 @@ class EditInvoice extends EditRecord
                             ->send();
                     }
                 })
-                ->visible(
-                    fn (Invoice $record) => $record->status === InvoiceStatus::Posted &&
-                    ! $record->getRemainingAmount()->isZero()
-                ),
+                ->visible(function (Invoice $record) {
+                    $res = $record->status === InvoiceStatus::Posted &&
+                    ! $record->getRemainingAmount()->isZero();
+
+                    if (app()->runningUnitTests()) {
+                        dump('Visible Check: '.($res ? 'YES' : 'NO'));
+                        dump('Status: '.$record->status->value);
+                        dump('Remaining: '.$record->getRemainingAmount());
+                        dump('Is Zero: '.($record->getRemainingAmount()->isZero() ? 'YES' : 'NO'));
+                    }
+
+                    return $res;
+                }),
 
             // Actions\Action::make('resetToDraft')
             //     ->label(__('invoice.reset_to_draft'))

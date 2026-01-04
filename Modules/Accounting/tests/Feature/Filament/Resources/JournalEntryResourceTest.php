@@ -425,10 +425,19 @@ it('can create and post capital injection journal entry using Filament interface
     $this->assertTrue($journalEntry->total_debit->isEqualTo($journalEntry->total_credit));
 
     // Verify the post action is no longer visible for posted entries
-    $editWire = livewire(EditJournalEntry::class, [
+    // Verify the post action is no longer visible for posted entries (on View page)
+    // And verify Edit page is forbidden
+    $livewire = livewire(\Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\ViewJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ]);
-    $editWire->assertActionHidden('post');
+    // View page shouldn't have 'post' action either (it's already posted)
+    // View page shouldn't have 'post' action either (it's already posted)
+    $livewire->assertActionDoesNotExist('post');
+
+    // Verify Edit page is forbidden
+    $this->actingAs($this->user)
+        ->get(EditJournalEntry::getUrl(['record' => $journalEntry->getRouteKey()]))
+        ->assertForbidden();
 
     // Verify immutability: Attempt to update posted entry should throw exception
     $journalEntry->description = 'Attempted unauthorized update';

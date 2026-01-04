@@ -7,9 +7,11 @@ use Livewire\Livewire;
 use Modules\Accounting\Enums\Accounting\AccountType;
 use Modules\Accounting\Enums\Accounting\JournalType;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ViewInvoice;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ViewVendorBill;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Foundation\Enums\Partners\PartnerType;
@@ -97,6 +99,12 @@ beforeEach(function () {
         // OR set expense_account_id if needed.
         'expense_account_id' => $this->company->default_accounts_payable_id, // Test setup
     ]);
+
+    // Assign Permissions
+    app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    setPermissionsTeamId($this->company->id);
+    $this->user->assignRole('super_admin');
 
     $this->actingAs($this->user);
     Filament::setTenant($this->company);
@@ -270,7 +278,7 @@ test('capital investment and trading cycle flow', function () {
     expect($bill->status->value)->toBe('posted');
 
     // Step 6: Pay Purchase Bill
-    Livewire::test(EditVendorBill::class, ['record' => $bill->getRouteKey()])
+    Livewire::test(ViewVendorBill::class, ['record' => $bill->getRouteKey()])
         ->callAction('register_payment', [
             'journal_id' => $this->bankJournal->id,
             'payment_date' => now()->format('Y-m-d'),
@@ -385,7 +393,7 @@ test('capital investment and trading cycle flow', function () {
     expect($invoice->status)->toBe(InvoiceStatus::Posted);
 
     // Step 11: Receive Payment
-    Livewire::test(EditInvoice::class, ['record' => $invoice->getRouteKey()])
+    Livewire::test(ViewInvoice::class, ['record' => $invoice->getRouteKey()])
         ->callAction('register_payment', [
             'journal_id' => $this->bankJournal->id,
             'payment_date' => now()->format('Y-m-d'),

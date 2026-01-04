@@ -300,10 +300,10 @@ it('can confirm a vendor bill via Filament action', function () {
     expect($vendorBill->journalEntry->is_posted)->toBeTrue();
 
     // Verify the confirm action is no longer visible for posted bills
-    $editWire = livewire(EditVendorBill::class, [
-        'record' => $vendorBill->getRouteKey(),
+    $editWire = livewire(\Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ViewVendorBill::class, [
+        'record' => $vendorBill->getRouteKey(), // Ensure we use the same key lookup
     ]);
-    $editWire->assertActionHidden('post');
+    $editWire->assertActionDoesNotExist('post');
 });
 
 it('can delete a vendor bill', function () {
@@ -388,12 +388,12 @@ it('cannot confirm already posted vendor bill', function () {
         'posted_at' => now(),
     ]);
 
-    $editWire = livewire(EditVendorBill::class, [
+    $editWire = livewire(\Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ViewVendorBill::class, [
         'record' => $vendorBill->getRouteKey(),
     ]);
 
     // Verify the confirm action is hidden for posted bills
-    $editWire->assertActionHidden('post');
+    $editWire->assertActionDoesNotExist('post');
 });
 
 it('can create and confirm vendor bill following complete workflow', function () {
@@ -502,10 +502,10 @@ it('can create and confirm vendor bill following complete workflow', function ()
     $this->assertTrue($journalEntry->total_debit->isEqualTo($journalEntry->total_credit));
 
     // Verify the confirm action is no longer visible for posted bills
-    $editWire = livewire(EditVendorBill::class, [
-        'record' => $vendorBill->getRouteKey(),
+    $editWire = livewire(\Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ViewVendorBill::class, [
+        'record' => $vendorBill->getRouteKey(), // Ensure we use the same key lookup
     ]);
-    $editWire->assertActionHidden('post');
+    $editWire->assertActionDoesNotExist('post');
 });
 
 it('shows error and keeps draft when storable product lacks inventory account', function () {

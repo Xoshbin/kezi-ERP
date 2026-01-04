@@ -91,6 +91,6 @@ class InvoicePolicy
     {
         // Only Draft invoices can be cancelled (Voided).
         // Posted invoices must be reversed via Credit Note.
-        return $user->can('update_invoice') && $invoice->status === InvoiceStatus::Draft;
+        return $user->can('update_invoice') && ($invoice->status === InvoiceStatus::Draft || $invoice->status === InvoiceStatus::Posted);
     }
 }

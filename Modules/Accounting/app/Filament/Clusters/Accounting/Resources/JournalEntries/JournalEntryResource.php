@@ -5,6 +5,7 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntri
 use App\Models\Company;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -310,7 +311,10 @@ class JournalEntryResource extends Resource
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                ActionGroup::make([
+                    \Filament\Actions\ViewAction::make(),
+                    EditAction::make(),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -357,6 +361,7 @@ class JournalEntryResource extends Resource
             'index' => ListJournalEntries::route('/'),
             'create' => CreateJournalEntry::route('/create'),
             'edit' => EditJournalEntry::route('/{record}/edit'),
+            'view' => Pages\ViewJournalEntry::route('/{record}'),
         ];
     }
 }
