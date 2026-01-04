@@ -123,15 +123,17 @@ class RolesAndPermissionsSeeder extends Seeder
         }
 
         // --- 3. Assign Super Admin to Default User ---
-        // We assign the Global Super Admin role (company_id = null) to the user.
+        // We assign the Global Super Admin role to the user within a company context.
+        // Note: company_id is part of the primary key in model_has_roles, so it cannot be null.
 
         $user = \App\Models\User::where('email', 'admin@jmeryar.com')->first();
 
-        if ($user) {
+        if ($user && $company) {
             // Manually checking db to avoid 'User does not belong to team' errors
             $exists = DB::table('model_has_roles')
                 ->where('model_id', $user->id)
                 ->where('role_id', $superAdmin->id)
+                ->where('company_id', $company->id)
                 ->exists();
 
             if (! $exists) {
@@ -139,7 +141,7 @@ class RolesAndPermissionsSeeder extends Seeder
                     'role_id' => $superAdmin->id,
                     'model_type' => get_class($user),
                     'model_id' => $user->id,
-                    'company_id' => null, // Global
+                    'company_id' => $company->id,
                 ]);
             }
         }
