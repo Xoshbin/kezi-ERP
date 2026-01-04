@@ -36,26 +36,26 @@ class StockPickingResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('Stock Pickings');
+        return __('inventory::stock_picking.navigation_label');
     }
 
     public static function getModelLabel(): string
     {
-        return __('Stock Picking');
+        return __('inventory::stock_picking.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('Stock Pickings');
+        return __('inventory::stock_picking.plural_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make(__('Basic Information'))
+            Section::make(__('inventory::stock_move.basic_information'))
                 ->schema([
                     Forms\Components\TextInput::make('reference')
-                        ->label(__('Reference'))
+                        ->label(__('inventory::stock_picking.reference'))
                         ->required()
                         ->maxLength(255)
                         ->default(fn () => 'SP-'.str_pad(random_int(1, 9999), 4, '0', STR_PAD_LEFT)),
@@ -74,13 +74,13 @@ class StockPickingResource extends Resource
                         ->native(false),
 
                     Forms\Components\Select::make('partner_id')
-                        ->label(__('Partner'))
+                        ->label(__('inventory::stock_picking.partner'))
                         ->relationship('partner', 'name')
                         ->searchable()
                         ->preload(),
 
                     Forms\Components\DateTimePicker::make('scheduled_date')
-                        ->label(__('Scheduled Date'))
+                        ->label(__('inventory::stock_picking.scheduled_date'))
                         ->default(now())
                         ->required(),
 
