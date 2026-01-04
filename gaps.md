@@ -218,9 +218,9 @@ Your system demonstrates strong foundational architecture for accounting with ex
 
 | Gap | Priority | Explanation |
 |-----|----------|-------------|
-| **No goods receipt (GRN) process** | Critical | VendorBill creates stock moves; no separate receiving workflow |
-| **No partial receiving** | High | Cannot receive partial quantities and track backorders |
-| **No three-way matching** | High | No enforcement of PO-GRN-Invoice matching before payment |
+| ~~**No goods receipt (GRN) process**~~ | ~~Critical~~ | ✅ **COMPLETED** - `CreateGoodsReceiptFromPurchaseOrderAction`, GRN auto-creates on PO confirm |
+| ~~**No partial receiving**~~ | ~~High~~ | ✅ **COMPLETED** - `ValidateGoodsReceiptAction` supports partial receipts with backorder creation |
+| ~~**No three-way matching**~~ | ~~High~~ | ✅ **COMPLETED** - `ThreeWayMatchingService` validates PO-GRN-Bill matching |
 | **No purchase requisition workflow** | Medium | No internal request → approval → PO process |
 | **No vendor price lists** | Medium | No vendor-specific pricing with quantity breaks |
 | **No dropship support** | Low | No vendor-direct-to-customer shipping |
