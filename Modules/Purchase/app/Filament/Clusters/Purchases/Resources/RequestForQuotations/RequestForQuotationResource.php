@@ -49,16 +49,16 @@ class RequestForQuotationResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return 'Request for Quotations';
+        return __('purchase::request_for_quotation.navigation_label');
     }
 
     public static function getModelLabel(): string
     {
-        return 'Request for Quotation';
+        return __('purchase::request_for_quotation.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'Request for Quotations';
+        return __('purchase::request_for_quotation.plural_label');
     }
 }
