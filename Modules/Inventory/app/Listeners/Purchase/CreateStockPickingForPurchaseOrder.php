@@ -2,96 +2,52 @@
 
 namespace Modules\Inventory\Listeners\Purchase;
 
-use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
-use Modules\Inventory\Enums\Inventory\StockLocationType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\StockPickingState;
-use Modules\Inventory\Enums\Inventory\StockPickingType;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Inventory\Models\StockMove;
-use Modules\Inventory\Models\StockMoveProductLine;
-use Modules\Inventory\Models\StockPicking;
+use Modules\Inventory\Actions\GoodsReceipt\CreateGoodsReceiptFromPurchaseOrderAction;
+use Modules\Inventory\DataTransferObjects\ReceiveGoodsFromPurchaseOrderDTO;
 use Modules\Product\Enums\Products\ProductType;
 use Modules\Purchase\Events\PurchaseOrderConfirmed;
 
+/**
+ * Creates a Goods Receipt (StockPicking) when a Purchase Order is confirmed.
+ *
+ * This listener ensures that inventory receiving is decoupled from billing:
+ * - A draft StockPicking is always created for tracking goods receipt
+ * - The picking must be validated before inventory is updated
+ * - VendorBill posting validates that goods have been received (for PO-linked bills)
+ */
 class CreateStockPickingForPurchaseOrder
 {
+    public function __construct(
+        private readonly CreateGoodsReceiptFromPurchaseOrderAction $createAction,
+    ) {}
+
     /**
-     * Handle the event.
+     * Handle the PurchaseOrderConfirmed event.
      *
-     * In AUTO_RECORD_ON_BILL mode, stock moves are created when the Vendor Bill is posted,
-     * so we skip creation here to avoid duplicate stock moves.
-     * In MANUAL_INVENTORY_RECORDING mode, we create draft stock moves for warehouse tracking.
+     * Creates a draft StockPicking (GRN) for all storable products in the PO.
+     * The InventoryAccountingMode setting now only affects whether GRN validation
+     * is strictly required before VendorBill posting.
      */
     public function handle(PurchaseOrderConfirmed $event): void
     {
         $po = $event->purchaseOrder;
 
-        // In AUTO mode, bill posting will create stock moves automatically
-        // So we skip PO-based stock move creation to avoid duplicates
-        if ($po->company->inventory_accounting_mode === InventoryAccountingMode::AUTO_RECORD_ON_BILL) {
-            return;
-        }
-
-        // Filter lines for storable products
-        $storableLines = $po->lines->filter(function ($line) {
+        // Check if PO has storable products
+        $hasStorableProducts = $po->lines->contains(function ($line) {
             return $line->product && $line->product->type === ProductType::Storable;
         });
 
-        if ($storableLines->isEmpty()) {
-            return;
+        if (! $hasStorableProducts) {
+            return; // No storable products, no GRN needed
         }
 
-        // Get Locations
-        // Get Locations
-        $vendorLocation = StockLocation::firstOrCreate([
-            'company_id' => $po->company_id,
-            'type' => StockLocationType::Vendor,
-        ], [
-            'name' => 'Vendors',
-            'is_active' => true,
-        ]);
+        // Create the GRN using the action
+        $dto = new ReceiveGoodsFromPurchaseOrderDTO(
+            purchaseOrder: $po,
+            userId: auth()->id() ?? $po->created_by_user_id ?? \App\Models\User::first()->id,
+            receiptDate: $po->expected_delivery_date ?? $po->po_date,
+        );
 
-        $warehouseLocation = StockLocation::where('company_id', $po->company_id)
-            ->where('type', StockLocationType::Internal)
-            ->first();
-
-        // Create Picking
-        $picking = StockPicking::create([
-            'company_id' => $po->company_id,
-            'type' => StockPickingType::Receipt,
-            'state' => StockPickingState::Draft,
-            'partner_id' => $po->vendor_id,
-            'scheduled_date' => $po->po_date ?? now(),
-            'origin' => $po->po_number,
-            'created_by_user_id' => auth()->id() ?? $po->created_by_user_id ?? \App\Models\User::first()->id,
-        ]);
-
-        // Create Moves
-        foreach ($storableLines as $line) {
-            $move = StockMove::create([
-                'company_id' => $po->company_id,
-                'picking_id' => $picking->id,
-                'move_type' => StockMoveType::Incoming,
-                'status' => StockMoveStatus::Draft,
-                'move_date' => $po->po_date ?? now(),
-                'created_by_user_id' => auth()->id() ?? $po->created_by_user_id,
-                'reference' => $line->description,
-                'description' => "Receive {$po->po_number}",
-                'source_type' => get_class($line),
-                'source_id' => $line->id,
-            ]);
-
-            // Create Move Product Line
-            StockMoveProductLine::create([
-                'company_id' => $po->company_id,
-                'stock_move_id' => $move->id,
-                'product_id' => $line->product_id,
-                'quantity' => $line->quantity,
-                'from_location_id' => $vendorLocation->id,
-                'to_location_id' => $warehouseLocation->id,
-            ]);
-        }
+        $this->createAction->execute($dto);
     }
 }

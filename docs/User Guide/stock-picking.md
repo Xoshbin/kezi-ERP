@@ -35,6 +35,45 @@ All pickings follow a standard lifecycle:
 
 ---
 
+## Goods Receipt Note (GRN) from Purchase Orders
+
+When you confirm a Purchase Order with storable products, the system automatically creates a **Draft Goods Receipt Note (GRN)** — a special type of Receipt picking linked to your PO.
+
+### Automatic GRN Creation
+
+1. You confirm a Purchase Order containing storable products.
+2. The system creates a draft `StockPicking` of type **Receipt**.
+3. Stock Moves are created for each storable product line.
+4. The GRN is linked to the PO via `purchase_order_id`.
+
+### Validating the GRN
+
+When goods physically arrive:
+
+1. Navigate to **Inventory > Operations > Transfers** and find the GRN linked to your PO.
+2. Verify quantities match what was received.
+3. Click **Validate** to confirm receipt.
+4. Stock quantities are updated and the PO status changes to **Partially Received** or **Fully Received**.
+
+### Three-Way Matching
+
+When you create a Vendor Bill linked to a Purchase Order, the system performs **three-way matching**:
+
+| Document | What is Checked |
+|----------|-----------------|
+| **Purchase Order** | What was ordered (quantities, prices) |
+| **GRN** | What was physically received |
+| **Vendor Bill** | What the vendor is charging |
+
+Matching statuses:
+- ✅ **Fully Matched** — All quantities received and match the bill
+- ⚠️ **Pending Receipt** — Goods not yet received (blocks posting in strict mode)
+- ⚠️ **Partially Received** — Some goods received, more expected
+- ❌ **Quantity Mismatch** — Bill quantity differs from received
+- ❌ **Price Mismatch** — Bill price differs from PO price
+
+---
+
 ## 1. Receiving Goods (Receipts)
 
 Use this when your vendor delivers products you ordered.
