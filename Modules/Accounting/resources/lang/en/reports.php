@@ -15,6 +15,8 @@ return [
     'aging_reports_description' => 'Track outstanding receivables and payables by aging periods.',
     'tax_reports' => 'Tax Reports',
     'tax_reports_description' => 'Comprehensive tax reporting for compliance and analysis.',
+    'consolidated_reports' => 'Consolidated Reports',
+    'consolidated_reports_description' => 'Financial reports aggregating multiple entities.',
 
     // Report Descriptions
     'profit_and_loss_description' => 'View revenue, expenses, and net income for a specific period.',
@@ -25,6 +27,8 @@ return [
     'aged_receivables_description' => 'Outstanding customer invoices grouped by aging periods.',
     'aged_payables_description' => 'Outstanding vendor bills grouped by aging periods.',
     'tax_report_description' => 'Summary of tax collected and paid for compliance reporting.',
+    'consolidated_profit_and_loss' => 'Consolidated P&L',
+    'consolidated_profit_and_loss_description' => 'Aggregated view of revenue and expenses across companies.',
 
     // Quick Actions
     'quick_actions' => 'Quick Actions',
@@ -52,6 +56,7 @@ return [
     'view_aged_receivables' => 'View Aged Receivables',
     'view_aged_payables' => 'View Aged Payables',
     'view_tax_report' => 'View Tax Report',
+    'view_consolidated_profit_and_loss' => 'View Consolidated P&L',
     'period' => 'Period',
     'revenue' => 'Revenue',
     'expenses' => 'Expenses',
