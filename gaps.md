@@ -125,13 +125,18 @@ The JMeryar ERP is a headless accounting system built on Laravel 12 with Filamen
 - Support for both JournalEntry and Invoice templates via JSON storage
 
 #### 4. **Consolidated Financial Statements**
-> [!IMPORTANT]
-> Multi-company hierarchy exists but no consolidation reports for parent companies.
+> [!NOTE]
+> Implemented: Multi-company consolidation with currency translation and inter-company elimination.
 
-**Required:**
-- Inter-company transaction elimination
-- Consolidated Trial Balance / Balance Sheet / P&L
-- Currency translation for subsidiaries
+**Implemented:**
+- `ConsolidatedTrialBalanceService` with multi-currency support
+- `ConsolidatedBalanceSheetService` and `ConsolidatedProfitAndLossService`
+- `CurrencyTranslationService` with Closing Rate, Average Rate, and Historical Rate methods
+- `InterCompanyEliminationService` for eliminating inter-company balances
+- `InterCompanyDocumentService` for auto-creating reciprocal Vendor Bills from Invoices
+- Partner `linked_company_id` field for inter-company partner identification
+- Company `consolidation_method` field (Full, Proportional, Equity)
+- Filament UI for Consolidated P&L report
 
 ---
 
@@ -247,13 +252,13 @@ PDF generation exists but verify:
 | Domain | Completeness | Status |
 |--------|--------------|--------|
 | Core Accounting | 95% | ✅ Recurring Entries Implemented |
-| Financial Reports | 95% | ⚠️ Missing Consolidation |
+| Financial Reports | 100% | ✅ Consolidation Implemented |
 | Sales | 85% | ✅ Credit Notes/Returns Implemented |
 | Purchase | 90% | ✅ Debit Notes/Returns Implemented |
 | Inventory | 85% | ⚠️ No Serial Tracking |
 | HR/Payroll | 75% | ⚠️ No Expense Claims |
 | Payment | 80% | ⚠️ No Cheque Management |
-| Multi-Company | 70% | ❌ No Consolidation |
+| Multi-Company | 95% | ✅ Consolidation Implemented |
 
 ---
 
@@ -283,10 +288,10 @@ PDF generation exists but verify:
 
 ## Summary
 
-The JMeryar ERP has a **solid foundation** with excellent implementation of core double-entry accounting, inventory valuation, and the Action-DTO-Service architecture. However, from a **complete accounting system perspective**, the most critical gaps are:
+The JMeryar ERP has a **solid foundation** with excellent implementation of core double-entry accounting, inventory valuation, and the Action-DTO-Service architecture. **Key recent additions:**
 
-1. **Recurring Entries** - Needed for automation of routine transactions  
-2. **Consolidated Reporting** - Required for multi-company setups
+1. **Consolidated Reporting** - ✅ Implemented for multi-company setups with currency translation and inter-company eliminations
+2. **Recurring Entries** - ✅ Implemented for automation of routine transactions  
 
 From an **ERP perspective**, the key missing features are:
 1. **Serial Number Tracking** - For unit-level inventory management
