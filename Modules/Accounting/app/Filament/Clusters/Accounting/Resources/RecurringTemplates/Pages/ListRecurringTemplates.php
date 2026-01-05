@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Accounting\Filament\Resources\RecurringTemplateResource\Pages;
+namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\RecurringTemplates\Pages;
 
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
-use Modules\Accounting\Filament\Resources\RecurringTemplateResource;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\RecurringTemplates\RecurringTemplateResource;
 
 class ListRecurringTemplates extends ListRecords
 {
