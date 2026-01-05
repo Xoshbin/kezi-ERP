@@ -41,7 +41,7 @@ class ProcessRecurringTransactionsCommand extends Command
         foreach ($templates as $template) {
             try {
                 $this->info("Processing template: {$template->name} (ID: {$template->id})");
-                $action->execute($template);
+                $action->execute($template, Carbon::now());
                 $this->info("Successfully processed template: {$template->name}");
             } catch (\Exception $e) {
                 $this->error("Failed to process template ID {$template->id}: ".$e->getMessage());

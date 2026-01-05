@@ -99,7 +99,7 @@ class RecurringTransactionTest extends TestCase
             'company_id' => $this->company->id,
             'journal_id' => $this->journal->id,
             'description' => 'Monthly Rent Payment',
-            'is_posted' => 0, // Should be draft
+            'is_posted' => 1, // Recurring transactions are posted immediately
         ]);
 
         // Assert Next Run Date updated
