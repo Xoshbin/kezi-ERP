@@ -34,6 +34,7 @@ use Xoshbin\CustomFields\Traits\HasCustomFields;
  * @property \Modules\Foundation\Enums\Partners\PartnerType $type
  * @property string|null $contact_person
  * @property string|null $email
+ * @property int|null $linked_company_id
  * @property string|null $phone
  * @property string|null $address_line_1
  * @property string|null $address_line_2
@@ -107,6 +108,7 @@ class Partner extends Model
         'type',
         'contact_person',
         'email',
+        'linked_company_id',
         'phone',
         'address_line_1',
         'address_line_2',
@@ -247,6 +249,25 @@ class Partner extends Model
     | Financial Balance Calculations
     |--------------------------------------------------------------------------
     */
+
+    /**
+     * Get the company linked to this partner (for inter-company transactions).
+     */
+    /**
+     * @return BelongsTo<Company, static>
+     */
+    public function linkedCompany(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'linked_company_id');
+    }
+
+    /**
+     * Check if this partner represents an inter-company entity.
+     */
+    public function isInterCompanyPartner(): bool
+    {
+        return $this->linked_company_id !== null;
+    }
 
     /**
      * Get the total outstanding customer balance (accounts receivable).
