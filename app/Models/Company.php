@@ -29,6 +29,7 @@ use Modules\Purchase\Enums\Purchases\VendorBillStatus;
  * @property int $currency_id
  * @property string $fiscal_country
  * @property int|null $parent_company_id
+ * @property \Modules\Accounting\Enums\Consolidation\ConsolidationMethod $consolidation_method
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read Collection<int, \Modules\Accounting\Models\Account> $accounts
@@ -113,6 +114,7 @@ class Company extends Model
         'currency_id',
         'fiscal_country',
         'parent_company_id',
+        'consolidation_method',
         'enable_reconciliation',
         'default_accounts_payable_id',
         'default_tax_receivable_id',
@@ -162,6 +164,7 @@ class Company extends Model
         'pdf_settings' => 'json',
         'numbering_settings' => 'json',
         'inventory_accounting_mode' => \Modules\Inventory\Enums\Inventory\InventoryAccountingMode::class,
+        'consolidation_method' => \Modules\Accounting\Enums\Consolidation\ConsolidationMethod::class,
     ];
 
     /*

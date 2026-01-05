@@ -122,6 +122,8 @@ class Invoice extends Model
         'total_amount_company_currency',
         'total_tax_company_currency',
         'posted_at',
+        'inter_company_source_id',
+        'inter_company_source_type',
         'reset_to_draft_log',
     ];
 

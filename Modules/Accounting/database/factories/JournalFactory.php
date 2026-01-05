@@ -29,8 +29,12 @@ class JournalFactory extends Factory
             'currency_id' => function (array $attributes) {
                 return Company::find($attributes['company_id'])->currency_id;
             },
-            'default_debit_account_id' => Account::factory(),
-            'default_credit_account_id' => Account::factory(),
+            'default_debit_account_id' => function (array $attributes) {
+                return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
+            },
+            'default_credit_account_id' => function (array $attributes) {
+                return Account::factory()->create(['company_id' => $attributes['company_id']])->id;
+            },
         ];
     }
 }
