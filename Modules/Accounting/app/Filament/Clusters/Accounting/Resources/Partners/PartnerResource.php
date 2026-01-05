@@ -267,6 +267,17 @@ class PartnerResource extends Resource
                                     ->helperText(__('accounting::partner.payable_account_help'))
                                     ->prefixIcon('heroicon-m-arrow-trending-down'),
                             ]),
+
+                        Grid::make(1)
+                            ->schema([
+                                Select::make('linked_company_id')
+                                    ->label(__('accounting::partner.linked_company'))
+                                    ->relationship('linkedCompany', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->helperText(__('accounting::partner.linked_company_help'))
+                                    ->prefixIcon('heroicon-m-building-office-2'),
+                            ]),
                     ])
                     ->columnSpanFull()
                     ->collapsible(),
