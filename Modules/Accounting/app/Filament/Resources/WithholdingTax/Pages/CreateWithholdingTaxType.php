@@ -20,8 +20,20 @@ class CreateWithholdingTaxType extends CreateRecord
         ];
     }
 
-    public function getTitle(): string
+    protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
     {
-        return __('accounting::withholding_tax.pages.create');
+        $action = app(\Modules\Accounting\Actions\Accounting\CreateWithholdingTaxTypeAction::class);
+
+        $dto = new \Modules\Accounting\DataTransferObjects\Accounting\CreateWithholdingTaxTypeDTO(
+            company_id: filament()->getTenant()->id,
+            name: is_array($data['name']) ? $data['name'] : [app()->getLocale() => $data['name']],
+            rate: $data['rate'] / 100, // Convert percentage to decimal
+            withholding_account_id: $data['withholding_account_id'],
+            applicable_to: \Modules\Accounting\Enums\Accounting\WithholdingTaxApplicability::from($data['applicable_to']),
+            threshold_amount: $data['threshold_amount'] ?? null,
+            is_active: $data['is_active'],
+        );
+
+        return $action->execute($dto);
     }
 }

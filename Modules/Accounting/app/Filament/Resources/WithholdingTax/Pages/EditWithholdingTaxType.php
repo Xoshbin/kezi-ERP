@@ -22,6 +22,24 @@ class EditWithholdingTaxType extends EditRecord
         ];
     }
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        if (isset($data['rate'])) {
+            $data['rate'] = $data['rate'] * 100; // Convert decimal to percentage for display
+        }
+
+        return $data;
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        if (isset($data['rate'])) {
+            $data['rate'] = $data['rate'] / 100; // Convert percentage to decimal for storage
+        }
+
+        return $data;
+    }
+
     public function getTitle(): string
     {
         return __('accounting::withholding_tax.pages.edit');
