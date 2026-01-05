@@ -16,9 +16,8 @@ class ScenarioOneSeeder extends Seeder
         // Step 1.1: Create Currency (IQD)
         $iqd = DB::table('currencies')->insertGetId([
             'code' => 'IQD',
-            'name' => 'Iraqi Dinar',
+            'name' => json_encode(['en' => 'Iraqi Dinar']),
             'symbol' => 'ع.د',
-            'exchange_rate' => 1.0,
             'decimal_places' => 3,
             'is_active' => true,
             'created_at' => now(),
@@ -36,36 +35,59 @@ class ScenarioOneSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        (new UserSeeder)->run();
-
-        // Step 1.3: Create User (Soran)
-        $user = DB::table('users')->insertGetId([
+        // Insert exchange rate (Now that we have company_id)
+        DB::table('currency_rates')->insert([
             'company_id' => $company,
-            'name' => 'Soran',
-            'email' => 'soran@jmeryarerp.com',
-            'password' => Hash::make('SecurePassword123!'),
+            'currency_id' => $iqd,
+            'rate' => 1.0,
+            'effective_date' => now()->startOfDay(),
+            'source' => 'Manual',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
+        (new UserSeeder)->run();
+
+        // Step 1.3: Create User (Soran)
+        $user = DB::table('users')->updateOrInsert(
+            ['email' => 'soran@jmeryarerp.com'],
+            [
+                'name' => 'Soran',
+                'password' => Hash::make('SecurePassword123!'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+        // updateOrInsert returns boolean, we need ID.
+        $userId = DB::table('users')->where('email', 'soran@jmeryarerp.com')->value('id');
+
+        // Attach user to company
+        DB::table('company_user')->updateOrInsert(
+            ['company_id' => $company, 'user_id' => $userId],
+            ['created_at' => now(), 'updated_at' => now()]
+        );
+
+        $user = $userId; // Keep $user variable for later use
+
         // Step 2: Chart of Accounts
         $accounts = [
-            ['code' => '1010', 'name' => 'Bank', 'type' => 'Asset'],
-            ['code' => '1200', 'name' => 'Accounts Receivable', 'type' => 'Asset'],
-            ['code' => '1500', 'name' => 'IT Equipment', 'type' => 'Asset'],
-            ['code' => '1501', 'name' => 'Accumulated Depreciation', 'type' => 'Asset'],
-            ['code' => '2100', 'name' => 'Accounts Payable', 'type' => 'Liability'],
-            ['code' => '3000', 'name' => "Owner's Equity", 'type' => 'Equity'],
-            ['code' => '4000', 'name' => 'Consulting Revenue', 'type' => 'Revenue'],
-            ['code' => '5000', 'name' => 'Sales Discounts & Returns', 'type' => 'Revenue'],
-            ['code' => '6100', 'name' => 'Depreciation Expense', 'type' => 'Expense'],
+            ['code' => '1010', 'name' => 'Bank', 'type' => 'bank_and_cash'],
+            ['code' => '1200', 'name' => 'Accounts Receivable', 'type' => 'receivable'],
+            ['code' => '1500', 'name' => 'IT Equipment', 'type' => 'fixed_assets'],
+            ['code' => '1501', 'name' => 'Accumulated Depreciation', 'type' => 'fixed_assets'],
+            ['code' => '2100', 'name' => 'Accounts Payable', 'type' => 'payable'],
+            ['code' => '3000', 'name' => "Owner's Equity", 'type' => 'equity'],
+            ['code' => '4000', 'name' => 'Consulting Revenue', 'type' => 'income'],
+            ['code' => '5000', 'name' => 'Sales Discounts & Returns', 'type' => 'income'],
+            ['code' => '6100', 'name' => 'Depreciation Expense', 'type' => 'depreciation'],
+            ['code' => '220150', 'name' => 'Withholding Tax Payable', 'type' => 'current_liabilities'],
         ];
         $accountIds = [];
         foreach ($accounts as $acc) {
             $accountIds[$acc['code']] = DB::table('accounts')->insertGetId([
                 'company_id' => $company,
                 'code' => $acc['code'],
-                'name' => $acc['name'],
+                'name' => json_encode(['en' => $acc['name']]),
                 'type' => $acc['type'],
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -74,16 +96,16 @@ class ScenarioOneSeeder extends Seeder
 
         // Step 3.1: Journals
         $journals = [
-            ['name' => 'Bank', 'type' => 'Bank', 'short_code' => 'BNK'],
-            ['name' => 'Sales', 'type' => 'Sale', 'short_code' => 'INV'],
-            ['name' => 'Purchases', 'type' => 'Purchase', 'short_code' => 'BILL'],
-            ['name' => 'Miscellaneous', 'type' => 'Miscellaneous', 'short_code' => 'MISC'],
+            ['name' => 'Bank', 'type' => 'bank', 'short_code' => 'BNK'],
+            ['name' => 'Sales', 'type' => 'sale', 'short_code' => 'INV'],
+            ['name' => 'Purchases', 'type' => 'purchase', 'short_code' => 'BILL'],
+            ['name' => 'Miscellaneous', 'type' => 'miscellaneous', 'short_code' => 'MISC'],
         ];
         $journalIds = [];
         foreach ($journals as $j) {
             $journalIds[$j['name']] = DB::table('journals')->insertGetId([
                 'company_id' => $company,
-                'name' => $j['name'],
+                'name' => json_encode(['en' => $j['name']]),
                 'type' => $j['type'],
                 'short_code' => $j['short_code'],
                 'created_at' => now(),
@@ -148,11 +170,16 @@ class ScenarioOneSeeder extends Seeder
             ],
         ]);
 
+        // Step 5.0: Call WHT Seeder
+        (new \Modules\Accounting\Database\Seeders\WithholdingTaxTypeSeeder)->run();
+        $whtTypeId = DB::table('withholding_tax_types')->where('name', 'like', '%Services%')->value('id');
+
         // Step 5.1: Create Vendor
         $paykarVendorId = DB::table('partners')->insertGetId([
             'company_id' => $company,
             'name' => 'Paykar Tech Supplies',
             'type' => 'Vendor',
+            'withholding_tax_type_id' => $whtTypeId,
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
@@ -169,7 +196,7 @@ class ScenarioOneSeeder extends Seeder
             'bill_reference' => 'KE-LAPTOP-001',
             'total_amount' => 3000000,
             'total_tax' => 0,
-            'status' => \Modules\Purchase\Models\VendorBill::STATUS_DRAFT,
+            'status' => 'draft',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -224,7 +251,7 @@ class ScenarioOneSeeder extends Seeder
             ],
         ]);
         DB::table('vendor_bills')->where('id', $vendorBillId)->update([
-            'status' => \Modules\Purchase\Models\VendorBill::STATUS_DRAFT,
+            'status' => 'draft',
             'journal_entry_id' => $vendorBillJournalEntryId,
         ]);
 
@@ -245,7 +272,7 @@ class ScenarioOneSeeder extends Seeder
             'customer_id' => $hawreCustomerId,
             'invoice_date' => now(),
             'due_date' => Carbon::now()->addDays(15),
-            'status' => \Modules\Sales\Models\Invoice::STATUS_DRAFT,
+            'status' => 'draft',
             'invoice_number' => 'INV-0001',
             'total_amount' => 5000000,
             'total_tax' => 0,
@@ -303,7 +330,7 @@ class ScenarioOneSeeder extends Seeder
             ],
         ]);
         DB::table('invoices')->where('id', $invoiceId)->update([
-            'status' => \Modules\Sales\Models\Invoice::STATUS_DRAFT,
+            'status' => 'draft',
             'invoice_number' => 'INV-0001',
             'journal_entry_id' => $invoiceJournalEntryId,
         ]);
@@ -365,7 +392,7 @@ class ScenarioOneSeeder extends Seeder
             'journal_entry_id' => $paymentJournalEntryId,
         ]);
         DB::table('invoices')->where('id', $invoiceId)->update([
-            'status' => \Modules\Sales\Models\Invoice::STATUS_DRAFT,
+            'status' => 'draft',
         ]);
         DB::table('payment_document_links')->insert([
             'payment_id' => $paymentId,
@@ -431,7 +458,7 @@ class ScenarioOneSeeder extends Seeder
             'journal_entry_id' => $vendorPaymentJournalEntryId,
         ]);
         DB::table('vendor_bills')->where('id', $vendorBillId)->update([
-            'status' => \Modules\Purchase\Models\VendorBill::STATUS_DRAFT,
+            'status' => 'draft',
         ]);
         DB::table('payment_document_links')->insert([
             'payment_id' => $vendorPaymentId,
