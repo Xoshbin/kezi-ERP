@@ -139,6 +139,20 @@ class ViewReports extends Page
                     ],
                 ],
             ],
+            'consolidated_reports' => [
+                'title' => __('accounting::reports.consolidated_reports'),
+                'description' => __('accounting::reports.consolidated_reports_description'),
+                'icon' => 'heroicon-o-globe-alt',
+                'reports' => [
+                    [
+                        'name' => __('accounting::reports.consolidated_profit_and_loss'),
+                        'description' => __('accounting::reports.consolidated_profit_and_loss_description'),
+                        'icon' => 'heroicon-o-chart-bar',
+                        'url' => $baseUrl.'/view-consolidated-profit-and-loss',
+                        'button_text' => __('accounting::reports.view_consolidated_profit_and_loss'),
+                    ],
+                ],
+            ],
         ];
     }
 }
