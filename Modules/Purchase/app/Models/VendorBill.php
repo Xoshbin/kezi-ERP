@@ -137,6 +137,8 @@ class VendorBill extends Model
         'journal_entry_id',     // Nullable foreign key to journal_entries.id, linking to the immutable
         // financial transaction once the bill is posted .
         'posted_at',            // Nullable timestamp indicating when the vendor bill was confirmed/posted .
+        'inter_company_source_id',
+        'inter_company_source_type',
         'reset_to_draft_log',   // JSON/Text field to log instances where a 'Posted' bill was
         // **reset to 'Draft' for modification**, crucial for maintaining an audit trail .
     ];
