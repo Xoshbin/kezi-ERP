@@ -2,18 +2,15 @@
 
 namespace Modules\Accounting\Actions\Recurring;
 
-use App\Models\Company;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use Modules\Accounting\Enums\Accounting\RecurringFrequency;
-use Modules\Accounting\Enums\Accounting\RecurringStatus;
-use Modules\Accounting\Enums\Accounting\RecurringTargetType;
 use Modules\Accounting\Models\RecurringTemplate;
 use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\PaymentTerm;
 use Modules\Sales\Actions\Sales\CreateInvoiceAction;
 use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
 use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
@@ -22,36 +19,35 @@ class ProcessRecurringTransactionAction
 {
     public function __construct(
         private readonly CreateJournalEntryAction $createJournalEntryAction,
-        private readonly CreateInvoiceAction $createInvoiceAction,
+        private readonly CreateInvoiceAction $createInvoiceAction
     ) {}
 
-    public function execute(RecurringTemplate $template): void
+    public function execute(RecurringTemplate $template, Carbon $runDate): void
     {
-        if ($template->status !== RecurringStatus::Active) {
-            return;
-        }
-
-        DB::transaction(function () use ($template) {
-            match ($template->target_type) {
-                RecurringTargetType::JournalEntry => $this->processJournalEntry($template),
-                RecurringTargetType::Invoice => $this->processInvoice($template),
+        DB::transaction(function () use ($template, $runDate) {
+            match ($template->target_type->value) {
+                'journal_entry' => $this->processJournalEntry($template),
+                'invoice' => $this->processInvoice($template),
             };
 
-            $this->updateNextRunDate($template);
+            // Update next run date
+            $template->update([
+                'next_run_date' => $template->frequency->nextDate($runDate, $template->interval),
+            ]);
         });
     }
 
     private function processJournalEntry(RecurringTemplate $template): void
     {
         $data = $template->template_data;
-        $company = Company::findOrFail($template->company_id);
         $currency = Currency::findOrFail($data['currency_id']);
+        $currencyCode = $currency->code;
 
-        $lines = collect($data['lines'])->map(function ($line) use ($currency) {
+        $lines = collect($data['lines'])->map(function ($line) use ($currencyCode) {
             return new CreateJournalEntryLineDTO(
                 account_id: $line['account_id'],
-                debit: Money::of($line['debit'], $currency->code),
-                credit: Money::of($line['credit'], $currency->code),
+                debit: Money::of($line['debit'], $currencyCode),
+                credit: Money::of($line['credit'], $currencyCode),
                 description: $line['description'] ?? null,
                 partner_id: $line['partner_id'] ?? null,
                 analytic_account_id: $line['analytic_account_id'] ?? null,
@@ -62,12 +58,14 @@ class ProcessRecurringTransactionAction
             company_id: $template->company_id,
             journal_id: $data['journal_id'],
             currency_id: $data['currency_id'],
-            entry_date: Carbon::now()->format('Y-m-d'), // Generate for today
-            reference: $data['reference'] ?? null,
-            description: $data['description'] ?? "Recurring: {$template->name}",
-            created_by_user_id: $template->created_by_user_id ?? 1, // Fallback to system user or null handling
-            is_posted: false, // Always draft for safety
+            entry_date: Carbon::now()->format('Y-m-d'),
+            reference: 'Recurring: '.$template->name,
+            description: $data['description'] ?? $template->name,
+            created_by_user_id: $template->created_by_user_id ?? 1,
+            is_posted: true,
             lines: $lines,
+            source_type: 'RecurringTemplate',
+            source_id: $template->id,
         );
 
         $this->createJournalEntryAction->execute($dto);
@@ -76,8 +74,8 @@ class ProcessRecurringTransactionAction
     private function processInvoice(RecurringTemplate $template): void
     {
         $data = $template->template_data;
-        $company = Company::findOrFail($template->company_id);
-        $currencyCode = Currency::findOrFail($data['currency_id'])->code;
+        $currency = Currency::findOrFail($data['currency_id']);
+        $currencyCode = $currency->code;
 
         $lines = collect($data['lines'])->map(function ($line) use ($currencyCode) {
             return new CreateInvoiceLineDTO(
@@ -90,40 +88,31 @@ class ProcessRecurringTransactionAction
             );
         })->toArray();
 
-        // Calculate due date based on payment terms if needed, for now default to invoice date
-        $invoiceDate = Carbon::now()->format('Y-m-d');
+        $invoiceDate = Carbon::now();
+        $dueDate = $invoiceDate->copy();
+
+        if (isset($data['payment_term_id'])) {
+            $paymentTerm = PaymentTerm::find($data['payment_term_id']);
+            if ($paymentTerm) {
+                $installments = $paymentTerm->calculateInstallments($invoiceDate, Money::of(1, $currencyCode));
+                if (! empty($installments)) {
+                    // Use the last installment due date as the invoice due date
+                    $dueDate = end($installments)['due_date'];
+                }
+            }
+        }
 
         $dto = new CreateInvoiceDTO(
             company_id: $template->company_id,
             customer_id: $data['customer_id'],
             currency_id: $data['currency_id'],
-            invoice_date: $invoiceDate,
-            due_date: $invoiceDate, // Should ideally calculate from payment term
+            invoice_date: $invoiceDate->format('Y-m-d'),
+            due_date: $dueDate->format('Y-m-d'),
             lines: $lines,
             fiscal_position_id: $data['fiscal_position_id'] ?? null,
             payment_term_id: $data['payment_term_id'] ?? null,
         );
 
         $this->createInvoiceAction->execute($dto);
-    }
-
-    private function updateNextRunDate(RecurringTemplate $template): void
-    {
-        $nextDate = Carbon::parse($template->next_run_date);
-
-        match ($template->frequency) {
-            RecurringFrequency::Daily => $nextDate->addDays($template->interval),
-            RecurringFrequency::Weekly => $nextDate->addWeeks($template->interval),
-            RecurringFrequency::Monthly => $nextDate->addMonths($template->interval),
-            RecurringFrequency::Yearly => $nextDate->addYears($template->interval),
-        };
-
-        if ($template->end_date && $nextDate->gt(Carbon::parse($template->end_date))) {
-            $template->status = RecurringStatus::Completed;
-        } else {
-            $template->next_run_date = $nextDate;
-        }
-
-        $template->save();
     }
 }
