@@ -117,7 +117,7 @@ class WithholdingTaxTypeResource extends Resource
                     ->sortable(),
                 TextColumn::make('rate')
                     ->label(__('accounting::withholding_tax.rate'))
-                    ->formatStateUsing(fn ($state) => \Modules\Foundation\Support\NumberFormatter::formatPercentage($state))
+                    ->formatStateUsing(fn ($state) => \Modules\Foundation\Support\NumberFormatter::formatPercentage($state * 100))
                     ->sortable(),
                 TextColumn::make('applicable_to')
                     ->label(__('accounting::withholding_tax.applicable_to'))
