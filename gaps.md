@@ -34,6 +34,7 @@ The JMeryar ERP is a headless accounting system built on Laravel 12 with Filamen
 - [x] **Loan Management** (LoanAgreement, schedules, rate changes)
 - [x] **Opening Balance Entries**
 - [x] **Journal Entry Reversal**
+- [x] **Withholding Tax** (configurable types, payment deduction, certificates)
 
 ### Financial Reports
 - [x] Trial Balance
@@ -143,10 +144,16 @@ The JMeryar ERP is a headless accounting system built on Laravel 12 with Filamen
 ### Medium Priority Gaps
 
 #### 5. **Withholding Tax / Tax Withholding**
-No mechanism for:
-- Withholding tax on vendor payments
-- Tax certificates generation
-- Tax withholding reports
+#### 5. **Withholding Tax / Tax Withholding**
+> [!NOTE]
+> Implemented: Full withholding tax system linked to payments.
+
+**Implemented:**
+- `WithholdingTaxType` with configurable rates and thresholds
+- `WithholdingTaxEntry` linked to Payments
+- `WithholdingTaxCertificate` generation
+- Service layer for calculation and application
+- Filament UI for managing tax types
 
 #### 6. **Cheque/Check Management**
 Given the Iraqi market focus (manual processing), missing:
@@ -291,7 +298,8 @@ PDF generation exists but verify:
 The JMeryar ERP has a **solid foundation** with excellent implementation of core double-entry accounting, inventory valuation, and the Action-DTO-Service architecture. **Key recent additions:**
 
 1. **Consolidated Reporting** - ✅ Implemented for multi-company setups with currency translation and inter-company eliminations
-2. **Recurring Entries** - ✅ Implemented for automation of routine transactions  
+2. **Recurring Entries** - ✅ Implemented for automation of routine transactions
+3. **Withholding Tax** - ✅ Implemented for vendor payment tax deduction and certificates  
 
 From an **ERP perspective**, the key missing features are:
 1. **Serial Number Tracking** - For unit-level inventory management
