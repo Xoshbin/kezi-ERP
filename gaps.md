@@ -183,7 +183,15 @@ No dedicated petty cash workflow:
 - Expense vouchers
 - Replenishment process
 
-#### 8. **Letter of Credit / LC Management**
+#### 8. **Employee Cash Advance**
+No cash advance system for employees:
+- Advance request and approval workflow
+- Advance disbursement (creates receivable from employee)
+- Expense report submission with receipts
+- Settlement: clear advance vs actual expenses
+- Integration with payroll for balance recovery
+
+#### 9. **Letter of Credit / LC Management**
 For import/export transactions:
 - LC creation and tracking
 - Link to purchase orders/vendor bills
