@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Cheques\Widgets;
 
+use Filament\Actions\Action;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -37,7 +38,7 @@ class UpcomingCheques extends BaseWidget
                     ->badge(),
             ])
             ->actions([
-                Tables\Actions\Action::make('view')
+                Action::make('view')
                     ->url(fn (Cheque $record) => \Modules\Accounting\Filament\Clusters\Accounting\Resources\Cheques\ChequeResource::getUrl('edit', ['record' => $record])),
             ]);
     }
