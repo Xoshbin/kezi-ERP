@@ -117,6 +117,7 @@ class Partner extends Model
         'zip_code',
         'country',
         'tax_id',
+        'withholding_tax_type_id',
         'receivable_account_id',
         'payable_account_id',
         'customer_payment_term_id',
@@ -259,6 +260,14 @@ class Partner extends Model
     public function linkedCompany(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'linked_company_id');
+    }
+
+    /**
+     * Get the withholding tax type for this partner.
+     */
+    public function withholdingTaxType(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\WithholdingTaxType::class, 'withholding_tax_type_id');
     }
 
     /**

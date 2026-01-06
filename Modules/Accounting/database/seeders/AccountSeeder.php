@@ -56,6 +56,7 @@ class AccountSeeder extends Seeder
             ['code' => '210201', 'name' => ['en' => 'Stock Interim (Received)', 'ckb' => 'کەڵەکەبووی کاتیی (وەرگیراو)', 'ar' => 'مخزون مؤقت (مستلم)'], 'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities],
             ['code' => '210202', 'name' => ['en' => 'Stock Input Account (IQD)', 'ckb' => 'حسابی هاتنی کۆگا (دینار)', 'ar' => 'حساب إدخال المخزون (دينار عراقي)'], 'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities],
             ['code' => '220101', 'name' => ['en' => 'VAT Payable', 'ckb' => 'باجی بەھای زیادکراو', 'ar' => 'ضريبة القيمة المضافة مستحقة الدفع'], 'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities],
+            ['code' => '220150', 'name' => ['en' => 'Withholding Tax Payable', 'ckb' => 'باجی ڕاگرتن - خەرجکراو', 'ar' => 'ضريبة الاستقطاع مستحقة الدفع'], 'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities, 'reconcilable' => false],
             ['code' => '220201', 'name' => ['en' => 'Unearned Revenue', 'ckb' => 'داھاتی نەبردی', 'ar' => 'إيراد غير مكتسب'], 'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities],
             ['code' => '220301', 'name' => ['en' => 'Outstanding Payments', 'ckb' => 'پارەدانە نەتمامەکان', 'ar' => 'مدفوعات معلقة'], 'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities],
             ['code' => '220501', 'name' => ['en' => 'Accrued Expenses', 'ckb' => 'خەرجییە کەڵەکەبووەکان', 'ar' => 'مصروفات مستحقة'], 'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities],
@@ -110,6 +111,7 @@ class AccountSeeder extends Seeder
                     'name' => $accountData['name'],
                     'type' => $accountData['type'],
                     'can_create_assets' => $accountData['can_create_assets'] ?? false,
+                    'allow_reconciliation' => $accountData['reconcilable'] ?? true, // Default to true if not specified
                 ]
             );
         }
