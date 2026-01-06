@@ -66,5 +66,48 @@ it('can issue a payable cheque', function () {
 });
 
 it('validates lock date when issuing cheque', function () {
-    // To be implemented once LockDate functionality is fully confirmed in test setup
-})->todo();
+    $company = Company::factory()->create();
+    $user = User::factory()->create();
+    $user->companies()->attach($company);
+    $user->refresh();
+
+    // Create a lock date that blocks entries before 5 days ago
+    \Modules\Accounting\Models\LockDate::create([
+        'company_id' => $company->id,
+        'lock_type' => \Modules\Accounting\Enums\Accounting\LockDateType::AllUsers->value,
+        'locked_until' => now()->subDays(5), // Locked until 5 days ago
+    ]);
+
+    // Clear cache so the lock date is picked up
+    \Illuminate\Support\Facades\Cache::flush();
+
+    // Use the company's currency
+    $currency = $company->currency;
+    $account = \Modules\Accounting\Models\Account::factory()->create(['company_id' => $company->id]);
+
+    $journal = Journal::factory()->create([
+        'company_id' => $company->id,
+        'currency_id' => $company->currency_id,
+        'default_debit_account_id' => $account->id,
+        'default_credit_account_id' => $account->id,
+    ]);
+    $partner = Partner::factory()->create(['company_id' => $company->id]);
+
+    $dto = new CreateChequeDTO(
+        company_id: $company->id,
+        journal_id: $journal->id,
+        partner_id: $partner->id,
+        currency_id: $currency->id,
+        cheque_number: '100',
+        amount: Money::of(50000, $currency->code),
+        issue_date: now()->subDays(10)->format('Y-m-d'), // Before lock date (10 days ago < locked until 5 days ago)
+        due_date: now()->addDays(30)->format('Y-m-d'),
+        type: ChequeType::Payable,
+        payee_name: $partner->name,
+    );
+
+    $action = app(IssueChequeAction::class);
+
+    expect(fn () => $action->execute($dto, $user))
+        ->toThrow(\Modules\Accounting\Exceptions\PeriodIsLockedException::class);
+});
