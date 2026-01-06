@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
                 // Basic data for transactions (customers, vendors, products).
                 \Modules\Foundation\Database\Seeders\PartnerSeeder::class,
                 \Modules\Foundation\Database\Seeders\PartnerCustomFieldSeeder::class,
+                \Modules\Accounting\Database\Seeders\WithholdingTaxTypeSeeder::class,
                 \Modules\Accounting\Database\Seeders\TaxSeeder::class,
                 \Modules\Product\Database\Seeders\ProductSeeder::class,
 

@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Services\CurrencyConverterService;
 use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
 use Modules\Payment\Enums\Payments\PaymentStatus;
 use Modules\Payment\Enums\Payments\PaymentType;
@@ -19,7 +20,10 @@ use Modules\Sales\Models\Invoice;
 
 class CreatePaymentAction
 {
-    public function __construct(private readonly \Modules\Accounting\Services\Accounting\LockDateService $lockDateService) {}
+    public function __construct(
+        private readonly \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
+        private readonly CurrencyConverterService $currencyConverter
+    ) {}
 
     public function execute(CreatePaymentDTO $dto, User $user): Payment
     {
@@ -35,25 +39,76 @@ class CreatePaymentAction
         $company = Company::findOrFail($dto->company_id);
         $this->lockDateService->enforce($company, Carbon::parse($dto->payment_date));
 
-        return DB::transaction(function () use ($dto) {
-            $currencyCode = Currency::findOrFail($dto->currency_id)->code;
+        return DB::transaction(function () use ($dto, $company) {
+            $currency = Currency::findOrFail($dto->currency_id);
+            $currencyCode = $currency->code;
 
-            // Determine payment details based on presence of document links
+            // Fetch Exchange Rate for WHT Conversion
+            // If payment currency is same as company, rate is 1.0
+            $exchangeRate = 1.0;
+            if ($currency->id !== $company->currency_id) {
+                // Try to fetch rate, fallback to 1.0 if not found (Draft state)
+                $exchangeRate = $this->currencyConverter->getExchangeRate(
+                    $currency,
+                    Carbon::parse($dto->payment_date),
+                    $company
+                ) ?? 1.0;
+            }
+
+            // Adjust calculation for Withholding Tax
+            $totalWithheldAmount = Money::of(0, $currencyCode);
+            $whtEntriesToCreate = [];
+
             if (! empty($dto->document_links)) {
-                // For settlement payments, calculate from document links
-                $totalAmount = Money::of(0, $currencyCode);
                 $documentTypes = [];
                 $partnerId = null;
+                $totalAmount = Money::of(0, $currencyCode); // Reset to recalculate with WHT awareness
 
                 foreach ($dto->document_links as $link) {
-                    $totalAmount = $totalAmount->plus($link->amount_applied);
+                    $linkAmount = $link->amount_applied;
+                    $totalAmount = $totalAmount->plus($linkAmount); // Gross Amount clearing debt
                     $documentTypes[$link->document_type] = true;
 
-                    if (! $partnerId) {
-                        if ($link->document_type === 'invoice') {
-                            $partnerId = Invoice::findOrFail($link->document_id)->customer_id;
-                        } elseif ($link->document_type === 'vendor_bill') {
-                            $partnerId = VendorBill::findOrFail($link->document_id)->vendor_id;
+                    // Determine Partner
+                    $documentPartner = null;
+                    if ($link->document_type === 'invoice') {
+                        $document = Invoice::findOrFail($link->document_id);
+                        $documentPartner = $document->customer;
+                    } elseif ($link->document_type === 'vendor_bill') {
+                        $document = VendorBill::findOrFail($link->document_id);
+                        $documentPartner = $document->vendor;
+                    }
+
+                    if ($documentPartner && ! $partnerId) {
+                        $partnerId = $documentPartner->id;
+                    }
+
+                    // WHT Logic: Currently only for Vendor Bills (Outbound)
+                    // If Paying a Vendor Bill, and Vendor has WHT Type, we withhold.
+                    if ($link->document_type === 'vendor_bill' && $documentPartner && $documentPartner->withholding_tax_type_id) {
+                        $whtType = $documentPartner->withholdingTaxType;
+                        // Logic: Tax is on the Amount Applied (Gross).
+                        // We assume Amount Applied is the Gross amount being cleared.
+                        $taxAmount = $whtType->calculateWithholding($linkAmount);
+
+                        if ($taxAmount->isPositive()) {
+                            $totalWithheldAmount = $totalWithheldAmount->plus($taxAmount);
+
+                            // Convert amounts to Base Currency for Storage
+                            // Note: calculateWithholding returns Money in same currency as input (Payment Currency)
+                            // We must convert to Company Base Currency
+                            $taxAmountBase = $taxAmount->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+                            $linkAmountBase = $linkAmount->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+
+                            $whtEntriesToCreate[] = [
+                                'company_id' => $dto->company_id,
+                                'withholding_tax_type_id' => $whtType->id,
+                                'vendor_id' => $documentPartner->id,
+                                'base_amount' => $linkAmountBase, // Base Currency
+                                'withheld_amount' => $taxAmountBase, // Base Currency
+                                'rate_applied' => $whtType->rate_fraction, // Use fraction 0.05
+                                'currency_id' => $dto->currency_id, // Store Original Payment Currency ID
+                            ];
                         }
                     }
                 }
@@ -62,9 +117,13 @@ class CreatePaymentAction
                     throw new InvalidArgumentException('A payment cannot be linked to both invoices and vendor bills simultaneously.');
                 }
                 $paymentType = key($documentTypes) === 'invoice' ? PaymentType::Inbound : PaymentType::Outbound;
+
+                // ADJUSTMENT: The actual Money Movement (Payment Amount) is Gross - Tax
+                $paymentAmount = $totalAmount->minus($totalWithheldAmount);
+
             } else {
                 // For direct payments, use provided values
-                $totalAmount = $dto->amount;
+                $paymentAmount = $dto->amount;
                 $partnerId = $dto->paid_to_from_partner_id;
                 $paymentType = $dto->payment_type;
             }
@@ -78,11 +137,17 @@ class CreatePaymentAction
 
                 'payment_method' => $dto->payment_method,
                 'reference' => $dto->reference,
-                'amount' => $totalAmount,
+                'amount' => $paymentAmount, // Net Amount (Gross - Tax)
                 'payment_type' => $paymentType,
                 'paid_to_from_partner_id' => $partnerId,
                 'status' => PaymentStatus::Draft,
             ]);
+
+            // Create WHT Entries linked to Payment
+            foreach ($whtEntriesToCreate as $whtData) {
+                $whtData['payment_id'] = $payment->id;
+                \Modules\Accounting\Models\WithholdingTaxEntry::create($whtData);
+            }
 
             // Handle settlement payments (document links)
             if (! empty($dto->document_links)) {
