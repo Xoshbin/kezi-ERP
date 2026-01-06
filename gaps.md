@@ -144,7 +144,6 @@ The JMeryar ERP is a headless accounting system built on Laravel 12 with Filamen
 ### Medium Priority Gaps
 
 #### 5. **Withholding Tax / Tax Withholding**
-#### 5. **Withholding Tax / Tax Withholding**
 > [!NOTE]
 > Implemented: Full withholding tax system linked to payments.
 
@@ -156,11 +155,27 @@ The JMeryar ERP is a headless accounting system built on Laravel 12 with Filamen
 - Filament UI for managing tax types
 
 #### 6. **Cheque/Check Management**
+> [!NOTE]
+> Implemented: Full cheque system linked to payments.
 Given the Iraqi market focus (manual processing), missing:
 - Post-dated cheque tracking
 - Cheque register
 - Cheque printing templates
 - Cheque bounce/return handling
+
+**Implemented:**
+- `Cheque` and `Chequebook` models with full lifecycle tracking
+- `ChequeStatus` enum (draft, printed, handed_over, deposited, cleared, bounced, cancelled, voided)
+- `ChequeType` enum (payable, receivable)
+- Complete action layer: Issue, Receive, HandOver, Deposit, Clear, RegisterBounce, Cancel
+- `ChequeService` for orchestration and `ChequeMaturityService` for due date tracking
+- `CreateJournalEntryForChequeAction` for double-entry accounting integration
+- Filament `ChequeResource` and `ChequebookResource` with full CRUD
+- `UpcomingCheques` dashboard widget for 7-day maturity lookout
+- Cheque printing blade template with basic layout
+- Comprehensive test coverage (9 feature tests + 4 Filament tests)
+- Multilingual support (English, Arabic, Kurdish)
+
 
 #### 7. **Petty Cash Management**
 No dedicated petty cash workflow:
