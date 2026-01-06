@@ -144,10 +144,10 @@ class CreateJournalEntryForChequeAction
     private function getClearLines(Cheque $cheque): array
     {
         $company = $cheque->company;
-        $bankAccount = $cheque->journal->default_account_id; // The specific bank account
+        $bankAccountId = $cheque->journal->default_debit_account_id; // The specific bank account
 
-        if (! $bankAccount) {
-            throw new \RuntimeException('Journal default account not configured.');
+        if (! $bankAccountId) {
+            throw new \RuntimeException('Journal default debit account not configured.');
         }
 
         if ($cheque->type === ChequeType::Payable) {
@@ -168,7 +168,7 @@ class CreateJournalEntryForChequeAction
                     'credit' => Money::zero($cheque->currency->code),
                 ],
                 [
-                    'account_id' => $bankAccount,
+                    'account_id' => $bankAccountId,
                     'partner_id' => null,
                     'debit' => Money::zero($cheque->currency->code),
                     'credit' => $cheque->amount_company_currency,
@@ -187,7 +187,7 @@ class CreateJournalEntryForChequeAction
 
             return [
                 [
-                    'account_id' => $bankAccount,
+                    'account_id' => $bankAccountId,
                     'partner_id' => null,
                     'debit' => $cheque->amount_company_currency,
                     'credit' => Money::zero($cheque->currency->code),
