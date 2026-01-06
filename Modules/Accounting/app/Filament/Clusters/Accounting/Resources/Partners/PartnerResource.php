@@ -277,6 +277,13 @@ class PartnerResource extends Resource
                                     ->preload()
                                     ->helperText(__('accounting::partner.linked_company_help'))
                                     ->prefixIcon('heroicon-m-building-office-2'),
+                                Select::make('withholding_tax_type_id')
+                                    ->label(__('accounting::withholding_tax.label')) // Assuming translation key exists, or use 'Withholding Tax Type'
+                                    ->relationship('withholdingTaxType', 'name')
+                                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->name.' ('.$record->rate * 100 .'%)')
+                                    ->searchable()
+                                    ->preload()
+                                    ->prefixIcon('heroicon-m-scissors'),
                             ]),
                     ])
                     ->columnSpanFull()
