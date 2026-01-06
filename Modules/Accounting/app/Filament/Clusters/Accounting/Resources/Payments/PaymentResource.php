@@ -307,6 +307,7 @@ class PaymentResource extends Resource
             VendorBillsRelationManager::class,
             JournalEntriesRelationManager::class,
             BankStatementLinesRelationManager::class,
+            RelationManagers\ChequesRelationManager::class,
         ];
     }
 
