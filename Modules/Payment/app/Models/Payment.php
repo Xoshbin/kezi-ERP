@@ -266,6 +266,16 @@ class Payment extends Model
     }
 
     /**
+     * Get the Cheques linked to this Payment.
+     *
+     * @return HasMany<Cheque, static>
+     */
+    public function cheques(): HasMany
+    {
+        return $this->hasMany(Cheque::class);
+    }
+
+    /**
      * Get the total amount withheld for this payment.
      */
     public function getTotalWithheldAttribute(): ?\Brick\Money\Money
