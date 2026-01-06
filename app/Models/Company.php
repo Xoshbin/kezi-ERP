@@ -150,6 +150,10 @@ class Company extends Model
         'numbering_settings',
         // Inventory Settings
         'inventory_accounting_mode',
+        // Cheque Settings
+        'default_pdc_receivable_account_id',
+        'default_pdc_payable_account_id',
+        'default_cheque_expense_account_id',
     ];
 
     /**
@@ -608,6 +612,38 @@ class Company extends Model
     public function defaultPensionPayableAccount(): BelongsTo
     {
         return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_pension_payable_account_id');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cheque Management Default Accounts
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Get the default account for Post-Dated Cheques Receivable (Asset).
+     * Used when we receive a cheque from a customer but haven't deposited it yet.
+     */
+    public function defaultPdcReceivableAccount(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_pdc_receivable_account_id');
+    }
+
+    /**
+     * Get the default account for Post-Dated Cheques Payable (Liability).
+     * Used when we issue a cheque to a vendor but it hasn't been cleared yet.
+     */
+    public function defaultPdcPayableAccount(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_pdc_payable_account_id');
+    }
+
+    /**
+     * Get the default account for bank charges or cheque bounce penalties (Expense).
+     */
+    public function defaultChequeExpenseAccount(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_cheque_expense_account_id');
     }
 
     /**
