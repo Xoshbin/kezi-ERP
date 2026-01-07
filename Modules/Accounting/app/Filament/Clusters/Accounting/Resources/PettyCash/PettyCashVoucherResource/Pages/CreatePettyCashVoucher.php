@@ -14,7 +14,7 @@ class CreatePettyCashVoucher extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['company_id'] = filament()->getTenant()->id;
-        
+
         return $data;
     }
 

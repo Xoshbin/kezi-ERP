@@ -7,5 +7,5 @@ use Modules\Accounting\Filament\Clusters\Accounting\Resources\PettyCash\PettyCas
 
 class ListPettyCashFunds extends ListRecords
 {
-   protected static string $resource = PettyCashFundResource::class;
+    protected static string $resource = PettyCashFundResource::class;
 }

@@ -15,7 +15,7 @@ class CreatePettyCashFund extends CreateRecord
     {
         $data['company_id'] = filament()->getTenant()->id;
         $data['status'] = 'active';
-        
+
         return $data;
     }
 
