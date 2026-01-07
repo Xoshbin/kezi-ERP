@@ -196,12 +196,19 @@ Given the Iraqi market focus (manual processing), missing:
 
 
 #### 8. **Employee Cash Advance**
-No cash advance system for employees:
-- Advance request and approval workflow
-- Advance disbursement (creates receivable from employee)
-- Expense report submission with receipts
-- Settlement: clear advance vs actual expenses
-- Integration with payroll for balance recovery
+> [!NOTE]
+> Implemented: Full cash advance system with expense reporting.
+
+**Implemented:**
+- `CashAdvance` and `ExpenseReport` models with full lifecycle tracking
+- `CashAdvanceStatus` enum (draft, pending_approval, approved, disbursed, pending_settlement, settled, rejected, cancelled)
+- Complete action layer: Create, Submit, Approve, Reject, Disburse, Settle
+- `CashAdvanceService` for orchestration
+- Journal entry integration for disbursement and settlement
+- Filament `CashAdvanceResource` and `ExpenseReportResource` with full CRUD
+- Comprehensive test coverage (Feature + Filament tests)
+- Multilingual support (English, Arabic, Kurdish)
+- User guide documentation (`understanding-cash-advances.md`)
 
 #### 9. **Letter of Credit / LC Management**
 For import/export transactions:
@@ -231,10 +238,14 @@ No dedicated transfer workflow between stock locations:
 - In-transit tracking
 
 #### 3. **Employee Expense Claims**
-HR module lacks:
-- Expense claim submission
+> [!NOTE]
+> Implemented: Via the Employee Cash Advance module.
+
+**Implemented:**
+- Expense Report submission linked to Cash Advances
 - Manager approval workflow
-- Expense reimbursement via payroll or payment
+- Settlement with reimbursement or return of excess funds
+- Full Filament UI and tests
 
 #### 4. **Project Management / Job Costing**
 Analytic accounts exist but no dedicated:
