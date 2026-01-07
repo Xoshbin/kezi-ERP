@@ -104,7 +104,7 @@ class Product extends Model
         'default_stock_input_account_id',
         'default_price_difference_account_id',
         'average_cost',
-        'lot_tracking_enabled',
+        'tracking_type',
     ];
 
     protected $casts = [
@@ -116,7 +116,7 @@ class Product extends Model
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
         'type' => \Modules\Product\Enums\Products\ProductType::class,
-        'lot_tracking_enabled' => 'boolean',
+        'tracking_type' => \Modules\Inventory\Enums\Inventory\TrackingType::class,
     ];
 
     protected static function booted(): void
@@ -358,5 +358,13 @@ class Product extends Model
         }
 
         return $quant->quantity - $quant->reserved_quantity;
+    }
+
+    /**
+     * Check if product has any stock moves (for tracking type immutability)
+     */
+    public function hasStockMoves(): bool
+    {
+        return $this->stockMoveProductLines()->exists();
     }
 }
