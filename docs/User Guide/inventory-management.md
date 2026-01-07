@@ -18,6 +18,7 @@ Inventory management is a comprehensive system that tracks, values, and manages 
 - **Multi-method Valuation**: Support for FIFO, LIFO, AVCO, and Standard Price valuation methods
 - **Lot Tracking**: Complete traceability with lot codes and expiration dates
 - **Serial Number Tracking**: Trace individual units with unique history and location
+- **Inter-Warehouse Transfers**: Two-step ship/receive workflow with in-transit tracking
 - **Reservation System**: Reserve stock for specific orders and prevent overselling
 - **Reordering Rules**: Automated reorder suggestions based on min/max levels
 - **Comprehensive Reporting**: Valuation, aging, turnover, and traceability reports
@@ -309,6 +310,7 @@ The inventory management system integrates seamlessly with:
 - [Stock Movements](stock-movements.md) - Detailed movement processing guide
 - [Lot Tracking](lot-tracking.md) - Complete lot management guide
 - [Serial Number Tracking](serial-number-tracking.md) - Individual unit tracking guide
+- [Inter-Warehouse Transfers](inter-warehouse-transfers.md) - Two-step transfer workflow guide
 - [Reordering Rules](reordering-rules.md) - Automated procurement setup
 - [Stock Management](stock-management.md) - Basic stock tracking guide
 

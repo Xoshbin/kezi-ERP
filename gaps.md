@@ -240,10 +240,16 @@ For import/export transactions:
 - Multilingual support (English, Arabic, Kurdish)
 
 #### 2. **Inter-Warehouse Transfers**
-No dedicated transfer workflow between stock locations:
-- Transfer Orders
-- Two-step transfers (ship → receive)
-- In-transit tracking
+> [!NOTE]
+> Implemented: Two-step transfer workflow with in-transit tracking.
+
+**Implemented:**
+- `StockPicking` extended for internal transfers with `Shipped` state
+- `Transit` location type for in-transit stock tracking
+- `TransferOrderService` orchestrating create → confirm → ship → receive workflow
+- `ShipTransferAction` and `ReceiveTransferAction` for atomic operations
+- Filament Ship/Receive actions integrated into ViewStockPicking
+- Comprehensive test coverage (8 tests, 22 assertions)
 
 #### 3. **Employee Expense Claims**
 > [!NOTE]
