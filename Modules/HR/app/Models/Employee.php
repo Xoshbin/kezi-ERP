@@ -70,6 +70,8 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $attendances_count
  * @property-read Collection<int, Payroll> $payrolls
  * @property-read int|null $payrolls_count
+ * @property-read Collection<int, CashAdvance> $cashAdvances
+ * @property-read int|null $cash_advances_count
  */
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class Employee extends Model
@@ -270,6 +272,17 @@ class Employee extends Model
     public function payrolls(): HasMany
     {
         return $this->hasMany(Payroll::class);
+    }
+
+    /**
+     * Get the cash advances for this employee.
+     */
+    /**
+     * @return HasMany<CashAdvance, static>
+     */
+    public function cashAdvances(): HasMany
+    {
+        return $this->hasMany(CashAdvance::class);
     }
 
     /*
