@@ -34,4 +34,10 @@ return [
     'mark_defective' => 'Mark as Defective',
     'mark_returned' => 'Mark as Returned',
     'view_history' => 'View History',
+
+    // Widget
+    'warranties_expiring_soon' => 'Warranties Expiring Soon',
+    'warranties_expiring_within_30_days' => 'Serial numbers with warranties expiring in the next 30 days',
+    'no_warranties_expiring' => 'No Warranties Expiring',
+    'all_warranties_are_current' => 'All warranties are current or have already expired',
 ];
