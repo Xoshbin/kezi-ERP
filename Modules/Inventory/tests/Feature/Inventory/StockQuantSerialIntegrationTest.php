@@ -11,12 +11,13 @@ use Modules\Product\Models\Product;
 use RuntimeException;
 use Tests\TestCase;
 
-uses(TestCase::class);
+// uses(TestCase::class); // Removed redundant line
 
 beforeEach(function () {
-    $this->company = createCompany();
-    $this->user = createUser($this->company);
-    actingAsUser($this->user, $this->company);
+    $this->company = \App\Models\Company::factory()->create();
+    $this->user = \App\Models\User::factory()->create();
+    $this->user->companies()->attach($this->company);
+    $this->actingAs($this->user);
 
     $this->service = app(StockQuantService::class);
     $this->location = StockLocation::factory()->for($this->company)->create();
@@ -153,7 +154,7 @@ it('reserves serial tracked quant', function () {
         companyId: $this->company->id,
         productId: $product->id,
         locationId: $this->location->id,
-        quantity: 1,
+        qty: 1,
         serialNumberId: $serial->id
     );
 
@@ -180,7 +181,7 @@ it('unreserves serial tracked quant', function () {
         companyId: $this->company->id,
         productId: $product->id,
         locationId: $this->location->id,
-        quantity: 1,
+        qty: 1,
         serialNumberId: $serial->id
     );
 
@@ -188,7 +189,7 @@ it('unreserves serial tracked quant', function () {
         companyId: $this->company->id,
         productId: $product->id,
         locationId: $this->location->id,
-        quantity: 1,
+        qty: 1,
         serialNumberId: $serial->id
     );
 

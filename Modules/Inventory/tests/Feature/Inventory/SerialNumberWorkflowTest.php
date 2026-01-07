@@ -12,12 +12,13 @@ use Modules\Inventory\Services\Inventory\StockQuantService;
 use Modules\Product\Models\Product;
 use Tests\TestCase;
 
-uses(TestCase::class);
+// // uses(TestCase::class); // Removed redundant line // Removed redundant line
 
 beforeEach(function () {
-    $this->company = createCompany();
-    $this->user = createUser($this->company);
-    actingAsUser($this->user, $this->company);
+    $this->company = \App\Models\Company::factory()->create();
+    $this->user = \App\Models\User::factory()->create();
+    $this->user->companies()->attach($this->company);
+    $this->actingAs($this->user);
 
     $this->serialService = app(SerialNumberService::class);
     $this->quantService = app(StockQuantService::class);
@@ -157,8 +158,14 @@ it('validates serial for outgoing shipment', function () {
         ->sold()
         ->create(['current_location_id' => $warehouse->id]);
 
-    expect($this->serialService->validateForOutgoing($availableSerial))->toBeTrue()
-        ->and($this->serialService->validateForOutgoing($soldSerial))->toBeFalse();
+    $move = \Modules\Inventory\Models\StockMove::factory()->for($this->company)->create([
+        'product_id' => $product->id,
+        'from_location_id' => $warehouse->id,
+        'quantity' => 1,
+    ]);
+
+    expect($this->serialService->validateForOutgoing($availableSerial, $move))->toBeTrue()
+        ->and($this->serialService->validateForOutgoing($soldSerial, $move))->toBeFalse();
 });
 
 it('finds warranty expiring within timeframe', function () {
