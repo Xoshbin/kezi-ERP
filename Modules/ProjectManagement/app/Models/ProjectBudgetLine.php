@@ -27,7 +27,7 @@ use Modules\Accounting\Models\Account;
  * @property-read ProjectBudget $projectBudget
  * @property-read Account $account
  */
-#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
+#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class, \Modules\ProjectManagement\Observers\ProjectBudgetLineObserver::class])]
 class ProjectBudgetLine extends Model
 {
     use HasFactory;
