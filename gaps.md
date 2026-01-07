@@ -78,6 +78,7 @@ The JMeryar ERP is a headless accounting system built on Laravel 12 with Filamen
 - [x] **Payroll Processing** with journal entry generation
 - [x] **Leave Types & Leave Requests**
 - [x] **Attendance Tracking**
+- [x] **Employee Cash Advance & Expense Reports** (Workflow, disbursement, settlement)
 
 ### Payment Module
 - [x] **Payments** (inbound/outbound)
@@ -297,7 +298,7 @@ PDF generation exists but verify:
 | Sales | 85% | ✅ Credit Notes/Returns Implemented |
 | Purchase | 90% | ✅ Debit Notes/Returns Implemented |
 | Inventory | 85% | ⚠️ No Serial Tracking |
-| HR/Payroll | 75% | ⚠️ No Expense Claims |
+| HR/Payroll | 95% | ✅ Cash Advance Implemented |
 | Payment | 90% | ✅ Cheque + Petty Cash Implemented |
 | Multi-Company | 95% | ✅ Consolidation Implemented |
 
