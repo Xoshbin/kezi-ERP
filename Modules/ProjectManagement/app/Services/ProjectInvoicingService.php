@@ -104,9 +104,13 @@ class ProjectInvoicingService
             );
         }
 
+        if (! $projectInvoice->project->customer_id) {
+            throw new \Exception('Project must have a customer assigned before generating an invoice.');
+        }
+
         $invoiceDto = new \Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO(
             company_id: $projectInvoice->company_id,
-            customer_id: $projectInvoice->project->customer_id,
+            customer_id: (int) $projectInvoice->project->customer_id,
             currency_id: $projectInvoice->company->currency_id,
             invoice_date: now()->format('Y-m-d'),
             due_date: now()->addDays(30)->format('Y-m-d'), // Default 30 days
