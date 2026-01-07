@@ -25,6 +25,7 @@ return new class extends Migration
 
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
+            $table->decimal('hourly_rate', 15, 2)->nullable();
 
             $table->decimal('budget_amount', 19, 4)->default(0);
             $table->boolean('is_billable')->default(true);
