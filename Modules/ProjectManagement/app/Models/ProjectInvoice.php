@@ -21,9 +21,9 @@ use Modules\Sales\Models\Invoice;
  * @property Carbon $invoice_date
  * @property Carbon $period_start
  * @property Carbon $period_end
- * @property string $labor_amount
- * @property string $expense_amount
- * @property string $total_amount
+ * @property \Brick\Money\Money $labor_amount
+ * @property \Brick\Money\Money $expense_amount
+ * @property \Brick\Money\Money $total_amount
  * @property string $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
