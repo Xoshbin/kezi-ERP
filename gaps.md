@@ -178,10 +178,21 @@ Given the Iraqi market focus (manual processing), missing:
 
 
 #### 7. **Petty Cash Management**
-No dedicated petty cash workflow:
-- Petty cash fund setup
-- Expense vouchers
-- Replenishment process
+> [!NOTE]
+> Implemented: Full petty cash system with imprest fund management.
+
+**Implemented:**
+- `PettyCashFund`, `PettyCashVoucher`, and `PettyCashReplenishment` models
+- Full action layer: CreateFund, CreateVoucher, PostVoucher, CreateReplenishment
+- `PettyCashService` for orchestration and business rule enforcement
+- Imprest system with automatic balance tracking
+- Support for multiple funds with different custodians and currencies
+- Journal entry integration on voucher posting and replenishment
+- Filament resources: `PettyCashFundResource`, `PettyCashVoucherResource`, `PettyCashReplenishmentResource`
+- Complete test coverage (4 business logic tests + 10 Filament tests)
+- Multilingual support (English, Arabic, Kurdish)
+- User guide documentation (`understanding-petty-cash.md`)
+
 
 #### 8. **Employee Cash Advance**
 No cash advance system for employees:
@@ -287,7 +298,7 @@ PDF generation exists but verify:
 | Purchase | 90% | ✅ Debit Notes/Returns Implemented |
 | Inventory | 85% | ⚠️ No Serial Tracking |
 | HR/Payroll | 75% | ⚠️ No Expense Claims |
-| Payment | 80% | ⚠️ No Cheque Management |
+| Payment | 90% | ✅ Cheque + Petty Cash Implemented |
 | Multi-Company | 95% | ✅ Consolidation Implemented |
 
 ---
@@ -322,7 +333,9 @@ The JMeryar ERP has a **solid foundation** with excellent implementation of core
 
 1. **Consolidated Reporting** - ✅ Implemented for multi-company setups with currency translation and inter-company eliminations
 2. **Recurring Entries** - ✅ Implemented for automation of routine transactions
-3. **Withholding Tax** - ✅ Implemented for vendor payment tax deduction and certificates  
+3. **Withholding Tax** - ✅ Implemented for vendor payment tax deduction and certificates
+4. **Cheque Management** - ✅ Implemented for post-dated cheque tracking and full lifecycle management
+5. **Petty Cash Management** - ✅ Implemented for imprest fund management with vouchers and replenishments
 
 From an **ERP perspective**, the key missing features are:
 1. **Serial Number Tracking** - For unit-level inventory management
