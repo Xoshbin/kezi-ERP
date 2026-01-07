@@ -10,6 +10,24 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Modules\Product\Models\Product;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $stock_move_id
+ * @property int $product_id
+ * @property float $quantity
+ * @property int $from_location_id
+ * @property int $to_location_id
+ * @property string|null $description
+ * @property string|null $source_type
+ * @property int|null $source_id
+ * @property-read Company $company
+ * @property-read StockMove $stockMove
+ * @property-read Product $product
+ * @property-read StockLocation $fromLocation
+ * @property-read StockLocation $toLocation
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, StockMoveLine> $stockMoveLines
+ */
 class StockMoveProductLine extends Model
 {
     use HasFactory;
