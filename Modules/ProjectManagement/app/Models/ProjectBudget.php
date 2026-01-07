@@ -42,6 +42,7 @@ class ProjectBudget extends Model
         'start_date',
         'end_date',
         'total_budget',
+        'total_actual',
         'is_active',
     ];
 
@@ -51,6 +52,8 @@ class ProjectBudget extends Model
         'is_active' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'total_budget' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'total_actual' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
     ];
 
     protected $attributes = [
@@ -86,7 +89,7 @@ class ProjectBudget extends Model
      */
     public function getTotalBudgetMoney(): Money
     {
-        return Money::ofMinor($this->total_budget, $this->company->currency->code);
+        return $this->total_budget;
     }
 
     /**
@@ -104,15 +107,15 @@ class ProjectBudget extends Model
      */
     public function getUtilizationPercentage(): float
     {
-        $budget = (float) $this->total_budget;
+        $budget = $this->total_budget->getAmount()->toFloat();
 
         if ($budget == 0) {
             return 0;
         }
 
-        $actual = (float) $this->lines()->sum('actual_amount');
+        $actual = $this->getTotalActual()->getAmount()->toFloat();
 
-        return round(($actual / $budget) * 100, 2);
+        return (float) number_format(($actual / $budget) * 100, 2);
     }
 
     /**
