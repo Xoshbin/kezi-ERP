@@ -38,6 +38,11 @@ class PettyCashFund extends Model
 {
     use HasFactory;
 
+    protected static function newFactory()
+    {
+        return \Modules\Payment\Database\Factories\PettyCash\PettyCashFundFactory::new();
+    }
+
     protected $fillable = [
         'company_id',
         'name',
