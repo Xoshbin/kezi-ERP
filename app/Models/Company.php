@@ -142,6 +142,7 @@ class Company extends Model
         'default_social_security_payable_account_id',
         'default_health_insurance_payable_account_id',
         'default_pension_payable_account_id',
+        'default_employee_advance_receivable_account_id',
         // PDF Settings
         'pdf_template',
         'pdf_logo_path',
@@ -612,6 +613,14 @@ class Company extends Model
     public function defaultPensionPayableAccount(): BelongsTo
     {
         return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_pension_payable_account_id');
+    }
+
+    /**
+     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     */
+    public function defaultEmployeeAdvanceReceivableAccount(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_employee_advance_receivable_account_id');
     }
 
     /*
