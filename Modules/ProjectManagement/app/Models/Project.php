@@ -71,6 +71,7 @@ class Project extends Model
         'budget_amount',
         'is_billable',
         'billing_type',
+        'hourly_rate',
     ];
 
     protected $casts = [
@@ -79,6 +80,7 @@ class Project extends Model
         'start_date' => 'date',
         'end_date' => 'date',
         'is_billable' => 'boolean',
+        'hourly_rate' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
