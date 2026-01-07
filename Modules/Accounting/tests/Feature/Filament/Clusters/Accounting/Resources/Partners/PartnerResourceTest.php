@@ -22,6 +22,7 @@ beforeEach(function () {
 
 it('can create a partner with linked company', function () {
     $otherCompany = Company::factory()->create(['name' => 'Subsidiary B']);
+    $tax = \Modules\Accounting\Models\Tax::factory()->create(['company_id' => $this->company->id]);
 
     livewire(CreatePartner::class)
         ->fillForm([
@@ -29,6 +30,7 @@ it('can create a partner with linked company', function () {
             'type' => PartnerType::Vendor->value,
             'is_active' => true,
             'linked_company_id' => $otherCompany->id,
+            'tax_id' => $tax->id,
         ])
         ->call('create')
         ->assertHasNoFormErrors();
@@ -37,13 +39,16 @@ it('can create a partner with linked company', function () {
         'name' => 'Subsidiary B Partner',
         'linked_company_id' => $otherCompany->id,
         'company_id' => $this->company->id,
+        'tax_id' => $tax->id,
     ]);
 });
 
 it('can edit a partner to link to a company', function () {
+    $tax = \Modules\Accounting\Models\Tax::factory()->create(['company_id' => $this->company->id]);
     $partner = Partner::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Existing Partner',
+        'tax_id' => $tax->id,
     ]);
 
     $otherCompany = Company::factory()->create(['name' => 'Subsidiary C']);
