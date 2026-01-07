@@ -11,12 +11,13 @@ use Modules\Inventory\Services\Inventory\SerialNumberService;
 use Modules\Product\Models\Product;
 use Tests\TestCase;
 
-uses(TestCase::class);
+// uses(TestCase::class); // Removed redundant line
 
 beforeEach(function () {
-    $this->company = createCompany();
-    $this->user = createUser($this->company);
-    actingAsUser($this->user, $this->company);
+    $this->company = \App\Models\Company::factory()->create();
+    $this->user = \App\Models\User::factory()->create();
+    $this->user->companies()->attach($this->company);
+    $this->actingAs($this->user);
 });
 
 it('creates serial number with valid data', function () {
