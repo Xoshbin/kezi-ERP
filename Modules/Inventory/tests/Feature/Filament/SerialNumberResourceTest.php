@@ -12,12 +12,14 @@ use Tests\TestCase;
 
 use function Pest\Livewire\livewire;
 
-uses(TestCase::class);
+// uses(TestCase::class); // Removed redundant line
 
 beforeEach(function () {
-    $this->company = createCompany();
-    $this->user = createUser($this->company);
-    actingAsUser($this->user, $this->company);
+    $this->company = \App\Models\Company::factory()->create();
+    $this->user = \App\Models\User::factory()->create();
+    $this->user->companies()->attach($this->company);
+    $this->actingAs($this->user);
+    \Filament\Facades\Filament::setTenant($this->company);
 });
 
 it('can render serial number list page', function () {

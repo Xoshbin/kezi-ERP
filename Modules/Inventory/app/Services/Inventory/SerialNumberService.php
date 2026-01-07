@@ -101,17 +101,20 @@ class SerialNumberService
             return false;
         }
 
-        // Serial must be at the source location
-        if ($serial->current_location_id !== $move->from_location_id) {
-            return false;
+        // Check if any product line in the move matches the serial's product and location
+        foreach ($move->productLines as $line) {
+            // Ensure product matches
+            if ($line->product_id !== $serial->product_id) {
+                continue;
+            }
+
+            // Ensure source location matches
+            if ($line->from_location_id === $serial->current_location_id) {
+                return true;
+            }
         }
 
-        // Serial must belong to the product
-        if ($serial->product_id !== $move->product_id) {
-            return false;
-        }
-
-        return true;
+        return false;
     }
 
     /**

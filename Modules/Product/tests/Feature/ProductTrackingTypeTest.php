@@ -8,12 +8,13 @@ use Modules\Inventory\Models\StockMove;
 use Modules\Product\Models\Product;
 use Tests\TestCase;
 
-uses(TestCase::class);
+// uses(TestCase::class); // Removed redundant line
 
 beforeEach(function () {
-    $this->company = createCompany();
-    $this->user = createUser($this->company);
-    actingAsUser($this->user, $this->company);
+    $this->company = \App\Models\Company::factory()->create();
+    $this->user = \App\Models\User::factory()->create();
+    $this->user->companies()->attach($this->company);
+    $this->actingAs($this->user);
 });
 
 it('allows setting tracking type on new product', function () {
@@ -45,8 +46,8 @@ it('prevents changing tracking type after stock moves exist', function () {
 
     StockMove::factory()->for($this->company)->create([
         'product_id' => $product->id,
-        'source_location_id' => $sourceLocation->id,
-        'destination_location_id' => $destLocation->id,
+        'from_location_id' => $sourceLocation->id,
+        'to_location_id' => $destLocation->id,
         'quantity' => 1,
     ]);
 
