@@ -7,8 +7,8 @@ use Modules\Accounting\Models\JournalEntry;
 use Modules\Accounting\Models\JournalEntryLine;
 use Modules\Foundation\Models\Currency;
 use Modules\ProjectManagement\Actions\CreateProjectBudgetAction;
-use Modules\ProjectManagement\DataTransferObjects\BudgetLineDTO;
 use Modules\ProjectManagement\DataTransferObjects\CreateProjectBudgetDTO;
+use Modules\ProjectManagement\DataTransferObjects\ProjectBudgetLineDTO;
 use Modules\ProjectManagement\Models\Project;
 use Modules\ProjectManagement\Models\ProjectBudget;
 use Modules\ProjectManagement\Services\ProjectBudgetService;
@@ -36,16 +36,17 @@ it('creates project budget with lines', function () {
     $account2 = Account::factory()->create(['company_id' => $this->company->id, 'type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
 
     $dto = new CreateProjectBudgetDTO(
+        company_id: $this->company->id,
         project_id: $this->project->id,
         name: 'Q1 Budget',
-        start_date: now(),
-        end_date: now()->addMonth(),
+        start_date: today(),
+        end_date: today()->addMonth(),
         lines: [
-            new BudgetLineDTO(
+            new ProjectBudgetLineDTO(
                 account_id: $account1->id,
                 budgeted_amount: 100000 // 1000.00
             ),
-            new BudgetLineDTO(
+            new ProjectBudgetLineDTO(
                 account_id: $account2->id,
                 budgeted_amount: 200000 // 2000.00
             ),
@@ -57,7 +58,7 @@ it('creates project budget with lines', function () {
 
     expect($budget)
         ->toBeInstanceOf(ProjectBudget::class)
-        ->total_budget->toBe(300000.0) // 3000.00
+        ->total_budget->getMinorAmount()->toInt()->toBe(300000) // 3000.00
         ->lines->count()->toBe(2);
 });
 
@@ -66,12 +67,13 @@ it('updates actuals from journal entries', function () {
 
     // Create Budget
     $budgetDto = new CreateProjectBudgetDTO(
+        company_id: $this->company->id,
         project_id: $this->project->id,
         name: 'Test Budget',
-        start_date: now(),
-        end_date: now()->addMonth(),
+        start_date: today(),
+        end_date: today()->addMonth(),
         lines: [
-            new BudgetLineDTO(
+            new ProjectBudgetLineDTO(
                 account_id: $account->id,
                 budgeted_amount: 500000 // 5000.00
             ),
@@ -80,13 +82,13 @@ it('updates actuals from journal entries', function () {
     $budget = app(CreateProjectBudgetAction::class)->execute($budgetDto);
 
     // Create Actual Expense (Journal Entry) linked to project analytic account AND budget account
-    $journalEntry = JournalEntry::factory()->create(['company_id' => $this->company->id]);
+    $journalEntry = JournalEntry::factory()->create(['company_id' => $this->company->id, 'entry_date' => now()]);
     JournalEntryLine::factory()->create([
         'journal_entry_id' => $journalEntry->id,
         'analytic_account_id' => $this->project->analytic_account_id,
         'account_id' => $account->id,
-        'debit' => 150000, // 1500.00
-        'credit' => 0,
+        'debit' => \Brick\Money\Money::ofMinor(150000, $this->currency->code), // 1500.00
+        'credit' => \Brick\Money\Money::ofMinor(0, $this->currency->code),
     ]);
 
     // Run service to update actuals
@@ -94,22 +96,23 @@ it('updates actuals from journal entries', function () {
 
     $budgetLine = $budget->lines->first();
     expect($budgetLine->refresh())
-        ->actual_amount->getAmount()->toInt()->toBe(150000);
+        ->actual_amount->getMinorAmount()->toInt()->toBe(150000);
 
     expect($budget->refresh())
-        ->total_actual->getAmount()->toInt()->toBe(150000);
+        ->total_actual->getMinorAmount()->toInt()->toBe(150000);
 });
 
 it('calculates budget variance correctly', function () {
     $account = Account::factory()->create(['company_id' => $this->company->id, 'type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
 
     $budgetDto = new CreateProjectBudgetDTO(
+        company_id: $this->company->id,
         project_id: $this->project->id,
         name: 'Variance Test',
-        start_date: now(),
-        end_date: now()->addMonth(),
+        start_date: today(),
+        end_date: today()->addMonth(),
         lines: [
-            new BudgetLineDTO(
+            new ProjectBudgetLineDTO(
                 account_id: $account->id,
                 budgeted_amount: 100000 // 1000.00
             ),
@@ -118,13 +121,13 @@ it('calculates budget variance correctly', function () {
     $budget = app(CreateProjectBudgetAction::class)->execute($budgetDto);
 
     // Spend 1200.00 (Over budget)
-    $journalEntry = JournalEntry::factory()->create(['company_id' => $this->company->id]);
+    $journalEntry = JournalEntry::factory()->create(['company_id' => $this->company->id, 'entry_date' => now()]);
     JournalEntryLine::factory()->create([
         'journal_entry_id' => $journalEntry->id,
         'analytic_account_id' => $this->project->analytic_account_id,
         'account_id' => $account->id,
-        'debit' => 120000, // 1200.00
-        'credit' => 0,
+        'debit' => \Brick\Money\Money::ofMinor(120000, $this->currency->code), // 1200.00
+        'credit' => \Brick\Money\Money::ofMinor(0, $this->currency->code),
     ]);
 
     app(ProjectBudgetService::class)->updateActuals($budget);
@@ -135,20 +138,21 @@ it('calculates budget variance correctly', function () {
     // The Project model has getBudgetVariance() which is global.
     // Let's check the Project's variance.
 
-    $variance = $this->project->getBudgetVariance();
-    expect($variance->getAmount()->toInt())->toBe(-20000); // -200.00
+    $variance = $this->project->refresh()->getBudgetVariance();
+    expect($variance->getMinorAmount()->toInt())->toBe(-20000); // -20.000 IQD
 });
 
 it('generates budget utilization report', function () {
     $account = Account::factory()->create(['company_id' => $this->company->id, 'type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense]);
 
     $budgetDto = new CreateProjectBudgetDTO(
+        company_id: $this->company->id,
         project_id: $this->project->id,
         name: 'Utilization Test',
-        start_date: now(),
-        end_date: now()->addMonth(),
+        start_date: today(),
+        end_date: today()->addMonth(),
         lines: [
-            new BudgetLineDTO(
+            new ProjectBudgetLineDTO(
                 account_id: $account->id,
                 budgeted_amount: 100000 // 1000.00
             ),
@@ -157,13 +161,13 @@ it('generates budget utilization report', function () {
     $budget = app(CreateProjectBudgetAction::class)->execute($budgetDto);
 
     // Spend 500.00 (50% utilization)
-    $journalEntry = JournalEntry::factory()->create(['company_id' => $this->company->id]);
+    $journalEntry = JournalEntry::factory()->create(['company_id' => $this->company->id, 'entry_date' => now()]);
     JournalEntryLine::factory()->create([
         'journal_entry_id' => $journalEntry->id,
         'analytic_account_id' => $this->project->analytic_account_id,
         'account_id' => $account->id,
-        'debit' => 50000, // 500.00
-        'credit' => 0,
+        'debit' => \Brick\Money\Money::ofMinor(50000, $this->currency->code), // 500.00
+        'credit' => \Brick\Money\Money::ofMinor(0, $this->currency->code),
     ]);
     app(ProjectBudgetService::class)->updateActuals($budget);
 

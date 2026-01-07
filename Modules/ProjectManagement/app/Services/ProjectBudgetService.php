@@ -29,6 +29,9 @@ class ProjectBudgetService
             return;
         }
 
+        $currency = $project->company->currency;
+        $totalActual = \Brick\Money\Money::zero($currency->code);
+
         foreach ($budget->lines as $line) {
             // Calculate actuals for this account within the analytic account
             // Logic: Sum of (debit - credit) for JournalEntryLines that match:
@@ -39,14 +42,21 @@ class ProjectBudgetService
             $actualAmount = $project->analyticAccount->journalEntryLines()
                 ->where('account_id', $line->account_id)
                 ->whereHas('journalEntry', function ($query) use ($budget) {
-                    $query->whereBetween('date', [$budget->start_date, $budget->end_date]);
+                    $query->whereBetween('entry_date', [$budget->start_date, $budget->end_date]);
                 })
                 ->sum(\Illuminate\Support\Facades\DB::raw('debit - credit'));
 
+            $actualMoney = \Brick\Money\Money::ofMinor($actualAmount, $currency->code);
+
             $line->update([
-                'actual_amount' => $actualAmount,
+                'actual_amount' => $actualMoney,
             ]);
+            $totalActual = $totalActual->plus($actualMoney);
         }
+
+        $budget->update([
+            'total_actual' => $totalActual,
+        ]);
     }
 
     /**

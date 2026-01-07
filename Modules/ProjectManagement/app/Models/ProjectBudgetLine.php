@@ -44,6 +44,8 @@ class ProjectBudgetLine extends Model
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'budgeted_amount' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'actual_amount' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
     ];
 
     protected $attributes = [
@@ -79,7 +81,7 @@ class ProjectBudgetLine extends Model
      */
     public function getBudgetedMoney(): Money
     {
-        return Money::ofMinor($this->budgeted_amount, $this->company->currency->code);
+        return $this->budgeted_amount;
     }
 
     /**
@@ -87,7 +89,7 @@ class ProjectBudgetLine extends Model
      */
     public function getActualMoney(): Money
     {
-        return Money::ofMinor($this->actual_amount, $this->company->currency->code);
+        return $this->actual_amount;
     }
 
     /**
