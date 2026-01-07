@@ -53,6 +53,9 @@ class ProjectInvoice extends Model
         'invoice_date' => 'date',
         'period_start' => 'date',
         'period_end' => 'date',
+        'labor_amount' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'expense_amount' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'total_amount' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

@@ -15,7 +15,7 @@ class CreateProjectInvoiceAction
             $project = Project::findOrFail($dto->project_id);
 
             // Calculate Labor Amount
-            $laborAmount = 0;
+            $laborAmount = \Brick\Money\Money::zero($project->company->currency->code);
             if ($dto->include_labor) {
                 // Get approved billable timesheet lines in period
                 $hours = $project->timesheetLines()
@@ -26,32 +26,40 @@ class CreateProjectInvoiceAction
                     })
                     ->sum('hours');
 
-                // Rate calculation placeholder - assuming 0 or fetched from config/contract
-                // In real implementation, we'd fetch rate from Employee contract or Project billing rate
-                $hourlyRate = 0;
-                $laborAmount = $hours * $hourlyRate;
+                // dumps($hours);
+
+                $hourlyRate = $project->hourly_rate ?? 0;
+                $laborAmount = \Brick\Money\Money::of($hours * $hourlyRate, $project->company->currency->code);
             }
 
             // Calculate Expense Amount
-            $expenseAmount = 0;
+            $expenseAmount = \Brick\Money\Money::zero($project->company->currency->code);
             if ($dto->include_expenses) {
-                // Should fetch from Journal Entries linked to Analytic Account
-                // Placeholder
+                $expenseSum = \Modules\Accounting\Models\JournalEntryLine::query()
+                    ->where('analytic_account_id', $project->analytic_account_id)
+                    ->whereHas('journalEntry', function ($query) use ($dto) {
+                        $query->whereBetween('entry_date', [$dto->period_start, $dto->period_end]);
+                    })
+                    ->sum(DB::raw('debit - credit'));
+
+                $expenseAmount = \Brick\Money\Money::ofMinor($expenseSum, $project->company->currency->code);
             }
 
-            $totalAmount = $laborAmount + $expenseAmount;
+            $totalAmount = $laborAmount->plus($expenseAmount);
 
-            return ProjectInvoice::create([
-                'company_id' => $dto->company_id,
-                'project_id' => $dto->project_id,
-                'invoice_date' => now(), // Default to today
-                'period_start' => $dto->period_start,
-                'period_end' => $dto->period_end,
-                'labor_amount' => $laborAmount,
-                'expense_amount' => $expenseAmount,
-                'total_amount' => $totalAmount,
-                'status' => 'draft',
-            ]);
+            $projectInvoice = new ProjectInvoice;
+            $projectInvoice->company_id = $dto->company_id;
+            $projectInvoice->project_id = $dto->project_id;
+            $projectInvoice->invoice_date = now();
+            $projectInvoice->period_start = $dto->period_start;
+            $projectInvoice->period_end = $dto->period_end;
+            $projectInvoice->labor_amount = $laborAmount;
+            $projectInvoice->expense_amount = $expenseAmount;
+            $projectInvoice->total_amount = $totalAmount;
+            $projectInvoice->status = 'draft';
+            $projectInvoice->save();
+
+            return $projectInvoice;
         });
     }
 }

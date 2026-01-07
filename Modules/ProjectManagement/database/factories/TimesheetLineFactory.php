@@ -1,0 +1,21 @@
+<?php
+
+namespace Modules\ProjectManagement\Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\ProjectManagement\Models\TimesheetLine;
+
+class TimesheetLineFactory extends Factory
+{
+    protected $model = TimesheetLine::class;
+
+    public function definition(): array
+    {
+        return [
+            'date' => now(),
+            'hours' => $this->faker->randomFloat(2, 1, 8),
+            'description' => $this->faker->sentence,
+            'is_billable' => true,
+        ];
+    }
+}

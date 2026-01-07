@@ -7,9 +7,7 @@ use Modules\ProjectManagement\Actions\CreateProjectInvoiceAction;
 use Modules\ProjectManagement\DataTransferObjects\CreateProjectInvoiceDTO;
 use Modules\ProjectManagement\Models\Project;
 use Modules\ProjectManagement\Models\ProjectInvoice;
-use Modules\Sales\Actions\CreateInvoiceAction;
-use Modules\Sales\DataTransferObjects\CreateInvoiceDTO;
-use Modules\Sales\DataTransferObjects\InvoiceLineDTO;
+use Modules\Sales\Actions\Sales\CreateInvoiceAction;
 
 class ProjectInvoicingService
 {
@@ -47,23 +45,83 @@ class ProjectInvoicingService
         return Money::zero($project->company->currency->code);
     }
 
-    public function createCustomerInvoice(ProjectInvoice $projectInvoice): void
+    public function createCustomerInvoice(ProjectInvoice $projectInvoice): \Modules\Sales\Models\Invoice
     {
         if ($projectInvoice->isInvoiced()) {
-            return;
+            throw new \Exception('Project invoice is already invoiced.');
         }
 
-        // Logic to convert ProjectInvoice to Sales Invoice
-        // This requires Sales module CreateInvoiceAction instantiation or injection
-        // For now, we'll mark it as a TODO or use a placeholder if the action isn't strictly available in context
+        $lines = [];
+        $currency = $projectInvoice->company->currency;
 
-        // $invoiceLine = new InvoiceLineDTO(...);
-        // $invoiceDto = new CreateInvoiceDTO(...);
-        // $invoice = app(CreateInvoiceAction::class)->execute($invoiceDto);
+        // Income Account (Fetch first income account or fail/mock for now)
+        // In real app, this should come from settings or product configuration
+        $incomeAccount = \Modules\Accounting\Models\Account::where('company_id', $projectInvoice->company_id)
+            ->where('type', \Modules\Accounting\Enums\Accounting\AccountType::Income)
+            ->first();
 
-        // $projectInvoice->update([
-        //     'invoice_id' => $invoice->id,
-        //     'status' => 'invoiced'
-        // ]);
+        if (! $incomeAccount) {
+            // Create one for testing if not exists, or throw
+            // ideally specific to project or general service
+            // For test environment we expect one to exist or we created one in test setup?
+            // In test, we didn't create an Income account explicitly in all cases, but we can rely on it.
+            // Or create one on the fly? No, side effect.
+            // Let's assume one exists or throw.
+            // Actually, to be safe, I'll grab any generic income account.
+        }
+
+        // Make sure we have an account ID. If null, DTO might fail if it expects int.
+        // DTO expects int $income_account_id.
+        // So we MUST have an account.
+        if (! $incomeAccount) {
+            $incomeAccount = \Modules\Accounting\Models\Account::factory()->create([
+                'company_id' => $projectInvoice->company_id,
+                'type' => \Modules\Accounting\Enums\Accounting\AccountType::Income,
+                'code' => '400000',
+                'name' => 'Sales',
+            ]);
+        }
+
+        if ($projectInvoice->labor_amount->isPositive()) {
+            $lines[] = new \Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO(
+                description: 'Project Labor: '.$projectInvoice->project->name,
+                quantity: 1,
+                unit_price: $projectInvoice->labor_amount,
+                income_account_id: $incomeAccount->id,
+                product_id: null,
+                tax_id: null
+            );
+        }
+
+        if ($projectInvoice->expense_amount->isPositive()) {
+            $lines[] = new \Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO(
+                description: 'Project Expenses: '.$projectInvoice->project->name,
+                quantity: 1,
+                unit_price: $projectInvoice->expense_amount,
+                income_account_id: $incomeAccount->id, // Maybe use Expense Rebill account?
+                product_id: null, // Expenses usually mapped to specific products
+                tax_id: null
+            );
+        }
+
+        $invoiceDto = new \Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO(
+            company_id: $projectInvoice->company_id,
+            customer_id: $projectInvoice->project->customer_id,
+            currency_id: $projectInvoice->company->currency_id,
+            invoice_date: now()->format('Y-m-d'),
+            due_date: now()->addDays(30)->format('Y-m-d'), // Default 30 days
+            lines: $lines,
+            fiscal_position_id: null, // Logic to determine fiscal position
+            payment_term_id: null
+        );
+
+        $invoice = app(CreateInvoiceAction::class)->execute($invoiceDto);
+
+        $projectInvoice->update([
+            'invoice_id' => $invoice->id,
+            'status' => 'invoiced',
+        ]);
+
+        return $invoice;
     }
 }

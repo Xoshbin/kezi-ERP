@@ -21,5 +21,8 @@ uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class
         $root.'/Modules/Purchase/tests/Feature',
         $root.'/Modules/Purchase/tests/Unit',
         $root.'/Modules/Sales/tests/Feature',
-        $root.'/Modules/Sales/tests/Unit'
+        $root.'/Modules/Sales/tests/Unit',
+        // Project Management
+        $root.'/Modules/ProjectManagement/tests/Feature',
+        $root.'/Modules/ProjectManagement/tests/Unit',
     );
