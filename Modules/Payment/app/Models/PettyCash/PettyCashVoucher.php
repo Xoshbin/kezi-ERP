@@ -39,6 +39,11 @@ class PettyCashVoucher extends Model
 {
     use HasFactory;
 
+    protected static function newFactory()
+    {
+        return \Modules\Payment\Database\Factories\PettyCash\PettyCashVoucherFactory::new();
+    }
+
     protected $fillable = [
         'company_id',
         'fund_id',
