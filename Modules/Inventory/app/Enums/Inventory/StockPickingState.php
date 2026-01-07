@@ -7,6 +7,7 @@ enum StockPickingState: string
     case Draft = 'draft';
     case Confirmed = 'confirmed';
     case Assigned = 'assigned';
+    case Shipped = 'shipped';
     case Done = 'done';
     case Cancelled = 'cancelled';
 
