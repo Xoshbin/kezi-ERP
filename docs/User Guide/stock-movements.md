@@ -74,6 +74,8 @@ Stock movements also appear in:
 **To Location**: Destination warehouse location
 **Accounting Impact**: No journal entry (internal movement)
 
+> **Note**: For complex inter-warehouse transfers requiring ship/receive workflow with in-transit tracking, see the dedicated [Inter-Warehouse Transfers](inter-warehouse-transfers.md) guide. This section covers simple one-step internal transfers within the same facility.
+
 ### Adjustment Movements
 **Purpose**: Correct inventory discrepancies or record losses
 **From Location**: Warehouse location (for decreases)
@@ -351,6 +353,7 @@ A: Journal entries are only created when movements reach "Done" status. Check th
 - [Lot Tracking](lot-tracking.md) - Detailed lot management guide
 - [Vendor Bills](vendor-bills.md) - Automatic receipt processing
 - [Customer Invoices](customer-invoices.md) - Automatic delivery processing
+- [Inter-Warehouse Transfers](inter-warehouse-transfers.md) - Two-step transfer workflow
 
 ---
 
