@@ -13,6 +13,8 @@ use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\AssignPickingAction;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\CancelPickingAction;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ConfirmPickingAction;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ReceiveTransferAction;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ShipTransferAction;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ValidatePickingAction;
 use Modules\Inventory\Models\StockPicking;
 
@@ -47,6 +49,7 @@ class ViewStockPicking extends ViewRecord
                                     'draft' => 'gray',
                                     'confirmed' => 'warning',
                                     'assigned' => 'info',
+                                    'shipped' => 'warning',
                                     'done' => 'success',
                                     'cancelled' => 'danger',
                                     default => 'gray',
@@ -129,14 +132,28 @@ class ViewStockPicking extends ViewRecord
                 break;
 
             case StockPickingState::Confirmed:
-                $actions[] = AssignPickingAction::make();
+                // For internal transfers, show Ship action
+                if ($record->isInternalTransfer()) {
+                    $actions[] = ShipTransferAction::make();
+                } else {
+                    $actions[] = AssignPickingAction::make();
+                }
                 $actions[] = CancelPickingAction::make();
                 break;
 
             case StockPickingState::Assigned:
-                $actions[] = ValidatePickingAction::make();
-
+                // For internal transfers, show Ship action
+                if ($record->isInternalTransfer()) {
+                    $actions[] = ShipTransferAction::make();
+                } else {
+                    $actions[] = ValidatePickingAction::make();
+                }
                 $actions[] = CancelPickingAction::make();
+                break;
+
+            case StockPickingState::Shipped:
+                // Only for internal transfers - show Receive action
+                $actions[] = ReceiveTransferAction::make();
                 break;
         }
 
