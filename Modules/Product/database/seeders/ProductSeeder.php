@@ -6,6 +6,7 @@ use App\Models\Company;
 use Illuminate\Database\Seeder;
 use Modules\Accounting\Models\Account;
 use Modules\Inventory\Enums\Inventory\ReorderingRoute;
+use Modules\Inventory\Enums\Inventory\TrackingType;
 use Modules\Inventory\Enums\Inventory\ValuationMethod;
 use Modules\Inventory\Models\ReorderingRule;
 use Modules\Inventory\Models\StockLocation;
@@ -69,7 +70,7 @@ class ProductSeeder extends Seeder
                 'default_cogs_account_id' => $costOfRevenue->id,
                 'income_account_id' => $incomeAccount->id,
                 'expense_account_id' => $costOfRevenue->id,
-                'lot_tracking_enabled' => true, // Serial number tracking
+                'tracking_type' => TrackingType::Serial, // Serial number tracking
             ]
         );
 
@@ -86,7 +87,7 @@ class ProductSeeder extends Seeder
                 'default_cogs_account_id' => $costOfRevenue->id,
                 'income_account_id' => $incomeAccount->id,
                 'expense_account_id' => $costOfRevenue->id,
-                'lot_tracking_enabled' => true, // Batch tracking
+                'tracking_type' => TrackingType::Lot, // Batch tracking
             ]
         );
 
@@ -103,7 +104,7 @@ class ProductSeeder extends Seeder
                 'default_cogs_account_id' => $costOfRevenue->id,
                 'income_account_id' => $incomeAccount->id,
                 'expense_account_id' => $costOfRevenue->id,
-                'lot_tracking_enabled' => true, // Batch tracking with expiration dates
+                'tracking_type' => TrackingType::Lot, // Batch tracking with expiration dates
             ]
         );
 
