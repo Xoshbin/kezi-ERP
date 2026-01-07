@@ -22,18 +22,23 @@ class CreateProjectBudgetAction
                 'is_active' => true,
             ]);
 
-            $totalBudget = 0;
+            $company = \App\Models\Company::find($dto->company_id);
+            $totalBudget = \Brick\Money\Money::zero($company->currency->code);
 
             foreach ($dto->lines as $lineDto) {
+                // Convert integer/string minor units from DTO to Money object
+                // This ensures BaseCurrencyMoneyCast treats it correctly (as Minor input converted to DB format)
+                $amount = \Brick\Money\Money::ofMinor($lineDto->budgeted_amount, $company->currency->code);
+
                 ProjectBudgetLine::create([
                     'company_id' => $dto->company_id,
                     'project_budget_id' => $budget->id,
                     'account_id' => $lineDto->account_id,
                     'description' => $lineDto->description,
-                    'budgeted_amount' => $lineDto->budgeted_amount,
+                    'budgeted_amount' => $amount,
                 ]);
 
-                $totalBudget += (float) $lineDto->budgeted_amount;
+                $totalBudget = $totalBudget->plus($amount);
             }
 
             $budget->update([

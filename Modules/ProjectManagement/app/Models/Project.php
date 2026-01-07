@@ -189,7 +189,7 @@ class Project extends Model
     public function getTotalActualCost(): Money
     {
         if (! $this->analyticAccount) {
-            return Money::zero($this->company->currency);
+            return Money::zero($this->company->currency->code);
         }
 
         $debitTotal = $this->analyticAccount->journalEntryLines()
@@ -214,7 +214,7 @@ class Project extends Model
             return Money::ofMinor($this->budget_amount, $this->company->currency->code);
         }
 
-        return Money::ofMinor($activeBudget->total_budget, $this->company->currency->code);
+        return $activeBudget->total_budget;
     }
 
     /**

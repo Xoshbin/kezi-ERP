@@ -9,10 +9,11 @@ use Modules\Foundation\Models\Currency;
 use Modules\ProjectManagement\Actions\CreateProjectAction;
 use Modules\ProjectManagement\Actions\CreateProjectBudgetAction;
 use Modules\ProjectManagement\Actions\UpdateProjectAction;
-use Modules\ProjectManagement\DataTransferObjects\BudgetLineDTO;
 use Modules\ProjectManagement\DataTransferObjects\CreateProjectBudgetDTO;
 use Modules\ProjectManagement\DataTransferObjects\CreateProjectDTO;
+use Modules\ProjectManagement\DataTransferObjects\ProjectBudgetLineDTO;
 use Modules\ProjectManagement\DataTransferObjects\UpdateProjectDTO;
+use Modules\ProjectManagement\Enums\BillingType;
 use Modules\ProjectManagement\Enums\ProjectStatus;
 use Modules\ProjectManagement\Models\Project;
 use Modules\ProjectManagement\Services\ProjectService;
@@ -30,7 +31,13 @@ it('creates project with analytic account auto-creation', function () {
         name: 'New Marketing Project',
         code: 'PROJ-001',
         description: 'Q1 Marketing Campaign',
-        budget_amount: 5000000, // 50,000.00
+        manager_id: null,
+        customer_id: null,
+        start_date: null,
+        end_date: null,
+        budget_amount: null,
+        billing_type: BillingType::TimeAndMaterials,
+        is_billable: true,
     );
 
     $action = app(CreateProjectAction::class);
@@ -45,7 +52,7 @@ it('creates project with analytic account auto-creation', function () {
     $analyticAccount = AnalyticAccount::find($project->analytic_account_id);
     expect($analyticAccount)
         ->toBeInstanceOf(AnalyticAccount::class)
-        ->name->toBe('PROJ-001: New Marketing Project');
+        ->name->toBe('New Marketing Project');
 });
 
 it('updates project details', function () {
@@ -56,6 +63,13 @@ it('updates project details', function () {
         code: $project->code,
         description: 'Updated Description',
         status: ProjectStatus::Active,
+        manager_id: null,
+        customer_id: null,
+        start_date: null,
+        end_date: null,
+        budget_amount: null,
+        billing_type: BillingType::TimeAndMaterials,
+        is_billable: true,
     );
 
     $action = app(UpdateProjectAction::class);
@@ -104,8 +118,8 @@ it('calculates project cost from journal entries', function () {
         'journal_entry_id' => $journalEntry->id,
         'analytic_account_id' => $project->analytic_account_id,
         'account_id' => $account->id,
-        'debit' => 100000, // 1000.00
-        'credit' => 0,
+        'debit' => \Brick\Money\Money::ofMinor(100000, $this->currency->code), // 1000.00
+        'credit' => \Brick\Money\Money::ofMinor(0, $this->currency->code),
     ]);
 
     // Create another expense
@@ -113,14 +127,14 @@ it('calculates project cost from journal entries', function () {
         'journal_entry_id' => $journalEntry->id,
         'analytic_account_id' => $project->analytic_account_id,
         'account_id' => $account->id,
-        'debit' => 50000, // 500.00
-        'credit' => 0,
+        'debit' => \Brick\Money\Money::ofMinor(50000, $this->currency->code), // 500.00
+        'credit' => \Brick\Money\Money::ofMinor(0, $this->currency->code),
     ]);
 
     // Total cost should be 1500.00
-    $totalCost = $project->getTotalActualCost();
+    $totalCost = $project->refresh()->getTotalActualCost();
 
-    expect($totalCost->getAmount()->toInt())->toBe(150000);
+    expect($totalCost->getMinorAmount()->toInt())->toBe(150000);
 });
 
 it('calculates budget variance', function () {
@@ -136,12 +150,13 @@ it('calculates budget variance', function () {
 
     // Create a budget of 5000.00
     $budgetDto = new CreateProjectBudgetDTO(
+        company_id: $this->company->id,
         project_id: $project->id,
         name: 'Initial Budget',
         start_date: now(),
         end_date: now()->addMonth(),
         lines: [
-            new BudgetLineDTO(
+            new ProjectBudgetLineDTO(
                 account_id: Account::factory()->create(['company_id' => $this->company->id, 'type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense])->id,
                 budgeted_amount: 500000 // 5000.00
             ),
@@ -155,12 +170,12 @@ it('calculates budget variance', function () {
         'journal_entry_id' => $journalEntry->id,
         'analytic_account_id' => $project->analytic_account_id,
         'account_id' => Account::factory()->create(['company_id' => $this->company->id, 'type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense])->id,
-        'debit' => 200000, // 2000.00
-        'credit' => 0,
+        'debit' => \Brick\Money\Money::ofMinor(200000, $this->currency->code), // 2000.00
+        'credit' => \Brick\Money\Money::ofMinor(0, $this->currency->code),
     ]);
 
     // Variance = Budget (5000) - Actual (2000) = 3000
-    $variance = $project->getBudgetVariance();
+    $variance = $project->refresh()->getBudgetVariance();
 
-    expect($variance->getAmount()->toInt())->toBe(300000);
+    expect($variance->getMinorAmount()->toInt())->toBe(300000);
 });
