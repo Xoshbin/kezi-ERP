@@ -21,6 +21,7 @@ use Modules\Accounting\Enums\Assets\AssetStatus;
 use Modules\Accounting\Enums\Assets\DepreciationMethod;
 use Modules\Accounting\Observers\AssetObserver;
 use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Modules\Foundation\Models\Concerns\HasDocumentAttachments;
 use Modules\Foundation\Models\Currency;
 
 /**
@@ -71,6 +72,8 @@ use Modules\Foundation\Models\Currency;
 #[ObservedBy([AssetObserver::class])]
 class Asset extends Model
 {
+    use HasDocumentAttachments;
+
     /** @use HasFactory<AssetFactory> */
     use HasFactory;
 

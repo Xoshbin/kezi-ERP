@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Modules\Foundation\Enums\Incoterm;
+use Modules\Foundation\Models\Concerns\HasDocumentAttachments;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\Partner;
 use Modules\Inventory\Models\StockLocation;
@@ -61,6 +62,7 @@ use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class PurchaseOrder extends Model
 {
+    use HasDocumentAttachments;
     use HasFactory;
 
     /**
