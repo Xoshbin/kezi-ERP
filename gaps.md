@@ -337,11 +337,17 @@ For import/export transactions:
 - User guide documentation (`incoterms.md`)
 
 #### 8. **Document Attachments Management**
-VendorBillAttachment exists but not standardized across:
-- Invoices
-- Purchase Orders
-- Journal Entries
-- Assets
+> [!NOTE]
+> Implemented: Polymorphic document attachment system for all core models.
+
+**Implemented:**
+- `DocumentAttachment` model with polymorphic `attachable` relationship
+- `HasDocumentAttachments` trait for easy integration
+- `DocumentAttachmentsHelper` Filament utility for standardized UI
+- Full integration in: Invoice, PurchaseOrder, JournalEntry, Asset
+- Automatic file deletion on record deletion
+- Status-based permissions (upload/delete only on draft documents)
+- Comprehensive test coverage (13 feature tests + 10 Filament tests)
 
 ---
 
