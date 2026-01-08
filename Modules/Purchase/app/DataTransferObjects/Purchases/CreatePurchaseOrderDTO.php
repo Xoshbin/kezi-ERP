@@ -3,6 +3,7 @@
 namespace Modules\Purchase\DataTransferObjects\Purchases;
 
 use Carbon\Carbon;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Models\Currency;
 
 /**
@@ -25,6 +26,7 @@ readonly class CreatePurchaseOrderDTO
         public ?string $notes = null,
         public ?string $terms_and_conditions = null,
         public ?int $delivery_location_id = null,
+        public ?Incoterm $incoterm = null,
         public array $lines = [],
     ) {}
 
@@ -61,6 +63,7 @@ readonly class CreatePurchaseOrderDTO
             notes: $data['notes'] ?? null,
             terms_and_conditions: $data['terms_and_conditions'] ?? null,
             delivery_location_id: $data['delivery_location_id'] ?? null,
+            incoterm: isset($data['incoterm']) ? Incoterm::tryFrom($data['incoterm']) : null,
             lines: $lines,
         );
     }
