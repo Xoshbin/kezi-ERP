@@ -12,6 +12,7 @@ class TimesheetLineFactory extends Factory
     public function definition(): array
     {
         return [
+            'company_id' => \App\Models\Company::factory(),
             'date' => now(),
             'hours' => $this->faker->randomFloat(2, 1, 8),
             'description' => $this->faker->sentence,

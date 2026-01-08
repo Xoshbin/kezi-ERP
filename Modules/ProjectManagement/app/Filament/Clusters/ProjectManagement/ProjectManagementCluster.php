@@ -1,0 +1,21 @@
+<?php
+
+namespace Modules\ProjectManagement\Filament\Clusters\ProjectManagement;
+
+use BackedEnum;
+use Filament\Clusters\Cluster;
+
+class ProjectManagementCluster extends Cluster
+{
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Project Management');
+    }
+
+    public static function getClusterLabel(): string
+    {
+        return __('Project Management');
+    }
+}
