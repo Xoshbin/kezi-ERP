@@ -8,5 +8,6 @@
     "Payment": true,
     "Product": true,
     "ProjectManagement": true,
-    "Manufacturing": true
+    "Manufacturing": true,
+    "QualityControl": true
 }

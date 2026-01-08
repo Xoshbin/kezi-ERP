@@ -27,4 +27,7 @@ uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class
         $root.'/Modules/ProjectManagement/tests/Unit',
         // Manufacturing
         $root.'/Modules/Manufacturing/tests/Feature',
+        // Quality Control
+        $root.'/Modules/QualityControl/tests/Feature',
+        $root.'/Modules/QualityControl/tests/Unit',
     );
