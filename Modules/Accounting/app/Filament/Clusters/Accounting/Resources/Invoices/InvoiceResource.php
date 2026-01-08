@@ -43,6 +43,7 @@ use Modules\Accounting\Models\Tax;
 use Modules\Accounting\Rules\NotInLockedPeriod;
 use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
+use Modules\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
 use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
@@ -482,6 +483,12 @@ class InvoiceResource extends Resource
                 ])
                 ->columns(3)
                 ->visible(fn (?Invoice $record) => $record && ($record->exchange_rate_at_creation || $record->total_amount_company_currency)),
+
+            DocumentAttachmentsHelper::makeSection(
+                directory: 'invoices',
+                disabledCallback: fn (?Invoice $record) => $record && $record->status !== InvoiceStatus::Draft,
+                deletableCallback: fn (?Invoice $record) => $record === null || $record->status === InvoiceStatus::Draft
+            ),
         ]);
     }
 
