@@ -14,7 +14,6 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -49,18 +48,11 @@ class JmeryarPanelProvider extends PanelProvider
             ->maxContentWidth('full')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverResources(in: base_path('Modules/Foundation/app/Filament/Resources'), for: 'Modules\\Foundation\\Filament\\Resources')
-            ->discoverClusters(in: base_path('Modules/Manufacturing/app/Filament/Clusters'), for: 'Modules\\Manufacturing\\Filament\\Clusters')
-            ->discoverResources(in: base_path('Modules/ProjectManagement/app/Filament/Clusters/ProjectManagement/Resources'), for: 'Modules\\ProjectManagement\\Filament\\Clusters\\ProjectManagement\\Resources')
-            ->discoverResources(in: base_path('Modules/QualityControl/app/Filament/Clusters/QualityControl/Resources'), for: 'Modules\\QualityControl\\Filament\\Clusters\\QualityControl\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->discoverPages(in: base_path('Modules/ProjectManagement/app/Filament/Clusters/ProjectManagement/Pages'), for: 'Modules\\ProjectManagement\\Filament\\Clusters\\ProjectManagement\\Pages')
-            ->pages([
-                Dashboard::class,
-            ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
+            ->discoverClusters(in: base_path('Modules/Manufacturing/app/Filament/Clusters'), for: 'Modules\\Manufacturing\\Filament\\Clusters')
             ->discoverClusters(in: base_path('Modules/ProjectManagement/app/Filament/Clusters'), for: 'Modules\\ProjectManagement\\Filament\\Clusters')
             ->discoverClusters(in: base_path('Modules/QualityControl/app/Filament/Clusters'), for: 'Modules\\QualityControl\\Filament\\Clusters')
+            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->widgets([
                 // Widgets\AccountWidget::class
             ])
