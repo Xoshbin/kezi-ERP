@@ -9,6 +9,10 @@ use Modules\Payment\Models\LCCharge;
 
 class CreateLCChargeAction
 {
+    public function __construct(
+        private readonly CreateJournalEntryForLCChargeAction $createJournalEntryForLCChargeAction
+    ) {}
+
     public function execute(CreateLCChargeDTO $dto, User $user): LCCharge
     {
         return DB::transaction(function () use ($dto) {
@@ -24,7 +28,11 @@ class CreateLCChargeAction
                 'description' => $dto->description,
             ]);
 
-            // TODO: Create journal entry for the charge via CreateJournalEntryForLCChargeAction
+            $journalEntry = $this->createJournalEntryForLCChargeAction->execute($charge);
+
+            $charge->update([
+                'journal_entry_id' => $journalEntry->id,
+            ]);
 
             return $charge;
         });
