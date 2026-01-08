@@ -64,4 +64,9 @@ class QualityInspectionTemplate extends Model
     {
         return $this->hasMany(QualityCheck::class, 'inspection_template_id');
     }
+
+    protected static function newFactory(): \Modules\QualityControl\Database\Factories\QualityInspectionTemplateFactory
+    {
+        return \Modules\QualityControl\Database\Factories\QualityInspectionTemplateFactory::new();
+    }
 }

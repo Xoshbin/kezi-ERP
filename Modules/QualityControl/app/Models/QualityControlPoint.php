@@ -87,7 +87,7 @@ class QualityControlPoint extends Model
     }
 
     /**
-     * Check if this control point should trigger for a given quantity
+     * Check if this control point should trigger based on quantity threshold
      */
     public function shouldTriggerForQuantity(float $quantity): bool
     {
@@ -100,5 +100,10 @@ class QualityControlPoint extends Model
         }
 
         return $quantity >= $this->quantity_threshold;
+    }
+
+    protected static function newFactory(): \Modules\QualityControl\Database\Factories\QualityControlPointFactory
+    {
+        return \Modules\QualityControl\Database\Factories\QualityControlPointFactory::new();
     }
 }
