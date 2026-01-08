@@ -2,7 +2,6 @@
 
 namespace Modules\Manufacturing\Models;
 
-use App\Casts\MoneyCast;
 use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -30,7 +29,7 @@ class ManufacturingOrderLine extends Model
         return [
             'quantity_required' => 'decimal:4',
             'quantity_consumed' => 'decimal:4',
-            'unit_cost' => MoneyCast::class,
+            'unit_cost' => 'decimal:2',
         ];
     }
 
