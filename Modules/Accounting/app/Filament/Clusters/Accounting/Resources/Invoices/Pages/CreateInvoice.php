@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Foundation\Models\Currency;
 use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
@@ -58,7 +59,8 @@ class CreateInvoice extends CreateRecord
             invoice_date: $data['invoice_date'],
             due_date: $data['due_date'],
             lines: $data['invoiceLines'],
-            fiscal_position_id: $data['fiscal_position_id'] ?? null
+            fiscal_position_id: $data['fiscal_position_id'] ?? null,
+            incoterm: isset($data['incoterm']) ? Incoterm::tryFrom($data['incoterm']) : null,
         );
 
         $invoice = app(\Modules\Sales\Actions\Sales\CreateInvoiceAction::class)->execute($invoiceDTO);

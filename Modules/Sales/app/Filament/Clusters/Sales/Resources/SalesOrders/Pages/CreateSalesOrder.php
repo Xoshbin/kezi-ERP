@@ -7,6 +7,7 @@ use Brick\Money\Money;
 use Carbon\Carbon;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Models\Currency;
 use Modules\Sales\Actions\Sales\CreateSalesOrderAction;
 use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderDTO;
@@ -46,6 +47,7 @@ class CreateSalesOrder extends CreateRecord
             notes: $data['notes'] ?? null,
             terms_and_conditions: $data['terms_and_conditions'] ?? null,
             delivery_location_id: $data['delivery_location_id'] ?? null,
+            incoterm: isset($data['incoterm']) ? Incoterm::tryFrom($data['incoterm']) : null,
             lines: $lineDtos,
         );
 

@@ -6,6 +6,7 @@ use Brick\Money\Money;
 use Carbon\Carbon;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Sales\Actions\Sales\ConfirmSalesOrderAction;
 use Modules\Sales\Actions\Sales\UpdateSalesOrderAction;
 use Modules\Sales\DataTransferObjects\Sales\SalesOrderLineDTO;
@@ -144,6 +145,7 @@ class EditSalesOrder extends EditRecord
             notes: $data['notes'] ?? null,
             terms_and_conditions: $data['terms_and_conditions'] ?? null,
             delivery_location_id: $data['delivery_location_id'] ?? null,
+            incoterm: isset($data['incoterm']) ? Incoterm::tryFrom($data['incoterm']) : null,
             status: isset($data['status']) ? SalesOrderStatus::from($data['status']) : null,
         );
 

@@ -35,6 +35,7 @@ class UpdateVendorBillAction
                 'bill_date' => $updateVendorBillDTO->bill_date,
                 'due_date' => $updateVendorBillDTO->due_date,
                 'bill_reference' => $updateVendorBillDTO->bill_reference,
+                'incoterm' => $updateVendorBillDTO->incoterm ?? $vendorBill->incoterm,
             ]);
 
             $vendorBill->lines()->delete();

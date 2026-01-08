@@ -2,6 +2,7 @@
 
 namespace Modules\Purchase\DataTransferObjects\Purchases;
 
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
 use Modules\Purchase\Models\PurchaseOrder;
 
@@ -25,6 +26,7 @@ class UpdatePurchaseOrderDTO
         public readonly ?string $notes = null,
         public readonly ?string $terms_and_conditions = null,
         public readonly ?int $delivery_location_id = null,
+        public readonly ?Incoterm $incoterm = null,
         public readonly ?PurchaseOrderStatus $status = null,
     ) {}
 }

@@ -2,6 +2,8 @@
 
 namespace Modules\Purchase\DataTransferObjects\Purchases;
 
+use Modules\Foundation\Enums\Incoterm;
+
 readonly class CreateVendorBillDTO
 {
     /**
@@ -19,5 +21,6 @@ readonly class CreateVendorBillDTO
         public int $created_by_user_id,
         public ?int $payment_term_id = null,
         public ?int $purchase_order_id = null,
+        public ?Incoterm $incoterm = null,
     ) {}
 }
