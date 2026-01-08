@@ -2,10 +2,15 @@
 
 namespace Modules\QualityControl\Filament\Clusters\QualityControl\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Modules\QualityControl\Filament\Clusters\QualityControl\Resources\DefectTypeResource\Pages;
 use Modules\QualityControl\Filament\Clusters\QualityControlCluster;
@@ -15,7 +20,7 @@ class DefectTypeResource extends Resource
 {
     protected static ?string $model = DefectType::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-exclamation-triangle';
 
     protected static ?string $cluster = QualityControlCluster::class;
 
@@ -26,78 +31,77 @@ class DefectTypeResource extends Resource
         return __('quality::defect_type.navigation_label');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make()
-                    ->schema([
-                        Forms\Components\TextInput::make('code')
-                            ->label(__('quality::defect_type.code'))
-                            ->required()
-                            ->maxLength(50)
-                            ->unique(ignoreRecord: true)
-                            ->columnSpan(1),
+        return $schema->components([
+            Section::make()
+                ->schema([
+                    TextInput::make('code')
+                        ->label(__('quality::defect_type.code'))
+                        ->required()
+                        ->maxLength(50)
+                        ->unique(ignoreRecord: true)
+                        ->columnSpan(1),
 
-                        Forms\Components\TextInput::make('name')
-                            ->label(__('quality::defect_type.name'))
-                            ->required()
-                            ->maxLength(255)
-                            ->columnSpan(1),
+                    TextInput::make('name')
+                        ->label(__('quality::defect_type.name'))
+                        ->required()
+                        ->maxLength(255)
+                        ->columnSpan(1),
 
-                        Forms\Components\Textarea::make('description')
-                            ->label(__('quality::defect_type.description'))
-                            ->rows(3)
-                            ->columnSpanFull(),
+                    Textarea::make('description')
+                        ->label(__('quality::defect_type.description'))
+                        ->rows(3)
+                        ->columnSpanFull(),
 
-                        Forms\Components\Toggle::make('active')
-                            ->label(__('quality::defect_type.active'))
-                            ->default(true)
-                            ->columnSpan(1),
-                    ])
-                    ->columns(2),
-            ]);
+                    Toggle::make('active')
+                        ->label(__('quality::defect_type.active'))
+                        ->default(true)
+                        ->columnSpan(1),
+                ])
+                ->columns(2),
+        ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
+                TextColumn::make('code')
                     ->label(__('quality::defect_type.code'))
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('quality::defect_type.name'))
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\IconColumn::make('active')
+                IconColumn::make('active')
                     ->label(__('quality::defect_type.active'))
                     ->boolean()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('quality::defect_type.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\TernaryFilter::make('active')
+                TernaryFilter::make('active')
                     ->label(__('quality::defect_type.active'))
                     ->placeholder(__('All'))
                     ->trueLabel(__('Active only'))
                     ->falseLabel(__('Inactive only')),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                \Filament\Actions\EditAction::make(),
+                \Filament\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                \Filament\Actions\BulkActionGroup::make([
+                    \Filament\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

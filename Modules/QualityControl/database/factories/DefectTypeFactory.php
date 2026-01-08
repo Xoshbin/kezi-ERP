@@ -19,6 +19,7 @@ class DefectTypeFactory extends Factory
             'name' => $this->faker->words(3, true),
             'description' => $this->faker->sentence(),
             'active' => true,
+            'company_id' => \App\Models\Company::factory(),
         ];
     }
 }
