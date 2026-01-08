@@ -42,6 +42,7 @@ class CreateVendorBillLineAction
             'total_line_tax' => $taxAmount,
             'expense_account_id' => $dto->expense_account_id,
             'tax_id' => $dto->tax_id,
+            'shipping_cost_type' => $dto->shipping_cost_type,
             'analytic_account_id' => $dto->analytic_account_id,
             'asset_category_id' => $dto->asset_category_id,
         ]);

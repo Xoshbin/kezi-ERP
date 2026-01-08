@@ -75,4 +75,27 @@ enum Incoterm: string implements HasDescription, HasLabel
             default => false,
         };
     }
+
+    public function shouldBuyerPayFor(ShippingCostType $type): bool
+    {
+        return match ($type) {
+            ShippingCostType::Freight => ! $this->sellerPaysFreight(),
+            ShippingCostType::Insurance => ! $this->sellerPaysInsurance(),
+            ShippingCostType::CustomsDuty => ! $this->sellerHandlesImportClearance(),
+            ShippingCostType::Handling, ShippingCostType::PortCharges => match ($this) {
+                self::Exw, self::Fca, self::Fas, self::Fob => true,
+                default => false,
+            },
+        };
+    }
+
+    public function getCostResponsibilities(): \Modules\Foundation\DataTransferObjects\ShippingCostResponsibilityDTO
+    {
+        return new \Modules\Foundation\DataTransferObjects\ShippingCostResponsibilityDTO(
+            buyerPaysFreight: ! $this->sellerPaysFreight(),
+            buyerPaysInsurance: ! $this->sellerPaysInsurance(),
+            buyerHandlesExportClearance: ! $this->sellerHandlesExportClearance(),
+            buyerHandlesImportClearance: ! $this->sellerHandlesImportClearance(),
+        );
+    }
 }
