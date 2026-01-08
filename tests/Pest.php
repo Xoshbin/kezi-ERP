@@ -25,4 +25,6 @@ uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class
         // Project Management
         $root.'/Modules/ProjectManagement/tests/Feature',
         $root.'/Modules/ProjectManagement/tests/Unit',
+        // Manufacturing
+        $root.'/Modules/Manufacturing/tests/Feature',
     );

@@ -7,5 +7,6 @@
     "Foundation": true,
     "Payment": true,
     "Product": true,
-    "ProjectManagement": true
+    "ProjectManagement": true,
+    "Manufacturing": true
 }
