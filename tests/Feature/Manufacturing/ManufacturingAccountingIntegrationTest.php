@@ -243,6 +243,7 @@ describe('Manufacturing Accounting Integration', function () {
             'company_id' => $this->company->id,
             'manufacturing_order_id' => $mo->id,
             'product_id' => Product::factory()->create(['company_id' => $this->company->id])->id,
+            'quantity_required' => 5.0,
             'quantity_consumed' => 5.0,
             'unit_cost' => 10.00,
             'currency_code' => $this->company->currency->code,

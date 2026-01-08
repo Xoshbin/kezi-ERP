@@ -94,7 +94,11 @@ class CreateJournalEntryForManufacturingAction
                 exchange_rate: null, // Using base currency
             );
 
-            return $this->createJournalEntryAction->execute($journalEntryDTO);
+            $journalEntry = $this->createJournalEntryAction->execute($journalEntryDTO);
+
+            $mo->update(['journal_entry_id' => $journalEntry->id]);
+
+            return $journalEntry;
         });
     }
 }
