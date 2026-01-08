@@ -41,6 +41,7 @@ use Modules\Accounting\Models\AssetCategory;
 use Modules\Accounting\Models\Journal;
 use Modules\Accounting\Models\Tax;
 use Modules\Accounting\Rules\NotInLockedPeriod;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Modules\Foundation\Models\Currency;
@@ -217,6 +218,11 @@ class VendorBillResource extends Resource
 
                             return __('accounting::bill.exchange_rate_helper');
                         }),
+                    Select::make('incoterm')
+                        ->label(__('accounting::bill.incoterm'))
+                        ->options(Incoterm::class)
+                        ->searchable()
+                        ->preload(),
                     Hidden::make('purchase_order_id'),
                 ])
                 ->columns(4)

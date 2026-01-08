@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Modules\Accounting\Models\FiscalPosition;
 use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\Partner;
 use Modules\Foundation\Models\PaymentTerm;
@@ -40,6 +41,7 @@ use Modules\Sales\Enums\Sales\InvoiceStatus;
  * @property Carbon $invoice_date
  * @property Carbon $due_date
  * @property InvoiceStatus $status
+ * @property Incoterm|null $incoterm
  * @property Money $total_amount
  * @property Money $total_tax
  * @property Carbon|null $posted_at
@@ -117,6 +119,7 @@ class Invoice extends Model
         'due_date',
         'payment_term_id',
         'status',
+        'incoterm',
         'total_amount',
         'total_tax',
         'total_amount_company_currency',
@@ -137,6 +140,7 @@ class Invoice extends Model
         'invoice_date' => 'date',
         'due_date' => 'date',
         'status' => InvoiceStatus::class,
+        'incoterm' => Incoterm::class,
         'exchange_rate_at_creation' => 'decimal:10',
         'total_amount' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
         'total_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,

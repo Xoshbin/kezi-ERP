@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\Partner;
 use Modules\Inventory\Models\StockLocation;
@@ -31,6 +32,7 @@ use Modules\Sales\Enums\Sales\SalesOrderStatus;
  * @property int $created_by_user_id
  * @property string|null $so_number
  * @property SalesOrderStatus $status
+ * @property Incoterm|null $incoterm
  * @property string|null $reference
  * @property Carbon $so_date
  * @property Carbon|null $expected_delivery_date
@@ -91,6 +93,7 @@ class SalesOrder extends Model
      */
     protected $casts = [
         'status' => SalesOrderStatus::class,
+        'incoterm' => Incoterm::class,
         'so_date' => 'date',
         'expected_delivery_date' => 'date',
         'confirmed_at' => 'datetime',

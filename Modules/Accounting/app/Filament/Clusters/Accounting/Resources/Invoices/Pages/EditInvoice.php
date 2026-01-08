@@ -25,6 +25,7 @@ use Modules\Accounting\Actions\Accounting\BuildInvoicePostingPreviewAction;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Widgets\SettlementSummaryWidget;
 use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Modules\Payment\Actions\Payments\CreatePaymentAction;
@@ -349,7 +350,8 @@ class EditInvoice extends EditRecord
             invoice_date: $data['invoice_date'],
             due_date: $data['due_date'],
             lines: $lineDTOs,
-            fiscal_position_id: $data['fiscal_position_id'] ?? null
+            fiscal_position_id: $data['fiscal_position_id'] ?? null,
+            incoterm: isset($data['incoterm']) ? Incoterm::tryFrom($data['incoterm']) : null
         );
 
         $updatedInvoice = app(UpdateInvoiceAction::class)->execute($invoiceDTO);

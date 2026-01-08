@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\Partner;
 use Modules\Foundation\Models\PaymentTerm;
@@ -50,6 +51,7 @@ use Modules\Purchase\Observers\VendorBillObserver;
  * @property Carbon $accounting_date
  * @property Carbon|null $due_date
  * @property VendorBillStatus $status
+ * @property Incoterm|null $incoterm
  * @property Money $total_amount
  * @property Money $total_tax
  * @property Carbon|null $posted_at
@@ -127,6 +129,7 @@ class VendorBill extends Model
         'bill_reference',       // The vendor's reference number; **assigned only upon 'confirmation' or 'posting'**
         // to ensure a clean, unbroken sequence of official documents [4-6].
         'status',               // Current status: e.g., 'Draft', 'Posted', 'Paid', 'Cancelled' .
+        'incoterm',
         // A 'Draft' bill can be modified/deleted, but 'Posted' cannot .
         'currency_id',          // Foreign key to the Currency model, specifying the bill's currency .
         'exchange_rate_at_creation', // Exchange rate captured at bill creation/posting
@@ -154,6 +157,7 @@ class VendorBill extends Model
         'accounting_date' => 'date',       // Cast to date for consistency .
         'due_date' => 'date',       // Cast to date for consistency .
         'status' => VendorBillStatus::class,
+        'incoterm' => Incoterm::class,
         'three_way_match_status' => ThreeWayMatchStatus::class,
         'exchange_rate_at_creation' => 'decimal:10',
         'total_amount' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,  // Document currency amounts
