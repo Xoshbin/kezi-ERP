@@ -11,7 +11,14 @@ class EventServiceProvider extends ServiceProvider
      *
      * @var array<string, array<int, string>>
      */
-    protected $listen = [];
+    protected $listen = [
+        \Modules\Inventory\Events\StockPickingValidated::class => [
+            \Modules\QualityControl\Listeners\CreateQualityChecksForStockPicking::class,
+        ],
+        \Modules\Manufacturing\Events\ManufacturingOrderCompleted::class => [
+            \Modules\QualityControl\Listeners\CreateQualityChecksForManufacturing::class,
+        ],
+    ];
 
     /**
      * Indicates if events should be discovered.
