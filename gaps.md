@@ -326,17 +326,15 @@ For import/export transactions:
 
 #### 7. **Delivery Terms (Incoterms)**
 > [!NOTE]
-> Implemented: Incoterm selection on Sales Orders, Invoices, Purchase Orders, and Vendor Bills.
+> Implemented: Incoterm selection and automated shipping cost validation.
 
 **Implemented:**
-- `Incoterm` enum with 11 standard rules
-- Database columns and casting in all models
-- Full DTO/Action support in Sales and Purchase/Accounting
-- Filament UI selection fields
+- `Incoterm` enum with 11 standard rules and cost responsibility logic
+- Automated shipping cost validation and guidance banners based on Incoterm
+- Shipping cost categorization (Freight, Insurance, Customs, etc.)
+- Auto-detection of shipping cost types from line item descriptions
+- Full persistence in Vendor Bills and Purchase Orders
 - User guide documentation (`incoterms.md`)
-
-**Future Enhancements** (not critical):
-- Automated shipping cost allocation rules based on Incoterm
 
 #### 8. **Document Attachments Management**
 VendorBillAttachment exists but not standardized across:

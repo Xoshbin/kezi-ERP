@@ -28,24 +28,28 @@ The system supports the 11 standard Incoterms® 2020 rules:
 *   **CFR (Cost and Freight):** Seller delivers on board. Seller pays for costs and freight to the named port of destination.
 *   **CIF (Cost, Insurance and Freight):** Same as CFR, but seller also pays for minimum insurance cover.
 
-## How to Use Incoterms
+## Automated Validation & Guidance
 
-### Sales & Invoicing
-When creating a **Sales Order** or **Customer Invoice**, you will find the **Incoterm** field in the "Additional Information" or "Shipping" section (depending on layout).
+The system now provides automated validation for shipping-related costs based on the selected Incoterm. 
 
-1.  Select the agreed Incoterm from the dropdown list.
-2.  The system will store this information.
-3.  Future updates (coming soon) may use this to automatically suggest shipping cost lines.
+### Shipping Cost Types
+When adding expense lines to a **Vendor Bill** or **Purchase Order**, you can categorize shipping costs using the **Shipping Type** field:
+*   **Freight:** Main carriage/transportation costs.
+*   **Insurance:** Cargo/transit insurance.
+*   **Customs Duty:** Import duties and tariffs.
+*   **Handling:** Loading/unloading, document handling.
+*   **Port Charges:** Terminal fees, port handling.
 
-### Purchases & Bills
-When creating a **Purchase Order** or **Vendor Bill**:
-
-1.  Select the Incoterm specified by your vendor.
-2.  This helps your accounting team verify if freight charges on the bill are legitimate. For example, if the term is **DDP**, you should generally not see separate freight charges from the vendor.
+### How Validation Works
+When you select an Incoterm, the system identifies which costs are typically the buyer's responsibility:
+*   **Warning Banners:** If you add a cost that the seller is typically responsible for (e.g., adding a "Freight" line to a **DDP** bill), a warning banner will appear at the top of the form.
+*   **Non-Blocking:** These warnings are for guidance only and will not prevent you from posting the bill, as businesses may have special agreements that differ from standard Incoterms.
 
 ## Logic Overview
-The system understands the basic responsibility shift for each term:
+The system implements the following responsibility rules:
 *   **Seller Pays Freight:** CPT, CIP, DAP, DPU, DDP, CFR, CIF.
-*   **Buyer Pays Freight:** EXW, FCA, FAS, FOB.
+*   **Seller Pays Insurance:** CIP, CIF, DDP.
+*   **Seller Handles Export Clearance:** All except EXW.
+*   **Seller Handles Import Clearance:** DDP only.
 
-This logic is currently used for reporting and will be used for automated validation in future updates.
+This logic ensures that your shipping costs are aligned with your international trade agreements.
