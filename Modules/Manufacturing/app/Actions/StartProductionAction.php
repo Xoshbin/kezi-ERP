@@ -4,7 +4,7 @@ namespace Modules\Manufacturing\Actions;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Modules\Inventory\Services\StockMoveService;
+use Modules\Inventory\Services\Inventory\StockMoveService;
 use Modules\Manufacturing\Enums\ManufacturingOrderStatus;
 use Modules\Manufacturing\Models\ManufacturingOrder;
 
