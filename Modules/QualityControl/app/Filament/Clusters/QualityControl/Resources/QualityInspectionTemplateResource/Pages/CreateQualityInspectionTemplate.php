@@ -11,7 +11,7 @@ class CreateQualityInspectionTemplate extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['company_id'] = auth()->user()->currentCompany->id;
+        $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
 
         return $data;
     }
