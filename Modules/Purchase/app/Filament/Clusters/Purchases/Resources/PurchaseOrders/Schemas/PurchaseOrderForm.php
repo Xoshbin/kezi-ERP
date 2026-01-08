@@ -25,6 +25,7 @@ use Modules\Accounting\Models\Tax;
 use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Enums\Partners\PartnerType;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
+use Modules\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
 use Modules\Foundation\Models\Currency;
 use Modules\Product\Models\Product;
 use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
@@ -559,6 +560,12 @@ class PurchaseOrderForm
                     ])
                     ->collapsible(),
 
+
+            DocumentAttachmentsHelper::makeSection(
+                directory: 'purchase-orders',
+                disabledCallback: fn (?PurchaseOrder $record) => $record && $record->status !== PurchaseOrderStatus::Draft,
+                deletableCallback: fn (?PurchaseOrder $record) => $record === null || $record->status === PurchaseOrderStatus::Draft
+            ),
             ]);
     }
 
