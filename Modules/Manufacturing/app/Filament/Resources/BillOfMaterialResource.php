@@ -169,6 +169,11 @@ class BillOfMaterialResource extends Resource
         ];
     }
 
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Manufacturing';
+    }
+
     public static function getNavigationBadge(): ?string
     {
         return (string) static::getModel()::where('is_active', true)->count();
