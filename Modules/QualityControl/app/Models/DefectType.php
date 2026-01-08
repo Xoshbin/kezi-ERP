@@ -35,6 +35,11 @@ class DefectType extends Model
         return $this->belongsTo(Company::class);
     }
 
+    protected static function newFactory(): \Modules\QualityControl\Database\Factories\DefectTypeFactory
+    {
+        return \Modules\QualityControl\Database\Factories\DefectTypeFactory::new();
+    }
+
     /**
      * @return HasMany<QualityAlert, static>
      */
