@@ -118,6 +118,11 @@ class QualityCheck extends Model
         return $this->hasMany(QualityCheckLine::class);
     }
 
+    protected static function newFactory(): \Modules\QualityControl\Database\Factories\QualityCheckFactory
+    {
+        return \Modules\QualityControl\Database\Factories\QualityCheckFactory::new();
+    }
+
     /**
      * @return HasMany<QualityAlert, static>
      */

@@ -15,7 +15,7 @@ class RejectLotAction
 
             // Update lot with rejection data
             $lot->update([
-                'is_rejected' => true,
+                'is_rejected' => 1,
                 'rejection_reason' => $dto->rejectionReason,
                 'quarantine_location_id' => $dto->quarantineLocationId,
                 'active' => false, // Deactivate rejected lots

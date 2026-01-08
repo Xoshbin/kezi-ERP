@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Company;
+use App\Models\User;
 use Modules\Inventory\Models\StockPicking;
 use Modules\Product\Models\Product;
 use Modules\QualityControl\Actions\CreateQualityCheckAction;
@@ -8,13 +10,13 @@ use Modules\QualityControl\Enums\QualityCheckStatus;
 use Modules\QualityControl\Models\QualityCheck;
 
 it('creates a quality check from DTO', function () {
-    $company = createCompanyWithRequiredAccounts();
-    $user = createUserForCompany($company);
+    $company = Company::factory()->create();
+    $user = User::factory()->create();
 
-    actingAs($user);
+    $this->actingAs($user);
 
-    $product = Product::factory()->forCompany($company)->create();
-    $picking = StockPicking::factory()->forCompany($company)->create();
+    $product = Product::factory()->create(['company_id' => $company->id]);
+    $picking = StockPicking::factory()->create(['company_id' => $company->id]);
 
     $dto = new CreateQualityCheckDTO(
         companyId: $company->id,
@@ -37,13 +39,13 @@ it('creates a quality check from DTO', function () {
 });
 
 it('auto-generates sequential check numbers', function () {
-    $company = createCompanyWithRequiredAccounts();
-    $user = createUserForCompany($company);
+    $company = Company::factory()->create();
+    $user = User::factory()->create();
 
-    actingAs($user);
+    $this->actingAs($user);
 
-    $product = Product::factory()->forCompany($company)->create();
-    $picking = StockPicking::factory()->forCompany($company)->create();
+    $product = Product::factory()->create(['company_id' => $company->id]);
+    $picking = StockPicking::factory()->create(['company_id' => $company->id]);
 
     $action = app(CreateQualityCheckAction::class);
 

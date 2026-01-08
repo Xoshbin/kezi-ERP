@@ -79,4 +79,9 @@ class QualityInspectionParameter extends Model
 
         return true;
     }
+
+    protected static function newFactory(): \Modules\QualityControl\Database\Factories\QualityInspectionParameterFactory
+    {
+        return \Modules\QualityControl\Database\Factories\QualityInspectionParameterFactory::new();
+    }
 }

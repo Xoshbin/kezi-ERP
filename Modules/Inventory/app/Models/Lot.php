@@ -19,6 +19,9 @@ class Lot extends Model
         'lot_code',
         'expiration_date',
         'active',
+        'is_rejected',
+        'rejection_reason',
+        'quarantine_location_id',
     ];
 
     protected $casts = [
