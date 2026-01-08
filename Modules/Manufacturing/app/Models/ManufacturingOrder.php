@@ -16,6 +16,11 @@ class ManufacturingOrder extends Model
 {
     use HasFactory;
 
+    protected static function newFactory(): \Modules\Manufacturing\Database\Factories\ManufacturingOrderFactory
+    {
+        return \Modules\Manufacturing\Database\Factories\ManufacturingOrderFactory::new();
+    }
+
     protected $fillable = [
         'company_id',
         'number',
