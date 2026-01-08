@@ -1,9 +1,9 @@
 <?php
 
-namespace Modules\Manufacturing\Filament\Resources\BillOfMaterialResource\Pages;
+namespace Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\BillOfMaterialResource\Pages;
 
 use Filament\Resources\Pages\ListRecords;
-use Modules\Manufacturing\Filament\Resources\BillOfMaterialResource;
+use Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\BillOfMaterialResource;
 
 class ListBillOfMaterials extends ListRecords
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Manufacturing\Filament\Resources;
+namespace Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources;
 
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -14,13 +14,16 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Modules\Manufacturing\Enums\BOMType;
-use Modules\Manufacturing\Filament\Resources\BillOfMaterialResource\Pages;
-use Modules\Manufacturing\Filament\Resources\BillOfMaterialResource\RelationManagers;
+use Modules\Manufacturing\Filament\Clusters\Manufacturing\ManufacturingCluster;
+use Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\BillOfMaterialResource\Pages;
+use Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\BillOfMaterialResource\RelationManagers;
 use Modules\Manufacturing\Models\BillOfMaterial;
 
 class BillOfMaterialResource extends Resource
 {
     protected static ?string $model = BillOfMaterial::class;
+
+    protected static ?string $cluster = ManufacturingCluster::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-cube';
 
@@ -167,11 +170,6 @@ class BillOfMaterialResource extends Resource
             'create' => Pages\CreateBillOfMaterial::route('/create'),
             'edit' => Pages\EditBillOfMaterial::route('/{record}/edit'),
         ];
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return 'Manufacturing';
     }
 
     public static function getNavigationBadge(): ?string
