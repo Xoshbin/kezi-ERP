@@ -16,6 +16,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Modules\Accounting\Enums\Accounting\TaxType;
 use Modules\Accounting\Models\Tax;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Modules\Product\Models\Product;
 use Modules\Sales\Enums\Sales\SalesOrderStatus;
@@ -249,6 +250,12 @@ class SalesOrderForm
 
                                         return __('sales::sales_orders.help.exchange_rate');
                                     }),
+
+                                Select::make('incoterm')
+                                    ->label(__('sales::sales_orders.fields.incoterm'))
+                                    ->options(Incoterm::class)
+                                    ->searchable()
+                                    ->preload(),
                             ]),
                     ]),
 

@@ -41,6 +41,7 @@ use Modules\Accounting\Models\FiscalPosition;
 use Modules\Accounting\Models\Journal;
 use Modules\Accounting\Models\Tax;
 use Modules\Accounting\Rules\NotInLockedPeriod;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Modules\Foundation\Models\Currency;
@@ -232,6 +233,11 @@ class InvoiceResource extends Resource
 
                             return null;
                         }),
+                    Select::make('incoterm')
+                        ->label(__('accounting::invoice.incoterm'))
+                        ->options(Incoterm::class)
+                        ->searchable()
+                        ->preload(),
                 ])
                 ->columns(4)
                 ->columnSpanFull(),

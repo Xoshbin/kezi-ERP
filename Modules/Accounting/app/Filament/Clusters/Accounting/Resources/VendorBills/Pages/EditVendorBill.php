@@ -24,6 +24,7 @@ use Modules\Accounting\Actions\Accounting\BuildVendorBillPostingPreviewAction;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Widgets\SettlementSummaryWidget;
 use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Modules\Payment\Actions\Payments\CreatePaymentAction;
@@ -301,7 +302,8 @@ class EditVendorBill extends EditRecord
             accounting_date: $data['accounting_date'],
             due_date: $data['due_date'] ?? null,
             lines: $lineDTOs,
-            updated_by_user_id: (int) Auth::id()
+            updated_by_user_id: (int) Auth::id(),
+            incoterm: isset($data['incoterm']) ? Incoterm::tryFrom($data['incoterm']) : null
         );
 
         try {

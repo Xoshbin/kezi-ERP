@@ -325,9 +325,18 @@ For import/export transactions:
 - Integrated with Inventory and Manufacturing workflows
 
 #### 7. **Delivery Terms (Incoterms)**
-Missing on Sales/Purchase:
-- Incoterms selection
-- Shipping cost allocation rules
+> [!NOTE]
+> Implemented: Incoterm selection on Sales Orders, Invoices, Purchase Orders, and Vendor Bills.
+
+**Implemented:**
+- `Incoterm` enum with 11 standard rules
+- Database columns and casting in all models
+- Full DTO/Action support in Sales and Purchase/Accounting
+- Filament UI selection fields
+- User guide documentation (`incoterms.md`)
+
+**Future Enhancements** (not critical):
+- Automated shipping cost allocation rules based on Incoterm
 
 #### 8. **Document Attachments Management**
 VendorBillAttachment exists but not standardized across:

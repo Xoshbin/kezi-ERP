@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Auth;
 use Modules\Accounting\Enums\Accounting\TaxType;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Tax;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Enums\Partners\PartnerType;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Modules\Foundation\Models\Currency;
@@ -261,6 +262,12 @@ class PurchaseOrderForm
 
                                         return __('purchase::purchase_orders.help.exchange_rate');
                                     }),
+
+                                Select::make('incoterm')
+                                    ->label(__('purchase::purchase_orders.fields.incoterm'))
+                                    ->options(Incoterm::class)
+                                    ->searchable()
+                                    ->preload(),
                             ]),
                     ]),
 
