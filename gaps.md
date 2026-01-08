@@ -282,11 +282,33 @@ For import/export transactions:
 ### Medium Priority
 
 #### 5. **Manufacturing / BOM**
-No production capabilities:
-- Bill of Materials
-- Work Orders
-- Manufacturing Orders
-- Component consumption and finished goods receipt
+> [!NOTE]
+> Partially Implemented: Foundation complete with database schema, models, DTOs, Actions, and Services.
+
+**Implemented:**
+- `BillOfMaterial` and `BOMLine` models with translatable names
+- `WorkCenter` model with hourly cost tracking
+- `ManufacturingOrder` and `ManufacturingOrderLine` models with status workflow
+- `WorkOrder` model for production task tracking
+- `BOMType` enum (Normal, Kit, Phantom)
+- `ManufacturingOrderStatus` and `WorkOrderStatus` enums
+- `CreateBOMAction` with component line creation
+- `CreateManufacturingOrderAction` with sequence number generation
+- `ConfirmManufacturingOrderAction` creating work orders
+- `StartProductionAction` and `ConsumeComponentsAction` with inventory integration
+- `ProduceFinishedGoodsAction` with cost calculation
+- `BOMService` with circular reference validation and cost calculation
+- `ManufacturingOrderService` with full lifecycle orchestration and event dispatching
+- Integration with `StockMoveService` for component consumption and finished goods receipt
+- Product model relationships for BOMs and Manufacturing Orders
+
+**Remaining:**
+- Filament UI (BOMResource, WorkCenterResource, ManufacturingOrderResource)
+- Dashboard widgets for production tracking
+- Journal entry creation for WIP and finished goods
+- Variance tracking (standard vs actual cost)
+- Feature tests and Filament tests
+- User documentation
 
 #### 6. **Quality Control**
 No QC integration:
