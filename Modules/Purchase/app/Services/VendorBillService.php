@@ -31,6 +31,7 @@ class VendorBillService
         protected CurrencyConverterService $currencyConverter,
         protected ExchangeRateService $exchangeRateService,
         protected SequenceService $sequenceService,
+        protected \Modules\Purchase\Services\ShippingCostAllocationService $shippingCostAllocationService,
     ) {}
 
     public function post(VendorBill $vendorBill, User $user): void
@@ -311,5 +312,13 @@ class VendorBillService
             // If no priority error found, throw the first error
             throw new RuntimeException($preview['errors'][0]);
         }
+    }
+
+    /**
+     * Validate shipping costs for the vendor bill based on Incoterms.
+     */
+    public function validateShippingCosts(VendorBill $vendorBill): \Modules\Purchase\DataTransferObjects\Purchases\ShippingCostValidationResult
+    {
+        return $this->shippingCostAllocationService->validateVendorBillShippingCosts($vendorBill);
     }
 }

@@ -24,7 +24,6 @@ use Modules\Accounting\Actions\Accounting\BuildVendorBillPostingPreviewAction;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Widgets\SettlementSummaryWidget;
 use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Modules\Payment\Actions\Payments\CreatePaymentAction;
@@ -288,7 +287,9 @@ class EditVendorBill extends EditRecord
                 unit_price: Money::of($line['unit_price'], $record->currency->code),
                 expense_account_id: $line['expense_account_id'],
                 tax_id: $line['tax_id'] ?? null,
-                analytic_account_id: $line['analytic_account_id'] ?? null
+                analytic_account_id: $line['analytic_account_id'] ?? null,
+                shipping_cost_type: isset($line['shipping_cost_type']) ? \Modules\Foundation\Enums\ShippingCostType::tryFrom($line['shipping_cost_type']) : null,
+                asset_category_id: $line['asset_category_id'] ?? null
             );
         }
 
@@ -303,7 +304,7 @@ class EditVendorBill extends EditRecord
             due_date: $data['due_date'] ?? null,
             lines: $lineDTOs,
             updated_by_user_id: (int) Auth::id(),
-            incoterm: isset($data['incoterm']) ? Incoterm::tryFrom($data['incoterm']) : null
+            incoterm: isset($data['incoterm']) ? \Modules\Foundation\Enums\Incoterm::tryFrom($data['incoterm']) : null
         );
 
         try {

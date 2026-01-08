@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Modules\Accounting\Models\Tax;
 use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
+use Modules\Foundation\Enums\ShippingCostType;
 use Modules\Foundation\Models\Currency;
 use Modules\Product\Models\Product;
 
@@ -65,6 +66,7 @@ class PurchaseOrderLine extends Model
         'subtotal_company_currency',
         'total_line_tax_company_currency',
         'total_company_currency',
+        'shipping_cost_type',
         'expected_delivery_date',
         'notes',
     ];
@@ -76,6 +78,7 @@ class PurchaseOrderLine extends Model
         'quantity' => 'float',
         'quantity_received' => 'float',
         'unit_price' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'shipping_cost_type' => ShippingCostType::class,
         'subtotal' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
         'total_line_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
         'total' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,

@@ -14,6 +14,7 @@ use Illuminate\Support\Carbon;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\AnalyticAccount;
 use Modules\Accounting\Models\Tax;
+use Modules\Foundation\Enums\ShippingCostType;
 use Modules\Product\Models\Product;
 use Modules\Purchase\Database\Factories\VendorBillLineFactory;
 use Modules\Purchase\Observers\VendorBillLineObserver;
@@ -98,6 +99,7 @@ class VendorBillLine extends Model
         'description',             // A detailed textual description of the line item [2].
         'quantity',                // The quantity of the product or service on this line [2].
         'unit_price',              // The price per unit of the item [2].
+        'shipping_cost_type',
         'unit_price_company_currency', // Price per unit in company currency
         'tax_id',                  // Nullable foreign key to the Tax model, representing the tax applied to this line [2].
         'subtotal',                // The calculated subtotal for this line, typically quantity * unit_price [2].
@@ -121,6 +123,7 @@ class VendorBillLine extends Model
         'quantity' => 'decimal:2', // Ensures precision for quantities, allowing for fractional units.
         'unit_price' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class, // Document currency amounts
         'unit_price_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class, // Company base currency amounts
+        'shipping_cost_type' => ShippingCostType::class,
         'subtotal' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class, // Document currency amounts
         'subtotal_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class, // Company base currency amounts
         'total_line_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class, // Document currency amounts

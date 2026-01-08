@@ -80,4 +80,34 @@ class IncotermTest extends TestCase
         // DAP: Buyer handles (False)
         $this->assertFalse(Incoterm::Dap->sellerHandlesImportClearance());
     }
+
+    public function test_should_buyer_pay_for()
+    {
+        // DDP: Seller pays everything, so buyer pays nothing
+        $this->assertFalse(Incoterm::Ddp->shouldBuyerPayFor(\Modules\Foundation\Enums\ShippingCostType::Freight));
+        $this->assertFalse(Incoterm::Ddp->shouldBuyerPayFor(\Modules\Foundation\Enums\ShippingCostType::Insurance));
+
+        // EXW: Buyer pays everything
+        $this->assertTrue(Incoterm::Exw->shouldBuyerPayFor(\Modules\Foundation\Enums\ShippingCostType::Freight));
+        $this->assertTrue(Incoterm::Exw->shouldBuyerPayFor(\Modules\Foundation\Enums\ShippingCostType::Insurance));
+
+        // FOB: Buyer pays main carriage freight
+        $this->assertTrue(Incoterm::Fob->shouldBuyerPayFor(\Modules\Foundation\Enums\ShippingCostType::Freight));
+        // FOB: Buyer usually pays insurance too (seller's responsibility ends at ship's rail)
+        $this->assertTrue(Incoterm::Fob->shouldBuyerPayFor(\Modules\Foundation\Enums\ShippingCostType::Insurance));
+
+        // CIF: Seller pays freight and insurance
+        $this->assertFalse(Incoterm::Cif->shouldBuyerPayFor(\Modules\Foundation\Enums\ShippingCostType::Freight));
+        $this->assertFalse(Incoterm::Cif->shouldBuyerPayFor(\Modules\Foundation\Enums\ShippingCostType::Insurance));
+    }
+
+    public function test_get_cost_responsibilities_returns_dto()
+    {
+        $dto = Incoterm::Cif->getCostResponsibilities();
+        $this->assertInstanceOf(\Modules\Foundation\DataTransferObjects\ShippingCostResponsibilityDTO::class, $dto);
+        $this->assertFalse($dto->buyerPaysFreight);
+        $this->assertFalse($dto->buyerPaysInsurance);
+        $this->assertFalse($dto->buyerHandlesExportClearance);
+        $this->assertTrue($dto->buyerHandlesImportClearance);
+    }
 }
