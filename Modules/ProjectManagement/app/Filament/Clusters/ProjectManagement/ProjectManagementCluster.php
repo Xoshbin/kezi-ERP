@@ -9,6 +9,11 @@ class ProjectManagementCluster extends Cluster
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('Project Management');
