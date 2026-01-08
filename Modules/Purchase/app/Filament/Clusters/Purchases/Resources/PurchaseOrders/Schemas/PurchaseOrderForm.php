@@ -307,7 +307,8 @@ class PurchaseOrderForm
                                 TableColumn::make(__('purchase::purchase_orders.fields.description'))->width('15%'),
                                 TableColumn::make(__('purchase::purchase_orders.fields.quantity'))->width('8%'),
                                 TableColumn::make(__('purchase::purchase_orders.fields.unit_price'))->width('12%'),
-                                TableColumn::make(__('purchase::purchase_orders.fields.tax'))->width('15%'),
+                                TableColumn::make(__('purchase::purchase_orders.fields.tax'))->width('12%'),
+                                TableColumn::make(__('Shipping Type'))->width('12%'),
                                 TableColumn::make(__('purchase::purchase_orders.fields.expected_delivery_date'))->width('12%'),
                                 TableColumn::make(__('purchase::purchase_orders.fields.notes'))->width('20%'),
                             ])
@@ -362,6 +363,14 @@ class PurchaseOrderForm
                                                     $set('unit_price', (string) $convertedPrice);
                                                 } else {
                                                     $set('unit_price', 0);
+                                                }
+
+                                                // Auto-detect shipping cost type
+                                                $name = strtolower($product->name);
+                                                if (str_contains($name, 'freight') || str_contains($name, 'shipping')) {
+                                                    $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Freight);
+                                                } elseif (str_contains($name, 'insurance')) {
+                                                    $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Insurance);
                                                 }
                                             }
                                         }
@@ -501,7 +510,12 @@ class PurchaseOrderForm
                                     ->label(__('purchase::purchase_orders.fields.expected_delivery_date'))
                                     ->default(fn (callable $get) => $get('../../expected_delivery_date'))
                                     ->columnSpan(3),
-
+                                Select::make('shipping_cost_type')
+                                    ->label(__('Shipping Type'))
+                                    ->options(\Modules\Foundation\Enums\ShippingCostType::class)
+                                    ->placeholder(__('None'))
+                                    ->nullable()
+                                    ->columnSpan(3),
                                 Textarea::make('notes')
                                     ->label(__('purchase::purchase_orders.fields.notes'))
                                     ->rows(2)

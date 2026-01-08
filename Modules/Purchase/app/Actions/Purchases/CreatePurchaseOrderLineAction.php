@@ -31,6 +31,7 @@ class CreatePurchaseOrderLineAction
             'subtotal' => Money::of(0, $currency->code),
             'total_line_tax' => Money::of(0, $currency->code),
             'total' => Money::of(0, $currency->code),
+            'shipping_cost_type' => $dto->shipping_cost_type,
             'expected_delivery_date' => $dto->expected_delivery_date,
             'notes' => $dto->notes,
         ]);
