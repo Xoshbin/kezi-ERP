@@ -51,6 +51,7 @@ class JmeryarPanelProvider extends PanelProvider
             ->discoverResources(in: base_path('Modules/Foundation/app/Filament/Resources'), for: 'Modules\\Foundation\\Filament\\Resources')
             ->discoverClusters(in: base_path('Modules/Manufacturing/app/Filament/Clusters'), for: 'Modules\\Manufacturing\\Filament\\Clusters')
             ->discoverResources(in: base_path('Modules/ProjectManagement/app/Filament/Clusters/ProjectManagement/Resources'), for: 'Modules\\ProjectManagement\\Filament\\Clusters\\ProjectManagement\\Resources')
+            ->discoverResources(in: base_path('Modules/QualityControl/app/Filament/Clusters/QualityControl/Resources'), for: 'Modules\\QualityControl\\Filament\\Clusters\\QualityControl\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->discoverPages(in: base_path('Modules/ProjectManagement/app/Filament/Clusters/ProjectManagement/Pages'), for: 'Modules\\ProjectManagement\\Filament\\Clusters\\ProjectManagement\\Pages')
             ->pages([
@@ -59,6 +60,7 @@ class JmeryarPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
             ->discoverClusters(in: base_path('Modules/ProjectManagement/app/Filament/Clusters'), for: 'Modules\\ProjectManagement\\Filament\\Clusters')
+            ->discoverClusters(in: base_path('Modules/QualityControl/app/Filament/Clusters'), for: 'Modules\\QualityControl\\Filament\\Clusters')
             ->widgets([
                 // Widgets\AccountWidget::class
             ])

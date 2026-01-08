@@ -145,6 +145,27 @@ class StockPicking extends Model
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<\Modules\QualityControl\Models\QualityCheck>
+     */
+    public function qualityChecks(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(\Modules\QualityControl\Models\QualityCheck::class, 'source');
+    }
+
+    /**
+     * Check if this picking has pending quality checks
+     */
+    public function hasPendingQualityChecks(): bool
+    {
+        return $this->qualityChecks()
+            ->whereIn('status', [
+                \Modules\QualityControl\Enums\QualityCheckStatus::Draft,
+                \Modules\QualityControl\Enums\QualityCheckStatus::InProgress,
+            ])
+            ->exists();
+    }
+
+    /**
      * Get the transit location for internal transfers.
      *
      * @return BelongsTo<StockLocation, static>
