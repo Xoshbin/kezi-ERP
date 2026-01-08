@@ -15,6 +15,11 @@ class WorkCenter extends Model
     use HasFactory;
     use HasTranslations;
 
+    protected static function newFactory(): \Modules\Manufacturing\Database\Factories\WorkCenterFactory
+    {
+        return \Modules\Manufacturing\Database\Factories\WorkCenterFactory::new();
+    }
+
     protected $fillable = [
         'company_id',
         'code',
