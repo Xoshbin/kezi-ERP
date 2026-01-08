@@ -73,4 +73,23 @@ class ManufacturingOrderService
 
         return $mo;
     }
+
+    /**
+     * Alias for completeProduction for Filament UI
+     */
+    public function complete(ManufacturingOrder $mo): ManufacturingOrder
+    {
+        return $this->completeProduction($mo);
+    }
+
+    /**
+     * Cancel a manufacturing order
+     */
+    public function cancel(ManufacturingOrder $mo): ManufacturingOrder
+    {
+        $mo->status = \Modules\Manufacturing\Enums\ManufacturingOrderStatus::Cancelled;
+        $mo->save();
+
+        return $mo;
+    }
 }
