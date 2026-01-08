@@ -16,6 +16,8 @@ class BillOfMaterial extends Model
     use HasFactory;
     use HasTranslations;
 
+    protected $table = 'bills_of_materials';
+
     protected static function newFactory(): \Modules\Manufacturing\Database\Factories\BillOfMaterialFactory
     {
         return \Modules\Manufacturing\Database\Factories\BillOfMaterialFactory::new();
