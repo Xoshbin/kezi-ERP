@@ -3,8 +3,9 @@
 namespace Modules\QualityControl\Filament\Clusters\QualityControl\Resources;
 
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Modules\QualityControl\Enums\QualityAlertStatus;
@@ -16,7 +17,7 @@ class QualityAlertResource extends Resource
 {
     protected static ?string $model = QualityAlert::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-bell-alert';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-bell-alert';
 
     protected static ?string $cluster = QualityControlCluster::class;
 
@@ -37,11 +38,11 @@ class QualityAlertResource extends Resource
         return 'danger';
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('quality::alert.section_basic'))
+        return $schema
+            ->components([
+                Section::make(__('quality::alert.section_basic'))
                     ->schema([
                         Forms\Components\TextInput::make('number')
                             ->label(__('quality::alert.number'))
@@ -87,7 +88,7 @@ class QualityAlertResource extends Resource
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make(__('quality::alert.section_capa'))
+                Section::make(__('quality::alert.section_capa'))
                     ->schema([
                         Forms\Components\Textarea::make('root_cause')
                             ->label(__('quality::alert.root_cause'))
@@ -157,12 +158,12 @@ class QualityAlertResource extends Resource
                     ->preload(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                \Filament\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                \Filament\Actions\BulkActionGroup::make([
                     // Alerts can be deleted if necessary
-                    Tables\Actions\DeleteBulkAction::make(),
+                    \Filament\Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

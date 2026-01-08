@@ -12,7 +12,7 @@ class CreateQualityAlert extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['company_id'] = auth()->user()->currentCompany->id;
+        $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
         $data['reported_by_user_id'] = auth()->id();
         $data['status'] = QualityAlertStatus::New->value;
 

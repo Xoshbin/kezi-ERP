@@ -3,8 +3,9 @@
 namespace Modules\QualityControl\Filament\Clusters\QualityControl\Resources;
 
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Modules\QualityControl\Enums\QualityTriggerFrequency;
@@ -17,7 +18,7 @@ class QualityControlPointResource extends Resource
 {
     protected static ?string $model = QualityControlPoint::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cog-6-tooth';
 
     protected static ?string $cluster = QualityControlCluster::class;
 
@@ -28,11 +29,11 @@ class QualityControlPointResource extends Resource
         return __('quality::control_point.navigation_label');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('quality::control_point.section_basic'))
+        return $schema
+            ->components([
+                Section::make(__('quality::control_point.section_basic'))
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->label(__('quality::control_point.name'))
@@ -76,7 +77,7 @@ class QualityControlPointResource extends Resource
                             ->numeric()
                             ->nullable()
                             ->helperText(__('quality::control_point.quantity_threshold_helper'))
-                            ->visible(fn (Forms\Get $get) => $get('trigger_frequency') === QualityTriggerFrequency::PerQuantity->value)
+                            ->visible(fn ($get) => $get('trigger_frequency') === QualityTriggerFrequency::PerQuantity->value)
                             ->columnSpan(1),
 
                         Forms\Components\Toggle::make('is_blocking')
@@ -142,12 +143,12 @@ class QualityControlPointResource extends Resource
                     ->label(__('quality::control_point.active')),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                \Filament\Actions\EditAction::make(),
+                \Filament\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                \Filament\Actions\BulkActionGroup::make([
+                    \Filament\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
