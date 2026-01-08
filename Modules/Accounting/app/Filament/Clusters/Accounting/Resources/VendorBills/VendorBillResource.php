@@ -20,6 +20,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -321,7 +322,7 @@ class VendorBillResource extends Resource
                                 ->searchable()
                                 ->preload()
                                 ->reactive()
-                                ->afterStateUpdated(function (callable $set, $state) {
+                                ->afterStateUpdated(function (callable $set, $state, callable $get) {
                                     if ($state) {
                                         $product = Product::find($state);
                                         // Ensure we have a single Product model, not a collection
@@ -342,9 +343,9 @@ class VendorBillResource extends Resource
                                             // Auto-detect shipping cost type
                                             $name = strtolower($product->name);
                                             if (str_contains($name, 'freight') || str_contains($name, 'shipping')) {
-                                                $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Freight->value);
+                                                $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Freight);
                                             } elseif (str_contains($name, 'insurance')) {
-                                                $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Insurance->value);
+                                                $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Insurance);
                                             }
                                         }
                                     }

@@ -368,49 +368,49 @@ class PurchaseOrderForm
                                                 // Auto-detect shipping cost type
                                                 $name = strtolower($product->name);
                                                 if (str_contains($name, 'freight') || str_contains($name, 'shipping')) {
-                                                    $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Freight->value);
+                                                    $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Freight);
                                                 } elseif (str_contains($name, 'insurance')) {
-                                                    $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Insurance->value);
+                                                    $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Insurance);
                                                 }
                                             }
                                         }
                                     })
                                     ->createOptionForm([
-                                    Hidden::make('company_id')
-                                        ->default(fn () => Filament::getTenant()?->getKey()),
-                                    TextInput::make('name')
-                                        ->label(__('product.name'))
-                                        ->required()
-                                        ->maxLength(255),
-                                    TextInput::make('sku')
-                                        ->label(__('product.sku'))
-                                        ->required()
-                                        ->maxLength(255),
-                                    Select::make('type')
-                                        ->label(__('product.type'))
-                                        ->required()
-                                        ->live()
-                                        ->options(
-                                            collect(\Modules\Product\Enums\Products\ProductType::cases())
-                                                ->mapWithKeys(fn (\Modules\Product\Enums\Products\ProductType $type) => [$type->value => $type->label()])
-                                        ),
-                                    Textarea::make('description')
-                                        ->label(__('product.description'))
-                                        ->rows(3),
-                                    Toggle::make('is_active')
-                                        ->label(__('product.is_active'))
-                                        ->default(true),
-                                    Select::make('default_inventory_account_id')
-                                        ->label(__('product.default_inventory_account'))
-                                        ->options(function () {
-                                            return Account::where('company_id', Filament::getTenant()?->getKey())
-                                                ->where('is_deprecated', false)
-                                                ->pluck('name', 'id');
-                                        })
-                                        ->visible(fn ($get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
-                                        ->required(fn ($get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
-                                        ->searchable()
-                                        ->preload(),
+                                        Hidden::make('company_id')
+                                            ->default(fn () => Filament::getTenant()?->getKey()),
+                                        TextInput::make('name')
+                                            ->label(__('product.name'))
+                                            ->required()
+                                            ->maxLength(255),
+                                        TextInput::make('sku')
+                                            ->label(__('product.sku'))
+                                            ->required()
+                                            ->maxLength(255),
+                                        Select::make('type')
+                                            ->label(__('product.type'))
+                                            ->required()
+                                            ->live()
+                                            ->options(
+                                                collect(\Modules\Product\Enums\Products\ProductType::cases())
+                                                    ->mapWithKeys(fn (\Modules\Product\Enums\Products\ProductType $type) => [$type->value => $type->label()])
+                                            ),
+                                        Textarea::make('description')
+                                            ->label(__('product.description'))
+                                            ->rows(3),
+                                        Toggle::make('is_active')
+                                            ->label(__('product.is_active'))
+                                            ->default(true),
+                                        Select::make('default_inventory_account_id')
+                                            ->label(__('product.default_inventory_account'))
+                                            ->options(function () {
+                                                return Account::where('company_id', Filament::getTenant()?->getKey())
+                                                    ->where('is_deprecated', false)
+                                                    ->pluck('name', 'id');
+                                            })
+                                            ->visible(fn ($get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
+                                            ->required(fn ($get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
+                                            ->searchable()
+                                            ->preload(),
                                     ])
                                     ->createOptionModalHeading(__('common.modal_title_create_product'))
                                     ->createOptionAction(function (Action $action) {
