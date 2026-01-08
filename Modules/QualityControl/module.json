@@ -1,0 +1,11 @@
+{
+    "name": "QualityControl",
+    "alias": "qualitycontrol",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\QualityControl\\Providers\\QualityControlServiceProvider"
+    ],
+    "files": []
+}
