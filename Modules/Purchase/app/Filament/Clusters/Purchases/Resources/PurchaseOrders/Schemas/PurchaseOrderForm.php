@@ -307,7 +307,8 @@ class PurchaseOrderForm
                                 TableColumn::make(__('purchase::purchase_orders.fields.description'))->width('15%'),
                                 TableColumn::make(__('purchase::purchase_orders.fields.quantity'))->width('8%'),
                                 TableColumn::make(__('purchase::purchase_orders.fields.unit_price'))->width('12%'),
-                                TableColumn::make(__('purchase::purchase_orders.fields.tax'))->width('15%'),
+                                TableColumn::make(__('purchase::purchase_orders.fields.tax'))->width('12%'),
+                                TableColumn::make(__('Shipping Type'))->width('12%'),
                                 TableColumn::make(__('purchase::purchase_orders.fields.expected_delivery_date'))->width('12%'),
                                 TableColumn::make(__('purchase::purchase_orders.fields.notes'))->width('20%'),
                             ])
@@ -363,45 +364,53 @@ class PurchaseOrderForm
                                                 } else {
                                                     $set('unit_price', 0);
                                                 }
+
+                                                // Auto-detect shipping cost type
+                                                $name = strtolower($product->name);
+                                                if (str_contains($name, 'freight') || str_contains($name, 'shipping')) {
+                                                    $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Freight->value);
+                                                } elseif (str_contains($name, 'insurance')) {
+                                                    $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Insurance->value);
+                                                }
                                             }
                                         }
                                     })
                                     ->createOptionForm([
-                                        Hidden::make('company_id')
-                                            ->default(fn () => Filament::getTenant()?->getKey()),
-                                        TextInput::make('name')
-                                            ->label(__('product.name'))
-                                            ->required()
-                                            ->maxLength(255),
-                                        TextInput::make('sku')
-                                            ->label(__('product.sku'))
-                                            ->required()
-                                            ->maxLength(255),
-                                        Select::make('type')
-                                            ->label(__('product.type'))
-                                            ->required()
-                                            ->live()
-                                            ->options(
-                                                collect(\Modules\Product\Enums\Products\ProductType::cases())
-                                                    ->mapWithKeys(fn (\Modules\Product\Enums\Products\ProductType $type) => [$type->value => $type->label()])
-                                            ),
-                                        Textarea::make('description')
-                                            ->label(__('product.description'))
-                                            ->rows(3),
-                                        Toggle::make('is_active')
-                                            ->label(__('product.is_active'))
-                                            ->default(true),
-                                        Select::make('default_inventory_account_id')
-                                            ->label(__('product.default_inventory_account'))
-                                            ->options(function () {
-                                                return Account::where('company_id', Filament::getTenant()?->getKey())
-                                                    ->where('is_deprecated', false)
-                                                    ->pluck('name', 'id');
-                                            })
-                                            ->visible(fn ($get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
-                                            ->required(fn ($get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
-                                            ->searchable()
-                                            ->preload(),
+                                    Hidden::make('company_id')
+                                        ->default(fn () => Filament::getTenant()?->getKey()),
+                                    TextInput::make('name')
+                                        ->label(__('product.name'))
+                                        ->required()
+                                        ->maxLength(255),
+                                    TextInput::make('sku')
+                                        ->label(__('product.sku'))
+                                        ->required()
+                                        ->maxLength(255),
+                                    Select::make('type')
+                                        ->label(__('product.type'))
+                                        ->required()
+                                        ->live()
+                                        ->options(
+                                            collect(\Modules\Product\Enums\Products\ProductType::cases())
+                                                ->mapWithKeys(fn (\Modules\Product\Enums\Products\ProductType $type) => [$type->value => $type->label()])
+                                        ),
+                                    Textarea::make('description')
+                                        ->label(__('product.description'))
+                                        ->rows(3),
+                                    Toggle::make('is_active')
+                                        ->label(__('product.is_active'))
+                                        ->default(true),
+                                    Select::make('default_inventory_account_id')
+                                        ->label(__('product.default_inventory_account'))
+                                        ->options(function () {
+                                            return Account::where('company_id', Filament::getTenant()?->getKey())
+                                                ->where('is_deprecated', false)
+                                                ->pluck('name', 'id');
+                                        })
+                                        ->visible(fn ($get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
+                                        ->required(fn ($get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
+                                        ->searchable()
+                                        ->preload(),
                                     ])
                                     ->createOptionModalHeading(__('common.modal_title_create_product'))
                                     ->createOptionAction(function (Action $action) {
@@ -501,7 +510,12 @@ class PurchaseOrderForm
                                     ->label(__('purchase::purchase_orders.fields.expected_delivery_date'))
                                     ->default(fn (callable $get) => $get('../../expected_delivery_date'))
                                     ->columnSpan(3),
-
+                                Select::make('shipping_cost_type')
+                                    ->label(__('Shipping Type'))
+                                    ->options(\Modules\Foundation\Enums\ShippingCostType::class)
+                                    ->placeholder(__('None'))
+                                    ->nullable()
+                                    ->columnSpan(3),
                                 Textarea::make('notes')
                                     ->label(__('purchase::purchase_orders.fields.notes'))
                                     ->rows(2)
