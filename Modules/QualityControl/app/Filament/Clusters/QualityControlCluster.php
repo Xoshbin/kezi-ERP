@@ -10,6 +10,11 @@ class QualityControlCluster extends Cluster
 
     protected static ?int $navigationSort = 50;
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('quality::cluster.label');
