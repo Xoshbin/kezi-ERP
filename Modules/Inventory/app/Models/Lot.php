@@ -59,6 +59,30 @@ class Lot extends Model
     }
 
     /**
+     * @return HasMany<\Modules\QualityControl\Models\QualityCheck, static>
+     */
+    public function qualityChecks(): HasMany
+    {
+        return $this->hasMany(\Modules\QualityControl\Models\QualityCheck::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\Modules\Inventory\Models\StockLocation, static>
+     */
+    public function quarantineLocation(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(StockLocation::class, 'quarantine_location_id');
+    }
+
+    /**
+     * Check if the lot is rejected
+     */
+    public function isRejected(): bool
+    {
+        return $this->is_rejected ?? false;
+    }
+
+    /**
      * Check if the lot is expired
      */
     public function isExpired(): bool

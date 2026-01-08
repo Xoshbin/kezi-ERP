@@ -116,6 +116,14 @@ class ManufacturingOrder extends Model
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<\Modules\QualityControl\Models\QualityCheck>
+     */
+    public function qualityChecks(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(\Modules\QualityControl\Models\QualityCheck::class, 'source');
+    }
+
+    /**
      * @return HasMany<ManufacturingOrderLine, static>
      */
     public function lines(): HasMany
