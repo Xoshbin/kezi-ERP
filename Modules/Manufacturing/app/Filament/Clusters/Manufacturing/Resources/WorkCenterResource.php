@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Manufacturing\Filament\Resources;
+namespace Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources;
 
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -13,12 +13,15 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Modules\Manufacturing\Filament\Resources\WorkCenterResource\Pages;
+use Modules\Manufacturing\Filament\Clusters\Manufacturing\ManufacturingCluster;
+use Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\WorkCenterResource\Pages;
 use Modules\Manufacturing\Models\WorkCenter;
 
 class WorkCenterResource extends Resource
 {
     protected static ?string $model = WorkCenter::class;
+
+    protected static ?string $cluster = ManufacturingCluster::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
@@ -139,10 +142,5 @@ class WorkCenterResource extends Resource
             'create' => Pages\CreateWorkCenter::route('/create'),
             'edit' => Pages\EditWorkCenter::route('/{record}/edit'),
         ];
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return 'Manufacturing';
     }
 }

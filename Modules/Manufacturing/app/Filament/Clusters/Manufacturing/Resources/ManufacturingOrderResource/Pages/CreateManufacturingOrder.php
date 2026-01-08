@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Manufacturing\Filament\Resources\ManufacturingOrderResource\Pages;
+namespace Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\ManufacturingOrderResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
 use Modules\Manufacturing\DataTransferObjects\CreateManufacturingOrderDTO;
-use Modules\Manufacturing\Filament\Resources\ManufacturingOrderResource;
+use Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\ManufacturingOrderResource;
 use Modules\Manufacturing\Services\ManufacturingOrderService;
 
 class CreateManufacturingOrder extends CreateRecord

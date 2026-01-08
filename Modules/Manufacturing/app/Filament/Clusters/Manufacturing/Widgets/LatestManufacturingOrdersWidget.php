@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Manufacturing\Filament\Widgets;
+namespace Modules\Manufacturing\Filament\Clusters\Manufacturing\Widgets;
 
 use Filament\Tables;
 use Filament\Tables\Table;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Manufacturing\Filament\Resources;
+namespace Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources;
 
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -15,13 +15,16 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Modules\Manufacturing\Enums\ManufacturingOrderStatus;
-use Modules\Manufacturing\Filament\Resources\ManufacturingOrderResource\Pages;
-use Modules\Manufacturing\Filament\Resources\ManufacturingOrderResource\RelationManagers;
+use Modules\Manufacturing\Filament\Clusters\Manufacturing\ManufacturingCluster;
+use Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\ManufacturingOrderResource\Pages;
+use Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\ManufacturingOrderResource\RelationManagers;
 use Modules\Manufacturing\Models\ManufacturingOrder;
 
 class ManufacturingOrderResource extends Resource
 {
     protected static ?string $model = ManufacturingOrder::class;
+
+    protected static ?string $cluster = ManufacturingCluster::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-cog-6-tooth';
 
@@ -255,11 +258,6 @@ class ManufacturingOrderResource extends Resource
             'view' => Pages\ViewManufacturingOrder::route('/{record}'),
             'edit' => Pages\EditManufacturingOrder::route('/{record}/edit'),
         ];
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return 'Manufacturing';
     }
 
     public static function getNavigationBadge(): ?string

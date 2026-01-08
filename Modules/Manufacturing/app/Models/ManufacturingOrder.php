@@ -3,6 +3,7 @@
 namespace Modules\Manufacturing\Models;
 
 use App\Models\Company;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,6 +13,20 @@ use Modules\Inventory\Models\StockLocation;
 use Modules\Manufacturing\Enums\ManufacturingOrderStatus;
 use Modules\Product\Models\Product;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property string $number
+ * @property int $product_id
+ * @property float $quantity_to_produce
+ * @property float $quantity_produced
+ * @property int $source_location_id
+ * @property int $destination_location_id
+ * @property ManufacturingOrderStatus $status
+ * @property Carbon|null $actual_end_date
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Modules\Manufacturing\Models\ManufacturingOrderLine[] $lines
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Modules\Manufacturing\Models\WorkOrder[] $workOrders
+ */
 class ManufacturingOrder extends Model
 {
     use HasFactory;

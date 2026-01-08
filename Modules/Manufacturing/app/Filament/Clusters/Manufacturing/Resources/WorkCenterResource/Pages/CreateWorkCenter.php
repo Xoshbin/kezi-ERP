@@ -1,9 +1,9 @@
 <?php
 
-namespace Modules\Manufacturing\Filament\Resources\WorkCenterResource\Pages;
+namespace Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\WorkCenterResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Modules\Manufacturing\Filament\Resources\WorkCenterResource;
+use Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\WorkCenterResource;
 
 class CreateWorkCenter extends CreateRecord
 {
