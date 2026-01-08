@@ -2,6 +2,7 @@
 
 namespace Modules\Sales\DataTransferObjects\Sales;
 
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Sales\Models\Invoice;
 
 class UpdateInvoiceDTO
@@ -17,5 +18,6 @@ class UpdateInvoiceDTO
         public readonly string $due_date,
         public readonly array $lines,
         public readonly ?int $fiscal_position_id,
+        public readonly ?Incoterm $incoterm = null,
     ) {}
 }
