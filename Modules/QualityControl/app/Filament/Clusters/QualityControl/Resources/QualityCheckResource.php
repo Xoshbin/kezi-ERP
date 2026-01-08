@@ -3,8 +3,10 @@
 namespace Modules\QualityControl\Filament\Clusters\QualityControl\Resources;
 
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Modules\QualityControl\Enums\QualityCheckStatus;
@@ -16,7 +18,7 @@ class QualityCheckResource extends Resource
 {
     protected static ?string $model = QualityCheck::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-check';
 
     protected static ?string $cluster = QualityControlCluster::class;
 
@@ -27,11 +29,37 @@ class QualityCheckResource extends Resource
         return __('quality::check.navigation_label');
     }
 
-    public static function form(Form $form): Form
+    public static function infolist(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('quality::check.section_basic'))
+        return $schema
+            ->components([
+                Section::make(__('quality::check.section_basic'))
+                    ->schema([
+                        TextEntry::make('number')
+                            ->label(__('quality::check.number')),
+                        TextEntry::make('status')
+                            ->label(__('quality::check.status'))
+                            ->badge()
+                            ->formatStateUsing(fn ($state) => $state->label())
+                            ->color(fn ($state) => $state->color()),
+                        TextEntry::make('product.name')
+                            ->label(__('quality::check.product')),
+                        TextEntry::make('lot.lot_code')
+                            ->label(__('quality::check.lot'))
+                            ->placeholder('—'),
+                        TextEntry::make('notes')
+                            ->label(__('quality::check.notes'))
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2),
+            ]);
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Section::make(__('quality::check.section_basic'))
                     ->schema([
                         Forms\Components\TextInput::make('number')
                             ->label(__('quality::check.number'))
@@ -121,10 +149,10 @@ class QualityCheckResource extends Resource
                     ->preload(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                \Filament\Actions\ViewAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                \Filament\Actions\BulkActionGroup::make([
                     // No bulk delete for quality checks
                 ]),
             ])

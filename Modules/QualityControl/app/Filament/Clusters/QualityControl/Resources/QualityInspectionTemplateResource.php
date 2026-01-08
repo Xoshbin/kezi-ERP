@@ -3,8 +3,9 @@
 namespace Modules\QualityControl\Filament\Clusters\QualityControl\Resources;
 
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Modules\QualityControl\Enums\QualityCheckType;
@@ -16,7 +17,7 @@ class QualityInspectionTemplateResource extends Resource
 {
     protected static ?string $model = QualityInspectionTemplate::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     protected static ?string $cluster = QualityControlCluster::class;
 
@@ -27,11 +28,11 @@ class QualityInspectionTemplateResource extends Resource
         return __('quality::template.navigation_label');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('quality::template.section_basic'))
+        return $schema
+            ->components([
+                Section::make(__('quality::template.section_basic'))
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->label(__('quality::template.name'))
@@ -51,7 +52,7 @@ class QualityInspectionTemplateResource extends Resource
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make(__('quality::template.section_parameters'))
+                Section::make(__('quality::template.section_parameters'))
                     ->schema([
                         Forms\Components\Repeater::make('parameters')
                             ->label(__('quality::template.parameters'))
@@ -75,21 +76,21 @@ class QualityInspectionTemplateResource extends Resource
                                     ->label(__('quality::template.min_value'))
                                     ->numeric()
                                     ->nullable()
-                                    ->visible(fn (Forms\Get $get) => $get('check_type') === QualityCheckType::Measure->value)
+                                    ->visible(fn ($get) => $get('check_type') === QualityCheckType::Measure->value)
                                     ->columnSpan(1),
 
                                 Forms\Components\TextInput::make('max_value')
                                     ->label(__('quality::template.max_value'))
                                     ->numeric()
                                     ->nullable()
-                                    ->visible(fn (Forms\Get $get) => $get('check_type') === QualityCheckType::Measure->value)
+                                    ->visible(fn ($get) => $get('check_type') === QualityCheckType::Measure->value)
                                     ->columnSpan(1),
 
                                 Forms\Components\TextInput::make('unit_of_measure')
                                     ->label(__('quality::template.unit_of_measure'))
                                     ->maxLength(50)
                                     ->nullable()
-                                    ->visible(fn (Forms\Get $get) => $get('check_type') === QualityCheckType::Measure->value)
+                                    ->visible(fn ($get) => $get('check_type') === QualityCheckType::Measure->value)
                                     ->columnSpan(2),
 
                                 Forms\Components\Textarea::make('instructions')
@@ -101,7 +102,8 @@ class QualityInspectionTemplateResource extends Resource
                                     ->default(fn ($get) => $get('../../parameters') ? count($get('../../parameters')) : 0),
                             ])
                             ->columns(4)
-                            ->reorderable('sequence')
+                            ->reorderable()
+                            ->orderColumn('sequence')
                             ->collapsible()
                             ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
                             ->defaultItems(0)
@@ -141,12 +143,12 @@ class QualityInspectionTemplateResource extends Resource
                     ->label(__('quality::template.active')),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                \Filament\Actions\EditAction::make(),
+                \Filament\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                \Filament\Actions\BulkActionGroup::make([
+                    \Filament\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

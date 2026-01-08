@@ -39,6 +39,20 @@ class QualityAlert extends Model
 {
     use HasFactory;
 
+    protected static function newFactory(): \Modules\QualityControl\Database\Factories\QualityAlertFactory
+    {
+        return \Modules\QualityControl\Database\Factories\QualityAlertFactory::new();
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (QualityAlert $alert) {
+            if (empty($alert->number)) {
+                $alert->number = 'QA-'.str_pad((string) (static::max('id') + 1), 6, '0', STR_PAD_LEFT);
+            }
+        });
+    }
+
     protected $fillable = [
         'company_id',
         'number',
