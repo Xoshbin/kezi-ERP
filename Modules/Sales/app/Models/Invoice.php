@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
 use Modules\Accounting\Models\FiscalPosition;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Foundation\Enums\Incoterm;
+use Modules\Foundation\Models\Concerns\HasDocumentAttachments;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\Partner;
 use Modules\Foundation\Models\PaymentTerm;
@@ -86,6 +87,7 @@ use Modules\Sales\Enums\Sales\InvoiceStatus;
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class Invoice extends Model
 {
+    use HasDocumentAttachments;
     use HasFactory;
     use \Modules\Foundation\Traits\HasPaymentState;
 
