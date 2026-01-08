@@ -49,6 +49,7 @@ class UpdateSalesOrderAction
                 'notes' => $dto->notes,
                 'terms_and_conditions' => $dto->terms_and_conditions,
                 'delivery_location_id' => $dto->delivery_location_id,
+                'incoterm' => $dto->incoterm ?? $salesOrder->incoterm,
                 'status' => $dto->status ?? $salesOrder->status,
             ]);
 

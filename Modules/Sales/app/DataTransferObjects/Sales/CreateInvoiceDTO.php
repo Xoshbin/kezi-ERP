@@ -2,6 +2,8 @@
 
 namespace Modules\Sales\DataTransferObjects\Sales;
 
+use Modules\Foundation\Enums\Incoterm;
+
 class CreateInvoiceDTO
 {
     /**
@@ -16,5 +18,6 @@ class CreateInvoiceDTO
         public readonly array $lines,
         public readonly ?int $fiscal_position_id,
         public readonly ?int $payment_term_id = null,
+        public readonly ?Incoterm $incoterm = null,
     ) {}
 }
