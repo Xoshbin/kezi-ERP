@@ -1,0 +1,11 @@
+{
+    "name": "Manufacturing",
+    "alias": "manufacturing",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Manufacturing\\Providers\\ManufacturingServiceProvider"
+    ],
+    "files": []
+}

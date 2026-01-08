@@ -367,4 +367,24 @@ class Product extends Model
     {
         return $this->stockMoveProductLines()->exists();
     }
+
+    /**
+     * Get bills of materials where this product is the finished product
+     *
+     * @return HasMany<\Modules\Manufacturing\Models\BillOfMaterial, static>
+     */
+    public function billsOfMaterials(): HasMany
+    {
+        return $this->hasMany(\Modules\Manufacturing\Models\BillOfMaterial::class);
+    }
+
+    /**
+     * Get manufacturing orders for this product
+     *
+     * @return HasMany<\Modules\Manufacturing\Models\ManufacturingOrder, static>
+     */
+    public function manufacturingOrders(): HasMany
+    {
+        return $this->hasMany(\Modules\Manufacturing\Models\ManufacturingOrder::class);
+    }
 }
