@@ -21,6 +21,7 @@ use Modules\Accounting\Database\Factories\JournalEntryFactory;
 use Modules\Accounting\Enums\Accounting\JournalEntryState;
 use Modules\Accounting\Observers\JournalEntryObserver;
 use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Modules\Foundation\Models\Concerns\HasDocumentAttachments;
 use Modules\Foundation\Models\Currency;
 use RuntimeException;
 
@@ -81,6 +82,8 @@ use RuntimeException;
 #[ObservedBy([JournalEntryObserver::class])]
 class JournalEntry extends Model
 {
+    use HasDocumentAttachments;
+
     /** @use HasFactory<JournalEntryFactory> */
     use HasFactory;
 
