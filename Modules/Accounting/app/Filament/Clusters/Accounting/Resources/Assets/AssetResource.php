@@ -29,6 +29,7 @@ use Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages\ListA
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\RelationManagers\DepreciationEntryRelationManager;
 use Modules\Accounting\Models\Asset;
 use Modules\Accounting\Rules\NotInLockedPeriod;
+use Modules\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
 
@@ -269,6 +270,12 @@ class AssetResource extends Resource
                 ])
                 ->columns(2)
                 ->columnSpanFull(),
+
+            DocumentAttachmentsHelper::makeSection(
+                directory: 'assets',
+                disabledCallback: fn (?Asset $record) => $record && $record->status !== AssetStatus::Draft,
+                deletableCallback: fn (?Asset $record) => $record === null || $record->status === AssetStatus::Draft
+            ),
         ]);
     }
 

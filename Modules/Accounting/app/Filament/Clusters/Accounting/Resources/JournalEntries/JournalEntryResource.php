@@ -33,6 +33,7 @@ use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Journal;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
+use Modules\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
 use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
@@ -224,6 +225,12 @@ class JournalEntryResource extends Resource
                 ])
                 ->columns(3)
                 ->columnSpanFull(),
+
+            DocumentAttachmentsHelper::makeSection(
+                directory: 'journal-entries',
+                disabledCallback: fn (?JournalEntry $record) => $record && $record->is_posted,
+                deletableCallback: fn (?JournalEntry $record) => $record === null || !$record->is_posted
+            ),
         ]);
     }
 
