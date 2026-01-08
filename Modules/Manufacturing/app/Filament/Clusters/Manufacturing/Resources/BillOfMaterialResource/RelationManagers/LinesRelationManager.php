@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Manufacturing\Filament\Resources\BillOfMaterialResource\RelationManagers;
+namespace Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\BillOfMaterialResource\RelationManagers;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;

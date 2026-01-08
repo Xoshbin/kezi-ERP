@@ -5,8 +5,10 @@ namespace Modules\Manufacturing\Actions;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Modules\Inventory\DataTransferObjects\CreateStockMoveDTO;
-use Modules\Inventory\DataTransferObjects\StockMoveProductLineDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Services\Inventory\StockMoveService;
 use Modules\Manufacturing\Enums\ManufacturingOrderStatus;
 use Modules\Manufacturing\Models\ManufacturingOrder;
@@ -19,6 +21,7 @@ class ProduceFinishedGoodsAction
 
     public function execute(ManufacturingOrder $mo): ManufacturingOrder
     {
+        /** @var ManufacturingOrder */
         return DB::transaction(function () use ($mo) {
             // Validate current status
             if ($mo->status !== ManufacturingOrderStatus::InProgress) {
@@ -26,7 +29,12 @@ class ProduceFinishedGoodsAction
             }
 
             // Calculate actual production cost (sum of consumed components)
-            $totalCost = Money::zero($mo->lines->first()->currency_code);
+            $firstLine = $mo->lines->first();
+            if (! $firstLine) {
+                // Should not happen for a valid MO, but safe to handle
+                throw new \RuntimeException("Manufacturing Order {$mo->number} has no lines to process.");
+            }
+            $totalCost = Money::zero($firstLine->currency_code);
 
             foreach ($mo->lines as $line) {
                 $lineCost = Money::ofMinor($line->unit_cost, $line->currency_code)
@@ -39,21 +47,29 @@ class ProduceFinishedGoodsAction
 
             // Create stock move for finished goods receipt
             $stockMoveDTO = new CreateStockMoveDTO(
-                companyId: $mo->company_id,
-                sourceLocationId: $mo->source_location_id, // From production (virtual)
-                destinationLocationId: $mo->destination_location_id, // To finished goods warehouse
-                productLines: [
-                    new StockMoveProductLineDTO(
-                        productId: $mo->product_id,
+                company_id: $mo->company_id,
+                move_type: StockMoveType::Incoming, // Production output is a receipt into stock
+                status: StockMoveStatus::Done,
+                move_date: Carbon::now(),
+                created_by_user_id: (int) (auth()->id() ?? 1), // Fallback for testing/console
+                product_lines: [
+                    new CreateStockMoveProductLineDTO(
+                        product_id: $mo->product_id,
                         quantity: $mo->quantity_to_produce,
-                        unitPrice: $unitCost,
+                        from_location_id: $mo->source_location_id, // Virtual production location
+                        to_location_id: $mo->destination_location_id, // Finished goods warehouse
+                        description: "Production of MO/{$mo->number}",
+                        source_type: ManufacturingOrder::class,
+                        source_id: $mo->id
                     ),
                 ],
                 reference: "MO/{$mo->number}",
-                scheduledDate: Carbon::now(),
+                source_type: ManufacturingOrder::class,
+                source_id: $mo->id
             );
 
-            $stockMove = $this->stockMoveService->createAndConfirm($stockMoveDTO);
+            // Use createMove which handles auto-confirmation if status is Done
+            $stockMove = $this->stockMoveService->createMove($stockMoveDTO);
 
             // Update MO status
             $mo->update([

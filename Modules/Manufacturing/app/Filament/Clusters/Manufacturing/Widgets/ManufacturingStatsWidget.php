@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Manufacturing\Filament\Widgets;
+namespace Modules\Manufacturing\Filament\Clusters\Manufacturing\Widgets;
 
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;

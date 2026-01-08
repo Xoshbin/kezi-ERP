@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Manufacturing\Filament\Resources\ManufacturingOrderResource\Pages;
+namespace Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\ManufacturingOrderResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -8,7 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Modules\Manufacturing\Enums\ManufacturingOrderStatus;
-use Modules\Manufacturing\Filament\Resources\ManufacturingOrderResource;
+use Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\ManufacturingOrderResource;
 use Modules\Manufacturing\Services\ManufacturingOrderService;
 
 class ViewManufacturingOrder extends ViewRecord

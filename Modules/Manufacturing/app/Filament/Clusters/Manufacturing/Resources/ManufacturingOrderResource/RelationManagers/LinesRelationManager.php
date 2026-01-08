@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Manufacturing\Filament\Resources\ManufacturingOrderResource\RelationManagers;
+namespace Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\ManufacturingOrderResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Resources\RelationManagers\RelationManager;

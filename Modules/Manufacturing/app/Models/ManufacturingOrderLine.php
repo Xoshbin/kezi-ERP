@@ -9,6 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Inventory\Models\StockMove;
 use Modules\Product\Models\Product;
 
+/**
+ * @property int $id
+ * @property string $currency_code
+ * @property float $unit_cost
+ * @property float $quantity_consumed
+ */
 class ManufacturingOrderLine extends Model
 {
     use HasFactory;

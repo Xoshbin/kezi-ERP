@@ -1,9 +1,9 @@
 <?php
 
-namespace Modules\Manufacturing\Filament\Resources\BillOfMaterialResource\Pages;
+namespace Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\BillOfMaterialResource\Pages;
 
 use Filament\Resources\Pages\EditRecord;
-use Modules\Manufacturing\Filament\Resources\BillOfMaterialResource;
+use Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\BillOfMaterialResource;
 
 class EditBillOfMaterial extends EditRecord
 {
