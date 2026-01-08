@@ -2,6 +2,7 @@
 
 namespace Modules\Manufacturing\Services;
 
+use Modules\Manufacturing\Actions\Accounting\CreateJournalEntryForManufacturingAction;
 use Modules\Manufacturing\Actions\ConfirmManufacturingOrderAction;
 use Modules\Manufacturing\Actions\ConsumeComponentsAction;
 use Modules\Manufacturing\Actions\CreateManufacturingOrderAction;
@@ -21,6 +22,7 @@ class ManufacturingOrderService
         private readonly StartProductionAction $startProductionAction,
         private readonly ConsumeComponentsAction $consumeComponentsAction,
         private readonly ProduceFinishedGoodsAction $produceFinishedGoodsAction,
+        private readonly CreateJournalEntryForManufacturingAction $createJournalEntryAction,
     ) {}
 
     public function create(CreateManufacturingOrderDTO $dto): ManufacturingOrder
@@ -61,7 +63,7 @@ class ManufacturingOrderService
     }
 
     /**
-     * Complete full production workflow: consume components + produce finished goods
+     * Complete full production workflow: consume components + produce finished goods + create journal entry
      */
     public function completeProduction(ManufacturingOrder $mo): ManufacturingOrder
     {
@@ -70,6 +72,13 @@ class ManufacturingOrderService
 
         // Then produce finished goods
         $mo = $this->produceFinishedGoods($mo);
+
+        // Create journal entry for the manufacturing transaction
+        $journalEntry = $this->createJournalEntryAction->execute($mo, auth()->user());
+
+        // Link journal entry to manufacturing order
+        $mo->journal_entry_id = $journalEntry->id;
+        $mo->save();
 
         return $mo;
     }
