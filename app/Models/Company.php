@@ -151,6 +151,9 @@ class Company extends Model
         'numbering_settings',
         // Inventory Settings
         'inventory_accounting_mode',
+        'default_finished_goods_inventory_id',
+        'default_raw_materials_inventory_id',
+        'default_manufacturing_journal_id',
         // Cheque Settings
         'default_pdc_receivable_account_id',
         'default_pdc_payable_account_id',
