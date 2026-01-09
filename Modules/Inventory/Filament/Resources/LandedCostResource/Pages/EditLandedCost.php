@@ -4,7 +4,9 @@ namespace Modules\Inventory\Filament\Resources\LandedCostResource\Pages;
 
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Modules\Inventory\Actions\LandedCost\AllocateLandedCostsAction;
 use Modules\Inventory\Actions\LandedCost\PostLandedCostAction;
+use Modules\Inventory\Enums\Inventory\LandedCostStatus;
 use Modules\Inventory\Filament\Resources\LandedCostResource;
 
 class EditLandedCost extends EditRecord
@@ -15,14 +17,42 @@ class EditLandedCost extends EditRecord
     {
         return [
             Actions\Action::make('post')
-                ->label('Post')
-                ->color('success')
+                ->label('Post Landed Cost')
+                ->visible(fn ($record) => $record->status === LandedCostStatus::Draft)
                 ->requiresConfirmation()
-                ->action(function (PostLandedCostAction $action) {
-                    $action->execute($this->getRecord());
-                    $this->redirect($this->getResource()::getUrl('edit', ['record' => $this->getRecord()]));
+                ->action(function ($record) {
+                    // Validate: Ensure at least one stock picking is attached
+                    if ($record->stockPickings()->count() === 0) {
+                        \Filament\Notifications\Notification::make()
+                            ->title('No Stock Pickings Attached')
+                            ->body('Please attach at least one stock picking before posting.')
+                            ->danger()
+                            ->send();
+
+                        return;
+                    }
+
+                    // Get all stock moves from attached pickings
+                    $stockMoves = $record->stockPickings()
+                        ->with('moves.productLines')
+                        ->get()
+                        ->pluck('moves')
+                        ->flatten();
+
+                    // Allocate costs to stock moves
+                    app(AllocateLandedCostsAction::class)->execute($record, $stockMoves);
+
+                    // Post the landed cost
+                    app(PostLandedCostAction::class)->execute($record);
+
+                    \Filament\Notifications\Notification::make()
+                        ->title('Landed Cost Posted')
+                        ->success()
+                        ->send();
+
+                    return redirect()->route('filament.admin.resources.landed-costs.edit', $record);
                 })
-                ->visible(fn () => $this->getRecord()->status === \Modules\Inventory\Enums\Inventory\LandedCostStatus::Draft),
+                ->color('success'),
             Actions\DeleteAction::make(),
         ];
     }
