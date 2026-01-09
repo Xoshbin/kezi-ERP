@@ -86,17 +86,27 @@ it('can create and post a landed cost', function () {
     expect($landedCost)->toBeInstanceOf(LandedCost::class);
     expect($landedCost->amount_total->getAmount()->toFloat())->toBe(100.0);
 
-    // 3. Allocate Costs
-    $moves = collect([$move1]);
+    // 3. Attach Stock Picking to Landed Cost (NEW WORKFLOW)
+    $landedCost->stockPickings()->attach($picking->id);
 
+    expect($landedCost->stockPickings)->toHaveCount(1);
+
+    // 4. Get stock moves from attached pickings (simulating the Post action workflow)
+    $stockMoves = $landedCost->stockPickings()
+        ->with('moves')
+        ->get()
+        ->pluck('moves')
+        ->flatten();
+
+    // 5. Allocate Costs
     $allocateAction = app(AllocateLandedCostsAction::class);
-    $allocateAction->execute($landedCost, $moves);
+    $allocateAction->execute($landedCost, $stockMoves);
 
     $landedCost->refresh();
     expect($landedCost->lines)->toHaveCount(1);
     expect($landedCost->lines->first()->additional_cost->getAmount()->toFloat())->toBe(100.0);
 
-    // 4. Post Landed Cost
+    // 6. Post Landed Cost
     $postAction = app(PostLandedCostAction::class);
     $postAction->execute($landedCost);
 

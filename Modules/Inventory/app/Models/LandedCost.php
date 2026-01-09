@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
@@ -85,5 +86,18 @@ class LandedCost extends Model
     public function lines(): HasMany
     {
         return $this->hasMany(LandedCostLine::class);
+    }
+
+    /**
+     * Get the stock pickings that this landed cost applies to.
+     */
+    public function stockPickings(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            StockPicking::class,
+            'landed_cost_stock_picking',
+            'landed_cost_id',
+            'stock_picking_id'
+        )->withTimestamps();
     }
 }
