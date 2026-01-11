@@ -2,54 +2,63 @@
 
 namespace Modules\Inventory\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Modules\Inventory\Enums\Inventory\LandedCostAllocationMethod;
 use Modules\Inventory\Enums\Inventory\LandedCostStatus;
 use Modules\Inventory\Filament\Resources\LandedCostResource\Pages;
+use Modules\Inventory\Filament\Resources\LandedCostResource\RelationManagers;
 use Modules\Inventory\Models\LandedCost;
 
 class LandedCostResource extends Resource
 {
     protected static ?string $model = LandedCost::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-calculator';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-calculator';
 
-    protected static ?string $navigationGroup = 'Operations';
-
-    public static function form(Form $form): Form
+    public static function getNavigationGroup(): ?string
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make()
+        return 'Operations';
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Section::make()
                     ->schema([
-                        Forms\Components\Select::make('vendor_bill_id')
+                        Select::make('vendor_bill_id')
                             ->relationship('vendorBill', 'bill_reference')
                             ->searchable()
                             ->preload()
                             ->label('Vendor Bill'),
 
-                        Forms\Components\DatePicker::make('date')
+                        DatePicker::make('date')
                             ->required()
                             ->default(now()),
 
-                        Forms\Components\TextInput::make('amount_total')
+                        TextInput::make('amount_total')
                             ->required()
                             ->numeric()
                             ->label('Total Amount'),
 
-                        Forms\Components\Select::make('allocation_method')
+                        Select::make('allocation_method')
                             ->options(LandedCostAllocationMethod::class)
                             ->required()
                             ->default(LandedCostAllocationMethod::ByQuantity),
 
-                        Forms\Components\TextInput::make('description')
+                        TextInput::make('description')
                             ->maxLength(255),
 
-                        Forms\Components\Select::make('status')
+                        Select::make('status')
                             ->options(LandedCostStatus::class)
                             ->required()
                             ->default(LandedCostStatus::Draft)
@@ -83,11 +92,11 @@ class LandedCostResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
