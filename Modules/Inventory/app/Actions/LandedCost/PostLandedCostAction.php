@@ -2,11 +2,15 @@
 
 namespace Modules\Inventory\Actions\LandedCost;
 
+use Brick\Money\Money;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Modules\Inventory\Enums\Inventory\CostSource;
 use Modules\Inventory\Enums\Inventory\LandedCostStatus;
 use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Inventory\Models\InventoryCostLayer;
 use Modules\Inventory\Models\LandedCost;
 use Modules\Inventory\Models\StockMoveValuation;
 
@@ -19,51 +23,120 @@ class PostLandedCostAction
         }
 
         DB::transaction(function () use ($landedCost) {
-            // 1. Create Journal Entry
-            // Debit: Inventory Valuation Account (from Product Category)
-            // Credit: Landed Cost Clearing Account (from Company/Settings)
-            // For now, I'll need to fetch these accounts. Since I don't have easy access to settings yet,
-            // I will assume the Journal Entry creation part is a TODO or simplified.
+            $company = $landedCost->company;
+            $currencyCode = $company->currency->code;
+            $zero = Money::of(0, $currencyCode);
 
-            // $journalEntry = $this->createJournalEntry($landedCost);
-            // $landedCost->journal_entry_id = $journalEntry->id;
+            // 1. Create Journal Entry for Landed Cost
+            // We need to gather all affected products and their inventory accounts
+            $inventoryAccountGroups = [];
 
-            // 2. Update Stock Valuation
             foreach ($landedCost->lines as $line) {
                 $stockMove = $line->stockMove;
+                $productLine = $stockMove->productLines->first();
 
-                // Create Stock Value Adjustment
+                if (! $productLine || ! $productLine->product) {
+                    continue;
+                }
+
+                $product = $productLine->product;
+                $inventoryAccountId = $product->default_inventory_account_id;
+
+                if (! $inventoryAccountId) {
+                    throw new \Exception("Product {$product->id} ({$product->name}) does not have an inventory account configured");
+                }
+
+                // Group by inventory account for consolidated journal entry
+                if (! isset($inventoryAccountGroups[$inventoryAccountId])) {
+                    $inventoryAccountGroups[$inventoryAccountId] = [
+                        'amount' => $zero,
+                        'product_names' => [],
+                    ];
+                }
+
+                $inventoryAccountGroups[$inventoryAccountId]['amount'] =
+                    $inventoryAccountGroups[$inventoryAccountId]['amount']->plus($line->additional_cost);
+                $inventoryAccountGroups[$inventoryAccountId]['product_names'][] = $product->name;
+            }
+
+            // Build Journal Entry Lines
+            $journalEntryLines = [];
+
+            // Debit lines: Inventory accounts (increases asset value)
+            foreach ($inventoryAccountGroups as $accountId => $data) {
+                $productList = implode(', ', array_unique($data['product_names']));
+
+                $journalEntryLines[] = new CreateJournalEntryLineDTO(
+                    account_id: $accountId,
+                    debit: $data['amount'],
+                    credit: $zero,
+                    description: "Landed cost allocation for: {$productList}",
+                    partner_id: $landedCost->vendorBill?->partner_id,
+                    analytic_account_id: null,
+                );
+            }
+
+            // Credit line: Landed Cost Expense account
+            // Use the company's default expense account or stock input account
+            $expenseAccountId = $company->default_expense_account_id
+                ?? $company->inventory_adjustment_account_id;
+
+            if (! $expenseAccountId) {
+                throw new \Exception("Company {$company->id} does not have a default expense account or inventory adjustment account configured for landed costs");
+            }
+
+            $journalEntryLines[] = new CreateJournalEntryLineDTO(
+                account_id: $expenseAccountId,
+                debit: $zero,
+                credit: $landedCost->amount_total,
+                description: "Landed cost expense: {$landedCost->description}",
+                partner_id: $landedCost->vendorBill?->partner_id,
+                analytic_account_id: null,
+            );
+
+            // Create Journal Entry DTO
+            $journalEntryDTO = new CreateJournalEntryDTO(
+                company_id: $company->id,
+                journal_id: $company->default_purchase_journal_id,
+                currency_id: $company->currency_id,
+                entry_date: $landedCost->date->toDateString(),
+                reference: "LC-{$landedCost->id}",
+                description: "Landed Cost: {$landedCost->description}",
+                created_by_user_id: (int) (Auth::id() ?? $landedCost->created_by_user_id ?? 1),
+                is_posted: true,
+                lines: $journalEntryLines,
+                source_type: LandedCost::class,
+                source_id: $landedCost->id,
+            );
+
+            // Create the journal entry
+            $journalEntry = app(CreateJournalEntryAction::class)->execute($journalEntryDTO);
+
+            // Link journal entry to landed cost
+            $landedCost->journal_entry_id = $journalEntry->id;
+
+            // 2. Create Stock Move Valuations
+            foreach ($landedCost->lines as $line) {
+                $stockMove = $line->stockMove;
+                $productLine = $stockMove->productLines->first();
+
                 StockMoveValuation::create([
                     'company_id' => $landedCost->company_id,
-                    'product_id' => $stockMove->productLines->first()->product_id, // Simplified: assuming 1 product per move for now or taking first
+                    'product_id' => $productLine->product_id,
                     'stock_move_id' => $stockMove->id,
-                    'quantity' => 0, // No quantity change
+                    'quantity' => 0, // No quantity change, only cost adjustment
                     'cost_impact' => $line->additional_cost,
-                    'valuation_method' => ValuationMethod::STANDARD, // Should match product's method
+                    'valuation_method' => $productLine->product->inventory_valuation_method ?? ValuationMethod::STANDARD,
                     'move_type' => $stockMove->move_type,
-                    // 'journal_entry_id' => $journalEntry->id,
+                    'journal_entry_id' => $journalEntry->id,
                     'source_type' => LandedCost::class,
                     'source_id' => $landedCost->id,
                     'cost_source' => CostSource::Manual,
                     'cost_source_reference' => $landedCost->id,
                 ]);
-
-                // Update Inventory Cost Layer if needed (complex for FIFO)
-                // If the stock move corresponds to a layer, we should increase the unit cost of that layer?
-                // Or just creating the valuation record is enough for the "total value" report?
-                // Usually, we update the remaining value of the layer if it exists.
-
-                // Find associated cost layer?
-                // $layer = InventoryCostLayer::where('source_type', StockMove::class)
-                //    ->where('source_id', $stockMove->id)
-                //    ->first();
-                // if ($layer) {
-                // $layer->unit_cost += apportioned cost?
-                // This is tricky because layer unit_cost is calculated at creation.
-                // If we want to support true landed cost, we might need a separate mechanism or update the layer.
-                // }
             }
 
+            // 3. Update Landed Cost status
             $landedCost->status = LandedCostStatus::Posted;
             $landedCost->save();
         });

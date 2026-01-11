@@ -13,12 +13,41 @@ it('can create and post a landed cost', function () {
     $company = \App\Models\Company::factory()->create();
     $currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
     $company->currency_id = $currency->id;
+
+    // Create test accounts for journal entries
+    $inventoryAccount = \Modules\Accounting\Models\Account::create([
+        'company_id' => $company->id,
+        'name' => 'Inventory Account',
+        'code' => '1500',
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets,
+    ]);
+
+    $expenseAccount = \Modules\Accounting\Models\Account::create([
+        'company_id' => $company->id,
+        'name' => 'Landed Cost Expense',
+        'code' => '5200',
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense,
+    ]);
+
+    $company->inventory_adjustment_account_id = $expenseAccount->id;
+
+    // Create default journal
+    $journal = \Modules\Accounting\Models\Journal::create([
+        'company_id' => $company->id,
+        'name' => 'Purchase Journal',
+        'code' => 'PURCH',
+        'short_code' => 'PURCH',
+        'type' => \Modules\Accounting\Enums\Accounting\JournalType::Purchase,
+    ]);
+
+    $company->default_purchase_journal_id = $journal->id;
     $company->save();
 
     $user = \App\Models\User::factory()->create();
 
     $product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $company->id,
+        'default_inventory_account_id' => $inventoryAccount->id,
     ]);
 
     // Create Stock Location
@@ -121,4 +150,28 @@ it('can create and post a landed cost', function () {
 
     expect($valuation)->not->toBeNull();
     expect($valuation->cost_impact->getAmount()->toFloat())->toBe(100.0);
+
+    // 7. Verify Journal Entry was created
+    expect($landedCost->journal_entry_id)->not->toBeNull();
+
+    $journalEntry = $landedCost->journalEntry;
+    expect($journalEntry)->not->toBeNull();
+    expect($journalEntry->reference)->toBe("LC-{$landedCost->id}");
+    expect($journalEntry->state)->toBe(\Modules\Accounting\Enums\Accounting\JournalEntryState::Posted);
+
+    // Verify Journal Entry lines
+    $journalEntryLines = $journalEntry->lines;
+    expect($journalEntryLines)->toHaveCount(2); // 1 debit (inventory), 1 credit (expense)
+
+    // Find debit line (Inventory Account)
+    $debitLine = $journalEntryLines->firstWhere('account_id', $inventoryAccount->id);
+    expect($debitLine)->not->toBeNull();
+    expect($debitLine->debit->getAmount()->toFloat())->toBe(100.0);
+    expect($debitLine->credit->getAmount()->toFloat())->toBe(0.0);
+
+    // Find credit line (Expense Account)
+    $creditLine = $journalEntryLines->firstWhere('account_id', $expenseAccount->id);
+    expect($creditLine)->not->toBeNull();
+    expect($creditLine->debit->getAmount()->toFloat())->toBe(0.0);
+    expect($creditLine->credit->getAmount()->toFloat())->toBe(100.0);
 });
