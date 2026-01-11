@@ -720,6 +720,13 @@ class VendorBillResource extends Resource
                 ActionGroup::make([
                     \Filament\Actions\ViewAction::make(),
                     EditAction::make(),
+                    Action::make('create_landed_cost')
+                        ->label(__('Create Landed Cost'))
+                        ->icon('heroicon-o-truck')
+                        ->visible(fn (VendorBill $record) => $record->status === VendorBillStatus::Posted)
+                        ->url(fn (VendorBill $record) => \Modules\Inventory\Filament\Resources\LandedCostResource::getUrl('create', [
+                            'vendor_bill_id' => $record->id,
+                        ])),
                 ]),
                 Action::make('register_payment')
                     ->label(__('Register Payment'))
