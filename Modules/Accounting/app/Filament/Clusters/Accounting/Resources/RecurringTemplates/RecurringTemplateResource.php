@@ -105,10 +105,17 @@ class RecurringTemplateResource extends Resource
                     ->schema([
                         Grid::make(1)
                             ->statePath('template_data')
-                            ->schema(fn (Get $get): array => match ($get('target_type')) {
-                                RecurringTargetType::JournalEntry->value => static::getJournalEntrySchema(),
-                                RecurringTargetType::Invoice->value => static::getInvoiceSchema(),
-                                default => [],
+                            ->schema(function (Get $get): array {
+                                $targetType = $get('target_type');
+                                if ($targetType instanceof RecurringTargetType) {
+                                    $targetType = $targetType->value;
+                                }
+
+                                return match ($targetType) {
+                                    RecurringTargetType::JournalEntry->value => static::getJournalEntrySchema(),
+                                    RecurringTargetType::Invoice->value => static::getInvoiceSchema(),
+                                    default => [],
+                                };
                             }),
                     ]),
             ]);
