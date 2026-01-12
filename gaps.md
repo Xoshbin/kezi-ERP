@@ -21,7 +21,7 @@ The application has a strong foundation for a "Headless" ERP, with a robust doma
 | **Cash Flow Statement** | ✅ Implemented | `CashFlowStatementService` is present. |
 | **Payment Terms** | ✅ Implemented | Found in `Modules/Foundation`. |
 | **Cheque Management** | ✅ Implemented | Specific module/service found. |
-| **Dunning/Follow-up** | ❌ Missing | No logic found for automated customer follow-up (Dunning levels, letters). |
+| **Dunning/Follow-up** | ✅ Implemented | Automated customer follow-up (Dunning levels, letters) is implemented. |
 
 ### 2.2. Inventory Management
 
