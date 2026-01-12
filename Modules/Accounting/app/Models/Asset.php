@@ -108,6 +108,8 @@ class Asset extends Model
         'depreciation_expense_account_id',
         'accumulated_depreciation_account_id',
         'status',
+        'prorata_temporis',
+        'declining_factor',
         'currency_id',
         'source_type',
         'source_id',
@@ -126,6 +128,8 @@ class Asset extends Model
         'useful_life_years' => 'integer',
         'status' => AssetStatus::class,
         'depreciation_method' => DepreciationMethod::class,
+        'prorata_temporis' => 'boolean',
+        'declining_factor' => 'double',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

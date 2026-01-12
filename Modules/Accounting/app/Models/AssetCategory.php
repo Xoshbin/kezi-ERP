@@ -21,11 +21,15 @@ class AssetCategory extends Model
         'depreciation_method',
         'useful_life_years',
         'salvage_value_default',
+        'prorata_temporis',
+        'declining_factor',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'prorata_temporis' => 'boolean',
+        'declining_factor' => 'double',
         'depreciation_method' => DepreciationMethod::class,
     ];
 
