@@ -37,8 +37,12 @@ use Illuminate\Support\Carbon;
  */
 class FiscalPositionTaxMapping extends Model
 {
-    /** @use HasFactory<FiscalPositionTaxMappingFactory> */
     use HasFactory;
+
+    protected static function newFactory(): \Modules\Accounting\Database\Factories\FiscalPositionTaxMappingFactory
+    {
+        return \Modules\Accounting\Database\Factories\FiscalPositionTaxMappingFactory::new();
+    }
 
     /**
      * The table associated with the model.

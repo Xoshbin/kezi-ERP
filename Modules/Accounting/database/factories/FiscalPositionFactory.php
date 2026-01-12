@@ -11,6 +11,8 @@ use Modules\Accounting\Models\FiscalPosition;
  */
 class FiscalPositionFactory extends Factory
 {
+    protected $model = FiscalPosition::class;
+
     /**
      * Define the model's default state.
      *
@@ -21,7 +23,11 @@ class FiscalPositionFactory extends Factory
         return [
             'company_id' => Company::factory(),
             'name' => $this->faker->company,
-            'country' => $this->faker->country,
+            'country' => $this->faker->countryCode,
+            'auto_apply' => false,
+            'vat_required' => false,
+            'zip_from' => null,
+            'zip_to' => null,
         ];
     }
 }

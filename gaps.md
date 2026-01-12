@@ -16,7 +16,7 @@ The application has a strong foundation for a "Headless" ERP, with a robust doma
 | **Recurring Entries** | ✅ Implemented | Full implementation completed: `RecurringTemplate` model, `ProcessRecurringTransactionsCommand` scheduler, invoice/journal generation logic, and UI (Filament) support. |
 | **Deferred Revenue/Expense** | ✅ Implemented | Full implementation completed: DeferredItem model, linear schedule generation, Invoice/VendorBill integration, and automated daily processing job. |
 | **Asset Management** | ✅ Implemented | Full implementation completed: Support for Straight Line, Declining Balance (with automatic SL switch), and Sum-of-Digits methods. Includes Prorata Temporis configuration and full Filament UI integration. |
-| **Fiscal Positions** | ⚠️ Partial | Models like `FiscalPosition` exist, but automatic tax mapping logic based on partner country/region needs verification. |
+| **Fiscal Positions** | ✅ Implemented | Full implementation completed: Automatic tax/account mapping based on partner country, VAT requirement, and zip ranges, with integration in Invoices and Vendor Bills. |
 | **Bank Reconciliation** | ✅ Implemented | `BankReconciliationService` is present. |
 | **Cash Flow Statement** | ✅ Implemented | `CashFlowStatementService` is present. |
 | **Payment Terms** | ✅ Implemented | Found in `Modules/Foundation`. |
