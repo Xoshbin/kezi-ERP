@@ -485,3 +485,119 @@ test('it handles multiple tax rates correctly', function () {
     expect($report->totalInputTax)->toEqual(Money::zero($currency));
     expect($report->netTaxPayable)->toEqual(Money::of(200, $currency));
 });
+
+test('it correctly handles sales credit notes (refunds) reducing output tax', function () {
+    // Arrange
+    $company = $this->company;
+    $currency = $company->currency->code;
+    $startDate = Carbon::parse('2025-04-01');
+    $endDate = Carbon::parse('2025-04-30');
+
+    // Create sales tax (Liability)
+    $salesTaxAccount = Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentLiabilities]);
+    $salesTax = Tax::factory()->for($company)->create([
+        'name' => 'VAT 15% (Sales)',
+        'rate' => 15.0,
+        'type' => TaxType::Sales,
+        'tax_account_id' => $salesTaxAccount->id,
+        'is_active' => true,
+    ]);
+
+    $salesJournal = Journal::factory()->for($company)->create(['type' => JournalType::Sale]);
+
+    // 1. Invoice: Sale of 1000 + 150 Tax
+    $invoiceEntry = JournalEntry::factory()->for($company)->create([
+        'journal_id' => $salesJournal->id,
+        'entry_date' => '2025-04-01',
+        'is_posted' => true,
+    ]);
+
+    // Credit Tax Account (Increase Liability)
+    JournalEntryLine::factory()->create([
+        'journal_entry_id' => $invoiceEntry->id,
+        'account_id' => $salesTaxAccount->id,
+        'debit' => Money::zero($currency),
+        'credit' => Money::of(150, $currency),
+    ]);
+
+    // 2. Credit Note: Refund of 1000 + 150 Tax
+    $creditNoteEntry = JournalEntry::factory()->for($company)->create([
+        'journal_id' => $salesJournal->id,
+        'entry_date' => '2025-04-02',
+        'is_posted' => true,
+    ]);
+
+    // Debit Tax Account (Reduce Liability)
+    JournalEntryLine::factory()->create([
+        'journal_entry_id' => $creditNoteEntry->id,
+        'account_id' => $salesTaxAccount->id,
+        'debit' => Money::of(150, $currency),
+        'credit' => Money::zero($currency),
+    ]);
+
+    // Action
+    $service = app(\Modules\Accounting\Services\Reports\TaxReportService::class);
+    $report = $service->generate($company, $startDate, $endDate);
+
+    // Assert
+    // Total Output Tax should be 0 (150 - 150)
+    expect($report->totalOutputTax)->toEqual(Money::zero($currency));
+});
+
+test('it correctly handles purchase refunds reducing input tax', function () {
+    // Arrange
+    $company = $this->company;
+    $currency = $company->currency->code;
+    $startDate = Carbon::parse('2025-04-01');
+    $endDate = Carbon::parse('2025-04-30');
+
+    // Create purchase tax (Asset)
+    $purchaseTaxAccount = Account::factory()->for($company)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets]);
+    $purchaseTax = Tax::factory()->for($company)->create([
+        'name' => 'VAT 15% (Purchase)',
+        'rate' => 15.0,
+        'type' => TaxType::Purchase,
+        'tax_account_id' => $purchaseTaxAccount->id,
+        'is_active' => true,
+    ]);
+
+    $purchaseJournal = Journal::factory()->for($company)->create(['type' => JournalType::Purchase]);
+
+    // 1. Bill: Purchase of 1000 + 150 Tax
+    $billEntry = JournalEntry::factory()->for($company)->create([
+        'journal_id' => $purchaseJournal->id,
+        'entry_date' => '2025-04-01',
+        'is_posted' => true,
+    ]);
+
+    // Debit Tax Account (Increase Input Tax Asset)
+    JournalEntryLine::factory()->create([
+        'journal_entry_id' => $billEntry->id,
+        'account_id' => $purchaseTaxAccount->id,
+        'debit' => Money::of(150, $currency),
+        'credit' => Money::zero($currency),
+    ]);
+
+    // 2. Refund: Return of 1000 + 150 Tax
+    $refundEntry = JournalEntry::factory()->for($company)->create([
+        'journal_id' => $purchaseJournal->id,
+        'entry_date' => '2025-04-02',
+        'is_posted' => true,
+    ]);
+
+    // Credit Tax Account (Reduce Input Tax Asset)
+    JournalEntryLine::factory()->create([
+        'journal_entry_id' => $refundEntry->id,
+        'account_id' => $purchaseTaxAccount->id,
+        'debit' => Money::zero($currency),
+        'credit' => Money::of(150, $currency),
+    ]);
+
+    // Action
+    $service = app(\Modules\Accounting\Services\Reports\TaxReportService::class);
+    $report = $service->generate($company, $startDate, $endDate);
+
+    // Assert
+    // Total Input Tax should be 0 (150 - 150)
+    expect($report->totalInputTax)->toEqual(Money::zero($currency));
+});
