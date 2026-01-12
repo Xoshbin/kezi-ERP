@@ -152,4 +152,19 @@ class TaxReportService
             netTaxPayable: $netTaxPayable
         );
     }
+
+    public function generateSpecificReport(string $generatorClass, Company $company, Carbon $startDate, Carbon $endDate): array
+    {
+        if (! class_exists($generatorClass)) {
+            throw new \RuntimeException("Tax Report Generator class {$generatorClass} not found.");
+        }
+
+        $generator = app($generatorClass);
+
+        if (! $generator instanceof \Modules\Accounting\Services\Reports\Generators\TaxReportGeneratorContract) {
+            throw new \RuntimeException("Class {$generatorClass} must implement TaxReportGeneratorContract.");
+        }
+
+        return $generator->generate($company, $startDate, $endDate);
+    }
 }

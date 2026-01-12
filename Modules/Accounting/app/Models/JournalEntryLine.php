@@ -103,7 +103,16 @@ class JournalEntryLine extends Model
         'original_currency_amount',
         'original_currency_id',
         'exchange_rate_at_transaction',
+        'tax_id',
     ];
+
+    /**
+     * Get the tax associated with this line.
+     */
+    public function tax(): BelongsTo
+    {
+        return $this->belongsTo(Tax::class);
+    }
 
     /**
      * The attributes that should be cast to native types.
