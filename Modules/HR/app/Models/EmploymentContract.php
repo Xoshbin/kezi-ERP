@@ -5,13 +5,13 @@ namespace Modules\HR\Models;
 use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
-use Database\Factories\EmploymentContractFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Modules\Foundation\Models\Currency;
+use Modules\HR\Database\Factories\EmploymentContractFactory;
 
 /**
  * Class EmploymentContract
@@ -59,6 +59,11 @@ class EmploymentContract extends Model
 {
     /** @use HasFactory<EmploymentContractFactory> */
     use HasFactory;
+
+    protected static function newFactory(): EmploymentContractFactory
+    {
+        return EmploymentContractFactory::new();
+    }
 
     /**
      * The attributes that are mass assignable.
