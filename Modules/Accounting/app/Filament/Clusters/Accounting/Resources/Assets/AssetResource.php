@@ -188,6 +188,7 @@ class AssetResource extends Resource
                     Select::make('depreciation_method')
                         ->label(__('accounting::asset.depreciation_method'))
                         ->searchable()
+                        ->live()
                         ->options(
                             collect(DepreciationMethod::cases())
                                 ->mapWithKeys(fn (DepreciationMethod $method) => [$method->value => $method->label()])
@@ -198,8 +199,8 @@ class AssetResource extends Resource
 
                     TextInput::make('declining_factor')
                         ->label(__('accounting::asset.declining_factor'))
-                        ->required(fn ($get) => $get('depreciation_method') === DepreciationMethod::Declining->value)
-                        ->visible(fn ($get) => $get('depreciation_method') === DepreciationMethod::Declining->value)
+                        ->required(fn ($get) => ($get('depreciation_method')?->value ?? $get('depreciation_method')) === 'declining')
+                        ->visible(fn ($get) => ($get('depreciation_method')?->value ?? $get('depreciation_method')) === 'declining')
                         ->numeric()
                         ->minValue(1)
                         ->default(2.0)
