@@ -13,7 +13,7 @@ The application has a strong foundation for a "Headless" ERP, with a robust doma
 | Feature | Status | Observation |
 | :--- | :--- | :--- |
 | **General Ledger** | ✅ Implemented | Robust double-entry system with immutable Journal Entries. |
-| **Recurring Entries** | ⚠️ Partial | [RecurringTemplate](file:///Users/khoshbin/PhpstormProjects/jmeryar-notebooklm/Modules/Accounting/app/Models/RecurringTemplate.php#16-59) model exists, but the **automation service/job** to generate entries is missing. |
+| **Recurring Entries** | ✅ Implemented | Full implementation completed: `RecurringTemplate` model, `ProcessRecurringTransactionsCommand` scheduler, invoice/journal generation logic, and UI (Filament) support. |
 | **Deferred Revenue/Expense** | ✅ Implemented | Full implementation completed: DeferredItem model, linear schedule generation, Invoice/VendorBill integration, and automated daily processing job. |
 | **Asset Management** | ⚠️ Basic | Service exists ([AssetService](file:///Users/khoshbin/PhpstormProjects/jmeryar-notebooklm/Modules/Accounting/app/Services/AssetService.php#20-116)), but acts as a simple straight-line calculator. **Missing:** Declining balance, Sum-of-digits, Prorata temporis configuration, and Asset Models. |
 | **Fiscal Positions** | ⚠️ Partial | Models like `FiscalPosition` exist, but automatic tax mapping logic based on partner country/region needs verification. |
@@ -49,8 +49,7 @@ The application has a strong foundation for a "Headless" ERP, with a robust doma
 ## 3. Recommendations & Next Steps
 
 1.  **Implement Landed Costs**: This is the highest priority gap for an ERP dealing with physical goods, to ensure accurate COGS.
-2.  **Automate Recurring Entries**: Implement the scheduler/job to process `RecurringTemplate`.
-3.  **Enhance Asset Management**: Add support for different depreciation methods if required by local laws.
-4.  **Implement Deferred Revenue/Expenses**: Create a mechanism to automatically spread costs/revenues (Accruals).
-5.  **Dunning System**: Implement AR follow-up capability.
+2.  **Enhance Asset Management**: Add support for different depreciation methods if required by local laws.
+3.  **Implement Deferred Revenue/Expenses**: Create a mechanism to automatically spread costs/revenues (Accruals).
+4.  **Dunning System**: Implement AR follow-up capability.
 
