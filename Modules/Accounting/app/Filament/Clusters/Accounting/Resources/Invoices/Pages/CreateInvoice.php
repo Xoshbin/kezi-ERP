@@ -38,7 +38,9 @@ class CreateInvoice extends CreateRecord
                 unit_price: Money::of($line['unit_price'], $currency->code),
                 income_account_id: $line['income_account_id'],
                 product_id: $line['product_id'] ?? null,
-                tax_id: $line['tax_id'] ?? null
+                tax_id: $line['tax_id'] ?? null,
+                deferred_start_date: $line['deferred_start_date'] ?? null,
+                deferred_end_date: $line['deferred_end_date'] ?? null
             );
         }
         $data['invoiceLines'] = $lineDTOs;

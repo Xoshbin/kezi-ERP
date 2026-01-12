@@ -38,6 +38,8 @@ class CreateInvoiceLineAction
             'income_account_id' => $dto->income_account_id,
             'subtotal' => $subtotal, // Explicitly provide the calculated subtotal
             'total_line_tax' => $taxAmount, // Explicitly provide the calculated tax
+            'deferred_start_date' => $dto->deferred_start_date,
+            'deferred_end_date' => $dto->deferred_end_date,
         ]);
 
         return $invoiceLine;
