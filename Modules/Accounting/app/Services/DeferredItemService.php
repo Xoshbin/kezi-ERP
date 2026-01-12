@@ -53,13 +53,13 @@ class DeferredItemService
             'company_id' => $line->company_id,
             'type' => 'revenue',
             'name' => $line->description ?? 'Deferred Revenue '.$line->invoice->generated_number,
-            'original_amount' => $line->subtotal_company_currency,
-            'deferred_amount' => $line->subtotal_company_currency,
+            'original_amount' => $line->subtotal_company_currency ?? $line->subtotal->getAmount(), // Fallback if company currency is null (safer)
+            'deferred_amount' => $line->subtotal_company_currency ?? $line->subtotal->getAmount(),
             'start_date' => $line->deferred_start_date,
             'end_date' => $line->deferred_end_date,
             'method' => DeferralMethod::Linear,
-            'deferred_account_id' => $line->income_account_id, // The account on the line (Liability)
-            'recognition_account_id' => $line->product->income_account_id, // The target Revenue account
+            'deferred_account_id' => $line->product->deferred_revenue_account_id,
+            'recognition_account_id' => $line->product->income_account_id,
             'source_type' => InvoiceLine::class,
             'source_id' => $line->id,
         ]);
@@ -83,13 +83,13 @@ class DeferredItemService
             'company_id' => $line->company_id,
             'type' => 'expense',
             'name' => $line->description ?? 'Deferred Expense '.$line->vendorBill->reference,
-            'original_amount' => $line->subtotal_company_currency,
-            'deferred_amount' => $line->subtotal_company_currency,
+            'original_amount' => $line->subtotal_company_currency ?? $line->subtotal->getAmount(),
+            'deferred_amount' => $line->subtotal_company_currency ?? $line->subtotal->getAmount(),
             'start_date' => $line->deferred_start_date,
             'end_date' => $line->deferred_end_date,
             'method' => DeferralMethod::Linear,
-            'deferred_account_id' => $line->expense_account_id, // The account on the line (Asset)
-            'recognition_account_id' => $line->product->expense_account_id, // The target Expense account
+            'deferred_account_id' => $line->product->deferred_expense_account_id,
+            'recognition_account_id' => $line->product->expense_account_id,
             'source_type' => VendorBillLine::class,
             'source_id' => $line->id,
         ]);

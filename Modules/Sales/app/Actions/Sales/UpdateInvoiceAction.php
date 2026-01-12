@@ -62,6 +62,8 @@ class UpdateInvoiceAction
                     'total_line_tax' => $taxAmount,
                     'income_account_id' => $lineDto->income_account_id,
                     'tax_id' => $lineDto->tax_id,
+                    'deferred_start_date' => $lineDto->deferred_start_date,
+                    'deferred_end_date' => $lineDto->deferred_end_date,
                 ]);
             }
 
