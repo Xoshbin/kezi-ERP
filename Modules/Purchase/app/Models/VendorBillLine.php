@@ -110,6 +110,8 @@ class VendorBillLine extends Model
         'asset_category_id',       // Optional link to asset category to create an asset from this line.
         'analytic_account_id',     // Nullable foreign key to the AnalyticAccount model for management/cost accounting [2, 7].
         // implies its applicability at the document line level for richer analytic tracking.
+        'deferred_start_date',
+        'deferred_end_date',
     ];
 
     /**
@@ -128,6 +130,8 @@ class VendorBillLine extends Model
         'subtotal_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class, // Company base currency amounts
         'total_line_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class, // Document currency amounts
         'total_line_tax_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class, // Company base currency amounts
+        'deferred_start_date' => 'date',
+        'deferred_end_date' => 'date',
         'created_at' => 'datetime',  // Automatically managed by Eloquent for audit trails [2].
         'updated_at' => 'datetime',  // Automatically managed by Eloquent [2].
     ];

@@ -16,5 +16,7 @@ readonly class VendorBillLineDTO
         public ?int $analytic_account_id,
         public ?\Modules\Foundation\Enums\ShippingCostType $shipping_cost_type = null,
         public ?int $asset_category_id = null,
+        public ?string $deferred_start_date = null,
+        public ?string $deferred_end_date = null,
     ) {}
 }

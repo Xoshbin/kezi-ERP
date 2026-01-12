@@ -154,35 +154,27 @@ class VendorBillService
         // Load necessary relationships
         $vendorBill->load(['company', 'currency', 'lines']);
 
+        $exchangeRate = null;
+
         // If vendor bill is in company base currency, set rate to 1.0
         if ($vendorBill->currency_id === $vendorBill->company->currency_id) {
-            $vendorBill->update([
-                'exchange_rate_at_creation' => 1.0,
-                'total_amount_company_currency' => $vendorBill->total_amount,
-                'total_tax_company_currency' => $vendorBill->total_tax,
-            ]);
+            $exchangeRate = 1.0;
+        } else {
+            // Use manually set exchange rate if available, otherwise get from currency converter
+            $exchangeRate = $vendorBill->exchange_rate_at_creation;
 
-            return;
-        }
-
-        // Use manually set exchange rate if available, otherwise get from currency converter
-        $exchangeRate = $vendorBill->exchange_rate_at_creation;
-
-        if (! $exchangeRate) {
-            // Get exchange rate for the bill date
-            $exchangeRate = $this->currencyConverter->getExchangeRate($vendorBill->currency, $vendorBill->bill_date, $vendorBill->company);
-
-            // If no exchange rate is found, try to get the latest available rate as fallback
             if (! $exchangeRate) {
-                $exchangeRate = $this->currencyConverter->getLatestExchangeRate($vendorBill->currency, $vendorBill->company);
+                // Get exchange rate for the bill date
+                $exchangeRate = $this->currencyConverter->getExchangeRate($vendorBill->currency, $vendorBill->bill_date, $vendorBill->company);
 
-                // If still no rate found, skip multi-currency processing for backward compatibility
+                // If no exchange rate is found, try to get the latest available rate as fallback
                 if (! $exchangeRate) {
-                    $vendorBill->exchange_rate_at_creation = 1.0;
-                    $vendorBill->total_amount_company_currency = $vendorBill->total_amount;
-                    $vendorBill->total_tax_company_currency = $vendorBill->total_tax;
+                    $exchangeRate = $this->currencyConverter->getLatestExchangeRate($vendorBill->currency, $vendorBill->company);
 
-                    return;
+                    // If still no rate found, use 1.0 as fallback
+                    if (! $exchangeRate) {
+                        $exchangeRate = 1.0;
+                    }
                 }
             }
         }

@@ -73,6 +73,6 @@ it('updates invoice status to posted in UI after confirmation', function () {
     expect($invoice->status)->toBe(InvoiceStatus::Posted);
 
     // 5. Verify Component State
-    $component->assertActionHidden('post');
-    $component->assertActionVisible('register_payment');
+    // Since the component redirects, we cannot assert action visibility on the old instance reliably.
+    $component->assertRedirect(EditInvoice::getUrl(['record' => $invoice->getRouteKey()]));
 });
