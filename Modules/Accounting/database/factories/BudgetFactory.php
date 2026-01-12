@@ -13,6 +13,8 @@ use Modules\Foundation\Models\Currency;
  */
 class BudgetFactory extends Factory
 {
+    protected $model = \Modules\Accounting\Models\Budget::class;
+
     /**
      * Define the model's default state.
      *
