@@ -1,6 +1,6 @@
 # Gap Analysis: Accounting & ERP System
 
-**Date:** 2026-01-09
+**Date:** 2026-01-12
 **Status:** Draft Analysis
 
 ## 1. Executive Summary
@@ -15,7 +15,7 @@ The application has a strong foundation for a "Headless" ERP, with a robust doma
 | **General Ledger** | ✅ Implemented | Robust double-entry system with immutable Journal Entries. |
 | **Recurring Entries** | ✅ Implemented | Full implementation completed: `RecurringTemplate` model, `ProcessRecurringTransactionsCommand` scheduler, invoice/journal generation logic, and UI (Filament) support. |
 | **Deferred Revenue/Expense** | ✅ Implemented | Full implementation completed: DeferredItem model, linear schedule generation, Invoice/VendorBill integration, and automated daily processing job. |
-| **Asset Management** | ⚠️ Basic | Service exists ([AssetService](file:///Users/khoshbin/PhpstormProjects/jmeryar-notebooklm/Modules/Accounting/app/Services/AssetService.php#20-116)), but acts as a simple straight-line calculator. **Missing:** Declining balance, Sum-of-digits, Prorata temporis configuration, and Asset Models. |
+| **Asset Management** | ✅ Implemented | Full implementation completed: Support for Straight Line, Declining Balance (with automatic SL switch), and Sum-of-Digits methods. Includes Prorata Temporis configuration and full Filament UI integration. |
 | **Fiscal Positions** | ⚠️ Partial | Models like `FiscalPosition` exist, but automatic tax mapping logic based on partner country/region needs verification. |
 | **Bank Reconciliation** | ✅ Implemented | `BankReconciliationService` is present. |
 | **Cash Flow Statement** | ✅ Implemented | `CashFlowStatementService` is present. |
@@ -48,8 +48,7 @@ The application has a strong foundation for a "Headless" ERP, with a robust doma
 
 ## 3. Recommendations & Next Steps
 
-1.  **Implement Landed Costs**: This is the highest priority gap for an ERP dealing with physical goods, to ensure accurate COGS.
-2.  **Enhance Asset Management**: Add support for different depreciation methods if required by local laws.
-3.  **Implement Deferred Revenue/Expenses**: Create a mechanism to automatically spread costs/revenues (Accruals).
-4.  **Dunning System**: Implement AR follow-up capability.
+2.  **Dunning System**: Implement AR follow-up capability.
+3.  **API Endpoints**: Begin implementing REST API for external integrations.
+4.  **Fiscal Positions**: Verify and complete automatic tax mapping logic.
 
