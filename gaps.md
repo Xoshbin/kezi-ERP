@@ -15,9 +15,10 @@ The accounting engine is the most mature part of the system.
 - **Assets:** ✅ Full Asset Management with Depreciation schedules.
 - **Bank:** ✅ Reconciliation, Statements, Cheques.
 - **Multi-Currency:** ✅ Supported with Revaluation and Gain/Loss services.
-- **Tax:** ⚠️ **Partial.** Generic Tax implementation exists.
-    - **Gap:** No country-specific tax reports (e.g., Iraq VAT Return, tax filing formats).
-    - **Gap:** Missing "Tax Groups" for complex multi-tax scenarios (if needed).
+- **Tax:** ✅ **Improved.**
+    - **Implemented:** Tax Groups (Bundles) and generic Tax Reporting engine.
+    - **Implemented:** Iraq VAT Return generator.
+    - **Gap:** Other country-specific tax reports (framework exists, needs implementation per country).
 - **Reporting:** ✅ Standard financial reports (P&L, Balance Sheet, TB, Cash Flow) exist.
     - **Gap:** "Statement of Changes in Equity" is missing.
     - **Gap:** Exec Dashboard / Financial Ratios analysis.
@@ -66,5 +67,5 @@ These modules are completely absent but might be out of scope:
 
 ## Recommendation for "Accounting First" Goal
 1.  **Prioritize Localization:** Build a specific `l10n_iq` (Iraq) seeder/module to provision the correct COA and Tax Rules.
-2.  **Fill Tax Reporting Gap:** Create `IraqVATReturnService` to map the generic tax data to the official form.
+2.  **Fill Tax Reporting Gap:** ✅ Created `IraqVATReturnGenerator` and extensible reporting plugin system.
 3.  **Enhance Manufacturing:** If client needs real production tracking, implement Work Centers and Costing.
