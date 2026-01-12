@@ -47,6 +47,10 @@ use Modules\Foundation\Models\Currency;
  * @property-read Collection<int, DepreciationEntry> $depreciationEntries
  * @property-read int|null $depreciation_entries_count
  * @property-read Account $depreciationExpenseAccount
+ * @property bool $prorata_temporis
+ * @property float|null $declining_factor
+ * @property int|null $currency_id
+ * @property-read Currency|null $currency
  *
  * @method static AssetFactory factory($count = null, $state = [])
  * @method static Builder<static>|Asset newModelQuery()
