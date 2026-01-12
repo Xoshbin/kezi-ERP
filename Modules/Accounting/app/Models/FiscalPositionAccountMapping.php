@@ -37,8 +37,12 @@ use Illuminate\Support\Carbon;
  */
 class FiscalPositionAccountMapping extends Model
 {
-    /** @use HasFactory<FiscalPositionAccountMappingFactory> */
     use HasFactory;
+
+    protected static function newFactory(): \Modules\Accounting\Database\Factories\FiscalPositionAccountMappingFactory
+    {
+        return \Modules\Accounting\Database\Factories\FiscalPositionAccountMappingFactory::new();
+    }
 
     /**
      * The table associated with the model.

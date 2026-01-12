@@ -40,12 +40,10 @@ class FiscalPositionService
                         ->where('zip_to', '>=', $partner->zip_code);
                 });
             })
-            ->where(function ($query) {
-                $query->where('vat_required', false)
-                    ->orWhere(function ($q) {
-                        $q->where('vat_required', true)
-                            ->whereNotNull('partner_tax_id'); // Assuming tax_id in Partner model
-                    });
+            ->where(function ($query) use ($partner) {
+                if (! $partner->tax_id) {
+                    $query->where('vat_required', false);
+                }
             })
             ->orderByRaw('CASE WHEN country IS NOT NULL THEN 0 ELSE 1 END')
             ->orderByRaw('CASE WHEN zip_from IS NOT NULL THEN 0 ELSE 1 END')
