@@ -14,7 +14,7 @@ The application has a strong foundation for a "Headless" ERP, with a robust doma
 | :--- | :--- | :--- |
 | **General Ledger** | ✅ Implemented | Robust double-entry system with immutable Journal Entries. |
 | **Recurring Entries** | ⚠️ Partial | [RecurringTemplate](file:///Users/khoshbin/PhpstormProjects/jmeryar-notebooklm/Modules/Accounting/app/Models/RecurringTemplate.php#16-59) model exists, but the **automation service/job** to generate entries is missing. |
-| **Deferred Revenue/Expense** | ❌ Missing | No logic found for spreading revenue/expenses over future periods (Cut-off management). |
+| **Deferred Revenue/Expense** | ✅ Implemented | Full implementation completed: DeferredItem model, linear schedule generation, Invoice/VendorBill integration, and automated daily processing job. |
 | **Asset Management** | ⚠️ Basic | Service exists ([AssetService](file:///Users/khoshbin/PhpstormProjects/jmeryar-notebooklm/Modules/Accounting/app/Services/AssetService.php#20-116)), but acts as a simple straight-line calculator. **Missing:** Declining balance, Sum-of-digits, Prorata temporis configuration, and Asset Models. |
 | **Fiscal Positions** | ⚠️ Partial | Models like `FiscalPosition` exist, but automatic tax mapping logic based on partner country/region needs verification. |
 | **Bank Reconciliation** | ✅ Implemented | `BankReconciliationService` is present. |
