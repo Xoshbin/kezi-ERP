@@ -11,6 +11,8 @@ use Modules\Accounting\Models\BudgetLine;
  */
 class BudgetLineFactory extends Factory
 {
+    protected $model = \Modules\Accounting\Models\BudgetLine::class;
+
     /**
      * Define the model's default state.
      *
@@ -19,7 +21,9 @@ class BudgetLineFactory extends Factory
     public function definition(): array
     {
         return [
+            'company_id' => \App\Models\Company::factory(),
             'budget_id' => Budget::factory(),
+
             'budgeted_amount' => $this->faker->numberBetween(1000, 100000),
             'achieved_amount' => $this->faker->numberBetween(0, 100000),
             'committed_amount' => $this->faker->numberBetween(0, 100000),

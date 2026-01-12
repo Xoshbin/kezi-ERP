@@ -229,6 +229,18 @@ class PurchaseOrderLine extends Model
         return $this->getUnitPriceInCompanyCurrency()->multipliedBy($this->quantity);
     }
 
+    /**
+     * Get the subtotal for this line in company currency.
+     */
+    public function getSubtotalInCompanyCurrency(): Money
+    {
+        if ($this->subtotal_company_currency) {
+            return $this->subtotal_company_currency;
+        }
+
+        return $this->getUnitPriceInCompanyCurrency()->multipliedBy($this->quantity);
+    }
+
     protected static function newFactory(): \Modules\Purchase\Database\Factories\PurchaseOrderLineFactory
     {
         return \Modules\Purchase\Database\Factories\PurchaseOrderLineFactory::new();

@@ -139,6 +139,11 @@ class EditVendorBill extends EditRecord
                         $vendorBillService->post($record, $user);
                         Notification::make()->title(__('accounting::bill.notification_bill_confirmed_success'))->success()->send();
                         $this->redirect($this->getResource()::getUrl('edit', ['record' => $record]));
+                    } catch (\Modules\Accounting\Exceptions\BudgetExceededException $e) {
+                        Notification::make()
+                            ->title($e->getMessage())
+                            ->danger()
+                            ->send();
                     } catch (Exception $e) {
                         Log::error('Vendor bill confirmation failed', [
                             'bill_id' => $record->id,
