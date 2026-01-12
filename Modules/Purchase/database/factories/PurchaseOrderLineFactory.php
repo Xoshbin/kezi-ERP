@@ -2,6 +2,7 @@
 
 namespace Modules\Purchase\Database\Factories;
 
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Product\Models\Product;
 use Modules\Purchase\Models\PurchaseOrder;
@@ -23,24 +24,64 @@ class PurchaseOrderLineFactory extends Factory
     public function definition(): array
     {
         $quantity = $this->faker->numberBetween(1, 100);
-        $unitPrice = $this->faker->randomFloat(2, 10, 1000);
-        $subtotal = $quantity * $unitPrice;
-        $tax = $subtotal * 0.1; // 10% tax
-        $total = $subtotal + $tax;
+        $unitPriceRaw = $this->faker->randomFloat(2, 10, 1000);
+        $subtotalRaw = $quantity * $unitPriceRaw;
+        $taxRaw = $subtotalRaw * 0.1; // 10% tax
+        $totalRaw = $subtotalRaw + $taxRaw;
 
         return [
             'purchase_order_id' => PurchaseOrder::factory(),
             'product_id' => Product::factory(),
             'description' => $this->faker->sentence(),
             'quantity' => $quantity,
-            'unit_price' => $unitPrice * 100, // Store as cents for Money cast
-            'subtotal' => $subtotal * 100, // Store as cents for Money cast
-            'total_line_tax' => $tax * 100, // Store as cents for Money cast
-            'total' => $total * 100, // Store as cents for Money cast
-            'unit_price_company_currency' => $unitPrice * 100, // Store as cents for Money cast
-            'subtotal_company_currency' => $subtotal * 100, // Store as cents for Money cast
-            'total_line_tax_company_currency' => $tax * 100, // Store as cents for Money cast
-            'total_company_currency' => $total * 100, // Store as cents for Money cast
+            'unit_price' => function (array $attributes) use ($unitPriceRaw) {
+                $po = PurchaseOrder::find($attributes['purchase_order_id']);
+                $currencyCode = $po ? $po->currency->code : 'USD';
+
+                return Money::of($unitPriceRaw, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
+            },
+            'subtotal' => function (array $attributes) use ($subtotalRaw) {
+                $po = PurchaseOrder::find($attributes['purchase_order_id']);
+                $currencyCode = $po ? $po->currency->code : 'USD';
+
+                return Money::of($subtotalRaw, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
+            },
+            'total_line_tax' => function (array $attributes) use ($taxRaw) {
+                $po = PurchaseOrder::find($attributes['purchase_order_id']);
+                $currencyCode = $po ? $po->currency->code : 'USD';
+
+                return Money::of($taxRaw, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
+            },
+            'total' => function (array $attributes) use ($totalRaw) {
+                $po = PurchaseOrder::find($attributes['purchase_order_id']);
+                $currencyCode = $po ? $po->currency->code : 'USD';
+
+                return Money::of($totalRaw, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
+            },
+            'unit_price_company_currency' => function (array $attributes) use ($unitPriceRaw) {
+                $po = PurchaseOrder::find($attributes['purchase_order_id']);
+                $currencyCode = $po ? $po->company->currency->code : 'USD';
+
+                return Money::of($unitPriceRaw, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
+            },
+            'subtotal_company_currency' => function (array $attributes) use ($subtotalRaw) {
+                $po = PurchaseOrder::find($attributes['purchase_order_id']);
+                $currencyCode = $po ? $po->company->currency->code : 'USD';
+
+                return Money::of($subtotalRaw, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
+            },
+            'total_line_tax_company_currency' => function (array $attributes) use ($taxRaw) {
+                $po = PurchaseOrder::find($attributes['purchase_order_id']);
+                $currencyCode = $po ? $po->company->currency->code : 'USD';
+
+                return Money::of($taxRaw, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
+            },
+            'total_company_currency' => function (array $attributes) use ($totalRaw) {
+                $po = PurchaseOrder::find($attributes['purchase_order_id']);
+                $currencyCode = $po ? $po->company->currency->code : 'USD';
+
+                return Money::of($totalRaw, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
+            },
             'quantity_received' => 0,
             'notes' => $this->faker->optional()->sentence(),
         ];
@@ -82,15 +123,19 @@ class PurchaseOrderLineFactory extends Factory
             $tax = $subtotal * 0.1; // 10% tax
             $total = $subtotal + $tax;
 
+            $po = PurchaseOrder::find($attributes['purchase_order_id']);
+            $currencyCode = $po ? $po->currency->code : 'USD';
+            $companyCurrencyCode = $po ? $po->company->currency->code : 'USD';
+
             return [
-                'unit_price' => $price * 100, // Store as cents
-                'subtotal' => $subtotal * 100, // Store as cents
-                'total_line_tax' => $tax * 100, // Store as cents
-                'total' => $total * 100, // Store as cents
-                'unit_price_company_currency' => $price * 100, // Store as cents
-                'subtotal_company_currency' => $subtotal * 100, // Store as cents
-                'total_line_tax_company_currency' => $tax * 100, // Store as cents
-                'total_company_currency' => $total * 100, // Store as cents
+                'unit_price' => Money::of($price, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'subtotal' => Money::of($subtotal, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'total_line_tax' => Money::of($tax, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'total' => Money::of($total, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'unit_price_company_currency' => Money::of($price, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'subtotal_company_currency' => Money::of($subtotal, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'total_line_tax_company_currency' => Money::of($tax, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'total_company_currency' => Money::of($total, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
             ];
         });
     }
@@ -101,19 +146,30 @@ class PurchaseOrderLineFactory extends Factory
     public function withQuantity(int $quantity): static
     {
         return $this->state(function (array $attributes) use ($quantity) {
-            $unitPrice = $attributes['unit_price'] / 100; // Convert from cents
-            $subtotal = $quantity * $unitPrice;
+            $po = PurchaseOrder::find($attributes['purchase_order_id']);
+            $currencyCode = $po ? $po->currency->code : 'USD';
+            $companyCurrencyCode = $po ? $po->company->currency->code : 'USD';
+
+            // unit_price might be a Money object or a string/float
+            $unitPrice = $attributes['unit_price'];
+            if ($unitPrice instanceof Money) {
+                $unitPriceValue = $unitPrice->getAmount()->toFloat();
+            } else {
+                $unitPriceValue = (float) $unitPrice;
+            }
+
+            $subtotal = $quantity * $unitPriceValue;
             $tax = $subtotal * 0.1; // 10% tax
             $total = $subtotal + $tax;
 
             return [
                 'quantity' => $quantity,
-                'subtotal' => $subtotal * 100, // Store as cents
-                'total_line_tax' => $tax * 100, // Store as cents
-                'total' => $total * 100, // Store as cents
-                'subtotal_company_currency' => $subtotal * 100, // Store as cents
-                'total_line_tax_company_currency' => $tax * 100, // Store as cents
-                'total_company_currency' => $total * 100, // Store as cents
+                'subtotal' => Money::of($subtotal, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'total_line_tax' => Money::of($tax, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'total' => Money::of($total, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'subtotal_company_currency' => Money::of($subtotal, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'total_line_tax_company_currency' => Money::of($tax, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'total_company_currency' => Money::of($total, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
             ];
         });
     }

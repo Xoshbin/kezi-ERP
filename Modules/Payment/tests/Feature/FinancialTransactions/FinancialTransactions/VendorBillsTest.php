@@ -38,7 +38,7 @@ beforeEach(function () {
 });
 
 test('a draft vendor bill can be confirmed, which posts it and dispatches an event', function () {
-    Event::fake();
+    Event::fake([VendorBillConfirmed::class]);
     $vendorBill = VendorBill::factory()->for($this->company)->create(['status' => 'draft']);
 
     // Use the dedicated Action to create the line.
