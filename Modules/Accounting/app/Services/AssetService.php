@@ -146,7 +146,8 @@ class AssetService
 
         // Final Prorata Entry
         if ($asset->prorata_temporis) {
-            $totalDepreciated = \Brick\Money\Money::zero($asset->currency->code);
+            $currencyCode = $asset->currency->code ?? $asset->company->currency->code;
+            $totalDepreciated = \Brick\Money\Money::zero($currencyCode);
             foreach ($entries as $entry) {
                 $totalDepreciated = $totalDepreciated->plus($entry->amount);
             }
@@ -174,7 +175,8 @@ class AssetService
         $factor = $asset->declining_factor ?? 2.0; // Default to Double Declining
 
         $currentBookValue = $cost;
-        $totalDepreciation = \Brick\Money\Money::zero($asset->currency->code);
+        $currencyCode = $asset->currency->code ?? $asset->company->currency->code;
+        $totalDepreciation = \Brick\Money\Money::zero($currencyCode);
         $depreciableBase = $cost->minus($salvage, RoundingMode::HALF_UP);
 
         // Annual Rate = Factor / Life Years
