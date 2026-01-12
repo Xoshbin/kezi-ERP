@@ -111,6 +111,14 @@ class StockPicking extends Model
     }
 
     /**
+     * @return HasMany<StockMove, static>
+     */
+    public function moves(): HasMany
+    {
+        return $this->hasMany(StockMove::class, 'picking_id');
+    }
+
+    /**
      * Get the Purchase Order associated with this picking (for GRN workflow).
      *
      * @return BelongsTo<PurchaseOrder, static>
