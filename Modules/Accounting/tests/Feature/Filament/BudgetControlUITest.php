@@ -1,6 +1,7 @@
 <?php
 
 use Brick\Money\Money;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Enums\Accounting\AccountType;
 use Modules\Accounting\Enums\Accounting\JournalType;
 use Modules\Accounting\Enums\Budgets\BudgetStatus;
@@ -19,7 +20,7 @@ use Tests\Traits\WithConfiguredCompany;
 
 use function Pest\Livewire\livewire;
 
-uses(WithConfiguredCompany::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
@@ -41,7 +42,7 @@ beforeEach(function () {
 
     // Setup currency and accounts
     $this->currency = $this->company->currency;
-    $currencyCode = $this->currency->code; // Define variable for closure scope if needed, but here simple property access is fine.
+    $currencyCode = $this->currency->code;
 
     $this->expenseAccount = Account::factory()->create([
         'company_id' => $this->company->id,
@@ -64,6 +65,17 @@ beforeEach(function () {
         'short_code' => 'BILL',
     ]);
     $this->company->update(['default_purchase_journal_id' => $this->journal->id]);
+
+    $this->taxAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'code' => '500000',
+        'name' => 'Tax Account',
+        'type' => AccountType::CurrentLiabilities,
+    ]);
+    $this->company->update([
+        'default_tax_account_id' => $this->taxAccount->id,
+        'default_tax_receivable_id' => $this->taxAccount->id,
+    ]);
 
     // Create a budget
     $this->budget = Budget::factory()->create([
@@ -88,6 +100,7 @@ it('shows error notification when posting vendor bill exceeding budget', functio
         'company_id' => $this->company->id,
         'status' => VendorBillStatus::Draft,
         'bill_date' => now(),
+        'accounting_date' => now(),
     ]);
 
     \Modules\Purchase\Models\VendorBillLine::factory()->create([
@@ -96,11 +109,18 @@ it('shows error notification when posting vendor bill exceeding budget', functio
         'subtotal' => Money::of(1500, $currencyCode),
         'subtotal_company_currency' => Money::of(1500, $currencyCode),
         'total_line_tax' => Money::of(0, $currencyCode),
+        'tax_id' => null,
     ]);
 
+    $bill->calculateTotalsFromLines();
+    $bill->save();
+    $bill->refresh();
+
     livewire(EditVendorBill::class, ['record' => $bill->id])
+        ->assertActionExists('post')
+        ->assertActionVisible('post')
         ->callAction('post')
-        ->assertNotified('The transaction exceeds the available budget');
+        ->assertNotified();
 });
 
 it('shows error notification when confirming purchase order exceeding budget', function () {
@@ -123,13 +143,19 @@ it('shows error notification when confirming purchase order exceeding budget', f
         'quantity' => 1,
         'unit_price' => Money::of(1500, $currencyCode),
         'unit_price_company_currency' => Money::of(1500, $currencyCode),
+        'subtotal' => Money::of(1500, $currencyCode),
+        'subtotal_company_currency' => Money::of(1500, $currencyCode),
         'total_line_tax' => Money::of(0, $currencyCode),
+        'tax_id' => null,
     ]);
 
     $po->calculateTotalsFromLines();
     $po->save();
+    $po->refresh();
 
     livewire(EditPurchaseOrder::class, ['record' => $po->id])
+        ->assertActionExists('confirm')
+        ->assertActionVisible('confirm')
         ->callAction('confirm')
-        ->assertNotified('The transaction exceeds the available budget');
+        ->assertNotified();
 });

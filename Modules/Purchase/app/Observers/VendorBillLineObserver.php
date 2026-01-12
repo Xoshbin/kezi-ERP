@@ -71,7 +71,7 @@ class VendorBillLineObserver
             $this->updateCompanyCurrencyTotals($vendorBill);
         }
 
-        $vendorBill->saveQuietly();
+        $vendorBill->save();
     }
 
     /**

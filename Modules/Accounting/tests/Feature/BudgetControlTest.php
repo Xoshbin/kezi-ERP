@@ -64,10 +64,21 @@ beforeEach(function () {
         'short_code' => 'BILL',
     ]);
     $this->company->update(['default_purchase_journal_id' => $this->journal->id]);
+
+    $this->taxAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'code' => '500000',
+        'name' => 'Tax Account',
+        'type' => AccountType::CurrentLiabilities,
+    ]);
+    $this->company->update([
+        'default_tax_account_id' => $this->taxAccount->id,
+        'default_tax_receivable_id' => $this->taxAccount->id,
+    ]);
 });
 
 it('prevents posting a vendor bill that exceeds the budget', function () {
-    $currencyCode = $this->company->currency->code;
+    $currencyCode = $this->currency->code;
     // Create a budget
     $budget = Budget::factory()->create([
         'company_id' => $this->company->id,
@@ -86,6 +97,7 @@ it('prevents posting a vendor bill that exceeds the budget', function () {
     // Create a draft vendor bill exceeding the budget
     $bill = VendorBill::factory()->create([
         'company_id' => $this->company->id,
+        'currency_id' => $this->currency->id,
         'status' => VendorBillStatus::Draft,
         'bill_date' => now(),
     ]);
@@ -96,15 +108,19 @@ it('prevents posting a vendor bill that exceeds the budget', function () {
         'subtotal' => Money::of(1500, $currencyCode),
         'subtotal_company_currency' => Money::of(1500, $currencyCode),
         'total_line_tax' => Money::of(0, $currencyCode),
+        'unit_price' => Money::of(1500, $currencyCode),
+        'tax_id' => null,
     ]);
 
     // Expect exception when posting
     $this->expectException(BudgetExceededException::class);
 
-    app(VendorBillService::class)->post($bill, $this->user);
+    app(VendorBillService::class)->post($bill->refresh(), $this->user);
 });
 
 it('allows posting a vendor bill within the budget', function () {
+    $currencyCode = $this->currency->code;
+
     $budget = Budget::factory()->create([
         'company_id' => $this->company->id,
         'status' => BudgetStatus::Finalized,
@@ -121,6 +137,7 @@ it('allows posting a vendor bill within the budget', function () {
 
     $bill = VendorBill::factory()->create([
         'company_id' => $this->company->id,
+        'currency_id' => $this->currency->id,
         'status' => VendorBillStatus::Draft,
         'bill_date' => now(),
     ]);
@@ -128,15 +145,21 @@ it('allows posting a vendor bill within the budget', function () {
     \Modules\Purchase\Models\VendorBillLine::factory()->create([
         'vendor_bill_id' => $bill->id,
         'expense_account_id' => $this->expenseAccount->id,
-        'subtotal' => 500,
+        'subtotal' => Money::of(500, $currencyCode),
+        'subtotal_company_currency' => Money::of(500, $currencyCode),
+        'total_line_tax' => Money::of(0, $currencyCode),
+        'unit_price' => Money::of(500, $currencyCode),
+        'tax_id' => null,
     ]);
 
-    app(VendorBillService::class)->post($bill, $this->user);
+    app(VendorBillService::class)->post($bill->refresh(), $this->user);
 
     expect($bill->refresh()->status)->toBe(VendorBillStatus::Posted);
 });
 
 it('prevents confirming a purchase order that exceeds the budget', function () {
+    $currencyCode = $this->currency->code;
+
     $budget = Budget::factory()->create([
         'company_id' => $this->company->id,
         'status' => BudgetStatus::Finalized,
@@ -158,6 +181,7 @@ it('prevents confirming a purchase order that exceeds the budget', function () {
 
     $po = PurchaseOrder::factory()->create([
         'company_id' => $this->company->id,
+        'currency_id' => $this->currency->id,
         'status' => PurchaseOrderStatus::Draft,
         'po_date' => now(),
     ]);
@@ -166,7 +190,11 @@ it('prevents confirming a purchase order that exceeds the budget', function () {
         'purchase_order_id' => $po->id,
         'product_id' => $product->id,
         'quantity' => 1,
-        'unit_price' => Money::of(1500, $this->currency->code),
+        'unit_price' => Money::of(1500, $currencyCode),
+        'unit_price_company_currency' => Money::of(1500, $currencyCode),
+        'subtotal' => Money::of(1500, $currencyCode),
+        'total_line_tax' => Money::of(0, $currencyCode),
+        'tax_id' => null,
     ]);
 
     // Ensure totals are calculated
@@ -175,35 +203,38 @@ it('prevents confirming a purchase order that exceeds the budget', function () {
 
     $this->expectException(BudgetExceededException::class);
 
-    app(PurchaseOrderService::class)->confirm($po, $this->user);
+    app(PurchaseOrderService::class)->confirm($po->refresh(), $this->user);
 });
 
 it('correctly calculates committed costs from POs and actuals from Bills', function () {
     $currencyCode = $this->currency->code;
 
-    // Budget: 1000
+    // Budget: 10,000
     $budget = Budget::factory()->create([
         'company_id' => $this->company->id,
         'status' => BudgetStatus::Finalized,
         'period_start_date' => now()->startOfMonth(),
         'period_end_date' => now()->endOfMonth(),
+        'name' => 'Test Budget',
     ]);
 
     BudgetLine::factory()->create([
         'company_id' => $this->company->id,
         'budget_id' => $budget->id,
         'account_id' => $this->expenseAccount->id,
-        'budgeted_amount' => 1000, // Stored as minor units or Money? BudgetLineFactory uses numberBetween (integer). Cast handles it.
+        'budgeted_amount' => Money::of(10000, $currencyCode),
     ]);
 
     $product = \Modules\Product\Models\Product::factory()->create([
         'company_id' => $this->company->id,
         'expense_account_id' => $this->expenseAccount->id,
+        'name' => 'Test Product',
     ]);
 
-    // 1. Confirm PO for 600 -> Should pass. Committed: 600, Actual: 0. Available: 400.
+    // 1. Confirm PO for 4000 -> Should pass.
     $po1 = PurchaseOrder::factory()->create([
         'company_id' => $this->company->id,
+        'currency_id' => $this->currency->id,
         'status' => PurchaseOrderStatus::Draft,
         'po_date' => now(),
     ]);
@@ -211,20 +242,20 @@ it('correctly calculates committed costs from POs and actuals from Bills', funct
         'purchase_order_id' => $po1->id,
         'product_id' => $product->id,
         'quantity' => 1,
-        'unit_price' => Money::of(400, $currencyCode),
-        'unit_price_company_currency' => Money::of(400, $currencyCode),
+        'unit_price' => Money::of(4000, $currencyCode),
+        'unit_price_company_currency' => Money::of(4000, $currencyCode),
+        'subtotal' => Money::of(4000, $currencyCode),
+        'subtotal_company_currency' => Money::of(4000, $currencyCode),
         'total_line_tax' => Money::of(0, $currencyCode),
-        // 'total_company_currency' => calculated automatically or must set if not calculated in factory?
-        // Factory usually calculates it? Or we can let it be null and calculateTotalsFromLines?
+        'tax_id' => null,
     ]);
-    $po1->calculateTotalsFromLines();
-    $po1->save();
 
-    app(PurchaseOrderService::class)->confirm($po1, $this->user);
+    app(PurchaseOrderService::class)->confirm($po1->refresh(), $this->user);
 
-    // 2. Try to confirm PO for 1500 -> Should fail (400 + 1500 > 1000).
+    // 2. Try to confirm PO for 7000 -> Should fail (4000 + 7000 > 10000).
     $po2 = PurchaseOrder::factory()->create([
         'company_id' => $this->company->id,
+        'currency_id' => $this->currency->id,
         'status' => PurchaseOrderStatus::Draft,
         'po_date' => now(),
     ]);
@@ -232,51 +263,54 @@ it('correctly calculates committed costs from POs and actuals from Bills', funct
         'purchase_order_id' => $po2->id,
         'product_id' => $product->id,
         'quantity' => 1,
-        'unit_price' => Money::of(1500, $currencyCode),
-        'unit_price_company_currency' => Money::of(1500, $currencyCode),
+        'unit_price' => Money::of(7000, $currencyCode),
+        'unit_price_company_currency' => Money::of(7000, $currencyCode),
+        'subtotal' => Money::of(7000, $currencyCode),
+        'subtotal_company_currency' => Money::of(7000, $currencyCode),
         'total_line_tax' => Money::of(0, $currencyCode),
+        'tax_id' => null,
     ]);
-    $po2->calculateTotalsFromLines();
-    $po2->save();
 
     try {
-        app(PurchaseOrderService::class)->confirm($po2, $this->user);
+        app(PurchaseOrderService::class)->confirm($po2->refresh(), $this->user);
         $this->fail('Should have thrown BudgetExceededException');
     } catch (BudgetExceededException $e) {
         // Expected
     }
 
-    // 3. Post Bill for PO1 (400).
-    // Creates Vendor Bill linked to PO1.
+    // 3. Post Bill for PO1 (4000).
     $bill = VendorBill::factory()->create([
         'company_id' => $this->company->id,
+        'currency_id' => $this->currency->id,
         'purchase_order_id' => $po1->id,
         'status' => VendorBillStatus::Draft,
         'bill_date' => now(),
+        'accounting_date' => now(),
     ]);
     \Modules\Purchase\Models\VendorBillLine::factory()->create([
         'vendor_bill_id' => $bill->id,
         'expense_account_id' => $this->expenseAccount->id,
-        'subtotal' => Money::of(400, $currencyCode),
-        'subtotal_company_currency' => Money::of(400, $currencyCode),
+        'subtotal' => Money::of(4000, $currencyCode),
+        'subtotal_company_currency' => Money::of(4000, $currencyCode),
+        'unit_price' => Money::of(4000, $currencyCode),
         'total_line_tax' => Money::of(0, $currencyCode),
+        'tax_id' => null,
     ]);
 
-    app(VendorBillService::class)->post($bill, $this->user);
+    app(VendorBillService::class)->post($bill->refresh(), $this->user);
 
-    // Total Usage = 400. Available = 600.
-
-    // 4. Try to confirm PO2 (500) again -> Should still fail (600 + 500 > 1000).
+    // 4. Try to confirm PO2 again -> Should still fail (4000 actual + 7000 try > 10000).
     try {
-        app(PurchaseOrderService::class)->confirm($po2, $this->user);
+        app(PurchaseOrderService::class)->confirm($po2->refresh(), $this->user);
         $this->fail('Should have thrown BudgetExceededException');
     } catch (BudgetExceededException $e) {
         // Expected
     }
 
-    // 5. Create valid PO3 for 300 -> Should pass (600 + 300 = 900 < 1000).
+    // 5. Create valid PO3 for 3000 -> Should pass (4000 + 3000 = 7000 < 10000).
     $po3 = PurchaseOrder::factory()->create([
         'company_id' => $this->company->id,
+        'currency_id' => $this->currency->id,
         'status' => PurchaseOrderStatus::Draft,
         'po_date' => now(),
     ]);
@@ -284,13 +318,15 @@ it('correctly calculates committed costs from POs and actuals from Bills', funct
         'purchase_order_id' => $po3->id,
         'product_id' => $product->id,
         'quantity' => 1,
-        'unit_price' => Money::of(300, $currencyCode),
-        'unit_price_company_currency' => Money::of(300, $currencyCode),
+        'unit_price' => Money::of(3000, $currencyCode),
+        'unit_price_company_currency' => Money::of(3000, $currencyCode),
+        'subtotal' => Money::of(3000, $currencyCode),
+        'subtotal_company_currency' => Money::of(3000, $currencyCode),
+        'total_line_tax' => Money::of(0, $currencyCode),
+        'tax_id' => null,
     ]);
-    $po3->calculateTotalsFromLines();
-    $po3->save();
 
-    app(PurchaseOrderService::class)->confirm($po3, $this->user);
+    app(PurchaseOrderService::class)->confirm($po3->refresh(), $this->user);
 
-    expect($po3->status)->toBe(PurchaseOrderStatus::Confirmed);
+    expect($po3->refresh()->status)->toBe(PurchaseOrderStatus::ToReceive);
 });
