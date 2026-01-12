@@ -24,6 +24,8 @@ class CreateAssetAction
                 'asset_account_id' => $dto->asset_account_id,
                 'accumulated_depreciation_account_id' => $dto->accumulated_depreciation_account_id,
                 'depreciation_expense_account_id' => $dto->depreciation_expense_account_id,
+                'prorata_temporis' => $dto->prorata_temporis,
+                'declining_factor' => $dto->declining_factor,
                 'source_type' => $dto->source_type,
                 'source_id' => $dto->source_id,
             ]);

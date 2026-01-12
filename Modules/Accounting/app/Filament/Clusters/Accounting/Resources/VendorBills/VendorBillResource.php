@@ -501,6 +501,15 @@ class VendorBillResource extends Resource
                                         ->numeric()
                                         ->label(__('accounting::asset.useful_life_years'))
                                         ->required(),
+                                    Toggle::make('prorata_temporis')
+                                        ->label(__('accounting::asset.prorata_temporis'))
+                                        ->default(false),
+                                    TextInput::make('declining_factor')
+                                        ->label(__('accounting::asset.declining_factor'))
+                                        ->numeric()
+                                        ->visible(fn ($get) => $get('depreciation_method') === DepreciationMethod::Declining->value)
+                                        ->required(fn ($get) => $get('depreciation_method') === DepreciationMethod::Declining->value)
+                                        ->default(2.0),
                                     TextInput::make('salvage_value_default')
                                         ->numeric()
                                         ->label(__('accounting::asset.salvage_value_default'))

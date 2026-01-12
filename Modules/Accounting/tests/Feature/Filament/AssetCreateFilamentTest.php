@@ -91,3 +91,98 @@ test('asset can be updated via filament form with string date', function () {
     expect($asset->purchase_date->format('Y-m-d'))->toBe('2024-06-20');
     expect($asset->useful_life_years)->toBe(7);
 });
+
+test('asset can be created with prorata temporis enabled', function () {
+    livewire(CreateAsset::class)
+        ->fillForm([
+            'company_id' => $this->company->id,
+            'name' => 'Prorata Asset',
+            'purchase_date' => '2024-01-15',
+            'purchase_value' => 12000,
+            'salvage_value' => 0,
+            'useful_life_years' => 3,
+            'depreciation_method' => DepreciationMethod::StraightLine->value,
+            'asset_account_id' => $this->assetAccount->id,
+            'depreciation_expense_account_id' => $this->depreciationExpenseAccount->id,
+            'accumulated_depreciation_account_id' => $this->accumulatedDepreciationAccount->id,
+            'currency_id' => $this->company->currency_id,
+            'prorata_temporis' => true,
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $this->assertDatabaseHas('assets', [
+        'name' => 'Prorata Asset',
+        'prorata_temporis' => true,
+    ]);
+});
+
+test('asset with declining balance method requires declining factor', function () {
+    livewire(CreateAsset::class)
+        ->fillForm([
+            'company_id' => $this->company->id,
+            'name' => 'Declining Asset',
+            'purchase_date' => '2024-01-01',
+            'purchase_value' => 10000,
+            'salvage_value' => 0,
+            'useful_life_years' => 5,
+            'depreciation_method' => DepreciationMethod::Declining->value,
+            'declining_factor' => null,
+            'asset_account_id' => $this->assetAccount->id,
+            'depreciation_expense_account_id' => $this->depreciationExpenseAccount->id,
+            'accumulated_depreciation_account_id' => $this->accumulatedDepreciationAccount->id,
+            'currency_id' => $this->company->currency_id,
+        ])
+        ->call('create')
+        ->assertHasErrors(['data.declining_factor' => 'required']);
+});
+
+test('asset can be created with declining balance and factor', function () {
+    livewire(CreateAsset::class)
+        ->fillForm([
+            'company_id' => $this->company->id,
+            'name' => 'Declining Asset Fix',
+            'purchase_date' => '2024-01-01',
+            'purchase_value' => 10000,
+            'salvage_value' => 0,
+            'useful_life_years' => 5,
+            'depreciation_method' => DepreciationMethod::Declining->value,
+            'declining_factor' => 2.5,
+            'asset_account_id' => $this->assetAccount->id,
+            'depreciation_expense_account_id' => $this->depreciationExpenseAccount->id,
+            'accumulated_depreciation_account_id' => $this->accumulatedDepreciationAccount->id,
+            'currency_id' => $this->company->currency_id,
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $this->assertDatabaseHas('assets', [
+        'name' => 'Declining Asset Fix',
+        'depreciation_method' => DepreciationMethod::Declining->value,
+        'declining_factor' => 2.5,
+    ]);
+});
+
+test('asset can be created with sum of digits method', function () {
+    livewire(CreateAsset::class)
+        ->fillForm([
+            'company_id' => $this->company->id,
+            'name' => 'SYD Asset',
+            'purchase_date' => '2024-01-01',
+            'purchase_value' => 12000,
+            'salvage_value' => 0,
+            'useful_life_years' => 3,
+            'depreciation_method' => DepreciationMethod::SumOfDigits->value,
+            'asset_account_id' => $this->assetAccount->id,
+            'depreciation_expense_account_id' => $this->depreciationExpenseAccount->id,
+            'accumulated_depreciation_account_id' => $this->accumulatedDepreciationAccount->id,
+            'currency_id' => $this->company->currency_id,
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $this->assertDatabaseHas('assets', [
+        'name' => 'SYD Asset',
+        'depreciation_method' => DepreciationMethod::SumOfDigits->value,
+    ]);
+});

@@ -19,6 +19,8 @@ readonly class CreateAssetDTO
         public int $depreciation_expense_account_id,
         public int $accumulated_depreciation_account_id,
         public int $currency_id,
+        public bool $prorata_temporis = false,
+        public ?float $declining_factor = null,
         public ?string $source_type = null,
         public ?int $source_id = null,
     ) {}
