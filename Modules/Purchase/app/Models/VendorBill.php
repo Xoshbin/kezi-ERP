@@ -45,6 +45,7 @@ use Modules\Purchase\Observers\VendorBillObserver;
  * @property int|null $purchase_order_id
  * @property int|null $stock_picking_id
  * @property int|null $journal_entry_id
+ * @property int|null $fiscal_position_id
  * @property ThreeWayMatchStatus|null $three_way_match_status
  * @property string $bill_reference
  * @property Carbon $bill_date
@@ -139,6 +140,7 @@ class VendorBill extends Model
         'total_tax_company_currency',    // Total tax in company currency
         'journal_entry_id',     // Nullable foreign key to journal_entries.id, linking to the immutable
         // financial transaction once the bill is posted .
+        'fiscal_position_id',
         'posted_at',            // Nullable timestamp indicating when the vendor bill was confirmed/posted .
         'inter_company_source_id',
         'inter_company_source_type',
@@ -261,6 +263,14 @@ class VendorBill extends Model
     public function stockPicking(): BelongsTo
     {
         return $this->belongsTo(StockPicking::class, 'stock_picking_id');
+    }
+
+    /**
+     * Get the fiscal position applied to this vendor bill.
+     */
+    public function fiscalPosition(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\FiscalPosition::class, 'fiscal_position_id');
     }
 
     /**
