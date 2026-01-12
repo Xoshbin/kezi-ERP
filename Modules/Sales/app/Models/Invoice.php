@@ -127,9 +127,11 @@ class Invoice extends Model
         'total_amount_company_currency',
         'total_tax_company_currency',
         'posted_at',
-        'inter_company_source_id',
         'inter_company_source_type',
         'reset_to_draft_log',
+        'dunning_level_id',
+        'last_dunning_date',
+        'next_dunning_date',
     ];
 
     /**
@@ -152,6 +154,8 @@ class Invoice extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'posted_at' => 'datetime',
+        'last_dunning_date' => 'datetime',
+        'next_dunning_date' => 'date',
     ];
 
     /*
@@ -239,6 +243,23 @@ class Invoice extends Model
     public function fiscalPosition(): BelongsTo
     {
         return $this->belongsTo(FiscalPosition::class);
+    }
+
+    /**
+     * @return BelongsTo<\Modules\Accounting\Models\DunningLevel, static>
+     */
+    public function dunningLevel(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\DunningLevel::class);
+    }
+
+    /**
+     * Scope a query to only include invoices that are overdue.
+     */
+    public function scopeOverdue($query)
+    {
+        return $query->where('status', InvoiceStatus::Posted)
+            ->where('due_date', '<', Carbon::today());
     }
 
     /**
