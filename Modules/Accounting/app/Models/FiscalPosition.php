@@ -21,6 +21,10 @@ use Spatie\Translatable\HasTranslations;
  * @property int $company_id
  * @property string|array<string, string> $name
  * @property string|null $country
+ * @property bool $auto_apply
+ * @property bool $vat_required
+ * @property string|null $zip_from
+ * @property string|null $zip_to
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, FiscalPositionAccountMapping> $accountMappings
@@ -33,12 +37,16 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|FiscalPosition newModelQuery()
  * @method static Builder<static>|FiscalPosition newQuery()
  * @method static Builder<static>|FiscalPosition query()
+ * @method static Builder<static>|FiscalPosition whereAutoApply($value)
  * @method static Builder<static>|FiscalPosition whereCompanyId($value)
  * @method static Builder<static>|FiscalPosition whereCountry($value)
  * @method static Builder<static>|FiscalPosition whereCreatedAt($value)
  * @method static Builder<static>|FiscalPosition whereId($value)
  * @method static Builder<static>|FiscalPosition whereName($value)
  * @method static Builder<static>|FiscalPosition whereUpdatedAt($value)
+ * @method static Builder<static>|FiscalPosition whereVatRequired($value)
+ * @method static Builder<static>|FiscalPosition whereZipFrom($value)
+ * @method static Builder<static>|FiscalPosition whereZipTo($value)
  *
  * @mixin Eloquent
  */
@@ -66,6 +74,10 @@ class FiscalPosition extends Model
         'company_id',
         'name',
         'country',
+        'auto_apply',
+        'vat_required',
+        'zip_from',
+        'zip_to',
     ];
 
     /**
@@ -75,9 +87,19 @@ class FiscalPosition extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'auto_apply' => 'boolean',
+        'vat_required' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * Scope a query to only include fiscal positions that can be automatically applied.
+     */
+    public function scopeAutoApply(Builder $query): Builder
+    {
+        return $query->where('auto_apply', true);
+    }
 
     /*
     |--------------------------------------------------------------------------

@@ -258,6 +258,12 @@ class VendorBillResource extends Resource
                         ->options(Incoterm::class)
                         ->searchable()
                         ->preload(),
+                    Select::make('fiscal_position_id')
+                        ->label(__('accounting::bill.fiscal_position'))
+                        ->relationship('fiscalPosition', 'name')
+                        ->searchable()
+                        ->preload()
+                        ->helperText(__('accounting::bill.fiscal_position_helper')),
                     Hidden::make('purchase_order_id'),
                 ])
                 ->columns(4)

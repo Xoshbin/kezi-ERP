@@ -284,6 +284,12 @@ class PartnerResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->prefixIcon('heroicon-m-scissors'),
+                                Select::make('fiscal_position_id')
+                                    ->label(__('accounting::partner.fiscal_position'))
+                                    ->relationship('fiscalPosition', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->prefixIcon('heroicon-m-globe-alt'),
                             ]),
                     ])
                     ->columnSpanFull()
