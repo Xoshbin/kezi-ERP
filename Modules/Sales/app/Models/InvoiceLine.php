@@ -98,6 +98,8 @@ class InvoiceLine extends Model
         'total_line_tax',      // Total tax amount for this line [3, 4]
         'total_line_tax_company_currency', // Total tax in company currency
         'income_account_id',   // Foreign key to the specific income account [3, 4]
+        'deferred_start_date',
+        'deferred_end_date',
     ];
 
     /**
@@ -115,6 +117,8 @@ class InvoiceLine extends Model
         'subtotal_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
         'total_line_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
         'total_line_tax_company_currency' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'deferred_start_date' => 'date',
+        'deferred_end_date' => 'date',
         'created_at' => 'datetime', // Eloquent automatically manages these, but explicit casting is robust [12, 13].
         'updated_at' => 'datetime',
     ];
