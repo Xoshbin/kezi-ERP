@@ -32,6 +32,7 @@ class VendorBillService
         protected ExchangeRateService $exchangeRateService,
         protected SequenceService $sequenceService,
         protected \Modules\Purchase\Services\ShippingCostAllocationService $shippingCostAllocationService,
+        protected \Modules\Accounting\Services\BudgetControlService $budgetControlService,
     ) {}
 
     public function post(VendorBill $vendorBill, User $user): void
@@ -46,6 +47,9 @@ class VendorBillService
 
         // Validate the vendor bill before posting
         $this->validateVendorBillForPosting($vendorBill);
+
+        // Validate budget availability
+        $this->budgetControlService->validateVendorBill($vendorBill);
 
         DB::transaction(function () use ($vendorBill, $user) {
             // Process multi-currency amounts before posting
