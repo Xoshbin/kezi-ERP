@@ -19,7 +19,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Modules\Accounting\Enums\Assets\AssetStatus;
 use Modules\Accounting\Enums\Assets\DepreciationMethod;
 use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
@@ -70,7 +69,7 @@ class AssetResource extends Resource
                 ->description(__('accounting::asset.asset_currency_info_description'))
                 ->schema([
                     Hidden::make('company_id')
-                        ->default(fn () => Filament::getTenant()->id)
+                        ->default(fn () => Filament::getTenant()?->getKey())
                         ->dehydrated(),
 
                     TextInput::make('name')
@@ -93,11 +92,8 @@ class AssetResource extends Resource
                         })
                         ->afterStateUpdated(function (callable $set, $state) {
                             if ($state) {
+                                /** @var Currency|null $currency */
                                 $currency = Currency::find($state);
-                                // Ensure we have a single Currency model, not a collection
-                                if ($currency instanceof Collection) {
-                                    $currency = $currency->first();
-                                }
                                 $company = Filament::getTenant();
 
                                 if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
@@ -194,13 +190,12 @@ class AssetResource extends Resource
                                 ->mapWithKeys(fn (DepreciationMethod $method) => [$method->value => $method->label()])
                         )
                         ->required()
-                        ->live()
                         ->columnSpan(1),
 
                     TextInput::make('declining_factor')
                         ->label(__('accounting::asset.declining_factor'))
-                        ->required(fn ($get) => ($get('depreciation_method')?->value ?? $get('depreciation_method')) === 'declining')
-                        ->visible(fn ($get) => ($get('depreciation_method')?->value ?? $get('depreciation_method')) === 'declining')
+                        ->required(fn ($get) => $get('depreciation_method') === DepreciationMethod::Declining->value)
+                        ->visible(fn ($get) => $get('depreciation_method') === DepreciationMethod::Declining->value)
                         ->numeric()
                         ->minValue(1)
                         ->default(2.0)
