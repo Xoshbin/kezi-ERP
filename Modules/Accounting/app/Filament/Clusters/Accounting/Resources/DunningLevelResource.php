@@ -58,6 +58,38 @@ class DunningLevelResource extends Resource
                             ->default(false),
                     ])->columns(2),
 
+                Section::make('Late Fee Configuration')
+                    ->schema([
+                        Toggle::make('charge_fee')
+                            ->label('Charge Late Fee')
+                            ->default(false)
+                            ->live(),
+
+                        \Filament\Schemas\Components\Grid::make(3)
+                            ->schema([
+                                \Filament\Forms\Components\Select::make('fee_product_id')
+                                    ->label('Fee Product')
+                                    ->relationship('feeProduct', 'name')
+                                    ->requiredIf('charge_fee', true)
+                                    ->searchable(),
+
+                                \Filament\Forms\Components\TextInput::make('fee_amount')
+                                    ->label('Flat Fee Amount')
+                                    ->rules(['numeric'])
+                                    ->extraInputAttributes(['type' => 'number', 'step' => '0.01'])
+                                    ->prefix('MC') // Using generic currency symbol as place holder
+                                    ->default(0)
+                                    ->formatStateUsing(fn ($state) => $state instanceof \Brick\Money\Money ? $state->getAmount()->toFloat() : $state),
+
+                                \Filament\Forms\Components\TextInput::make('fee_percentage')
+                                    ->label('Fee Percentage')
+                                    ->numeric()
+                                    ->suffix('%')
+                                    ->default(0),
+                            ])
+                            ->visible(fn (callable $get) => $get('charge_fee')),
+                    ]),
+
                 Section::make('Email Configuration')
                     ->description('Configure the email template explicitly.')
                     ->schema([

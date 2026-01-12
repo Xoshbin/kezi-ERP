@@ -132,6 +132,7 @@ class Invoice extends Model
         'dunning_level_id',
         'last_dunning_date',
         'next_dunning_date',
+        'source_invoice_id',
     ];
 
     /**
@@ -165,6 +166,17 @@ class Invoice extends Model
     | These methods define the relationships this Invoice model has with other
     | entities in the accounting system, crucial for data integrity and navigation.
     */
+
+    public function sourceInvoice(): BelongsTo
+    {
+        return $this->belongsTo(Invoice::class, 'source_invoice_id');
+    }
+
+    public function generatedDebitNotes(): HasMany
+    {
+        return $this->hasMany(Invoice::class, 'source_invoice_id');
+    }
+
     /**
      * Get the company that owns this invoice.
      * An invoice is always issued by a specific company. [1]
