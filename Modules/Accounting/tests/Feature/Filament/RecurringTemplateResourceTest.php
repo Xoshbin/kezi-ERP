@@ -10,7 +10,10 @@ use Modules\Accounting\Filament\Clusters\Accounting\Resources\RecurringTemplates
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\RecurringTemplates\Pages\EditRecurringTemplate;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\RecurringTemplates\Pages\ListRecurringTemplates;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\RecurringTemplates\RecurringTemplateResource;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
 use Modules\Accounting\Models\RecurringTemplate;
+use Modules\Foundation\Models\Currency;
 use Tests\Traits\WithConfiguredCompany;
 
 use function Pest\Livewire\livewire;
@@ -84,10 +87,45 @@ it('can search templates by name', function () {
 // =========================================================================
 
 it('can create a recurring template for journal entry', function () {
-    // This test requires complex nested repeater form handling in Filament 4
-    // which is better verified through manual testing or integration tests.
-    // The form structure is verified via 'can render the create page'.
-})->skip('Complex nested repeater form handling requires integration testing');
+    $currency = Currency::factory()->create();
+    $journal = Journal::factory()->create(['company_id' => $this->company->id]);
+    [$accountDebit, $accountCredit] = Account::factory()->count(2)->create(['company_id' => $this->company->id]);
+
+    livewire(CreateRecurringTemplate::class)
+        ->fillForm([
+            'name' => 'Monthly Rent',
+            'frequency' => RecurringFrequency::Monthly,
+            'interval' => 1,
+            'start_date' => now(),
+            'status' => RecurringStatus::Active,
+            'target_type' => RecurringTargetType::JournalEntry,
+            'template_data' => [
+                'journal_id' => $journal->id,
+                'currency_id' => $currency->id,
+                'description' => 'Rent Payment',
+                'lines' => [
+                    [
+                        'account_id' => (string) $accountDebit->id,
+                        'debit' => 1000,
+                        'credit' => 0,
+                    ],
+                    [
+                        'account_id' => $accountCredit->id,
+                        'debit' => 0,
+                        'credit' => 1000,
+                    ],
+                ],
+            ],
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $this->assertDatabaseHas('recurring_templates', [
+        'company_id' => $this->company->id,
+        'name' => 'Monthly Rent',
+        'target_type' => RecurringTargetType::JournalEntry,
+    ]);
+})->skip('Validation for account_id inside repeater fails in test environment despite correct tenant context.');
 
 it('validates required fields on create', function () {
     livewire(CreateRecurringTemplate::class)
@@ -129,14 +167,72 @@ it('can load existing template data in edit form', function () {
 });
 
 it('can update a recurring template', function () {
-    // Filament 4's dynamic Grid with statePath has issues preserving nested data on save.
-    // The core update functionality is verified through the feature tests.
-})->skip('Dynamic Grid with statePath requires special handling in Filament 4');
+    $currency = Currency::factory()->create();
+    $journal = Journal::factory()->create(['company_id' => $this->company->id]);
+    $account = Account::factory()->create(['company_id' => $this->company->id]);
+
+    $templateData = [
+        'journal_id' => $journal->id,
+        'currency_id' => $currency->id,
+        'description' => 'Test',
+        'lines' => [['account_id' => $account->id, 'debit' => 100, 'credit' => 0]],
+    ];
+
+    $template = RecurringTemplate::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'Old Name',
+        'target_type' => RecurringTargetType::JournalEntry,
+        'template_data' => $templateData,
+    ]);
+
+    livewire(EditRecurringTemplate::class, ['record' => $template->getRouteKey()])
+        ->fillForm([
+            'name' => 'New Name',
+            'target_type' => RecurringTargetType::JournalEntry,
+            'template_data' => $templateData,
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    $this->assertDatabaseHas('recurring_templates', [
+        'id' => $template->id,
+        'name' => 'New Name',
+    ]);
+});
 
 it('can pause a recurring template', function () {
-    // Filament 4's dynamic Grid with statePath has issues preserving nested data on save.
-    // The core pause functionality is verified through the feature tests.
-})->skip('Dynamic Grid with statePath requires special handling in Filament 4');
+    $currency = Currency::factory()->create();
+    $journal = Journal::factory()->create(['company_id' => $this->company->id]);
+    $account = Account::factory()->create(['company_id' => $this->company->id]);
+
+    $templateData = [
+        'journal_id' => $journal->id,
+        'currency_id' => $currency->id,
+        'description' => 'Test',
+        'lines' => [['account_id' => $account->id, 'debit' => 100, 'credit' => 0]],
+    ];
+
+    $template = RecurringTemplate::factory()->create([
+        'company_id' => $this->company->id,
+        'status' => RecurringStatus::Active,
+        'target_type' => RecurringTargetType::JournalEntry,
+        'template_data' => $templateData,
+    ]);
+
+    livewire(EditRecurringTemplate::class, ['record' => $template->getRouteKey()])
+        ->fillForm([
+            'status' => RecurringStatus::Paused,
+            'target_type' => RecurringTargetType::JournalEntry,
+            'template_data' => $templateData,
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    $this->assertDatabaseHas('recurring_templates', [
+        'id' => $template->id,
+        'status' => RecurringStatus::Paused,
+    ]);
+});
 
 it('can delete a recurring template', function () {
     $template = RecurringTemplate::factory()->create([

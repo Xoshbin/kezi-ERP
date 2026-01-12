@@ -13,6 +13,7 @@ class CreateRecurringTemplate extends CreateRecord
     {
         $data['company_id'] = filament()->getTenant()?->id;
         $data['created_by_user_id'] = auth()->id();
+        $data['next_run_date'] ??= $data['start_date'];
 
         return $data;
     }
