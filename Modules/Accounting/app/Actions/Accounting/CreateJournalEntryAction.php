@@ -207,7 +207,10 @@ class CreateJournalEntryAction implements JournalEntryCreatorContract
                 $line->account_id = $lineDto->account_id;
                 $line->partner_id = $lineDto->partner_id;
                 $line->analytic_account_id = $lineDto->analytic_account_id;
+                $line->partner_id = $lineDto->partner_id;
+                $line->analytic_account_id = $lineDto->analytic_account_id;
                 $line->description = $lineDto->description;
+                $line->tax_id = $lineDto->tax_id;
 
                 // Now set the Money fields after currency_id is set
                 $line->debit = $debitBase;
