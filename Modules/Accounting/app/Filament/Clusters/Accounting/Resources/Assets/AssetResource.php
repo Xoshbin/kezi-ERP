@@ -175,6 +175,14 @@ class AssetResource extends Resource
                         ->label(__('accounting::asset.useful_life_years'))
                         ->required()
                         ->numeric()
+                        ->minValue(1)
+                        ->step(1)
+                        ->columnSpan(1),
+
+                    \Filament\Forms\Components\Toggle::make('prorata_temporis')
+                        ->label(__('accounting::asset.prorata_temporis'))
+                        ->default(false)
+                        ->inline(false)
                         ->columnSpan(1),
 
                     Select::make('depreciation_method')
@@ -185,6 +193,17 @@ class AssetResource extends Resource
                                 ->mapWithKeys(fn (DepreciationMethod $method) => [$method->value => $method->label()])
                         )
                         ->required()
+                        ->live()
+                        ->columnSpan(1),
+
+                    TextInput::make('declining_factor')
+                        ->label(__('accounting::asset.declining_factor'))
+                        ->required(fn ($get) => $get('depreciation_method') === DepreciationMethod::Declining->value)
+                        ->visible(fn ($get) => $get('depreciation_method') === DepreciationMethod::Declining->value)
+                        ->numeric()
+                        ->minValue(1)
+                        ->default(2.0)
+                        ->step(0.1)
                         ->columnSpan(1),
 
                     Select::make('asset_account_id')
