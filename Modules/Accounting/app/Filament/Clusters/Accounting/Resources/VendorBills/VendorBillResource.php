@@ -407,6 +407,12 @@ class VendorBillResource extends Resource
                                 ->preload()
                                 ->required()
                                 ->columnSpan(3),
+                            DatePicker::make('deferred_start_date')
+                                ->label(__('accounting::bill.deferred_start_date'))
+                                ->columnSpan(3),
+                            DatePicker::make('deferred_end_date')
+                                ->label(__('accounting::bill.deferred_end_date'))
+                                ->columnSpan(3),
                             TranslatableSelect::forModel('tax_id', Tax::class, 'name')
                                 ->label(__('accounting::bill.tax'))
                                 ->options(function () {

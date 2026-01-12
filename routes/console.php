@@ -11,3 +11,4 @@ use Illuminate\Support\Facades\Schedule;
 use Modules\Accounting\Console\Commands\ProcessDepreciations;
 
 Schedule::command(ProcessDepreciations::class)->daily();
+Schedule::job(new \Modules\Accounting\Jobs\ProcessDeferredEntriesJob)->daily();

@@ -64,6 +64,8 @@ class CreateVendorBill extends CreateRecord
                 expense_account_id: $line['expense_account_id'],
                 tax_id: $line['tax_id'] ?? null,
                 analytic_account_id: $line['analytic_account_id'] ?? null,
+                deferred_start_date: $line['deferred_start_date'] ?? null,
+                deferred_end_date: $line['deferred_end_date'] ?? null,
                 currency: $currency->code
             );
         }

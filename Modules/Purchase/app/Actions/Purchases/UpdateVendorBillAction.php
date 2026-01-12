@@ -68,6 +68,8 @@ class UpdateVendorBillAction
                     'analytic_account_id' => $line->analytic_account_id,
                     'shipping_cost_type' => $line->shipping_cost_type,
                     'asset_category_id' => $line->asset_category_id ?? null,
+                    'deferred_start_date' => $line->deferred_start_date,
+                    'deferred_end_date' => $line->deferred_end_date,
                 ]);
             }
 

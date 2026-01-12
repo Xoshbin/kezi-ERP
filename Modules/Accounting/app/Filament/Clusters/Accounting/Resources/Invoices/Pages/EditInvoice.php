@@ -148,6 +148,7 @@ class EditInvoice extends EditRecord
                 ->disabled(fn (Invoice $record): bool => $record->invoiceLines->isEmpty() || $record->total_amount->isZero())
                 ->action(function (Invoice $record): void {
                     $this->save();
+                    $record = $record->fresh(['invoiceLines']);
                     $service = app(InvoiceService::class);
                     try {
                         $user = Auth::user();
@@ -317,6 +318,8 @@ class EditInvoice extends EditRecord
                 'unit_price' => $line->unit_price,
                 'tax_id' => $line->tax_id,
                 'income_account_id' => $line->income_account_id,
+                'deferred_start_date' => $line->deferred_start_date,
+                'deferred_end_date' => $line->deferred_end_date,
             ];
         })->toArray();
         $data['invoiceLines'] = $linesData;
@@ -339,7 +342,9 @@ class EditInvoice extends EditRecord
                 unit_price: Money::of($line['unit_price'], $record->currency->code),
                 income_account_id: $line['income_account_id'],
                 product_id: $line['product_id'] ?? null,
-                tax_id: $line['tax_id'] ?? null
+                tax_id: $line['tax_id'] ?? null,
+                deferred_start_date: $line['deferred_start_date'] ?? null,
+                deferred_end_date: $line['deferred_end_date'] ?? null
             );
         }
 
