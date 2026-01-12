@@ -8,9 +8,12 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
@@ -65,9 +68,28 @@ class FiscalPositionResource extends Resource
                     ->label(__('accounting::fiscal_position.name'))
                     ->required()
                     ->maxLength(255),
-                TextInput::make('country')
-                    ->label(__('accounting::fiscal_position.country'))
-                    ->maxLength(255),
+                Section::make(__('accounting::fiscal_position.criteria'))
+                    ->description(__('accounting::fiscal_position.criteria_description'))
+                    ->schema([
+                        Toggle::make('auto_apply')
+                            ->label(__('accounting::fiscal_position.auto_apply'))
+                            ->live(),
+                        Toggle::make('vat_required')
+                            ->label(__('accounting::fiscal_position.vat_required'))
+                            ->visible(fn ($get) => $get('auto_apply')),
+                        TextInput::make('country')
+                            ->label(__('accounting::fiscal_position.country'))
+                            ->maxLength(255)
+                            ->visible(fn ($get) => $get('auto_apply')),
+                        TextInput::make('zip_from')
+                            ->label(__('accounting::fiscal_position.zip_from'))
+                            ->maxLength(255)
+                            ->visible(fn ($get) => $get('auto_apply')),
+                        TextInput::make('zip_to')
+                            ->label(__('accounting::fiscal_position.zip_to'))
+                            ->maxLength(255)
+                            ->visible(fn ($get) => $get('auto_apply')),
+                    ])->columns(2),
             ]);
     }
 
@@ -82,6 +104,8 @@ class FiscalPositionResource extends Resource
                 TextColumn::make('name')
                     ->label(__('accounting::fiscal_position.name'))
                     ->searchable(),
+                ToggleColumn::make('auto_apply')
+                    ->label(__('accounting::fiscal_position.auto_apply')),
                 TextColumn::make('country')
                     ->label(__('accounting::fiscal_position.country'))
                     ->searchable(),

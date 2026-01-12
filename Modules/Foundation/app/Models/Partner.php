@@ -56,6 +56,7 @@ use Xoshbin\CustomFields\Traits\HasCustomFields;
  * @property-read int|null $payments_count
  * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
+ * @property-read \Modules\Accounting\Models\FiscalPosition|null $fiscalPosition
  *
  * @method static \Modules\Foundation\Database\Factories\PartnerFactory factory($count = null, $state = [])
  * @method static Builder<static>|Partner newModelQuery()
@@ -122,6 +123,7 @@ class Partner extends Model
         'payable_account_id',
         'customer_payment_term_id',
         'vendor_payment_term_id',
+        'fiscal_position_id',
         'is_active',
     ];
 
@@ -268,6 +270,14 @@ class Partner extends Model
     public function withholdingTaxType(): BelongsTo
     {
         return $this->belongsTo(\Modules\Accounting\Models\WithholdingTaxType::class, 'withholding_tax_type_id');
+    }
+
+    /**
+     * Get the default fiscal position for this partner.
+     */
+    public function fiscalPosition(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\FiscalPosition::class, 'fiscal_position_id');
     }
 
     /**
