@@ -105,6 +105,8 @@ class Product extends Model
         'default_price_difference_account_id',
         'average_cost',
         'tracking_type',
+        'deferred_revenue_account_id',
+        'deferred_expense_account_id',
     ];
 
     protected $casts = [
@@ -192,6 +194,22 @@ class Product extends Model
     public function expenseAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'expense_account_id');
+    }
+
+    /**
+     * @return BelongsTo<Account, static>
+     */
+    public function deferredRevenueAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'deferred_revenue_account_id');
+    }
+
+    /**
+     * @return BelongsTo<Account, static>
+     */
+    public function deferredExpenseAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'deferred_expense_account_id');
     }
 
     // ADDED: Relationship to the default inventory/valuation account.
