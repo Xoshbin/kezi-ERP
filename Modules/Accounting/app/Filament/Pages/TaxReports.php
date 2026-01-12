@@ -11,7 +11,7 @@ class TaxReports extends Page
 {
     public static function getNavigationIcon(): ?string
     {
-        return 'heroicon-o-document-chart';
+        return 'heroicon-o-document-chart-bar';
     }
 
     public static function getNavigationGroup(): ?string
