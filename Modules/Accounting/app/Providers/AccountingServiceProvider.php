@@ -73,6 +73,7 @@ class AccountingServiceProvider extends ServiceProvider
             \Modules\Accounting\Console\Commands\ProcessDepreciations::class,
             \Modules\Accounting\Console\Commands\RevalueForeignCurrencyBalances::class,
             \Modules\Accounting\Console\Commands\ProcessRecurringTransactionsCommand::class,
+            \Modules\Accounting\Console\Commands\ProcessDunningCommand::class,
         ]);
     }
 
@@ -84,6 +85,7 @@ class AccountingServiceProvider extends ServiceProvider
         $this->app->booted(function () {
             $schedule = $this->app->make(\Illuminate\Console\Scheduling\Schedule::class);
             $schedule->command('accounting:process-recurring')->dailyAt('00:00');
+            $schedule->command('accounting:process-dunning')->dailyAt('01:00');
         });
     }
 

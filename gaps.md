@@ -21,7 +21,7 @@ The application has a strong foundation for a "Headless" ERP, with a robust doma
 | **Cash Flow Statement** | ✅ Implemented | `CashFlowStatementService` is present. |
 | **Payment Terms** | ✅ Implemented | Found in `Modules/Foundation`. |
 | **Cheque Management** | ✅ Implemented | Specific module/service found. |
-| **Dunning/Follow-up** | ❌ Missing | No logic found for automated customer follow-up (Dunning levels, letters). |
+| **Dunning/Follow-up** | ✅ Implemented | Automated customer follow-up (Dunning levels, emails) is implemented. Automatic creation of Debit Notes for late fees is deferred to future versions to maintain strict financial immutability. |
 
 ### 2.2. Inventory Management
 
@@ -47,8 +47,7 @@ The application has a strong foundation for a "Headless" ERP, with a robust doma
 | **Audit Trail** | ✅ Implemented | Strict Immutability and standard Laravel Audit features. |
 
 ## 3. Recommendations & Next Steps
+1.  **Late Fee Automation**: Implement automatic creation of Debit Notes for dunning fees (v2).
+2.  **API Endpoints**: Begin implementing REST API for external integrations.
 
-2.  **Dunning System**: Implement AR follow-up capability.
-3.  **API Endpoints**: Begin implementing REST API for external integrations.
-4.  **Fiscal Positions**: Verify and complete automatic tax mapping logic.
 
