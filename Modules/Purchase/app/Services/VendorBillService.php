@@ -158,11 +158,6 @@ class VendorBillService
 
         // If vendor bill is in company base currency, set rate to 1.0
         if ($vendorBill->currency_id === $vendorBill->company->currency_id) {
-            $vendorBill->update([
-                'exchange_rate_at_creation' => 1.0,
-                'total_amount_company_currency' => $vendorBill->total_amount,
-                'total_tax_company_currency' => $vendorBill->total_tax,
-            ]);
             $exchangeRate = 1.0;
         } else {
             // Use manually set exchange rate if available, otherwise get from currency converter
