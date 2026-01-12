@@ -12,7 +12,10 @@ use Modules\Accounting\Enums\Accounting\RecurringTargetType;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Journal;
 use Modules\Accounting\Models\RecurringTemplate;
+use Modules\Foundation\Enums\Partners\PartnerType;
 use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Sales\Models\Invoice;
 use Tests\TestCase;
 
 class RecurringTransactionTest extends TestCase
@@ -121,5 +124,57 @@ class RecurringTransactionTest extends TestCase
             ->assertExitCode(0);
 
         // Assert No Journal Entry created (need to verify more specifically if needed, but output count covers it)
+    }
+
+    public function test_it_creates_invoice_from_recurring_template()
+    {
+        $customer = Partner::factory()->create([
+            'company_id' => $this->company->id,
+            'type' => PartnerType::Customer,
+        ]);
+
+        $template = RecurringTemplate::factory()->create([
+            'company_id' => $this->company->id,
+            'name' => 'Monthly Hosting',
+            'frequency' => RecurringFrequency::Monthly,
+            'interval' => 1,
+            'start_date' => Carbon::today(),
+            'next_run_date' => Carbon::today(),
+            'status' => RecurringStatus::Active,
+            'target_type' => RecurringTargetType::Invoice,
+            'template_data' => [
+                'customer_id' => $customer->id,
+                'currency_id' => $this->currency->id,
+                'description' => 'Monthly Hosting Fee',
+                'lines' => [
+                    [
+                        'description' => 'Hosting',
+                        'quantity' => 1,
+                        'unit_price' => 100,
+                        'income_account_id' => $this->accountCredit->id,
+                        'product_id' => null,
+                        'tax_id' => null,
+                    ],
+                ],
+            ],
+            'created_by_user_id' => $this->user->id,
+        ]);
+
+        $this->artisan('accounting:process-recurring')
+            ->expectsOutput('Starting recurring transactions processing...')
+            ->expectsOutput("Processing template: {$template->name} (ID: {$template->id})")
+            ->assertExitCode(0);
+
+        // Assert Invoice created
+        $this->assertDatabaseHas('invoices', [
+            'company_id' => $this->company->id,
+            'customer_id' => $customer->id,
+            'currency_id' => $this->currency->id,
+            'status' => 'draft', // Invoices created as draft
+        ]);
+
+        // Assert Next Run Date updated
+        $template->refresh();
+        $this->assertEquals(Carbon::today()->addMonth()->format('Y-m-d'), $template->next_run_date->format('Y-m-d'));
     }
 }
