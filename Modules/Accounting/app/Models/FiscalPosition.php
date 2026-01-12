@@ -55,6 +55,11 @@ class FiscalPosition extends Model
     use HasFactory;
     use HasTranslations;
 
+    protected static function newFactory(): \Modules\Accounting\Database\Factories\FiscalPositionFactory
+    {
+        return \Modules\Accounting\Database\Factories\FiscalPositionFactory::new();
+    }
+
     /** @var array<int, string> */
     public array $translatable = ['name'];
 
