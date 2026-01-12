@@ -457,6 +457,12 @@ class InvoiceResource extends Resource
                                 ->modifyQueryUsing(fn ($query) => $query->where('type', 'income'))
                                 ->required()
                                 ->columnSpan(3),
+                            DatePicker::make('deferred_start_date')
+                                ->label(__('accounting::invoice.deferred_start_date'))
+                                ->columnSpan(3),
+                            DatePicker::make('deferred_end_date')
+                                ->label(__('accounting::invoice.deferred_end_date'))
+                                ->columnSpan(3),
                         ])
                         ->columns(18),
                 ])->columnSpanFull(),
