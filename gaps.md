@@ -28,7 +28,7 @@ The application has a strong foundation for a "Headless" ERP, with a robust doma
 | Feature | Status | Observation |
 | :--- | :--- | :--- |
 | **Valuation Methods** | ✅ Implemented | FIFO, LIFO, AVCO are fully supported in `InventoryValuationService`. |
-| **Landed Costs** | ❌ Missing | No "Landed Cost" logic found to allocate freight/customs duties to the cost of inventory items (critical for importers). |
+| **Landed Costs** | ✅ Implemented | Full implementation completed: Landed Cost model, Stock Picking selection, Cost Allocation (Quantity/Value), Journal Entry creation, and Vendor Bill integration actions. |
 | **Stock Moves** | ✅ Implemented | Integrated with Accounting. |
 
 ### 2.3. Operational Modules
