@@ -12,6 +12,10 @@ readonly class DunningLevelDTO
         public ?string $email_body = null,
         public bool $print_letter = false,
         public bool $send_email = true,
+        public bool $charge_fee = false,
+        public float $fee_amount = 0.0,
+        public float $fee_percentage = 0.0,
+        public ?int $fee_product_id = null,
     ) {}
 
     public static function fromArray(array $data): self
@@ -24,6 +28,10 @@ readonly class DunningLevelDTO
             email_body: $data['email_body'] ?? null,
             print_letter: (bool) ($data['print_letter'] ?? false),
             send_email: (bool) ($data['send_email'] ?? true),
+            charge_fee: (bool) ($data['charge_fee'] ?? false),
+            fee_amount: (float) ($data['fee_amount'] ?? 0),
+            fee_percentage: (float) ($data['fee_percentage'] ?? 0),
+            fee_product_id: isset($data['fee_product_id']) ? (int) $data['fee_product_id'] : null,
         );
     }
 }

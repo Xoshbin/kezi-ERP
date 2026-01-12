@@ -19,6 +19,10 @@ class UpdateDunningLevelAction
                 'email_body' => $dto->email_body,
                 'print_letter' => $dto->print_letter,
                 'send_email' => $dto->send_email,
+                'charge_fee' => $dto->charge_fee,
+                'fee_amount' => $dto->fee_amount,
+                'fee_percentage' => $dto->fee_percentage,
+                'fee_product_id' => $dto->fee_product_id,
             ]);
 
             return $dunningLevel->refresh();
