@@ -41,6 +41,8 @@ class VendorBillService
             return;
         }
 
+        $vendorBill->refresh();
+
         $this->lockDateService->enforce(Company::findOrFail($vendorBill->company_id), Carbon::parse($vendorBill->bill_date));
 
         Gate::forUser($user)->authorize('post', $vendorBill);

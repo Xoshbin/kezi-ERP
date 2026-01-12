@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
  * Class BudgetLine
  *
  * @property int $id
+ * @property int $company_id
  * @property int $budget_id
  * @property int|null $analytic_account_id
  * @property int|null $account_id
@@ -27,6 +28,7 @@ use Illuminate\Support\Carbon;
  * @property-read Account|null $account
  * @property-read AnalyticAccount|null $analyticAccount
  * @property-read Budget $budget
+ * @property-read Company $company
  *
  * @method static BudgetLineFactory factory($count = null, $state = [])
  * @method static Builder<static>|BudgetLine newModelQuery()
@@ -133,10 +135,14 @@ class BudgetLine extends Model
     /**
      * Get the general ledger account associated with this budget line (if applicable).
      * This links the budget line to the Chart of Accounts [3, 4].
-     */
-    /**
+     *
      * @return BelongsTo<Account, static>
      */
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class);
+    }
+
     /**
      * Get committed amount dynamically from Purchase Orders.
      * Committed = Confirmed PO lines that are NOT yet billed (or fully billed).
