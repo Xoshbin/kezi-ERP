@@ -58,6 +58,11 @@ class TaxResource extends Resource
             ->components([
                 Section::make(__('accounting::tax.basic_information'))
                     ->schema([
+                        Toggle::make('is_group')
+                            ->label(__('accounting::tax.is_group'))
+                            ->live()
+                            ->columnSpanFull(),
+
                         TranslatableSelect::make('tax_account_id')
                             ->searchable()
                             ->preload()
@@ -75,7 +80,16 @@ class TaxResource extends Resource
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_account'))
                             ->createOptionAction(fn (Action $a) => $a->name('create-account-option')->modalWidth('lg'))
-                            ->required(),
+                            ->required(fn (\Filament\Forms\Get $get) => ! $get('is_group'))
+                            ->visible(fn (\Filament\Forms\Get $get) => ! $get('is_group')),
+
+                        Select::make('children')
+                            ->relationship('children', 'name')
+                            ->multiple()
+                            ->preload()
+                            ->label(__('accounting::tax.children'))
+                            ->visible(fn (\Filament\Forms\Get $get) => $get('is_group'))
+                            ->required(fn (\Filament\Forms\Get $get) => $get('is_group')),
 
                         TextInput::make('name')
                             ->label(__('accounting::tax.name'))
@@ -84,18 +98,31 @@ class TaxResource extends Resource
                         TextInput::make('rate')
                             ->label(__('accounting::tax.rate'))
                             ->required()
-                            ->numeric(),
+                            ->numeric()
+                            ->helperText(fn (\Filament\Forms\Get $get) => $get('is_group') ? 'For groups, ensure this matches the sum of children rates.' : null),
                         Select::make('type')
                             ->label(__('accounting::tax.type'))
                             ->options(collect(TaxType::cases())->mapWithKeys(fn ($c) => [$c->value => $c->label()]))
                             ->required(),
+
+                        TextInput::make('country')
+                            ->label(__('accounting::tax.country'))
+                            ->maxLength(2)
+                            ->placeholder('IQ'),
+
+                        TextInput::make('report_tag')
+                            ->label(__('accounting::tax.report_tag'))
+                            ->maxLength(255)
+                            ->placeholder('VAT_SALES_STD'),
+
                         Toggle::make('is_active')
                             ->label(__('accounting::tax.is_active'))
                             ->required(),
                         Toggle::make('is_recoverable')
                             ->label(__('accounting::tax.is_recoverable'))
                             ->helperText(__('accounting::tax.is_recoverable_help'))
-                            ->default(true),
+                            ->default(true)
+                            ->visible(fn (\Filament\Forms\Get $get) => ! $get('is_group')),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -112,10 +139,21 @@ class TaxResource extends Resource
                 TextColumn::make('name')
                     ->label(__('accounting::tax.name'))
                     ->searchable(),
+                IconColumn::make('is_group')
+                    ->label(__('accounting::tax.is_group'))
+                    ->boolean(),
                 TextColumn::make('rate')
                     ->label(__('accounting::tax.rate'))
                     ->formatStateUsing(fn ($state) => \Modules\Foundation\Support\NumberFormatter::formatPercentage($state / 100))
                     ->sortable(),
+                TextColumn::make('country')
+                    ->label(__('accounting::tax.country'))
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('report_tag')
+                    ->label(__('accounting::tax.report_tag'))
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('type')
                     ->label(__('accounting::tax.type'))
                     ->searchable(),
