@@ -190,6 +190,8 @@ class InvoiceService
         // Load necessary relationships
         $invoice->load(['company', 'currency', 'invoiceLines']);
 
+        $exchangeRate = null;
+
         // If invoice is in company base currency, set rate to 1.0
         if ($invoice->currency_id === $invoice->company->currency_id) {
             $invoice->update([
@@ -197,28 +199,23 @@ class InvoiceService
                 'total_amount_company_currency' => $invoice->total_amount,
                 'total_tax_company_currency' => $invoice->total_tax,
             ]);
+            $exchangeRate = 1.0;
+        } else {
+            // Use manually set exchange rate if available, otherwise get from currency converter
+            $exchangeRate = $invoice->exchange_rate_at_creation;
 
-            return;
-        }
-
-        // Use manually set exchange rate if available, otherwise get from currency converter
-        $exchangeRate = $invoice->exchange_rate_at_creation;
-
-        if (! $exchangeRate) {
-            // Get exchange rate for the invoice date
-            $exchangeRate = $this->currencyConverter->getExchangeRate($invoice->currency, $invoice->invoice_date, $invoice->company);
-
-            // If no exchange rate is found, try to get the latest available rate as fallback
             if (! $exchangeRate) {
-                $exchangeRate = $this->currencyConverter->getLatestExchangeRate($invoice->currency, $invoice->company);
+                // Get exchange rate for the invoice date
+                $exchangeRate = $this->currencyConverter->getExchangeRate($invoice->currency, $invoice->invoice_date, $invoice->company);
 
-                // If still no rate found, skip multi-currency processing for backward compatibility
+                // If no exchange rate is found, try to get the latest available rate as fallback
                 if (! $exchangeRate) {
-                    $invoice->exchange_rate_at_creation = 1.0;
-                    $invoice->total_amount_company_currency = $invoice->total_amount;
-                    $invoice->total_tax_company_currency = $invoice->total_tax;
+                    $exchangeRate = $this->currencyConverter->getLatestExchangeRate($invoice->currency, $invoice->company);
 
-                    return;
+                    // If still no rate found, use 1.0 as fallback
+                    if (! $exchangeRate) {
+                        $exchangeRate = 1.0;
+                    }
                 }
             }
         }

@@ -20,6 +20,11 @@ class DeferredItem extends Model
 {
     use HasFactory;
 
+    protected static function newFactory(): \Modules\Accounting\Database\Factories\DeferredItemFactory
+    {
+        return \Modules\Accounting\Database\Factories\DeferredItemFactory::new();
+    }
+
     protected $table = 'deferred_items';
 
     protected $fillable = [
