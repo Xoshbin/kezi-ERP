@@ -35,7 +35,7 @@ The application has a strong foundation for a "Headless" ERP, with a robust doma
 
 | Feature | Status | Observation |
 | :--- | :--- | :--- |
-| **Budgeting** | ⚠️ Partial | `ProjectBudget` and `Budget` models exist in Accounting/ProjectManagement, but `BudgetControlService` (warning/preventing over-budget actions) was not clearly identified. |
+| **Budgeting** | ✅ Implemented | Full implementation completed: `BudgetControlService` validates Vendor Bills and Purchase Orders against active budgets, including committed costs from POs and actuals from GL. |
 | **Payroll** | ⚠️ Partial | HR Models (`Payroll`, `Contract`) exist. Integration with Accounting (automatic Journal Generation for payroll) needs verification. |
 | **Tax Reporting** | ⚠️ Partial | `TaxReportService` exists. Needs to be checked against specific local tax requirements (e.g., specific VAT Return formats). |
 
