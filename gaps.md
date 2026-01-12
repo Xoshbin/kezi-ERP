@@ -36,7 +36,7 @@ The application has a strong foundation for a "Headless" ERP, with a robust doma
 | Feature | Status | Observation |
 | :--- | :--- | :--- |
 | **Budgeting** | ✅ Implemented | Full implementation completed: `BudgetControlService` validates Vendor Bills and Purchase Orders against active budgets, including committed costs from POs and actuals from GL. |
-| **Payroll** | ⚠️ Partial | HR Models (`Payroll`, `Contract`) exist. Integration with Accounting (automatic Journal Generation for payroll) needs verification. |
+| **Payroll** | ✅ Implemented | HR Models (`Payroll`, `Contract`) exist. Integration with Accounting (automatic Journal Generation for payroll) verified and working. |
 | **Tax Reporting** | ⚠️ Partial | `TaxReportService` exists. Needs to be checked against specific local tax requirements (e.g., specific VAT Return formats). |
 
 ### 2.4. Technical / Architecture
