@@ -54,6 +54,76 @@ describe('DunningLevelResource', function () {
         ]);
     });
 
+    it('can create a dunning level with late fees', function () {
+        $product = \Modules\Product\Models\Product::factory()->create([
+            'company_id' => $this->company->id,
+            'name' => 'Late Fee Service',
+            'type' => \Modules\Product\Enums\Products\ProductType::Service,
+        ]);
+
+        Livewire::test(CreateDunningLevel::class)
+            ->fillForm([
+                'name' => 'Fee Level',
+                'days_overdue' => 15,
+                'send_email' => false,
+                'charge_fee' => true,
+                'fee_product_id' => $product->id,
+                'fee_amount' => 50,
+                'fee_percentage' => 5,
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('dunning_levels', [
+            'company_id' => $this->company->id,
+            'name' => 'Fee Level',
+            'charge_fee' => 1,
+            'fee_product_id' => $product->id,
+            'fee_percentage' => 5,
+        ]);
+
+        $level = DunningLevel::where('name', 'Fee Level')->first();
+        expect($level->fee_amount->getAmount()->toFloat())->toBe(50.0);
+    });
+
+    it('can update a dunning level to add late fees', function () {
+        $product = \Modules\Product\Models\Product::factory()->create([
+            'company_id' => $this->company->id,
+            'name' => 'Late Fee Service',
+            'type' => \Modules\Product\Enums\Products\ProductType::Service,
+        ]);
+
+        $level = DunningLevel::factory()->create([
+            'company_id' => $this->company->id,
+            'name' => 'Level 1',
+            'charge_fee' => false,
+        ]);
+
+        Livewire::test(EditDunningLevel::class, [
+            'record' => $level->getRouteKey(),
+        ])
+            ->fillForm([
+                'charge_fee' => true,
+            ])
+            ->fillForm([
+                'fee_product_id' => $product->id,
+                'fee_amount' => 25,
+                'fee_percentage' => 2.5,
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('dunning_levels', [
+            'id' => $level->id,
+            'charge_fee' => 1,
+            'fee_product_id' => $product->id,
+            'fee_percentage' => 2.5,
+        ]);
+
+        $level->refresh();
+        expect($level->fee_amount->getAmount()->toFloat())->toBe(25.0);
+    });
+
     it('can render edit page', function () {
         $level = DunningLevel::factory()->create(['company_id' => $this->company->id]);
 
