@@ -14,6 +14,8 @@ use Modules\HR\Models\EmploymentContract;
  */
 class EmploymentContractFactory extends Factory
 {
+    protected $model = EmploymentContract::class;
+
     /**
      * Define the model's default state.
      *
