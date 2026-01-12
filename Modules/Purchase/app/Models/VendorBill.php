@@ -183,7 +183,7 @@ class VendorBill extends Model
 
     public function calculateTotalsFromLines(): void
     {
-        $this->loadMissing('lines', 'currency');
+        $this->load('lines', 'currency');
 
         $currencyCode = $this->currency->code;
         $zero = Money::of(0, $currencyCode);

@@ -79,6 +79,11 @@ class EditPurchaseOrder extends EditRecord
                             ->send();
 
                         $this->refreshFormData(['status']);
+                    } catch (\Modules\Accounting\Exceptions\BudgetExceededException $e) {
+                        Notification::make()
+                            ->title($e->getMessage())
+                            ->danger()
+                            ->send();
                     } catch (Exception $e) {
                         Notification::make()
                             ->title(__('purchase::purchase_orders.notifications.confirm_failed'))

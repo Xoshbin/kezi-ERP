@@ -25,18 +25,40 @@ class VendorBillLineFactory extends Factory
      */
     public function definition(): array
     {
+        $quantity = $this->faker->randomFloat(2, 1, 100);
+        $unitPriceRaw = $this->faker->randomFloat(2, 10, 1000);
+        $subtotalRaw = $quantity * $unitPriceRaw;
+        $totalTaxRaw = $subtotalRaw * 0.1; // 10% tax mock
+
         return [
             'vendor_bill_id' => VendorBill::factory(),
             'company_id' => function (array $attributes) {
-                return VendorBill::find($attributes['vendor_bill_id'])->company_id;
+                $bill = VendorBill::find($attributes['vendor_bill_id']);
+
+                return $bill ? $bill->company_id : \App\Models\Company::factory();
             },
             'product_id' => Product::factory()->state(['type' => ProductType::Service]),
             'description' => $this->faker->sentence(4),
-            'quantity' => $this->faker->randomFloat(2, 1, 100),
-            'unit_price' => Money::of($this->faker->randomFloat(2, 10, 1000), 'USD'),
+            'quantity' => $quantity,
+            'unit_price' => function (array $attributes) use ($unitPriceRaw) {
+                $bill = VendorBill::find($attributes['vendor_bill_id']);
+                $currencyCode = $bill ? $bill->currency->code : 'USD';
+
+                return Money::of($unitPriceRaw, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
+            },
             'tax_id' => Tax::factory(),
-            'subtotal' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
-            'total_line_tax' => Money::of($this->faker->randomFloat(2, 0, 200), 'USD'),
+            'subtotal' => function (array $attributes) use ($subtotalRaw) {
+                $bill = VendorBill::find($attributes['vendor_bill_id']);
+                $currencyCode = $bill ? $bill->currency->code : 'USD';
+
+                return Money::of($subtotalRaw, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
+            },
+            'total_line_tax' => function (array $attributes) use ($totalTaxRaw) {
+                $bill = VendorBill::find($attributes['vendor_bill_id']);
+                $currencyCode = $bill ? $bill->currency->code : 'USD';
+
+                return Money::of($totalTaxRaw, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP);
+            },
             'expense_account_id' => Account::factory(),
             'analytic_account_id' => AnalyticAccount::factory(), // Nullable, can be used for detailed tracking
         ];

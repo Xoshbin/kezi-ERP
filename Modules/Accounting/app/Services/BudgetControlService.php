@@ -57,7 +57,7 @@ class BudgetControlService
 
         foreach ($po->lines as $line) {
             // Determine Expense Account from Product
-            $expenseAccountId = $line->product?->expense_account_id;
+            $expenseAccountId = $line->product->expense_account_id;
 
             if ($expenseAccountId) {
                 // POs are usually in document currency, we need company currency
@@ -96,7 +96,7 @@ class BudgetControlService
             })
             ->when($accountId, fn ($q) => $q->where('account_id', $accountId))
             ->when($analyticAccountId, fn ($q) => $q->where('analytic_account_id', $analyticAccountId))
-            ->with('budget')
+            ->with(['budget', 'account'])
             ->get();
 
         if ($budgetLines->isEmpty()) {
@@ -118,10 +118,14 @@ class BudgetControlService
 
             // Check if adding the new amount exceeds available
             if ($available->minus($amountToCheck)->isNegative()) {
+                $rawAccountName = $budgetLine->account->name ?? $budgetLine->analyticAccount->name ?? 'Unknown';
+                $accountName = is_array($rawAccountName) ? (string) (array_values($rawAccountName)[0] ?? 'Unknown') : (string) $rawAccountName;
+
+                $budgetName = $budget->name;
+
                 throw new BudgetExceededException(
-                    "Budget exceeded for {$budget->name} (Account: ".
-                    ($budgetLine->account?->name ?? $budgetLine->analyticAccount?->name ?? 'Unknown').
-                    "). Available: {$available->formatTo('en_US')}, Requested: {$amountToCheck->formatTo('en_US')}"
+                    "The transaction exceeds the available budget: Budget exceeded for {$budgetName} (Account: {$accountName}). ".
+                    "Available: {$available->formatTo('en_US')}, Requested: {$amountToCheck->formatTo('en_US')}"
                 );
             }
         }
@@ -171,13 +175,15 @@ class BudgetControlService
      */
     protected function getCommitted(BudgetLine $line): Money
     {
+        $budget = $line->budget;
+        $currency = $budget->currency;
+
         // Sum of unbilled portions of Confirmed POs
         // Logic: Iterate confirmed PO lines within period.
         // Committed = (Quantity - Quantity Billed) * Unit Price
         // But wait, "Quantity Billed" might not be tracked directly on PO Line in this system?
         // Let's check PurchaseOrderLine. available fields: quantity, quantity_received.
         // There is 'vendorBills' relation on PO but linking lines is complex.
-        // Simplified approach: If PO is Confirmed but NOT Done/FullyBilled.
         // We sum the whole amount? No, double counting with Bills.
         // Better approach:
         // Committed = Sum of PO Lines where status is Confirmed/ToReceive/ToBill
@@ -234,8 +240,6 @@ class BudgetControlService
 
         // This subtracts *all* billed amounts linked to POs from the total PO committed amount.
         // It handles partial billing and full billing correctly (Committed reduces as Actuals increase).
-
-        $currency = $line->budget->currency;
 
         // 1. Total PO Amount for this account/period
         $poQuery = \Modules\Purchase\Models\PurchaseOrderLine::query()

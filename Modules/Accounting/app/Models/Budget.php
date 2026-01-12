@@ -31,6 +31,7 @@ use Modules\Foundation\Models\Currency;
  * @property-read Collection<int, BudgetLine> $budgetLines
  * @property-read int|null $budget_lines_count
  * @property-read Company $company
+ * @property-read Currency $currency
  *
  * @method static BudgetFactory factory($count = null, $state = [])
  * @method static Builder<static>|Budget newModelQuery()
