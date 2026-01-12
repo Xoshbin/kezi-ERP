@@ -37,16 +37,28 @@ class DunningLevel extends Model
         'email_body',
         'print_letter',
         'send_email',
+        'charge_fee',
+        'fee_amount',
+        'fee_percentage',
+        'fee_product_id',
     ];
 
     protected $casts = [
         'days_overdue' => 'integer',
         'print_letter' => 'boolean',
         'send_email' => 'boolean',
+        'charge_fee' => 'boolean',
+        'fee_amount' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'fee_percentage' => 'decimal:2',
     ];
 
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function feeProduct(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Product\Models\Product::class, 'fee_product_id');
     }
 }
