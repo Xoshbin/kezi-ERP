@@ -44,7 +44,7 @@ test('it splits tax correctly for invoices with tax groups', function () {
 
     $childTaxA = Tax::factory()->create([
         'company_id' => $this->company->id,
-        'rate' => 10,
+        'rate' => 0.10, // 10% as decimal fraction
         'tax_account_id' => $taxAccountA->id,
         'name' => 'VAT 10%',
         'type' => TaxType::Sales,
@@ -52,7 +52,7 @@ test('it splits tax correctly for invoices with tax groups', function () {
 
     $childTaxB = Tax::factory()->create([
         'company_id' => $this->company->id,
-        'rate' => 5,
+        'rate' => 0.05, // 5% as decimal fraction
         'tax_account_id' => $taxAccountB->id,
         'name' => 'Reconstruction 5%',
         'type' => TaxType::Sales,
@@ -60,7 +60,7 @@ test('it splits tax correctly for invoices with tax groups', function () {
 
     $groupTax = Tax::factory()->create([
         'company_id' => $this->company->id,
-        'rate' => 15, // Sum of children
+        'rate' => 0.15, // Sum of children (15% as decimal fraction)
         'is_group' => true,
         'name' => 'Group Tax 15%',
         'type' => TaxType::Sales,
@@ -115,7 +115,7 @@ test('it handles mixed recoverability in vendor bills for tax groups', function 
     // Child 1: Recoverable (e.g. VAT 10%)
     $childRecoverable = Tax::factory()->create([
         'company_id' => $this->company->id,
-        'rate' => 10,
+        'rate' => 0.10, // 10% as decimal fraction
         'tax_account_id' => $taxAccountRecoverable->id,
         'is_recoverable' => true,
         'type' => TaxType::Purchase,
@@ -124,14 +124,14 @@ test('it handles mixed recoverability in vendor bills for tax groups', function 
     // Child 2: Non-Recoverable (e.g. Duty 5%) -> Capitalized
     $childCapitalized = Tax::factory()->create([
         'company_id' => $this->company->id,
-        'rate' => 5,
+        'rate' => 0.05, // 5% as decimal fraction
         'is_recoverable' => false,
         'type' => TaxType::Purchase,
     ]);
 
     $groupTax = Tax::factory()->create([
         'company_id' => $this->company->id,
-        'rate' => 15,
+        'rate' => 0.15, // Sum of children (15% as decimal fraction)
         'is_group' => true,
         'type' => TaxType::Purchase,
     ]);
