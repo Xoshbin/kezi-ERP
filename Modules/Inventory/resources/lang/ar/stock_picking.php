@@ -65,4 +65,10 @@ return [
     'actual_fulfilled_quantity' => 'الكمية الفعلية / المنفذة',
     'assigned_lots' => 'الدفعات المسندة',
     'validate_done' => 'تحقق (تم)',
+    'operations' => 'العمليات',
+
+    'fields' => [
+        'type' => 'النوع',
+        'state' => 'الحالة',
+    ],
 ];
