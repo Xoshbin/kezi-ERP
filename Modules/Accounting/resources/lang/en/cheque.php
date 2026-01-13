@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'navigation_label' => 'Cheques',
     'bank' => 'Bank',
     'bank_name' => 'Bank Name',
     'prefix' => 'Prefix',

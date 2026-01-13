@@ -18,6 +18,11 @@ class ViewReports extends Page
 
     protected static ?string $cluster = AccountingCluster::class;
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __("navigation.groups.reports");
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('accounting::reports.reports');
