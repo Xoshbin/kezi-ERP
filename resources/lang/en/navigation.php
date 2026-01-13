@@ -17,6 +17,8 @@ return [
         'settings' => 'Settings',
         'inventory' => 'Inventory Management',
         'human_resources' => 'Human Resources',
+        'reporting' => 'Reporting',
+        'operations' => 'Operations',
     ],
 
     // App Switcher

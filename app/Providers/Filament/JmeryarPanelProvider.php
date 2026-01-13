@@ -52,6 +52,8 @@ class JmeryarPanelProvider extends PanelProvider
             ->discoverClusters(in: base_path('Modules/Manufacturing/app/Filament/Clusters'), for: 'Modules\\Manufacturing\\Filament\\Clusters')
             ->discoverClusters(in: base_path('Modules/ProjectManagement/app/Filament/Clusters'), for: 'Modules\\ProjectManagement\\Filament\\Clusters')
             ->discoverClusters(in: base_path('Modules/QualityControl/app/Filament/Clusters'), for: 'Modules\\QualityControl\\Filament\\Clusters')
+            ->discoverClusters(in: base_path('Modules/Accounting/app/Filament/Clusters'), for: 'Modules\\Accounting\\Filament\\Clusters')
+            ->discoverClusters(in: base_path('Modules/Inventory/app/Filament/Clusters'), for: 'Modules\\Inventory\\Filament\\Clusters')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->widgets([
                 // Widgets\AccountWidget::class
