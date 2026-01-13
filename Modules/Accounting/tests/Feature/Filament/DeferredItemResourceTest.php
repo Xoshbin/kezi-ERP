@@ -1,6 +1,6 @@
 <?php
 
-use Modules\Accounting\Filament\Resources\DeferredItemResource;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\DeferredItemResource;
 use Modules\Accounting\Models\DeferredItem;
 
 use function Pest\Livewire\livewire;

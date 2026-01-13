@@ -21,7 +21,7 @@ use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pag
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages\CreatePartner;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
-use Modules\Accounting\Filament\Resources\Accounts\Pages\CreateAccount;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Accounts\Pages\CreateAccount;
 use Modules\Accounting\Models\Asset;
 use Modules\Accounting\Models\Journal;
 use Modules\Accounting\Models\JournalEntry;
