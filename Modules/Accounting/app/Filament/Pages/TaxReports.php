@@ -5,6 +5,7 @@ namespace Modules\Accounting\Filament\Pages;
 use App\Models\Company;
 use Filament\Actions\Action;
 use Filament\Pages\Page;
+use Modules\Accounting\Filament\Clusters\Reporting\ReportingCluster;
 use Modules\Accounting\Services\Reports\TaxReportService;
 
 class TaxReports extends Page
@@ -14,10 +15,7 @@ class TaxReports extends Page
         return 'heroicon-o-document-chart-bar';
     }
 
-    public static function getNavigationGroup(): ?string
-    {
-        return 'Reporting';
-    }
+    protected static ?string $cluster = ReportingCluster::class;
 
     protected string $view = 'accounting::filament.pages.tax-reports';
 

@@ -7,6 +7,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Filament\Resources\DeferredItemResource\Pages;
 use Modules\Accounting\Models\DeferredItem;
 
@@ -16,10 +17,7 @@ class DeferredItemResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clock';
 
-    public static function getNavigationGroup(): ?string
-    {
-        return 'Accounting';
-    }
+    protected static ?string $cluster = AccountingCluster::class;
 
     public static function form(Schema $schema): Schema
     {
