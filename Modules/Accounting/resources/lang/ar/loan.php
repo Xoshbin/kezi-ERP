@@ -21,4 +21,18 @@ return [
         'eir_rate' => 'معدل EIR الدوري',
         'status' => 'الحالة',
     ],
+    // New keys appended
+    'accrue_interest' => 'استحقاق الفائدة',
+    'journal' => 'دفتر اليومية',
+    'interest_expense_income' => 'مصروفات / إيرادات الفوائد',
+    'accrued_interest' => 'الفائدة المستحقة',
+    'installment' => 'القسط #',
+    'post_repayment' => 'تسجيل السداد',
+    'loan_account' => 'حساب القرض',
+    'long_term_account' => 'حساب طويل الأجل',
+    'short_term_account' => 'حساب قصير الأجل',
+    'months' => 'أشهر',
+    'as_of_date' => 'بتاريخ',
+    'balance_after' => 'الرصيد بعد',
+    'reclassify' => 'إعادة تصنيف الجزء الحالي',
 ];
