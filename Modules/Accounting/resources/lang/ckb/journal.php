@@ -34,4 +34,7 @@ return [
     'description' => 'پێناسە',
     'is_posted' => 'نێردراوە',
     'journal_entries' => 'تۆمارەکانی پەرتووکی ڕۆژانە',
+    'fields' => [
+        'bank_account' => 'هەژماری بانک',
+    ],
 ];
