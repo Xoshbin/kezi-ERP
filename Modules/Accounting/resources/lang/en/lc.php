@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'navigation_label' => 'Letter Of Credits',
     'beneficiary' => 'Beneficiary',
     'expense_account' => 'Expense Account',
     'vendor_bill' => 'Vendor Bill #',

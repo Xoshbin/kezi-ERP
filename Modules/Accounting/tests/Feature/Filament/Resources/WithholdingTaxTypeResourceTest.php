@@ -3,9 +3,9 @@
 use Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Enums\Accounting\WithholdingTaxApplicability;
-use Modules\Accounting\Filament\Resources\WithholdingTax\Pages\CreateWithholdingTaxType;
-use Modules\Accounting\Filament\Resources\WithholdingTax\Pages\EditWithholdingTaxType;
-use Modules\Accounting\Filament\Resources\WithholdingTax\Pages\ListWithholdingTaxTypes;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\Pages\CreateWithholdingTaxType;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\Pages\EditWithholdingTaxType;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\Pages\ListWithholdingTaxTypes;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\WithholdingTaxType;
 use Tests\Traits\WithConfiguredCompany;

@@ -1,6 +1,6 @@
 <?php
 
-use Modules\Inventory\Filament\Resources\LandedCostResource\Pages\CreateLandedCost;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\LandedCostResource\Pages\CreateLandedCost;
 use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 use Modules\Purchase\Models\VendorBill;
 
@@ -38,7 +38,7 @@ it('can pre-fill landed cost from vendor bill', function () {
     // Since testing Filament Pages directly via Livewire requires complex setup in this environment,
     // we verify the integration contract: The Resource URL must support the query parameter.
 
-    $url = \Modules\Inventory\Filament\Resources\LandedCostResource::getUrl('create', [
+    $url = \Modules\Inventory\Filament\Clusters\Inventory\Resources\LandedCostResource::getUrl('create', [
         'tenant' => $company->id,
         'vendor_bill_id' => $bill->id,
     ]);
