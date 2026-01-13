@@ -2,6 +2,7 @@
 
 namespace Modules\Inventory\Filament\Resources;
 
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
@@ -14,6 +15,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Modules\Inventory\Enums\Inventory\LandedCostAllocationMethod;
 use Modules\Inventory\Enums\Inventory\LandedCostStatus;
+use Modules\Inventory\Filament\Clusters\Operations\OperationsCluster;
 use Modules\Inventory\Filament\Resources\LandedCostResource\Pages;
 use Modules\Inventory\Filament\Resources\LandedCostResource\RelationManagers;
 use Modules\Inventory\Models\LandedCost;
@@ -24,10 +26,7 @@ class LandedCostResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-calculator';
 
-    public static function getNavigationGroup(): ?string
-    {
-        return 'Operations';
-    }
+    protected static ?string $cluster = OperationsCluster::class;
 
     public static function form(Schema $schema): Schema
     {
@@ -95,7 +94,7 @@ class LandedCostResource extends Resource
                 EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
             ]);
