@@ -59,12 +59,12 @@ class LetterOfCreditResource extends Resource
                                 ->required()
                                 ->searchable()
                                 ->preload()
-                                ->label('Beneficiary (Vendor)'),
+                                ->label(__('accounting::lc.beneficiary_vendor')),
                         ])->columnSpanFull(),
 
                         Group::make([
                             TextInput::make('amount')
-                                ->label('LC Amount')
+                                ->label(__('accounting::lc.lc_amount'))
                                 ->required()
                                 ->rule('numeric')
                                 ->prefix('IQD')
@@ -78,30 +78,30 @@ class LetterOfCreditResource extends Resource
                             Select::make('purchase_order_id')
                                 ->relationship('purchaseOrder', 'po_number')
                                 ->searchable()
-                                ->label('Purchase Order'),
+                                ->label(__('accounting::lc.purchase_order')),
 
                             Select::make('issuing_bank_partner_id')
                                 ->relationship('issuingBank', 'name')
                                 ->searchable()
-                                ->label('Issuing Bank'),
+                                ->label(__('accounting::lc.issuing_bank')),
                         ])->columns(2),
 
                         Group::make([
                             DatePicker::make('issue_date')
                                 ->required()
                                 ->default(now())
-                                ->label('Issue Date'),
+                                ->label(__('accounting::lc.issue_date')),
 
                             DatePicker::make('expiry_date')
                                 ->required()
                                 ->default(now()->addMonths(3))
-                                ->label('Expiry Date'),
+                                ->label(__('accounting::lc.expiry_date')),
 
                             DatePicker::make('shipment_date')
-                                ->label('Latest Shipment Date'),
+                                ->label(__('accounting::lc.latest_shipment_date')),
 
                             TextInput::make('incoterm')
-                                ->label('Incoterm')
+                                ->label(__('accounting::lc.incoterm'))
                                 ->placeholder('e.g., FOB, CIF, DDP'),
                         ])->columns(2),
 
@@ -126,7 +126,7 @@ class LetterOfCreditResource extends Resource
                     ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('vendor.name')
-                    ->label('Beneficiary')
+                    ->label(__('accounting::lc.beneficiary'))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('amount')
@@ -163,15 +163,15 @@ class LetterOfCreditResource extends Resource
 
                 // Issue LC Action
                 Action::make('issue')
-                    ->label('Issue')
+                    ->label(__('accounting::lc.issue'))
                     ->icon('heroicon-m-document-check')
                     ->color('info')
                     ->form([
                         TextInput::make('bank_reference')
-                            ->label('Bank Reference Number')
+                            ->label(__('accounting::lc.bank_reference_number'))
                             ->required(),
                         DatePicker::make('issue_date')
-                            ->label('Issue Date')
+                            ->label(__('accounting::lc.issue_date'))
                             ->required()
                             ->default(now()),
                     ])
@@ -186,7 +186,7 @@ class LetterOfCreditResource extends Resource
 
                 // Cancel LC Action
                 Action::make('cancel')
-                    ->label('Cancel')
+                    ->label(__('accounting::lc.cancel'))
                     ->icon('heroicon-m-x-circle')
                     ->color('danger')
                     ->requiresConfirmation()

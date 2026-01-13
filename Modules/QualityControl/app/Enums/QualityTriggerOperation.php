@@ -12,10 +12,10 @@ enum QualityTriggerOperation: string
     public function label(): string
     {
         return match ($this) {
-            self::GoodsReceipt => __('quality::enums.trigger_operation.goods_receipt'),
-            self::InternalTransfer => __('quality::enums.trigger_operation.internal_transfer'),
-            self::ManufacturingOutput => __('quality::enums.trigger_operation.manufacturing_output'),
-            self::CustomerDelivery => __('quality::enums.trigger_operation.customer_delivery'),
+            self::GoodsReceipt => __('qualitycontrol::enums.trigger_operation.goods_receipt'),
+            self::InternalTransfer => __('qualitycontrol::enums.trigger_operation.internal_transfer'),
+            self::ManufacturingOutput => __('qualitycontrol::enums.trigger_operation.manufacturing_output'),
+            self::CustomerDelivery => __('qualitycontrol::enums.trigger_operation.customer_delivery'),
         };
     }
 }

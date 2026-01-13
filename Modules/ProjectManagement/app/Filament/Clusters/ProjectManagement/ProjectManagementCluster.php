@@ -16,11 +16,11 @@ class ProjectManagementCluster extends Cluster
 
     public static function getNavigationLabel(): string
     {
-        return __('Project Management');
+        return __('projectmanagement::project.navigation.label');
     }
 
     public static function getClusterLabel(): string
     {
-        return __('Project Management');
+        return __('projectmanagement::project.navigation.label');
     }
 }
