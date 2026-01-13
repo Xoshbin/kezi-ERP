@@ -46,4 +46,18 @@ return [
         'disbursed' => 'تم صرف الأموال بنجاح.',
         'settled' => 'تمت تسوية السلفة بنجاح.',
     ],
+    // New keys appended
+    'employee' => 'الموظف',
+    'submit' => 'إرسال',
+    'approve' => 'موافقة',
+    'approved_amount' => 'المبلغ الموافق عليه',
+    'reject' => 'رفض',
+    'rejection_reason' => 'سبب الرفض',
+    'disburse' => 'صرف',
+    'settle' => 'تسوية',
+    'settlement_method' => 'طريقة التسوية',
+    'bank_account' => 'الحساب البنكي',
+    'requested_amount' => 'المبلغ المطلوب',
+    'expected_return_date' => 'تاريخ العودة المتوقع',
+    'advance_number' => 'رقم السلفة',
 ];

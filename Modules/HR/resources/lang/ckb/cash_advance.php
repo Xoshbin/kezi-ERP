@@ -46,4 +46,18 @@ return [
         'disbursed' => 'پارە بە سەرکەوتوویی خەرجکرا.',
         'settled' => 'پێشینە بە سەرکەوتوویی پاکتاوکرا.',
     ],
+    // New keys appended
+    'employee' => 'فەرمانبەر',
+    'submit' => 'ناردن',
+    'approve' => 'پەسەندکردن',
+    'approved_amount' => 'بڕی پەسەندکراو',
+    'reject' => 'ڕەتکردنەوە',
+    'rejection_reason' => 'هۆکاری ڕەتکردنەوە',
+    'disburse' => 'خەرجکردن',
+    'settle' => 'پاکتاوکردن',
+    'settlement_method' => 'رێگای پاکتاوکردن',
+    'bank_account' => 'هەژماری بانکی',
+    'requested_amount' => 'بڕی داواکراو',
+    'expected_return_date' => 'بەرواری گەڕانەوەی پێشبینیکراو',
+    'advance_number' => 'ژمارەی پێشینە',
 ];
