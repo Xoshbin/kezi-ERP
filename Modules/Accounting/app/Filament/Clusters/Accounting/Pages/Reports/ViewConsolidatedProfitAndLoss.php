@@ -30,6 +30,11 @@ class ViewConsolidatedProfitAndLoss extends Page
 
     protected static ?string $cluster = AccountingCluster::class;
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __("navigation.groups.reports");
+    }
+
     public ?string $asOfDate = null; // Consolidated P&L usually needs a period too?
     // Wait, ConsolidatedP&LService expects $asOfDate, but P&L is a period report.
     // Let's check ConsolidatedProfitAndLossService::generate signature.
