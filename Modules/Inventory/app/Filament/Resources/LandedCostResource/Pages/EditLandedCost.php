@@ -17,7 +17,7 @@ class EditLandedCost extends EditRecord
     {
         return [
             Actions\Action::make('post')
-                ->label(__('inventory::landed_cost.actions.post_landed_cost'))
+                ->label('Post Landed Cost')
                 ->visible(fn ($record) => $record->status === LandedCostStatus::Draft)
                 ->requiresConfirmation()
                 ->action(function ($record) {

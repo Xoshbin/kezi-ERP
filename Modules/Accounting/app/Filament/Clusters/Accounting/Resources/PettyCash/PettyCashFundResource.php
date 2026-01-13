@@ -25,7 +25,7 @@ class PettyCashFundResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::petty_cash.navigation_label');
+        return 'Petty Cash';
     }
 
     public static function form(Schema $schema): Schema
@@ -37,36 +37,40 @@ class PettyCashFundResource extends Resource
                         TextInput::make('name')
                             ->required()
                             ->maxLength(255)
-                            ->label(__('accounting::petty_cash.fields.petty_cash_fund')),
+                            ->label('Fund Name')
+                            ->helperText('e.g., "Main Office Petty Cash"'),
 
                         Select::make('custodian_id')
                             ->relationship('custodian', 'name')
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->label(__('accounting::petty_cash.fields.custodian')),
+                            ->label('Custodian (Responsible Employee)'),
 
                         Select::make('account_id')
                             ->relationship('account', 'name', fn ($query) => $query->where('type', 'asset'))
                             ->required()
-                            ->label(__('accounting::account.label')),
+                            ->label('Petty Cash Account')
+                            ->helperText('The GL account for petty cash'),
 
                         Select::make('bank_account_id')
                             ->relationship('bankAccount', 'name', fn ($query) => $query->where('type', 'asset'))
                             ->required()
-                            ->label(__('accounting::journal.fields.bank_account')),
+                            ->label('Bank Account')
+                            ->helperText('Source bank account for replenishments'),
 
                         Select::make('currency_id')
                             ->relationship('currency', 'code')
                             ->required()
                             ->default(1) // IQD
-                            ->label(__('accounting::invoice.currency')),
+                            ->label('Currency'),
 
                         TextInput::make('imprest_amount')
                             ->required()
                             ->numeric()
                             ->prefix('IQD')
-                            ->label(__('accounting::petty_cash.fields.imprest_amount')),
+                            ->label('Imprest Amount')
+                            ->helperText('Fixed fund amount'),
                     ])->columns(2),
             ]);
     }
@@ -81,16 +85,16 @@ class PettyCashFundResource extends Resource
                     ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('custodian.name')
-                    ->label(__('accounting::petty_cash.fields.custodian'))
+                    ->label('Custodian')
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('imprest_amount')
                     ->money(fn (PettyCashFund $record) => $record->currency->code)
-                    ->label(__('accounting::petty_cash.fields.imprest_amount')),
+                    ->label('Imprest Amount'),
 
                 Tables\Columns\TextColumn::make('current_balance')
                     ->money(fn (PettyCashFund $record) => $record->currency->code)
-                    ->label(__('accounting::petty_cash.fields.current_balance'))
+                    ->label('Current Balance')
                     ->color(fn (PettyCashFund $record) => $record->current_balance->isLessThan($record->imprest_amount->multipliedBy(0.2)) ? 'danger' : 'success'),
 
                 Tables\Columns\TextColumn::make('status')

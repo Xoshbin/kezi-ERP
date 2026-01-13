@@ -39,7 +39,7 @@ class LandedCostResource extends Resource
                             ->relationship('vendorBill', 'bill_reference')
                             ->searchable()
                             ->preload()
-                            ->label(__('inventory::landed_cost.fields.vendor_bill')),
+                            ->label('Vendor Bill'),
 
                         DatePicker::make('date')
                             ->required()
@@ -48,7 +48,7 @@ class LandedCostResource extends Resource
                         TextInput::make('amount_total')
                             ->required()
                             ->numeric()
-                            ->label(__('inventory::landed_cost.fields.total_amount')),
+                            ->label('Total Amount'),
 
                         Select::make('allocation_method')
                             ->options(LandedCostAllocationMethod::class)
@@ -72,13 +72,13 @@ class LandedCostResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label(__('inventory::landed_cost.fields.id'))
+                    ->label('ID')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('date')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('vendorBill.bill_reference')
-                    ->label(__('inventory::landed_cost.fields.vendor_bill'))
+                    ->label('Vendor Bill')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('amount_total')
                     ->money()

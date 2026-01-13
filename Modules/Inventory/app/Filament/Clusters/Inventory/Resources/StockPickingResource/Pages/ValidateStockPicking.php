@@ -78,22 +78,22 @@ class ValidateStockPicking extends Page
                     ->description('Confirm the actual quantities that were picked for each move.')
                     ->schema([
                         Repeater::make('moves')
-                            ->label(__('inventory::stock_picking.stock_moves'))
+                            ->label('Stock Moves')
                             ->schema([
                                 TextInput::make('product_info')
-                                    ->label(__('inventory::stock_picking.product'))
+                                    ->label('Product')
                                     ->disabled()
                                     ->dehydrated(false)
                                     ->default(fn ($state) => $state['product_name'] ?? '—'),
 
                                 TextInput::make('planned_quantity')
-                                    ->label(__('inventory::stock_picking.planned_quantity'))
+                                    ->label('Planned Quantity')
                                     ->disabled()
                                     ->dehydrated()
                                     ->default(fn ($state) => number_format($state['planned_quantity'] ?? 0, 2)),
 
                                 TextInput::make('actual_quantity')
-                                    ->label(__('inventory::stock_picking.actual_fulfilled_quantity'))
+                                    ->label('Actual / Fulfilled Quantity')
                                     ->numeric()
                                     ->required()
                                     ->minValue(0)
@@ -102,7 +102,7 @@ class ValidateStockPicking extends Page
                                     ->default(fn ($state) => $state['actual_quantity'] ?? 0),
 
                                 TextInput::make('lot_lines_info')
-                                    ->label(__('inventory::stock_picking.assigned_lots'))
+                                    ->label('Assigned Lots')
                                     ->disabled()
                                     ->dehydrated(false)
                                     ->default(function ($state) {
@@ -128,7 +128,7 @@ class ValidateStockPicking extends Page
     {
         return [
             Action::make('validate')
-                ->label(__('inventory::stock_picking.validate_done'))
+                ->label('Validate (Done)')
                 ->color('success')
                 ->icon('heroicon-o-check')
                 ->icon('heroicon-o-check')
@@ -138,7 +138,7 @@ class ValidateStockPicking extends Page
                 }),
 
             Action::make('create_backorder')
-                ->label(__('inventory::stock_picking.create_backorder'))
+                ->label('Create Backorder')
                 ->color('warning')
                 ->icon('heroicon-o-clock')
                 ->action('createBackorder'),

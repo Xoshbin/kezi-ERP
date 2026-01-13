@@ -25,15 +25,15 @@ class ViewStockPicking extends ViewRecord
     public function infolist(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make(__('inventory::stock_picking.label'))
+            Section::make('Picking Information')
                 ->schema([
                     Grid::make(3)
                         ->schema([
                             TextEntry::make('reference')
-                                ->label(__('inventory::stock_picking.reference')),
+                                ->label('Reference'),
 
                             TextEntry::make('type')
-                                ->label(__('inventory::stock_picking.types.receipt'))
+                                ->label('Type')
                                 ->badge()
                                 ->color(fn ($state) => match ($state) {
                                     'receipt' => 'success',
@@ -43,7 +43,7 @@ class ViewStockPicking extends ViewRecord
                                 }),
 
                             TextEntry::make('state')
-                                ->label(__('inventory::stock_picking.states.draft'))
+                                ->label('State')
                                 ->badge()
                                 ->color(fn ($state) => match ($state) {
                                     'draft' => 'gray',
@@ -56,36 +56,36 @@ class ViewStockPicking extends ViewRecord
                                 }),
 
                             TextEntry::make('partner.name')
-                                ->label(__('inventory::stock_picking.partner'))
+                                ->label('Partner')
                                 ->placeholder('—'),
 
                             TextEntry::make('scheduled_date')
-                                ->label(__('inventory::stock_picking.scheduled_date'))
+                                ->label('Scheduled Date')
                                 ->dateTime(),
 
                             TextEntry::make('completed_at')
-                                ->label(__('inventory::stock_picking.completed_at'))
+                                ->label('Completed At')
                                 ->dateTime()
                                 ->placeholder('—'),
 
                             TextEntry::make('origin')
-                                ->label(__('inventory::stock_picking.origin'))
+                                ->label('Origin')
                                 ->placeholder('—'),
 
                             TextEntry::make('stockMoves')
-                                ->label(__('inventory::stock_picking.total_moves'))
+                                ->label('Total Moves')
                                 ->getStateUsing(fn (StockPicking $record) => $record->stockMoves()->count()),
 
                             TextEntry::make('created_at')
-                                ->label(__('common.created_at'))
+                                ->label('Created At')
                                 ->dateTime(),
                         ]),
                 ]),
 
-            Section::make(__('inventory::stock_picking.stock_moves'))
+            Section::make('Stock Moves')
                 ->schema([
                     TextEntry::make('stockMoves')
-                        ->label(__('inventory::stock_picking.move_details'))
+                        ->label('Move Details')
                         ->listWithLineBreaks()
                         ->bulleted()
                         ->getStateUsing(function (StockPicking $record) {

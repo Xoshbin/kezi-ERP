@@ -61,13 +61,13 @@ class StockPickingResource extends Resource
                         ->default(fn () => 'SP-'.str_pad(random_int(1, 9999), 4, '0', STR_PAD_LEFT)),
 
                     Forms\Components\Select::make('type')
-                        ->label(__('inventory::stock_picking.fields.type'))
+                        ->label(__('Type'))
                         ->options(StockPickingType::class)
                         ->required()
                         ->native(false),
 
                     Forms\Components\Select::make('state')
-                        ->label(__('inventory::stock_picking.fields.state'))
+                        ->label(__('State'))
                         ->options(StockPickingState::class)
                         ->default(StockPickingState::Draft)
                         ->required()
@@ -85,12 +85,12 @@ class StockPickingResource extends Resource
                         ->required(),
 
                     Forms\Components\TextInput::make('origin')
-                        ->label(__('inventory::stock_picking.origin'))
+                        ->label(__('Origin'))
                         ->maxLength(255),
                 ])
                 ->columns(2),
 
-            Section::make(__('inventory::stock_picking.operations'))
+            Section::make(__('Operations'))
                 ->schema([
                     Forms\Components\Repeater::make('stockMoves')
                         ->relationship()
@@ -174,12 +174,12 @@ class StockPickingResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('reference')
-                    ->label(__('inventory::stock_picking.reference'))
+                    ->label('Reference')
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('type')
-                    ->label(__('inventory::stock_picking.fields.type'))
+                    ->label('Type')
                     ->badge()
                     ->color(fn (StockPickingType $state): string => match ($state) {
                         StockPickingType::Receipt => 'success',
@@ -189,7 +189,7 @@ class StockPickingResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('state')
-                    ->label(__('inventory::stock_picking.fields.state'))
+                    ->label('State')
                     ->badge()
                     ->color(fn (StockPickingState $state): string => match ($state) {
                         StockPickingState::Draft => 'gray',
@@ -201,40 +201,40 @@ class StockPickingResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('partner.name')
-                    ->label(__('inventory::stock_picking.partner'))
+                    ->label('Partner')
                     ->searchable()
                     ->sortable()
                     ->placeholder('—'),
 
                 Tables\Columns\TextColumn::make('scheduled_date')
-                    ->label(__('inventory::stock_picking.scheduled_date'))
+                    ->label('Scheduled Date')
                     ->dateTime()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('completed_at')
-                    ->label(__('inventory::stock_picking.completed_at'))
+                    ->label('Completed At')
                     ->dateTime()
                     ->sortable()
                     ->placeholder('—'),
 
                 Tables\Columns\TextColumn::make('origin')
-                    ->label(__('inventory::stock_picking.origin'))
+                    ->label('Origin')
                     ->searchable()
                     ->placeholder('—'),
 
                 Tables\Columns\TextColumn::make('stockMoves')
-                    ->label(__('inventory::stock_picking.moves'))
+                    ->label('Moves')
                     ->counts('stockMoves')
                     ->badge()
                     ->color('info'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
-                    ->label(__('inventory::stock_picking.fields.type'))
+                    ->label('Type')
                     ->options(StockPickingType::class),
 
                 Tables\Filters\SelectFilter::make('state')
-                    ->label(__('inventory::stock_picking.fields.state'))
+                    ->label('State')
                     ->options(StockPickingState::class),
             ])
             ->recordActions([
