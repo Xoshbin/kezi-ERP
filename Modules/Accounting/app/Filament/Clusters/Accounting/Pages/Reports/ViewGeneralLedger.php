@@ -32,6 +32,11 @@ class ViewGeneralLedger extends Page
 
     protected static ?string $cluster = AccountingCluster::class;
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __("navigation.groups.reports");
+    }
+
     public ?string $startDate = null;
 
     public ?string $endDate = null;

@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'navigation_label' => 'Petty Cash',
     'fund' => 'Petty Cash Fund',
     'funds' => 'Petty Cash Funds',
     'voucher' => 'Petty Cash Voucher',
