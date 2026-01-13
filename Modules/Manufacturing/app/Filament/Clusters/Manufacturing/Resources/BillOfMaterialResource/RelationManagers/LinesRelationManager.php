@@ -12,6 +12,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class LinesRelationManager extends RelationManager
 {
@@ -19,7 +20,7 @@ class LinesRelationManager extends RelationManager
 
     protected static ?string $title = 'Components';
 
-    public static function getTitle(string $ownerRecord, string $pageClass): string
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return __('manufacturing::manufacturing.bom.components');
     }
