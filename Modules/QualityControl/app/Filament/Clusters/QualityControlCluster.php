@@ -17,11 +17,11 @@ class QualityControlCluster extends Cluster
 
     public static function getNavigationLabel(): string
     {
-        return __('quality::cluster.label');
+        return __('qualitycontrol::cluster.label');
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return __('quality::cluster.group');
+        return __('qualitycontrol::cluster.group');
     }
 }

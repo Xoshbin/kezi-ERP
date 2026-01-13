@@ -25,7 +25,7 @@ class ScheduleEntriesRelationManager extends RelationManager
             MoneyColumn::make('payment_amount'),
             MoneyColumn::make('principal_component'),
             MoneyColumn::make('interest_component'),
-            MoneyColumn::make('outstanding_balance_after')->label('Balance after'),
+            MoneyColumn::make('outstanding_balance_after')->label(__('accounting::loan.balance_after')),
         ]);
     }
 }

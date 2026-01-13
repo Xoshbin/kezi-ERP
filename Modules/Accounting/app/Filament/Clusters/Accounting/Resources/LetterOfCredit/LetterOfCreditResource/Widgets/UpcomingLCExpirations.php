@@ -33,7 +33,7 @@ class UpcomingLCExpirations extends BaseWidget
                     ->url(fn (LetterOfCredit $record) => route('filament.jmeryar.resources.letter-of-credits.edit', $record)),
 
                 Tables\Columns\TextColumn::make('vendor.name')
-                    ->label('Beneficiary')
+                    ->label(__('accounting::lc.beneficiary'))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('amount')
