@@ -29,7 +29,7 @@ class ExpenseReportForm
                             // ->relationship('lines')
                             ->schema([
                                 \Filament\Forms\Components\Select::make('expense_account_id')
-                                    ->label('Expense Account')
+                                    ->label(__('hr::expense.expense_account'))
                                     ->options(\Modules\Accounting\Models\Account::where('type', \Modules\Accounting\Enums\Accounting\AccountType::Expense)->get()->pluck('name', 'id'))
                                     ->searchable()
                                     ->required()
@@ -40,13 +40,13 @@ class ExpenseReportForm
                                 \Filament\Forms\Components\TextInput::make('amount')
                                     ->numeric()
                                     ->required()
-                                    ->label('Amount')
+                                    ->label(__('hr::expense.amount'))
                                     ->formatStateUsing(fn ($state) => $state instanceof \Brick\Money\Money ? $state->getAmount()->toFloat() : $state),
                                 \Filament\Forms\Components\TextInput::make('description')
                                     ->required()
                                     ->columnSpan(2),
                                 \Filament\Forms\Components\Select::make('partner_id')
-                                    ->label('Vendor (Optional)')
+                                    ->label(__('hr::expense.vendor'))
                                     ->options(\Modules\Foundation\Models\Partner::get()->pluck('name', 'id'))
                                     ->searchable(),
                                 \Filament\Forms\Components\TextInput::make('receipt_reference'),

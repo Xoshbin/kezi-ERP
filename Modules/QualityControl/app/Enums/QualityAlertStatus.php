@@ -12,10 +12,10 @@ enum QualityAlertStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::New => __('quality::enums.alert_status.new'),
-            self::InProgress => __('quality::enums.alert_status.in_progress'),
-            self::Resolved => __('quality::enums.alert_status.resolved'),
-            self::Closed => __('quality::enums.alert_status.closed'),
+            self::New => __('qualitycontrol::enums.alert_status.new'),
+            self::InProgress => __('qualitycontrol::enums.alert_status.in_progress'),
+            self::Resolved => __('qualitycontrol::enums.alert_status.resolved'),
+            self::Closed => __('qualitycontrol::enums.alert_status.closed'),
         };
     }
 

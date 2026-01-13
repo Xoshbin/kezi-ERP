@@ -26,29 +26,29 @@ class QualityCheckResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('quality::check.navigation_label');
+        return __('qualitycontrol::check.navigation_label');
     }
 
     public static function infolist(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make(__('quality::check.section_basic'))
+                Section::make(__('qualitycontrol::check.section_basic'))
                     ->schema([
                         TextEntry::make('number')
-                            ->label(__('quality::check.number')),
+                            ->label(__('qualitycontrol::check.number')),
                         TextEntry::make('status')
-                            ->label(__('quality::check.status'))
+                            ->label(__('qualitycontrol::check.status'))
                             ->badge()
                             ->formatStateUsing(fn ($state) => $state->label())
                             ->color(fn ($state) => $state->color()),
                         TextEntry::make('product.name')
-                            ->label(__('quality::check.product')),
+                            ->label(__('qualitycontrol::check.product')),
                         TextEntry::make('lot.lot_code')
-                            ->label(__('quality::check.lot'))
+                            ->label(__('qualitycontrol::check.lot'))
                             ->placeholder('—'),
                         TextEntry::make('notes')
-                            ->label(__('quality::check.notes'))
+                            ->label(__('qualitycontrol::check.notes'))
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
@@ -59,33 +59,33 @@ class QualityCheckResource extends Resource
     {
         return $schema
             ->components([
-                Section::make(__('quality::check.section_basic'))
+                Section::make(__('qualitycontrol::check.section_basic'))
                     ->schema([
                         Forms\Components\TextInput::make('number')
-                            ->label(__('quality::check.number'))
+                            ->label(__('qualitycontrol::check.number'))
                             ->disabled()
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('status')
-                            ->label(__('quality::check.status'))
+                            ->label(__('qualitycontrol::check.status'))
                             ->options(collect(QualityCheckStatus::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
                             ->disabled()
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('product_id')
-                            ->label(__('quality::check.product'))
+                            ->label(__('qualitycontrol::check.product'))
                             ->relationship('product', 'name')
                             ->disabled()
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('lot_id')
-                            ->label(__('quality::check.lot'))
+                            ->label(__('qualitycontrol::check.lot'))
                             ->relationship('lot', 'lot_code')
                             ->disabled()
                             ->columnSpan(1),
 
                         Forms\Components\Textarea::make('notes')
-                            ->label(__('quality::check.notes'))
+                            ->label(__('qualitycontrol::check.notes'))
                             ->rows(3)
                             ->columnSpanFull(),
                     ])
@@ -98,52 +98,52 @@ class QualityCheckResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('number')
-                    ->label(__('quality::check.number'))
+                    ->label(__('qualitycontrol::check.number'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('product.name')
-                    ->label(__('quality::check.product'))
+                    ->label(__('qualitycontrol::check.product'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('lot.lot_code')
-                    ->label(__('quality::check.lot'))
+                    ->label(__('qualitycontrol::check.lot'))
                     ->searchable()
                     ->sortable()
                     ->placeholder('—'),
 
                 Tables\Columns\TextColumn::make('status')
-                    ->label(__('quality::check.status'))
+                    ->label(__('qualitycontrol::check.status'))
                     ->badge()
                     ->formatStateUsing(fn ($state) => $state->label())
                     ->color(fn ($state) => $state->color())
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('inspectedByUser.name')
-                    ->label(__('quality::check.inspector'))
+                    ->label(__('qualitycontrol::check.inspector'))
                     ->sortable()
                     ->placeholder('—'),
 
                 Tables\Columns\TextColumn::make('inspected_at')
-                    ->label(__('quality::check.inspected_at'))
+                    ->label(__('qualitycontrol::check.inspected_at'))
                     ->dateTime()
                     ->sortable()
                     ->placeholder('—'),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label(__('quality::check.created_at'))
+                    ->label(__('qualitycontrol::check.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->label(__('quality::check.status'))
+                    ->label(__('qualitycontrol::check.status'))
                     ->options(collect(QualityCheckStatus::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()])),
 
                 Tables\Filters\SelectFilter::make('product_id')
-                    ->label(__('quality::check.product'))
+                    ->label(__('qualitycontrol::check.product'))
                     ->relationship('product', 'name')
                     ->searchable()
                     ->preload(),

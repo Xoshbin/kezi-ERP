@@ -36,7 +36,7 @@ class ChargesRelationManager extends RelationManager
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('account.name')
-                    ->label('Expense Account')
+                    ->label(__('accounting::lc.expense_account'))
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
@@ -59,7 +59,7 @@ class ChargesRelationManager extends RelationManager
                             ->relationship('account', 'name')
                             ->required()
                             ->searchable()
-                            ->label('Expense Account'),
+                            ->label(__('accounting::lc.expense_account')),
 
                         Forms\Components\DatePicker::make('charge_date')
                             ->required()
