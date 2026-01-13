@@ -43,7 +43,7 @@ class ChequebookResource extends Resource
                             ->required()
                             ->maxLength(255),
                         Select::make('bank_id') // Use relationship for dynamic fetching
-                            ->label('Bank (Currency)')
+                            ->label(__('accounting::cheque.bank'))
                              // Assuming we want to link to a currency or a journal.
                              // But Chequebook model has `bank_name` (string) not ID, based on previous migration.
                              // Re-checking migration: `bank_name` string.
@@ -51,7 +51,7 @@ class ChequebookResource extends Resource
 
                         TextInput::make('bank_name')
                             ->required()
-                            ->label('Bank Name'),
+                            ->label(__('accounting::cheque.bank_name')),
 
                         Toggle::make('is_active')
                             ->required()
@@ -60,12 +60,12 @@ class ChequebookResource extends Resource
                 Section::make('Sequence')
                     ->schema([
                         TextInput::make('prefix')
-                            ->label('Prefix')
+                            ->label(__('accounting::cheque.prefix'))
                             ->maxLength(10),
                         TextInput::make('digits')
                             ->numeric()
                             ->default(6)
-                            ->label('Number of Digits'),
+                            ->label(__('accounting::cheque.digits')),
                         TextInput::make('start_number')
                             ->numeric()
                             ->required()

@@ -73,7 +73,7 @@ class ChequeResource extends Resource
 
                             // Amount
                             TextInput::make('amount')
-                                ->label('Amount')
+                                ->label(__('accounting::cheque.amount'))
                                 ->required()
                                 ->numeric()
                                 ->prefix('IQD'),
@@ -88,18 +88,18 @@ class ChequeResource extends Resource
                             TextInput::make('cheque_number')
                                 ->required()
                                 ->maxLength(50)
-                                ->label('Cheque Number'),
+                                ->label(__('accounting::cheque.cheque_number')),
 
                             // Dates
                             DatePicker::make('issue_date')
                                 ->required()
                                 ->default(now())
-                                ->label('Issue Date'),
+                                ->label(__('accounting::cheque.issue_date')),
 
                             DatePicker::make('due_date')
                                 ->required()
                                 ->default(now()->addDays(30))
-                                ->label('Due Date (PDC)'),
+                                ->label(__('accounting::cheque.due_date')),
 
                         ])->columns(2),
 
@@ -107,21 +107,21 @@ class ChequeResource extends Resource
                         Group::make([
                             Select::make('chequebook_id')
                                 ->relationship('chequebook', 'name', fn ($query) => $query->where('is_active', true))
-                                ->label('From Cheque Book')
+                                ->label(__('accounting::cheque.from_cheque_book'))
                                 ->searchable()
                                 ->visible(fn (Get $get) => $get('type') === ChequeType::Payable->value),
 
                             Select::make('journal_id')
                                 ->relationship('journal', 'name')
                                 ->required()
-                                ->label('Bank Account')
+                                ->label(__('accounting::cheque.bank_account'))
                                 ->helperText('The bank account associated with this transaction.'),
                         ])->columns(2),
 
                         // Section for Receivable-specific logic (Bank Name)
                         Group::make([
                             TextInput::make('bank_name')
-                                ->label('Drawer Bank')
+                                ->label(__('accounting::cheque.drawer_bank'))
                                 ->visible(fn (Get $get) => $get('type') === ChequeType::Receivable->value),
                         ]),
 
@@ -151,7 +151,7 @@ class ChequeResource extends Resource
                     ->color(fn (Cheque $record) => $record->due_date->isPast() && $record->status === ChequeStatus::Draft ? 'danger' : null),
 
                 Tables\Columns\TextColumn::make('partner.name')
-                    ->label('Party')
+                    ->label(__('accounting::cheque.party'))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('amount')
@@ -175,7 +175,7 @@ class ChequeResource extends Resource
 
                 // Hand Over (Payable)
                 Action::make('hand_over')
-                    ->label('Hand Over')
+                    ->label(__('accounting::cheque.hand_over'))
                     ->icon('heroicon-m-arrow-right-start-on-rectangle')
                     ->color('warning')
                     ->requiresConfirmation()
@@ -186,12 +186,12 @@ class ChequeResource extends Resource
 
                 // Deposit (Receivable)
                 Action::make('deposit')
-                    ->label('Deposit')
+                    ->label(__('accounting::cheque.deposit'))
                     ->icon('heroicon-m-building-library')
                     ->color('info')
                     ->form([
                         DatePicker::make('deposited_at')
-                            ->label('Deposit Date')
+                            ->label(__('accounting::cheque.deposit_date'))
                             ->required()
                             ->default(now()),
                     ])
@@ -206,12 +206,12 @@ class ChequeResource extends Resource
 
                 // Clear
                 Action::make('clear')
-                    ->label('Clear')
+                    ->label(__('accounting::cheque.clear'))
                     ->icon('heroicon-m-check-circle')
                     ->color('success')
                     ->form([
                         DatePicker::make('cleared_at')
-                            ->label('Cleared Date')
+                            ->label(__('accounting::cheque.cleared_date'))
                             ->required()
                             ->default(now()),
                     ])
@@ -226,7 +226,7 @@ class ChequeResource extends Resource
 
                 // Bounce
                 Action::make('bounce')
-                    ->label('Bounce')
+                    ->label(__('accounting::cheque.bounce'))
                     ->icon('heroicon-m-x-circle')
                     ->color('danger')
                     ->form([

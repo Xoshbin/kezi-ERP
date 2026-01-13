@@ -19,12 +19,12 @@ class UtilizationsRelationManager extends RelationManager
             ->recordTitleAttribute('id')
             ->columns([
                 Tables\Columns\TextColumn::make('vendor_bill_id')
-                    ->label('Vendor Bill #')
+                    ->label(__('accounting::lc.vendor_bill'))
                     ->url(fn (LCUtilization $record) => route('filament.jmeryar.resources.vendor-bills.edit', $record->vendor_bill_id))
                     ->color('primary'),
 
                 Tables\Columns\TextColumn::make('vendorBill.bill_number')
-                    ->label('Bill Number')
+                    ->label(__('accounting::lc.bill_number'))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('utilized_amount')

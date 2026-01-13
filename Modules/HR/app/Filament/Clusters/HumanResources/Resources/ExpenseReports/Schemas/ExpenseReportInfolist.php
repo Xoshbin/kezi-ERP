@@ -26,7 +26,7 @@ class ExpenseReportInfolist
                                     ->date(),
                                 TextEntry::make('employee.full_name'),
                                 TextEntry::make('cashAdvance.advance_number')
-                                    ->label('Cash Advance'),
+                                    ->label(__('hr::expense.cash_advance')),
                                 TextEntry::make('total_amount')
                                     ->money(fn ($record) => $record->cashAdvance->currency->code),
                             ]),
@@ -39,7 +39,7 @@ class ExpenseReportInfolist
                                     ->schema([
                                         TextEntry::make('expense_date')->date(),
                                         TextEntry::make('description'),
-                                        TextEntry::make('expenseAccount.name')->label('Account'),
+                                        TextEntry::make('expenseAccount.name')->label(__('hr::expense.account')),
                                         TextEntry::make('amount')
                                             ->money(fn ($record) => $record->expenseReport->cashAdvance->currency->code),
                                     ]),

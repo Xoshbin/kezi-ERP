@@ -31,21 +31,21 @@ class BillOfMaterialResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return 'Bill of Material';
+        return __('manufacturing::manufacturing.bom.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'Bills of Materials';
+        return __('manufacturing::manufacturing.bom.plural_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('BOM Information')
+            Section::make(__('manufacturing::manufacturing.bom.section_bom_information'))
                 ->schema([
                     Forms\Components\Select::make('product_id')
-                        ->label('Finished Product')
+                        ->label(__('manufacturing::manufacturing.bom.finished_product'))
                         ->relationship('product', 'name')
                         ->searchable()
                         ->preload()
@@ -53,18 +53,18 @@ class BillOfMaterialResource extends Resource
                         ->columnSpanFull(),
 
                     Forms\Components\TextInput::make('code')
-                        ->label('BOM Code')
+                        ->label(__('manufacturing::manufacturing.bom.code'))
                         ->required()
                         ->unique(ignoreRecord: true)
                         ->maxLength(50),
 
                     Forms\Components\TextInput::make('name')
-                        ->label('BOM Name')
+                        ->label(__('manufacturing::manufacturing.bom.name'))
                         ->required()
                         ->maxLength(255),
 
                     Forms\Components\Select::make('type')
-                        ->label('BOM Type')
+                        ->label(__('manufacturing::manufacturing.bom.type'))
                         ->options([
                             BOMType::Normal->value => 'Normal',
                             BOMType::Kit->value => 'Kit',
@@ -74,18 +74,18 @@ class BillOfMaterialResource extends Resource
                         ->required(),
 
                     Forms\Components\TextInput::make('quantity')
-                        ->label('Quantity to Produce')
+                        ->label(__('manufacturing::manufacturing.bom.quantity'))
                         ->numeric()
                         ->default(1.0)
                         ->required()
                         ->minValue(0.0001),
 
                     Forms\Components\Toggle::make('is_active')
-                        ->label('Active')
+                        ->label(__('manufacturing::manufacturing.bom.is_active'))
                         ->default(true),
 
                     Forms\Components\Textarea::make('notes')
-                        ->label('Notes')
+                        ->label(__('manufacturing::manufacturing.bom.notes'))
                         ->maxLength(1000)
                         ->columnSpanFull(),
                 ])
@@ -98,35 +98,35 @@ class BillOfMaterialResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->label('BOM Code')
+                    ->label(__('manufacturing::manufacturing.bom.code'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('product.name')
-                    ->label('Finished Product')
+                    ->label(__('manufacturing::manufacturing.bom.finished_product'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('type')
-                    ->label('Type')
+                    ->label(__('manufacturing::manufacturing.bom.type'))
                     ->badge()
                     ->formatStateUsing(fn (BOMType $state): string => $state->label()),
 
                 Tables\Columns\TextColumn::make('quantity')
-                    ->label('Qty')
+                    ->label(__('manufacturing::manufacturing.bom.qty'))
                     ->numeric(decimalPlaces: 2),
 
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('Active')
+                    ->label(__('manufacturing::manufacturing.bom.is_active'))
                     ->boolean(),
 
                 Tables\Columns\TextColumn::make('lines_count')
-                    ->label('Components')
+                    ->label(__('manufacturing::manufacturing.bom.components'))
                     ->counts('lines')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created')
+                    ->label(__('manufacturing::manufacturing.bom.created'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -140,7 +140,7 @@ class BillOfMaterialResource extends Resource
                     ]),
 
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active')
+                    ->label(__('manufacturing::manufacturing.bom.is_active'))
                     ->placeholder('All BOMs')
                     ->trueLabel('Active only')
                     ->falseLabel('Inactive only'),

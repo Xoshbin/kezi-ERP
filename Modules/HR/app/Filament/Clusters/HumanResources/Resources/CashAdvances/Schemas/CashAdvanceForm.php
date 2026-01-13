@@ -24,10 +24,10 @@ class CashAdvanceForm
                             ->required(),
                         \Filament\Forms\Components\TextInput::make('requested_amount')
                             ->numeric()
-                            ->label('Requested Amount')
+                            ->label(__('hr::cash_advance.requested_amount'))
                             ->required(),
                         \Filament\Forms\Components\DatePicker::make('expected_return_date')
-                            ->label('Expected Return Date'),
+                            ->label(__('hr::cash_advance.expected_return_date')),
                         \Filament\Forms\Components\Textarea::make('purpose')
                             ->required()
                             ->columnSpanFull(),
