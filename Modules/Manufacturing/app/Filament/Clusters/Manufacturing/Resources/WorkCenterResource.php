@@ -29,32 +29,32 @@ class WorkCenterResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return 'Work Center';
+        return __('manufacturing::work_center.navigation.name');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'Work Centers';
+        return __('manufacturing::work_center.navigation.plural');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Work Center Information')
+            Section::make(__('manufacturing::work_center.sections.info'))
                 ->schema([
                     Forms\Components\TextInput::make('code')
-                        ->label('Work Center Code')
+                        ->label(__('manufacturing::work_center.fields.code'))
                         ->required()
                         ->unique(ignoreRecord: true)
                         ->maxLength(50),
 
                     Forms\Components\TextInput::make('name')
-                        ->label('Name')
+                        ->label(__('manufacturing::work_center.fields.name'))
                         ->required()
                         ->maxLength(255),
 
                     Forms\Components\TextInput::make('hourly_cost')
-                        ->label('Hourly Cost')
+                        ->label(__('manufacturing::work_center.fields.hourly_cost'))
                         ->numeric()
                         ->prefix(fn () => auth()->user()->currentCompany->currency->symbol ?? '$')
                         ->required()
@@ -62,18 +62,18 @@ class WorkCenterResource extends Resource
                         ->helperText('Labor and overhead cost per hour'),
 
                     Forms\Components\TextInput::make('capacity')
-                        ->label('Capacity (units/hour)')
+                        ->label(__('manufacturing::work_center.fields.capacity'))
                         ->numeric()
                         ->minValue(0)
                         ->helperText('Production capacity per hour'),
 
                     Forms\Components\Toggle::make('is_active')
-                        ->label('Active')
+                        ->label(__('manufacturing::work_center.fields.is_active'))
                         ->default(true)
                         ->inline(false),
 
                     Forms\Components\Textarea::make('notes')
-                        ->label('Notes')
+                        ->label(__('manufacturing::work_center.fields.notes'))
                         ->rows(3)
                         ->columnSpanFull(),
                 ])
@@ -86,41 +86,41 @@ class WorkCenterResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->label('Code')
+                    ->label(__('manufacturing::work_center.fields.code'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Name')
+                    ->label(__('manufacturing::work_center.fields.name'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('hourly_cost')
-                    ->label('Hourly Cost')
+                    ->label(__('manufacturing::work_center.fields.hourly_cost'))
                     ->money(fn ($record) => $record->currency_code ?? 'USD')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('capacity')
-                    ->label('Capacity')
+                    ->label(__('manufacturing::work_center.fields.capacity'))
                     ->numeric(decimalPlaces: 2)
                     ->suffix(' units/hr')
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('Active')
+                    ->label(__('manufacturing::work_center.fields.is_active'))
                     ->boolean()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created')
+                    ->label(__('manufacturing::work_center.fields.created'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active')
-                    ->placeholder('All')
+                    ->label(__('manufacturing::work_center.fields.is_active'))
+                    ->placeholder(__('manufacturing::work_center.navigation.plural'))
                     ->trueLabel('Active only')
                     ->falseLabel('Inactive only'),
             ])

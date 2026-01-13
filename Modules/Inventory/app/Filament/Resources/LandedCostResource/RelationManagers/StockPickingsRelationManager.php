@@ -25,11 +25,11 @@ class StockPickingsRelationManager extends RelationManager
         return $schema
             ->schema([
                 TextInput::make('reference')
-                    ->label('Reference')
+                    ->label(__('inventory::landed_cost.fields.reference'))
                     ->disabled(),
 
                 DatePicker::make('scheduled_date')
-                    ->label('Scheduled Date')
+                    ->label(__('inventory::landed_cost.fields.scheduled_date'))
                     ->disabled(),
             ]);
     }
@@ -40,17 +40,17 @@ class StockPickingsRelationManager extends RelationManager
             ->recordTitleAttribute('reference')
             ->columns([
                 TextColumn::make('reference')
-                    ->label('Reference')
+                    ->label(__('inventory::landed_cost.fields.reference'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('type')
-                    ->label('Type')
+                    ->label(__('inventory::landed_cost.fields.type'))
                     ->badge()
                     ->formatStateUsing(fn (StockPickingType $state) => $state->label()),
 
                 TextColumn::make('state')
-                    ->label('State')
+                    ->label(__('inventory::landed_cost.fields.state'))
                     ->badge()
                     ->formatStateUsing(fn (StockPickingState $state) => $state->label())
                     ->color(fn (StockPickingState $state): string => match ($state) {
@@ -61,16 +61,16 @@ class StockPickingsRelationManager extends RelationManager
                     }),
 
                 TextColumn::make('scheduled_date')
-                    ->label('Scheduled Date')
+                    ->label(__('inventory::landed_cost.fields.scheduled_date'))
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('source_location.name')
-                    ->label('From')
+                    ->label(__('inventory::landed_cost.fields.from'))
                     ->sortable(),
 
                 TextColumn::make('destination_location.name')
-                    ->label('To')
+                    ->label(__('inventory::landed_cost.fields.to'))
                     ->sortable(),
             ])
             ->filters([
@@ -78,7 +78,7 @@ class StockPickingsRelationManager extends RelationManager
             ])
             ->headerActions([
                 AttachAction::make()
-                    ->label('Attach Stock Picking')
+                    ->label(__('inventory::landed_cost.fields.attach_stock_picking'))
                     ->preloadRecordSelect()
                     ->recordSelectOptionsQuery(fn ($query) => $query->where('state', StockPickingState::Done)
                         ->where('type', StockPickingType::Receipt)),

@@ -54,7 +54,7 @@ class RegisterCompany extends RegisterTenant
                             ->label(__('currency.is_active'))
                             ->default(true),
                         TextInput::make('decimal_places')
-                            ->label('Decimal Places')
+                            ->label(__('currency.decimal_places'))
                             ->required()
                             ->numeric()
                             ->default(2)

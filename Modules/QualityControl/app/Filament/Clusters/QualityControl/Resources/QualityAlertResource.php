@@ -25,7 +25,7 @@ class QualityAlertResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('quality::alert.navigation_label');
+        return __('qualitycontrol::alert.navigation_label');
     }
 
     public static function getNavigationBadge(): ?string
@@ -42,22 +42,22 @@ class QualityAlertResource extends Resource
     {
         return $schema
             ->components([
-                Section::make(__('quality::alert.section_basic'))
+                Section::make(__('qualitycontrol::alert.section_basic'))
                     ->schema([
                         Forms\Components\TextInput::make('number')
-                            ->label(__('quality::alert.number'))
+                            ->label(__('qualitycontrol::alert.number'))
                             ->disabled()
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('status')
-                            ->label(__('quality::alert.status'))
+                            ->label(__('qualitycontrol::alert.status'))
                             ->options(collect(QualityAlertStatus::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
                             ->required()
                             ->native(false)
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('product_id')
-                            ->label(__('quality::alert.product'))
+                            ->label(__('qualitycontrol::alert.product'))
                             ->relationship('product', 'name')
                             ->required()
                             ->searchable()
@@ -65,7 +65,7 @@ class QualityAlertResource extends Resource
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('defect_type_id')
-                            ->label(__('quality::alert.defect_type'))
+                            ->label(__('qualitycontrol::alert.defect_type'))
                             ->relationship('defectType', 'name')
                             ->searchable()
                             ->preload()
@@ -73,13 +73,13 @@ class QualityAlertResource extends Resource
                             ->columnSpan(1),
 
                         Forms\Components\Textarea::make('description')
-                            ->label(__('quality::alert.description'))
+                            ->label(__('qualitycontrol::alert.description'))
                             ->required()
                             ->rows(3)
                             ->columnSpanFull(),
 
                         Forms\Components\Select::make('assigned_to_user_id')
-                            ->label(__('quality::alert.assigned_to'))
+                            ->label(__('qualitycontrol::alert.assigned_to'))
                             ->relationship('assignedToUser', 'name')
                             ->searchable()
                             ->preload()
@@ -88,20 +88,20 @@ class QualityAlertResource extends Resource
                     ])
                     ->columns(2),
 
-                Section::make(__('quality::alert.section_capa'))
+                Section::make(__('qualitycontrol::alert.section_capa'))
                     ->schema([
                         Forms\Components\Textarea::make('root_cause')
-                            ->label(__('quality::alert.root_cause'))
+                            ->label(__('qualitycontrol::alert.root_cause'))
                             ->rows(3)
                             ->columnSpanFull(),
 
                         Forms\Components\Textarea::make('corrective_action')
-                            ->label(__('quality::alert.corrective_action'))
+                            ->label(__('qualitycontrol::alert.corrective_action'))
                             ->rows(3)
                             ->columnSpanFull(),
 
                         Forms\Components\Textarea::make('preventive_action')
-                            ->label(__('quality::alert.preventive_action'))
+                            ->label(__('qualitycontrol::alert.preventive_action'))
                             ->rows(3)
                             ->columnSpanFull(),
                     ])
@@ -114,45 +114,45 @@ class QualityAlertResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('number')
-                    ->label(__('quality::alert.number'))
+                    ->label(__('qualitycontrol::alert.number'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('product.name')
-                    ->label(__('quality::alert.product'))
+                    ->label(__('qualitycontrol::alert.product'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('defectType.name')
-                    ->label(__('quality::alert.defect_type'))
+                    ->label(__('qualitycontrol::alert.defect_type'))
                     ->searchable()
                     ->sortable()
                     ->placeholder('—'),
 
                 Tables\Columns\TextColumn::make('status')
-                    ->label(__('quality::alert.status'))
+                    ->label(__('qualitycontrol::alert.status'))
                     ->badge()
                     ->formatStateUsing(fn ($state) => $state->label())
                     ->color(fn ($state) => $state->color())
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('assignedToUser.name')
-                    ->label(__('quality::alert.assigned_to'))
+                    ->label(__('qualitycontrol::alert.assigned_to'))
                     ->sortable()
                     ->placeholder(__('Unassigned')),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label(__('quality::alert.created_at'))
+                    ->label(__('qualitycontrol::alert.created_at'))
                     ->dateTime()
                     ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->label(__('quality::alert.status'))
+                    ->label(__('qualitycontrol::alert.status'))
                     ->options(collect(QualityAlertStatus::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()])),
 
                 Tables\Filters\SelectFilter::make('assigned_to_user_id')
-                    ->label(__('quality::alert.assigned_to'))
+                    ->label(__('qualitycontrol::alert.assigned_to'))
                     ->relationship('assignedToUser', 'name')
                     ->searchable()
                     ->preload(),

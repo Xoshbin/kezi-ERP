@@ -31,21 +31,21 @@ class BillOfMaterialResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return 'Bill of Material';
+        return __('manufacturing::bom.navigation.name');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'Bills of Materials';
+        return __('manufacturing::bom.navigation.plural');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('BOM Information')
+            Section::make(__('manufacturing::bom.sections.info'))
                 ->schema([
                     Forms\Components\Select::make('product_id')
-                        ->label('Finished Product')
+                        ->label(__('manufacturing::bom.fields.product'))
                         ->relationship('product', 'name')
                         ->searchable()
                         ->preload()
@@ -53,39 +53,39 @@ class BillOfMaterialResource extends Resource
                         ->columnSpanFull(),
 
                     Forms\Components\TextInput::make('code')
-                        ->label('BOM Code')
+                        ->label(__('manufacturing::bom.fields.code'))
                         ->required()
                         ->unique(ignoreRecord: true)
                         ->maxLength(50),
 
                     Forms\Components\TextInput::make('name')
-                        ->label('BOM Name')
+                        ->label(__('manufacturing::bom.fields.name'))
                         ->required()
                         ->maxLength(255),
 
                     Forms\Components\Select::make('type')
-                        ->label('BOM Type')
+                        ->label(__('manufacturing::bom.fields.type'))
                         ->options([
-                            BOMType::Normal->value => 'Normal',
-                            BOMType::Kit->value => 'Kit',
-                            BOMType::Phantom->value => 'Phantom',
+                            BOMType::Normal->value => __('manufacturing::bom.types.normal'),
+                            BOMType::Kit->value => __('manufacturing::bom.types.kit'),
+                            BOMType::Phantom->value => __('manufacturing::bom.types.phantom'),
                         ])
                         ->default(BOMType::Normal->value)
                         ->required(),
 
                     Forms\Components\TextInput::make('quantity')
-                        ->label('Quantity to Produce')
+                        ->label(__('manufacturing::bom.fields.quantity'))
                         ->numeric()
                         ->default(1.0)
                         ->required()
                         ->minValue(0.0001),
 
                     Forms\Components\Toggle::make('is_active')
-                        ->label('Active')
+                        ->label(__('manufacturing::bom.fields.is_active'))
                         ->default(true),
 
                     Forms\Components\Textarea::make('notes')
-                        ->label('Notes')
+                        ->label(__('manufacturing::bom.fields.notes'))
                         ->maxLength(1000)
                         ->columnSpanFull(),
                 ])
@@ -98,35 +98,40 @@ class BillOfMaterialResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->label('BOM Code')
+                    ->label(__('manufacturing::bom.fields.code'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('product.name')
-                    ->label('Finished Product')
+                    ->label(__('manufacturing::bom.fields.product'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('type')
-                    ->label('Type')
+                    ->label(__('manufacturing::bom.fields.type'))
                     ->badge()
-                    ->formatStateUsing(fn (BOMType $state): string => $state->label()),
+                    ->formatStateUsing(fn (BOMType $state): string => match($state) {
+                        BOMType::Normal => __('manufacturing::bom.types.normal'),
+                        BOMType::Kit => __('manufacturing::bom.types.kit'),
+                        BOMType::Phantom => __('manufacturing::bom.types.phantom'),
+                        default => $state->label(),
+                    }),
 
                 Tables\Columns\TextColumn::make('quantity')
-                    ->label('Qty')
+                    ->label(__('manufacturing::bom.fields.qty'))
                     ->numeric(decimalPlaces: 2),
 
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('Active')
+                    ->label(__('manufacturing::bom.fields.is_active'))
                     ->boolean(),
 
                 Tables\Columns\TextColumn::make('lines_count')
-                    ->label('Components')
+                    ->label(__('manufacturing::bom.fields.components'))
                     ->counts('lines')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created')
+                    ->label(__('manufacturing::bom.fields.created'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -134,15 +139,15 @@ class BillOfMaterialResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
                     ->options([
-                        BOMType::Normal->value => 'Normal',
-                        BOMType::Kit->value => 'Kit',
-                        BOMType::Phantom->value => 'Phantom',
+                        BOMType::Normal->value => __('manufacturing::bom.types.normal'),
+                        BOMType::Kit->value => __('manufacturing::bom.types.kit'),
+                        BOMType::Phantom->value => __('manufacturing::bom.types.phantom'),
                     ]),
 
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active')
-                    ->placeholder('All BOMs')
-                    ->trueLabel('Active only')
+                    ->label(__('manufacturing::bom.fields.is_active'))
+                    ->placeholder(__('manufacturing::bom.navigation.plural'))
+                    ->trueLabel(__('manufacturing::bom.fields.is_active'))
                     ->falseLabel('Inactive only'),
             ])
             ->recordActions([

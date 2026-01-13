@@ -11,9 +11,9 @@ enum QualityTriggerFrequency: string
     public function label(): string
     {
         return match ($this) {
-            self::PerOperation => __('quality::enums.trigger_frequency.per_operation'),
-            self::PerProduct => __('quality::enums.trigger_frequency.per_product'),
-            self::PerQuantity => __('quality::enums.trigger_frequency.per_quantity'),
+            self::PerOperation => __('qualitycontrol::enums.trigger_frequency.per_operation'),
+            self::PerProduct => __('qualitycontrol::enums.trigger_frequency.per_product'),
+            self::PerQuantity => __('qualitycontrol::enums.trigger_frequency.per_quantity'),
         };
     }
 }

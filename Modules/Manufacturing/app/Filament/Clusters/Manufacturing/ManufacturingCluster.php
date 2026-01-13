@@ -10,7 +10,7 @@ class ManufacturingCluster extends Cluster
 
     public static function getNavigationLabel(): string
     {
-        return 'Manufacturing';
+        return __('manufacturing::cluster.navigation.name');
     }
 
     public static function shouldRegisterNavigation(): bool

@@ -28,57 +28,57 @@ class PettyCashVoucherResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Petty Cash';
+        return __('accounting::petty_cash.navigation.group');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Expense Details')
+                Section::make(__('accounting::petty_cash.sections.expense_details'))
                     ->schema([
                         Select::make('fund_id')
                             ->relationship('fund', 'name', fn ($query) => $query->where('status', 'active'))
                             ->required()
-                            ->label('Petty Cash Fund')
+                            ->label(__('accounting::petty_cash.fields.fund'))
                             ->searchable()
                             ->preload(),
 
                         DatePicker::make('voucher_date')
                             ->required()
                             ->default(now())
-                            ->label('Expense Date'),
+                            ->label(__('accounting::petty_cash.fields.expense_date')),
 
                         TextInput::make('amount')
                             ->required()
                             ->numeric()
                             ->prefix('IQD')
-                            ->label('Amount'),
+                            ->label(__('accounting::petty_cash.fields.amount')),
 
                         Select::make('expense_account_id')
                             ->relationship('expenseAccount', 'name', fn ($query) => $query->where('type', 'expense'))
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->label('Expense Category')
-                            ->helperText('Select the type of expense'),
+                            ->label(__('accounting::petty_cash.fields.expense_category'))
+                            ->helperText(__('accounting::petty_cash.fields.expense_category_helper')),
 
                         Select::make('partner_id')
                             ->relationship('partner', 'name')
                             ->searchable()
                             ->preload()
-                            ->label('Vendor/Payee (Optional)'),
+                            ->label(__('accounting::petty_cash.fields.vendor_payee')),
 
                         Textarea::make('description')
                             ->required()
                             ->rows(3)
-                            ->label('Description')
-                            ->helperText('Describe the purpose of this expense')
+                            ->label(__('accounting::petty_cash.fields.description'))
+                            ->helperText(__('accounting::petty_cash.fields.description_helper'))
                             ->columnSpanFull(),
 
                         TextInput::make('receipt_reference')
-                            ->label('Receipt Reference')
-                            ->helperText('External receipt number'),
+                            ->label(__('accounting::petty_cash.fields.receipt_reference'))
+                            ->helperText(__('accounting::petty_cash.fields.receipt_reference_helper')),
                     ])->columns(2),
             ]);
     }
@@ -97,7 +97,7 @@ class PettyCashVoucherResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('fund.name')
-                    ->label('Fund')
+                    ->label(__('accounting::petty_cash.fields.fund'))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('amount')
@@ -105,7 +105,7 @@ class PettyCashVoucherResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('expenseAccount.name')
-                    ->label('Category')
+                    ->label(__('accounting::petty_cash.fields.category'))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('description')
@@ -123,12 +123,12 @@ class PettyCashVoucherResource extends Resource
             ])
             ->actions([
                 Actions\Action::make('post')
-                    ->label('Post')
+                    ->label(__('accounting::petty_cash.actions.post.label'))
                     ->icon('heroicon-m-check-badge')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->modalHeading('Post Petty Cash Voucher')
-                    ->modalDescription('This will create a journal entry and update the fund balance.')
+                    ->modalHeading(__('accounting::petty_cash.actions.post.heading'))
+                    ->modalDescription(__('accounting::petty_cash.actions.post.description'))
                     ->visible(fn (PettyCashVoucher $record) => $record->status === PettyCashVoucherStatus::Draft)
                     ->action(function (PettyCashVoucher $record) {
                         app(PettyCashService::class)->postVoucher($record, auth()->user());

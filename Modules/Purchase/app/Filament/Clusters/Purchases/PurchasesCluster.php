@@ -13,6 +13,6 @@ class PurchasesCluster extends Cluster
 
     public static function getNavigationLabel(): string
     {
-        return 'Purchases';
+        return __('purchase::cluster.navigation.name');
     }
 }

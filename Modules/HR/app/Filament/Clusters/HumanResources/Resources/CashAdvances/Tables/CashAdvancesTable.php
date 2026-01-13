@@ -18,7 +18,7 @@ class CashAdvancesTable
                     ->searchable()
                     ->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('employee.first_name') // Accessor full_name might not work for search/sort easily without configuration
-                    ->label('Employee')
+                    ->label(__('hr::employee.single'))
                     ->formatStateUsing(fn ($record) => $record->employee->full_name)
                     ->searchable(['first_name', 'last_name']),
                 \Filament\Tables\Columns\TextColumn::make('requested_amount')

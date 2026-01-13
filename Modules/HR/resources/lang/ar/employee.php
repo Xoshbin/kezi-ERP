@@ -1,24 +1,23 @@
 <?php
 
 return [
-    // Basic Information
     'basic_information' => 'المعلومات الأساسية',
-    'basic_information_description' => 'تفاصيل هوية الموظف الأساسية ومعلومات الاتصال',
+    'basic_information_description' => 'بيانات الموظف الأساسية ومعلومات الاتصال',
+    'fields' => [
+        'employee_number' => 'رقم الموظف',
+    ],
+    'single' => 'موظف',
     'employee_number' => 'رقم الموظف',
     'first_name' => 'الاسم الأول',
     'last_name' => 'اسم العائلة',
-    'email' => 'عنوان البريد الإلكتروني',
+    'email' => 'البريد الإلكتروني',
     'phone' => 'رقم الهاتف',
-
-    // Organizational Details
     'organizational_details' => 'التفاصيل التنظيمية',
-    'organizational_details_description' => 'القسم والمنصب والهيكل الإداري',
+    'organizational_details_description' => 'القسم، المنصب، والهيكل الإداري',
     'department' => 'القسم',
     'position' => 'المنصب',
     'manager' => 'المدير',
     'user_account' => 'حساب المستخدم',
-
-    // Personal Information
     'personal_information' => 'المعلومات الشخصية',
     'personal_information_description' => 'التفاصيل الشخصية ووثائق الهوية',
     'date_of_birth' => 'تاريخ الميلاد',
@@ -33,34 +32,28 @@ return [
     'marital_status_widowed' => 'أرمل',
     'nationality' => 'الجنسية',
     'national_id' => 'رقم الهوية الوطنية',
-    'passport_number' => 'رقم جواز السفر',
-
-    // Address Information
+    'passport_number' => 'رقم الجواز',
     'address_information' => 'معلومات العنوان',
     'address_information_description' => 'عنوان السكن وتفاصيل الموقع',
-    'address_line_1' => 'العنوان الأول',
-    'address_line_2' => 'العنوان الثاني',
+    'address_line_1' => 'العنوان 1',
+    'address_line_2' => 'العنوان 2',
     'city' => 'المدينة',
-    'state' => 'الولاية/المحافظة',
+    'state' => 'المنطقة/المحافظة',
     'zip_code' => 'الرمز البريدي',
-    'country' => 'البلد',
-
-    // Emergency Contact
-    'emergency_contact' => 'جهة الاتصال الطارئة',
-    'emergency_contact_description' => 'تفاصيل شخص الاتصال في حالات الطوارئ',
+    'country' => 'الدولة',
+    'emergency_contact' => 'جهة اتصال للطوارئ',
+    'emergency_contact_description' => 'تفاصيل شخص للاتصال في حالة الطوارئ',
     'emergency_contact_name' => 'اسم جهة الاتصال',
     'emergency_contact_phone' => 'هاتف جهة الاتصال',
-    'emergency_contact_relationship' => 'صلة القرابة',
-
-    // Employment Details
+    'emergency_contact_relationship' => 'العلاقة',
     'employment_details' => 'تفاصيل التوظيف',
-    'employment_details_description' => 'تواريخ التوظيف والحالة والنوع',
-    'hire_date' => 'تاريخ التوظيف',
-    'termination_date' => 'تاريخ إنهاء الخدمة',
+    'employment_details_description' => 'تواريخ التوظيف، الحالة، والنوع',
+    'hire_date' => 'تاريخ التعيين',
+    'termination_date' => 'تاريخ الانهاء',
     'employment_status' => 'حالة التوظيف',
     'employment_status_active' => 'نشط',
     'employment_status_inactive' => 'غير نشط',
-    'employment_status_terminated' => 'منتهي الخدمة',
+    'employment_status_terminated' => 'منهي الخدمة',
     'employment_status_on_leave' => 'في إجازة',
     'employee_type' => 'نوع الموظف',
     'employee_type_full_time' => 'دوام كامل',
@@ -68,15 +61,11 @@ return [
     'employee_type_contract' => 'عقد',
     'employee_type_intern' => 'متدرب',
     'is_active' => 'نشط',
-
-    // Banking Information
-    'banking_information' => 'المعلومات المصرفية',
-    'banking_information_description' => 'تفاصيل الحساب المصرفي للراتب',
+    'banking_information' => 'المعلومات البنكية',
+    'banking_information_description' => 'تفاصيل الحساب البنكي للرواتب',
     'bank_name' => 'اسم البنك',
     'bank_account_number' => 'رقم الحساب',
-    'bank_routing_number' => 'رقم التوجيه',
-
-    // Navigation
-    'navigation_label' => 'الموظفون',
+    'bank_routing_number' => 'رقم التوجيه البنكي',
+    'navigation_label' => 'الموظفين',
     'navigation_group' => 'الموارد البشرية',
 ];

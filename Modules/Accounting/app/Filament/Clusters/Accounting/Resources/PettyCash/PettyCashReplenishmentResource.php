@@ -25,19 +25,19 @@ class PettyCashReplenishmentResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Petty Cash';
+        return __('accounting::petty_cash.navigation.group');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Replenishment Details')
+                Section::make(__('accounting::petty_cash.sections.replenishment_details'))
                     ->schema([
                         Select::make('fund_id')
                             ->relationship('fund', 'name', fn ($query) => $query->where('status', 'active'))
                             ->required()
-                            ->label('Petty Cash Fund')
+                            ->label(__('accounting::petty_cash.fields.fund'))
                             ->searchable()
                             ->preload()
                             ->reactive()
@@ -54,28 +54,28 @@ class PettyCashReplenishmentResource extends Resource
                         DatePicker::make('replenishment_date')
                             ->required()
                             ->default(now())
-                            ->label('Replenishment Date'),
+                            ->label(__('accounting::petty_cash.fields.replenishment_date')),
 
                         TextInput::make('amount')
                             ->required()
                             ->numeric()
                             ->prefix('IQD')
-                            ->label('Amount')
-                            ->helperText('Amount will be auto-calculated based on fund balance'),
+                            ->label(__('accounting::petty_cash.fields.amount'))
+                            ->helperText(__('accounting::petty_cash.fields.amount_helper')),
 
                         Select::make('payment_method')
                             ->options([
-                                'cash' => 'Cash',
-                                'bank_transfer' => 'Bank Transfer',
-                                'cheque' => 'Cheque',
+                                'cash' => __('accounting::petty_cash.fields.payment_methods.cash'),
+                                'bank_transfer' => __('accounting::petty_cash.fields.payment_methods.bank_transfer'),
+                                'cheque' => __('accounting::petty_cash.fields.payment_methods.cheque'),
                             ])
                             ->required()
                             ->default('bank_transfer')
-                            ->label('Payment Method'),
+                            ->label(__('accounting::petty_cash.fields.payment_method')),
 
                         TextInput::make('reference')
-                            ->label('Reference')
-                            ->helperText('Bank transfer reference or cheque number'),
+                            ->label(__('accounting::petty_cash.fields.reference'))
+                            ->helperText(__('accounting::petty_cash.fields.reference_helper')),
                     ])->columns(2),
             ]);
     }
@@ -94,7 +94,7 @@ class PettyCashReplenishmentResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('fund.name')
-                    ->label('Fund')
+                    ->label(__('accounting::petty_cash.fields.fund'))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('amount')
