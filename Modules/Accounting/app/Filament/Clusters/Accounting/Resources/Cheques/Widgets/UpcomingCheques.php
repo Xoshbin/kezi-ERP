@@ -24,12 +24,12 @@ class UpcomingCheques extends BaseWidget
             ->columns([
                 Tables\Columns\TextColumn::make('due_date')
                     ->date()
-                    ->label('Due Date')
+                    ->label(__('accounting::cheque.due_date'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cheque_number')
                     ->weight('bold'),
                 Tables\Columns\TextColumn::make('partner.name')
-                    ->label('Party'),
+                    ->label(__('accounting::cheque.party')),
                 Tables\Columns\TextColumn::make('amount')
                     ->money(fn (Cheque $record) => $record->currency->code),
                 Tables\Columns\TextColumn::make('type')

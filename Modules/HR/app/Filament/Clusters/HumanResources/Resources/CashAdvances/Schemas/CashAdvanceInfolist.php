@@ -18,12 +18,12 @@ class CashAdvanceInfolist
                         Grid::make(2)
                             ->schema([
                                 TextEntry::make('advance_number')
-                                    ->label('Advance Number')
+                                    ->label(__('hr::cash_advance.advance_number'))
                                     ->weight('bold'),
                                 TextEntry::make('status')
                                     ->badge(),
                                 TextEntry::make('employee.full_name')
-                                    ->label('Employee'),
+                                    ->label(__('hr::cash_advance.employee')),
                                 TextEntry::make('company.name')
                                     ->label('Company'),
                                 TextEntry::make('requested_amount')
