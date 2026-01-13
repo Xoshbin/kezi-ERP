@@ -16,7 +16,7 @@ class ExpenseReportsTable
                     ->searchable()
                     ->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('cashAdvance.advance_number')
-                    ->label('Cash Advance')
+                    ->label(__('hr::expense_report.actions.cash_advance'))
                     ->searchable(),
                 \Filament\Tables\Columns\TextColumn::make('total_amount')
                     ->money(fn ($record) => $record->cashAdvance?->currency?->code ?? 'USD') // currency might be on cashAdvance
@@ -38,7 +38,7 @@ class ExpenseReportsTable
                 \Filament\Actions\EditAction::make()
                     ->visible(fn ($record) => $record->status === \Modules\HR\Enums\ExpenseReportStatus::Draft),
                 \Filament\Actions\Action::make('submit')
-                    ->label('Submit')
+                    ->label(__('hr::expense_report.actions.submit'))
                     ->icon('heroicon-m-paper-airplane')
                     ->color('info')
                     ->requiresConfirmation()
@@ -47,7 +47,7 @@ class ExpenseReportsTable
                         app(\Modules\HR\Services\HumanResources\CashAdvanceService::class)->submitExpenseReport($record, auth()->user());
                     }),
                 \Filament\Actions\Action::make('approve')
-                    ->label('Approve')
+                    ->label(__('hr::expense_report.actions.approve'))
                     ->icon('heroicon-m-check')
                     ->color('success')
                     ->requiresConfirmation()

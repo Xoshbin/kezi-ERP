@@ -34,4 +34,7 @@ return [
     'description' => 'وصف',
     'is_posted' => 'مرحل',
     'journal_entries' => 'قيود اليومية',
+    'fields' => [
+        'bank_account' => 'الحساب البنكي',
+    ],
 ];
