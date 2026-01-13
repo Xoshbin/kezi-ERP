@@ -66,7 +66,9 @@ class CreateJournalEntryForVendorBillAction implements VendorBillJournalEntryCre
 
                     if ($tax->is_group) {
                         $children = $tax->children;
-                        $ratios = $children->map(fn ($t) => $t->rate)->toArray();
+                        // Note: allocate() requires integer ratios, so we scale decimal rates (e.g., 0.10)
+                        // to integers by multiplying by 10000 to support rates with up to 4 decimal places
+                        $ratios = $children->map(fn ($t) => (int) ($t->rate * 10000))->toArray();
 
                         if (array_sum($ratios) > 0) {
                             $allocatedAmounts = $totalLineTax->allocate(...$ratios);
