@@ -18,7 +18,7 @@ class CashAdvancesTable
                     ->searchable()
                     ->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('employee.first_name') // Accessor full_name might not work for search/sort easily without configuration
-                    ->label('Employee')
+                    ->label(__('hr::cash_advance.employee'))
                     ->formatStateUsing(fn ($record) => $record->employee->full_name)
                     ->searchable(['first_name', 'last_name']),
                 \Filament\Tables\Columns\TextColumn::make('requested_amount')
@@ -42,7 +42,7 @@ class CashAdvancesTable
                 EditAction::make()
                     ->visible(fn (\Modules\HR\Models\CashAdvance $record) => $record->status === \Modules\HR\Enums\CashAdvanceStatus::Draft),
                 \Filament\Actions\Action::make('submit')
-                    ->label('Submit')
+                    ->label(__('hr::cash_advance.submit'))
                     ->icon('heroicon-m-paper-airplane')
                     ->color('info')
                     ->requiresConfirmation()
@@ -51,14 +51,14 @@ class CashAdvancesTable
                         app(\Modules\HR\Services\HumanResources\CashAdvanceService::class)->submitForApproval($record, auth()->user());
                     }),
                 \Filament\Actions\Action::make('approve')
-                    ->label('Approve')
+                    ->label(__('hr::cash_advance.approve'))
                     ->icon('heroicon-m-check')
                     ->color('success')
                     ->requiresConfirmation()
                     ->visible(fn (\Modules\HR\Models\CashAdvance $record) => $record->status === \Modules\HR\Enums\CashAdvanceStatus::PendingApproval)
                     ->form([
                         \Filament\Forms\Components\TextInput::make('approved_amount')
-                            ->label('Approved Amount')
+                            ->label(__('hr::cash_advance.approved_amount'))
                             ->required()
                             ->numeric()
                             ->default(fn (\Modules\HR\Models\CashAdvance $record) => (string) $record->requested_amount->getAmount()),
@@ -68,28 +68,28 @@ class CashAdvancesTable
                         app(\Modules\HR\Services\HumanResources\CashAdvanceService::class)->approve($record, $amount, auth()->user());
                     }),
                 \Filament\Actions\Action::make('reject')
-                    ->label('Reject')
+                    ->label(__('hr::cash_advance.reject'))
                     ->icon('heroicon-m-x-mark')
                     ->color('danger')
                     ->requiresConfirmation()
                     ->visible(fn (\Modules\HR\Models\CashAdvance $record) => $record->status === \Modules\HR\Enums\CashAdvanceStatus::PendingApproval)
                     ->form([
                         \Filament\Forms\Components\Textarea::make('reason')
-                            ->label('Rejection Reason')
+                            ->label(__('hr::cash_advance.rejection_reason'))
                             ->required(),
                     ])
                     ->action(function (\Modules\HR\Models\CashAdvance $record, array $data) {
                         app(\Modules\HR\Services\HumanResources\CashAdvanceService::class)->reject($record, $data['reason'], auth()->user());
                     }),
                 \Filament\Actions\Action::make('disburse')
-                    ->label('Disburse')
+                    ->label(__('hr::cash_advance.disburse'))
                     ->icon('heroicon-m-banknotes')
                     ->color('success')
                     ->requiresConfirmation()
                     ->visible(fn (\Modules\HR\Models\CashAdvance $record) => $record->status === \Modules\HR\Enums\CashAdvanceStatus::Approved)
                     ->form([
                         \Filament\Forms\Components\Select::make('bank_account_id')
-                            ->label('Bank Account')
+                            ->label(__('hr::cash_advance.bank_account'))
                             ->options(\Modules\Accounting\Models\Account::where('type', \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash)->get()->pluck('name', 'id'))
                             ->required()
                             ->searchable(),
@@ -98,14 +98,14 @@ class CashAdvancesTable
                         app(\Modules\HR\Services\HumanResources\CashAdvanceService::class)->disburse($record, (int) $data['bank_account_id'], auth()->user());
                     }),
                 \Filament\Actions\Action::make('settle')
-                    ->label('Settle')
+                    ->label(__('hr::cash_advance.settle'))
                     ->icon('heroicon-m-scale')
                     ->color('primary')
                     ->requiresConfirmation()
                     ->visible(fn (\Modules\HR\Models\CashAdvance $record) => $record->status === \Modules\HR\Enums\CashAdvanceStatus::PendingSettlement)
                     ->form([
                         \Filament\Forms\Components\Select::make('settlement_method')
-                            ->label('Settlement Method')
+                            ->label(__('hr::cash_advance.settlement_method'))
                             ->options([
                                 'none' => 'None (Exact Match/Carry Forward)',
                                 'cash_return' => 'Cash Return (Employee pays back)',
@@ -113,7 +113,7 @@ class CashAdvancesTable
                             ])
                             ->required(),
                         \Filament\Forms\Components\Select::make('bank_account_id')
-                            ->label('Bank Account')
+                            ->label(__('hr::cash_advance.bank_account'))
                             ->helperText('Required for Cash Return or Reimbursement')
                             ->options(\Modules\Accounting\Models\Account::where('type', \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash)->get()->pluck('name', 'id'))
                             ->visible(fn (\Filament\Forms\Get $get) => in_array($get('settlement_method'), ['cash_return', 'reimbursement'])),

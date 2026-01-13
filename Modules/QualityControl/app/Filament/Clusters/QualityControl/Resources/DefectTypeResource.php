@@ -28,7 +28,7 @@ class DefectTypeResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('quality::defect_type.navigation_label');
+        return __('qualitycontrol::defect_type.navigation_label');
     }
 
     public static function form(Schema $schema): Schema
@@ -37,25 +37,25 @@ class DefectTypeResource extends Resource
             Section::make()
                 ->schema([
                     TextInput::make('code')
-                        ->label(__('quality::defect_type.code'))
+                        ->label(__('qualitycontrol::defect_type.code'))
                         ->required()
                         ->maxLength(50)
                         ->unique(ignoreRecord: true)
                         ->columnSpan(1),
 
                     TextInput::make('name')
-                        ->label(__('quality::defect_type.name'))
+                        ->label(__('qualitycontrol::defect_type.name'))
                         ->required()
                         ->maxLength(255)
                         ->columnSpan(1),
 
                     Textarea::make('description')
-                        ->label(__('quality::defect_type.description'))
+                        ->label(__('qualitycontrol::defect_type.description'))
                         ->rows(3)
                         ->columnSpanFull(),
 
                     Toggle::make('active')
-                        ->label(__('quality::defect_type.active'))
+                        ->label(__('qualitycontrol::defect_type.active'))
                         ->default(true)
                         ->columnSpan(1),
                 ])
@@ -68,29 +68,29 @@ class DefectTypeResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('code')
-                    ->label(__('quality::defect_type.code'))
+                    ->label(__('qualitycontrol::defect_type.code'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('name')
-                    ->label(__('quality::defect_type.name'))
+                    ->label(__('qualitycontrol::defect_type.name'))
                     ->searchable()
                     ->sortable(),
 
                 IconColumn::make('active')
-                    ->label(__('quality::defect_type.active'))
+                    ->label(__('qualitycontrol::defect_type.active'))
                     ->boolean()
                     ->sortable(),
 
                 TextColumn::make('created_at')
-                    ->label(__('quality::defect_type.created_at'))
+                    ->label(__('qualitycontrol::defect_type.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 TernaryFilter::make('active')
-                    ->label(__('quality::defect_type.active'))
+                    ->label(__('qualitycontrol::defect_type.active'))
                     ->placeholder(__('All'))
                     ->trueLabel(__('Active only'))
                     ->falseLabel(__('Inactive only')),

@@ -25,47 +25,47 @@ class QualityInspectionTemplateResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('quality::template.navigation_label');
+        return __('qualitycontrol::template.navigation_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make(__('quality::template.section_basic'))
+                Section::make(__('qualitycontrol::template.section_basic'))
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label(__('quality::template.name'))
+                            ->label(__('qualitycontrol::template.name'))
                             ->required()
                             ->maxLength(255)
                             ->columnSpanFull(),
 
                         Forms\Components\Textarea::make('description')
-                            ->label(__('quality::template.description'))
+                            ->label(__('qualitycontrol::template.description'))
                             ->rows(3)
                             ->columnSpanFull(),
 
                         Forms\Components\Toggle::make('active')
-                            ->label(__('quality::template.active'))
+                            ->label(__('qualitycontrol::template.active'))
                             ->default(true)
                             ->columnSpan(1),
                     ])
                     ->columns(2),
 
-                Section::make(__('quality::template.section_parameters'))
+                Section::make(__('qualitycontrol::template.section_parameters'))
                     ->schema([
                         Forms\Components\Repeater::make('parameters')
-                            ->label(__('quality::template.parameters'))
+                            ->label(__('qualitycontrol::template.parameters'))
                             ->relationship()
                             ->schema([
                                 Forms\Components\TextInput::make('name')
-                                    ->label(__('quality::template.parameter_name'))
+                                    ->label(__('qualitycontrol::template.parameter_name'))
                                     ->required()
                                     ->maxLength(255)
                                     ->columnSpan(2),
 
                                 Forms\Components\Select::make('check_type')
-                                    ->label(__('quality::template.check_type'))
+                                    ->label(__('qualitycontrol::template.check_type'))
                                     ->options(collect(QualityCheckType::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
                                     ->required()
                                     ->native(false)
@@ -73,28 +73,28 @@ class QualityInspectionTemplateResource extends Resource
                                     ->columnSpan(2),
 
                                 Forms\Components\TextInput::make('min_value')
-                                    ->label(__('quality::template.min_value'))
+                                    ->label(__('qualitycontrol::template.min_value'))
                                     ->numeric()
                                     ->nullable()
                                     ->visible(fn ($get) => $get('check_type') === QualityCheckType::Measure->value)
                                     ->columnSpan(1),
 
                                 Forms\Components\TextInput::make('max_value')
-                                    ->label(__('quality::template.max_value'))
+                                    ->label(__('qualitycontrol::template.max_value'))
                                     ->numeric()
                                     ->nullable()
                                     ->visible(fn ($get) => $get('check_type') === QualityCheckType::Measure->value)
                                     ->columnSpan(1),
 
                                 Forms\Components\TextInput::make('unit_of_measure')
-                                    ->label(__('quality::template.unit_of_measure'))
+                                    ->label(__('qualitycontrol::template.unit_of_measure'))
                                     ->maxLength(50)
                                     ->nullable()
                                     ->visible(fn ($get) => $get('check_type') === QualityCheckType::Measure->value)
                                     ->columnSpan(2),
 
                                 Forms\Components\Textarea::make('instructions')
-                                    ->label(__('quality::template.instructions'))
+                                    ->label(__('qualitycontrol::template.instructions'))
                                     ->rows(2)
                                     ->columnSpanFull(),
 
@@ -107,7 +107,7 @@ class QualityInspectionTemplateResource extends Resource
                             ->collapsible()
                             ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
                             ->defaultItems(0)
-                            ->addActionLabel(__('quality::template.add_parameter'))
+                            ->addActionLabel(__('qualitycontrol::template.add_parameter'))
                             ->columnSpanFull(),
                     ]),
             ]);
@@ -118,29 +118,29 @@ class QualityInspectionTemplateResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label(__('quality::template.name'))
+                    ->label(__('qualitycontrol::template.name'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('parameters_count')
-                    ->label(__('quality::template.parameters_count'))
+                    ->label(__('qualitycontrol::template.parameters_count'))
                     ->counts('parameters')
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('active')
-                    ->label(__('quality::template.active'))
+                    ->label(__('qualitycontrol::template.active'))
                     ->boolean()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label(__('quality::template.created_at'))
+                    ->label(__('qualitycontrol::template.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('active')
-                    ->label(__('quality::template.active')),
+                    ->label(__('qualitycontrol::template.active')),
             ])
             ->actions([
                 \Filament\Actions\EditAction::make(),

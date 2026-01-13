@@ -26,46 +26,46 @@ class QualityControlPointResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('quality::control_point.navigation_label');
+        return __('qualitycontrol::control_point.navigation_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make(__('quality::control_point.section_basic'))
+                Section::make(__('qualitycontrol::control_point.section_basic'))
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label(__('quality::control_point.name'))
+                            ->label(__('qualitycontrol::control_point.name'))
                             ->required()
                             ->maxLength(255)
                             ->columnSpanFull(),
 
                         Forms\Components\Select::make('trigger_operation')
-                            ->label(__('quality::control_point.trigger_operation'))
+                            ->label(__('qualitycontrol::control_point.trigger_operation'))
                             ->options(collect(QualityTriggerOperation::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
                             ->required()
                             ->native(false)
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('trigger_frequency')
-                            ->label(__('quality::control_point.trigger_frequency'))
+                            ->label(__('qualitycontrol::control_point.trigger_frequency'))
                             ->options(collect(QualityTriggerFrequency::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
                             ->required()
                             ->native(false)
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('product_id')
-                            ->label(__('quality::control_point.product'))
+                            ->label(__('qualitycontrol::control_point.product'))
                             ->relationship('product', 'name')
                             ->searchable()
                             ->preload()
                             ->nullable()
-                            ->helperText(__('quality::control_point.product_helper'))
+                            ->helperText(__('qualitycontrol::control_point.product_helper'))
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('inspection_template_id')
-                            ->label(__('quality::control_point.inspection_template'))
+                            ->label(__('qualitycontrol::control_point.inspection_template'))
                             ->relationship('inspectionTemplate', 'name')
                             ->searchable()
                             ->preload()
@@ -73,21 +73,21 @@ class QualityControlPointResource extends Resource
                             ->columnSpan(1),
 
                         Forms\Components\TextInput::make('quantity_threshold')
-                            ->label(__('quality::control_point.quantity_threshold'))
+                            ->label(__('qualitycontrol::control_point.quantity_threshold'))
                             ->numeric()
                             ->nullable()
-                            ->helperText(__('quality::control_point.quantity_threshold_helper'))
+                            ->helperText(__('qualitycontrol::control_point.quantity_threshold_helper'))
                             ->visible(fn ($get) => $get('trigger_frequency') === QualityTriggerFrequency::PerQuantity->value)
                             ->columnSpan(1),
 
                         Forms\Components\Toggle::make('is_blocking')
-                            ->label(__('quality::control_point.is_blocking'))
-                            ->helperText(__('quality::control_point.is_blocking_helper'))
+                            ->label(__('qualitycontrol::control_point.is_blocking'))
+                            ->helperText(__('qualitycontrol::control_point.is_blocking_helper'))
                             ->default(false)
                             ->columnSpan(1),
 
                         Forms\Components\Toggle::make('active')
-                            ->label(__('quality::control_point.active'))
+                            ->label(__('qualitycontrol::control_point.active'))
                             ->default(true)
                             ->columnSpan(1),
                     ])
@@ -100,47 +100,47 @@ class QualityControlPointResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label(__('quality::control_point.name'))
+                    ->label(__('qualitycontrol::control_point.name'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('trigger_operation')
-                    ->label(__('quality::control_point.trigger_operation'))
+                    ->label(__('qualitycontrol::control_point.trigger_operation'))
                     ->badge()
                     ->formatStateUsing(fn ($state) => $state->label())
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('trigger_frequency')
-                    ->label(__('quality::control_point.trigger_frequency'))
+                    ->label(__('qualitycontrol::control_point.trigger_frequency'))
                     ->formatStateUsing(fn ($state) => $state->label())
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('product.name')
-                    ->label(__('quality::control_point.product'))
+                    ->label(__('qualitycontrol::control_point.product'))
                     ->placeholder(__('All products'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_blocking')
-                    ->label(__('quality::control_point.is_blocking'))
+                    ->label(__('qualitycontrol::control_point.is_blocking'))
                     ->boolean()
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('active')
-                    ->label(__('quality::control_point.active'))
+                    ->label(__('qualitycontrol::control_point.active'))
                     ->boolean()
                     ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('trigger_operation')
-                    ->label(__('quality::control_point.trigger_operation'))
+                    ->label(__('qualitycontrol::control_point.trigger_operation'))
                     ->options(collect(QualityTriggerOperation::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()])),
 
                 Tables\Filters\TernaryFilter::make('is_blocking')
-                    ->label(__('quality::control_point.is_blocking')),
+                    ->label(__('qualitycontrol::control_point.is_blocking')),
 
                 Tables\Filters\TernaryFilter::make('active')
-                    ->label(__('quality::control_point.active')),
+                    ->label(__('qualitycontrol::control_point.active')),
             ])
             ->actions([
                 \Filament\Actions\EditAction::make(),

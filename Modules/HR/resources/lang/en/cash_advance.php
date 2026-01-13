@@ -46,4 +46,18 @@ return [
         'disbursed' => 'Funds disbursed successfully.',
         'settled' => 'Cash advance settled successfully.',
     ],
+    // New keys appended for compatibility with new refactors (if any) or just additions
+    'employee' => 'Employee',
+    'submit' => 'Submit',
+    'approve' => 'Approve',
+    'approved_amount' => 'Approved Amount',
+    'reject' => 'Reject',
+    'rejection_reason' => 'Rejection Reason',
+    'disburse' => 'Disburse',
+    'settle' => 'Settle',
+    'settlement_method' => 'Settlement Method',
+    'bank_account' => 'Bank Account',
+    'requested_amount' => 'Requested Amount',
+    'expected_return_date' => 'Expected Return Date',
+    'advance_number' => 'Advance Number',
 ];
