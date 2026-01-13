@@ -34,4 +34,7 @@ return [
     'description' => 'Description',
     'is_posted' => 'Posted',
     'journal_entries' => 'Journal Entries',
+    'fields' => [
+        'bank_account' => 'Bank Account',
+    ],
 ];

@@ -55,4 +55,20 @@ return [
     'quantity_to_receive' => 'بڕی بۆ وەرگرتن',
     'planned_quantity' => 'بڕی پلاندانراو',
     'received_quantity' => 'بڕی وەرگیراو',
+
+    // View Stock Picking
+    'moves' => 'جوڵەکان',
+    'total_moves' => 'کۆی جوڵەکان',
+    'move_details' => 'وردەکارییەکانی جوڵە',
+    'stock_moves' => 'جوڵەکانی کۆگا',
+    'product' => 'بەرهەم',
+    'actual_fulfilled_quantity' => 'بڕی جێبەجێکراو / ڕاستەقینە',
+    'assigned_lots' => 'گروپە دیاریکراوەکان',
+    'validate_done' => 'پەسەندکردن (تەواو)',
+    'operations' => 'کردارەکان',
+
+    'fields' => [
+        'type' => 'جۆر',
+        'state' => 'دۆخ',
+    ],
 ];

@@ -55,4 +55,20 @@ return [
     'quantity_to_receive' => 'Quantity to Receive',
     'planned_quantity' => 'Planned Quantity',
     'received_quantity' => 'Received Quantity',
+
+    // View Stock Picking
+    'moves' => 'Moves',
+    'total_moves' => 'Total Moves',
+    'move_details' => 'Move Details',
+    'stock_moves' => 'Stock Moves',
+    'product' => 'Product',
+    'actual_fulfilled_quantity' => 'Actual / Fulfilled Quantity',
+    'assigned_lots' => 'Assigned Lots',
+    'validate_done' => 'Validate (Done)',
+    'operations' => 'Operations',
+
+    'fields' => [
+        'type' => 'Type',
+        'state' => 'State',
+    ],
 ];
