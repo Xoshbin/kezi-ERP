@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('currency_id');
             $table->string('fiscal_country'); // e.g., 'IQ'
             $table->foreignId('parent_company_id')->nullable()->constrained('companies')->onDelete('set null');
-            
+
             // Consolidation
             $table->string('consolidation_method')->default('full')->comment('Consolidation method: full, proportional, equity');
 

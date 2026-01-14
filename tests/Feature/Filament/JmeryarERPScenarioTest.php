@@ -12,6 +12,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Modules\Accounting\Enums\Accounting\JournalType;
 use Modules\Accounting\Exceptions\PeriodIsLockedException;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\Accounts\Pages\CreateAccount;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\Pages\CreateBankStatement;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice;
@@ -21,7 +22,6 @@ use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pag
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages\CreatePartner;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Accounts\Pages\CreateAccount;
 use Modules\Accounting\Models\Asset;
 use Modules\Accounting\Models\Journal;
 use Modules\Accounting\Models\JournalEntry;

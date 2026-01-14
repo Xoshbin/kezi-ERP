@@ -560,12 +560,11 @@ class PurchaseOrderForm
                     ])
                     ->collapsible(),
 
-
-            DocumentAttachmentsHelper::makeSection(
-                directory: 'purchase-orders',
-                disabledCallback: fn (?PurchaseOrder $record) => $record && $record->status !== PurchaseOrderStatus::Draft,
-                deletableCallback: fn (?PurchaseOrder $record) => $record === null || $record->status === PurchaseOrderStatus::Draft
-            ),
+                DocumentAttachmentsHelper::makeSection(
+                    directory: 'purchase-orders',
+                    disabledCallback: fn (?PurchaseOrder $record) => $record && $record->status !== PurchaseOrderStatus::Draft,
+                    deletableCallback: fn (?PurchaseOrder $record) => $record === null || $record->status === PurchaseOrderStatus::Draft
+                ),
             ]);
     }
 
