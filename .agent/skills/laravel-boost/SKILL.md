@@ -11,17 +11,16 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
--   php - 8.4.6
+-   php - 8.4+
 -   filament/filament (FILAMENT) - v4
 -   laravel/framework (LARAVEL) - v12
--   laravel/prompts (PROMPTS) - v0
 -   livewire/livewire (LIVEWIRE) - v3
 -   larastan/larastan (LARASTAN) - v3
 -   laravel/pint (PINT) - v1
--   laravel/sail (SAIL) - v1
 -   pestphp/pest (PEST) - v4
--   phpunit/phpunit (PHPUNIT) - v12
--   tailwindcss (TAILWINDCSS) - v4
+-   nwidart/laravel-modules - v11 (modular architecture)
+-   bezhansalleh/filament-shield - v4 (RBAC)
+-   brick/money - v0.10.1 (monetary precision)
 
 ## Conventions
 
@@ -32,6 +31,13 @@ This application is a Laravel application and its main Laravel ecosystems packag
 ## Verification Scripts
 
 -   Do not create verification scripts or tinker when tests cover that functionality and prove it works. Unit and feature tests are more important.
+
+## Modular Testing
+
+-   Tests are located in both root `tests/` and `Modules/{Module}/tests/`.
+-   Run all tests: `php artisan test --parallel`
+-   Run module-specific tests: `php artisan test Modules/Accounting/tests/`
+-   Always run `./vendor/bin/phpstan analyse` after tests.
 
 ## Application Structure & Architecture
 
