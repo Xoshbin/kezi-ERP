@@ -11,7 +11,7 @@ class HumanResourcesCluster extends Cluster
 
     public static function getNavigationLabel(): string
     {
-        return __('navigation.clusters.human_resources');
+        return __('hr::navigation.label');
     }
 
     public static function shouldRegisterNavigation(): bool
