@@ -8,4 +8,11 @@ use Modules\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\Proj
 class CreateProjectTask extends CreateRecord
 {
     protected static string $resource = ProjectTaskResource::class;
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
+
+        return $data;
+    }
 }
