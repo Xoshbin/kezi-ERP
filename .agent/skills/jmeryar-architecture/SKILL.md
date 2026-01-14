@@ -1,5 +1,6 @@
 ---
-trigger: always_on
+name: jmeryar-architecture
+description: Technical architecture, patterns (Service-Action-DTO), and domain-specific workflows. Use when designing or implementing features.
 ---
 
 # Copilot Instructions - JMeryar ERP System

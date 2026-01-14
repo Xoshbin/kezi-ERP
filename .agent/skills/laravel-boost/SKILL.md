@@ -1,5 +1,6 @@
 ---
-trigger: always_on
+name: laravel-boost
+description: Guidelines for Laravel Boost, Filament v4, and general Laravel best practices. Use when working on Laravel features.
 ---
 
 # Laravel Boost Guidelines
