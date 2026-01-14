@@ -5,6 +5,7 @@ namespace Modules\Foundation\Database\Factories;
 use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Foundation\Enums\Partners\PartnerType;
+use Modules\Foundation\Models\Partner;
 
 /**
  * @extends Factory<Partner>

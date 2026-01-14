@@ -16,9 +16,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('company_id')->constrained('companies');
             $table->foreignId('customer_id')->constrained('partners');
+            $table->foreignId('sales_order_id')->nullable()->constrained('sales_orders')->nullOnDelete();
+            $table->foreignId('source_invoice_id')->nullable()->constrained('invoices')->nullOnDelete();
             $table->foreignId('currency_id')->constrained('currencies');
-            $table->foreignId('journal_entry_id')->nullable()->constrained('journal_entries')->onDelete('set null');
-            $table->foreignId('fiscal_position_id')->nullable()->constrained('fiscal_positions')->onDelete('set null');
+            $table->foreignId('journal_entry_id')->nullable()->constrained('journal_entries')->nullOnDelete();
+            $table->foreignId('fiscal_position_id')->nullable()->constrained('fiscal_positions')->nullOnDelete();
+            $table->foreignId('dunning_level_id')->nullable()->constrained('dunning_levels')->nullOnDelete();
+            $table->timestamp('last_dunning_date')->nullable();
+            $table->date('next_dunning_date')->nullable();
             $table->string('invoice_number')->nullable();
             $table->date('invoice_date');
             $table->date('due_date');
@@ -33,6 +38,10 @@ return new class extends Migration
             $table->unsignedBigInteger('total_tax_company_currency')->nullable();
             $table->timestamp('posted_at')->nullable();
             $table->json('reset_to_draft_log')->nullable();
+            $table->foreignId('payment_term_id')->nullable()->constrained('payment_terms')->nullOnDelete();
+            $table->string('incoterm', 3)->nullable()->index(); // FCA, EXW, etc.
+            $table->string('incoterm_location')->nullable();
+            $table->nullableMorphs('inter_company_source', 'inv_ic_source_idx');
             $table->timestamps();
 
             // A truly conditional unique index requires raw SQL.

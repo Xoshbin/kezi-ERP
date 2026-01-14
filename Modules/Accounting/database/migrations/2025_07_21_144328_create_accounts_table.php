@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id');
+            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->foreignId('account_group_id')->nullable();
             $table->string('code');
             $table->json('name');
@@ -22,6 +22,7 @@ return new class extends Migration
             $table->enum('type', $allowedTypes);
             $table->boolean('is_deprecated')->default(false);
             $table->boolean('can_create_assets')->default(false);
+            $table->foreignId('currency_id')->nullable()->constrained();
             $table->timestamps();
 
             $table->boolean('allow_reconciliation')
