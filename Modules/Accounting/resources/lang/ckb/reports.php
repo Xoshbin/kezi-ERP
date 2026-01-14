@@ -112,4 +112,6 @@ return [
     'tax_rate' => 'ڕێژەی باج',
     'net_amount' => 'بڕی پوخت',
     'tax_amount' => 'بڕی باج',
+    'iraq_vat_return' => 'گەڕانەوەی باجی عێراق (VAT)',
+    'navigation_group' => 'ڕاپۆرتەکان',
 ];

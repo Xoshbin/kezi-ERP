@@ -152,7 +152,7 @@ return [
     'difference' => 'Difference',
     'balanced' => 'Balanced',
     'no_account_balances_found' => 'No account balances found for the selected date.',
-    'select_date_and_generate' => 'Select a date and click "Generate Report" to view the Trial Balance.',
+    'select_date_and_generate_tb' => 'Select a date and click "Generate Report" to view the Trial Balance.',
 
     // Tax Report
     'tax_report' => 'Tax Report',
@@ -170,7 +170,7 @@ return [
     'refundable' => 'Refundable',
     'no_output_tax_transactions' => 'No output tax transactions found for this period.',
     'no_input_tax_transactions' => 'No input tax transactions found for this period.',
-    'select_date_range_and_generate' => 'Select a date range and click "Generate Report" to view the Tax Report.',
+    'select_date_range_and_generate_tax' => 'Select a date range and click "Generate Report" to view the Tax Report.',
 
     // Cash Flow Statement
     'cash_flow_statement' => 'Cash Flow Statement',
@@ -192,4 +192,6 @@ return [
     'select_dates_and_generate' => 'Select a date range and click "Generate Report" to view the Cash Flow Statement.',
     'cash_flow_indirect_method' => 'Indirect Method Statement',
     'cash_flow_verification_note' => 'The ending cash balance should equal beginning cash plus net change in cash.',
+    'iraq_vat_return' => 'Iraq VAT Return',
+    'navigation_group' => 'Reports',
 ];

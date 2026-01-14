@@ -15,6 +15,7 @@ class CashAdvancesTable
         return $table
             ->columns([
                 \Filament\Tables\Columns\TextColumn::make('advance_number')
+                    ->label(__('hr::cash_advance.advance_number'))
                     ->searchable()
                     ->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('employee.first_name') // Accessor full_name might not work for search/sort easily without configuration
@@ -22,11 +23,14 @@ class CashAdvancesTable
                     ->formatStateUsing(fn ($record) => $record->employee->full_name)
                     ->searchable(['first_name', 'last_name']),
                 \Filament\Tables\Columns\TextColumn::make('requested_amount')
+                    ->label(__('hr::cash_advance.requested_amount'))
                     ->money(fn ($record) => $record->currency->code)
                     ->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('status')
+                    ->label(__('hr::cash_advance.fields.status'))
                     ->badge(),
                 \Filament\Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('hr::cash_advance.created_at'))
                     ->dateTime()
                     ->sortable(),
             ])
@@ -106,17 +110,13 @@ class CashAdvancesTable
                     ->form([
                         \Filament\Forms\Components\Select::make('settlement_method')
                             ->label(__('hr::cash_advance.settlement_method'))
-                            ->options([
-                                'none' => 'None (Exact Match/Carry Forward)',
-                                'cash_return' => 'Cash Return (Employee pays back)',
-                                'reimbursement' => 'Reimbursement (Company pays employee)',
-                            ])
+                            ->options(__('hr::cash_advance.settlement_methods'))
                             ->required(),
                         \Filament\Forms\Components\Select::make('bank_account_id')
                             ->label(__('hr::cash_advance.bank_account'))
-                            ->helperText('Required for Cash Return or Reimbursement')
+                            ->helperText(__('hr::cash_advance.bank_account_helper'))
                             ->options(\Modules\Accounting\Models\Account::where('type', \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash)->get()->pluck('name', 'id'))
-                            ->visible(fn (\Filament\Forms\Get $get) => in_array($get('settlement_method'), ['cash_return', 'reimbursement'])),
+                            ->visible(fn ($get) => in_array($get('settlement_method'), ['cash_return', 'reimbursement'])),
                     ])
                     ->action(function (\Modules\HR\Models\CashAdvance $record, array $data) {
                         app(\Modules\HR\Services\HumanResources\CashAdvanceService::class)->settle($record, $data['settlement_method'], $data['bank_account_id'] ?? null, auth()->user());

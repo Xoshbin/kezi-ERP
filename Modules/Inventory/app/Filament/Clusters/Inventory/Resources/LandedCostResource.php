@@ -30,14 +30,14 @@ class LandedCostResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Operations';
+        return __('inventory::landed_cost.navigation_group');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make()
+                Section::make(__('inventory::landed_cost.section_details'))
                     ->schema([
                         Select::make('vendor_bill_id')
                             ->relationship('vendorBill', 'bill_reference')
@@ -46,6 +46,7 @@ class LandedCostResource extends Resource
                             ->label(__('inventory::landed_cost.fields.vendor_bill')),
 
                         DatePicker::make('date')
+                            ->label(__('inventory::landed_cost.fields.date'))
                             ->required()
                             ->default(now()),
 
@@ -55,14 +56,17 @@ class LandedCostResource extends Resource
                             ->label(__('inventory::landed_cost.fields.total_amount')),
 
                         Select::make('allocation_method')
+                            ->label(__('inventory::landed_cost.fields.allocation_method'))
                             ->options(LandedCostAllocationMethod::class)
                             ->required()
                             ->default(LandedCostAllocationMethod::ByQuantity),
 
                         TextInput::make('description')
+                            ->label(__('inventory::landed_cost.fields.description'))
                             ->maxLength(255),
 
                         Select::make('status')
+                            ->label(__('inventory::landed_cost.fields.status'))
                             ->options(LandedCostStatus::class)
                             ->required()
                             ->default(LandedCostStatus::Draft)
@@ -79,17 +83,21 @@ class LandedCostResource extends Resource
                     ->label(__('inventory::landed_cost.fields.id'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('date')
+                    ->label(__('inventory::landed_cost.fields.date'))
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('vendorBill.bill_reference')
                     ->label(__('inventory::landed_cost.fields.vendor_bill'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('amount_total')
+                    ->label(__('inventory::landed_cost.fields.total_amount'))
                     ->money()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('allocation_method')
+                    ->label(__('inventory::landed_cost.fields.allocation_method'))
                     ->badge(),
                 Tables\Columns\TextColumn::make('status')
+                    ->label(__('inventory::landed_cost.fields.status'))
                     ->badge(),
             ])
             ->filters([

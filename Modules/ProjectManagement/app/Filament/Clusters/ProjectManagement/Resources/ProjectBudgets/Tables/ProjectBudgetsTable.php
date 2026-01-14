@@ -18,19 +18,23 @@ class ProjectBudgetsTable
         return $table
             ->columns([
                 TextColumn::make('project.name')
+                    ->label(__('projectmanagement::project.budget.project_name'))
                     ->searchable()
                     ->sortable()
                     ->weight('medium'),
                 TextColumn::make('name')
+                    ->label(__('projectmanagement::project.budget.name'))
                     ->searchable(),
                 TextColumn::make('start_date')
+                    ->label(__('projectmanagement::project.budget.start_date'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('end_date')
+                    ->label(__('projectmanagement::project.budget.end_date'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('budget_amount')
-                    ->label('Total Budget')
+                    ->label(__('projectmanagement::project.budget.total_budget'))
                     ->money(fn ($record) => $record->company->currency->code ?? 'USD') // Assumes attribute is major units if using MoneyCast, OR need manual formatting if minor
                     // ProjectBudget line uses minor units. ProjectBudget budget_amount also minor?
                     // Observer updates it by summing lines (minor).
