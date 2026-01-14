@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -15,7 +16,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\DunningLevelResource\Pages;
 use Modules\Accounting\Models\DunningLevel;
 
@@ -23,7 +23,7 @@ class DunningLevelResource extends Resource
 {
     protected static ?string $model = DunningLevel::class;
 
-    protected static ?string $cluster = AccountingCluster::class;
+    protected static ?string $cluster = SettingsCluster::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-bell-alert';
 
@@ -31,7 +31,7 @@ class DunningLevelResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::navigation.configuration');
+        return __('accounting::navigation.groups.accounting_settings');
     }
 
     public static function getModelLabel(): string

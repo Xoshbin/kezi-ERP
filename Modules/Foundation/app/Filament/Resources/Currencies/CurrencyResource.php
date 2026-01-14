@@ -46,6 +46,11 @@ class CurrencyResource extends Resource
         return __('foundation::currency.plural_label');
     }
 
+    public static function getNavigationGroup(): string
+    {
+        return __('foundation::navigation.groups.general_settings');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema

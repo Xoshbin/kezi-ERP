@@ -2,6 +2,7 @@
 
 namespace Modules\QualityControl\Filament\Clusters\QualityControl\Resources;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -11,7 +12,6 @@ use Filament\Tables\Table;
 use Modules\QualityControl\Enums\QualityTriggerFrequency;
 use Modules\QualityControl\Enums\QualityTriggerOperation;
 use Modules\QualityControl\Filament\Clusters\QualityControl\Resources\QualityControlPointResource\Pages;
-use Modules\QualityControl\Filament\Clusters\QualityControlCluster;
 use Modules\QualityControl\Models\QualityControlPoint;
 
 class QualityControlPointResource extends Resource
@@ -20,13 +20,18 @@ class QualityControlPointResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cog-6-tooth';
 
-    protected static ?string $cluster = QualityControlCluster::class;
+    protected static ?string $cluster = SettingsCluster::class;
 
     protected static ?int $navigationSort = 3;
 
     public static function getNavigationLabel(): string
     {
         return __('qualitycontrol::control_point.navigation_label');
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return __('qualitycontrol::navigation.groups.qc_settings');
     }
 
     public static function form(Schema $schema): Schema
