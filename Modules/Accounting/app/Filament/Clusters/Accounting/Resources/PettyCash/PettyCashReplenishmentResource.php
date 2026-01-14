@@ -25,19 +25,29 @@ class PettyCashReplenishmentResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Petty Cash';
+        return __('accounting::petty_cash.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('accounting::petty_cash.replenishment.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('accounting::petty_cash.replenishment.plural_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Replenishment Details')
+                Section::make(__('accounting::petty_cash.replenishment.section_details'))
                     ->schema([
                         Select::make('fund_id')
                             ->relationship('fund', 'name', fn ($query) => $query->where('status', 'active'))
                             ->required()
-                            ->label('Petty Cash Fund')
+                            ->label(__('accounting::petty_cash.fields.petty_cash_fund'))
                             ->searchable()
                             ->preload()
                             ->reactive()
@@ -54,13 +64,13 @@ class PettyCashReplenishmentResource extends Resource
                         DatePicker::make('replenishment_date')
                             ->required()
                             ->default(now())
-                            ->label('Replenishment Date'),
+                            ->label(__('accounting::petty_cash.fields.replenishment_date')),
 
                         TextInput::make('amount')
                             ->required()
                             ->numeric()
                             ->prefix('IQD')
-                            ->label('Amount')
+                            ->label(__('accounting::petty_cash.fields.amount'))
                             ->helperText('Amount will be auto-calculated based on fund balance'),
 
                         Select::make('payment_method')
@@ -71,10 +81,10 @@ class PettyCashReplenishmentResource extends Resource
                             ])
                             ->required()
                             ->default('bank_transfer')
-                            ->label('Payment Method'),
+                            ->label(__('accounting::petty_cash.fields.payment_method')),
 
                         TextInput::make('reference')
-                            ->label('Reference')
+                            ->label(__('accounting::petty_cash.fields.reference'))
                             ->helperText('Bank transfer reference or cheque number'),
                     ])->columns(2),
             ]);
@@ -85,27 +95,32 @@ class PettyCashReplenishmentResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('replenishment_number')
+                    ->label(__('accounting::petty_cash.replenishment.replenishment_number'))
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('replenishment_date')
+                    ->label(__('accounting::petty_cash.fields.replenishment_date'))
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('fund.name')
-                    ->label('Fund')
+                    ->label(__('accounting::petty_cash.fields.petty_cash_fund'))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('amount')
+                    ->label(__('accounting::petty_cash.fields.amount'))
                     ->money(fn (PettyCashReplenishment $record) => $record->fund->currency->code)
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('payment_method')
+                    ->label(__('accounting::petty_cash.fields.payment_method'))
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => ucwords(str_replace('_', ' ', $state))),
 
                 Tables\Columns\TextColumn::make('reference')
+                    ->label(__('accounting::petty_cash.fields.reference'))
                     ->searchable()
                     ->toggleable(),
             ])

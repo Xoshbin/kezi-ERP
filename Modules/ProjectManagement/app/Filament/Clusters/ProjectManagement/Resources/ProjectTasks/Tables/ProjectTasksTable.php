@@ -24,31 +24,38 @@ class ProjectTasksTable
         return $table
             ->columns([
                 TextColumn::make('project.name')
+                    ->label(__('projectmanagement::project.task.project'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('name')
+                    ->label(__('projectmanagement::project.task.name'))
                     ->searchable()
                     ->sortable()
                     ->weight('medium'),
                 TextColumn::make('assignedEmployee.first_name')
-                    ->label('Assigned To')
+                    ->label(__('projectmanagement::project.task.assigned_to'))
                     ->formatStateUsing(fn ($record) => $record->assignedEmployee ? "{$record->assignedEmployee->first_name} {$record->assignedEmployee->last_name}" : '')
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('status')
+                    ->label(__('projectmanagement::project.task.status'))
                     ->badge()
                     ->sortable(),
                 TextColumn::make('due_date')
+                    ->label(__('projectmanagement::project.task.due_date'))
                     ->date()
                     ->sortable()
                     ->color(fn ($record) => $record->due_date < now() && $record->status !== 'completed' ? 'danger' : null),
                 TextColumn::make('estimated_hours')
+                    ->label(__('projectmanagement::project.task.estimated_hours'))
                     ->numeric(1)
                     ->sortable(),
                 TextColumn::make('actual_hours')
+                    ->label(__('projectmanagement::project.task.actual_hours'))
                     ->numeric(1)
                     ->sortable(),
                 TextColumn::make('progress_percentage')
+                    ->label(__('projectmanagement::project.task.progress_percentage'))
                     ->numeric()
                     ->suffix('%')
                     ->sortable(),

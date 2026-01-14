@@ -31,50 +31,61 @@ class DunningLevelResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Configuration';
+        return __('accounting::navigation.configuration');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('accounting::dunning_level.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('accounting::dunning_level.plural_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('General Information')
+                Section::make(__('accounting::dunning_level.sections.general_information'))
                     ->schema([
                         TextInput::make('name')
+                            ->label(__('accounting::dunning_level.fields.name'))
                             ->required()
                             ->maxLength(255),
                         TextInput::make('days_overdue')
-                            ->label('Days Overdue')
-                            ->helperText('Number of days after due date to trigger this level')
+                            ->label(__('accounting::dunning_level.fields.days_overdue'))
+                            ->helperText(__('accounting::dunning_level.helpers.days_overdue'))
                             ->numeric()
                             ->required()
                             ->default(0),
                         Toggle::make('send_email')
-                            ->label('Send Email')
+                            ->label(__('accounting::dunning_level.fields.send_email'))
                             ->default(true)
                             ->live(),
                         Toggle::make('print_letter')
-                            ->label('Print Letter')
+                            ->label(__('accounting::dunning_level.fields.print_letter'))
                             ->default(false),
                     ])->columns(2),
 
-                Section::make('Late Fee Configuration')
+                Section::make(__('accounting::dunning_level.sections.late_fee_configuration'))
                     ->schema([
                         Toggle::make('charge_fee')
-                            ->label('Charge Late Fee')
+                            ->label(__('accounting::dunning_level.fields.charge_fee'))
                             ->default(false)
                             ->live(),
 
                         \Filament\Schemas\Components\Grid::make(3)
                             ->schema([
                                 \Filament\Forms\Components\Select::make('fee_product_id')
-                                    ->label('Fee Product')
+                                    ->label(__('accounting::dunning_level.fields.fee_product'))
                                     ->relationship('feeProduct', 'name')
                                     ->requiredIf('charge_fee', true)
                                     ->searchable(),
 
                                 \Filament\Forms\Components\TextInput::make('fee_amount')
-                                    ->label('Flat Fee Amount')
+                                    ->label(__('accounting::dunning_level.fields.fee_amount'))
                                     ->rules(['numeric'])
                                     ->extraInputAttributes(['type' => 'number', 'step' => '0.01'])
                                     ->prefix('MC') // Using generic currency symbol as place holder
@@ -82,7 +93,7 @@ class DunningLevelResource extends Resource
                                     ->formatStateUsing(fn ($state) => $state instanceof \Brick\Money\Money ? $state->getAmount()->toFloat() : $state),
 
                                 \Filament\Forms\Components\TextInput::make('fee_percentage')
-                                    ->label('Fee Percentage')
+                                    ->label(__('accounting::dunning_level.fields.fee_percentage'))
                                     ->numeric()
                                     ->suffix('%')
                                     ->default(0),
@@ -90,14 +101,14 @@ class DunningLevelResource extends Resource
                             ->visible(fn (callable $get) => $get('charge_fee')),
                     ]),
 
-                Section::make('Email Configuration')
-                    ->description('Configure the email template explicitly.')
+                Section::make(__('accounting::dunning_level.sections.email_configuration'))
+                    ->description(__('accounting::dunning_level.helpers.email_configuration'))
                     ->schema([
                         TextInput::make('email_subject')
-                            ->label('Email Subject')
+                            ->label(__('accounting::dunning_level.fields.email_subject'))
                             ->requiredIf('send_email', true),
                         Textarea::make('email_body')
-                            ->label('Email Body')
+                            ->label(__('accounting::dunning_level.fields.email_body'))
                             ->rows(5)
                             ->requiredIf('send_email', true),
                     ])
@@ -110,14 +121,18 @@ class DunningLevelResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('accounting::dunning_level.fields.name'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('days_overdue')
+                    ->label(__('accounting::dunning_level.fields.days_overdue'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('send_email')
+                    ->label(__('accounting::dunning_level.fields.send_email'))
                     ->boolean(),
                 Tables\Columns\IconColumn::make('print_letter')
+                    ->label(__('accounting::dunning_level.fields.print_letter'))
                     ->boolean(),
             ])
             ->filters([])

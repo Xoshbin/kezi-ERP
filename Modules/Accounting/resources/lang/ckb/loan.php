@@ -1,6 +1,9 @@
 <?php
 
 return [
+    'label' => 'رێککەوتننامەی قەرز',
+    'plural_label' => 'رێککەوتننامەکانی قەرز',
+    'navigation_label' => 'رێککەوتننامەکانی قەرز',
     'form' => [
         'counterparty_currency' => 'لایەنی بەرامبەر و دراو',
         'partner' => 'هاوبەش',
