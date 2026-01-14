@@ -13,17 +13,21 @@ class ExpenseReportsTable
         return $table
             ->columns([
                 \Filament\Tables\Columns\TextColumn::make('report_number')
+                    ->label(__('hr::expense_report.fields.report_number'))
                     ->searchable()
                     ->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('cashAdvance.advance_number')
-                    ->label(__('hr::expense_report.actions.cash_advance'))
+                    ->label(__('hr::expense_report.fields.cash_advance'))
                     ->searchable(),
                 \Filament\Tables\Columns\TextColumn::make('total_amount')
+                    ->label(__('hr::expense_report.fields.total_amount'))
                     ->money(fn ($record) => $record->cashAdvance?->currency?->code ?? 'USD') // currency might be on cashAdvance
                     ->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('status')
+                    ->label(__('hr::expense_report.fields.status'))
                     ->badge(),
                 \Filament\Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('hr::expense_report.fields.created_at'))
                     ->dateTime()
                     ->sortable(),
             ])

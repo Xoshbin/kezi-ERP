@@ -47,6 +47,7 @@ return [
         'billing_type' => 'جۆری پسوولە',
         'start_date' => 'بەرواری دەستپێک',
         'end_date' => 'بەرواری کۆتایی',
+        'custom_navigation_label' => 'پڕۆژەکان',
     ],
     'task' => [
         'label' => 'ئەرکی پڕۆژە',
