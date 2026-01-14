@@ -31,6 +31,7 @@ return new class extends Migration
             $table->integer('sequence')->default(0);
 
             $table->timestamps();
+            $table->softDeletes();
 
             // Indexes for performance
             $table->index(['project_id', 'status']);
