@@ -47,9 +47,11 @@ class ChequebookResource extends Resource
                 Section::make(__('accounting::cheque.details'))
                     ->schema([
                         TextInput::make('name')
+                            ->label(__('accounting::cheque.name'))
                             ->required()
                             ->maxLength(255),
                         TextInput::make('bank_account_number')
+                            ->label(__('accounting::cheque.bank_account'))
                             ->required()
                             ->maxLength(255),
                         Select::make('bank_id') // Use relationship for dynamic fetching
@@ -78,10 +80,12 @@ class ChequebookResource extends Resource
                             ->default(6)
                             ->label(__('accounting::cheque.digits')),
                         TextInput::make('start_number')
+                            ->label(__('accounting::cheque.start_number'))
                             ->numeric()
                             ->required()
                             ->default(1),
                         TextInput::make('next_number') // Helper, maybe read only or editable
+                            ->label(__('accounting::cheque.next_number'))
                             ->numeric()
                             ->default(1),
                     ])->columns(2),
@@ -93,15 +97,20 @@ class ChequebookResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('accounting::cheque.name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('bank_name')
+                    ->label(__('accounting::cheque.bank_name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('prefix')
+                    ->label(__('accounting::cheque.prefix'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('next_number')
+                    ->label(__('accounting::cheque.next_number'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')
+                    ->label(__('accounting::cheque.is_active'))
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
