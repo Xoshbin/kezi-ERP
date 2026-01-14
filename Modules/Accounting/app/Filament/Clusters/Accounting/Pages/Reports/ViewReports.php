@@ -20,7 +20,7 @@ class ViewReports extends Page
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::navigation.groups.reports');
+        return null;
     }
 
     public static function getNavigationLabel(): string

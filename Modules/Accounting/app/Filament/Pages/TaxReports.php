@@ -22,6 +22,11 @@ class TaxReports extends Page
         return __('accounting::reports.navigation_group');
     }
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     protected string $view = 'accounting::filament.pages.tax-reports';
 
     public ?string $report_type = null;
