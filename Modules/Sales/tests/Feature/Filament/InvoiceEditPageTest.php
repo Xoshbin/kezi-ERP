@@ -12,6 +12,9 @@ use Modules\Foundation\Models\Partner;
 use Modules\Sales\Enums\Sales\InvoiceStatus;
 use Modules\Sales\Models\Invoice;
 use Modules\Sales\Models\InvoiceLine;
+use Tests\Traits\WithSuperAdminRole;
+
+uses(WithSuperAdminRole::class);
 
 beforeEach(function () {
     $this->seed(RolesAndPermissionsSeeder::class);
@@ -20,7 +23,7 @@ beforeEach(function () {
     $this->user->companies()->attach($this->company);
 
     setPermissionsTeamId($this->company->id);
-    $this->user->assignRole('super_admin');
+    $this->assignSuperAdminRole($this->user, $this->company);
 
     $this->actingAs($this->user);
 

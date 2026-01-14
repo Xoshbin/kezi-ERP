@@ -22,6 +22,7 @@ use Tests\TestCase;
 class VendorBillConfirmationTest extends TestCase
 {
     use RefreshDatabase;
+    use \Tests\Traits\WithSuperAdminRole;
 
     protected User $user;
 
@@ -45,7 +46,7 @@ class VendorBillConfirmationTest extends TestCase
         $this->user->companies()->attach($this->company);
 
         setPermissionsTeamId($this->company->id);
-        $this->user->assignRole('super_admin');
+        $this->assignSuperAdminRole($this->user, $this->company);
 
         $this->actingAs($this->user);
         \Filament\Facades\Filament::setTenant($this->company);

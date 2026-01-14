@@ -26,6 +26,9 @@ beforeEach(function () {
     $this->user->companies()->attach($this->company);
     $this->actingAs($this->user);
 
+    // Set team context BEFORE assigning permissions (required for company_id in model_has_permissions)
+    setPermissionsTeamId($this->company->id);
+
     // Setup permissions
     $permissions = [
         'create_vendor_bill',

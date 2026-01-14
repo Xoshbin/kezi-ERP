@@ -24,15 +24,24 @@ test('payment confirmation properly posts draft invoice before marking as paid',
         'company_id' => $this->company->id,
     ]);
 
-    $invoice = Invoice::factory()->withLines(1)->create([
+    $invoiceAmount = Money::of(100000, $this->company->currency->code);
+    $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $customer->id,
         'currency_id' => $this->company->currency_id,
         'status' => InvoiceStatus::Draft, // Important: starts as draft
-        'total_amount' => Money::of(100000, $this->company->currency->code), // $1000
+        'total_amount' => $invoiceAmount,
         'invoice_number' => null, // Draft invoices don't have numbers
         'posted_at' => null,
         'journal_entry_id' => null,
+    ]);
+
+    // Create a matching line to prevent recomputation issues
+    \Modules\Sales\Models\InvoiceLine::factory()->create([
+        'invoice_id' => $invoice->id,
+        'company_id' => $this->company->id,
+        'subtotal' => $invoiceAmount,
+        'total_line_tax' => Money::zero($this->company->currency->code),
     ]);
 
     // Create a payment for the full amount
@@ -40,7 +49,7 @@ test('payment confirmation properly posts draft invoice before marking as paid',
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Draft,
-        'amount' => Money::of(100000, $this->company->currency->code),
+        'amount' => $invoiceAmount,
         'currency_id' => $this->company->currency_id,
         'paid_to_from_partner_id' => $customer->id,
         'payment_type' => PaymentType::Inbound,
@@ -51,7 +60,7 @@ test('payment confirmation properly posts draft invoice before marking as paid',
     PaymentDocumentLink::create([
         'payment_id' => $payment->id,
         'invoice_id' => $invoice->id,
-        'amount_applied' => Money::of(100000, $this->company->currency->code),
+        'amount_applied' => $invoiceAmount,
     ]);
 
     // Act: Confirm the payment
@@ -84,14 +93,23 @@ test('payment confirmation properly posts draft vendor bill before marking as pa
         'company_id' => $this->company->id,
     ]);
 
-    $vendorBill = VendorBill::factory()->withLines(1)->create([
+    $billAmount = Money::of(50000, $this->company->currency->code);
+    $vendorBill = VendorBill::factory()->create([
         'company_id' => $this->company->id,
         'vendor_id' => $vendor->id,
         'currency_id' => $this->company->currency_id,
         'status' => VendorBillStatus::Draft, // Important: starts as draft
-        'total_amount' => Money::of(50000, $this->company->currency->code), // $500
+        'total_amount' => $billAmount,
         'journal_entry_id' => null,
         'posted_at' => null,
+    ]);
+
+    // Create a matching line to prevent recomputation issues
+    \Modules\Purchase\Models\VendorBillLine::factory()->create([
+        'vendor_bill_id' => $vendorBill->id,
+        'company_id' => $this->company->id,
+        'subtotal' => $billAmount,
+        'total_line_tax' => Money::zero($this->company->currency->code),
     ]);
 
     // Create a payment for the full amount
@@ -99,7 +117,7 @@ test('payment confirmation properly posts draft vendor bill before marking as pa
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Draft,
-        'amount' => Money::of(50000, $this->company->currency->code),
+        'amount' => $billAmount,
         'currency_id' => $this->company->currency_id,
         'paid_to_from_partner_id' => $vendor->id,
         'payment_type' => PaymentType::Outbound,
@@ -110,7 +128,7 @@ test('payment confirmation properly posts draft vendor bill before marking as pa
     PaymentDocumentLink::create([
         'payment_id' => $payment->id,
         'vendor_bill_id' => $vendorBill->id,
-        'amount_applied' => Money::of(50000, $this->company->currency->code),
+        'amount_applied' => $billAmount,
     ]);
 
     // Act: Confirm the payment
@@ -142,12 +160,13 @@ test('payment confirmation does not affect already posted documents', function (
         'company_id' => $this->company->id,
     ]);
 
+    $invoiceAmount = Money::of(100000, $this->company->currency->code);
     $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $customer->id,
         'currency_id' => $this->company->currency_id,
         'status' => InvoiceStatus::Posted, // Already posted
-        'total_amount' => Money::of(100000, $this->company->currency->code),
+        'total_amount' => $invoiceAmount,
         'invoice_number' => 'INV-001',
         'posted_at' => now(),
     ]);
@@ -157,7 +176,7 @@ test('payment confirmation does not affect already posted documents', function (
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
         'status' => PaymentStatus::Draft,
-        'amount' => Money::of(100000, $this->company->currency->code),
+        'amount' => $invoiceAmount,
         'currency_id' => $this->company->currency_id,
         'paid_to_from_partner_id' => $customer->id,
         'payment_type' => PaymentType::Inbound,
@@ -167,8 +186,8 @@ test('payment confirmation does not affect already posted documents', function (
     // Link payment to invoice
     PaymentDocumentLink::create([
         'payment_id' => $payment->id,
-        'invoice_id' => $invoice->id,
-        'amount_applied' => Money::of(100000, $this->company->currency->code),
+        'invoice_id' => $invoice->getKey(),
+        'amount_applied' => $invoiceAmount,
     ]);
 
     // Store original values
