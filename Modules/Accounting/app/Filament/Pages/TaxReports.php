@@ -19,7 +19,7 @@ class TaxReports extends Page
 
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.reports');
+        return __('accounting::reports.navigation_group');
     }
 
     protected string $view = 'accounting::filament.pages.tax-reports';
@@ -40,14 +40,14 @@ class TaxReports extends Page
 
     public static function getNavigationLabel(): string
     {
-        return __('Tax Reports');
+        return __('accounting::reports.tax_reports');
     }
 
     protected function getHeaderActions(): array
     {
         return [
             Action::make('generate')
-                ->label('Generate Report')
+                ->label(__('accounting::reports.generate_report'))
                 ->action(fn () => $this->generate()),
         ];
     }
@@ -55,7 +55,7 @@ class TaxReports extends Page
     public function getGenerators(): array
     {
         return [
-            \Modules\Accounting\Services\Reports\Generators\IraqVATReturnGenerator::class => 'Iraq VAT Return',
+            \Modules\Accounting\Services\Reports\Generators\IraqVATReturnGenerator::class => __('accounting::reports.iraq_vat_return'),
         ];
     }
 

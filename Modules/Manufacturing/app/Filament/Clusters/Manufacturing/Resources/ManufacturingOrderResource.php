@@ -32,28 +32,28 @@ class ManufacturingOrderResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return 'Manufacturing Order';
+        return __('manufacturing::manufacturing.order.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'Manufacturing Orders';
+        return __('manufacturing::manufacturing.order.plural_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Manufacturing Order Information')
+            Section::make(__('manufacturing::manufacturing.order.section_information'))
                 ->schema([
                     Forms\Components\TextInput::make('number')
-                        ->label('MO Number')
+                        ->label(__('manufacturing::manufacturing.order.number'))
                         ->disabled()
                         ->dehydrated(false)
-                        ->placeholder('Auto-generated on save')
+                        ->placeholder(__('manufacturing::manufacturing.order.number_placeholder'))
                         ->visible(fn ($record) => $record !== null),
 
                     Forms\Components\Select::make('bom_id')
-                        ->label('Bill of Materials')
+                        ->label(__('manufacturing::manufacturing.bom.label'))
                         ->relationship('billOfMaterial', 'code')
                         ->searchable()
                         ->preload()
@@ -69,7 +69,7 @@ class ManufacturingOrderResource extends Resource
                         }),
 
                     Forms\Components\Select::make('product_id')
-                        ->label('Product to Manufacture')
+                        ->label(__('manufacturing::manufacturing.order.product'))
                         ->relationship('product', 'name')
                         ->searchable()
                         ->preload()
@@ -77,72 +77,72 @@ class ManufacturingOrderResource extends Resource
                         ->disabled(fn ($get) => $get('bom_id') !== null),
 
                     Forms\Components\TextInput::make('quantity_to_produce')
-                        ->label('Quantity to Produce')
+                        ->label(__('manufacturing::manufacturing.order.quantity_to_produce'))
                         ->numeric()
                         ->required()
                         ->minValue(0.0001)
                         ->default(1.0),
 
                     Forms\Components\Select::make('source_location_id')
-                        ->label('Source Location (Components)')
+                        ->label(__('manufacturing::manufacturing.order.source_location'))
                         ->relationship('sourceLocation', 'name')
                         ->searchable()
                         ->preload()
                         ->required()
-                        ->helperText('Where to take components from'),
+                        ->helperText(__('manufacturing::manufacturing.order.source_location_helper')),
 
                     Forms\Components\Select::make('destination_location_id')
-                        ->label('Destination Location (Finished Goods)')
+                        ->label(__('manufacturing::manufacturing.order.destination_location'))
                         ->relationship('destinationLocation', 'name')
                         ->searchable()
                         ->preload()
                         ->required()
-                        ->helperText('Where to put finished products'),
+                        ->helperText(__('manufacturing::manufacturing.order.destination_location_helper')),
 
                     Forms\Components\DatePicker::make('planned_start_date')
-                        ->label('Planned Start Date')
+                        ->label(__('manufacturing::manufacturing.order.planned_start_date'))
                         ->default(now()),
 
                     Forms\Components\DatePicker::make('planned_end_date')
-                        ->label('Planned End Date')
+                        ->label(__('manufacturing::manufacturing.order.planned_end_date'))
                         ->default(now()->addDays(7)),
 
                     Forms\Components\Textarea::make('notes')
-                        ->label('Notes')
+                        ->label(__('manufacturing::manufacturing.bom.notes'))
                         ->rows(3)
                         ->columnSpanFull(),
                 ])
                 ->columns(2),
 
-            Section::make('Production Status')
+            Section::make(__('manufacturing::manufacturing.order.production_status'))
                 ->schema([
                     Forms\Components\Select::make('status')
-                        ->label('Status')
+                        ->label(__('manufacturing::manufacturing.order.status'))
                         ->options([
-                            ManufacturingOrderStatus::Draft->value => 'Draft',
-                            ManufacturingOrderStatus::Confirmed->value => 'Confirmed',
-                            ManufacturingOrderStatus::InProgress->value => 'In Progress',
-                            ManufacturingOrderStatus::Done->value => 'Done',
-                            ManufacturingOrderStatus::Cancelled->value => 'Cancelled',
+                            ManufacturingOrderStatus::Draft->value => __('manufacturing::manufacturing.order.draft'),
+                            ManufacturingOrderStatus::Confirmed->value => __('manufacturing::manufacturing.order.confirmed'),
+                            ManufacturingOrderStatus::InProgress->value => __('manufacturing::manufacturing.order.in_progress'),
+                            ManufacturingOrderStatus::Done->value => __('manufacturing::manufacturing.order.done'),
+                            ManufacturingOrderStatus::Cancelled->value => __('manufacturing::manufacturing.order.cancelled'),
                         ])
                         ->default(ManufacturingOrderStatus::Draft->value)
                         ->disabled()
                         ->dehydrated(false),
 
                     Forms\Components\TextInput::make('quantity_produced')
-                        ->label('Quantity Produced')
+                        ->label(__('manufacturing::manufacturing.order.quantity_produced'))
                         ->numeric()
                         ->disabled()
                         ->dehydrated(false)
                         ->default(0),
 
                     Forms\Components\DateTimePicker::make('actual_start_date')
-                        ->label('Actual Start Date')
+                        ->label(__('manufacturing::manufacturing.order.actual_start_date'))
                         ->disabled()
                         ->dehydrated(false),
 
                     Forms\Components\DateTimePicker::make('actual_end_date')
-                        ->label('Actual End Date')
+                        ->label(__('manufacturing::manufacturing.order.actual_end_date'))
                         ->disabled()
                         ->dehydrated(false),
                 ])
@@ -156,27 +156,27 @@ class ManufacturingOrderResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('number')
-                    ->label('MO Number')
+                    ->label(__('manufacturing::manufacturing.order.number'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('product.name')
-                    ->label('Product')
+                    ->label(__('manufacturing::manufacturing.bom.product'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('quantity_to_produce')
-                    ->label('Qty to Produce')
+                    ->label(__('manufacturing::manufacturing.order.qty_to_produce_short'))
                     ->numeric(decimalPlaces: 2)
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('quantity_produced')
-                    ->label('Qty Produced')
+                    ->label(__('manufacturing::manufacturing.order.qty_produced_short'))
                     ->numeric(decimalPlaces: 2)
                     ->sortable(),
 
                 Tables\Columns\BadgeColumn::make('status')
-                    ->label('Status')
+                    ->label(__('manufacturing::manufacturing.order.status'))
                     ->colors([
                         'secondary' => ManufacturingOrderStatus::Draft->value,
                         'warning' => ManufacturingOrderStatus::Confirmed->value,
@@ -187,40 +187,40 @@ class ManufacturingOrderResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('planned_start_date')
-                    ->label('Planned Start')
+                    ->label(__('manufacturing::manufacturing.order.planned_start'))
                     ->date()
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('actual_start_date')
-                    ->label('Actual Start')
+                    ->label(__('manufacturing::manufacturing.order.actual_start'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created')
+                    ->label(__('manufacturing::manufacturing.bom.created'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Status')
+                    ->label(__('manufacturing::manufacturing.order.status'))
                     ->options([
-                        ManufacturingOrderStatus::Draft->value => 'Draft',
-                        ManufacturingOrderStatus::Confirmed->value => 'Confirmed',
-                        ManufacturingOrderStatus::InProgress->value => 'In Progress',
-                        ManufacturingOrderStatus::Done->value => 'Done',
-                        ManufacturingOrderStatus::Cancelled->value => 'Cancelled',
+                        ManufacturingOrderStatus::Draft->value => __('manufacturing::manufacturing.order.draft'),
+                        ManufacturingOrderStatus::Confirmed->value => __('manufacturing::manufacturing.order.confirmed'),
+                        ManufacturingOrderStatus::InProgress->value => __('manufacturing::manufacturing.order.in_progress'),
+                        ManufacturingOrderStatus::Done->value => __('manufacturing::manufacturing.order.done'),
+                        ManufacturingOrderStatus::Cancelled->value => __('manufacturing::manufacturing.order.cancelled'),
                     ]),
 
                 Tables\Filters\Filter::make('planned_start_date')
                     ->form([
                         Forms\Components\DatePicker::make('from')
-                            ->label('From'),
+                            ->label(__('manufacturing::manufacturing.order.from')),
                         Forms\Components\DatePicker::make('until')
-                            ->label('Until'),
+                            ->label(__('manufacturing::manufacturing.order.until')),
                     ])
                     ->query(function ($query, array $data) {
                         return $query

@@ -5,11 +5,11 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Cheques;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Select;
-use Filament\Schemas\Components\TextInput;
-use Filament\Schemas\Components\Toggle;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -25,16 +25,26 @@ class ChequebookResource extends Resource
 
     protected static ?string $cluster = AccountingCluster::class;
 
+    public static function getModelLabel(): string
+    {
+        return __('accounting::cheque.cheque_book_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('accounting::cheque.cheque_book_plural_label');
+    }
+
     public static function getNavigationGroup(): ?string
     {
-        return 'Cheque Management';
+        return __('accounting::cheque.cheque_management');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Details')
+                Section::make(__('accounting::cheque.details'))
                     ->schema([
                         TextInput::make('name')
                             ->required()
@@ -54,10 +64,11 @@ class ChequebookResource extends Resource
                             ->label(__('accounting::cheque.bank_name')),
 
                         Toggle::make('is_active')
+                            ->label(__('accounting::cheque.active'))
                             ->required()
                             ->default(true),
                     ]),
-                Section::make('Sequence')
+                Section::make(__('accounting::cheque.sequence'))
                     ->schema([
                         TextInput::make('prefix')
                             ->label(__('accounting::cheque.prefix'))

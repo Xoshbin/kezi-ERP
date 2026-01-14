@@ -60,4 +60,11 @@ return [
     'requested_amount' => 'المبلغ المطلوب',
     'expected_return_date' => 'تاريخ العودة المتوقع',
     'advance_number' => 'رقم السلفة',
+    'created_at' => 'تاريخ الإنشاء',
+    'bank_account_helper' => 'مطلوب في حالة الإرجاع النقدي أو التعويض',
+    'settlement_methods' => [
+        'none' => 'لا يوجد (مطابقة تامة/ترحيل للأمام)',
+        'cash_return' => 'إرجاع نقدي (الموظف يعيد المبلغ)',
+        'reimbursement' => 'تعويض (الشركة تدفع للموظف)',
+    ],
 ];

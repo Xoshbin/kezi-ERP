@@ -37,16 +37,26 @@ class ChequeResource extends Resource
 
     protected static ?string $cluster = AccountingCluster::class;
 
+    public static function getModelLabel(): string
+    {
+        return __('accounting::cheque.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('accounting::cheque.plural_label');
+    }
+
     public static function getNavigationGroup(): ?string
     {
-        return 'Cheque Management';
+        return __('accounting::cheque.cheque_management');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Cheque Details')
+                Section::make(__('accounting::cheque.details'))
                     ->schema([
                         Group::make([
 
@@ -65,7 +75,7 @@ class ChequeResource extends Resource
                                 ->required()
                                 ->searchable()
                                 ->preload()
-                                ->label(fn (Get $get) => $get('type') === ChequeType::Payable->value ? 'Payee' : 'Drawer (Customer)'),
+                                ->label(fn (Get $get) => $get('type') === ChequeType::Payable->value ? __('accounting::cheque.payee') : __('accounting::cheque.drawer')),
 
                         ])->columnSpanFull(),
 
@@ -126,6 +136,7 @@ class ChequeResource extends Resource
                         ]),
 
                         Textarea::make('memo')
+                            ->label(__('accounting::cheque.memo'))
                             ->rows(3)
                             ->columnSpanFull(),
                     ]),
@@ -231,18 +242,18 @@ class ChequeResource extends Resource
                     ->color('danger')
                     ->form([
                         DatePicker::make('bounced_at')
-                            ->label('Bounced Date')
+                            ->label(__('accounting::cheque.bounced_date'))
                             ->required()
                             ->default(now()),
                         Textarea::make('reason')
-                            ->label('Reason')
+                            ->label(__('accounting::cheque.reason'))
                             ->required(),
                         TextInput::make('bank_charges')
-                            ->label('Bank Charges')
+                            ->label(__('accounting::cheque.bank_charges'))
                             ->numeric()
                             ->prefix('IQD'),
                         Textarea::make('notes')
-                            ->label('Notes'),
+                            ->label(__('accounting::cheque.notes')),
                     ])
                     ->visible(fn (Cheque $record) => in_array($record->status, [ChequeStatus::HandedOver, ChequeStatus::Deposited]))
                     ->action(function (Cheque $record, array $data) {
@@ -259,7 +270,7 @@ class ChequeResource extends Resource
 
                 // Cancel (Draft only)
                 Action::make('cancel')
-                    ->label('Cancel')
+                    ->label(__('accounting::cheque.cancel'))
                     ->icon('heroicon-m-no-symbol')
                     ->color('gray')
                     ->requiresConfirmation()
@@ -270,7 +281,7 @@ class ChequeResource extends Resource
 
                 // Print Cheque
                 Action::make('print')
-                    ->label('Print')
+                    ->label(__('accounting::cheque.print'))
                     ->icon('heroicon-m-printer')
                     ->color('gray')
                     ->url(fn (Cheque $record) => route('cheques.print', $record))
