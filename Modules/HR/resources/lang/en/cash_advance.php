@@ -60,4 +60,11 @@ return [
     'requested_amount' => 'Requested Amount',
     'expected_return_date' => 'Expected Return Date',
     'advance_number' => 'Advance Number',
+    'created_at' => 'Created at',
+    'bank_account_helper' => 'Required for Cash Return or Reimbursement',
+    'settlement_methods' => [
+        'none' => 'None (Exact Match/Carry Forward)',
+        'cash_return' => 'Cash Return (Employee pays back)',
+        'reimbursement' => 'Reimbursement (Company pays employee)',
+    ],
 ];
