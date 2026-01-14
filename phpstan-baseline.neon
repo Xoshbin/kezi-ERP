@@ -3903,7 +3903,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 7
+			count: 8
 			path: Modules/Accounting/tests/Feature/BudgetControlTest.php
 
 		-
@@ -4677,7 +4677,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 9
+			count: 10
 			path: Modules/Accounting/tests/Feature/Filament/Clusters/Accounting/Resources/Invoices/InterCompanyInvoiceResourceTest.php
 
 		-
@@ -23161,84 +23161,6 @@ parameters:
 			path: Modules/Purchase/database/seeders/VendorBillSeeder.php
 
 		-
-			message: '#^Access to an undefined property Modules\\Purchase\\Tests\\Browser\\PurchaseOrderLineItemsBrowserTest\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 11
-			path: Modules/Purchase/tests/Browser/PurchaseOrderLineItemsBrowserTest.php
-
-		-
-			message: '#^Access to an undefined property Modules\\Purchase\\Tests\\Browser\\PurchaseOrderLineItemsBrowserTest\:\:\$user\.$#'
-			identifier: property.notFound
-			count: 3
-			path: Modules/Purchase/tests/Browser/PurchaseOrderLineItemsBrowserTest.php
-
-		-
-			message: '#^Call to an undefined method Modules\\Purchase\\Tests\\Browser\\PurchaseOrderLineItemsBrowserTest\:\:assertDatabaseHas\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: Modules/Purchase/tests/Browser/PurchaseOrderLineItemsBrowserTest.php
-
-		-
-			message: '#^Call to an undefined method Modules\\Purchase\\Tests\\Browser\\PurchaseOrderLineItemsBrowserTest\:\:browse\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: Modules/Purchase/tests/Browser/PurchaseOrderLineItemsBrowserTest.php
-
-		-
-			message: '#^Call to method loginAs\(\) on an unknown class Laravel\\Dusk\\Browser\.$#'
-			identifier: class.notFound
-			count: 3
-			path: Modules/Purchase/tests/Browser/PurchaseOrderLineItemsBrowserTest.php
-
-		-
-			message: '#^Method Modules\\Purchase\\Tests\\Browser\\PurchaseOrderLineItemsBrowserTest\:\:test_can_create_purchase_order_with_line_items\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: Modules/Purchase/tests/Browser/PurchaseOrderLineItemsBrowserTest.php
-
-		-
-			message: '#^Method Modules\\Purchase\\Tests\\Browser\\PurchaseOrderLineItemsBrowserTest\:\:test_totals_are_calculated_live\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: Modules/Purchase/tests/Browser/PurchaseOrderLineItemsBrowserTest.php
-
-		-
-			message: '#^Method Modules\\Purchase\\Tests\\Browser\\PurchaseOrderLineItemsBrowserTest\:\:test_validation_errors_for_required_fields\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: Modules/Purchase/tests/Browser/PurchaseOrderLineItemsBrowserTest.php
-
-		-
-			message: '#^Modules\\Purchase\\Tests\\Browser\\PurchaseOrderLineItemsBrowserTest\:\:setUp\(\) calls parent\:\:setUp\(\) but Modules\\Purchase\\Tests\\Browser\\PurchaseOrderLineItemsBrowserTest does not extend any class\.$#'
-			identifier: class.noParent
-			count: 1
-			path: Modules/Purchase/tests/Browser/PurchaseOrderLineItemsBrowserTest.php
-
-		-
-			message: '#^Parameter \$browser of anonymous function has invalid type Laravel\\Dusk\\Browser\.$#'
-			identifier: class.notFound
-			count: 3
-			path: Modules/Purchase/tests/Browser/PurchaseOrderLineItemsBrowserTest.php
-
-		-
-			message: '#^Property Modules\\Purchase\\Tests\\Browser\\PurchaseOrderLineItemsBrowserTest\:\:\$product has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: Modules/Purchase/tests/Browser/PurchaseOrderLineItemsBrowserTest.php
-
-		-
-			message: '#^Property Modules\\Purchase\\Tests\\Browser\\PurchaseOrderLineItemsBrowserTest\:\:\$tax has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: Modules/Purchase/tests/Browser/PurchaseOrderLineItemsBrowserTest.php
-
-		-
-			message: '#^Property Modules\\Purchase\\Tests\\Browser\\PurchaseOrderLineItemsBrowserTest\:\:\$vendor has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: Modules/Purchase/tests/Browser/PurchaseOrderLineItemsBrowserTest.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 9
@@ -26636,6 +26558,12 @@ parameters:
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: Modules/Sales/tests/Feature/Filament/InvoiceEditPageTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assignSuperAdminRole\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: Modules/Sales/tests/Feature/Filament/InvoiceEditPageTest.php
