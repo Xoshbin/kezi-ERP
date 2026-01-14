@@ -7,14 +7,9 @@ return [
     ],
     'groups' => [
         'accounting_settings' => 'ژمێریاری',
-        'administration' => 'بەڕێوەبردن',
-        'configuration' => 'ڕێکخستن',
-        'sales_purchases' => 'کڕین و فرۆشتن',
+        'transactions' => 'مامەڵەکان',
         'banking_cash' => 'بانک و کاش',
-        'cheque_management' => 'بەڕێوەبردنی چەک',
-        'petty_cash' => 'پارەی وورد (نەختینە)',
         'financial_planning' => 'پلاندانانی دارایی',
-        'core_accounting' => 'ژمێریاریی بنەڕەتی',
-        'reports' => 'ڕاپۆرتەکان',
+        'administration' => 'بەڕێوەبردن',
     ],
 ];

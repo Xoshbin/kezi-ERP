@@ -28,7 +28,7 @@ class PettyCashVoucherResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::navigation.groups.petty_cash');
+        return __('accounting::navigation.groups.banking_cash');
     }
 
     public static function getModelLabel(): string
