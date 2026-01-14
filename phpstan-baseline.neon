@@ -20151,7 +20151,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 27
+			count: 25
 			path: Modules/Payment/tests/Feature/FinancialTransactions/FinancialTransactions/PaymentPostingBusinessLogicTest.php
 
 		-

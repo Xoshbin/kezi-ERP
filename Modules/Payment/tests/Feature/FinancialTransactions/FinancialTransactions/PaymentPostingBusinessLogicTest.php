@@ -186,7 +186,7 @@ test('payment confirmation does not affect already posted documents', function (
     // Link payment to invoice
     PaymentDocumentLink::create([
         'payment_id' => $payment->id,
-        'invoice_id' => $invoice->id,
+        'invoice_id' => $invoice->getKey(),
         'amount_applied' => $invoiceAmount,
     ]);
 
