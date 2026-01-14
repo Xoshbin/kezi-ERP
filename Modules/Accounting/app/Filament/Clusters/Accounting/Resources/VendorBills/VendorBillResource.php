@@ -7,6 +7,7 @@ use BackedEnum;
 use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
@@ -19,6 +20,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -40,6 +42,7 @@ use Modules\Accounting\Models\AssetCategory;
 use Modules\Accounting\Models\Journal;
 use Modules\Accounting\Models\Tax;
 use Modules\Accounting\Rules\NotInLockedPeriod;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Modules\Foundation\Models\Currency;
@@ -88,6 +91,40 @@ class VendorBillResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
+            \Filament\Forms\Components\Placeholder::make('shipping_warnings')
+                ->columnSpanFull()
+                ->hidden(fn (?VendorBill $record) => ! $record || ! $record->incoterm)
+                ->content(function (?VendorBill $record) {
+                    if (! $record || ! $record->incoterm) {
+                        return null;
+                    }
+
+                    // We use the service to get validation results
+                    $result = app(\Modules\Purchase\Services\VendorBillService::class)->validateShippingCosts($record);
+
+                    if ($result->isValid()) {
+                        return null;
+                    }
+
+                    $warnings = collect($result->warnings)
+                        ->map(fn ($warning) => '<li>'.e($warning).'</li>')
+                        ->implode('');
+
+                    return new \Illuminate\Support\HtmlString("
+                        <div class=\"p-4 bg-danger-500/10 border border-danger-500/20 rounded-lg\">
+                            <h4 class=\"text-danger-700 font-bold mb-2 flex items-center\">
+                                <svg class=\"w-5 h-5 mr-2\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z\" clip-rule=\"evenodd\"/></svg>
+                                Shipping Cost Responsibility Warnings
+                            </h4>
+                            <ul class=\"list-disc list-inside text-danger-600\">
+                                {$warnings}
+                            </ul>
+                            <p class=\"mt-2 text-xs text-danger-500\">
+                                According to Incoterm {$record->incoterm->getLabel()}, these costs are typically the responsabilidad of the seller.
+                            </p>
+                        </div>
+                    ");
+                }),
             Section::make(__('accounting::bill.vendor_currency_info'))
                 ->description(__('accounting::bill.vendor_currency_info_description'))
                 ->schema([
@@ -216,6 +253,17 @@ class VendorBillResource extends Resource
 
                             return __('accounting::bill.exchange_rate_helper');
                         }),
+                    Select::make('incoterm')
+                        ->label(__('accounting::bill.incoterm'))
+                        ->options(Incoterm::class)
+                        ->searchable()
+                        ->preload(),
+                    Select::make('fiscal_position_id')
+                        ->label(__('accounting::bill.fiscal_position'))
+                        ->relationship('fiscalPosition', 'name')
+                        ->searchable()
+                        ->preload()
+                        ->helperText(__('accounting::bill.fiscal_position_helper')),
                     Hidden::make('purchase_order_id'),
                 ])
                 ->columns(4)
@@ -264,8 +312,9 @@ class VendorBillResource extends Resource
                             TableColumn::make(__('accounting::bill.quantity'))->width('8%'),
                             TableColumn::make(__('accounting::bill.unit_price'))->width('12%'),
                             TableColumn::make(__('accounting::bill.expense_account'))->width('18%'),
-                            TableColumn::make(__('accounting::bill.tax'))->width('18%'),
-                            TableColumn::make(__('accounting::asset.category'))->width('18%'),
+                            TableColumn::make(__('accounting::bill.tax'))->width('15%'),
+                            TableColumn::make(__('Shipping Type'))->width('12%'),
+                            TableColumn::make(__('accounting::asset.category'))->width('15%'),
                         ])
                         ->live()
                         ->reorderable(true)
@@ -279,7 +328,7 @@ class VendorBillResource extends Resource
                                 ->searchable()
                                 ->preload()
                                 ->reactive()
-                                ->afterStateUpdated(function (callable $set, $state) {
+                                ->afterStateUpdated(function (callable $set, $state, callable $get) {
                                     if ($state) {
                                         $product = Product::find($state);
                                         // Ensure we have a single Product model, not a collection
@@ -296,6 +345,14 @@ class VendorBillResource extends Resource
                                                 $set('unit_price', $unitPrice);
                                             }
                                             $set('expense_account_id', $product->expense_account_id);
+
+                                            // Auto-detect shipping cost type
+                                            $name = strtolower($product->name);
+                                            if (str_contains($name, 'freight') || str_contains($name, 'shipping')) {
+                                                $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Freight);
+                                            } elseif (str_contains($name, 'insurance')) {
+                                                $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Insurance);
+                                            }
                                         }
                                     }
                                 })
@@ -356,6 +413,12 @@ class VendorBillResource extends Resource
                                 ->preload()
                                 ->required()
                                 ->columnSpan(3),
+                            DatePicker::make('deferred_start_date')
+                                ->label(__('accounting::bill.deferred_start_date'))
+                                ->columnSpan(3),
+                            DatePicker::make('deferred_end_date')
+                                ->label(__('accounting::bill.deferred_end_date'))
+                                ->columnSpan(3),
                             TranslatableSelect::forModel('tax_id', Tax::class, 'name')
                                 ->label(__('accounting::bill.tax'))
                                 ->options(function () {
@@ -404,6 +467,12 @@ class VendorBillResource extends Resource
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(3),
+                            Select::make('shipping_cost_type')
+                                ->label(__('Shipping Type'))
+                                ->options(\Modules\Foundation\Enums\ShippingCostType::class)
+                                ->placeholder(__('None'))
+                                ->nullable()
+                                ->columnSpan(3),
                             TranslatableSelect::forModel('asset_category_id', AssetCategory::class, 'name')
                                 ->label(__('accounting::asset.category'))
                                 ->searchableFields(['name'])
@@ -438,6 +507,15 @@ class VendorBillResource extends Resource
                                         ->numeric()
                                         ->label(__('accounting::asset.useful_life_years'))
                                         ->required(),
+                                    Toggle::make('prorata_temporis')
+                                        ->label(__('accounting::asset.prorata_temporis'))
+                                        ->default(false),
+                                    TextInput::make('declining_factor')
+                                        ->label(__('accounting::asset.declining_factor'))
+                                        ->numeric()
+                                        ->visible(fn ($get) => $get('depreciation_method') === DepreciationMethod::Declining->value)
+                                        ->required(fn ($get) => $get('depreciation_method') === DepreciationMethod::Declining->value)
+                                        ->default(2.0),
                                     TextInput::make('salvage_value_default')
                                         ->numeric()
                                         ->label(__('accounting::asset.salvage_value_default'))
@@ -660,7 +738,17 @@ class VendorBillResource extends Resource
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                ActionGroup::make([
+                    \Filament\Actions\ViewAction::make(),
+                    EditAction::make(),
+                    Action::make('create_landed_cost')
+                        ->label(__('Create Landed Cost'))
+                        ->icon('heroicon-o-truck')
+                        ->visible(fn (VendorBill $record) => $record->status === VendorBillStatus::Posted)
+                        ->url(fn (VendorBill $record) => \Modules\Inventory\Filament\Resources\LandedCostResource::getUrl('create', [
+                            'vendor_bill_id' => $record->id,
+                        ])),
+                ]),
                 Action::make('register_payment')
                     ->label(__('Register Payment'))
                     ->icon('heroicon-o-banknotes')
@@ -779,6 +867,7 @@ class VendorBillResource extends Resource
             'index' => ListVendorBills::route('/'),
             'create' => CreateVendorBill::route('/create'),
             'edit' => EditVendorBill::route('/{record}/edit'),
+            'view' => Pages\ViewVendorBill::route('/{record}'),
         ];
     }
 }

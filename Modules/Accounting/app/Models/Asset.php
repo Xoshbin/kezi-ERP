@@ -21,6 +21,7 @@ use Modules\Accounting\Enums\Assets\AssetStatus;
 use Modules\Accounting\Enums\Assets\DepreciationMethod;
 use Modules\Accounting\Observers\AssetObserver;
 use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
+use Modules\Foundation\Models\Concerns\HasDocumentAttachments;
 use Modules\Foundation\Models\Currency;
 
 /**
@@ -46,6 +47,10 @@ use Modules\Foundation\Models\Currency;
  * @property-read Collection<int, DepreciationEntry> $depreciationEntries
  * @property-read int|null $depreciation_entries_count
  * @property-read Account $depreciationExpenseAccount
+ * @property bool $prorata_temporis
+ * @property float|null $declining_factor
+ * @property int|null $currency_id
+ * @property-read Currency|null $currency
  *
  * @method static AssetFactory factory($count = null, $state = [])
  * @method static Builder<static>|Asset newModelQuery()
@@ -71,6 +76,8 @@ use Modules\Foundation\Models\Currency;
 #[ObservedBy([AssetObserver::class])]
 class Asset extends Model
 {
+    use HasDocumentAttachments;
+
     /** @use HasFactory<AssetFactory> */
     use HasFactory;
 
@@ -105,6 +112,8 @@ class Asset extends Model
         'depreciation_expense_account_id',
         'accumulated_depreciation_account_id',
         'status',
+        'prorata_temporis',
+        'declining_factor',
         'currency_id',
         'source_type',
         'source_id',
@@ -123,6 +132,8 @@ class Asset extends Model
         'useful_life_years' => 'integer',
         'status' => AssetStatus::class,
         'depreciation_method' => DepreciationMethod::class,
+        'prorata_temporis' => 'boolean',
+        'declining_factor' => 'double',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

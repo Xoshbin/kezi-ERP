@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
                 \Modules\Accounting\Database\Seeders\JournalSeeder::class,
                 UpdateCompanyDefaultsSeeder::class,
                 UserSeeder::class,
+                \Database\Seeders\RolesAndPermissionsSeeder::class,
 
                 // 2. Payment terms
                 // Common payment terms for all companies
@@ -33,6 +34,7 @@ class DatabaseSeeder extends Seeder
                 // Basic data for transactions (customers, vendors, products).
                 \Modules\Foundation\Database\Seeders\PartnerSeeder::class,
                 \Modules\Foundation\Database\Seeders\PartnerCustomFieldSeeder::class,
+                \Modules\Accounting\Database\Seeders\WithholdingTaxTypeSeeder::class,
                 \Modules\Accounting\Database\Seeders\TaxSeeder::class,
                 \Modules\Product\Database\Seeders\ProductSeeder::class,
 

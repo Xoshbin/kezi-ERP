@@ -5,7 +5,6 @@ namespace Modules\Inventory\Models;
 use App\Models\Company;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
-use Database\Factories\AdjustmentDocumentLineFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,6 +14,7 @@ use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Tax;
 use Modules\Foundation\Casts\DocumentCurrencyMoneyCast;
 use Modules\Foundation\Models\Currency;
+use Modules\Inventory\Database\Factories\AdjustmentDocumentLineFactory;
 use Modules\Inventory\Observers\AdjustmentDocumentLineObserver;
 use Modules\Product\Models\Product;
 
@@ -151,5 +151,10 @@ class AdjustmentDocumentLine extends Model
     public function lines(): HasMany
     {
         return $this->hasMany(AdjustmentDocumentLine::class);
+    }
+
+    protected static function newFactory(): AdjustmentDocumentLineFactory
+    {
+        return AdjustmentDocumentLineFactory::new();
     }
 }

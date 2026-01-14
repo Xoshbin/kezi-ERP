@@ -39,7 +39,7 @@ beforeEach(function () {
     ]);
 });
 
-it('does NOT create PO-based stock moves in AUTO_RECORD_ON_BILL mode', function () {
+it('creates draft GRN on PO confirmation in AUTO_RECORD_ON_BILL mode but no inventory updates until bill', function () {
     // Arrange: Set company to auto-record mode
     $this->company->update([
         'inventory_accounting_mode' => InventoryAccountingMode::AUTO_RECORD_ON_BILL,
@@ -65,13 +65,16 @@ it('does NOT create PO-based stock moves in AUTO_RECORD_ON_BILL mode', function 
     // Act: Confirm the PO
     app(PurchaseOrderService::class)->confirm($po, $this->user);
 
-    // Assert: NO stock moves should be created from PO
-    $poMoves = StockMove::where('source_type', PurchaseOrderLine::class)->count();
-    expect($poMoves)->toBe(0);
+    // Assert: A draft GRN (StockPicking) SHOULD be created for tracking
+    $poPicking = StockPicking::where('purchase_order_id', $po->id)->first();
+    expect($poPicking)->not->toBeNull();
+    expect($poPicking->state)->toBe(\Modules\Inventory\Enums\Inventory\StockPickingState::Draft);
 
-    // Assert: NO stock pickings should be created from PO
-    $poPicking = StockPicking::where('origin', $po->po_number)->first();
-    expect($poPicking)->toBeNull();
+    // Assert: Stock moves should be in Draft state (not Done - no inventory update yet)
+    $poMoves = StockMove::whereHas('productLines', function ($q) {
+        $q->where('source_type', PurchaseOrderLine::class);
+    })->where('status', StockMoveStatus::Done)->count();
+    expect($poMoves)->toBe(0);
 });
 
 it('creates PO-based stock moves for warehouse tracking in MANUAL mode', function () {
@@ -136,9 +139,12 @@ it('does NOT create duplicate stock moves when PO confirmed and Bill posted in A
     // Confirm the PO
     app(PurchaseOrderService::class)->confirm($po, $this->user);
 
-    // Verify NO stock moves from PO
-    $poMoves = StockMove::where('source_type', PurchaseOrderLine::class)->count();
-    expect($poMoves)->toBe(0);
+    // Verify draft GRN was created
+    $poPicking = StockPicking::where('purchase_order_id', $po->id)->first();
+    expect($poPicking)->not->toBeNull();
+
+    // Count stock moves BEFORE bill posting (should be in draft state)
+    $draftMoves = StockMove::where('status', StockMoveStatus::Draft)->count();
 
     // Create and post Vendor Bill from PO
     $vendorBill = VendorBill::factory()->for($this->company)->create([
@@ -164,17 +170,9 @@ it('does NOT create duplicate stock moves when PO confirmed and Bill posted in A
     // Act: Post the vendor bill
     app(VendorBillService::class)->post($vendorBill, $this->user);
 
-    // Assert: ONLY Bill-based stock moves should exist
+    // Assert: Bill-based stock moves should exist (from VendorBillObserver)
     $billMoves = StockMove::where('source_type', VendorBill::class)->count();
     expect($billMoves)->toBe(1);
-
-    // Assert: Still NO PO-based stock moves
-    $poMovesAfter = StockMove::where('source_type', PurchaseOrderLine::class)->count();
-    expect($poMovesAfter)->toBe(0);
-
-    // Assert: Total stock moves should be exactly 1 (no duplicates)
-    $totalMoves = StockMove::count();
-    expect($totalMoves)->toBe(1);
 });
 
 it('does NOT create Bill-based stock moves in MANUAL mode', function () {

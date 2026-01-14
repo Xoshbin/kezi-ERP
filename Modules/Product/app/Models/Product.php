@@ -104,7 +104,9 @@ class Product extends Model
         'default_stock_input_account_id',
         'default_price_difference_account_id',
         'average_cost',
-        'lot_tracking_enabled',
+        'tracking_type',
+        'deferred_revenue_account_id',
+        'deferred_expense_account_id',
     ];
 
     protected $casts = [
@@ -116,7 +118,7 @@ class Product extends Model
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
         'type' => \Modules\Product\Enums\Products\ProductType::class,
-        'lot_tracking_enabled' => 'boolean',
+        'tracking_type' => \Modules\Inventory\Enums\Inventory\TrackingType::class,
     ];
 
     protected static function booted(): void
@@ -192,6 +194,22 @@ class Product extends Model
     public function expenseAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'expense_account_id');
+    }
+
+    /**
+     * @return BelongsTo<Account, static>
+     */
+    public function deferredRevenueAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'deferred_revenue_account_id');
+    }
+
+    /**
+     * @return BelongsTo<Account, static>
+     */
+    public function deferredExpenseAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'deferred_expense_account_id');
     }
 
     // ADDED: Relationship to the default inventory/valuation account.
@@ -358,5 +376,33 @@ class Product extends Model
         }
 
         return $quant->quantity - $quant->reserved_quantity;
+    }
+
+    /**
+     * Check if product has any stock moves (for tracking type immutability)
+     */
+    public function hasStockMoves(): bool
+    {
+        return $this->stockMoveProductLines()->exists();
+    }
+
+    /**
+     * Get bills of materials where this product is the finished product
+     *
+     * @return HasMany<\Modules\Manufacturing\Models\BillOfMaterial, static>
+     */
+    public function billsOfMaterials(): HasMany
+    {
+        return $this->hasMany(\Modules\Manufacturing\Models\BillOfMaterial::class);
+    }
+
+    /**
+     * Get manufacturing orders for this product
+     *
+     * @return HasMany<\Modules\Manufacturing\Models\ManufacturingOrder, static>
+     */
+    public function manufacturingOrders(): HasMany
+    {
+        return $this->hasMany(\Modules\Manufacturing\Models\ManufacturingOrder::class);
     }
 }

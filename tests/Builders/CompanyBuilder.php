@@ -48,6 +48,7 @@ class CompanyBuilder
             'default_bank_account_id' => ['type' => 'bank_and_cash', 'name' => 'Bank'],
             'default_outstanding_receipts_account_id' => ['type' => 'current_assets', 'name' => 'Outstanding Receipts'],
             'default_sales_discount_account_id' => ['type' => 'expense', 'name' => 'Sales Discount'],
+            'default_purchase_returns_account_id' => ['type' => 'income', 'name' => 'Purchase Returns'],
             'default_tax_account_id' => ['type' => 'current_liabilities', 'name' => 'Tax Payable'],
             'default_tax_receivable_id' => ['type' => 'current_assets', 'name' => 'Tax Receivable'],
             'default_gain_loss_account_id' => ['type' => 'income', 'name' => 'Gain/Loss on Asset Disposal'],
@@ -60,10 +61,6 @@ class CompanyBuilder
     public function withDefaultJournals(): self
     {
         $this->journals = [
-            'default_purchase_journal_id' => ['type' => JournalType::Purchase, 'name' => 'Purchase Journal'],
-            'default_sales_journal_id' => ['type' => JournalType::Sale, 'name' => 'Sales Journal'],
-            'default_bank_journal_id' => ['type' => JournalType::Bank, 'name' => 'Bank Journal'],
-            'default_depreciation_journal_id' => ['type' => JournalType::Miscellaneous, 'name' => 'Depreciation Journal'],
             'default_purchase_journal_id' => ['type' => JournalType::Purchase, 'name' => 'Purchase Journal'],
             'default_sales_journal_id' => ['type' => JournalType::Sale, 'name' => 'Sales Journal'],
             'default_bank_journal_id' => ['type' => JournalType::Bank, 'name' => 'Bank Journal'],

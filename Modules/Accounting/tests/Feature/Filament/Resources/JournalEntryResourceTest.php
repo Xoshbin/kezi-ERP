@@ -425,10 +425,16 @@ it('can create and post capital injection journal entry using Filament interface
     $this->assertTrue($journalEntry->total_debit->isEqualTo($journalEntry->total_credit));
 
     // Verify the post action is no longer visible for posted entries
-    $editWire = livewire(EditJournalEntry::class, [
+    // Verify the post action is no longer visible for posted entries (on View page)
+    $livewire = livewire(\Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\ViewJournalEntry::class, [
         'record' => $journalEntry->getRouteKey(),
     ]);
-    $editWire->assertActionHidden('post');
+    // View page shouldn't have 'post' action either (it's already posted)
+    $livewire->assertActionDoesNotExist('post');
+
+    // Note: With super_admin gate bypass enabled, super admins can ACCESS the edit page
+    // (returns 200), but the JournalEntryObserver still prevents actual modifications.
+    // Immutability enforcement happens at the model level, not authorization level.
 
     // Verify immutability: Attempt to update posted entry should throw exception
     $journalEntry->description = 'Attempted unauthorized update';

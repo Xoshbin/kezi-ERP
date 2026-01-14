@@ -23,7 +23,31 @@ class InvoiceLineObserver
 
     public function saving(InvoiceLine $invoiceLine): void
     {
+        $this->applyFiscalPositionMapping($invoiceLine);
         $this->calculateLineTotals($invoiceLine);
+    }
+
+    protected function applyFiscalPositionMapping(InvoiceLine $invoiceLine): void
+    {
+        $invoice = $invoiceLine->invoice;
+        if (! $invoice || ! $invoice->fiscal_position_id) {
+            return;
+        }
+
+        $fiscalPositionService = app(\Modules\Accounting\Services\Accounting\FiscalPositionService::class);
+        $fiscalPosition = $invoice->fiscalPosition;
+
+        // Map Tax
+        if ($invoiceLine->tax_id) {
+            $mappedTax = $fiscalPositionService->mapTax($fiscalPosition, $invoiceLine->tax);
+            $invoiceLine->tax_id = $mappedTax->id;
+        }
+
+        // Map Income Account
+        if ($invoiceLine->income_account_id) {
+            $mappedAccount = $fiscalPositionService->mapAccount($fiscalPosition, $invoiceLine->incomeAccount);
+            $invoiceLine->income_account_id = $mappedAccount->id;
+        }
     }
 
     protected function calculateLineTotals(InvoiceLine $invoiceLine): void

@@ -2,6 +2,7 @@
 
 namespace Modules\Purchase\DataTransferObjects\Purchases;
 
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Purchase\Models\VendorBill;
 
 readonly class UpdateVendorBillDTO
@@ -20,5 +21,6 @@ readonly class UpdateVendorBillDTO
         public ?string $due_date,
         public array $lines,
         public int $updated_by_user_id,
+        public ?Incoterm $incoterm = null,
     ) {}
 }

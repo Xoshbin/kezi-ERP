@@ -16,6 +16,7 @@ class CreateVendorBillAction
     public function __construct(
         protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         protected CreateVendorBillLineAction $createVendorBillLineAction,
+        protected \Modules\Accounting\Services\Accounting\FiscalPositionService $fiscalPositionService,
     ) {}
 
     public function execute(CreateVendorBillDTO $createVendorBillDTO): VendorBill
@@ -28,16 +29,25 @@ class CreateVendorBillAction
         }
 
         return DB::transaction(function () use ($createVendorBillDTO) {
+            $fiscalPositionId = $createVendorBillDTO->fiscal_position_id;
+            if (! $fiscalPositionId) {
+                $vendor = \Modules\Foundation\Models\Partner::findOrFail($createVendorBillDTO->vendor_id);
+                $fiscalPosition = $this->fiscalPositionService->getFiscalPositionForPartner($vendor);
+                $fiscalPositionId = $fiscalPosition?->id;
+            }
+
             $vendorBill = VendorBill::create([
                 'company_id' => $createVendorBillDTO->company_id,
                 'vendor_id' => $createVendorBillDTO->vendor_id,
                 'currency_id' => $createVendorBillDTO->currency_id,
                 'purchase_order_id' => $createVendorBillDTO->purchase_order_id,
+                'fiscal_position_id' => $fiscalPositionId,
                 'bill_reference' => $createVendorBillDTO->bill_reference,
                 'bill_date' => $createVendorBillDTO->bill_date,
                 'accounting_date' => $createVendorBillDTO->accounting_date,
                 'due_date' => $createVendorBillDTO->due_date,
                 'payment_term_id' => $createVendorBillDTO->payment_term_id,
+                'incoterm' => $createVendorBillDTO->incoterm,
                 // Add default zero values to satisfy NOT NULL constraints.
                 // The VendorBillLineObserver will update these as lines are added.
                 'total_tax' => 0,

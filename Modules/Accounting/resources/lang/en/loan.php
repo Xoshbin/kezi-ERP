@@ -24,4 +24,18 @@ return [
         'eir_rate' => 'EIR periodic rate',
         'status' => 'Status',
     ],
+    // New keys appended
+    'accrue_interest' => 'Accrue Interest',
+    'journal' => 'Journal',
+    'interest_expense_income' => 'Interest Expense / Income',
+    'accrued_interest' => 'Accrued Interest',
+    'installment' => 'Installment #',
+    'post_repayment' => 'Post Repayment',
+    'loan_account' => 'Loan Account',
+    'long_term_account' => 'Long-term Account',
+    'short_term_account' => 'Short-term Account',
+    'months' => 'Months',
+    'as_of_date' => 'As of date',
+    'balance_after' => 'Balance after',
+    'reclassify' => 'Reclassify Current Portion',
 ];

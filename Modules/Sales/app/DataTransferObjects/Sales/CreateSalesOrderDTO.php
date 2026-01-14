@@ -3,6 +3,7 @@
 namespace Modules\Sales\DataTransferObjects\Sales;
 
 use Carbon\Carbon;
+use Modules\Foundation\Enums\Incoterm;
 
 /**
  * Data Transfer Object for creating a new Sales Order
@@ -24,6 +25,7 @@ readonly class CreateSalesOrderDTO
         public ?string $notes = null,
         public ?string $terms_and_conditions = null,
         public ?int $delivery_location_id = null,
+        public ?Incoterm $incoterm = null,
         public array $lines = [],
     ) {}
 }

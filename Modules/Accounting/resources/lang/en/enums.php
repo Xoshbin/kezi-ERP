@@ -31,4 +31,9 @@ return [
         'open' => 'Open',
         'closed' => 'Closed',
     ],
+    'depreciation_method' => [
+        'straight_line' => 'Straight Line',
+        'declining' => 'Declining Balance',
+        'sum_of_digits' => 'Sum of Digits',
+    ],
 ];

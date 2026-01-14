@@ -49,6 +49,7 @@ class UpdatePurchaseOrderAction
                 'notes' => $dto->notes,
                 'terms_and_conditions' => $dto->terms_and_conditions,
                 'delivery_location_id' => $dto->delivery_location_id,
+                'incoterm' => $dto->incoterm ?? $purchaseOrder->incoterm,
                 'status' => $dto->status ?? $purchaseOrder->status,
             ]);
 
@@ -70,6 +71,7 @@ class UpdatePurchaseOrderAction
                     'total_line_tax' => Money::of(0, $purchaseOrder->currency->code),
                     'total' => Money::of(0, $purchaseOrder->currency->code),
                     'expected_delivery_date' => $lineDto->expected_delivery_date,
+                    'shipping_cost_type' => $lineDto->shipping_cost_type,
                     'notes' => $lineDto->notes,
                 ]);
 

@@ -49,6 +49,7 @@ class ProductFactory extends Factory
                 return Account::factory()->state(['company_id' => $attributes['company_id']])->create()->id;
             },
             'average_cost' => Money::of($this->faker->randomFloat(2, 50, 500), 'USD'), // Default positive average cost
+            'tracking_type' => \Modules\Inventory\Enums\Inventory\TrackingType::None,
             'is_active' => $this->faker->boolean(),
         ];
     }

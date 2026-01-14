@@ -18,6 +18,7 @@ readonly class PurchaseOrderLineDTO
         public float $quantity,
         public Money $unit_price,
         public ?int $tax_id = null,
+        public ?\Modules\Foundation\Enums\ShippingCostType $shipping_cost_type = null,
         public ?Carbon $expected_delivery_date = null,
         public ?string $notes = null,
     ) {}

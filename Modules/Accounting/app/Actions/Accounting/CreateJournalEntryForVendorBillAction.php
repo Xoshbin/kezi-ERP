@@ -56,12 +56,41 @@ class CreateJournalEntryForVendorBillAction implements VendorBillJournalEntryCre
                 $isStorable = $line->product?->type === \Modules\Product\Enums\Products\ProductType::Storable;
                 $isAsset = (bool) $line->asset_category_id;
 
-                // Determine if tax should be capitalized (non-recoverable) or treated as deductible
-                $taxShouldBeCapitalized = false;
-                $taxAmountCompanyCurrency = Money::of(0, $companyCurrency->code);
+                // Determine tax breakdown (capitalized vs recoverable)
+                $capitalizedTaxAmount = Money::of(0, $companyCurrency->code);
+                $recoverableTaxComponents = []; // Array of ['tax' => Tax, 'amount' => Money]
+
                 if ($line->tax_id && $line->total_line_tax->isPositive() && $line->tax) {
-                    $taxAmountCompanyCurrency = $convertToCompanyCurrency($line->total_line_tax);
-                    $taxShouldBeCapitalized = ! $line->tax->is_recoverable;
+                    $tax = $line->tax;
+                    $totalLineTax = $convertToCompanyCurrency($line->total_line_tax);
+
+                    if ($tax->is_group) {
+                        $children = $tax->children;
+                        // Note: allocate() requires integer ratios, so we scale decimal rates (e.g., 0.10)
+                        // to integers by multiplying by 10000 to support rates with up to 4 decimal places
+                        $ratios = $children->map(fn ($t) => (int) ($t->rate * 10000))->toArray();
+
+                        if (array_sum($ratios) > 0) {
+                            $allocatedAmounts = $totalLineTax->allocate(...$ratios);
+                            $index = 0;
+                            foreach ($children as $childTax) {
+                                $amount = $allocatedAmounts[$index];
+                                if (! $childTax->is_recoverable) {
+                                    $capitalizedTaxAmount = $capitalizedTaxAmount->plus($amount);
+                                } else {
+                                    $recoverableTaxComponents[] = ['tax' => $childTax, 'amount' => $amount];
+                                }
+                                $index++;
+                            }
+                        }
+                    } else {
+                        // Single Tax
+                        if (! $tax->is_recoverable) {
+                            $capitalizedTaxAmount = $totalLineTax;
+                        } else {
+                            $recoverableTaxComponents[] = ['tax' => $tax, 'amount' => $totalLineTax];
+                        }
+                    }
                 }
 
                 if ($isStorable && $line->product) {
@@ -74,8 +103,8 @@ class CreateJournalEntryForVendorBillAction implements VendorBillJournalEntryCre
 
                     // If tax should be capitalized, add it to the inventory cost
                     $inventoryCost = $subtotalCompanyCurrency;
-                    if ($taxShouldBeCapitalized) {
-                        $inventoryCost = $inventoryCost->plus($taxAmountCompanyCurrency);
+                    if ($capitalizedTaxAmount->isPositive()) {
+                        $inventoryCost = $inventoryCost->plus($capitalizedTaxAmount);
                     }
 
                     // Dr Stock Input (subtotal + capitalized tax) for Anglo-Saxon; receipt valuation handles Inventory Dr
@@ -83,8 +112,8 @@ class CreateJournalEntryForVendorBillAction implements VendorBillJournalEntryCre
                         account_id: (int) $stockInputAccount->getKey(),
                         debit: $inventoryCost,
                         credit: Money::of(0, $companyCurrency->code),
-                        description: $taxShouldBeCapitalized
-                            ? "Stock Input (incl. tax): {$line->description}"
+                        description: $capitalizedTaxAmount->isPositive()
+                            ? "Stock Input (incl. capitalized tax): {$line->description}"
                             : "Stock Input: {$line->description}",
                         partner_id: null,
                         analytic_account_id: null,
@@ -102,8 +131,8 @@ class CreateJournalEntryForVendorBillAction implements VendorBillJournalEntryCre
 
                     // If tax should be capitalized, add it to the asset cost
                     $assetCost = $subtotalCompanyCurrency;
-                    if ($taxShouldBeCapitalized) {
-                        $assetCost = $assetCost->plus($taxAmountCompanyCurrency);
+                    if ($capitalizedTaxAmount->isPositive()) {
+                        $assetCost = $assetCost->plus($capitalizedTaxAmount);
                     }
 
                     // Dr Asset (subtotal + capitalized tax)
@@ -111,8 +140,8 @@ class CreateJournalEntryForVendorBillAction implements VendorBillJournalEntryCre
                         account_id: $category->asset_account_id,
                         debit: $assetCost,
                         credit: Money::of(0, $companyCurrency->code),
-                        description: $taxShouldBeCapitalized
-                            ? "Asset (incl. tax): {$line->description}"
+                        description: $capitalizedTaxAmount->isPositive()
+                            ? "Asset (incl. capitalized tax): {$line->description}"
                             : "Asset: {$line->description}",
                         partner_id: null,
                         analytic_account_id: null,
@@ -126,8 +155,8 @@ class CreateJournalEntryForVendorBillAction implements VendorBillJournalEntryCre
 
                     // If tax should be capitalized, add it to the expense cost
                     $expenseCost = $subtotalCompanyCurrency;
-                    if ($taxShouldBeCapitalized) {
-                        $expenseCost = $expenseCost->plus($taxAmountCompanyCurrency);
+                    if ($capitalizedTaxAmount->isPositive()) {
+                        $expenseCost = $expenseCost->plus($capitalizedTaxAmount);
                     }
 
                     // Expense line: Dr expense (subtotal + capitalized tax)
@@ -135,8 +164,8 @@ class CreateJournalEntryForVendorBillAction implements VendorBillJournalEntryCre
                         account_id: $line->expense_account_id,
                         debit: $expenseCost,
                         credit: Money::of(0, $companyCurrency->code),
-                        description: $taxShouldBeCapitalized
-                            ? "Expense (incl. tax): {$line->description}"
+                        description: $capitalizedTaxAmount->isPositive()
+                            ? "Expense (incl. capitalized tax): {$line->description}"
                             : $line->description,
                         partner_id: null,
                         analytic_account_id: null,
@@ -146,24 +175,32 @@ class CreateJournalEntryForVendorBillAction implements VendorBillJournalEntryCre
                     $totalAP = $totalAP->plus($expenseCost);
                 }
 
-                // Taxes: Only create separate tax entries for recoverable taxes
-                // Non-recoverable taxes are already capitalized into the cost above
-                if ($line->tax_id && $line->total_line_tax->isPositive() && ! $taxShouldBeCapitalized) {
-                    $taxAccountId = $company->default_tax_receivable_id ?? $company->default_tax_account_id;
-                    if (! $taxAccountId) {
-                        throw new RuntimeException('Default input tax account not configured for company.');
+                // Taxes: Create separate tax entries for recoverable taxes
+                foreach ($recoverableTaxComponents as $component) {
+                    $tax = $component['tax'];
+                    $amount = $component['amount'];
+
+                    if ($amount->isPositive()) {
+                        // Prefer Tax specific account, fallback to company default
+                        $taxAccountId = $tax->tax_account_id ?? ($company->default_tax_receivable_id ?? $company->default_tax_account_id);
+
+                        if (! $taxAccountId) {
+                            throw new RuntimeException("Tax account not configured for tax '{$tax->name}' and no default company input tax account set.");
+                        }
+
+                        $lineDTOs[] = new CreateJournalEntryLineDTO(
+                            account_id: $taxAccountId,
+                            debit: $amount,
+                            credit: Money::of(0, $companyCurrency->code),
+                            description: $tax->is_group ? "Input tax (Split): {$line->description}" : "Input tax: {$line->description}",
+                            partner_id: null,
+                            analytic_account_id: null,
+                            // Note: original_currency_amount is complex for splits, skipping for simplicity unless critical
+                            exchange_rate_at_transaction: $exchangeRate,
+                            tax_id: $tax->id,
+                        );
+                        $totalAP = $totalAP->plus($amount);
                     }
-                    $lineDTOs[] = new CreateJournalEntryLineDTO(
-                        account_id: $taxAccountId,
-                        debit: $taxAmountCompanyCurrency,
-                        credit: Money::of(0, $companyCurrency->code),
-                        description: 'Input tax: '.$line->description,
-                        partner_id: null,
-                        analytic_account_id: null,
-                        original_currency_amount: $line->total_line_tax,
-                        exchange_rate_at_transaction: $exchangeRate,
-                    );
-                    $totalAP = $totalAP->plus($taxAmountCompanyCurrency);
                 }
             }
 

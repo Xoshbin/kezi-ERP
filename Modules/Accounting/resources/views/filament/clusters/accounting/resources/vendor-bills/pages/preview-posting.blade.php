@@ -1,6 +1,6 @@
 @use(Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\ProductResource)
 @use(Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\AssetResource)
-@use(Modules\Accounting\Filament\Resources\Accounts\AccountResource)
+@use(Modules\Accounting\Filament\Clusters\Accounting\Resources\Accounts\AccountResource)
 @use(App\Filament\Clusters\Settings\Resources\Companies\CompanyResource)
 @use(Modules\Foundation\Support\TranslatableHelper)
 

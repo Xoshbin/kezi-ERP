@@ -6,7 +6,6 @@ use App\Models\Company;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Support\Collection;
 use Modules\Accounting\DataTransferObjects\Reports\TaxReportDTO;
 use Modules\Accounting\DataTransferObjects\Reports\TaxReportLineDTO;
@@ -78,22 +77,24 @@ class TaxReportService
                 ]);
             }
 
-            // Calculate the tax amount from the journal line
-            // For sales tax: credit balance (positive)
-            // For purchase tax: debit balance (negative, so we take absolute)
-            $lineAmount = $taxLine->credit->minus($taxLine->debit);
+            $currentData = $taxData->get($taxKey);
+
+            // Calculate the tax amount from the journal line based on tax type
+            // Sales Tax (Liability): Credit increases, Debit decreases (Credit - Debit)
+            // Purchase Tax (Asset): Debit increases, Credit decreases (Debit - Credit)
+            if ($tax->isSalesTax()) {
+                $lineTaxAmount = $taxLine->credit->minus($taxLine->debit);
+            } else {
+                $lineTaxAmount = $taxLine->debit->minus($taxLine->credit);
+            }
 
             // Accumulate the tax amount
-            $currentData = $taxData->get($taxKey);
-            if (! $currentData || ! isset($currentData['tax_amount'])) {
-                throw new Exception('Tax data not properly initialized');
-            }
-            $currentData['tax_amount'] = $currentData['tax_amount']->plus($lineAmount->abs());
+            $currentData['tax_amount'] = $currentData['tax_amount']->plus($lineTaxAmount);
 
-            // Calculate net amount from tax amount and rate
+            // Calculate net amount using the same logic for consistency
+            // Net amount is derived from tax amount / rate
             if ($tax->rate > 0) {
-                $netFromTax = $currentData['tax_amount']->dividedBy($tax->rate / 100, RoundingMode::HALF_UP);
-                $currentData['net_amount'] = $netFromTax;
+                $currentData['net_amount'] = $currentData['tax_amount']->dividedBy($tax->rate / 100, RoundingMode::HALF_UP);
             }
 
             $taxData->put($taxKey, $currentData);
@@ -150,5 +151,20 @@ class TaxReportService
             totalInputTax: $totalInputTax,
             netTaxPayable: $netTaxPayable
         );
+    }
+
+    public function generateSpecificReport(string $generatorClass, Company $company, Carbon $startDate, Carbon $endDate): array
+    {
+        if (! class_exists($generatorClass)) {
+            throw new \RuntimeException("Tax Report Generator class {$generatorClass} not found.");
+        }
+
+        $generator = app($generatorClass);
+
+        if (! $generator instanceof \Modules\Accounting\Services\Reports\Generators\TaxReportGeneratorContract) {
+            throw new \RuntimeException("Class {$generatorClass} must implement TaxReportGeneratorContract.");
+        }
+
+        return $generator->generate($company, $startDate, $endDate);
     }
 }

@@ -34,6 +34,7 @@ use Xoshbin\CustomFields\Traits\HasCustomFields;
  * @property \Modules\Foundation\Enums\Partners\PartnerType $type
  * @property string|null $contact_person
  * @property string|null $email
+ * @property int|null $linked_company_id
  * @property string|null $phone
  * @property string|null $address_line_1
  * @property string|null $address_line_2
@@ -55,6 +56,7 @@ use Xoshbin\CustomFields\Traits\HasCustomFields;
  * @property-read int|null $payments_count
  * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
+ * @property-read \Modules\Accounting\Models\FiscalPosition|null $fiscalPosition
  *
  * @method static \Modules\Foundation\Database\Factories\PartnerFactory factory($count = null, $state = [])
  * @method static Builder<static>|Partner newModelQuery()
@@ -107,6 +109,7 @@ class Partner extends Model
         'type',
         'contact_person',
         'email',
+        'linked_company_id',
         'phone',
         'address_line_1',
         'address_line_2',
@@ -115,10 +118,12 @@ class Partner extends Model
         'zip_code',
         'country',
         'tax_id',
+        'withholding_tax_type_id',
         'receivable_account_id',
         'payable_account_id',
         'customer_payment_term_id',
         'vendor_payment_term_id',
+        'fiscal_position_id',
         'is_active',
     ];
 
@@ -247,6 +252,41 @@ class Partner extends Model
     | Financial Balance Calculations
     |--------------------------------------------------------------------------
     */
+
+    /**
+     * Get the company linked to this partner (for inter-company transactions).
+     */
+    /**
+     * @return BelongsTo<Company, static>
+     */
+    public function linkedCompany(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'linked_company_id');
+    }
+
+    /**
+     * Get the withholding tax type for this partner.
+     */
+    public function withholdingTaxType(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\WithholdingTaxType::class, 'withholding_tax_type_id');
+    }
+
+    /**
+     * Get the default fiscal position for this partner.
+     */
+    public function fiscalPosition(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\FiscalPosition::class, 'fiscal_position_id');
+    }
+
+    /**
+     * Check if this partner represents an inter-company entity.
+     */
+    public function isInterCompanyPartner(): bool
+    {
+        return $this->linked_company_id !== null;
+    }
 
     /**
      * Get the total outstanding customer balance (accounts receivable).

@@ -9,6 +9,37 @@ use Modules\Purchase\Models\VendorBillLine;
 class VendorBillLineObserver
 {
     /**
+     * Handle the VendorBillLine "saving" event.
+     */
+    public function saving(VendorBillLine $vendorBillLine): void
+    {
+        $this->applyFiscalPositionMapping($vendorBillLine);
+    }
+
+    protected function applyFiscalPositionMapping(VendorBillLine $vendorBillLine): void
+    {
+        $vendorBill = $vendorBillLine->vendorBill;
+        if (! $vendorBill || ! $vendorBill->fiscal_position_id) {
+            return;
+        }
+
+        $fiscalPositionService = app(\Modules\Accounting\Services\Accounting\FiscalPositionService::class);
+        $fiscalPosition = $vendorBill->fiscalPosition;
+
+        // Map Tax
+        if ($vendorBillLine->tax_id) {
+            $mappedTax = $fiscalPositionService->mapTax($fiscalPosition, $vendorBillLine->tax);
+            $vendorBillLine->tax_id = $mappedTax->id;
+        }
+
+        // Map Expense Account
+        if ($vendorBillLine->expense_account_id) {
+            $mappedAccount = $fiscalPositionService->mapAccount($fiscalPosition, $vendorBillLine->expenseAccount);
+            $vendorBillLine->expense_account_id = $mappedAccount->id;
+        }
+    }
+
+    /**
      * Handle the VendorBillLine "saved" event.
      * This is triggered on both creation and update.
      */
@@ -40,7 +71,7 @@ class VendorBillLineObserver
             $this->updateCompanyCurrencyTotals($vendorBill);
         }
 
-        $vendorBill->saveQuietly();
+        $vendorBill->save();
     }
 
     /**

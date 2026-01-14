@@ -15,15 +15,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\Partner;
 use Modules\Foundation\Models\PaymentTerm;
 use Modules\Inventory\Models\AdjustmentDocument;
+use Modules\Inventory\Models\StockPicking;
 use Modules\Payment\Enums\PaymentInstallments\InstallmentStatus;
 use Modules\Payment\Models\Payment;
 use Modules\Payment\Models\PaymentDocumentLink;
 use Modules\Payment\Models\PaymentInstallment;
 use Modules\Purchase\Database\Factories\VendorBillFactory;
+use Modules\Purchase\Enums\Purchases\ThreeWayMatchStatus;
 use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 use Modules\Purchase\Observers\VendorBillObserver;
 
@@ -40,12 +43,16 @@ use Modules\Purchase\Observers\VendorBillObserver;
  * @property int $vendor_id
  * @property int $currency_id
  * @property int|null $purchase_order_id
+ * @property int|null $stock_picking_id
  * @property int|null $journal_entry_id
+ * @property int|null $fiscal_position_id
+ * @property ThreeWayMatchStatus|null $three_way_match_status
  * @property string $bill_reference
  * @property Carbon $bill_date
  * @property Carbon $accounting_date
  * @property Carbon|null $due_date
  * @property VendorBillStatus $status
+ * @property Incoterm|null $incoterm
  * @property Money $total_amount
  * @property Money $total_tax
  * @property Carbon|null $posted_at
@@ -58,6 +65,7 @@ use Modules\Purchase\Observers\VendorBillObserver;
  * @property-read Collection<int, VendorBillLine> $lines
  * @property-read int|null $lines_count
  * @property-read PurchaseOrder|null $purchaseOrder
+ * @property-read StockPicking|null $stockPicking
  * @property-read Partner $vendor
  *
  * @method static \Modules\Purchase\Database\Factories\VendorBillFactory factory($count = null, $state = [])
@@ -113,6 +121,8 @@ class VendorBill extends Model
         'company_id',           // Foreign key to the Company model for multi-company support .
         'vendor_id',            // Foreign key to the Partner model, representing the supplier .
         'purchase_order_id',    // Foreign key to the PurchaseOrder model, linking bill to originating PO .
+        'stock_picking_id',     // Foreign key to the StockPicking model for three-way matching
+        'three_way_match_status', // Three-way matching status
         'bill_date',            // The date the vendor bill was issued by the supplier .
         'accounting_date',      // The date the bill is recognized in the company's books .
         'due_date',             // The date by which the payment is due .
@@ -120,6 +130,7 @@ class VendorBill extends Model
         'bill_reference',       // The vendor's reference number; **assigned only upon 'confirmation' or 'posting'**
         // to ensure a clean, unbroken sequence of official documents [4-6].
         'status',               // Current status: e.g., 'Draft', 'Posted', 'Paid', 'Cancelled' .
+        'incoterm',
         // A 'Draft' bill can be modified/deleted, but 'Posted' cannot .
         'currency_id',          // Foreign key to the Currency model, specifying the bill's currency .
         'exchange_rate_at_creation', // Exchange rate captured at bill creation/posting
@@ -129,7 +140,10 @@ class VendorBill extends Model
         'total_tax_company_currency',    // Total tax in company currency
         'journal_entry_id',     // Nullable foreign key to journal_entries.id, linking to the immutable
         // financial transaction once the bill is posted .
+        'fiscal_position_id',
         'posted_at',            // Nullable timestamp indicating when the vendor bill was confirmed/posted .
+        'inter_company_source_id',
+        'inter_company_source_type',
         'reset_to_draft_log',   // JSON/Text field to log instances where a 'Posted' bill was
         // **reset to 'Draft' for modification**, crucial for maintaining an audit trail .
     ];
@@ -145,6 +159,8 @@ class VendorBill extends Model
         'accounting_date' => 'date',       // Cast to date for consistency .
         'due_date' => 'date',       // Cast to date for consistency .
         'status' => VendorBillStatus::class,
+        'incoterm' => Incoterm::class,
+        'three_way_match_status' => ThreeWayMatchStatus::class,
         'exchange_rate_at_creation' => 'decimal:10',
         'total_amount' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,  // Document currency amounts
         'total_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,  // Document currency amounts
@@ -167,7 +183,7 @@ class VendorBill extends Model
 
     public function calculateTotalsFromLines(): void
     {
-        $this->loadMissing('lines', 'currency');
+        $this->load('lines', 'currency');
 
         $currencyCode = $this->currency->code;
         $zero = Money::of(0, $currencyCode);
@@ -236,6 +252,25 @@ class VendorBill extends Model
     public function purchaseOrder(): BelongsTo
     {
         return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id');
+    }
+
+    /**
+     * Get the Goods Receipt (StockPicking) linked to this Vendor Bill.
+     * Used for three-way matching: PO → GRN → Bill.
+     *
+     * @return BelongsTo<StockPicking, static>
+     */
+    public function stockPicking(): BelongsTo
+    {
+        return $this->belongsTo(StockPicking::class, 'stock_picking_id');
+    }
+
+    /**
+     * Get the fiscal position applied to this vendor bill.
+     */
+    public function fiscalPosition(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\FiscalPosition::class, 'fiscal_position_id');
     }
 
     /**
