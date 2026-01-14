@@ -11,7 +11,7 @@ class AccountingCluster extends Cluster
 
     public static function getNavigationLabel(): string
     {
-        return __('navigation.clusters.accounting');
+        return __('accounting::navigation.clusters.accounting');
     }
 
     public static function shouldRegisterNavigation(): bool

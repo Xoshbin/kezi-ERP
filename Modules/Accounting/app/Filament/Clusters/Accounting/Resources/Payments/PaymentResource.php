@@ -51,38 +51,38 @@ class PaymentResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.banking_cash');
+        return __('accounting::navigation.groups.banking_cash');
     }
 
     public static function getModelLabel(): string
     {
-        return __('payment::payment.model_label');
+        return __('accounting::payment.model_label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('payment::payment.model_plural_label');
+        return __('accounting::payment.model_plural_label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('payment::payment.navigation_label');
+        return __('accounting::payment.navigation_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make(__('payment::payment.form.payment_information'))
-                ->description(__('payment::payment.form.direct_payment_description'))
+            Section::make(__('accounting::payment.form.payment_information'))
+                ->description(__('accounting::payment.form.direct_payment_description'))
                 ->compact()
                 ->schema([
                     Group::make()
                         ->schema([
                             ToggleButtons::make('payment_type')
-                                ->label(__('payment::payment.form.payment_type'))
+                                ->label(__('accounting::payment.form.payment_type'))
                                 ->options([
-                                    PaymentType::Inbound->value => __('payment::payment.form.receive') ?: PaymentType::Inbound->label(),
-                                    PaymentType::Outbound->value => __('payment::payment.form.send') ?: PaymentType::Outbound->label(),
+                                    PaymentType::Inbound->value => __('accounting::payment.form.receive') ?: PaymentType::Inbound->label(),
+                                    PaymentType::Outbound->value => __('accounting::payment.form.send') ?: PaymentType::Outbound->label(),
                                 ])
                                 ->colors([
                                     PaymentType::Inbound->value => 'success',
@@ -98,14 +98,14 @@ class PaymentResource extends Resource
 
                             TranslatableSelect::forModel('paid_to_from_partner_id', Partner::class, 'name')
                                 ->searchable()
-                                ->label(__('payment::payment.form.partner'))
+                                ->label(__('accounting::payment.form.partner'))
                                 ->searchableFields(['name', 'tax_id'])
                                 ->preload()
                                 ->required()
                                 ->columnSpanFull(),
 
                             MoneyInput::make('amount')
-                                ->label(__('payment::payment.form.amount'))
+                                ->label(__('accounting::payment.form.amount'))
                                 ->currencyField('currency_id')
                                 ->required()
                                 ->columnSpanFull(),
@@ -114,11 +114,11 @@ class PaymentResource extends Resource
                                 ->schema([
                                     DatePicker::make('payment_date')
                                         ->default(now())
-                                        ->label(__('payment::payment.form.payment_date'))
+                                        ->label(__('accounting::payment.form.payment_date'))
                                         ->required()
                                         ->columnSpan(6),
                                     TextInput::make('reference')
-                                        ->label(__('payment::payment.form.reference'))
+                                        ->label(__('accounting::payment.form.reference'))
                                         ->maxLength(255)
                                         ->columnSpan(6),
                                 ])
@@ -131,22 +131,22 @@ class PaymentResource extends Resource
                     Group::make()
                         ->schema([
                             TranslatableSelect::forModel('journal_id', Journal::class, 'name')
-                                ->label(__('payment::payment.form.journal_id'))
+                                ->label(__('accounting::payment.form.journal_id'))
                                 ->searchable()
                                 ->relationship('journal', 'name')
-                                ->label(__('payment::payment.form.journal_id'))
+                                ->label(__('accounting::payment.form.journal_id'))
                                 ->searchableFields(['name', 'short_code'])
                                 ->preload()
                                 ->required()
                                 ->columnSpanFull(),
                             Select::make('payment_method')
-                                ->label(__('payment::payment.form.payment_method'))
+                                ->label(__('accounting::payment.form.payment_method'))
                                 ->options(collect(PaymentMethod::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
                                 ->searchable()
                                 ->required()
                                 ->columnSpanFull(),
                             TranslatableSelect::forModel('currency_id', Currency::class, 'name')
-                                ->label(__('payment::payment.form.currency_id'))
+                                ->label(__('accounting::payment.form.currency_id'))
                                 ->searchableFields(['name', 'code'])
                                 ->searchable()
                                 ->preload()
@@ -172,7 +172,7 @@ class PaymentResource extends Resource
             ->columns([
                 // Reference (most important for identification)
                 TextColumn::make('reference')
-                    ->label(__('payment::payment.reference'))
+                    ->label(__('accounting::payment.reference'))
                     ->searchable()
                     ->sortable()
                     ->weight('medium')
@@ -189,14 +189,14 @@ class PaymentResource extends Resource
 
                 // Partner (critical for identification)
                 TextColumn::make('partner.name')
-                    ->label(__('payment::payment.partner'))
+                    ->label(__('accounting::payment.partner'))
                     ->searchable()
                     ->sortable()
                     ->weight('medium'),
 
                 // Payment Type (critical for understanding direction)
                 TextColumn::make('payment_type')
-                    ->label(__('payment::payment.type'))
+                    ->label(__('accounting::payment.type'))
                     ->formatStateUsing(fn (PaymentType $state): string => $state->label())
                     ->badge()
                     ->color(fn (PaymentType $state): string => match ($state) {
@@ -211,7 +211,7 @@ class PaymentResource extends Resource
 
                 // Payment Method (important for categorization)
                 TextColumn::make('payment_method')
-                    ->label(__('payment::payment.method'))
+                    ->label(__('accounting::payment.method'))
                     ->formatStateUsing(fn (PaymentMethod $state): string => $state->label())
                     ->badge()
                     ->color(fn (PaymentMethod $state): string => $state->color())
@@ -221,7 +221,7 @@ class PaymentResource extends Resource
 
                 // Status (critical for workflow)
                 TextColumn::make('status')
-                    ->label(__('payment::payment.status'))
+                    ->label(__('accounting::payment.status'))
                     ->formatStateUsing(fn (PaymentStatus $state): string => $state->label())
                     ->badge()
                     ->color(fn (PaymentStatus $state): string => match ($state) {
@@ -240,41 +240,41 @@ class PaymentResource extends Resource
 
                 // Payment Date (important for chronological sorting)
                 TextColumn::make('payment_date')
-                    ->label(__('payment::payment.date'))
+                    ->label(__('accounting::payment.date'))
                     ->date()
                     ->sortable(),
 
                 // Amount (critical financial information)
                 MoneyColumn::make('amount')
-                    ->label(__('payment::payment.amount'))
+                    ->label(__('accounting::payment.amount'))
                     ->sortable()
                     ->weight('bold')
                     ->size('lg'),
 
                 // Currency (important for multi-currency)
                 TextColumn::make('currency.code')
-                    ->label(__('payment::payment.currency'))
+                    ->label(__('accounting::payment.currency'))
                     ->badge()
                     ->toggleable(),
 
                 // Journal (important for categorization)
                 TextColumn::make('journal.name')
-                    ->label(__('payment::payment.journal'))
+                    ->label(__('accounting::payment.journal'))
                     ->sortable()
                     ->toggleable(),
 
                 // Company (for multi-company setups)
                 TextColumn::make('company.name')
-                    ->label(__('payment::payment.company'))
+                    ->label(__('accounting::payment.company'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
-                    ->label(__('payment::payment.table.created_at'))
+                    ->label(__('accounting::payment.table.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label(__('payment::payment.table.updated_at'))
+                    ->label(__('accounting::payment.table.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

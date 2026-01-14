@@ -79,7 +79,7 @@ class ViewLoanAgreement extends ViewRecord
                             TextInput::make('short_code')->maxLength(16),
                         ])
                         ->createOptionUsing(fn (array $data) => Journal::query()->create($data)->getKey())
-                        ->createOptionModalHeading(__('common.modal_title_create_journal'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_journal'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
                         })
@@ -106,7 +106,7 @@ class ViewLoanAgreement extends ViewRecord
                             )->required(),
                         ])
                         ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
-                        ->createOptionModalHeading(__('common.modal_title_create_account'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
                         })
@@ -133,7 +133,7 @@ class ViewLoanAgreement extends ViewRecord
                             )->required(),
                         ])
                         ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
-                        ->createOptionModalHeading(__('common.modal_title_create_account'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
                         })
@@ -187,7 +187,7 @@ class ViewLoanAgreement extends ViewRecord
                             TextInput::make('short_code')->maxLength(16),
                         ])
                         ->createOptionUsing(fn (array $data) => Journal::query()->create($data)->getKey())
-                        ->createOptionModalHeading(__('common.modal_title_create_journal'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_journal'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
                         })
@@ -214,7 +214,7 @@ class ViewLoanAgreement extends ViewRecord
                             )->required(),
                         ])
                         ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
-                        ->createOptionModalHeading(__('common.modal_title_create_account'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
                         })
@@ -241,7 +241,7 @@ class ViewLoanAgreement extends ViewRecord
                             )->required(),
                         ])
                         ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
-                        ->createOptionModalHeading(__('common.modal_title_create_account'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
                         })
@@ -268,7 +268,7 @@ class ViewLoanAgreement extends ViewRecord
                             )->required(),
                         ])
                         ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
-                        ->createOptionModalHeading(__('common.modal_title_create_account'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
                         })
@@ -323,7 +323,7 @@ class ViewLoanAgreement extends ViewRecord
                             TextInput::make('short_code')->maxLength(16),
                         ])
                         ->createOptionUsing(fn (array $data) => Journal::query()->create($data)->getKey())
-                        ->createOptionModalHeading(__('common.modal_title_create_journal'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_journal'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
                         })
@@ -350,7 +350,7 @@ class ViewLoanAgreement extends ViewRecord
                             )->required(),
                         ])
                         ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
-                        ->createOptionModalHeading(__('common.modal_title_create_account'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
                         })
@@ -377,7 +377,7 @@ class ViewLoanAgreement extends ViewRecord
                             )->required(),
                         ])
                         ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
-                        ->createOptionModalHeading(__('common.modal_title_create_account'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
                         ->createOptionAction(function ($action) {
                             return $action->modalWidth('lg');
                         })

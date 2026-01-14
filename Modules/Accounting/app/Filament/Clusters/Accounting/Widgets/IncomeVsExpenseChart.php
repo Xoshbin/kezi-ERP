@@ -18,7 +18,7 @@ class IncomeVsExpenseChart extends ChartWidget
 
     public function getHeading(): string
     {
-        return __('dashboard.financial.income_vs_expense_chart');
+        return __('accounting::dashboard.financial.income_vs_expense_chart');
     }
 
     protected function getData(): array
@@ -56,7 +56,7 @@ class IncomeVsExpenseChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => __('dashboard.financial.total_revenue'),
+                    'label' => __('accounting::dashboard.financial.total_revenue'),
                     'data' => $revenueData,
                     'backgroundColor' => 'rgba(34, 197, 94, 0.1)',
                     'borderColor' => 'rgb(34, 197, 94)',
@@ -64,7 +64,7 @@ class IncomeVsExpenseChart extends ChartWidget
                     'fill' => true,
                 ],
                 [
-                    'label' => __('dashboard.financial.total_expenses'),
+                    'label' => __('accounting::dashboard.financial.total_expenses'),
                     'data' => $expenseData,
                     'backgroundColor' => 'rgba(239, 68, 68, 0.1)',
                     'borderColor' => 'rgb(239, 68, 68)',
@@ -72,7 +72,7 @@ class IncomeVsExpenseChart extends ChartWidget
                     'fill' => true,
                 ],
                 [
-                    'label' => __('dashboard.financial.net_income'),
+                    'label' => __('accounting::dashboard.financial.net_income'),
                     'data' => $netIncomeData,
                     'backgroundColor' => 'rgba(59, 130, 246, 0.1)',
                     'borderColor' => 'rgb(59, 130, 246)',
@@ -130,14 +130,14 @@ class IncomeVsExpenseChart extends ChartWidget
                     'display' => true,
                     'title' => [
                         'display' => true,
-                        'text' => __('dashboard.financial.month'),
+                        'text' => __('accounting::dashboard.financial.month'),
                     ],
                 ],
                 'y' => [
                     'display' => true,
                     'title' => [
                         'display' => true,
-                        'text' => __('dashboard.financial.amount'),
+                        'text' => __('accounting::dashboard.financial.amount'),
                     ],
                     'ticks' => [
                         'callback' => 'function(value, index, values) {
@@ -168,7 +168,7 @@ class IncomeVsExpenseChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => __('dashboard.financial.no_data'),
+                    'label' => __('accounting::dashboard.financial.no_data'),
                     'data' => [],
                     'backgroundColor' => 'rgba(156, 163, 175, 0.1)',
                     'borderColor' => 'rgb(156, 163, 175)',

@@ -36,7 +36,7 @@ class AnalyticAccountResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.core_accounting');
+        return __('accounting::navigation.groups.core_accounting');
     }
 
     public static function getNavigationLabel(): string

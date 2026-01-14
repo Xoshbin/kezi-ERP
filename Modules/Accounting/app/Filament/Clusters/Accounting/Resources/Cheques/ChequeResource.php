@@ -49,7 +49,7 @@ class ChequeResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::cheque.cheque_management');
+        return __('accounting::navigation.groups.cheque_management');
     }
 
     public static function form(Schema $schema): Schema
