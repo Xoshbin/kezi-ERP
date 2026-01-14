@@ -14,11 +14,12 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products');
             $table->foreignId('location_id')->constrained('stock_locations');
             $table->foreignId('lot_id')->nullable()->constrained('lots')->cascadeOnDelete();
+            $table->foreignId('serial_number_id')->nullable()->constrained('serial_numbers')->cascadeOnDelete();
             $table->decimal('quantity', 18, 4)->default(0);
             $table->decimal('reserved_quantity', 18, 4)->default(0);
             $table->timestamps();
 
-            $table->unique(['company_id', 'product_id', 'location_id', 'lot_id'], 'uq_quants_company_product_location_lot');
+            $table->unique(['company_id', 'product_id', 'location_id', 'lot_id', 'serial_number_id'], 'uq_quants_company_product_location_lot_serial');
             $table->index(['product_id', 'location_id']);
             $table->index(['company_id', 'product_id']);
             $table->index(['lot_id']);

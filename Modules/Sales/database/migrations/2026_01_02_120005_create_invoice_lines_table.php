@@ -23,6 +23,8 @@ return new class extends Migration
             $table->unsignedBigInteger('unit_price');
             $table->unsignedBigInteger('subtotal');
             $table->unsignedBigInteger('total_line_tax');
+            $table->date('deferred_start_date')->nullable();
+            $table->date('deferred_end_date')->nullable();
             // Add company currency amounts (converted amounts)
             $table->unsignedBigInteger('unit_price_company_currency')->nullable();
             $table->unsignedBigInteger('subtotal_company_currency')->nullable();

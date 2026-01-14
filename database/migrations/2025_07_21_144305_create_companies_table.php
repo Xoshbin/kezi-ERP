@@ -20,22 +20,10 @@ return new class extends Migration
             $table->foreignId('currency_id');
             $table->string('fiscal_country'); // e.g., 'IQ'
             $table->foreignId('parent_company_id')->nullable()->constrained('companies')->onDelete('set null');
-            $table->foreignId('default_accounts_payable_id')->nullable()->constrained('accounts')->nullOnDelete();
-            $table->foreignId('default_tax_receivable_id')->nullable()->constrained('accounts')->nullOnDelete();
-            $table->foreignId('default_purchase_journal_id')->nullable();
-            $table->foreignId('default_bank_journal_id')->nullable();
-            $table->foreignId('default_accounts_receivable_id')->nullable()->constrained('accounts')->nullOnDelete();
-            $table->foreignId('default_sales_discount_account_id')->nullable()->constrained('accounts')->nullOnDelete();
-            $table->foreignId('default_tax_account_id')->nullable()->constrained('accounts')->nullOnDelete();
-            $table->foreignId('default_sales_journal_id')->nullable();
-            $table->foreignId('default_depreciation_journal_id')->nullable();
-            $table->foreignId('default_bank_account_id')->nullable()->constrained('accounts')->nullOnDelete();
-            $table->foreignId('default_outstanding_receipts_account_id')->nullable()->constrained('accounts')->nullOnDelete();
-            $table->foreignId('default_gain_loss_account_id')->nullable()->constrained('accounts')->nullOnDelete();
-            $table->foreignId('default_stock_location_id')->nullable();
-            $table->foreignId('default_vendor_location_id')->nullable();
-            $table->foreignId('inventory_adjustment_account_id')->nullable()->constrained('accounts');
-            $table->foreignId('default_stock_input_account_id')->nullable()->constrained('accounts')->nullOnDelete();
+            
+            // Consolidation
+            $table->string('consolidation_method')->default('full')->comment('Consolidation method: full, proportional, equity');
+
             $table->string('inventory_accounting_mode')
                 ->default(InventoryAccountingMode::AUTO_RECORD_ON_BILL->value)
                 ->comment('Controls how inventory journal entries are created when vendor bills are confirmed');

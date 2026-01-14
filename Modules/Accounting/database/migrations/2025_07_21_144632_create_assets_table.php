@@ -25,6 +25,8 @@ return new class extends Migration
             $table->unsignedBigInteger('salvage_value')->default(0);
             $table->unsignedInteger('useful_life_years');
             $table->string('depreciation_method');
+            $table->boolean('prorata_temporis')->default(false);
+            $table->double('declining_factor')->nullable();
             $table->string('status')->default('Draft');
             $table->timestamps();
         });

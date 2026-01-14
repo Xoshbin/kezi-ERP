@@ -76,6 +76,7 @@ return new class extends Migration
         // Expense Report Lines
         Schema::create('expense_report_lines', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
             $table->foreignId('expense_report_id')->constrained('expense_reports')->cascadeOnDelete();
             $table->foreignId('expense_account_id')->constrained('accounts')->restrictOnDelete();
             $table->foreignId('partner_id')->nullable()->constrained('partners')->nullOnDelete();
