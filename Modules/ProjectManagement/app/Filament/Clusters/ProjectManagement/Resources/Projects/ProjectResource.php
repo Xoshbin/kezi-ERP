@@ -25,6 +25,21 @@ class ProjectResource extends Resource
 
     protected static ?string $cluster = ProjectManagementCluster::class;
 
+    public static function getModelLabel(): string
+    {
+        return __('projectmanagement::project.project.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('projectmanagement::project.project.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('projectmanagement::project.project.custom_navigation_label') ?? parent::getNavigationLabel();
+    }
+
     public static function form(Schema $schema): Schema
     {
         return ProjectForm::configure($schema);

@@ -34,6 +34,16 @@ class LetterOfCreditResource extends Resource
 
     protected static ?string $cluster = AccountingCluster::class;
 
+    public static function getModelLabel(): string
+    {
+        return __('accounting::lc.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('accounting::lc.plural_label');
+    }
+
     protected static ?string $recordTitleAttribute = 'lc_number';
 
     public static function getNavigationGroup(): ?string
@@ -121,6 +131,7 @@ class LetterOfCreditResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('lc_number')
+                    ->label(__('accounting::lc.lc_number'))
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
@@ -130,26 +141,32 @@ class LetterOfCreditResource extends Resource
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('amount')
+                    ->label(__('accounting::lc.amount'))
                     ->money(fn (LetterOfCredit $record) => $record->currency->code)
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('balance')
+                    ->label(__('accounting::lc.balance'))
                     ->money(fn (LetterOfCredit $record) => $record->currency->code)
                     ->color(fn (LetterOfCredit $record) => $record->balance->isZero() ? 'success' : 'warning'),
 
                 Tables\Columns\TextColumn::make('issue_date')
+                    ->label(__('accounting::lc.issue_date'))
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('expiry_date')
+                    ->label(__('accounting::lc.expiry_date'))
                     ->date()
                     ->sortable()
                     ->color(fn (LetterOfCredit $record) => $record->expiry_date->isPast() ? 'danger' : null),
 
                 Tables\Columns\TextColumn::make('type')
+                    ->label(__('accounting::lc.type'))
                     ->badge(),
 
                 Tables\Columns\TextColumn::make('status')
+                    ->label(__('accounting::lc.status'))
                     ->badge(),
             ])
             ->filters([

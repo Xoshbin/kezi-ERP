@@ -20,20 +20,24 @@ class ProjectInvoicesTable
         return $table
             ->columns([
                 TextColumn::make('project.name')
+                    ->label(__('projectmanagement::project.invoice.project'))
                     ->searchable()
                     ->sortable()
                     ->weight('medium'),
                 TextColumn::make('invoice_date')
+                    ->label(__('projectmanagement::project.invoice.invoice_date'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('period_start')
                     ->date()
-                    ->label('Period')
+                    ->label(__('projectmanagement::project.invoice.period'))
                     ->formatStateUsing(fn ($record) => "{$record->period_start->format('M d')} - {$record->period_end->format('M d, Y')}"),
                 TextColumn::make('total_amount')
+                    ->label(__('projectmanagement::project.invoice.total_amount'))
                     ->money(fn ($record) => $record->project->company->currency_code ?? 'USD')
                     ->sortable(),
                 TextColumn::make('status')
+                    ->label(__('projectmanagement::project.invoice.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'draft' => 'gray',
@@ -41,7 +45,7 @@ class ProjectInvoicesTable
                         'cancelled' => 'danger',
                     }),
                 TextColumn::make('invoice.document_number')
-                    ->label('Invoice #')
+                    ->label(__('projectmanagement::project.invoice.invoice_number'))
                     ->searchable()
                     ->url(fn ($record) => $record->invoice_id ? route('filament.app.resources.invoices.view', $record->invoice_id) : null),
             ])
