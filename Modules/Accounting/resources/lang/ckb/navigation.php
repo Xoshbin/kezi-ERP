@@ -6,6 +6,7 @@ return [
         'accounting' => 'ژمێریاری',
     ],
     'groups' => [
+        'accounting_settings' => 'ژمێریاری',
         'administration' => 'بەڕێوەبردن',
         'configuration' => 'ڕێکخستن',
         'sales_purchases' => 'کڕین و فرۆشتن',

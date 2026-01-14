@@ -2,6 +2,7 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -21,7 +22,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Modules\Inventory\Enums\Inventory\StockLocationType;
-use Modules\Inventory\Filament\Clusters\Inventory\InventoryCluster;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\Pages\CreateStockLocation;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\Pages\EditStockLocation;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\Pages\ListStockLocations;
@@ -32,7 +32,7 @@ class StockLocationResource extends Resource
 {
     protected static ?string $model = StockLocation::class;
 
-    protected static ?string $cluster = InventoryCluster::class;
+    protected static ?string $cluster = SettingsCluster::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-storefront';
 
@@ -51,6 +51,11 @@ class StockLocationResource extends Resource
     public static function getNavigationLabel(): string
     {
         return __('inventory::stock_location.plural_label');
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return __('inventory::navigation.groups.inventory_settings');
     }
 
     public static function form(Schema $schema): Schema

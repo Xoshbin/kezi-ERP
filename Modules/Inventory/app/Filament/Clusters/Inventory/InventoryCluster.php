@@ -13,7 +13,7 @@ class InventoryCluster extends Cluster
 
     public static function getNavigationLabel(): string
     {
-        return __('navigation.clusters.inventory');
+        return __('inventory::navigation.clusters.inventory');
     }
 
     public static function shouldRegisterNavigation(): bool
