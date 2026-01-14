@@ -127,7 +127,7 @@ class SerialNumberResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('status')
-                    ->label(__('common.status'))
+                    ->label(__('inventory::inventory.status'))
                     ->badge()
                     ->formatStateUsing(fn (SerialNumberStatus $state): string => $state->label())
                     ->color(fn (SerialNumberStatus $state): string => match ($state) {

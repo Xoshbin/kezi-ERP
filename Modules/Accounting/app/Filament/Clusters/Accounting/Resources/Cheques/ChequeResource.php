@@ -148,15 +148,18 @@ class ChequeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('cheque_number')
+                    ->label(__('accounting::cheque.cheque_number'))
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('issue_date')
+                    ->label(__('accounting::cheque.issue_date'))
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('due_date')
+                    ->label(__('accounting::cheque.due_date'))
                     ->date()
                     ->sortable()
                     ->color(fn (Cheque $record) => $record->due_date->isPast() && $record->status === ChequeStatus::Draft ? 'danger' : null),
@@ -166,13 +169,16 @@ class ChequeResource extends Resource
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('amount')
+                    ->label(__('accounting::cheque.amount'))
                     ->money(fn (Cheque $record) => $record->currency->code) // Assuming relationship loaded
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('type')
+                    ->label(__('accounting::cheque.type'))
                     ->badge(),
 
                 Tables\Columns\TextColumn::make('status')
+                    ->label(__('accounting::cheque.status'))
                     ->badge(),
             ])
             ->filters([

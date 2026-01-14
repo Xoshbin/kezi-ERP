@@ -37,4 +37,10 @@ return [
     'cheque_book_label' => 'Chequebook',
     'cheque_book_plural_label' => 'Chequebooks',
     'cheque_management' => 'Cheque Management',
+    'type' => 'Type',
+    'status' => 'Status',
+    'name' => 'Name',
+    'next_number' => 'Next Number',
+    'is_active' => 'Is Active',
+    'start_number' => 'Start Number',
 ];
