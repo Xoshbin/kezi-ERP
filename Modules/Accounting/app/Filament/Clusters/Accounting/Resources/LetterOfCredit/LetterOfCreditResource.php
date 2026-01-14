@@ -48,7 +48,7 @@ class LetterOfCreditResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::lc.navigation_group');
+        return __('accounting::navigation.groups.transactions');
     }
 
     public static function form(Schema $schema): Schema

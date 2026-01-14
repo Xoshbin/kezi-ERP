@@ -7,14 +7,9 @@ return [
     ],
     'groups' => [
         'accounting_settings' => 'Accounting',
-        'administration' => 'Administration',
-        'configuration' => 'Configuration',
-        'sales_purchases' => 'Sales & Purchases',
+        'transactions' => 'Transactions',
         'banking_cash' => 'Banking & Cash',
-        'cheque_management' => 'Cheque Management',
-        'petty_cash' => 'Petty Cash',
         'financial_planning' => 'Financial Planning',
-        'core_accounting' => 'Core Accounting',
-        'reports' => 'Reports',
+        'administration' => 'Administration',
     ],
 ];
