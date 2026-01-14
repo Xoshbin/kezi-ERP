@@ -14,12 +14,25 @@ return new class extends Migration
             $table->string('type');
             $table->string('state');
             $table->foreignId('partner_id')->nullable()->constrained('partners');
+            $table->foreignId('transit_location_id')->nullable()->constrained('stock_locations')->nullOnDelete();
+            $table->foreignId('destination_location_id')->nullable()->constrained('stock_locations')->nullOnDelete();
+            $table->timestamp('shipped_at')->nullable();
+            $table->foreignId('shipped_by_user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamp('received_at')->nullable();
+            $table->foreignId('received_by_user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('purchase_order_id')->nullable()->constrained('purchase_orders')->nullOnDelete();
             $table->timestamp('scheduled_date')->nullable();
             $table->timestamp('completed_at')->nullable();
+            $table->timestamp('validated_at')->nullable();
+            $table->foreignId('validated_by_user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('reference')->nullable();
+            $table->string('grn_number')->nullable();
             $table->string('origin')->nullable();
             $table->foreignId('created_by_user_id')->constrained('users');
             $table->timestamps();
+
+            $table->index(['type', 'state']);
+            $table->index('grn_number');
         });
     }
 

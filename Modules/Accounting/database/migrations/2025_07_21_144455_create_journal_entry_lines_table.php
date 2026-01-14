@@ -18,9 +18,11 @@ return new class extends Migration
             $table->foreignId('account_id')->constrained('accounts');
             $table->foreignId('partner_id')->nullable()->constrained('partners');
             $table->foreignId('analytic_account_id')->nullable()->constrained('analytic_accounts');
+            $table->foreignId('tax_id')->nullable()->constrained('taxes')->nullOnDelete();
             $table->unsignedBigInteger('debit')->default(0);
             $table->unsignedBigInteger('credit')->default(0);
             $table->unsignedBigInteger('original_currency_amount')->default(0);
+            $table->foreignId('original_currency_id')->nullable()->constrained('currencies');
             $table->unsignedBigInteger('exchange_rate_at_transaction')->default(0);
             // Add currency_id field for the original transaction currency
             $table->foreignId('currency_id')->nullable()->constrained('currencies');

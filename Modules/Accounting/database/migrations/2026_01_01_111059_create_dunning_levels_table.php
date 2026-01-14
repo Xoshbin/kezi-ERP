@@ -20,6 +20,10 @@ return new class extends Migration
             $table->text('email_body')->nullable();
             $table->boolean('print_letter')->default(false);
             $table->boolean('send_email')->default(true);
+            $table->boolean('charge_fee')->default(false);
+            $table->decimal('fee_amount', 20, 4)->default(0);
+            $table->decimal('fee_percentage', 5, 2)->default(0);
+            $table->foreignId('fee_product_id')->nullable()->constrained('products')->nullOnDelete();
             $table->timestamps();
         });
     }
