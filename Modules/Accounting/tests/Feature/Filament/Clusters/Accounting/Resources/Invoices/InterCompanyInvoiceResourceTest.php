@@ -23,6 +23,9 @@ beforeEach(function () {
     $user = \App\Models\User::factory()->create();
     $user->companies()->attach($this->companyA);
 
+    // Set team context BEFORE assigning permissions (required for company_id in model_has_permissions)
+    setPermissionsTeamId($this->companyA->id);
+
     // Assign permissions
     $permissions = ['view_any_invoice', 'view_invoice', 'create_invoice', 'update_invoice'];
     foreach ($permissions as $permission) {

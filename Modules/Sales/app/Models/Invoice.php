@@ -135,6 +135,15 @@ class Invoice extends Model
         'source_invoice_id',
     ];
 
+    protected static function booted(): void
+    {
+        static::saving(function (self $invoice) {
+            if ($invoice->relationLoaded('invoiceLines')) {
+                $invoice->calculateTotalsFromLines();
+            }
+        });
+    }
+
     /**
      * The attributes that should be cast.
      * Ensures dates are Carbon instances and JSON fields are properly handled. [1]
