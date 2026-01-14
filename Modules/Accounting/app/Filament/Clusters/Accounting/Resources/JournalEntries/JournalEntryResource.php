@@ -54,7 +54,7 @@ class JournalEntryResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.core_accounting');
+        return __('accounting::navigation.groups.core_accounting');
     }
 
     public static function getModelLabel(): string
@@ -103,13 +103,13 @@ class JournalEntryResource extends Resource
                             self::updateTotals($set, $get('lines') ?? [], $get('exchange_rate') ?? 1);
                         })
                         ->createOptionForm([
-                            TextInput::make('code')->label(__('currency.code'))->required()->maxLength(255),
-                            TextInput::make('name')->label(__('currency.name'))->required()->maxLength(255),
-                            TextInput::make('symbol')->label(__('currency.symbol'))->required()->maxLength(5),
-                            TextInput::make('exchange_rate')->label(__('currency.exchange_rate'))->required()->numeric()->default(1),
-                            Toggle::make('is_active')->label(__('currency.is_active'))->required()->default(true),
+                            TextInput::make('code')->label(__('accounting::currency.code'))->required()->maxLength(255),
+                            TextInput::make('name')->label(__('accounting::currency.name'))->required()->maxLength(255),
+                            TextInput::make('symbol')->label(__('accounting::currency.symbol'))->required()->maxLength(5),
+                            TextInput::make('exchange_rate')->label(__('accounting::currency.exchange_rate'))->required()->numeric()->default(1),
+                            Toggle::make('is_active')->label(__('accounting::currency.is_active'))->required()->default(true),
                         ])
-                        ->createOptionModalHeading(__('common.modal_title_create_currency'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_currency'))
                         ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
                         ->columnSpan(2),
                     TextInput::make('exchange_rate')

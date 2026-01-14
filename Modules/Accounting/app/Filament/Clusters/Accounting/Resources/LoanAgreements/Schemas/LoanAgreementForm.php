@@ -49,7 +49,7 @@ class LoanAgreementForm
                             TextInput::make('contact_person')->label(__('partner.contact_person') ?: 'Contact Person'),
                         ])
                         ->createOptionUsing(fn (array $data) => Partner::create($data)->getKey())
-                        ->createOptionModalHeading(__('common.modal_title_create_partner') ?: 'Create Partner')
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_partner') ?: 'Create Partner')
                         ->createOptionAction(fn (Action $action) => $action->modalWidth('lg')),
 
                     Group::make()
@@ -137,28 +137,28 @@ class LoanAgreementForm
                                 })
                                 ->createOptionForm([
                                     TextInput::make('code')
-                                        ->label(__('currency.code'))
+                                        ->label(__('accounting::currency.code'))
                                         ->required()
                                         ->maxLength(255),
                                     TextInput::make('name')
-                                        ->label(__('currency.name'))
+                                        ->label(__('accounting::currency.name'))
                                         ->required()
                                         ->maxLength(255),
                                     TextInput::make('symbol')
-                                        ->label(__('currency.symbol'))
+                                        ->label(__('accounting::currency.symbol'))
                                         ->required()
                                         ->maxLength(5),
                                     TextInput::make('exchange_rate')
-                                        ->label(__('currency.exchange_rate'))
+                                        ->label(__('accounting::currency.exchange_rate'))
                                         ->required()
                                         ->numeric()
                                         ->default(1),
                                     Toggle::make('is_active')
-                                        ->label(__('currency.is_active'))
+                                        ->label(__('accounting::currency.is_active'))
                                         ->required()
                                         ->default(true),
                                 ])
-                                ->createOptionModalHeading(__('common.modal_title_create_currency'))
+                                ->createOptionModalHeading(__('accounting::common.modal_title_create_currency'))
                                 ->createOptionAction(function (Action $action) {
                                     return $action
                                         ->modalWidth('lg');

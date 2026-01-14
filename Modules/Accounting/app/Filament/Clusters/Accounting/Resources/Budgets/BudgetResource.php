@@ -32,7 +32,7 @@ class BudgetResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.financial_planning');
+        return __('accounting::navigation.groups.financial_planning');
     }
 
     public static function getModelLabel(): string
