@@ -36,4 +36,10 @@ return [
     'cheque_book_label' => 'دەفتەری چەک',
     'cheque_book_plural_label' => 'دەفتەرەکانی چەک',
     'cheque_management' => 'بەڕێوەبردنی چەکەکان',
+    'type' => 'جۆر',
+    'status' => 'دۆخ',
+    'name' => 'ناو',
+    'next_number' => 'ژمارەی داهاتوو',
+    'is_active' => 'چالاکە',
+    'start_number' => 'ژمارەی دەستپێک',
 ];

@@ -8,6 +8,7 @@ return [
     'tracking_type_none' => 'بێ شوێنکەوتن',
     'tracking_type_lot' => 'بە گروپەکان',
     'tracking_type_serial' => 'بە ژمارەی زنجیرەیی',
+    'status' => 'دۆخ',
 
     // ژمارە زنجیرەییەکان
     'serial_number' => 'ژمارەی زنجیرەیی',
