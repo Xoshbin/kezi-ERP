@@ -58,8 +58,8 @@ class FinancialStatsOverview extends BaseWidget
         } catch (Exception) {
             // Fallback to zero values if services fail
             return [
-                Stat::make(__('dashboard.financial.error'), __('dashboard.financial.data_unavailable'))
-                    ->description(__('dashboard.financial.please_check_setup'))
+                Stat::make(__('accounting::dashboard.financial.error'), __('accounting::dashboard.financial.data_unavailable'))
+                    ->description(__('accounting::dashboard.financial.please_check_setup'))
                     ->color('danger')
                     ->icon('heroicon-o-exclamation-triangle'),
             ];
@@ -67,39 +67,39 @@ class FinancialStatsOverview extends BaseWidget
 
         return [
             // Current Month Net Profit
-            Stat::make(__('dashboard.financial.current_month_profit'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($netProfit))
-                ->description(__('dashboard.financial.profit_after_expenses'))
+            Stat::make(__('accounting::dashboard.financial.current_month_profit'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($netProfit))
+                ->description(__('accounting::dashboard.financial.profit_after_expenses'))
                 ->descriptionIcon($netProfit->isPositive() ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($netProfit->isPositive() ? 'success' : ($netProfit->isNegative() ? 'danger' : 'gray'))
                 ->chart($this->getMonthlyProfitTrend($company, $plService)),
 
             // Year-to-Date Net Profit
-            Stat::make(__('dashboard.financial.ytd_profit'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($ytdNetProfit))
-                ->description(__('dashboard.financial.year_to_date_performance'))
+            Stat::make(__('accounting::dashboard.financial.ytd_profit'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($ytdNetProfit))
+                ->description(__('accounting::dashboard.financial.year_to_date_performance'))
                 ->descriptionIcon($ytdNetProfit->isPositive() ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($ytdNetProfit->isPositive() ? 'success' : ($ytdNetProfit->isNegative() ? 'danger' : 'gray')),
 
             // Total Outstanding Receivables
-            Stat::make(__('dashboard.financial.total_receivables'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($totalReceivables))
-                ->description(__('dashboard.financial.outstanding_customer_invoices'))
+            Stat::make(__('accounting::dashboard.financial.total_receivables'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($totalReceivables))
+                ->description(__('accounting::dashboard.financial.outstanding_customer_invoices'))
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color($totalReceivables->isZero() ? 'gray' : 'warning'),
 
             // Total Outstanding Payables
-            Stat::make(__('dashboard.financial.total_payables'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($totalPayables))
-                ->description(__('dashboard.financial.outstanding_vendor_bills'))
+            Stat::make(__('accounting::dashboard.financial.total_payables'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($totalPayables))
+                ->description(__('accounting::dashboard.financial.outstanding_vendor_bills'))
                 ->descriptionIcon('heroicon-m-credit-card')
                 ->color($totalPayables->isZero() ? 'gray' : 'danger'),
 
             // Cash Balance
-            Stat::make(__('dashboard.financial.cash_balance'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($cashBalance))
-                ->description(__('dashboard.financial.total_cash_all_accounts'))
+            Stat::make(__('accounting::dashboard.financial.cash_balance'), \Modules\Foundation\Support\NumberFormatter::formatMoneyTo($cashBalance))
+                ->description(__('accounting::dashboard.financial.total_cash_all_accounts'))
                 ->descriptionIcon('heroicon-m-currency-dollar')
                 ->color($cashBalance->isPositive() ? 'success' : ($cashBalance->isNegative() ? 'danger' : 'gray')),
 
             // Gross Profit Margin
-            Stat::make(__('dashboard.financial.gross_margin'), \Modules\Foundation\Support\NumberFormatter::formatPercentage($grossProfitMargin, 1))
-                ->description(__('dashboard.financial.profitability_ratio'))
+            Stat::make(__('accounting::dashboard.financial.gross_margin'), \Modules\Foundation\Support\NumberFormatter::formatPercentage($grossProfitMargin, 1))
+                ->description(__('accounting::dashboard.financial.profitability_ratio'))
                 ->descriptionIcon('heroicon-m-chart-pie')
                 ->color($grossProfitMargin > 20 ? 'success' : ($grossProfitMargin > 10 ? 'warning' : 'danger')),
         ];

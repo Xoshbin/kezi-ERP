@@ -49,7 +49,7 @@ class BankStatementResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.banking_cash');
+        return __('accounting::navigation.groups.banking_cash');
     }
 
     public static function getModelLabel(): string
@@ -87,28 +87,28 @@ class BankStatementResource extends Resource
                         })
                         ->createOptionForm([
                             TextInput::make('code')
-                                ->label(__('currency.code'))
+                                ->label(__('accounting::currency.code'))
                                 ->required()
                                 ->maxLength(255),
                             TextInput::make('name')
-                                ->label(__('currency.name'))
+                                ->label(__('accounting::currency.name'))
                                 ->required()
                                 ->maxLength(255),
                             TextInput::make('symbol')
-                                ->label(__('currency.symbol'))
+                                ->label(__('accounting::currency.symbol'))
                                 ->required()
                                 ->maxLength(5),
                             TextInput::make('exchange_rate')
-                                ->label(__('currency.exchange_rate'))
+                                ->label(__('accounting::currency.exchange_rate'))
                                 ->required()
                                 ->numeric()
                                 ->default(1),
                             Toggle::make('is_active')
-                                ->label(__('currency.is_active'))
+                                ->label(__('accounting::currency.is_active'))
                                 ->required()
                                 ->default(true),
                         ])
-                        ->createOptionModalHeading(__('common.modal_title_create_currency')),
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_currency')),
                     Select::make('journal_id')
                         ->label(__('accounting::bank_statement.bank_journal'))
                         ->options(function (): array {

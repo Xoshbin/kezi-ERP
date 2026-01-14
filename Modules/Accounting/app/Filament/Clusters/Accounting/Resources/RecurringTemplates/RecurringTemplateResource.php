@@ -132,7 +132,7 @@ class RecurringTemplateResource extends Resource
                         ->searchable()
                         ->required(),
                     Select::make('currency_id')
-                        ->label(__('foundation::currency.currency'))
+                        ->label(__('accounting::currency.currency'))
                         ->options(fn () => Currency::pluck('name', 'id'))
                         ->searchable()
                         ->required(),
@@ -155,7 +155,7 @@ class RecurringTemplateResource extends Resource
                                 ->numeric()
                                 ->default(0),
                             Select::make('partner_id')
-                                ->label(__('foundation::partner.partner'))
+                                ->label(__('accounting::recurring.partner'))
                                 ->options(fn () => Partner::where('company_id', Filament::getTenant()?->id)->pluck('name', 'id'))
                                 ->searchable(),
                         ]),
@@ -171,21 +171,21 @@ class RecurringTemplateResource extends Resource
             Grid::make(3)
                 ->schema([
                     Select::make('customer_id')
-                        ->label(__('foundation::partner.customer'))
+                        ->label(__('accounting::recurring.customer'))
                         ->options(fn () => Partner::where('company_id', Filament::getTenant()?->id)->pluck('name', 'id'))
                         ->searchable()
                         ->required(),
                     Select::make('currency_id')
-                        ->label(__('foundation::currency.currency'))
+                        ->label(__('accounting::currency.currency'))
                         ->options(fn () => Currency::pluck('name', 'id'))
                         ->searchable()
                         ->required(),
                     Select::make('payment_term_id')
-                        ->label(__('foundation::payment_term.payment_term'))
+                        ->label(__('accounting::recurring.payment_term'))
                         ->options(fn () => PaymentTerm::where('company_id', Filament::getTenant()?->id)->pluck('name', 'id'))
                         ->searchable(),
                     Select::make('fiscal_position_id')
-                        ->label(__('foundation::fiscal_position.fiscal_position'))
+                        ->label(__('accounting::recurring.fiscal_position'))
                         ->options(fn () => FiscalPosition::where('company_id', Filament::getTenant()?->id)->pluck('name', 'id'))
                         ->searchable(),
                     Textarea::make('description')
@@ -204,11 +204,11 @@ class RecurringTemplateResource extends Resource
                                 ->searchable()
                                 ->required(),
                             Select::make('product_id')
-                                ->label(__('foundation::product.product'))
+                                ->label(__('accounting::recurring.product'))
                                 ->options(fn () => Product::pluck('name', 'id'))
                                 ->searchable(),
                             Select::make('tax_id')
-                                ->label(__('foundation::tax.tax'))
+                                ->label(__('accounting::recurring.tax'))
                                 ->options(fn () => Tax::where('company_id', Filament::getTenant()?->id)->pluck('name', 'id'))
                                 ->searchable(),
                         ]),

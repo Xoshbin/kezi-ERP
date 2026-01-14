@@ -17,7 +17,7 @@ class LoanAgreementsTable
         return $table
             ->columns([
                 TextColumn::make('company.name')
-                    ->label(__('common.company'))
+                    ->label(__('accounting::common.company'))
                     ->searchable(),
                 TextColumn::make('partner.name')
                     ->label(__('accounting::loan.form.partner'))
@@ -73,12 +73,12 @@ class LoanAgreementsTable
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->label(__('common.created_at'))
+                    ->label(__('accounting::common.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label(__('common.updated_at'))
+                    ->label(__('accounting::common.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
