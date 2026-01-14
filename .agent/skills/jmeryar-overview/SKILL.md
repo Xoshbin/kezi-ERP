@@ -1,5 +1,6 @@
 ---
-trigger: always_on
+name: jmeryar-overview
+description: High-level project overview, core design philosophy, and accounting principles. Use to understand the project context.
 ---
 
 ### 🧠 **Purpose**
