@@ -15,25 +15,25 @@ class Dashboard extends BaseDashboard
 
     public static function getNavigationLabel(): string
     {
-        return __('dashboard.title');
+        return __('accounting::dashboard.title');
     }
 
     public function getTitle(): string
     {
-        return __('dashboard.financial_dashboard');
+        return __('accounting::dashboard.financial_dashboard');
     }
 
     public function getHeading(): string
     {
-        return __('dashboard.financial_dashboard');
+        return __('accounting::dashboard.financial_dashboard');
     }
 
     public function getSubheading(): ?string
     {
         $company = Filament::getTenant();
-        $companyName = $company->name ?? __('dashboard.no_company');
+        $companyName = $company->name ?? __('accounting::dashboard.no_company');
 
-        return __('dashboard.welcome_message', [
+        return __('accounting::dashboard.welcome_message', [
             'company' => $companyName,
             'date' => now()->format('F j, Y'),
         ]);

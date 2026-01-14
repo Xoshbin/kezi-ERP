@@ -64,7 +64,7 @@ class ViewInvoice extends ViewRecord
                 ->modalDescription(__('accounting::invoice.payments_relation_manager.payment_details'))
                 ->schema([
                     Select::make('journal_id')
-                        ->label(__('payment::payment.form.journal_id'))
+                        ->label(__('accounting::payment.form.journal_id'))
                         ->options(function (): array {
                             $tenant = Filament::getTenant();
                             if (! $tenant instanceof Company) {
@@ -87,16 +87,16 @@ class ViewInvoice extends ViewRecord
                                 ->value('id');
                         }),
                     DatePicker::make('payment_date')
-                        ->label(__('payment::payment.form.payment_date'))
+                        ->label(__('accounting::payment.form.payment_date'))
                         ->default(now())
                         ->required(),
                     MoneyInput::make('amount')
-                        ->label(__('payment::payment.form.amount'))
+                        ->label(__('accounting::payment.form.amount'))
                         ->currencyField('currency_id')
                         ->default(fn (Invoice $record) => $record->getRemainingAmount())
                         ->required(),
                     TextInput::make('reference')
-                        ->label(__('payment::payment.form.reference'))
+                        ->label(__('accounting::payment.form.reference'))
                         ->placeholder(__('Optional reference')),
                     Hidden::make('currency_id')
                         ->default(fn (Invoice $record) => $record->currency_id),
@@ -136,12 +136,12 @@ class ViewInvoice extends ViewRecord
                         app(PaymentService::class)->confirm($payment, $user);
 
                         Notification::make()
-                            ->title(__('payment::payment.action.confirm.notification.success'))
+                            ->title(__('accounting::payment.action.confirm.notification.success'))
                             ->success()
                             ->send();
                     } catch (Exception $e) {
                         Notification::make()
-                            ->title(__('payment::payment.action.confirm.notification.error'))
+                            ->title(__('accounting::payment.action.confirm.notification.error'))
                             ->body($e->getMessage())
                             ->danger()
                             ->send();

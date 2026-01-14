@@ -157,7 +157,7 @@ it('handles service errors gracefully', function () {
     $component->assertOk();
 
     // Should show error message instead of crashing
-    $component->assertSeeText(__('dashboard.financial.data_unavailable'));
+    $component->assertSeeText(__('accounting::dashboard.financial.data_unavailable'));
 });
 
 it('calculates cash flow forecasts correctly', function () {

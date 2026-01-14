@@ -44,7 +44,7 @@ class AssetResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.core_accounting');
+        return __('accounting::navigation.groups.core_accounting');
     }
 
     public static function getModelLabel(): string
@@ -108,24 +108,24 @@ class AssetResource extends Resource
                         })
                         ->createOptionForm([
                             TextInput::make('code')
-                                ->label(__('currency.code'))
+                                ->label(__('accounting::currency.code'))
                                 ->required()
                                 ->maxLength(255),
                             TextInput::make('name')
-                                ->label(__('currency.name'))
+                                ->label(__('accounting::currency.name'))
                                 ->required()
                                 ->maxLength(255),
                             TextInput::make('symbol')
-                                ->label(__('currency.symbol'))
+                                ->label(__('accounting::currency.symbol'))
                                 ->required()
                                 ->maxLength(5),
                             TextInput::make('exchange_rate')
-                                ->label(__('currency.exchange_rate'))
+                                ->label(__('accounting::currency.exchange_rate'))
                                 ->required()
                                 ->numeric()
                                 ->default(1),
                         ])
-                        ->createOptionModalHeading(__('common.modal_title_create_currency'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_currency'))
                         ->createOptionAction(fn (Action $action) => $action->modalWidth('lg')),
 
                     TextInput::make('current_exchange_rate')
@@ -224,7 +224,7 @@ class AssetResource extends Resource
                                 ->default(\Modules\Accounting\Enums\Accounting\AccountType::FixedAssets->value)
                                 ->required(),
                         ])
-                        ->createOptionModalHeading(__('common.modal_title_create_account'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
                         ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
                         ->required()
                         ->columnSpan(1),
@@ -251,7 +251,7 @@ class AssetResource extends Resource
                                 ->default(\Modules\Accounting\Enums\Accounting\AccountType::Depreciation->value)
                                 ->required(),
                         ])
-                        ->createOptionModalHeading(__('common.modal_title_create_account'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
                         ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
                         ->required()
                         ->columnSpan(1),
@@ -278,7 +278,7 @@ class AssetResource extends Resource
                                 ->default(\Modules\Accounting\Enums\Accounting\AccountType::FixedAssets->value)
                                 ->required(),
                         ])
-                        ->createOptionModalHeading(__('common.modal_title_create_account'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
                         ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
                         ->required()
                         ->columnSpan(1),

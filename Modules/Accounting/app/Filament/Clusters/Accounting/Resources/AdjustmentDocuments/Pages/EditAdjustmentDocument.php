@@ -103,7 +103,7 @@ class EditAdjustmentDocument extends EditRecord
                     ]);
                 }),
             Action::make('post')
-                ->label(__('adjustment_document.post_document'))
+                ->label(__('accounting::adjustment_document.post_document'))
                 ->color('success')
                 ->requiresConfirmation()
                 ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft)
@@ -116,9 +116,9 @@ class EditAdjustmentDocument extends EditRecord
                             throw new Exception('User must be authenticated to post adjustment document');
                         }
                         $service->post($record, $user);
-                        Notification::make()->title(__('adjustment_document.notification_document_posted_successfully'))->success()->send();
+                        Notification::make()->title(__('accounting::adjustment_document.notification_document_posted_successfully'))->success()->send();
                     } catch (Exception $e) {
-                        Notification::make()->title(__('adjustment_document.notification_document_post_error'))->body($e->getMessage())->danger()->send();
+                        Notification::make()->title(__('accounting::adjustment_document.notification_document_post_error'))->body($e->getMessage())->danger()->send();
                     }
                 }),
             DeleteAction::make(),

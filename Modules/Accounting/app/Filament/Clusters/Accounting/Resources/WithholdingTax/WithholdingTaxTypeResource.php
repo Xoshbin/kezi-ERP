@@ -85,7 +85,7 @@ class WithholdingTaxTypeResource extends Resource
                                     ->required(),
                                 Toggle::make('is_deprecated')->label(__('accounting::account.is_deprecated'))->default(false),
                             ])
-                            ->createOptionModalHeading(__('common.modal_title_create_account'))
+                            ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
                             ->createOptionAction(fn (Action $a) => $a->name('create-account-option')->modalWidth('lg'))
                             ->required(),
                         Select::make('applicable_to')

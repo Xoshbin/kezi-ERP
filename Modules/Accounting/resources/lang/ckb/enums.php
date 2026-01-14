@@ -31,4 +31,14 @@ return [
         'open' => 'کراوە',
         'closed' => 'داخراو',
     ],
+    'depreciation_method' => [
+        'straight_line' => 'هێڵی ڕاست',
+        'declining' => 'کەمبوونەوەی هاوسەنگ',
+        'sum_of_digits' => 'کۆی ژمارەکان',
+    ],
+    'partner_type' => [
+        'customer' => 'کڕیار',
+        'vendor' => 'فرۆشیار',
+        'both' => 'هەردووکی',
+    ],
 ];
