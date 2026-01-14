@@ -8,6 +8,10 @@ use Modules\Inventory\Enums\Inventory\StockLocationType;
 use Modules\Inventory\Models\StockLocation;
 use Tests\Builders\CompanyBuilder;
 
+/**
+ * @property \App\Models\Company $company
+ * @property \App\Models\User $user
+ */
 trait WithConfiguredCompany
 {
     protected function setupWithConfiguredCompany(): void
