@@ -186,3 +186,22 @@ use Modules\Accounting\DataTransferObjects\CreateJournalEntryDTO;
 // Enums
 use Modules\Accounting\Enums\InvoiceStatus;
 ```
+
+## 8. Internationalization and Localization
+
+**Rule:** All UI strings **MUST** be localized and scoped to their respective modules.
+
+- **No Global Translations:** Do not use `lang/en.json`, `lang/ckb.json`, or any global translation files at the root level. All translations must reside within the modules.
+- **Modular Scoping:** Use the `module::file.key` syntax for all translations (e.g., `__('accounting::cheque.label')`).
+- **No Hardcoded Strings:** UI strings (labels, titles, placeholders, helper texts, notifications, buttons) **MUST NOT** be hardcoded.
+- **Consistency Across Locales:** Ensure translation keys exist and are translated in all supported locales:
+    - `en` (English)
+    - `ckb` (Kurdish Sorani)
+    - `ar` (Arabic)
+- **Filament Integration:** Always use translation keys in Filament components:
+    - `getModelLabel()`, `getPluralModelLabel()`
+    - `getNavigationLabel()`, `getNavigationGroup()`
+    - `label()`, `placeholder()`, `helperText()`
+    - `Action::make('name')->label(__('module::file.key'))`
+- **Enum Translations:** Translate enum values in the UI using the `module::file.enum_case` pattern or by implementing a `getLabel()` method on the enum that returns `__('module::file.status.' . $this->value)`.
+- **Naming Convention:** Translation files within `Modules/{Module}/resources/lang/{locale}/` should be named after the feature or entity they describe (e.g., `cash_advance.php` for HR cash advances).
