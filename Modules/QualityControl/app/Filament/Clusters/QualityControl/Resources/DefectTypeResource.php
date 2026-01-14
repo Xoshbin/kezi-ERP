@@ -2,6 +2,7 @@
 
 namespace Modules\QualityControl\Filament\Clusters\QualityControl\Resources;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -13,7 +14,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Modules\QualityControl\Filament\Clusters\QualityControl\Resources\DefectTypeResource\Pages;
-use Modules\QualityControl\Filament\Clusters\QualityControlCluster;
 use Modules\QualityControl\Models\DefectType;
 
 class DefectTypeResource extends Resource
@@ -22,13 +22,18 @@ class DefectTypeResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-exclamation-triangle';
 
-    protected static ?string $cluster = QualityControlCluster::class;
+    protected static ?string $cluster = SettingsCluster::class;
 
     protected static ?int $navigationSort = 1;
 
     public static function getNavigationLabel(): string
     {
         return __('qualitycontrol::defect_type.navigation_label');
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return __('qualitycontrol::navigation.groups.qc_settings');
     }
 
     public static function form(Schema $schema): Schema
