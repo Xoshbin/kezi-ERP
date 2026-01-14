@@ -33,6 +33,21 @@ class LandedCostResource extends Resource
         return __('inventory::landed_cost.navigation_group');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('inventory::landed_cost.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('inventory::landed_cost.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('inventory::landed_cost.plural_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema

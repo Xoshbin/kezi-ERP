@@ -23,4 +23,5 @@ return [
     'amount' => 'بڕ',
     'type' => 'جۆر',
     'status' => 'دۆخ',
+    'navigation_group' => 'بەڕێوەبردنی نامەی ئیعتماد',
 ];
