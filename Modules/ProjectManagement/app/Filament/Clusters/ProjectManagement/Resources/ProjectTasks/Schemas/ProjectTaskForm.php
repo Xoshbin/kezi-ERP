@@ -3,11 +3,10 @@
 namespace Modules\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\ProjectTasks\Schemas;
 
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Get;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Schema;
 use Modules\ProjectManagement\Enums\TaskStatus;
 
@@ -17,7 +16,7 @@ class ProjectTaskForm
     {
         return $schema
             ->components([
-                Grid::make()
+                Group::make()
                     ->schema([
                         Select::make('project_id')
                             ->relationship('project', 'name')
@@ -28,7 +27,7 @@ class ProjectTaskForm
                             ->afterStateUpdated(fn ($state, callable $set) => $set('parent_task_id', null)),
                         Select::make('parent_task_id')
                             ->label('Parent Task')
-                            ->relationship('parentTask', 'name', function ($query, Get $get) {
+                            ->relationship('parentTask', 'name', function ($query, $get) {
                                 $projectId = $get('project_id');
                                 if ($projectId) {
                                     $query->where('project_id', $projectId);
@@ -37,7 +36,7 @@ class ProjectTaskForm
                             ->searchable()
                             ->preload(),
                         Select::make('assigned_to')
-                            ->relationship('assignee', 'first_name') // Assuming first_name for now
+                            ->relationship('assignedEmployee', 'first_name')
                             ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name}")
                             ->searchable()
                             ->preload(),

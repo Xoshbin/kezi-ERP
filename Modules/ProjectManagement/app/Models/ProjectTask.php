@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Modules\HR\Models\Employee;
 use Modules\ProjectManagement\Enums\TaskStatus;
@@ -32,6 +33,7 @@ use Modules\ProjectManagement\Enums\TaskStatus;
  * @property int $sequence
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property-read Company $company
  * @property-read Project $project
  * @property-read ProjectTask|null $parentTask
@@ -45,6 +47,7 @@ use Modules\ProjectManagement\Enums\TaskStatus;
 class ProjectTask extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'company_id',

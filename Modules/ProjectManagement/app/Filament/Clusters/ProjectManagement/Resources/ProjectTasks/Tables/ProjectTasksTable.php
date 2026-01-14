@@ -7,7 +7,9 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
@@ -28,9 +30,9 @@ class ProjectTasksTable
                     ->searchable()
                     ->sortable()
                     ->weight('medium'),
-                TextColumn::make('assignee.first_name')
+                TextColumn::make('assignedEmployee.first_name')
                     ->label('Assigned To')
-                    ->formatStateUsing(fn ($record) => $record->assignee ? "{$record->assignee->first_name} {$record->assignee->last_name}" : '')
+                    ->formatStateUsing(fn ($record) => $record->assignedEmployee ? "{$record->assignedEmployee->first_name} {$record->assignedEmployee->last_name}" : '')
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('status')
@@ -66,6 +68,8 @@ class ProjectTasksTable
                     ViewAction::make(),
                     EditAction::make(),
                     DeleteAction::make(),
+                    RestoreAction::make(),
+                    ForceDeleteAction::make(),
                 ]),
             ])
             ->toolbarActions([
