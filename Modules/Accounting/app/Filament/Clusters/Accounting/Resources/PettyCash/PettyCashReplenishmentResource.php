@@ -25,7 +25,7 @@ class PettyCashReplenishmentResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::petty_cash.navigation_label');
+        return __('accounting::navigation.groups.petty_cash');
     }
 
     public static function getModelLabel(): string
