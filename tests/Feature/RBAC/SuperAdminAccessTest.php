@@ -28,8 +28,19 @@ beforeEach(function () {
     // Set team context BEFORE assigning roles (required for Spatie Permission with teams)
     setPermissionsTeamId($this->company->id);
 
+    // Create super_admin role for this company (since roles are now company-specific)
+    $superAdminRole = \Spatie\Permission\Models\Role::firstOrCreate([
+        'name' => 'super_admin',
+        'company_id' => $this->company->id,
+    ]);
+
+    // Grant all permissions if it was just created
+    if ($superAdminRole->wasRecentlyCreated) {
+        $superAdminRole->givePermissionTo(\Spatie\Permission\Models\Permission::all());
+    }
+
     // Assign super_admin role
-    $this->user->assignRole('super_admin');
+    $this->user->assignRole($superAdminRole);
 
     // Reload to clear cached relationships
     $this->user->refresh();
