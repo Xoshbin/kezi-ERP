@@ -56,9 +56,12 @@
             "Modules\\Foundation\\": "Modules/Foundation/app/",
             "Modules\\HR\\": "Modules/HR/app/",
             "Modules\\Inventory\\": "Modules/Inventory/app/",
+            "Modules\\Manufacturing\\": "Modules/Manufacturing/app/",
             "Modules\\Payment\\": "Modules/Payment/app/",
             "Modules\\Product\\": "Modules/Product/app/",
+            "Modules\\ProjectManagement\\": "Modules/ProjectManagement/app/",
             "Modules\\Purchase\\": "Modules/Purchase/app/",
+            "Modules\\QualityControl\\": "Modules/QualityControl/app/",
             "Modules\\Sales\\": "Modules/Sales/app/"
         }
     },
