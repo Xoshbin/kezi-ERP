@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Taxes;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -18,7 +19,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Modules\Accounting\Enums\Accounting\TaxType;
-use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages\CreateTax;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages\EditTax;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages\ListTaxes;
@@ -27,7 +27,7 @@ use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class TaxResource extends Resource
 {
-    protected static ?string $cluster = AccountingCluster::class;
+    protected static ?string $cluster = SettingsCluster::class;
 
     use Translatable;
 
@@ -50,6 +50,11 @@ class TaxResource extends Resource
     public static function getNavigationLabel(): string
     {
         return __('accounting::tax.plural_label');
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return __('accounting::navigation.groups.accounting_settings');
     }
 
     public static function form(Schema $schema): Schema

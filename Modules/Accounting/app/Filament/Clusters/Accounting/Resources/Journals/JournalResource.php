@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Journals;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -17,7 +18,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Modules\Accounting\Enums\Accounting\JournalType;
-use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Journals\Pages\CreateJournal;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Journals\Pages\EditJournal;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Journals\Pages\ListJournals;
@@ -37,11 +37,11 @@ class JournalResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
-    protected static ?string $cluster = AccountingCluster::class;
+    protected static ?string $cluster = SettingsCluster::class;
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::navigation.groups.core_accounting');
+        return __('accounting::navigation.groups.accounting_settings');
     }
 
     public static function getModelLabel(): string
