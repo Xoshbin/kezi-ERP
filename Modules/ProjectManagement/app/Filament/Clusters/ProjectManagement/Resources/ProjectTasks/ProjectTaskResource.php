@@ -19,6 +19,21 @@ class ProjectTaskResource extends Resource
 {
     protected static ?string $cluster = ProjectManagementCluster::class;
 
+    public static function getModelLabel(): string
+    {
+        return __('projectmanagement::project.task.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('projectmanagement::project.task.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('projectmanagement::project.task.plural_label');
+    }
+
     protected static ?string $model = ProjectTask::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
