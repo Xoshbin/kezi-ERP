@@ -14,6 +14,11 @@
             break;
         }
     }
+    // List of clusters to hide from the app switcher
+    $hiddenClusters = [
+        'Modules\Payment\Filament\Clusters\Payment\PaymentCluster',
+        'Modules\Product\Filament\Clusters\Product\ProductCluster',
+    ];
 @endphp
 
 @if (count($clusters) > 0)
@@ -46,7 +51,10 @@
                 position: fixed;
                 top: 90px;
                 left: 12px;
-                width: 360px;
+                width: 420px;
+                max-height: calc(100vh - 120px);
+                overflow-y: auto;
+                overflow-x: hidden;
                 background: white;
                 border-radius: 12px;
                 box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
@@ -75,6 +83,9 @@
                 gap: 16px;
             ">
                 @foreach ($clusters as $cluster)
+                    @if (in_array($cluster, $hiddenClusters))
+                        @continue
+                    @endif
                     @php
                         $isActive = $currentCluster === $cluster;
                         $icon = $cluster::getNavigationIcon();
@@ -94,6 +105,8 @@
                             border-radius: 10px;
                             text-decoration: none;
                             transition: background-color 0.15s ease;
+                            min-width: 0;
+                            overflow: hidden;
                             {{ $isActive ? 'background-color: rgb(255, 251, 235);' : '' }}
                         "
                         onmouseover="this.style.backgroundColor='{{ $isActive ? 'rgb(254, 243, 199)' : 'rgb(249, 250, 251)' }}'"
@@ -126,9 +139,10 @@
                             font-weight: 500;
                             text-align: center;
                             line-height: 1.3;
-                            word-wrap: break-word;
-                            overflow-wrap: break-word;
                             max-width: 100%;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
                             {{ $isActive 
                                 ? 'color: rgb(194, 65, 12);' 
                                 : 'color: rgb(55, 65, 81);' 

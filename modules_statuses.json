@@ -6,5 +6,8 @@
     "HR": true,
     "Foundation": true,
     "Payment": true,
-    "Product": true
+    "Product": true,
+    "ProjectManagement": true,
+    "Manufacturing": true,
+    "QualityControl": true
 }

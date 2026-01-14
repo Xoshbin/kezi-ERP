@@ -28,6 +28,10 @@ return [
     'depreciation_entries' => 'Depreciation Entries',
     'depreciation_date' => 'Depreciation Date',
     'amount' => 'Amount',
+    'prorata_temporis' => 'Prorata Temporis',
+    'declining_factor' => 'Declining Factor',
+    'depreciation_info' => 'Depreciation Information',
+    'depreciation_info_description' => 'Configure depreciation method and scheduling.',
 
     // Actions
     'post' => 'Post',

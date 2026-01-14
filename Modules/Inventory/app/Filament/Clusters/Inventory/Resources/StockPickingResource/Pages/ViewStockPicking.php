@@ -13,6 +13,8 @@ use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\AssignPickingAction;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\CancelPickingAction;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ConfirmPickingAction;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ReceiveTransferAction;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ShipTransferAction;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ValidatePickingAction;
 use Modules\Inventory\Models\StockPicking;
 
@@ -23,15 +25,15 @@ class ViewStockPicking extends ViewRecord
     public function infolist(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Picking Information')
+            Section::make(__('inventory::stock_picking.label'))
                 ->schema([
                     Grid::make(3)
                         ->schema([
                             TextEntry::make('reference')
-                                ->label('Reference'),
+                                ->label(__('inventory::stock_picking.reference')),
 
                             TextEntry::make('type')
-                                ->label('Type')
+                                ->label(__('inventory::stock_picking.types.receipt'))
                                 ->badge()
                                 ->color(fn ($state) => match ($state) {
                                     'receipt' => 'success',
@@ -41,48 +43,49 @@ class ViewStockPicking extends ViewRecord
                                 }),
 
                             TextEntry::make('state')
-                                ->label('State')
+                                ->label(__('inventory::stock_picking.states.draft'))
                                 ->badge()
                                 ->color(fn ($state) => match ($state) {
                                     'draft' => 'gray',
                                     'confirmed' => 'warning',
                                     'assigned' => 'info',
+                                    'shipped' => 'warning',
                                     'done' => 'success',
                                     'cancelled' => 'danger',
                                     default => 'gray',
                                 }),
 
                             TextEntry::make('partner.name')
-                                ->label('Partner')
+                                ->label(__('inventory::stock_picking.partner'))
                                 ->placeholder('—'),
 
                             TextEntry::make('scheduled_date')
-                                ->label('Scheduled Date')
+                                ->label(__('inventory::stock_picking.scheduled_date'))
                                 ->dateTime(),
 
                             TextEntry::make('completed_at')
-                                ->label('Completed At')
+                                ->label(__('inventory::stock_picking.completed_at'))
                                 ->dateTime()
                                 ->placeholder('—'),
 
                             TextEntry::make('origin')
-                                ->label('Origin')
+                                ->label(__('inventory::stock_picking.origin'))
                                 ->placeholder('—'),
 
                             TextEntry::make('stockMoves')
-                                ->label('Total Moves')
+                                ->label(__('inventory::stock_picking.total_moves'))
                                 ->getStateUsing(fn (StockPicking $record) => $record->stockMoves()->count()),
 
                             TextEntry::make('created_at')
-                                ->label('Created At')
+                                ->label(__('common.created_at'))
                                 ->dateTime(),
                         ]),
                 ]),
 
-            Section::make('Stock Moves')
+            Section::make(__('inventory::stock_picking.stock_moves'))
                 ->schema([
                     TextEntry::make('stockMoves')
-                        ->label('Move Details')
+                        ->label(__('inventory::stock_picking.move_details'))
                         ->listWithLineBreaks()
                         ->bulleted()
                         ->getStateUsing(function (StockPicking $record) {
@@ -129,14 +132,28 @@ class ViewStockPicking extends ViewRecord
                 break;
 
             case StockPickingState::Confirmed:
-                $actions[] = AssignPickingAction::make();
+                // For internal transfers, show Ship action
+                if ($record->isInternalTransfer()) {
+                    $actions[] = ShipTransferAction::make();
+                } else {
+                    $actions[] = AssignPickingAction::make();
+                }
                 $actions[] = CancelPickingAction::make();
                 break;
 
             case StockPickingState::Assigned:
-                $actions[] = ValidatePickingAction::make();
-
+                // For internal transfers, show Ship action
+                if ($record->isInternalTransfer()) {
+                    $actions[] = ShipTransferAction::make();
+                } else {
+                    $actions[] = ValidatePickingAction::make();
+                }
                 $actions[] = CancelPickingAction::make();
+                break;
+
+            case StockPickingState::Shipped:
+                // Only for internal transfers - show Receive action
+                $actions[] = ReceiveTransferAction::make();
                 break;
         }
 

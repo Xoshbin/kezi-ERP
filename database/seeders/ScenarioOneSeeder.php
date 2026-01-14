@@ -13,19 +13,34 @@ class ScenarioOneSeeder extends Seeder
     {
         DB::beginTransaction();
 
-        // Step 1.1: Create Currency (IQD)
-        $iqd = DB::table('currencies')->insertGetId([
-            'code' => 'IQD',
-            'name' => 'Iraqi Dinar',
-            'symbol' => 'ع.د',
-            'exchange_rate' => 1.0,
-            'decimal_places' => 3,
-            'is_active' => true,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Step 1: Currency (IQD)
+        $iqd = DB::table('currencies')->where('code', 'IQD')->value('id');
+        if (! $iqd) {
+            $iqd = DB::table('currencies')->insertGetId([
+                'code' => 'IQD',
+                'name' => json_encode(['en' => 'Iraqi Dinar']),
+                'symbol' => 'ع.د',
+                'decimal_places' => 3,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
-        // Step 1.2: Create Company
+        $usd = DB::table('currencies')->where('code', 'USD')->value('id');
+        if (! $usd) {
+            $usd = DB::table('currencies')->insertGetId([
+                'code' => 'USD',
+                'name' => json_encode(['en' => 'US Dollar']),
+                'symbol' => '$',
+                'decimal_places' => 2,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        // Step 1.1: Create Company
         $company = DB::table('companies')->insertGetId([
             'name' => 'Jmeryar Solutions',
             'address' => 'Slemani, Kurdistan Region, Iraq',
@@ -36,36 +51,59 @@ class ScenarioOneSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        (new UserSeeder)->run();
-
-        // Step 1.3: Create User (Soran)
-        $user = DB::table('users')->insertGetId([
+        // Insert exchange rate (Now that we have company_id)
+        DB::table('currency_rates')->insert([
             'company_id' => $company,
-            'name' => 'Soran',
-            'email' => 'soran@jmeryarerp.com',
-            'password' => Hash::make('SecurePassword123!'),
+            'currency_id' => $iqd,
+            'rate' => 1.0,
+            'effective_date' => now()->startOfDay(),
+            'source' => 'Manual',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
+        (new UserSeeder)->run();
+
+        // Step 1.3: Create User (Soran)
+        $user = DB::table('users')->updateOrInsert(
+            ['email' => 'soran@jmeryarerp.com'],
+            [
+                'name' => 'Soran',
+                'password' => Hash::make('SecurePassword123!'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+        // updateOrInsert returns boolean, we need ID.
+        $userId = DB::table('users')->where('email', 'soran@jmeryarerp.com')->value('id');
+
+        // Attach user to company
+        DB::table('company_user')->updateOrInsert(
+            ['company_id' => $company, 'user_id' => $userId],
+            ['created_at' => now(), 'updated_at' => now()]
+        );
+
+        $user = $userId; // Keep $user variable for later use
+
         // Step 2: Chart of Accounts
         $accounts = [
-            ['code' => '1010', 'name' => 'Bank', 'type' => 'Asset'],
-            ['code' => '1200', 'name' => 'Accounts Receivable', 'type' => 'Asset'],
-            ['code' => '1500', 'name' => 'IT Equipment', 'type' => 'Asset'],
-            ['code' => '1501', 'name' => 'Accumulated Depreciation', 'type' => 'Asset'],
-            ['code' => '2100', 'name' => 'Accounts Payable', 'type' => 'Liability'],
-            ['code' => '3000', 'name' => "Owner's Equity", 'type' => 'Equity'],
-            ['code' => '4000', 'name' => 'Consulting Revenue', 'type' => 'Revenue'],
-            ['code' => '5000', 'name' => 'Sales Discounts & Returns', 'type' => 'Revenue'],
-            ['code' => '6100', 'name' => 'Depreciation Expense', 'type' => 'Expense'],
+            ['code' => '1010', 'name' => 'Bank', 'type' => 'bank_and_cash'],
+            ['code' => '1200', 'name' => 'Accounts Receivable', 'type' => 'receivable'],
+            ['code' => '1500', 'name' => 'IT Equipment', 'type' => 'fixed_assets'],
+            ['code' => '1501', 'name' => 'Accumulated Depreciation', 'type' => 'fixed_assets'],
+            ['code' => '2100', 'name' => 'Accounts Payable', 'type' => 'payable'],
+            ['code' => '3000', 'name' => "Owner's Equity", 'type' => 'equity'],
+            ['code' => '4000', 'name' => 'Consulting Revenue', 'type' => 'income'],
+            ['code' => '5000', 'name' => 'Sales Discounts & Returns', 'type' => 'income'],
+            ['code' => '6100', 'name' => 'Depreciation Expense', 'type' => 'depreciation'],
+            ['code' => '220150', 'name' => 'Withholding Tax Payable', 'type' => 'current_liabilities'],
         ];
         $accountIds = [];
         foreach ($accounts as $acc) {
             $accountIds[$acc['code']] = DB::table('accounts')->insertGetId([
                 'company_id' => $company,
                 'code' => $acc['code'],
-                'name' => $acc['name'],
+                'name' => json_encode(['en' => $acc['name']]),
                 'type' => $acc['type'],
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -74,16 +112,16 @@ class ScenarioOneSeeder extends Seeder
 
         // Step 3.1: Journals
         $journals = [
-            ['name' => 'Bank', 'type' => 'Bank', 'short_code' => 'BNK'],
-            ['name' => 'Sales', 'type' => 'Sale', 'short_code' => 'INV'],
-            ['name' => 'Purchases', 'type' => 'Purchase', 'short_code' => 'BILL'],
-            ['name' => 'Miscellaneous', 'type' => 'Miscellaneous', 'short_code' => 'MISC'],
+            ['name' => 'Bank', 'type' => 'bank', 'short_code' => 'BNK'],
+            ['name' => 'Sales', 'type' => 'sale', 'short_code' => 'INV'],
+            ['name' => 'Purchases', 'type' => 'purchase', 'short_code' => 'BILL'],
+            ['name' => 'Miscellaneous', 'type' => 'miscellaneous', 'short_code' => 'MISC'],
         ];
         $journalIds = [];
         foreach ($journals as $j) {
             $journalIds[$j['name']] = DB::table('journals')->insertGetId([
                 'company_id' => $company,
-                'name' => $j['name'],
+                'name' => json_encode(['en' => $j['name']]),
                 'type' => $j['type'],
                 'short_code' => $j['short_code'],
                 'created_at' => now(),
@@ -116,10 +154,12 @@ class ScenarioOneSeeder extends Seeder
             'journal_id' => $journalIds['Bank'],
             'currency_id' => $iqd,
             'entry_date' => now(),
+            'entry_number' => 'DRAFT/2026/0001',
             'reference' => 'Initial Capital Investment',
             'description' => "Soran's personal funds transferred to the Jmeryar Solutions bank account",
             'created_by_user_id' => $user,
             'is_posted' => false,
+            'state' => 'draft',
             'total_debit' => 15000000,
             'total_credit' => 15000000,
             'hash' => $jeHash,
@@ -129,30 +169,45 @@ class ScenarioOneSeeder extends Seeder
         ]);
         DB::table('journal_entry_lines')->insert([
             [
+                'company_id' => $company,
                 'journal_entry_id' => $journalEntryId,
                 'account_id' => $accountIds['1010'],
+                'currency_id' => $iqd,
+                'original_currency_id' => $iqd,
                 'debit' => 15000000,
                 'credit' => 0,
+                'original_currency_amount' => 15000000,
+                'exchange_rate_at_transaction' => 1,
                 'description' => 'Capital injection into company bank account',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
+                'company_id' => $company,
                 'journal_entry_id' => $journalEntryId,
                 'account_id' => $accountIds['3000'],
+                'currency_id' => $iqd,
+                'original_currency_id' => $iqd,
                 'debit' => 0,
                 'credit' => 15000000,
+                'original_currency_amount' => 15000000,
+                'exchange_rate_at_transaction' => 1,
                 'description' => "Owner's personal investment",
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
         ]);
 
+        // Step 5.0: Call WHT Seeder
+        (new \Modules\Accounting\Database\Seeders\WithholdingTaxTypeSeeder)->run();
+        $whtTypeId = DB::table('withholding_tax_types')->where('name', 'like', '%Services%')->value('id');
+
         // Step 5.1: Create Vendor
         $paykarVendorId = DB::table('partners')->insertGetId([
             'company_id' => $company,
             'name' => 'Paykar Tech Supplies',
             'type' => 'Vendor',
+            'withholding_tax_type_id' => $whtTypeId,
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
@@ -169,11 +224,12 @@ class ScenarioOneSeeder extends Seeder
             'bill_reference' => 'KE-LAPTOP-001',
             'total_amount' => 3000000,
             'total_tax' => 0,
-            'status' => \Modules\Purchase\Models\VendorBill::STATUS_DRAFT,
+            'status' => 'draft',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         DB::table('vendor_bill_lines')->insert([
+            'company_id' => $company,
             'vendor_bill_id' => $vendorBillId,
             'description' => 'High-End Laptop for Business Use',
             'quantity' => 1,
@@ -189,42 +245,54 @@ class ScenarioOneSeeder extends Seeder
             'company_id' => $company,
             'journal_id' => $journalIds['Purchases'],
             'entry_date' => now(),
+            'entry_number' => 'DRAFT/2026/0002',
             'reference' => 'Vendor Bill KE-LAPTOP-001',
             'description' => 'Purchase of laptop on credit',
             'created_by_user_id' => $user,
             'is_posted' => false,
+            'state' => 'draft',
             'currency_id' => $iqd,
             'total_debit' => 3000000,
             'total_credit' => 3000000,
             'hash' => $vbJeHash,
             'previous_hash' => $jeHash,
-            'source_type' => 'App\Models\VendorBill',
+            'source_type' => 'Modules\Purchase\Models\VendorBill',
             'source_id' => $vendorBillId,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         DB::table('journal_entry_lines')->insert([
             [
+                'company_id' => $company,
                 'journal_entry_id' => $vendorBillJournalEntryId,
                 'account_id' => $accountIds['1500'],
+                'currency_id' => $iqd,
+                'original_currency_id' => $iqd,
                 'debit' => 3000000,
                 'credit' => 0,
+                'original_currency_amount' => 3000000,
+                'exchange_rate_at_transaction' => 1,
                 'description' => 'Laptop purchase (fixed asset)',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
+                'company_id' => $company,
                 'journal_entry_id' => $vendorBillJournalEntryId,
                 'account_id' => $accountIds['2100'],
+                'currency_id' => $iqd,
+                'original_currency_id' => $iqd,
                 'debit' => 0,
                 'credit' => 3000000,
+                'original_currency_amount' => 3000000,
+                'exchange_rate_at_transaction' => 1,
                 'description' => 'Accounts Payable for laptop',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
         ]);
         DB::table('vendor_bills')->where('id', $vendorBillId)->update([
-            'status' => \Modules\Purchase\Models\VendorBill::STATUS_DRAFT,
+            'status' => 'draft',
             'journal_entry_id' => $vendorBillJournalEntryId,
         ]);
 
@@ -245,7 +313,7 @@ class ScenarioOneSeeder extends Seeder
             'customer_id' => $hawreCustomerId,
             'invoice_date' => now(),
             'due_date' => Carbon::now()->addDays(15),
-            'status' => \Modules\Sales\Models\Invoice::STATUS_DRAFT,
+            'status' => 'draft',
             'invoice_number' => 'INV-0001',
             'total_amount' => 5000000,
             'total_tax' => 0,
@@ -253,6 +321,7 @@ class ScenarioOneSeeder extends Seeder
             'updated_at' => now(),
         ]);
         DB::table('invoice_lines')->insert([
+            'company_id' => $company,
             'invoice_id' => $invoiceId,
             'description' => 'On-site IT Infrastructure Setup',
             'quantity' => 1,
@@ -269,41 +338,53 @@ class ScenarioOneSeeder extends Seeder
             'journal_id' => $journalIds['Sales'],
             'currency_id' => $iqd,
             'entry_date' => now(),
+            'entry_number' => 'DRAFT/2026/0003',
             'reference' => 'Invoice INV-0001',
             'description' => 'IT setup services for Hawre Trading Group',
             'created_by_user_id' => $user,
             'is_posted' => false,
+            'state' => 'draft',
             'total_debit' => 5000000,
             'total_credit' => 5000000,
             'hash' => $invJeHash,
             'previous_hash' => $vbJeHash,
-            'source_type' => 'App\Models\Invoice',
+            'source_type' => 'Modules\Sales\Models\Invoice',
             'source_id' => $invoiceId,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         DB::table('journal_entry_lines')->insert([
             [
+                'company_id' => $company,
                 'journal_entry_id' => $invoiceJournalEntryId,
                 'account_id' => $accountIds['1200'],
+                'currency_id' => $iqd,
+                'original_currency_id' => $iqd,
                 'debit' => 5000000,
                 'credit' => 0,
+                'original_currency_amount' => 5000000,
+                'exchange_rate_at_transaction' => 1,
                 'description' => 'Accounts Receivable for IT services',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
+                'company_id' => $company,
                 'journal_entry_id' => $invoiceJournalEntryId,
                 'account_id' => $accountIds['4000'],
+                'currency_id' => $iqd,
+                'original_currency_id' => $iqd,
                 'debit' => 0,
                 'credit' => 5000000,
+                'original_currency_amount' => 5000000,
+                'exchange_rate_at_transaction' => 1,
                 'description' => 'Consulting Revenue',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
         ]);
         DB::table('invoices')->where('id', $invoiceId)->update([
-            'status' => \Modules\Sales\Models\Invoice::STATUS_DRAFT,
+            'status' => 'draft',
             'invoice_number' => 'INV-0001',
             'journal_entry_id' => $invoiceJournalEntryId,
         ]);
@@ -327,34 +408,46 @@ class ScenarioOneSeeder extends Seeder
             'journal_id' => $journalIds['Bank'],
             'currency_id' => $iqd,
             'entry_date' => now(),
+            'entry_number' => 'DRAFT/2026/0004',
             'reference' => 'Payment from Hawre Trading Group',
             'description' => 'Full payment for invoice INV-0001',
             'created_by_user_id' => $user,
             'is_posted' => false,
+            'state' => 'draft',
             'total_debit' => 5000000,
             'total_credit' => 5000000,
             'hash' => $payJeHash,
             'previous_hash' => $invJeHash,
-            'source_type' => 'App\Models\Payment',
+            'source_type' => 'Modules\Payment\Models\Payment',
             'source_id' => $paymentId,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         DB::table('journal_entry_lines')->insert([
             [
+                'company_id' => $company,
                 'journal_entry_id' => $paymentJournalEntryId,
                 'account_id' => $accountIds['1010'],
+                'currency_id' => $iqd,
+                'original_currency_id' => $iqd,
                 'debit' => 5000000,
                 'credit' => 0,
+                'original_currency_amount' => 5000000,
+                'exchange_rate_at_transaction' => 1,
                 'description' => 'Bank receipt from customer',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
+                'company_id' => $company,
                 'journal_entry_id' => $paymentJournalEntryId,
                 'account_id' => $accountIds['1200'],
+                'currency_id' => $iqd,
+                'original_currency_id' => $iqd,
                 'debit' => 0,
                 'credit' => 5000000,
+                'original_currency_amount' => 5000000,
+                'exchange_rate_at_transaction' => 1,
                 'description' => 'Clear Accounts Receivable',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -365,9 +458,10 @@ class ScenarioOneSeeder extends Seeder
             'journal_entry_id' => $paymentJournalEntryId,
         ]);
         DB::table('invoices')->where('id', $invoiceId)->update([
-            'status' => \Modules\Sales\Models\Invoice::STATUS_DRAFT,
+            'status' => 'draft',
         ]);
         DB::table('payment_document_links')->insert([
+            'company_id' => $company,
             'payment_id' => $paymentId,
             'amount_applied' => 5000000,
             'created_at' => now(),
@@ -393,34 +487,46 @@ class ScenarioOneSeeder extends Seeder
             'currency_id' => $iqd,
             'journal_id' => $journalIds['Bank'],
             'entry_date' => now(),
+            'entry_number' => 'DRAFT/2026/0005',
             'reference' => 'Payment to Paykar Tech Supplies',
             'description' => 'Payment for laptop purchase',
             'created_by_user_id' => $user,
             'is_posted' => false,
+            'state' => 'draft',
             'total_debit' => 3000000,
             'total_credit' => 3000000,
             'hash' => $vendorPayJeHash,
             'previous_hash' => $payJeHash,
-            'source_type' => 'App\Models\Payment',
+            'source_type' => 'Modules\Payment\Models\Payment',
             'source_id' => $vendorPaymentId,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         DB::table('journal_entry_lines')->insert([
             [
+                'company_id' => $company,
                 'journal_entry_id' => $vendorPaymentJournalEntryId,
                 'account_id' => $accountIds['2100'],
+                'currency_id' => $iqd,
+                'original_currency_id' => $iqd,
                 'debit' => 3000000,
                 'credit' => 0,
+                'original_currency_amount' => 3000000,
+                'exchange_rate_at_transaction' => 1,
                 'description' => 'Clear Accounts Payable',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
+                'company_id' => $company,
                 'journal_entry_id' => $vendorPaymentJournalEntryId,
                 'account_id' => $accountIds['1010'],
+                'currency_id' => $iqd,
+                'original_currency_id' => $iqd,
                 'debit' => 0,
                 'credit' => 3000000,
+                'original_currency_amount' => 3000000,
+                'exchange_rate_at_transaction' => 1,
                 'description' => 'Bank payment to vendor',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -431,9 +537,10 @@ class ScenarioOneSeeder extends Seeder
             'journal_entry_id' => $vendorPaymentJournalEntryId,
         ]);
         DB::table('vendor_bills')->where('id', $vendorBillId)->update([
-            'status' => \Modules\Purchase\Models\VendorBill::STATUS_DRAFT,
+            'status' => 'draft',
         ]);
         DB::table('payment_document_links')->insert([
+            'company_id' => $company,
             'payment_id' => $vendorPaymentId,
             'amount_applied' => 3000000,
             'created_at' => now(),
@@ -449,6 +556,7 @@ class ScenarioOneSeeder extends Seeder
             'date' => now(),
             'reference_number' => 'CN-0001',
             'reason' => 'Goodwill discount for new client',
+            'subtotal' => 500000,
             'total_amount' => 500000,
             'total_tax' => 0,
             'status' => 'draft',
@@ -456,6 +564,7 @@ class ScenarioOneSeeder extends Seeder
             'updated_at' => now(),
         ]);
         DB::table('adjustment_document_lines')->insert([
+            'company_id' => $company,
             'adjustment_document_id' => $creditNoteId,
             'description' => 'Refund for IT Setup Services',
             'quantity' => 1,
@@ -472,34 +581,46 @@ class ScenarioOneSeeder extends Seeder
             'currency_id' => $iqd,
             'journal_id' => $journalIds['Sales'],
             'entry_date' => now(),
+            'entry_number' => 'DRAFT/2026/0006',
             'reference' => 'Credit Note CN-0001',
             'description' => 'Refund to Hawre Trading Group',
             'created_by_user_id' => $user,
             'is_posted' => false,
+            'state' => 'draft',
             'total_debit' => 500000,
             'total_credit' => 500000,
             'hash' => $cnJeHash,
             'previous_hash' => $vendorPayJeHash,
-            'source_type' => 'App\Models\AdjustmentDocument',
+            'source_type' => 'Modules\Accounting\Models\AdjustmentDocument',
             'source_id' => $creditNoteId,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         DB::table('journal_entry_lines')->insert([
             [
+                'company_id' => $company,
                 'journal_entry_id' => $creditNoteJournalEntryId,
                 'account_id' => $accountIds['5000'],
+                'currency_id' => $iqd,
+                'original_currency_id' => $iqd,
                 'debit' => 500000,
                 'credit' => 0,
+                'original_currency_amount' => 500000,
+                'exchange_rate_at_transaction' => 1,
                 'description' => 'Sales Discounts & Returns (refund)',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
+                'company_id' => $company,
                 'journal_entry_id' => $creditNoteJournalEntryId,
                 'account_id' => $accountIds['1200'],
+                'currency_id' => $iqd,
+                'original_currency_id' => $iqd,
                 'debit' => 0,
                 'credit' => 500000,
+                'original_currency_amount' => 500000,
+                'exchange_rate_at_transaction' => 1,
                 'description' => 'Reduce Accounts Receivable',
                 'created_at' => now(),
                 'updated_at' => now(),

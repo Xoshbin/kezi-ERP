@@ -19,6 +19,7 @@ class PurchaseOrderService
     public function __construct(
         protected \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
         protected SequenceService $sequenceService,
+        protected \Modules\Accounting\Services\BudgetControlService $budgetControlService,
     ) {}
 
     /**
@@ -88,6 +89,7 @@ class PurchaseOrderService
         }
 
         $this->lockDateService->enforce($purchaseOrder->company, $purchaseOrder->po_date);
+        $this->budgetControlService->validatePurchaseOrder($purchaseOrder);
 
         return DB::transaction(function () use ($purchaseOrder) {
             // Generate PO number if not already set (in case it was confirmed directly from draft)

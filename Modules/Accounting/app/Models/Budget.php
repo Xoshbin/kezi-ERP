@@ -3,7 +3,6 @@
 namespace Modules\Accounting\Models;
 
 use App\Models\Company;
-use Database\Factories\BudgetFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -12,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Modules\Accounting\Database\Factories\BudgetFactory;
 use Modules\Accounting\Enums\Budgets\BudgetStatus;
 use Modules\Accounting\Enums\Budgets\BudgetType;
 use Modules\Foundation\Models\Currency;
@@ -31,6 +31,7 @@ use Modules\Foundation\Models\Currency;
  * @property-read Collection<int, BudgetLine> $budgetLines
  * @property-read int|null $budget_lines_count
  * @property-read Company $company
+ * @property-read Currency $currency
  *
  * @method static BudgetFactory factory($count = null, $state = [])
  * @method static Builder<static>|Budget newModelQuery()
@@ -128,5 +129,10 @@ class Budget extends Model
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
+    }
+
+    protected static function newFactory(): BudgetFactory
+    {
+        return BudgetFactory::new();
     }
 }

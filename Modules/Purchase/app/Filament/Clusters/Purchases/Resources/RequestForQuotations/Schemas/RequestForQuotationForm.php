@@ -16,10 +16,10 @@ class RequestForQuotationForm
     {
         return $schema
             ->components([
-                \Filament\Schemas\Components\Section::make('General Information')
+                \Filament\Schemas\Components\Section::make(__('purchase::request_for_quotation.sections.general'))
                     ->schema([
                         Forms\Components\Select::make('vendor_id')
-                            ->label('Vendor')
+                            ->label(__('purchase::request_for_quotation.fields.vendor'))
                             ->options(fn () => Partner::query()->whereIn('type', [\Modules\Foundation\Enums\Partners\PartnerType::Vendor, \Modules\Foundation\Enums\Partners\PartnerType::Both])->pluck('name', 'id'))
                             ->searchable()
                             ->required()
@@ -30,18 +30,18 @@ class RequestForQuotationForm
                             ->default(fn () => auth()->user()->current_company_id)
                             ->dehydrated(),
                         Forms\Components\DatePicker::make('rfq_date')
-                            ->label('RFQ Date')
+                            ->label(__('purchase::request_for_quotation.fields.rfq_date'))
                             ->default(now())
                             ->required(),
                         Forms\Components\DatePicker::make('valid_until')
-                            ->label('Valid Until'),
+                            ->label(__('purchase::request_for_quotation.fields.valid_until')),
                         Forms\Components\Select::make('currency_id')
-                            ->label('Currency')
+                            ->label(__('purchase::request_for_quotation.fields.currency'))
                             ->options(fn () => Currency::all()->pluck('code', 'id'))
                             ->default(fn () => Currency::where('code', 'USD')->first()?->id)
                             ->required(),
                         Forms\Components\TextInput::make('exchange_rate')
-                            ->label('Exchange Rate')
+                            ->label(__('purchase::request_for_quotation.fields.exchange_rate'))
                             ->numeric()
                             ->default(1.0)
                             ->required(),
@@ -52,12 +52,12 @@ class RequestForQuotationForm
                             ->dehydrated(),
                     ])->columns(2),
 
-                \Filament\Schemas\Components\Section::make('Details')
+                \Filament\Schemas\Components\Section::make(__('purchase::request_for_quotation.sections.details'))
                     ->schema([
                         Forms\Components\Repeater::make('lines')
                             ->schema([
                                 Forms\Components\Select::make('product_id')
-                                    ->label('Product')
+                                    ->label(__('purchase::request_for_quotation.lines.product'))
                                     ->options(fn () => Product::all()->pluck('name', 'id'))
                                     ->searchable()
                                     ->required()
@@ -70,22 +70,22 @@ class RequestForQuotationForm
                                     ->default(1)
                                     ->required(),
                                 Forms\Components\TextInput::make('unit')
-                                    ->label('Unit'),
+                                    ->label(__('purchase::request_for_quotation.lines.unit')),
                                 // Unit Price should be Money input, but for now simple numeric.
                                 // It should be editable if we are recording a bid.
                                 Forms\Components\TextInput::make('unit_price')
-                                    ->label('Unit Price')
+                                    ->label(__('purchase::request_for_quotation.lines.unit_price'))
                                     ->numeric()
                                     ->prefix('$'), // Should be dynamic based on currency
                                 Forms\Components\Select::make('tax_id')
-                                    ->label('Tax')
+                                    ->label(__('purchase::request_for_quotation.lines.tax'))
                                     ->options(fn () => Tax::all()->pluck('name', 'id')),
                             ])
                             ->columns(6)
                             ->defaultItems(1),
                     ]),
 
-                \Filament\Schemas\Components\Section::make('Notes')
+                \Filament\Schemas\Components\Section::make(__('purchase::request_for_quotation.sections.notes'))
                     ->schema([
                         Forms\Components\Textarea::make('notes')
                             ->rows(3),

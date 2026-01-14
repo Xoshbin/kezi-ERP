@@ -26,7 +26,7 @@ class PartnerFactory extends Factory
             'type' => $this->faker->randomElement([PartnerType::Vendor, PartnerType::Customer, PartnerType::Both]),
             'contact_person' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
-            'phone' => $this->faker->phoneNumber,
+            'phone' => $this->faker->numerify('##########'),
             'address_line_1' => $this->faker->streetAddress,
             'address_line_2' => $this->faker->optional()->streetAddress,
             'city' => $this->faker->city,

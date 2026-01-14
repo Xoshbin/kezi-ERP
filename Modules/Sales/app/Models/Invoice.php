@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Modules\Accounting\Models\FiscalPosition;
 use Modules\Accounting\Models\JournalEntry;
+use Modules\Foundation\Enums\Incoterm;
+use Modules\Foundation\Models\Concerns\HasDocumentAttachments;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\Partner;
 use Modules\Foundation\Models\PaymentTerm;
@@ -40,6 +42,7 @@ use Modules\Sales\Enums\Sales\InvoiceStatus;
  * @property Carbon $invoice_date
  * @property Carbon $due_date
  * @property InvoiceStatus $status
+ * @property Incoterm|null $incoterm
  * @property Money $total_amount
  * @property Money $total_tax
  * @property Carbon|null $posted_at
@@ -84,6 +87,7 @@ use Modules\Sales\Enums\Sales\InvoiceStatus;
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class Invoice extends Model
 {
+    use HasDocumentAttachments;
     use HasFactory;
     use \Modules\Foundation\Traits\HasPaymentState;
 
@@ -117,12 +121,18 @@ class Invoice extends Model
         'due_date',
         'payment_term_id',
         'status',
+        'incoterm',
         'total_amount',
         'total_tax',
         'total_amount_company_currency',
         'total_tax_company_currency',
         'posted_at',
+        'inter_company_source_type',
         'reset_to_draft_log',
+        'dunning_level_id',
+        'last_dunning_date',
+        'next_dunning_date',
+        'source_invoice_id',
     ];
 
     /**
@@ -135,6 +145,7 @@ class Invoice extends Model
         'invoice_date' => 'date',
         'due_date' => 'date',
         'status' => InvoiceStatus::class,
+        'incoterm' => Incoterm::class,
         'exchange_rate_at_creation' => 'decimal:10',
         'total_amount' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
         'total_tax' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
@@ -144,6 +155,8 @@ class Invoice extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'posted_at' => 'datetime',
+        'last_dunning_date' => 'datetime',
+        'next_dunning_date' => 'date',
     ];
 
     /*
@@ -153,6 +166,17 @@ class Invoice extends Model
     | These methods define the relationships this Invoice model has with other
     | entities in the accounting system, crucial for data integrity and navigation.
     */
+
+    public function sourceInvoice(): BelongsTo
+    {
+        return $this->belongsTo(Invoice::class, 'source_invoice_id');
+    }
+
+    public function generatedDebitNotes(): HasMany
+    {
+        return $this->hasMany(Invoice::class, 'source_invoice_id');
+    }
+
     /**
      * Get the company that owns this invoice.
      * An invoice is always issued by a specific company. [1]
@@ -231,6 +255,23 @@ class Invoice extends Model
     public function fiscalPosition(): BelongsTo
     {
         return $this->belongsTo(FiscalPosition::class);
+    }
+
+    /**
+     * @return BelongsTo<\Modules\Accounting\Models\DunningLevel, static>
+     */
+    public function dunningLevel(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\DunningLevel::class);
+    }
+
+    /**
+     * Scope a query to only include invoices that are overdue.
+     */
+    public function scopeOverdue($query)
+    {
+        return $query->where('status', InvoiceStatus::Posted)
+            ->where('due_date', '<', Carbon::today());
     }
 
     /**

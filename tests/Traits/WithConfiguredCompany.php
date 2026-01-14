@@ -12,6 +12,14 @@ trait WithConfiguredCompany
 {
     protected function setupWithConfiguredCompany(): void
     {
+        // Reset cached roles and permissions
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+        // Seed roles and permissions
+        if (\Spatie\Permission\Models\Role::count() === 0) {
+            $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+        }
+
         $this->company = CompanyBuilder::new()
             ->withDefaultAccounts()
             ->withDefaultJournals()
@@ -21,7 +29,33 @@ trait WithConfiguredCompany
 
         $this->user = User::factory()->create();
         $this->user->companies()->attach($this->company);
+
+        // Set global team/company id for Spatie permissions
+        setPermissionsTeamId($this->company->id);
+
+        // Assign super_admin role to the test user so they can access everything
+        $superAdminRole = \Spatie\Permission\Models\Role::where('name', 'super_admin')->whereNull('company_id')->first();
+        if ($superAdminRole) {
+            // We need to bypass the team check for assigning global roles sometimes,
+            // or just use DB insertion if assignRole fails for global with teams enabled.
+            // Spatie's assignRole with mixed global/team roles can be tricky.
+            // Let's try standard assignment first.
+            $this->user->assignRole($superAdminRole);
+        }
+
+        // Explicitly refresh user and force permission hydration
+        $this->user->refresh();
+        $this->user->unsetRelation('roles');
+        $this->user->unsetRelation('permissions');
+
+        // This access forces Spatie to hydrate its internal cache/state for this user instance
+        $this->user->hasPermissionTo('create_invoice');
+
         $this->actingAs($this->user);
+
+        // Set the current panel to ensures URL generation and middleware work correctly
+        \Filament\Facades\Filament::setTenant($this->company);
+        \Filament\Facades\Filament::setCurrentPanel(\Filament\Facades\Filament::getPanel('jmeryar'));
 
         // Set up Filament tenant context
         Filament::setTenant($this->company);

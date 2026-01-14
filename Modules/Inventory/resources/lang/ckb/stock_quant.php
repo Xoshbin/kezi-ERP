@@ -1,11 +1,11 @@
 <?php
 
 return [
-    'label' => 'بڕی کۆگا',
-    'plural_label' => 'بڕەکانی کۆگا',
+    'label' => 'بڕی عەمبار',
+    'plural_label' => 'بڕەکانی عەمبار',
 
     'sections' => [
-        'basic_info' => 'زانیاری سەرەتایی',
+        'basic_info' => 'زانیاری بنەڕەتی',
         'quantities' => 'بڕەکان',
     ],
 
@@ -14,25 +14,25 @@ return [
         'product' => 'بەرهەم',
         'location' => 'شوێن',
         'lot' => 'ژمارەی وەجبە',
-        'quantity' => 'بڕی بەردەست', // Total quantity physically
-        'reserved_quantity' => 'بڕی پارێزراو',
-        'available_quantity' => 'بڕی بەکارهاتوو', // Available to sell
-        'updated_at' => 'بەرواری نوێکردنەوە',
+        'quantity' => 'بڕ',
+        'reserved_quantity' => 'بڕی گیراو',
+        'available_quantity' => 'بڕی بەردەست',
+        'updated_at' => 'دواین نوێکردنەوە',
     ],
 
     'filters' => [
         'product' => 'بەرهەم',
         'location' => 'شوێن',
         'lot' => 'ژمارەی وەجبە',
-        'low_stock' => 'کەمبوونی کۆگا',
-        'out_of_stock' => 'نەمانی کۆگا',
-        'with_reservations' => 'لەگەڵ پارێزراوەکان',
+        'low_stock' => 'کەمبوونی عەمبار (≤ 10)',
+        'out_of_stock' => 'عەمبار تەواوبوو',
+        'with_reservations' => 'لەگەڵ گیراوەکان',
     ],
 
-    'no_lot' => 'بێ وەجبە',
+    'no_lot' => 'هیچ وەجبەیەک نییە',
 
     'empty_state' => [
-        'heading' => 'هیچ بڕێکی کۆگا نییە',
-        'description' => 'هیچ بەرهەمێک لە کۆگاکەتدا تۆمار نەکراوە.',
+        'heading' => 'هیچ بڕێکی عەمبار نەدۆزرایەوە',
+        'description' => 'بڕەکانی عەمبار لێرە دەردەکەون کاتێک بەرهەمەکان لە شوێنەکاندا عەمبار دەکرێن.',
     ],
 ];

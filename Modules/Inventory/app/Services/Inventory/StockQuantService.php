@@ -38,20 +38,21 @@ class StockQuantService
      * Create or retrieve a stock quant for the given parameters
      *
      * This method ensures a StockQuant record exists for the specified combination
-     * of company, product, location, and lot. If the record doesn't exist, it creates
-     * one with zero quantities.
+     * of company, product, location, lot, and serial number. If the record doesn't exist,
+     * it creates one with zero quantities.
      *
      * @param  int  $companyId  Company identifier
      * @param  int  $productId  Product identifier
      * @param  int  $locationId  Location identifier
      * @param  int|null  $lotId  Lot identifier (null for non-lot-tracked products)
+     * @param  int|null  $serialNumberId  Serial number identifier (null for non-serial-tracked products)
      * @return StockQuant The existing or newly created stock quant
      *
      * @example
-     * $quant = $service->upsertQuant(1, 123, 456, 789);
+     * $quant = $service->upsertQuant(1, 123, 456, 789, 101);
      * // Returns StockQuant with quantity=0, reserved_quantity=0 if new
      */
-    public function upsertQuant(int $companyId, int $productId, int $locationId, ?int $lotId = null): StockQuant
+    public function upsertQuant(int $companyId, int $productId, int $locationId, ?int $lotId = null, ?int $serialNumberId = null): StockQuant
     {
         return StockQuant::firstOrCreate(
             [
@@ -59,6 +60,7 @@ class StockQuantService
                 'product_id' => $productId,
                 'location_id' => $locationId,
                 'lot_id' => $lotId,
+                'serial_number_id' => $serialNumberId,
             ],
             [
                 'quantity' => 0,
@@ -74,8 +76,7 @@ class StockQuantService
      * to prevent race conditions. It validates business rules and ensures data integrity
      * by checking that quantities don't go negative and reservations don't exceed available stock.
      *
-     * The operation is wrapped in a database transaction with row-level locking to ensure
-     * thread safety in high-concurrency environments.
+     * For serial-tracked products, enforces quantity = 1 constraint.
      *
      * @param  int  $companyId  Company identifier
      * @param  int  $productId  Product identifier
@@ -83,38 +84,37 @@ class StockQuantService
      * @param  float  $deltaQty  Change in quantity (positive for increases, negative for decreases)
      * @param  float  $deltaReserved  Change in reserved quantity (default: 0)
      * @param  int|null  $lotId  Lot identifier (null for non-lot-tracked products)
+     * @param  int|null  $serialNumberId  Serial number identifier (null for non-serial-tracked products)
      * @return StockQuant The updated stock quant
      *
      * @throws RuntimeException When insufficient quantity for adjustment
-     * @throws RuntimeException When reserved quantity would become negative
-     * @throws RuntimeException When reserved quantity would exceed available quantity
-     *
-     * @example
-     * // Increase stock by 100 units
-     * $quant = $service->adjust(1, 123, 456, 100.0);
-     *
-     * // Decrease stock by 50 units and reserve 25
-     * $quant = $service->adjust(1, 123, 456, -50.0, 25.0);
+     * @throws RuntimeException When serial-tracked product quantity would exceed 1
      */
-    public function adjust(int $companyId, int $productId, int $locationId, float $deltaQty, float $deltaReserved = 0, ?int $lotId = null): StockQuant
+    public function adjust(int $companyId, int $productId, int $locationId, float $deltaQty, float $deltaReserved = 0, ?int $lotId = null, ?int $serialNumberId = null): StockQuant
     {
-        return DB::transaction(function () use ($companyId, $productId, $locationId, $deltaQty, $deltaReserved, $lotId) {
+        return DB::transaction(function () use ($companyId, $productId, $locationId, $deltaQty, $deltaReserved, $lotId, $serialNumberId) {
             // Lock quant row for update to ensure atomicity
             $quant = StockQuant::where('company_id', $companyId)
                 ->where('product_id', $productId)
                 ->where('location_id', $locationId)
                 ->where('lot_id', $lotId)
+                ->where('serial_number_id', $serialNumberId)
                 ->lockForUpdate()
                 ->first();
 
             if (! $quant) {
-                $quant = $this->upsertQuant($companyId, $productId, $locationId, $lotId);
+                $quant = $this->upsertQuant($companyId, $productId, $locationId, $lotId, $serialNumberId);
                 $quant->refresh();
                 $quant->lockForUpdate();
             }
 
             $newQty = $quant->quantity + $deltaQty;
             $newReserved = $quant->reserved_quantity + $deltaReserved;
+
+            // Serial-tracked products must have quantity of 0 or 1
+            if ($serialNumberId && $newQty > 1) {
+                throw new RuntimeException('Serial-tracked product quantity cannot exceed 1');
+            }
 
             if ($newQty < 0) {
                 throw new RuntimeException('Insufficient quantity for adjustment');
@@ -171,14 +171,14 @@ class StockQuantService
         return (float) $query->sum('reserved_quantity');
     }
 
-    public function reserve(int $companyId, int $productId, int $locationId, float $qty, ?int $lotId = null): StockQuant
+    public function reserve(int $companyId, int $productId, int $locationId, float $qty, ?int $lotId = null, ?int $serialNumberId = null): StockQuant
     {
-        return $this->adjust($companyId, $productId, $locationId, 0, $qty, $lotId);
+        return $this->adjust($companyId, $productId, $locationId, 0, $qty, $lotId, $serialNumberId);
     }
 
-    public function unreserve(int $companyId, int $productId, int $locationId, float $qty, ?int $lotId = null): StockQuant
+    public function unreserve(int $companyId, int $productId, int $locationId, float $qty, ?int $lotId = null, ?int $serialNumberId = null): StockQuant
     {
-        return $this->adjust($companyId, $productId, $locationId, 0, -$qty, $lotId);
+        return $this->adjust($companyId, $productId, $locationId, 0, -$qty, $lotId, $serialNumberId);
     }
 
     public function applyForIncoming(StockMove $move): void

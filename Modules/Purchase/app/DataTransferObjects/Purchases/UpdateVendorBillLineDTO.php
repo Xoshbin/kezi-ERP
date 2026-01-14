@@ -12,5 +12,6 @@ class UpdateVendorBillLineDTO
         public readonly ?int $product_id,
         public readonly ?int $tax_id,
         public readonly ?int $analytic_account_id,
+        public readonly ?\Modules\Foundation\Enums\ShippingCostType $shipping_cost_type = null,
     ) {}
 }

@@ -28,6 +28,11 @@ class ViewAgedPayables extends Page
 
     protected static ?string $cluster = AccountingCluster::class;
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __("navigation.groups.reports");
+    }
+
     public ?string $asOfDate = null;
 
     /** @var array<string, mixed>|null */

@@ -7,10 +7,12 @@ use Filament\Clusters\Cluster;
 
 class PurchasesCluster extends Cluster
 {
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-cart';
 
     public static function getNavigationLabel(): string
     {
-        return 'Purchases';
+        return __('purchase::purchases.navigation.label');
     }
 }

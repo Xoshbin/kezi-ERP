@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Foundation\Models\Currency;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillAction;
@@ -63,6 +64,8 @@ class CreateVendorBill extends CreateRecord
                 expense_account_id: $line['expense_account_id'],
                 tax_id: $line['tax_id'] ?? null,
                 analytic_account_id: $line['analytic_account_id'] ?? null,
+                deferred_start_date: $line['deferred_start_date'] ?? null,
+                deferred_end_date: $line['deferred_end_date'] ?? null,
                 currency: $currency->code
             );
         }
@@ -84,6 +87,10 @@ class CreateVendorBill extends CreateRecord
         // Store exchange_rate_at_creation separately since it's not in the DTO
         $exchangeRate = $data['exchange_rate_at_creation'] ?? null;
         unset($data['exchange_rate_at_creation']);
+
+        if (isset($data['incoterm'])) {
+            $data['incoterm'] = Incoterm::tryFrom($data['incoterm']);
+        }
 
         $vendorBillDTO = new CreateVendorBillDTO(...$data);
         $vendorBill = app(CreateVendorBillAction::class)->execute($vendorBillDTO);

@@ -33,6 +33,7 @@ class UpdateInvoiceAction
                 'fiscal_position_id' => $dto->fiscal_position_id,
                 'invoice_date' => $dto->invoice_date,
                 'due_date' => $dto->due_date,
+                'incoterm' => $dto->incoterm ?? $invoice->incoterm,
             ]);
 
             $invoice->invoiceLines()->delete();
@@ -61,6 +62,8 @@ class UpdateInvoiceAction
                     'total_line_tax' => $taxAmount,
                     'income_account_id' => $lineDto->income_account_id,
                     'tax_id' => $lineDto->tax_id,
+                    'deferred_start_date' => $lineDto->deferred_start_date,
+                    'deferred_end_date' => $lineDto->deferred_end_date,
                 ]);
             }
 

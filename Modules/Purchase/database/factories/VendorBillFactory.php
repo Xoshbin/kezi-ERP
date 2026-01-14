@@ -35,8 +35,16 @@ class VendorBillFactory extends Factory
             'due_date' => $this->faker->dateTimeBetween('now', '+2 months')->format('Y-m-d'),
             'bill_reference' => $this->faker->unique()->bothify('BILL-####??'),
             'status' => 'draft',
-            'total_amount' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
-            'total_tax' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
+            'total_amount' => function (array $attributes) {
+                $currencyCode = \Modules\Foundation\Models\Currency::find($attributes['currency_id'])->code;
+
+                return Money::of(0, $currencyCode);
+            },
+            'total_tax' => function (array $attributes) {
+                $currencyCode = \Modules\Foundation\Models\Currency::find($attributes['currency_id'])->code;
+
+                return Money::of(0, $currencyCode);
+            },
             'journal_entry_id' => null,
             'posted_at' => null,
             'reset_to_draft_log' => null,

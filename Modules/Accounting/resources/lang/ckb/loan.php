@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'navigation_label' => 'قەرزەکان',
-    'label' => 'قەرز',
-    'plural_label' => 'قەرزەکان',
+    'label' => 'رێککەوتننامەی قەرز',
+    'plural_label' => 'رێککەوتننامەکانی قەرز',
+    'navigation_label' => 'رێککەوتننامەکانی قەرز',
     'form' => [
         'counterparty_currency' => 'لایەنی بەرامبەر و دراو',
         'partner' => 'هاوبەش',
@@ -16,12 +16,26 @@ return [
         'months' => 'مانگ',
         'currency' => 'دراو',
         'principal_amount' => 'بڕی سەرەکی',
-        'outstanding_principal' => 'بڕی ماوە',
+        'outstanding_principal' => 'سەرەکی ماوە',
         'schedule_rates' => 'خشتە و ڕێژەکان',
-        'schedule_method' => 'ڕێگای خشتە',
-        'interest_rate' => 'ڕێژەی ساڵانە',
+        'schedule_method' => 'رێگای خشتە',
+        'interest_rate' => 'ڕێژەی ساڵانەی ناوەکی',
         'eir_enabled' => 'بەکارهێنانی EIR',
-        'eir_rate' => 'ڕێژەی EIR',
+        'eir_rate' => 'ڕێژەی EIR خولی',
         'status' => 'دۆخ',
     ],
+    // New keys appended
+    'accrue_interest' => 'کەڵەکەبوونی سوود',
+    'journal' => 'تۆماری ڕۆژانە',
+    'interest_expense_income' => 'خەرجی / داهاتی سوود',
+    'accrued_interest' => 'سوودی کەڵەکەبوو',
+    'installment' => 'قيست #',
+    'post_repayment' => 'تۆمارکردنی دانەوە',
+    'loan_account' => 'هەژماری قەرز',
+    'long_term_account' => 'هەژماری درێژخایەن',
+    'short_term_account' => 'هەژماری کورتخایەن',
+    'months' => 'مانگ',
+    'as_of_date' => 'لە بەرواری',
+    'balance_after' => 'باڵانس دوای',
+    'reclassify' => 'پۆلێنکردنەوەی بەشی ئێستا',
 ];

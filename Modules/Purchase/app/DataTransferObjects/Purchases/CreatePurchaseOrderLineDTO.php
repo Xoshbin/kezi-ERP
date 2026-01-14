@@ -16,6 +16,7 @@ readonly class CreatePurchaseOrderLineDTO
         public float $quantity,
         public Money $unit_price,
         public ?int $tax_id = null,
+        public ?\Modules\Foundation\Enums\ShippingCostType $shipping_cost_type = null,
         public ?Carbon $expected_delivery_date = null,
         public ?string $notes = null,
     ) {}
@@ -43,6 +44,7 @@ readonly class CreatePurchaseOrderLineDTO
             quantity: (float) $data['quantity'],
             unit_price: $unitPrice,
             tax_id: $data['tax_id'] ?? null,
+            shipping_cost_type: isset($data['shipping_cost_type']) ? \Modules\Foundation\Enums\ShippingCostType::tryFrom($data['shipping_cost_type']) : null,
             expected_delivery_date: isset($data['expected_delivery_date']) ? Carbon::parse($data['expected_delivery_date']) : null,
             notes: $data['notes'] ?? null,
         );

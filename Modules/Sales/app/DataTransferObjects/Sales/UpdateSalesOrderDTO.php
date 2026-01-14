@@ -2,6 +2,7 @@
 
 namespace Modules\Sales\DataTransferObjects\Sales;
 
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Sales\Enums\Sales\SalesOrderStatus;
 use Modules\Sales\Models\SalesOrder;
 
@@ -25,6 +26,7 @@ class UpdateSalesOrderDTO
         public readonly ?string $notes = null,
         public readonly ?string $terms_and_conditions = null,
         public readonly ?int $delivery_location_id = null,
+        public readonly ?Incoterm $incoterm = null,
         public readonly ?SalesOrderStatus $status = null,
     ) {}
 }

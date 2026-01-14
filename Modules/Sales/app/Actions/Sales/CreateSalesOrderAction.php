@@ -41,6 +41,7 @@ class CreateSalesOrderAction
                 'notes' => $dto->notes,
                 'terms_and_conditions' => $dto->terms_and_conditions,
                 'delivery_location_id' => $dto->delivery_location_id,
+                'incoterm' => $dto->incoterm,
                 'total_amount' => 0,
                 'total_tax' => 0,
             ]);

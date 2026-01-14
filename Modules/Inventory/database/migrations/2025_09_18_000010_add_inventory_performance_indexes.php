@@ -23,12 +23,13 @@ return new class extends Migration
         };
 
         // Add performance indexes for stock_moves table
-        $addIndexSafely('stock_moves', ['from_location_id', 'status'], 'idx_moves_from_location_status');
-        $addIndexSafely('stock_moves', ['to_location_id', 'status'], 'idx_moves_to_location_status');
-        $addIndexSafely('stock_moves', ['move_type', 'status'], 'idx_moves_type_status');
-        $addIndexSafely('stock_moves', ['company_id', 'move_date'], 'idx_moves_company_date');
-        $addIndexSafely('stock_moves', ['product_id', 'move_date'], 'idx_moves_product_date');
-        $addIndexSafely('stock_moves', ['company_id', 'product_id', 'move_date'], 'idx_moves_company_product_date');
+        // Add performance indexes for stock_move_product_lines table
+        $addIndexSafely('stock_move_product_lines', ['from_location_id', 'to_location_id'], 'idx_product_lines_from_to');
+        $addIndexSafely('stock_move_product_lines', ['company_id', 'product_id'], 'idx_product_lines_company_product');
+        // Note: status and move_type are on stock_moves, not product lines.
+        // We cannot index them here unless we join.
+        // The original migration tried to index 'status' on this table, but 'status' is likely only on stock_moves header?
+        // Let's check stock_move_product_lines definition again.
 
         // Add performance indexes for stock_move_valuations table
         if (Schema::hasTable('stock_move_valuations')) {
@@ -64,11 +65,12 @@ return new class extends Migration
         }
 
         // Drop indexes for stock_moves table
-        $dropIndexSafely('stock_moves', 'idx_moves_from_location_status');
-        $dropIndexSafely('stock_moves', 'idx_moves_to_location_status');
-        $dropIndexSafely('stock_moves', 'idx_moves_type_status');
-        $dropIndexSafely('stock_moves', 'idx_moves_company_date');
-        $dropIndexSafely('stock_moves', 'idx_moves_product_date');
-        $dropIndexSafely('stock_moves', 'idx_moves_company_product_date');
+        // Drop indexes for stock_move_lines table
+        $dropIndexSafely('stock_move_lines', 'idx_lines_from_location_status');
+        $dropIndexSafely('stock_move_lines', 'idx_lines_to_location_status');
+        $dropIndexSafely('stock_move_lines', 'idx_lines_type_status');
+        $dropIndexSafely('stock_move_lines', 'idx_lines_company_date');
+        $dropIndexSafely('stock_move_lines', 'idx_lines_product_date');
+        $dropIndexSafely('stock_move_lines', 'idx_lines_company_product_date');
     }
 };

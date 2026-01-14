@@ -36,6 +36,11 @@ class MultiCurrencyJournalEntryTest extends TestCase
         $this->actingAs($this->user);
         Filament::setTenant($this->company);
 
+        // Add Permissions
+        $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+        setPermissionsTeamId($this->company->id);
+        $this->user->assignRole('super_admin');
+
         // Setup Currencies
         $this->iqd = Currency::firstOrCreate(['code' => 'IQD'], ['name' => 'Iraqi Dinar', 'symbol' => 'IQD']);
         $this->usd = Currency::firstOrCreate(['code' => 'USD'], ['name' => 'US Dollar', 'symbol' => '$']);
