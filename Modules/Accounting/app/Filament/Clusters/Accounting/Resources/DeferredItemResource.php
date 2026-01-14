@@ -19,6 +19,16 @@ class DeferredItemResource extends Resource
 
     protected static ?string $cluster = AccountingCluster::class;
 
+    public static function getModelLabel(): string
+    {
+        return __('accounting::deferred_item.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('accounting::deferred_item.plural_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -47,18 +57,23 @@ class DeferredItemResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('accounting::deferred_item.name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('type')
+                    ->label(__('accounting::deferred_item.type'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'revenue' => 'success',
                         'expense' => 'warning',
                     }),
                 Tables\Columns\TextColumn::make('original_amount')
+                    ->label(__('accounting::deferred_item.original_amount'))
                     ->money(fn ($record) => $record->company->currency->code),
                 Tables\Columns\TextColumn::make('start_date')
+                    ->label(__('accounting::deferred_item.start_date'))
                     ->date(),
                 Tables\Columns\TextColumn::make('end_date')
+                    ->label(__('accounting::deferred_item.end_date'))
                     ->date(),
             ])
             ->filters([

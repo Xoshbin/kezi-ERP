@@ -19,6 +19,16 @@ class ProjectInvoiceResource extends Resource
 {
     protected static ?string $cluster = ProjectManagementCluster::class;
 
+    public static function getModelLabel(): string
+    {
+        return __('projectmanagement::project.invoice.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('projectmanagement::project.invoice.plural_label');
+    }
+
     protected static ?string $model = ProjectInvoice::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;

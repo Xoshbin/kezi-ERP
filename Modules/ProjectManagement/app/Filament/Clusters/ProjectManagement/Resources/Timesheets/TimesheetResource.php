@@ -18,6 +18,16 @@ class TimesheetResource extends Resource
 {
     protected static ?string $cluster = ProjectManagementCluster::class;
 
+    public static function getModelLabel(): string
+    {
+        return __('projectmanagement::project.timesheet.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('projectmanagement::project.timesheet.plural_label');
+    }
+
     protected static ?string $model = Timesheet::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
