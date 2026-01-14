@@ -59,7 +59,7 @@ The Accounting module provides:
 * **Asset Management:** Assets with depreciation schedules (straight-line, declining balance)
 * **Bank Management:** Reconciliation, statements, cheques
 * **Multi-Currency:** Currency conversion, revaluation, gain/loss handling
-* **Tax Management:** Tax groups/bundles, withholding tax, Iraq VAT returns
+* **Tax Management:** Tax groups/bundles, withholding tax, VAT returns
 * **Reporting:** Trial Balance, P&L, Balance Sheet, Cash Flow, Aged Receivables/Payables
 
 ### ✅ **Final Goal**
