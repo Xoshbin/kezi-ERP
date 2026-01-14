@@ -28,11 +28,26 @@ class PettyCashFundResource extends Resource
         return __('accounting::petty_cash.navigation_label');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('accounting::petty_cash.fund.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('accounting::petty_cash.fund.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('accounting::petty_cash.fund.plural_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Fund Details')
+                Section::make(__('accounting::petty_cash.fund.section_details'))
                     ->schema([
                         TextInput::make('name')
                             ->required()

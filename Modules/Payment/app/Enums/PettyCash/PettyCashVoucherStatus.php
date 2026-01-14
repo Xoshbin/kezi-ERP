@@ -14,8 +14,8 @@ enum PettyCashVoucherStatus: string implements HasColor, HasIcon, HasLabel
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::Draft => 'Draft',
-            self::Posted => 'Posted',
+            self::Draft => __('accounting::petty_cash.status.draft'),
+            self::Posted => __('accounting::petty_cash.status.posted'),
         };
     }
 

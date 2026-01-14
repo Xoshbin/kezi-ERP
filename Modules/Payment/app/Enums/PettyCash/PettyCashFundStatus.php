@@ -14,8 +14,8 @@ enum PettyCashFundStatus: string implements HasColor, HasIcon, HasLabel
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::Active => 'Active',
-            self::Closed => 'Closed',
+            self::Active => __('accounting::petty_cash.status.active'),
+            self::Closed => __('accounting::petty_cash.status.closed'),
         };
     }
 
