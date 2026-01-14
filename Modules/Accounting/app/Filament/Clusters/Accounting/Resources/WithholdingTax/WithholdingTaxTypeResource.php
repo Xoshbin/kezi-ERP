@@ -2,7 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax;
 
-use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -12,7 +11,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
-use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
@@ -20,6 +18,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Modules\Accounting\Enums\Accounting\WithholdingTaxApplicability;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\Pages\CreateWithholdingTaxType;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\Pages\EditWithholdingTaxType;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\Pages\ListWithholdingTaxTypes;
@@ -29,6 +28,7 @@ use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 class WithholdingTaxTypeResource extends Resource
 {
     protected static ?string $cluster = AccountingCluster::class;
+
     use Translatable;
 
     protected static ?string $model = WithholdingTaxType::class;
@@ -36,8 +36,6 @@ class WithholdingTaxTypeResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
 
     protected static ?int $navigationSort = 4;
-
-    
 
     public static function getLabel(): string
     {
