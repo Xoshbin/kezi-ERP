@@ -27,6 +27,16 @@ class ExpenseReportResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'report_number';
 
+    public static function getModelLabel(): string
+    {
+        return __('hr::expense_report.navigation.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('hr::expense_report.navigation.plural');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return ExpenseReportForm::configure($schema);

@@ -11,5 +11,7 @@ return [
         'start_date' => 'Start Date',
         'end_date' => 'End Date',
         'project_name' => 'Project',
+        'label' => 'Project Budget',
+        'plural_label' => 'Project Budgets',
     ],
 ];
