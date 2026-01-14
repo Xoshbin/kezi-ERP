@@ -16,4 +16,11 @@ return [
     'issue_date' => 'بەرواری دەرکردن',
     'cancel' => 'هەڵوەشاندنەوە',
     'beneficiary_vendor' => 'سوودمەند (فرۆشیار)',
+    'label' => 'نامەی ئیعتماد',
+    'plural_label' => 'نامەکانی ئیعتماد',
+    'lc_number' => 'LC ژمارەی',
+    'balance' => 'باڵانس',
+    'amount' => 'بڕ',
+    'type' => 'جۆر',
+    'status' => 'دۆخ',
 ];

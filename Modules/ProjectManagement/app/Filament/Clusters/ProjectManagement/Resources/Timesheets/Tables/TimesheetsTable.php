@@ -23,24 +23,28 @@ class TimesheetsTable
         return $table
             ->columns([
                 TextColumn::make('employee.first_name')
-                    ->label('Employee')
+                    ->label(__('projectmanagement::project.timesheet.employee'))
                     ->formatStateUsing(fn ($record) => $record->employee ? "{$record->employee->first_name} {$record->employee->last_name}" : '')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('start_date')
+                    ->label(__('projectmanagement::project.timesheet.start_date'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('end_date')
+                    ->label(__('projectmanagement::project.timesheet.end_date'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('status')
+                    ->label(__('projectmanagement::project.timesheet.status'))
                     ->badge()
                     ->sortable(),
                 TextColumn::make('total_hours')
+                    ->label(__('projectmanagement::project.timesheet.total_hours'))
                     ->numeric(2)
                     ->sortable(),
                 TextColumn::make('approvedBy.name')
-                    ->label('Approved By')
+                    ->label(__('projectmanagement::project.timesheet.approved_by'))
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([

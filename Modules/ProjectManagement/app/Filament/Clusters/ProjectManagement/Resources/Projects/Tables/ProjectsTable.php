@@ -26,38 +26,47 @@ class ProjectsTable
         return $table
             ->columns([
                 TextColumn::make('code')
+                    ->label(__('projectmanagement::project.project.code'))
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
                 TextColumn::make('name')
+                    ->label(__('projectmanagement::project.project.name'))
                     ->searchable()
                     ->sortable()
                     ->limit(30),
                 TextColumn::make('customer.name')
+                    ->label(__('projectmanagement::project.project.customer'))
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('manager.first_name')
-                    ->label('Manager')
+                    ->label(__('projectmanagement::project.project.manager'))
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('status')
+                    ->label(__('projectmanagement::project.project.status'))
                     ->badge()
                     ->sortable(),
                 TextColumn::make('budget_amount')
+                    ->label(__('projectmanagement::project.project.budget_amount'))
                     ->money(fn ($record) => $record->company->currency->code ?? 'USD')
                     ->sortable()
                     ->alignEnd(),
                 IconColumn::make('is_billable')
+                    ->label(__('projectmanagement::project.project.is_billable'))
                     ->boolean()
                     ->toggleable(),
                 TextColumn::make('billing_type')
+                    ->label(__('projectmanagement::project.project.billing_type'))
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('start_date')
+                    ->label(__('projectmanagement::project.project.start_date'))
                     ->date()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('end_date')
+                    ->label(__('projectmanagement::project.project.end_date'))
                     ->date()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
