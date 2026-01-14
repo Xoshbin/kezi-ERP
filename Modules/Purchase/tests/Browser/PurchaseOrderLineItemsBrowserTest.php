@@ -4,8 +4,11 @@ namespace Modules\Purchase\Tests\Browser;
 
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Laravel\Dusk\Browser;
+use Modules\Accounting\Models\Tax;
 use Modules\Foundation\Models\Partner;
 use Modules\Product\Models\Product;
+use Tests\DuskTestCase;
 use Tests\Traits\WithConfiguredCompany;
 
 class PurchaseOrderLineItemsBrowserTest extends DuskTestCase

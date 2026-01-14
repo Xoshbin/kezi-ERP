@@ -1,11 +1,13 @@
 includes:
     - vendor/larastan/larastan/extension.neon
     - vendor/nesbot/carbon/extension.neon
+    - phpstan-baseline.neon
 
 parameters:
 
     paths:
         - app/
+        - Modules/
 
     # Level 10 is the highest level
     level: 8
@@ -19,5 +21,5 @@ parameters:
         # These are acceptable for models that don't need factories or have complex setups
         - '#return type with generic class.*?does not specify its types#'
 
-#    excludePaths:
-#        - ./*/*/FileToBeExcluded.php
+    excludePaths:
+        - Modules/Purchase/tests/Browser/

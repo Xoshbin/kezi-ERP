@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->decimal('total_budget', 19, 4);
+            $table->decimal('total_actual', 19, 4)->default(0);
             $table->boolean('is_active')->default(true);
 
             $table->timestamps();

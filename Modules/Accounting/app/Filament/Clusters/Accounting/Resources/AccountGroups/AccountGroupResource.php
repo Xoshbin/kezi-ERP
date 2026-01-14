@@ -2,7 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AccountGroups;
 
-use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -10,12 +9,12 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\AccountGroups\Pages\CreateAccountGroup;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\AccountGroups\Pages\EditAccountGroup;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\AccountGroups\Pages\ListAccountGroups;
@@ -24,6 +23,7 @@ use Modules\Accounting\Models\AccountGroup;
 class AccountGroupResource extends Resource
 {
     protected static ?string $cluster = AccountingCluster::class;
+
     use Translatable;
 
     protected static ?string $model = AccountGroup::class;
@@ -31,8 +31,6 @@ class AccountGroupResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-folder';
 
     protected static ?int $navigationSort = 4;
-
-    
 
     public static function getPluralModelLabel(): string
     {

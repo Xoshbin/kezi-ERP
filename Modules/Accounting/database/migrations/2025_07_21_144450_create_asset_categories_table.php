@@ -12,6 +12,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('company_id')->constrained('companies');
             $table->string('name');
+            $table->boolean('prorata_temporis')->default(false);
+            $table->double('declining_factor')->nullable();
             $table->foreignId('asset_account_id')->constrained('accounts');
             $table->foreignId('accumulated_depreciation_account_id')->constrained('accounts');
             $table->foreignId('depreciation_expense_account_id')->constrained('accounts');
