@@ -229,7 +229,7 @@ class JournalEntryResource extends Resource
             DocumentAttachmentsHelper::makeSection(
                 directory: 'journal-entries',
                 disabledCallback: fn (?JournalEntry $record) => $record && $record->is_posted,
-                deletableCallback: fn (?JournalEntry $record) => $record === null || !$record->is_posted
+                deletableCallback: fn (?JournalEntry $record) => $record === null || ! $record->is_posted
             ),
         ]);
     }

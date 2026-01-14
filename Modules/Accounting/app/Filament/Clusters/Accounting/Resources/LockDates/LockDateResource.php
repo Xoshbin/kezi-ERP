@@ -2,19 +2,18 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\LockDates;
 
-use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
-use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Modules\Accounting\Enums\Accounting\LockDateType;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\LockDates\Pages\CreateLockDate;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\LockDates\Pages\EditLockDate;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\LockDates\Pages\ListLockDates;
@@ -23,13 +22,12 @@ use Modules\Accounting\Models\LockDate;
 class LockDateResource extends Resource
 {
     protected static ?string $cluster = AccountingCluster::class;
+
     protected static ?string $model = LockDate::class;
 
     protected static ?int $navigationSort = 7;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-lock-closed';
-
-    
 
     public static function getModelLabel(): string
     {

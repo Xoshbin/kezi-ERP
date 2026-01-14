@@ -7,7 +7,7 @@ use Modules\ProjectManagement\Models\Project;
 
 class BudgetVarianceWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Budget Variance by Project';
+    protected ?string $heading = 'Budget Variance by Project';
 
     protected static ?int $sort = 2;
 

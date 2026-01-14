@@ -46,6 +46,8 @@ return new class extends Migration
 
             // Delivery information
             $table->foreignId('delivery_location_id')->nullable()->constrained('stock_locations')->nullOnDelete();
+            $table->string('incoterm', 3)->nullable()->index(); // FCA, EXW, etc.
+            $table->string('incoterm_location')->nullable();
 
             $table->timestamps();
 

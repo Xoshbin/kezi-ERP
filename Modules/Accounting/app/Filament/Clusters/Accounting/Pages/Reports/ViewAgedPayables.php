@@ -30,7 +30,7 @@ class ViewAgedPayables extends Page
 
     public static function getNavigationGroup(): ?string
     {
-        return __("navigation.groups.reports");
+        return __('navigation.groups.reports');
     }
 
     public ?string $asOfDate = null;

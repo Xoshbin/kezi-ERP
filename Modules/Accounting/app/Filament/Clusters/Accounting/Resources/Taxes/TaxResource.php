@@ -2,7 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Taxes;
 
-use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -12,7 +11,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
-use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
@@ -20,6 +18,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Modules\Accounting\Enums\Accounting\TaxType;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages\CreateTax;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages\EditTax;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages\ListTaxes;
@@ -29,6 +28,7 @@ use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 class TaxResource extends Resource
 {
     protected static ?string $cluster = AccountingCluster::class;
+
     use Translatable;
 
     protected static ?string $model = Tax::class;
@@ -36,8 +36,6 @@ class TaxResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calculator';
 
     protected static ?int $navigationSort = 3;
-
-    
 
     public static function getLabel(): string
     {
