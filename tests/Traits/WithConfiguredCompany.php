@@ -8,6 +8,10 @@ use Modules\Inventory\Enums\Inventory\StockLocationType;
 use Modules\Inventory\Models\StockLocation;
 use Tests\Builders\CompanyBuilder;
 
+/**
+ * @property \App\Models\Company $company
+ * @property \App\Models\User $user
+ */
 trait WithConfiguredCompany
 {
     protected function setupWithConfiguredCompany(): void
@@ -34,14 +38,18 @@ trait WithConfiguredCompany
         setPermissionsTeamId($this->company->id);
 
         // Assign super_admin role to the test user so they can access everything
-        $superAdminRole = \Spatie\Permission\Models\Role::where('name', 'super_admin')->whereNull('company_id')->first();
-        if ($superAdminRole) {
-            // We need to bypass the team check for assigning global roles sometimes,
-            // or just use DB insertion if assignRole fails for global with teams enabled.
-            // Spatie's assignRole with mixed global/team roles can be tricky.
-            // Let's try standard assignment first.
-            $this->user->assignRole($superAdminRole);
+        // Since roles are now company-specific, we need to ensure the super_admin role exists for this company
+        $superAdminRole = \Spatie\Permission\Models\Role::firstOrCreate([
+            'name' => 'super_admin',
+            'company_id' => $this->company->id,
+        ]);
+
+        // Grant all permissions to super_admin if it was just created
+        if ($superAdminRole->wasRecentlyCreated) {
+            $superAdminRole->givePermissionTo(\Spatie\Permission\Models\Permission::all());
         }
+
+        $this->user->assignRole($superAdminRole);
 
         // Explicitly refresh user and force permission hydration
         $this->user->refresh();
