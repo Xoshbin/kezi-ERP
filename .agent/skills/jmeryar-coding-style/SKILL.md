@@ -1,10 +1,11 @@
 ---
-trigger: always_on
+name: jmeryar-coding-style
+description: Official coding styles, architectural patterns, and best practices. Use when writing or refactoring code.
 ---
 
 This document outlines the official coding styles, architectural patterns, and best practices for this application. [cite: 2312] Adherence to these standards is mandatory to ensure consistency, maintainability, and robustness. [cite: 2313]
 
-## 1\. Core Principles
+## 1. Core Principles
 
   - **Immutability is Law:** Posted financial records (invoices, bills, journal entries) can NEVER be edited or deleted. [cite: 2314] Corrections are made only through new, reversing transactions. [cite: 2315]
   - **Manual Data Entry First:** The system relies on manual input. [cite: 2315] No third-party payment integrations. [cite: 2316]
@@ -19,16 +20,16 @@ This document outlines the official coding styles, architectural patterns, and b
   - **Respect Accounting Principles:** Do not violate core accounting principles. [cite: 2335]
   - **Preserve Comments:** Do not remove comments unless they are no longer relevant. Commenting is important for code maintainability. [cite: 2336]
 
-## 2\. The Journal Entry as the Single Source of Truth
+## 2. The Journal Entry as the Single Source of Truth
 
   * **(PhD in Accounting) Rationale:** The General Ledger (GL) is the definitive record of a company's financial transactions. To ensure its integrity, all financial events **MUST** be recorded as immutable journal entries. Commercial documents like invoices or payments are important business records, but their financial impact is only official once it is reflected in the GL through a posted journal entry. [cite: 403, 1474] This creates a clear, auditable link from every operational action to its financial consequence and is the foundation of the double-entry system. [cite: 2289, 2291]
   * **(Expert Laravel Architect) Rules:**
       * **Financial Impact via Journal Entry:** Any model that has a financial impact (e.g., `Invoice`, `VendorBill`, `Payment`, `AssetDepreciationLine`) **MUST** have a polymorphic relationship to the `JournalEntry` model. The creation and posting of this `JournalEntry` is the sole mechanism by which a business event is recorded in the accounting system.
       * **Decoupled Creation and Posting:** The creation of a `JournalEntry` (in a `draft` state) **SHALL** be decoupled from its posting. Posting is a final, irreversible action. This is handled by an event listener (e.g., `PostJournalEntry`) after a business document is confirmed, ensuring a clean separation of concerns. [cite: 2378, 2379, 2600, 2602]
-      * **Source of Truth for Reports:** All financial reports (Trial Balance, P\&L, Balance Sheet) **MUST** be generated exclusively from the `journal_entry_lines` table. They **MUST NOT** be calculated from `invoices`, `bills`, or other commercial documents directly.
+      * **Source of Truth for Reports:** All financial reports (Trial Balance, P&L, Balance Sheet) **MUST** be generated exclusively from the `journal_entry_lines` table. They **MUST NOT** be calculated from `invoices`, `bills`, or other commercial documents directly.
       * **Data Consistency:** The `JournalEntry` **MUST** store key redundant data at the time of posting (e.g., the partner name) to ensure that reports from past periods remain consistent, even if the source partner record is later updated.
 
-## 3\. State Management: PHP 8.1+ Backed Enums
+## 3. State Management: PHP 8.1+ Backed Enums
 
 **Rule:** All state management (e.g., `status`, `state`, `type`) **MUST** be implemented using PHP 8.1+ Backed Enums. [cite: 2337] The use of class constants is deprecated. [cite: 2338] Enum cases **MUST** be `PascalCase`, while their corresponding string values **MUST** be `snake_case`. [cite: 2339]
 
@@ -60,7 +61,7 @@ class StockLocation extends Model
 }
 ```
 
-## 4\. Layered Architecture
+## 4. Layered Architecture
 
 The application follows a strict layered architecture to separate concerns. [cite: 2346, 4784] The primary layers are: Actions, Data Transfer Objects (DTOs), Services, Observers, and Policies. [cite: 2347]
 
@@ -140,7 +141,7 @@ The application follows a strict layered architecture to separate concerns. [cit
   Events are dispatched from Services after a core business process is completed. [cite: 2378]
   Listeners subscribe to these events to perform follow-up actions. [cite: 2379]
 
-## 5\. Financial Calculations
+## 5. Financial Calculations
 
 **Rule:** All monetary values **MUST** be handled using `Brick\Money` objects. Never use floats for financial calculations. [cite: 2380]
 
