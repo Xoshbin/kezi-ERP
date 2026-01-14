@@ -70,7 +70,7 @@ class VendorBillResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.sales_purchases');
+        return __('accounting::navigation.groups.sales_purchases');
     }
 
     public static function getModelLabel(): string
@@ -162,7 +162,7 @@ class VendorBillResource extends Resource
                                 ->label(__('partner.address'))
                                 ->columnSpanFull(),
                         ])
-                        ->createOptionModalHeading(__('common.modal_title_create_partner'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_partner'))
                         ->createOptionAction(function (Action $action) {
                             return $action
                                 ->modalWidth('lg');
@@ -201,28 +201,28 @@ class VendorBillResource extends Resource
                         })
                         ->createOptionForm([
                             TextInput::make('code')
-                                ->label(__('currency.code'))
+                                ->label(__('accounting::currency.code'))
                                 ->required()
                                 ->maxLength(255),
                             TextInput::make('name')
-                                ->label(__('currency.name'))
+                                ->label(__('accounting::currency.name'))
                                 ->required()
                                 ->maxLength(255),
                             TextInput::make('symbol')
-                                ->label(__('currency.symbol'))
+                                ->label(__('accounting::currency.symbol'))
                                 ->required()
                                 ->maxLength(5),
                             TextInput::make('exchange_rate')
-                                ->label(__('currency.exchange_rate'))
+                                ->label(__('accounting::currency.exchange_rate'))
                                 ->required()
                                 ->numeric()
                                 ->default(1),
                             Toggle::make('is_active')
-                                ->label(__('currency.is_active'))
+                                ->label(__('accounting::currency.is_active'))
                                 ->required()
                                 ->default(true),
                         ])
-                        ->createOptionModalHeading(__('common.modal_title_create_currency'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_currency'))
                         ->createOptionAction(function (Action $action) {
                             return $action
                                 ->modalWidth('lg');
@@ -384,7 +384,7 @@ class VendorBillResource extends Resource
                                         ->label(__('product.is_active'))
                                         ->default(true),
                                 ])
-                                ->createOptionModalHeading(__('common.modal_title_create_product'))
+                                ->createOptionModalHeading(__('accounting::common.modal_title_create_product'))
                                 ->createOptionAction(function (Action $action) {
                                     return $action
                                         ->modalWidth('lg');
@@ -461,7 +461,7 @@ class VendorBillResource extends Resource
 
                                     return $tax->getKey();
                                 })
-                                ->createOptionModalHeading(__('common.modal_title_create_tax'))
+                                ->createOptionModalHeading(__('accounting::common.modal_title_create_tax'))
                                 ->createOptionAction(function (Action $action) {
                                     return $action
                                         ->modalWidth('lg');

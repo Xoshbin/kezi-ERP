@@ -13,6 +13,6 @@ enum PartnerType: string
      */
     public function label(): string
     {
-        return __('enums.partner_type.'.$this->value);
+        return __('foundation::enums.partner_type.'.$this->value);
     }
 }

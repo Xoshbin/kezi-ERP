@@ -54,7 +54,7 @@ class AdjustmentDocumentResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.core_accounting');
+        return __('accounting::navigation.groups.core_accounting');
     }
 
     public static function getModelLabel(): string
@@ -87,28 +87,28 @@ class AdjustmentDocumentResource extends Resource
                         ->disabled(fn (Get $get): bool => ! empty($get('original_invoice_id')) || ! empty($get('original_vendor_bill_id')))
                         ->createOptionForm([
                             TextInput::make('code')
-                                ->label(__('currency.code'))
+                                ->label(__('accounting::currency.code'))
                                 ->required()
                                 ->maxLength(255),
                             TextInput::make('name')
-                                ->label(__('currency.name'))
+                                ->label(__('accounting::currency.name'))
                                 ->required()
                                 ->maxLength(255),
                             TextInput::make('symbol')
-                                ->label(__('currency.symbol'))
+                                ->label(__('accounting::currency.symbol'))
                                 ->required()
                                 ->maxLength(5),
                             TextInput::make('exchange_rate')
-                                ->label(__('currency.exchange_rate'))
+                                ->label(__('accounting::currency.exchange_rate'))
                                 ->required()
                                 ->numeric()
                                 ->default(1),
                             Toggle::make('is_active')
-                                ->label(__('currency.is_active'))
+                                ->label(__('accounting::currency.is_active'))
                                 ->required()
                                 ->default(true),
                         ])
-                        ->createOptionModalHeading(__('common.modal_title_create_currency'))
+                        ->createOptionModalHeading(__('accounting::common.modal_title_create_currency'))
                         ->createOptionAction(function (Action $action) {
                             return $action
                                 ->modalWidth('lg');
@@ -292,7 +292,7 @@ class AdjustmentDocumentResource extends Resource
                                         ->label(__('product.income_account'))
                                         ->required(),
                                 ])
-                                ->createOptionModalHeading(__('common.modal_title_create_product'))
+                                ->createOptionModalHeading(__('accounting::common.modal_title_create_product'))
                                 ->createOptionAction(function (Action $action) {
                                     return $action
                                         ->modalWidth('lg');
@@ -336,7 +336,7 @@ class AdjustmentDocumentResource extends Resource
                                         ->numeric()
                                         ->suffix('%'),
                                 ])
-                                ->createOptionModalHeading(__('common.modal_title_create_tax'))
+                                ->createOptionModalHeading(__('accounting::common.modal_title_create_tax'))
                                 ->createOptionAction(function (Action $action) {
                                     return $action
                                         ->modalWidth('lg');
@@ -374,7 +374,7 @@ class AdjustmentDocumentResource extends Resource
                                         ->label(__('accounting::account.is_deprecated'))
                                         ->default(false),
                                 ])
-                                ->createOptionModalHeading(__('common.modal_title_create_account'))
+                                ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
                                 ->createOptionAction(function (Action $action) {
                                     return $action
                                         ->modalWidth('lg');

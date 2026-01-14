@@ -78,7 +78,7 @@ class TaxResource extends Resource
                                 Toggle::make('is_deprecated')->label(__('accounting::account.is_deprecated'))->default(false),
                                 Toggle::make('allow_reconciliation')->label(__('accounting::account.allow_reconciliation'))->default(false),
                             ])
-                            ->createOptionModalHeading(__('common.modal_title_create_account'))
+                            ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
                             ->createOptionAction(fn (Action $a) => $a->name('create-account-option')->modalWidth('lg'))
                             ->required(fn (\Filament\Forms\Get $get) => ! $get('is_group'))
                             ->visible(fn (\Filament\Forms\Get $get) => ! $get('is_group')),

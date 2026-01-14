@@ -53,7 +53,7 @@ class PartnerResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.sales_purchases');
+        return __('accounting::navigation.groups.sales_purchases');
     }
 
     public static function getModelLabel(): string
@@ -121,7 +121,7 @@ class PartnerResource extends Resource
                                             ->numeric()
                                             ->suffix('%'),
                                     ])
-                                    ->createOptionModalHeading(__('common.modal_title_create_tax'))
+                                    ->createOptionModalHeading(__('accounting::common.modal_title_create_tax'))
                                     ->createOptionAction(function (Action $action) {
                                         return $action
                                             ->modalWidth('lg');
@@ -482,9 +482,9 @@ class PartnerResource extends Resource
                 SelectFilter::make('type')
                     ->label(__('accounting::partner.type'))
                     ->options([
-                        'customer' => __('enums.partner_type.customer'),
-                        'vendor' => __('enums.partner_type.vendor'),
-                        'both' => __('enums.partner_type.both'),
+                        'customer' => __('accounting::enums.partner_type.customer'),
+                        'vendor' => __('accounting::enums.partner_type.vendor'),
+                        'both' => __('accounting::enums.partner_type.both'),
                     ]),
 
                 Filter::make('has_overdue')
