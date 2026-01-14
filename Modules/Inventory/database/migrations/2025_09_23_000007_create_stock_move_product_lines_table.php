@@ -25,8 +25,8 @@ return new class extends Migration
 
             // Indexes for performance
             $table->index(['stock_move_id', 'product_id']);
-            $table->index(['company_id', 'product_id']);
-            $table->index(['from_location_id', 'to_location_id']);
+            $table->index(['company_id', 'product_id'], 'idx_product_lines_company_product');
+            $table->index(['from_location_id', 'to_location_id'], 'idx_product_lines_from_to');
         });
     }
 

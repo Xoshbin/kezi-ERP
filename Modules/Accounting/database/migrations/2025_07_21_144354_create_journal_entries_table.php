@@ -50,9 +50,10 @@ return new class extends Migration
             $table->string('hash', 64)->nullable()->index();
             $table->string('previous_hash', 64)->nullable()->index();
             $table->nullableMorphs('source'); // source_id and source_type
+            $table->string('entry_number')->nullable();
             $table->timestamps();
 
-            $table->unique(['company_id', 'journal_id', 'reference']);
+            $table->unique(['company_id', 'journal_id', 'entry_number']);
         });
     }
 
