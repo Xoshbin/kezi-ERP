@@ -6,6 +6,7 @@ return [
         'accounting' => 'Accounting',
     ],
     'groups' => [
+        'accounting_settings' => 'Accounting',
         'administration' => 'Administration',
         'configuration' => 'Configuration',
         'sales_purchases' => 'Sales & Purchases',

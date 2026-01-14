@@ -2,6 +2,7 @@
 
 namespace Modules\QualityControl\Filament\Clusters\QualityControl\Resources;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -10,7 +11,6 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Modules\QualityControl\Enums\QualityCheckType;
 use Modules\QualityControl\Filament\Clusters\QualityControl\Resources\QualityInspectionTemplateResource\Pages;
-use Modules\QualityControl\Filament\Clusters\QualityControlCluster;
 use Modules\QualityControl\Models\QualityInspectionTemplate;
 
 class QualityInspectionTemplateResource extends Resource
@@ -19,13 +19,18 @@ class QualityInspectionTemplateResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
-    protected static ?string $cluster = QualityControlCluster::class;
+    protected static ?string $cluster = SettingsCluster::class;
 
     protected static ?int $navigationSort = 2;
 
     public static function getNavigationLabel(): string
     {
         return __('qualitycontrol::template.navigation_label');
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return __('qualitycontrol::navigation.groups.qc_settings');
     }
 
     public static function form(Schema $schema): Schema
