@@ -38,6 +38,8 @@ class AssetFactory extends Factory
             'depreciation_expense_account_id' => Account::factory(),
             'accumulated_depreciation_account_id' => Account::factory(),
             'status' => AssetStatus::Draft,
+            'prorata_temporis' => false,
+            'declining_factor' => null,
         ];
     }
 }

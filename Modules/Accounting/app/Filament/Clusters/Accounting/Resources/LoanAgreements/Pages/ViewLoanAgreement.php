@@ -55,10 +55,10 @@ class ViewLoanAgreement extends ViewRecord
                     $loan->refresh();
                 }),
             Actions\Action::make('accrueInterest')
-                ->label('Accrue Interest')
+                ->label(__('accounting::loan.accrue_interest'))
                 ->form([
                     Select::make('journal_id')
-                        ->label('Journal')
+                        ->label(__('accounting::loan.journal'))
                         ->searchable()
                         ->preload()
                         ->options(function () {
@@ -85,7 +85,7 @@ class ViewLoanAgreement extends ViewRecord
                         })
                         ->required(),
                     Select::make('interest_account_id')
-                        ->label('Interest Expense / Income')
+                        ->label(__('accounting::loan.interest_expense_income'))
                         ->searchable()
                         ->preload()
                         ->options(function () {
@@ -112,7 +112,7 @@ class ViewLoanAgreement extends ViewRecord
                         })
                         ->required(),
                     Select::make('accrued_interest_account_id')
-                        ->label('Accrued Interest')
+                        ->label(__('accounting::loan.accrued_interest'))
                         ->searchable()
                         ->preload()
                         ->options(function () {
@@ -139,7 +139,7 @@ class ViewLoanAgreement extends ViewRecord
                         })
                         ->required(),
                     TextInput::make('for_month_sequence')
-                        ->label('Installment #')
+                        ->label(__('accounting::loan.installment'))
                         ->numeric()
                         ->required(),
                 ])
@@ -163,10 +163,10 @@ class ViewLoanAgreement extends ViewRecord
                     );
                 }),
             Actions\Action::make('postRepayment')
-                ->label('Post Repayment')
+                ->label(__('accounting::loan.post_repayment'))
                 ->form([
                     Select::make('journal_id')
-                        ->label('Journal')
+                        ->label(__('accounting::loan.journal'))
                         ->searchable()
                         ->preload()
                         ->options(function () {
@@ -220,7 +220,7 @@ class ViewLoanAgreement extends ViewRecord
                         })
                         ->required(),
                     Select::make('loan_account_id')
-                        ->label('Loan Account')
+                        ->label(__('accounting::loan.loan_account'))
                         ->searchable()
                         ->preload()
                         ->options(function () {
@@ -247,7 +247,7 @@ class ViewLoanAgreement extends ViewRecord
                         })
                         ->required(),
                     Select::make('accrued_interest_account_id')
-                        ->label('Accrued Interest')
+                        ->label(__('accounting::loan.accrued_interest'))
                         ->searchable()
                         ->preload()
                         ->options(function () {
@@ -274,7 +274,7 @@ class ViewLoanAgreement extends ViewRecord
                         })
                         ->required(),
                     TextInput::make('for_month_sequence')
-                        ->label('Installment #')
+                        ->label(__('accounting::loan.installment'))
                         ->numeric()
                         ->required(),
                 ])
@@ -299,10 +299,10 @@ class ViewLoanAgreement extends ViewRecord
                     );
                 }),
             Actions\Action::make('reclassifyCurrentPortion')
-                ->label('Reclassify Current Portion')
+                ->label(__('accounting::loan.reclassify'))
                 ->form([
                     Select::make('journal_id')
-                        ->label('Journal')
+                        ->label(__('accounting::loan.journal'))
                         ->searchable()
                         ->preload()
                         ->options(function () {
@@ -329,7 +329,7 @@ class ViewLoanAgreement extends ViewRecord
                         })
                         ->required(),
                     Select::make('long_term_account_id')
-                        ->label('Long-term Account')
+                        ->label(__('accounting::loan.long_term_account'))
                         ->searchable()
                         ->preload()
                         ->options(function () {
@@ -356,7 +356,7 @@ class ViewLoanAgreement extends ViewRecord
                         })
                         ->required(),
                     Select::make('short_term_account_id')
-                        ->label('Short-term Account')
+                        ->label(__('accounting::loan.short_term_account'))
                         ->searchable()
                         ->preload()
                         ->options(function () {
@@ -383,12 +383,12 @@ class ViewLoanAgreement extends ViewRecord
                         })
                         ->required(),
                     TextInput::make('months')
-                        ->label('Months')
+                        ->label(__('accounting::loan.months'))
                         ->numeric()
                         ->default(12)
                         ->required(),
                     DatePicker::make('as_of_date')
-                        ->label('As of date')
+                        ->label(__('accounting::loan.as_of_date'))
                         ->default(now())
                         ->required(),
                 ])

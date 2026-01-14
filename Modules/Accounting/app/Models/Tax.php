@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Modules\Accounting\Enums\Accounting\TaxType;
@@ -29,6 +30,9 @@ use Spatie\Translatable\HasTranslations;
  * @property float $rate
  * @property TaxType $type
  * @property bool $is_active
+ * @property bool $is_group
+ * @property string|null $country
+ * @property string|null $report_tag
  * @property bool $is_recoverable
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -97,6 +101,9 @@ class Tax extends Model
         'rate',
         'type', // e.g., 'Sales', 'Purchase', 'Both' [1]
         'is_active',
+        'is_group',
+        'country',
+        'report_tag',
         'is_recoverable', // Whether tax can be deducted as input tax or should be capitalized
         'tax_account_id', // Foreign key to the Account model for ledger posting [1]
     ];
@@ -110,6 +117,7 @@ class Tax extends Model
     protected $casts = [
         'rate' => 'float', // Crucial for monetary precision in tax calculations [1]
         'is_active' => 'boolean', // Ensures boolean behavior for the active status [1]
+        'is_group' => 'boolean',
         'is_recoverable' => 'boolean', // Whether tax can be deducted as input tax or should be capitalized
         'type' => TaxType::class,
         'created_at' => 'datetime', // Laravel automatically casts these, but explicit declaration is good practice.
@@ -138,6 +146,22 @@ class Tax extends Model
     public function taxAccount()
     {
         return $this->belongsTo(Account::class, 'tax_account_id');
+    }
+
+    /**
+     * Get the child taxes that make up this tax group.
+     */
+    public function children(): BelongsToMany
+    {
+        return $this->belongsToMany(Tax::class, 'tax_components', 'parent_tax_id', 'child_tax_id');
+    }
+
+    /**
+     * Get the parent taxes that this tax belongs to.
+     */
+    public function parents(): BelongsToMany
+    {
+        return $this->belongsToMany(Tax::class, 'tax_components', 'child_tax_id', 'parent_tax_id');
     }
 
     /**

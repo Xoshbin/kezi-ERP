@@ -6,6 +6,7 @@ use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Product\Models\Product;
 
 class StockMoveLine extends Model
 {
@@ -15,6 +16,7 @@ class StockMoveLine extends Model
         'company_id',
         'stock_move_product_line_id',
         'lot_id',
+        'serial_number_id',
         'quantity',
     ];
 
@@ -44,6 +46,14 @@ class StockMoveLine extends Model
     public function lot(): BelongsTo
     {
         return $this->belongsTo(Lot::class);
+    }
+
+    /**
+     * @return BelongsTo<SerialNumber, static>
+     */
+    public function serialNumber(): BelongsTo
+    {
+        return $this->belongsTo(SerialNumber::class);
     }
 
     /**

@@ -375,10 +375,20 @@ class ProductResource extends Resource
                             }),
                     ]),
                     Grid::make(1)->schema([
-                        Toggle::make('lot_tracking_enabled')
-                            ->label(__('product.lot_tracking_enabled'))
-                            ->helperText(__('product.lot_tracking_enabled_help'))
-                            ->visible(fn (Get $get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value),
+                        Select::make('tracking_type')
+                            ->label(__('inventory.tracking_type'))
+                            ->options([
+                                \Modules\Inventory\Enums\Inventory\TrackingType::None->value => __('inventory.tracking_type_none'),
+                                \Modules\Inventory\Enums\Inventory\TrackingType::Lot->value => __('inventory.tracking_type_lot'),
+                                \Modules\Inventory\Enums\Inventory\TrackingType::Serial->value => __('inventory.tracking_type_serial'),
+                            ])
+                            ->default(\Modules\Inventory\Enums\Inventory\TrackingType::None->value)
+                            ->disabled(fn ($record) => $record?->hasStockMoves())
+                            ->helperText(fn ($record) => $record?->hasStockMoves()
+                                ? __('inventory.tracking_type_immutable_help')
+                                : __('inventory.tracking_type_help'))
+                            ->visible(fn (Get $get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
+                            ->required(fn (Get $get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value),
                     ]),
                 ])
                 ->visible(fn (Get $get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value),

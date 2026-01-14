@@ -19,7 +19,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Modules\Accounting\Enums\Assets\AssetStatus;
 use Modules\Accounting\Enums\Assets\DepreciationMethod;
 use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
@@ -29,6 +28,7 @@ use Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages\ListA
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\RelationManagers\DepreciationEntryRelationManager;
 use Modules\Accounting\Models\Asset;
 use Modules\Accounting\Rules\NotInLockedPeriod;
+use Modules\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
 
@@ -69,7 +69,7 @@ class AssetResource extends Resource
                 ->description(__('accounting::asset.asset_currency_info_description'))
                 ->schema([
                     Hidden::make('company_id')
-                        ->default(fn () => Filament::getTenant()->id)
+                        ->default(fn () => Filament::getTenant()?->getKey())
                         ->dehydrated(),
 
                     TextInput::make('name')
@@ -92,11 +92,8 @@ class AssetResource extends Resource
                         })
                         ->afterStateUpdated(function (callable $set, $state) {
                             if ($state) {
+                                /** @var Currency|null $currency */
                                 $currency = Currency::find($state);
-                                // Ensure we have a single Currency model, not a collection
-                                if ($currency instanceof Collection) {
-                                    $currency = $currency->first();
-                                }
                                 $company = Filament::getTenant();
 
                                 if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
@@ -174,16 +171,35 @@ class AssetResource extends Resource
                         ->label(__('accounting::asset.useful_life_years'))
                         ->required()
                         ->numeric()
+                        ->minValue(1)
+                        ->step(1)
+                        ->columnSpan(1),
+
+                    \Filament\Forms\Components\Toggle::make('prorata_temporis')
+                        ->label(__('accounting::asset.prorata_temporis'))
+                        ->default(false)
+                        ->inline(false)
                         ->columnSpan(1),
 
                     Select::make('depreciation_method')
                         ->label(__('accounting::asset.depreciation_method'))
                         ->searchable()
+                        ->live()
                         ->options(
                             collect(DepreciationMethod::cases())
                                 ->mapWithKeys(fn (DepreciationMethod $method) => [$method->value => $method->label()])
                         )
                         ->required()
+                        ->columnSpan(1),
+
+                    TextInput::make('declining_factor')
+                        ->label(__('accounting::asset.declining_factor'))
+                        ->required(fn ($get) => $get('depreciation_method') === DepreciationMethod::Declining->value)
+                        ->visible(fn ($get) => $get('depreciation_method') === DepreciationMethod::Declining->value)
+                        ->numeric()
+                        ->minValue(1)
+                        ->default(2.0)
+                        ->step(0.1)
                         ->columnSpan(1),
 
                     Select::make('asset_account_id')
@@ -269,6 +285,12 @@ class AssetResource extends Resource
                 ])
                 ->columns(2)
                 ->columnSpanFull(),
+
+            DocumentAttachmentsHelper::makeSection(
+                directory: 'assets',
+                disabledCallback: fn (?Asset $record) => $record && $record->status !== AssetStatus::Draft,
+                deletableCallback: fn (?Asset $record) => $record === null || $record->status === AssetStatus::Draft
+            ),
         ]);
     }
 

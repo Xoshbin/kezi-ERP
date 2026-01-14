@@ -6,6 +6,7 @@ enum DepreciationMethod: string
 {
     case StraightLine = 'straight_line';
     case Declining = 'declining';
+    case SumOfDigits = 'sum_of_digits';
 
     /**
      * Get the translated label for the depreciation method.

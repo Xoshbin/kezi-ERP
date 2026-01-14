@@ -16,18 +16,18 @@ class ViewRequestForQuotation extends ViewRecord
             Actions\EditAction::make(),
 
             Actions\Action::make('send')
-                ->label('Send to Vendor')
+                ->label(__('purchase::request_for_quotation.actions.send_to_vendor'))
                 ->icon('heroicon-o-paper-airplane')
                 ->requiresConfirmation()
                 ->visible(fn (RequestForQuotationResource $resource, $record) => $record->status === \Modules\Purchase\Enums\Purchases\RequestForQuotationStatus::Draft)
                 ->action(fn ($record, \Modules\Purchase\Services\RequestForQuotationService $service) => $service->sendRFQ($record)),
 
             Actions\Action::make('record_bid')
-                ->label('Record Bid')
+                ->label(__('purchase::request_for_quotation.actions.record_bid'))
                 ->icon('heroicon-o-clipboard-document-check')
                 ->visible(fn ($record) => in_array($record->status, [\Modules\Purchase\Enums\Purchases\RequestForQuotationStatus::Sent, \Modules\Purchase\Enums\Purchases\RequestForQuotationStatus::BidReceived]))
                 ->form([
-                    \Filament\Forms\Components\Textarea::make('notes')->label('Bid Notes'),
+                    \Filament\Forms\Components\Textarea::make('notes')->label(__('purchase::request_for_quotation.fields.bid_notes')),
                     // Could add price updates here for bulk or simple updates
                 ])
                 ->action(function ($record, array $data, \Modules\Purchase\Services\RequestForQuotationService $service) {
@@ -39,14 +39,14 @@ class ViewRequestForQuotation extends ViewRecord
                 }),
 
             Actions\Action::make('convert_to_po')
-                ->label('Convert to Order')
+                ->label(__('purchase::request_for_quotation.actions.convert_to_order'))
                 ->icon('heroicon-o-check-circle')
                 ->requiresConfirmation()
                 ->visible(fn ($record) => in_array($record->status, [\Modules\Purchase\Enums\Purchases\RequestForQuotationStatus::BidReceived, \Modules\Purchase\Enums\Purchases\RequestForQuotationStatus::Accepted]) && ! $record->converted_to_purchase_order_id)
                 ->form([
                     \Filament\Forms\Components\DatePicker::make('po_date')->default(now())->required(),
                     \Filament\Forms\Components\DatePicker::make('expected_delivery_date'),
-                    \Filament\Forms\Components\TextInput::make('reference')->label('Vendor Reference'),
+                    \Filament\Forms\Components\TextInput::make('reference')->label(__('purchase::request_for_quotation.fields.vendor_reference')),
                 ])
                 ->action(function ($record, array $data, \Modules\Purchase\Services\RequestForQuotationService $service) {
                     $dto = new \Modules\Purchase\DataTransferObjects\Purchases\ConvertRFQToPurchaseOrderDTO(

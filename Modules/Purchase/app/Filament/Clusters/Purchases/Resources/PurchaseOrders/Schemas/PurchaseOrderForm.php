@@ -22,8 +22,10 @@ use Illuminate\Support\Facades\Auth;
 use Modules\Accounting\Enums\Accounting\TaxType;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Tax;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Foundation\Enums\Partners\PartnerType;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
+use Modules\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
 use Modules\Foundation\Models\Currency;
 use Modules\Product\Models\Product;
 use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
@@ -261,6 +263,12 @@ class PurchaseOrderForm
 
                                         return __('purchase::purchase_orders.help.exchange_rate');
                                     }),
+
+                                Select::make('incoterm')
+                                    ->label(__('purchase::purchase_orders.fields.incoterm'))
+                                    ->options(Incoterm::class)
+                                    ->searchable()
+                                    ->preload(),
                             ]),
                     ]),
 
@@ -300,7 +308,8 @@ class PurchaseOrderForm
                                 TableColumn::make(__('purchase::purchase_orders.fields.description'))->width('15%'),
                                 TableColumn::make(__('purchase::purchase_orders.fields.quantity'))->width('8%'),
                                 TableColumn::make(__('purchase::purchase_orders.fields.unit_price'))->width('12%'),
-                                TableColumn::make(__('purchase::purchase_orders.fields.tax'))->width('15%'),
+                                TableColumn::make(__('purchase::purchase_orders.fields.tax'))->width('12%'),
+                                TableColumn::make(__('Shipping Type'))->width('12%'),
                                 TableColumn::make(__('purchase::purchase_orders.fields.expected_delivery_date'))->width('12%'),
                                 TableColumn::make(__('purchase::purchase_orders.fields.notes'))->width('20%'),
                             ])
@@ -355,6 +364,14 @@ class PurchaseOrderForm
                                                     $set('unit_price', (string) $convertedPrice);
                                                 } else {
                                                     $set('unit_price', 0);
+                                                }
+
+                                                // Auto-detect shipping cost type
+                                                $name = strtolower($product->name);
+                                                if (str_contains($name, 'freight') || str_contains($name, 'shipping')) {
+                                                    $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Freight);
+                                                } elseif (str_contains($name, 'insurance')) {
+                                                    $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Insurance);
                                                 }
                                             }
                                         }
@@ -494,7 +511,12 @@ class PurchaseOrderForm
                                     ->label(__('purchase::purchase_orders.fields.expected_delivery_date'))
                                     ->default(fn (callable $get) => $get('../../expected_delivery_date'))
                                     ->columnSpan(3),
-
+                                Select::make('shipping_cost_type')
+                                    ->label(__('Shipping Type'))
+                                    ->options(\Modules\Foundation\Enums\ShippingCostType::class)
+                                    ->placeholder(__('None'))
+                                    ->nullable()
+                                    ->columnSpan(3),
                                 Textarea::make('notes')
                                     ->label(__('purchase::purchase_orders.fields.notes'))
                                     ->rows(2)
@@ -538,6 +560,12 @@ class PurchaseOrderForm
                     ])
                     ->collapsible(),
 
+
+            DocumentAttachmentsHelper::makeSection(
+                directory: 'purchase-orders',
+                disabledCallback: fn (?PurchaseOrder $record) => $record && $record->status !== PurchaseOrderStatus::Draft,
+                deletableCallback: fn (?PurchaseOrder $record) => $record === null || $record->status === PurchaseOrderStatus::Draft
+            ),
             ]);
     }
 

@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Modules\Foundation\Enums\Incoterm;
+use Modules\Foundation\Models\Concerns\HasDocumentAttachments;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\Partner;
 use Modules\Inventory\Models\StockLocation;
@@ -31,6 +33,7 @@ use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
  * @property int $created_by_user_id
  * @property string|null $po_number
  * @property PurchaseOrderStatus $status
+ * @property Incoterm|null $incoterm
  * @property string|null $reference
  * @property Carbon $po_date
  * @property Carbon|null $expected_delivery_date
@@ -59,6 +62,7 @@ use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
 #[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
 class PurchaseOrder extends Model
 {
+    use HasDocumentAttachments;
     use HasFactory;
 
     /**
@@ -71,6 +75,7 @@ class PurchaseOrder extends Model
         'created_by_user_id',
         'po_number',
         'status',
+        'incoterm',
         'reference',
         'po_date',
         'expected_delivery_date',
@@ -91,6 +96,7 @@ class PurchaseOrder extends Model
      */
     protected $casts = [
         'status' => PurchaseOrderStatus::class,
+        'incoterm' => Incoterm::class,
         'po_date' => 'date',
         'expected_delivery_date' => 'date',
         'confirmed_at' => 'datetime',

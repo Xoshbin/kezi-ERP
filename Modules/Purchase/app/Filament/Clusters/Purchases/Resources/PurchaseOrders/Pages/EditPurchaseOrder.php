@@ -11,6 +11,7 @@ use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
+use Modules\Foundation\Enums\Incoterm;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
 use Modules\Purchase\Actions\Purchases\UpdatePurchaseOrderAction;
 use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
@@ -69,14 +70,28 @@ class EditPurchaseOrder extends EditRecord
                 ->visible(fn () => $this->record->canBeConfirmed())
                 ->requiresConfirmation()
                 ->action(function () {
-                    app(PurchaseOrderService::class)->confirm($this->record, Auth::user());
+                    try {
+                        app(PurchaseOrderService::class)->confirm($this->record, Auth::user());
 
-                    Notification::make()
-                        ->title(__('purchase::purchase_orders.notifications.confirmed'))
-                        ->success()
-                        ->send();
+                        Notification::make()
+                            ->title(__('purchase::purchase_orders.notifications.confirmed'))
+                            ->success()
+                            ->send();
 
-                    $this->refreshFormData(['status']);
+                        $this->refreshFormData(['status']);
+                    } catch (\Modules\Accounting\Exceptions\BudgetExceededException $e) {
+                        Notification::make()
+                            ->title($e->getMessage())
+                            ->danger()
+                            ->send();
+                    } catch (Exception $e) {
+                        Notification::make()
+                            ->title(__('purchase::purchase_orders.notifications.confirm_failed'))
+                            ->body($e->getMessage())
+                            ->danger()
+                            ->persistent()
+                            ->send();
+                    }
                 }),
 
             Action::make('ready_to_receive')
@@ -250,6 +265,7 @@ class EditPurchaseOrder extends EditRecord
             notes: $data['notes'] ?? null,
             terms_and_conditions: $data['terms_and_conditions'] ?? null,
             delivery_location_id: $data['delivery_location_id'] ?? null,
+            incoterm: isset($data['incoterm']) ? Incoterm::tryFrom($data['incoterm']) : null,
             status: isset($data['status']) ? PurchaseOrderStatus::from($data['status']) : null,
         );
 

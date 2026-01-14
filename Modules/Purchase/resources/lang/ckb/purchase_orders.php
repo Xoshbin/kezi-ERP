@@ -41,6 +41,7 @@ return [
         'quantity' => 'بڕ',
         'unit_price' => 'نرخی یەکە',
         'tax' => 'باج',
+        'billing_status' => 'دۆخی پسوڵە',
     ],
 
     'help' => [

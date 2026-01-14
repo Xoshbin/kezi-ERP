@@ -35,6 +35,7 @@ class UpdateVendorBillAction
                 'bill_date' => $updateVendorBillDTO->bill_date,
                 'due_date' => $updateVendorBillDTO->due_date,
                 'bill_reference' => $updateVendorBillDTO->bill_reference,
+                'incoterm' => $updateVendorBillDTO->incoterm ?? $vendorBill->incoterm,
             ]);
 
             $vendorBill->lines()->delete();
@@ -65,7 +66,10 @@ class UpdateVendorBillAction
                     'expense_account_id' => $line->expense_account_id,
                     'tax_id' => $line->tax_id,
                     'analytic_account_id' => $line->analytic_account_id,
+                    'shipping_cost_type' => $line->shipping_cost_type,
                     'asset_category_id' => $line->asset_category_id ?? null,
+                    'deferred_start_date' => $line->deferred_start_date,
+                    'deferred_end_date' => $line->deferred_end_date,
                 ]);
             }
 

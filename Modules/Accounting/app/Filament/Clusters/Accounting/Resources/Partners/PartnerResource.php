@@ -267,6 +267,30 @@ class PartnerResource extends Resource
                                     ->helperText(__('accounting::partner.payable_account_help'))
                                     ->prefixIcon('heroicon-m-arrow-trending-down'),
                             ]),
+
+                        Grid::make(1)
+                            ->schema([
+                                Select::make('linked_company_id')
+                                    ->label(__('accounting::partner.linked_company'))
+                                    ->relationship('linkedCompany', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->helperText(__('accounting::partner.linked_company_help'))
+                                    ->prefixIcon('heroicon-m-building-office-2'),
+                                Select::make('withholding_tax_type_id')
+                                    ->label(__('accounting::withholding_tax.label')) // Assuming translation key exists, or use 'Withholding Tax Type'
+                                    ->relationship('withholdingTaxType', 'name')
+                                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->name.' ('.$record->rate * 100 .'%)')
+                                    ->searchable()
+                                    ->preload()
+                                    ->prefixIcon('heroicon-m-scissors'),
+                                Select::make('fiscal_position_id')
+                                    ->label(__('accounting::partner.fiscal_position'))
+                                    ->relationship('fiscalPosition', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->prefixIcon('heroicon-m-globe-alt'),
+                            ]),
                     ])
                     ->columnSpanFull()
                     ->collapsible(),

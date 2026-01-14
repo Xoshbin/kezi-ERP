@@ -11,6 +11,7 @@
     "require": {
         "php": "^8.4",
         "barryvdh/laravel-dompdf": "^3.1",
+        "bezhansalleh/filament-shield": "^4.0",
         "brick/money": "^0.10.1",
         "coolsam/modules": "^5.0",
         "craft-forge/filament-language-switcher": "^1.0",

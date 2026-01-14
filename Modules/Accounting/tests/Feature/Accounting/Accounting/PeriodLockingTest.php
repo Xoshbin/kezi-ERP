@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Livewire\Livewire;
 use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Modules\Accounting\Enums\Accounting\LockDateType;
-use Modules\Accounting\Filament\Resources\LockDates\Pages\ListLockDates;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\LockDates\Pages\ListLockDates;
 use Modules\Accounting\Models\LockDate;
 use Modules\Accounting\Rules\NotInLockedPeriod;
 use Modules\Foundation\Models\Partner;

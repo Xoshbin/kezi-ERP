@@ -29,6 +29,7 @@ use Modules\Purchase\Enums\Purchases\VendorBillStatus;
  * @property int $currency_id
  * @property string $fiscal_country
  * @property int|null $parent_company_id
+ * @property \Modules\Accounting\Enums\Consolidation\ConsolidationMethod $consolidation_method
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read Collection<int, \Modules\Accounting\Models\Account> $accounts
@@ -113,12 +114,14 @@ class Company extends Model
         'currency_id',
         'fiscal_country',
         'parent_company_id',
+        'consolidation_method',
         'enable_reconciliation',
         'default_accounts_payable_id',
         'default_tax_receivable_id',
         'default_purchase_journal_id',
         'default_accounts_receivable_id',
         'default_sales_discount_account_id',
+        'default_purchase_returns_account_id',
         'default_tax_account_id',
         'default_sales_journal_id',
         'default_depreciation_journal_id',
@@ -139,6 +142,7 @@ class Company extends Model
         'default_social_security_payable_account_id',
         'default_health_insurance_payable_account_id',
         'default_pension_payable_account_id',
+        'default_employee_advance_receivable_account_id',
         // PDF Settings
         'pdf_template',
         'pdf_logo_path',
@@ -147,6 +151,13 @@ class Company extends Model
         'numbering_settings',
         // Inventory Settings
         'inventory_accounting_mode',
+        'default_finished_goods_inventory_id',
+        'default_raw_materials_inventory_id',
+        'default_manufacturing_journal_id',
+        // Cheque Settings
+        'default_pdc_receivable_account_id',
+        'default_pdc_payable_account_id',
+        'default_cheque_expense_account_id',
     ];
 
     /**
@@ -161,6 +172,7 @@ class Company extends Model
         'pdf_settings' => 'json',
         'numbering_settings' => 'json',
         'inventory_accounting_mode' => \Modules\Inventory\Enums\Inventory\InventoryAccountingMode::class,
+        'consolidation_method' => \Modules\Accounting\Enums\Consolidation\ConsolidationMethod::class,
     ];
 
     /*
@@ -468,6 +480,17 @@ class Company extends Model
     }
 
     /**
+     * Get the default Purchase Returns account.
+     * This contra-expense account is credited when posting Debit Notes (vendor returns).
+     *
+     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     */
+    public function defaultPurchaseReturnsAccount(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_purchase_returns_account_id');
+    }
+
+    /**
      * @return BelongsTo<Journal, static>
      */
     public function defaultSalesJournal(): BelongsTo
@@ -593,6 +616,46 @@ class Company extends Model
     public function defaultPensionPayableAccount(): BelongsTo
     {
         return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_pension_payable_account_id');
+    }
+
+    /**
+     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     */
+    public function defaultEmployeeAdvanceReceivableAccount(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_employee_advance_receivable_account_id');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cheque Management Default Accounts
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Get the default account for Post-Dated Cheques Receivable (Asset).
+     * Used when we receive a cheque from a customer but haven't deposited it yet.
+     */
+    public function defaultPdcReceivableAccount(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_pdc_receivable_account_id');
+    }
+
+    /**
+     * Get the default account for Post-Dated Cheques Payable (Liability).
+     * Used when we issue a cheque to a vendor but it hasn't been cleared yet.
+     */
+    public function defaultPdcPayableAccount(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_pdc_payable_account_id');
+    }
+
+    /**
+     * Get the default account for bank charges or cheque bounce penalties (Expense).
+     */
+    public function defaultChequeExpenseAccount(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_cheque_expense_account_id');
     }
 
     /**

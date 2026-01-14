@@ -56,6 +56,8 @@ use Modules\Sales\Models\Invoice;
  * @property-read int|null $payment_document_links_count
  * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
+ * @property-read Collection<int, WithholdingTaxEntry> $withholdingTaxEntries
+ * @property-read \Brick\Money\Money|null $total_withheld
  *
  * @method static \Modules\Payment\Database\Factories\PaymentFactory factory($count = null, $state = [])
  * @method static Builder<static>|Payment newModelQuery()
@@ -251,6 +253,47 @@ class Payment extends Model
     {
         return $this->hasMany(JournalEntry::class, 'source_id')
             ->where('source_type', self::class);
+    }
+
+    /**
+     * Get the withholding tax entries for this payment.
+     *
+     * @return HasMany<\Modules\Accounting\Models\WithholdingTaxEntry, static>
+     */
+    public function withholdingTaxEntries(): HasMany
+    {
+        return $this->hasMany(\Modules\Accounting\Models\WithholdingTaxEntry::class);
+    }
+
+    /**
+     * Get the Cheques linked to this Payment.
+     *
+     * @return HasMany<Cheque, static>
+     */
+    public function cheques(): HasMany
+    {
+        return $this->hasMany(Cheque::class);
+    }
+
+    /**
+     * Get the total amount withheld for this payment.
+     */
+    public function getTotalWithheldAttribute(): ?\Brick\Money\Money
+    {
+        $entries = $this->withholdingTaxEntries;
+
+        if ($entries->isEmpty()) {
+            return null;
+        }
+
+        $currency = $this->currency->code;
+        $total = \Brick\Money\Money::zero($currency);
+
+        foreach ($entries as $entry) {
+            $total = $total->plus($entry->withheld_amount);
+        }
+
+        return $total;
     }
 
     protected static function newFactory(): \Modules\Payment\Database\Factories\PaymentFactory

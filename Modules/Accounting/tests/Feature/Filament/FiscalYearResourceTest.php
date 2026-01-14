@@ -9,6 +9,7 @@ use Modules\Accounting\Enums\Accounting\FiscalYearState;
 use Modules\Accounting\Enums\Accounting\JournalEntryState;
 use Modules\Accounting\Enums\Accounting\LockDateType;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\FiscalYears\Pages\EditFiscalYear;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\FiscalYears\Pages\ListFiscalYears;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\FiscalYears\RelationManagers\PeriodsRelationManager;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\FiscalPeriod;
@@ -24,6 +25,15 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
+});
+
+// =========================================================================
+// FISCAL YEAR LIST PAGE TESTS
+// =========================================================================
+
+it('has create action on list page', function () {
+    livewire(ListFiscalYears::class)
+        ->assertActionExists('create');
 });
 
 // =========================================================================

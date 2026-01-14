@@ -18,6 +18,7 @@ use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use Modules\Accounting\Actions\Accounting\BuildVendorBillPostingPreviewAction;
@@ -127,6 +128,8 @@ class EditVendorBill extends EditRecord
                 ->visible(fn (VendorBill $record): bool => $record->status === VendorBillStatus::Draft)
                 ->disabled(fn (VendorBill $record): bool => $record->lines->isEmpty() || $record->total_amount->isZero())
                 ->action(function (VendorBill $record): void {
+                    $this->save();
+                    $record = $record->fresh(['lines']);
                     $vendorBillService = app(VendorBillService::class);
                     try {
                         $user = Auth::user();
@@ -136,7 +139,16 @@ class EditVendorBill extends EditRecord
                         $vendorBillService->post($record, $user);
                         Notification::make()->title(__('accounting::bill.notification_bill_confirmed_success'))->success()->send();
                         $this->redirect($this->getResource()::getUrl('edit', ['record' => $record]));
+                    } catch (\Modules\Accounting\Exceptions\BudgetExceededException $e) {
+                        Notification::make()
+                            ->title($e->getMessage())
+                            ->danger()
+                            ->send();
                     } catch (Exception $e) {
+                        Log::error('Vendor bill confirmation failed', [
+                            'bill_id' => $record->id,
+                            'error' => $e->getMessage(),
+                        ]);
                         Notification::make()->title(__('accounting::bill.notification_confirm_bill_error'))->body($e->getMessage())->danger()->persistent()->send();
                     }
                 }),
@@ -287,7 +299,11 @@ class EditVendorBill extends EditRecord
                 unit_price: Money::of($line['unit_price'], $record->currency->code),
                 expense_account_id: $line['expense_account_id'],
                 tax_id: $line['tax_id'] ?? null,
-                analytic_account_id: $line['analytic_account_id'] ?? null
+                analytic_account_id: $line['analytic_account_id'] ?? null,
+                shipping_cost_type: isset($line['shipping_cost_type']) ? \Modules\Foundation\Enums\ShippingCostType::tryFrom($line['shipping_cost_type']) : null,
+                asset_category_id: $line['asset_category_id'] ?? null,
+                deferred_start_date: $line['deferred_start_date'] ?? null,
+                deferred_end_date: $line['deferred_end_date'] ?? null
             );
         }
 
@@ -301,7 +317,8 @@ class EditVendorBill extends EditRecord
             accounting_date: $data['accounting_date'],
             due_date: $data['due_date'] ?? null,
             lines: $lineDTOs,
-            updated_by_user_id: (int) Auth::id()
+            updated_by_user_id: (int) Auth::id(),
+            incoterm: isset($data['incoterm']) ? \Modules\Foundation\Enums\Incoterm::tryFrom($data['incoterm']) : null
         );
 
         try {
@@ -393,6 +410,8 @@ class EditVendorBill extends EditRecord
                 'tax_id' => $line->tax_id,
                 'expense_account_id' => $line->expense_account_id,
                 'analytic_account_id' => $line->analytic_account_id,
+                'deferred_start_date' => $line->deferred_start_date,
+                'deferred_end_date' => $line->deferred_end_date,
             ];
         })->toArray();
 

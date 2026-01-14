@@ -84,4 +84,6 @@ return [
     'no_data' => 'لا توجد بيانات',
     'report_generated' => 'تم إنشاء التقرير بنجاح',
     'report_error' => 'خطأ في إنشاء التقرير',
+    'iraq_vat_return' => 'إقرار ضريبة القيمة المضافة العراقي',
+    'navigation_group' => 'التقارير',
 ];

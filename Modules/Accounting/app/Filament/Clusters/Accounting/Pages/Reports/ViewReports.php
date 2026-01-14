@@ -18,6 +18,11 @@ class ViewReports extends Page
 
     protected static ?string $cluster = AccountingCluster::class;
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __("navigation.groups.reports");
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('accounting::reports.reports');
@@ -136,6 +141,20 @@ class ViewReports extends Page
                         'icon' => 'heroicon-o-document-text',
                         'url' => $baseUrl.'/view-tax-report',
                         'button_text' => __('accounting::reports.view_tax_report'),
+                    ],
+                ],
+            ],
+            'consolidated_reports' => [
+                'title' => __('accounting::reports.consolidated_reports'),
+                'description' => __('accounting::reports.consolidated_reports_description'),
+                'icon' => 'heroicon-o-globe-alt',
+                'reports' => [
+                    [
+                        'name' => __('accounting::reports.consolidated_profit_and_loss'),
+                        'description' => __('accounting::reports.consolidated_profit_and_loss_description'),
+                        'icon' => 'heroicon-o-chart-bar',
+                        'url' => $baseUrl.'/view-consolidated-profit-and-loss',
+                        'button_text' => __('accounting::reports.view_consolidated_profit_and_loss'),
                     ],
                 ],
             ],

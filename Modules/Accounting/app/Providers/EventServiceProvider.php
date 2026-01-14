@@ -14,6 +14,11 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         \Modules\Purchase\Events\VendorBillConfirmed::class => [
             \Modules\Accounting\Listeners\Asset\CreateAssetFromVendorBillListener::class,
+            \Modules\Accounting\Listeners\Deferred\CreateDeferredExpenseFromVendorBill::class,
+        ],
+        \Modules\Sales\Events\InvoiceConfirmed::class => [
+            \Modules\Accounting\Listeners\Consolidation\CreateInterCompanyVendorBillListener::class,
+            \Modules\Accounting\Listeners\Deferred\CreateDeferredRevenueFromInvoice::class,
         ],
         \Modules\Accounting\Events\FiscalYearClosed::class => [
             \Modules\Accounting\Listeners\UpdateLockDateOnFiscalYearClose::class,

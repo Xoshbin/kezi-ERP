@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/manufacturing",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Manufacturing\\": "app/",
+            "Modules\\Manufacturing\\Database\\Factories\\": "database/factories/",
+            "Modules\\Manufacturing\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Manufacturing\\Tests\\": "tests/"
+        }
+    }
+}

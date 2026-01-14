@@ -33,7 +33,7 @@ class TrialBalanceService
             ->join('journal_entries', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
             ->where('accounts.company_id', $company->id)
             ->where('journal_entries.state', 'posted')
-            ->where('journal_entries.entry_date', '<=', $asOfDate->toDateString())
+            ->whereDate('journal_entries.entry_date', '<=', $asOfDate)
             ->groupBy('accounts.id', 'accounts.code', 'accounts.name', 'accounts.type')
             ->orderBy('accounts.code')
             ->get();

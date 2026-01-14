@@ -5,6 +5,7 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntri
 use App\Models\Company;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -32,6 +33,7 @@ use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\Journal;
 use Modules\Accounting\Models\JournalEntry;
 use Modules\Foundation\Filament\Forms\Components\MoneyInput;
+use Modules\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
 use Modules\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\CurrencyRate;
@@ -223,6 +225,12 @@ class JournalEntryResource extends Resource
                 ])
                 ->columns(3)
                 ->columnSpanFull(),
+
+            DocumentAttachmentsHelper::makeSection(
+                directory: 'journal-entries',
+                disabledCallback: fn (?JournalEntry $record) => $record && $record->is_posted,
+                deletableCallback: fn (?JournalEntry $record) => $record === null || !$record->is_posted
+            ),
         ]);
     }
 
@@ -310,7 +318,10 @@ class JournalEntryResource extends Resource
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                ActionGroup::make([
+                    \Filament\Actions\ViewAction::make(),
+                    EditAction::make(),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -357,6 +368,7 @@ class JournalEntryResource extends Resource
             'index' => ListJournalEntries::route('/'),
             'create' => CreateJournalEntry::route('/create'),
             'edit' => EditJournalEntry::route('/{record}/edit'),
+            'view' => Pages\ViewJournalEntry::route('/{record}'),
         ];
     }
 }

@@ -41,6 +41,10 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
 
                     public DepreciationMethod $depreciation_method;
 
+                    public bool $prorata_temporis;
+
+                    public ?float $declining_factor;
+
                     public function __construct(public Company $company, public VendorBillLine $line)
                     {
                         $this->asset_account_id = $this->line->expense_account_id;
@@ -54,6 +58,8 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                             ?? $this->line->expense_account_id;
                         $this->useful_life_years = $this->line->product->useful_life_years ?? 5;
                         $this->depreciation_method = $this->line->product->depreciation_method ?? DepreciationMethod::StraightLine;
+                        $this->prorata_temporis = $this->line->product->prorata_temporis ?? false;
+                        $this->declining_factor = $this->line->product->declining_factor ?? null;
                     }
 
                     public function __get(string $name): mixed
@@ -64,6 +70,8 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                             'accumulated_depreciation_account_id' => $this->accumulated_depreciation_account_id,
                             'useful_life_years' => $this->useful_life_years,
                             'depreciation_method' => $this->depreciation_method,
+                            'prorata_temporis' => $this->prorata_temporis,
+                            'declining_factor' => $this->declining_factor,
                             default => null,
                         };
                     }
@@ -87,6 +95,8 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                     depreciation_expense_account_id: $category->depreciation_expense_account_id,
                     accumulated_depreciation_account_id: $category->accumulated_depreciation_account_id,
                     currency_id: $vendorBill->currency_id,
+                    prorata_temporis: $category->prorata_temporis ?? false,
+                    declining_factor: $category->declining_factor ?? null,
                     source_type: get_class($vendorBill),
                     source_id: $vendorBill->id
                 );

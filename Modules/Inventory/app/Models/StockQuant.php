@@ -20,6 +20,7 @@ class StockQuant extends Model
         'product_id',
         'location_id',
         'lot_id',
+        'serial_number_id',
         'quantity',
         'reserved_quantity',
     ];
@@ -59,6 +60,14 @@ class StockQuant extends Model
     public function lot(): BelongsTo
     {
         return $this->belongsTo(Lot::class);
+    }
+
+    /**
+     * @return BelongsTo<SerialNumber, static>
+     */
+    public function serialNumber(): BelongsTo
+    {
+        return $this->belongsTo(SerialNumber::class);
     }
 
     /**
