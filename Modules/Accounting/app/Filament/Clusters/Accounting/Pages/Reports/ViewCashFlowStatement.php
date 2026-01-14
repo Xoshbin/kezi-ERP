@@ -32,7 +32,7 @@ class ViewCashFlowStatement extends Page
 
     public static function getNavigationGroup(): ?string
     {
-        return __('navigation.groups.reports');
+        return __('accounting::navigation.groups.reports');
     }
 
     public ?string $startDate = null;

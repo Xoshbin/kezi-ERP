@@ -36,4 +36,9 @@ return [
         'declining' => 'Declining Balance',
         'sum_of_digits' => 'Sum of Digits',
     ],
+    'partner_type' => [
+        'customer' => 'Customer',
+        'vendor' => 'Vendor',
+        'both' => 'Both',
+    ],
 ];
