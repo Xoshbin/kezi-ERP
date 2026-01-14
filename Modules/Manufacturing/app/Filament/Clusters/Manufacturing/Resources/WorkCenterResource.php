@@ -29,51 +29,51 @@ class WorkCenterResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return 'Work Center';
+        return __('manufacturing::manufacturing.work_center.label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'Work Centers';
+        return __('manufacturing::manufacturing.work_center.plural_label');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Work Center Information')
+            Section::make(__('manufacturing::manufacturing.work_center.label'))
                 ->schema([
                     Forms\Components\TextInput::make('code')
-                        ->label('Work Center Code')
+                        ->label(__('manufacturing::manufacturing.work_center.code'))
                         ->required()
                         ->unique(ignoreRecord: true)
                         ->maxLength(50),
 
                     Forms\Components\TextInput::make('name')
-                        ->label('Name')
+                        ->label(__('manufacturing::manufacturing.work_center.name'))
                         ->required()
                         ->maxLength(255),
 
                     Forms\Components\TextInput::make('hourly_cost')
-                        ->label('Hourly Cost')
+                        ->label(__('manufacturing::manufacturing.work_center.hourly_cost'))
                         ->numeric()
                         ->prefix(fn () => auth()->user()->currentCompany->currency->symbol ?? '$')
                         ->required()
                         ->minValue(0)
-                        ->helperText('Labor and overhead cost per hour'),
+                        ->helperText(__('manufacturing::manufacturing.work_center.cost_helper')),
 
                     Forms\Components\TextInput::make('capacity')
-                        ->label('Capacity (units/hour)')
+                        ->label(__('manufacturing::manufacturing.work_center.capacity')) // Fixed: was Capacity (units/hour) hardcoded, now just Capacity, units suffix handled elsewhere or implied
                         ->numeric()
                         ->minValue(0)
-                        ->helperText('Production capacity per hour'),
+                        ->helperText(__('manufacturing::manufacturing.work_center.capacity_helper')),
 
                     Forms\Components\Toggle::make('is_active')
-                        ->label('Active')
+                        ->label(__('manufacturing::manufacturing.work_center.is_active'))
                         ->default(true)
                         ->inline(false),
 
                     Forms\Components\Textarea::make('notes')
-                        ->label('Notes')
+                        ->label(__('manufacturing::manufacturing.work_center.notes'))
                         ->rows(3)
                         ->columnSpanFull(),
                 ])
@@ -86,40 +86,40 @@ class WorkCenterResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->label('Code')
+                    ->label(__('manufacturing::manufacturing.work_center.code'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Name')
+                    ->label(__('manufacturing::manufacturing.work_center.name'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('hourly_cost')
-                    ->label('Hourly Cost')
+                    ->label(__('manufacturing::manufacturing.work_center.hourly_cost'))
                     ->money(fn ($record) => $record->currency_code ?? 'USD')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('capacity')
-                    ->label('Capacity')
+                    ->label(__('manufacturing::manufacturing.work_center.capacity'))
                     ->numeric(decimalPlaces: 2)
                     ->suffix(' units/hr')
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('Active')
+                    ->label(__('manufacturing::manufacturing.work_center.is_active'))
                     ->boolean()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created')
+                    ->label(__('manufacturing::manufacturing.work_center.created'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active')
+                    ->label(__('manufacturing::manufacturing.work_center.is_active'))
                     ->placeholder('All')
                     ->trueLabel('Active only')
                     ->falseLabel('Inactive only'),

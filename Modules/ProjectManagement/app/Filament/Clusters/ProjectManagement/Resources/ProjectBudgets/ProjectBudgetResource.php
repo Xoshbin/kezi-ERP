@@ -23,6 +23,16 @@ class ProjectBudgetResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    public static function getModelLabel(): string
+    {
+        return __('projectmanagement::project.budget.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('projectmanagement::project.budget.plural_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return ProjectBudgetForm::configure($schema);

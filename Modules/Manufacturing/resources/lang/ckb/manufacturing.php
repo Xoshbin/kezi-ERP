@@ -63,4 +63,17 @@ return [
         'source_location_helper' => 'کەرەستەکان لە کوێوە وەردەگیرێن',
         'destination_location_helper' => 'بەرهەمە تەواوبووەکان لە کوێ دادەنرێن',
     ],
+    'work_center' => [
+        'label' => 'ناوەندی کار',
+        'plural_label' => 'ناوەندەکانی کار',
+        'code' => 'کۆد',
+        'name' => 'ناو',
+        'hourly_cost' => 'تێچووی کاتژمێر',
+        'capacity' => 'توانا',
+        'is_active' => 'چالاک',
+        'notes' => 'تێبینیەکان',
+        'created' => 'دروستکراوە',
+        'capacity_helper' => 'توانای بەرهەمهێنان لە کاتژمێرێکدا',
+        'cost_helper' => 'تێچووی کار و خەرجی لە کاتژمێرێکدا',
+    ],
 ];

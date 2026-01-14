@@ -63,4 +63,17 @@ return [
         'source_location_helper' => 'Where to take components from',
         'destination_location_helper' => 'Where to put finished products',
     ],
+    'work_center' => [
+        'label' => 'Work Center',
+        'plural_label' => 'Work Centers',
+        'code' => 'Code',
+        'name' => 'Name',
+        'hourly_cost' => 'Hourly Cost',
+        'capacity' => 'Capacity',
+        'is_active' => 'Active',
+        'notes' => 'Notes',
+        'created' => 'Created',
+        'capacity_helper' => 'Production capacity per hour',
+        'cost_helper' => 'Labor and overhead cost per hour',
+    ],
 ];
