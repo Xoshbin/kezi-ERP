@@ -3,6 +3,7 @@
 return [
     'navigation' => [
         'name' => 'Expense Reports',
+        'label' => 'Expense Report',
         'plural' => 'Expense Reports',
         'group' => 'HR Management',
     ],
@@ -28,6 +29,7 @@ return [
     'actions' => [
         'submit' => 'Submit Report',
         'approve' => 'Approve Report',
+        'cash_advance' => 'Cash Advance',
     ],
     'status' => [
         'draft' => 'Draft',
