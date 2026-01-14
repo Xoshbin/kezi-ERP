@@ -15,6 +15,9 @@ return new class extends Migration
             $table->string('lot_code');
             $table->date('expiration_date')->nullable();
             $table->boolean('active')->default(true);
+            $table->boolean('is_rejected')->default(false);
+            $table->text('rejection_reason')->nullable();
+            $table->foreignId('quarantine_location_id')->nullable()->constrained('stock_locations', 'id')->nullOnDelete();
             $table->timestamps();
 
             $table->unique(['company_id', 'product_id', 'lot_code'], 'uniq_company_product_lot');

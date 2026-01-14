@@ -18,12 +18,16 @@ return new class extends Migration
             $table->foreignId('product_id')->nullable()->constrained('products');
             $table->foreignId('tax_id')->nullable()->constrained('taxes');
             $table->foreignId('expense_account_id')->constrained('accounts');
+            $table->foreignId('asset_category_id')->nullable()->constrained('asset_categories')->nullOnDelete();
             $table->foreignId('analytic_account_id')->nullable()->constrained('analytic_accounts');
+            $table->string('shipping_cost_type')->nullable();
             $table->string('description');
             $table->unsignedBigInteger('quantity');
             $table->unsignedBigInteger('unit_price');
             $table->unsignedBigInteger('subtotal');
             $table->unsignedBigInteger('total_line_tax');
+            $table->date('deferred_start_date')->nullable();
+            $table->date('deferred_end_date')->nullable();
             // Add company currency amounts (converted amounts)
             $table->unsignedBigInteger('unit_price_company_currency')->nullable();
             $table->unsignedBigInteger('subtotal_company_currency')->nullable();

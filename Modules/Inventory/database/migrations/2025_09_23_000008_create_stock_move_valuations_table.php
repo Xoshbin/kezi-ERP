@@ -32,7 +32,12 @@ return new class extends Migration
             $table->timestamps();
 
             // Add index for cost source queries
+            // Add index for cost source queries
             $table->index(['cost_source', 'company_id']);
+            $table->index(['company_id', 'product_id'], 'idx_valuations_company_product');
+            $table->index(['stock_move_id'], 'idx_valuations_move');
+            $table->index(['valuation_method'], 'idx_valuations_method');
+            $table->index(['move_type'], 'idx_valuations_move_type');
         });
     }
 
