@@ -77,17 +77,19 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // --- 2. Create Roles ---
 
-        // A. Super Admin (Global Role)
-        // Created with company_id = null, so it's a system-wide role.
-        $superAdmin = Role::firstOrCreate(['name' => 'super_admin', 'company_id' => null]);
-        // Grant all permissions to Super Admin (optional if utilizing Gate::before)
-        $superAdmin->givePermissionTo(Permission::all());
-
-        // B. Company-Specific Roles (Accountant, Managers, etc.)
-        // These roles appear in the Filament Shield UI for the Tenant.
+        // Get the first company for role creation
         $company = \App\Models\Company::first();
 
         if ($company) {
+            // A. Super Admin (Company-Specific Role)
+            // Created with company_id, so it's a company-specific role with full permissions.
+            $superAdmin = Role::firstOrCreate(['name' => 'super_admin', 'company_id' => $company->id]);
+            // Grant all permissions to Super Admin
+            $superAdmin->givePermissionTo(Permission::all());
+
+            // B. Company-Specific Roles (Accountant, Managers, etc.)
+            // These roles appear in the Filament Shield UI for the Tenant.
+
             // 1. Accountant
             $accountant = Role::firstOrCreate(['name' => 'accountant', 'company_id' => $company->id]);
             $accountant->givePermissionTo([
@@ -120,29 +122,29 @@ class RolesAndPermissionsSeeder extends Seeder
             $employee->givePermissionTo([
                 'view_any_product', 'view_product',
             ]);
-        }
 
-        // --- 3. Assign Super Admin to Default User ---
-        // We assign the Global Super Admin role to the user within a company context.
-        // Note: company_id is part of the primary key in model_has_roles, so it cannot be null.
+            // --- 3. Assign Super Admin to Default User ---
+            // We assign the Super Admin role to the user within the company context.
+            // Note: company_id is part of the primary key in model_has_roles, so it cannot be null.
 
-        $user = \App\Models\User::where('email', 'admin@jmeryar.com')->first();
+            $user = \App\Models\User::where('email', 'admin@jmeryar.com')->first();
 
-        if ($user && $company) {
-            // Manually checking db to avoid 'User does not belong to team' errors
-            $exists = DB::table('model_has_roles')
-                ->where('model_id', $user->id)
-                ->where('role_id', $superAdmin->id)
-                ->where('company_id', $company->id)
-                ->exists();
+            if ($user) {
+                // Manually checking db to avoid 'User does not belong to team' errors
+                $exists = DB::table('model_has_roles')
+                    ->where('model_id', $user->id)
+                    ->where('role_id', $superAdmin->id)
+                    ->where('company_id', $company->id)
+                    ->exists();
 
-            if (! $exists) {
-                DB::table('model_has_roles')->insert([
-                    'role_id' => $superAdmin->id,
-                    'model_type' => get_class($user),
-                    'model_id' => $user->id,
-                    'company_id' => $company->id,
-                ]);
+                if (! $exists) {
+                    DB::table('model_has_roles')->insert([
+                        'role_id' => $superAdmin->id,
+                        'model_type' => get_class($user),
+                        'model_id' => $user->id,
+                        'company_id' => $company->id,
+                    ]);
+                }
             }
         }
     }
