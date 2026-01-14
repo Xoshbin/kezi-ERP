@@ -131,6 +131,41 @@ All financial transactions create journal entries through `CreateJournalEntryAct
 - Use `RelationManagers` for line items
 - Authorization through Policies + Filament Shield for RBAC
 
+### Settings Cluster Injection
+
+Module "configuration" resources (e.g., `FiscalYearResource`, `TaxResource`, `DepartmentResource`) should be registered into the central `SettingsCluster` while remaining in their original module directories.
+
+**Pattern:**
+
+1. **Update `$cluster` property** to point to `SettingsCluster::class`:
+   ```php
+   use App\Filament\Clusters\Settings\SettingsCluster;
+
+   class FiscalYearResource extends Resource
+   {
+       protected static ?string $cluster = SettingsCluster::class;
+   }
+   ```
+
+2. **Add `getNavigationGroup()`** to group resources by module within the Settings area:
+   ```php
+   public static function getNavigationGroup(): string
+   {
+       return __('accounting::navigation.groups.accounting_settings');
+   }
+   ```
+
+3. **Add translations** for the navigation group in `Modules/{Module}/resources/lang/{locale}/navigation.php`:
+   ```php
+   return [
+       'groups' => [
+           'accounting_settings' => 'Accounting',
+       ],
+   ];
+   ```
+
+**Important:** Cluster classes (e.g., `SettingsCluster`, `InventoryCluster`) must use module-scoped translation keys (e.g., `foundation::navigation.clusters.settings`) for their labels.
+
 ### Cross-Module Dependencies
 
 Modules communicate through:
