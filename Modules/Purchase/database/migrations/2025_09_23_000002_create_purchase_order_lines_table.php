@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('purchase_order_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->string('shipping_cost_type')->nullable();
             $table->foreignId('tax_id')->nullable()->constrained()->nullOnDelete();
 
             // Line details

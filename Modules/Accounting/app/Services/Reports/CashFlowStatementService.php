@@ -298,12 +298,9 @@ class CashFlowStatementService
             ->get();
 
         return $results->mapWithKeys(function (object $result): array {
-            /** @phpstan-ignore-next-line property.notFound */
             $totalDebit = (int) ($result->total_debit ?: 0);
-            /** @phpstan-ignore-next-line property.notFound */
             $totalCredit = (int) ($result->total_credit ?: 0);
 
-            /** @phpstan-ignore-next-line property.notFound */
             return [(int) $result->account_id => $totalDebit - $totalCredit];
         });
     }

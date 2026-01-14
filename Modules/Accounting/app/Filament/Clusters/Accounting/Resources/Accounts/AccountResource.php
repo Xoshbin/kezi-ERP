@@ -2,7 +2,6 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Accounts;
 
-use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -11,7 +10,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
-use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
@@ -19,6 +17,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Accounts\Pages\CreateAccount;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Accounts\Pages\EditAccount;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Accounts\Pages\ListAccounts;
@@ -28,6 +27,7 @@ use Modules\Accounting\Models\Account;
 class AccountResource extends Resource
 {
     protected static ?string $cluster = AccountingCluster::class;
+
     use Translatable;
 
     protected static ?string $model = Account::class;
@@ -35,8 +35,6 @@ class AccountResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-list-bullet';
 
     protected static ?int $navigationSort = 3;
-
-    
 
     public static function getPluralModelLabel(): string
     {
