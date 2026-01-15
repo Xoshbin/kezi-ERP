@@ -113,6 +113,7 @@ class DocsAction
             'understanding-project-invoicing' => 'User Guide/understanding-project-invoicing',
             'understanding-vendor-management' => 'User Guide/understanding-vendor-management',
             'understanding-advanced-payments' => 'User Guide/understanding-advanced-payments',
+            'understanding-production-planning' => 'User Guide/understanding-production-planning',
         ];
 
         return $mapping[$slug] ?? $slug;
