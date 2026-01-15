@@ -53,6 +53,7 @@ class DocsAction
             'general-ledger-report' => 'User Guide/general-ledger-report',
             'aged-receivables-report' => 'User Guide/aged-receivables-report',
             'aged-payables-report' => 'User Guide/aged-payables-report',
+            'partner-ledger-report' => 'User Guide/partner-ledger-report',
         ];
 
         return $mapping[$slug] ?? $slug;
