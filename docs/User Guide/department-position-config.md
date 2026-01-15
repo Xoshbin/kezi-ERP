@@ -81,16 +81,27 @@ This section helps HR set expectations for compensation:
 
 ---
 
-## 4. Best Practices for Configuration
+## 4. Impact on Workflows
 
-1. **Logical Nesting**: Use parent departments to reflect your actual reporting structure.
-2. **Standard Titles**: Use consistent job titles (e.g., use "Manager" consistently instead of mixing with "Head of").
-3. **Keep it Updated**: If a department closes or a role is no longer needed, mark it as **Inactive** instead of deleting it to preserve historical records.
-4. **Salary Benchmarks**: Keep salary ranges updated to help with budgeting and recruitment planning.
+Configuring these correctly has a direct impact on other system behaviors:
+
+- **Leave Approvals**: If a department has a **Manager** assigned, the system can use this to route leave requests for initial approval.
+- **Employee Setup**: When adding an employee, selecting a **Job Position** automatically links them to the correct department and defines their seniority level.
+- **Reporting**: HR analytics often group data by Department to show headcount, turnover, and cost distribution.
+- **Contracts**: Position details (like salary range and employment type) serve as a reference when drafting new work contracts.
 
 ---
 
-## 5. Next Steps
+## 5. Best Practices for Configuration
+
+1. **Logical Nesting**: Use parent departments to reflect your actual reporting structure (e.g., Regional Office -> Branch).
+2. **Standard Titles**: Use consistent job titles to ensure reporting accuracy across the company.
+3. **Manager Assignment**: Always assign a Manager to departments to ensure approval workflows function correctly.
+4. **Active Status**: Instead of deleting old roles, mark them as **Inactive** to preserve historical employee data.
+
+---
+
+## 6. Next Steps
 
 Once your departments and positions are set up, you can:
 - [Add Employees](employee-management.md) to these positions.
