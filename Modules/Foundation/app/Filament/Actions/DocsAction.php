@@ -81,6 +81,8 @@ class DocsAction
             'journal-entries' => 'User Guide/journal-entries',
             'tax-management' => 'User Guide/tax-management',
             'fiscal-positions' => 'User Guide/fiscal-positions',
+            'understanding-inventory-ins-and-outs' => 'User Guide/understanding-inventory-ins-and-outs',
+            'landed-costs' => 'User Guide/landed-costs',
         ];
 
         return $mapping[$slug] ?? $slug;
