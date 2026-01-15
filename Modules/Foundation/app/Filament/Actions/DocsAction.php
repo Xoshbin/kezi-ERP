@@ -102,6 +102,8 @@ class DocsAction
             'understanding-letter-of-credit' => 'User Guide/understanding-letter-of-credit',
             'understanding-withholding-tax' => 'User Guide/understanding-withholding-tax',
             'scrap-management' => 'User Guide/scrap-management',
+            'inventory-adjustments' => 'User Guide/inventory-adjustments',
+            'inventory-reports' => 'User Guide/inventory-reports',
         ];
 
         return $mapping[$slug] ?? $slug;
