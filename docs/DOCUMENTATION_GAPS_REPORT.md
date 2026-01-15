@@ -155,7 +155,7 @@ The HR module has 12 models and 51+ Filament components but minimal user documen
 | Feature | Documentation Status |
 |---------|---------------------|
 | Vendor Bills | 🟢 `vendor-bills.md` (multi-language) |
-| Debit Notes | 🔴 Missing |
+| Debit Notes | 🟢 `debit-notes.md` (multi-language) |
 | Purchase Orders | 🟡 Partial |
 | Vendor Management | 🔴 Missing |
 | 3-Way Matching | 🔴 Missing |
@@ -319,7 +319,7 @@ The documentation has multi-language support for some features but not consisten
 
 6. ~~**Analytic Accounting Guide** — Complex feature for cost allocation~~ (🟢 Completed)
 7. ~~**Budget Management** — Important for financial planning~~ (🟢 Completed)
-8. **Credit Notes & Debit Notes** — Common adjustments, no guides
+8. ~~**Credit Notes & Debit Notes** — Common adjustments, no guides~~ (🟢 Completed)
 9. **Module Architecture Docs** — Foundation, HR, Payment, Manufacturing
 10. **Multi-Currency Deep Dive** — Exchange rates, revaluation, gain/loss
 

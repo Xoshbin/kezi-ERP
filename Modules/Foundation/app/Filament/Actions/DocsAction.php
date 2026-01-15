@@ -71,6 +71,7 @@ class DocsAction
             'adjustment-documents' => 'User Guide/adjustment-documents',
             'account-groups' => 'User Guide/account-groups',
             'credit-notes' => 'User Guide/credit-notes',
+            'debit-notes' => 'User Guide/debit-notes',
         ];
 
         return $mapping[$slug] ?? $slug;
