@@ -95,7 +95,7 @@ class CreateStockMove extends CreateRecord
     protected function getHeaderActions(): array
     {
         return [
-            DocsAction::make('stock-management'),
+            DocsAction::make('stock-movements'),
         ];
     }
 }
