@@ -51,4 +51,5 @@ return [
     'action_generate_opening' => 'Generate Opening Entry',
     'opening_in_progress' => 'Opening entry generation in progress...',
     'opening_generated_successfully' => 'Opening entry generated successfully.',
+    'opening_entry_failed' => 'Failed to generate opening entry',
 ];

@@ -40,4 +40,6 @@ return [
     // Actions
     'post' => 'Post',
     'post_depreciation_success' => 'Depreciation posted successfully.',
+    'compute_depreciation_board' => 'Compute Depreciation Board',
+    'depreciation_board_computed' => 'Depreciation board computed',
 ];

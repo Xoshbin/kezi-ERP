@@ -25,7 +25,7 @@ class UpcomingLCExpirations extends BaseWidget
                     ->where('expiry_date', '>=', now())
                     ->orderBy('expiry_date', 'asc')
             )
-            ->heading('LCs Expiring in Next 30 Days')
+            ->heading(__('accounting::lc.upcoming_expirations'))
             ->columns([
                 Tables\Columns\TextColumn::make('lc_number')
                     ->searchable()

@@ -55,7 +55,7 @@ class LetterOfCreditResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('LC Details')
+                Section::make(__('accounting::lc.lc_details'))
                     ->schema([
                         Group::make([
                             ToggleButtons::make('type')

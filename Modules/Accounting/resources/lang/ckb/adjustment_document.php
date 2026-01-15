@@ -34,4 +34,16 @@ return [
     'post_document' => 'ناردنی بەڵگەنامە',
     'notification_document_posted_successfully' => 'بەڵگەنامەی ڕێکخستن بە سەرکەوتوویی نێردرا',
     'notification_document_post_error' => 'هەڵە لە ناردنی بەڵگەنامەی ڕێکخستن',
+    'original_invoice' => 'پسوڵەی ڕەسەن',
+    'original_vendor_bill' => 'پسوڵەی فرۆشیاری ڕەسەن',
+    'help' => [
+        'reference_number' => 'بۆ نموونە: ADJ-2024-001',
+        'reason' => 'هۆکاری ئەم ڕێکخستنە وەسف بکە...',
+        'document_type_placeholder' => 'جۆری بەڵگەنامە بۆ بەستنەوە هەڵبژێرە...',
+        'invoice_placeholder' => 'بۆ پسوڵەیەک بگەڕێ...',
+        'vendor_bill_placeholder' => 'بۆ پسوڵەی فرۆشیار بگەڕێ...',
+    ],
+    'messages' => [
+        'reference_copied' => 'سەرچاوەکە کۆپیکرا!',
+    ],
 ];
