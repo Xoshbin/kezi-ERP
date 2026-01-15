@@ -172,7 +172,7 @@ The Manufacturing module has 77 files including 6 models, 7 actions, and 18 Fila
 |---------|---------------------|
 | Bill of Materials | 🟢 `bill-of-materials.md` |
 | Manufacturing Orders | 🟢 `manufacturing-orders.md` |
-| Work Centers | 🔴 Missing |
+| Work Centers | 🟢 Completed |
 | Work Orders | 🔴 Missing |
 | Production Planning | 🔴 Missing |
 | Component Consumption | 🔴 Missing |
