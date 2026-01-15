@@ -16,6 +16,7 @@ class ListInvoices extends ListRecords
         return [
             CreateAction::make(),
             DocsAction::make('customer-invoices'),
+            DocsAction::make('understanding-reversals'),
         ];
     }
 }

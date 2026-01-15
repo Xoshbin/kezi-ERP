@@ -109,6 +109,7 @@ class DocsAction
             'understanding-project-tasks' => 'User Guide/understanding-project-tasks',
             'understanding-work-centers' => 'User Guide/understanding-work-centers',
             'understanding-work-orders' => 'User Guide/understanding-work-orders',
+            'understanding-reversals' => 'User Guide/understanding-reversals',
         ];
 
         return $mapping[$slug] ?? $slug;
