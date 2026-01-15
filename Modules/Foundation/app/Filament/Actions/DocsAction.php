@@ -63,6 +63,7 @@ class DocsAction
             'leave-management' => 'User Guide/leave-management',
             'expense-reports' => 'User Guide/expense-reports',
             'department-position-config' => 'User Guide/department-position-config',
+            'quality-checks' => 'User Guide/quality-checks',
         ];
 
         return $mapping[$slug] ?? $slug;
