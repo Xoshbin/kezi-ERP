@@ -113,6 +113,14 @@ class DocsAction
             'understanding-vendor-management' => 'User Guide/understanding-vendor-management',
             'understanding-advanced-payments' => 'User Guide/understanding-advanced-payments',
             'understanding-production-planning' => 'User Guide/understanding-production-planning',
+            'understanding-accounts' => 'User Guide/understanding-accounts',
+            'understanding-audit-logs' => 'User Guide/understanding-audit-logs',
+            'understanding-financial-reports' => 'User Guide/understanding-financial-reports',
+            'understanding-currencies' => 'User Guide/understanding-currencies',
+            'understanding-numbering-settings' => 'User Guide/understanding-numbering-settings',
+            'understanding-pdf-settings' => 'User Guide/understanding-pdf-settings',
+            'understanding-rfq' => 'User Guide/understanding-rfq',
+            'understanding-sales-orders' => 'User Guide/understanding-sales-orders',
         ];
 
         return $mapping[$slug] ?? $slug;
