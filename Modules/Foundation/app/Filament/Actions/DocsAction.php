@@ -72,6 +72,7 @@ class DocsAction
             'account-groups' => 'User Guide/account-groups',
             'credit-notes' => 'User Guide/credit-notes',
             'debit-notes' => 'User Guide/debit-notes',
+            'currency-revaluation' => 'User Guide/currency-revaluation',
         ];
 
         return $mapping[$slug] ?? $slug;
