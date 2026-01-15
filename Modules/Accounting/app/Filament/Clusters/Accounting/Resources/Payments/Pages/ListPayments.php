@@ -17,6 +17,7 @@ class ListPayments extends ListRecords
             CreateAction::make(),
             DocsAction::make('payments'),
             DocsAction::make('understanding-reversals'),
+            DocsAction::make('understanding-advanced-payments'),
         ];
     }
 }
