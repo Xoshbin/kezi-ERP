@@ -77,6 +77,7 @@ class DocsAction
             'dunning-levels' => 'User Guide/dunning-levels',
             'recurring-templates' => 'User Guide/recurring-templates',
             'lock-dates' => 'User Guide/lock-dates',
+            'fixed-assets' => 'User Guide/fixed-assets',
         ];
 
         return $mapping[$slug] ?? $slug;
