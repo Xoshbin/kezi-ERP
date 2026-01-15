@@ -90,7 +90,7 @@ The `Modules/Accounting/app/Filament/Clusters/Accounting/Pages/Reports/` directo
 |---------|-------|
 | **Valuation Methods (FIFO/AVCO)** | 🟢 Completed (covered in understanding-inventory-ins-and-outs.md) |
 | **Landed Costs** | 🟢 Completed (landed-costs.md with Kurdish translation) |
-| **Scrap/Disposal Management** | Implemented but undocumented |
+| **Scrap/Disposal Management** | 🟢 Completed (scrap-management.md) |
 | **Multi-Warehouse Transfers** | 🟢 Completed (covered in inter-warehouse-transfers.md) |
 | **Inventory Adjustments** | No dedicated guide |
 | **Stock Valuation Reports** | No documentation |

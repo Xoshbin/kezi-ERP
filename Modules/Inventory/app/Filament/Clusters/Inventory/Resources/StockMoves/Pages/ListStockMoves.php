@@ -19,6 +19,7 @@ class ListStockMoves extends ListRecords
             DocsAction::make('stock-management'),
             DocsAction::make('understanding-inventory-ins-and-outs'),
             DocsAction::make('stock-movements'),
+            DocsAction::make('scrap-management'),
         ];
     }
 
