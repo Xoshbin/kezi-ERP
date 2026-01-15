@@ -73,7 +73,7 @@ The `Modules/Accounting/app/Filament/Clusters/Accounting/Pages/Reports/` directo
 | Aged Receivables | `ViewAgedReceivables.php` | 🟢 Completed |
 | Aged Payables | `ViewAgedPayables.php` | 🟢 Completed |
 | Partner Ledger | `ViewPartnerLedger.php` | 🟢 Completed |
-| Tax Report | `ViewTaxReport.php` | 🔴 Missing |
+| Tax Report | `ViewTaxReport.php` | 🟢 Completed |
 | Analytic Report | `ViewAnalyticReport.php` | 🔴 Missing |
 | Currency Gain/Loss Report | Unknown | 🔴 Missing |
 
