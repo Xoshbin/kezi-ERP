@@ -75,6 +75,7 @@ class DocsAction
             'currency-revaluation' => 'User Guide/currency-revaluation',
             'deferred-items' => 'User Guide/deferred-items',
             'dunning-levels' => 'User Guide/dunning-levels',
+            'recurring-templates' => 'User Guide/recurring-templates',
         ];
 
         return $mapping[$slug] ?? $slug;
