@@ -65,7 +65,7 @@ The `Modules/Accounting/app/Filament/Clusters/Accounting/Pages/Reports/` directo
 
 | Report | File | Documentation Status |
 |--------|------|---------------------|
-| Trial Balance | `ViewTrialBalance.php` | 🔴 Missing |
+| Trial Balance | `ViewTrialBalance.php` | 🟢 Completed |
 | Balance Sheet | `ViewBalanceSheet.php` | 🔴 Missing |
 | Profit & Loss (P&L) | `ViewProfitAndLoss.php` | 🔴 Missing |
 | Cash Flow Statement | `ViewCashFlow.php` | 🔴 Missing |
