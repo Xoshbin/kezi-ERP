@@ -46,7 +46,7 @@ This report identifies gaps between the implemented features in the JMeryar ERP 
 | **Recurring Templates** | `RecurringTemplateResource` | Medium |
 | **Audit Logs** | `AuditLogResource` | Low |
 | **Lock Dates** | `LockDateResource` | Medium |
-| **Adjustment Documents** | `AdjustmentDocumentResource` | High |
+| **Adjustment Documents** | `AdjustmentDocumentResource` | 🟢 Completed |
 
 #### 🟡 Partial Coverage
 

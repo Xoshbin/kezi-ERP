@@ -13,6 +13,7 @@ class ListAdjustmentDocuments extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('adjustment-documents'),
             CreateAction::make(),
         ];
     }
