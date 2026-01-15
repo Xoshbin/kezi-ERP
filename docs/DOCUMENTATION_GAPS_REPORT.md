@@ -186,7 +186,7 @@ The QualityControl module has 99 files. **Documentation Status:**
 |---------|---------------------|
 | Quality Checks | 🟢 Completed |
 | Quality Alerts | 🟢 Completed |
-| Quality Points | 🔴 Missing |
+| Quality Points | 🟢 Completed |
 | Quality Teams | 🔴 Missing |
 
 ---
