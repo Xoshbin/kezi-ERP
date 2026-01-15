@@ -334,7 +334,8 @@ class ListPayments extends ListRecords
 
 **Conventions:**
 - Add `DocsAction` to the `getHeaderActions()` method on List pages
-- The parameter matches the markdown filename in `docs/User Guide/` (without `.md`)
+- The parameter matches the slug key defined in `DocsAction::mapSlugToDocumentationPath()`
+- **IMPORTANT**: You **MUST** add a mapping entry in `Modules/Foundation/app/Filament/Actions/DocsAction.php` pointing your slug to the correct file path (e.g., `'my-slug' => 'User Guide/my-file'`).
 - Users can click the Help/Docs button in the header to open the guide
 
 ### 10.5. Reference

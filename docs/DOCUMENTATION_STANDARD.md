@@ -471,6 +471,20 @@ Before you publish, run through this checklist:
 
 ---
 
+## Developer Integration
+
+Once your guide is written, you need to connect it to the app:
+
+1. **Attach linkage**: Use `DocsAction::make('your-slug')` in the Filament Resource/Page.
+2. **Register mapping**: Update `Modules/Foundation/app/Filament/Actions/DocsAction.php`.
+   - Add your slug to the `$mapping` array:
+     ```php
+     'your-slug' => 'User Guide/your-filename',
+     ```
+   - **Important**: Without this mapping, the link will break!
+
+---
+
 ## A Final Word
 
 Remember: **great documentation is an act of empathy**. 
