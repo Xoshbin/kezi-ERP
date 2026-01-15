@@ -199,6 +199,7 @@ class ReorderStatusReport extends Page implements HasForms
     {
         return [
             \Modules\Foundation\Filament\Actions\DocsAction::make('reordering-rules'),
+            \Modules\Foundation\Filament\Actions\DocsAction::make('inventory-reports'),
             Action::make('export')
                 ->label(__('inventory::inventory_reports.reorder.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')

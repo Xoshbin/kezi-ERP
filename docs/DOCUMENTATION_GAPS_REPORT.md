@@ -47,6 +47,8 @@ This report identifies gaps between the implemented features in the JMeryar ERP 
 | **Audit Logs** | `AuditLogResource` | Low |
 | **Lock Dates** | `LockDateResource` | 🟢 Completed |
 | **Adjustment Documents** | `AdjustmentDocumentResource` | 🟢 Completed |
+| **Withholding Tax** | `WithholdingTaxTypeResource` | 🟢 Completed (multi-language) |
+| **Letters of Credit** | `LetterOfCreditResource` | 🟢 Completed (multi-language) |
 
 #### 🟡 Partial Coverage
 
@@ -92,8 +94,8 @@ The `Modules/Accounting/app/Filament/Clusters/Accounting/Pages/Reports/` directo
 | **Landed Costs** | 🟢 Completed (landed-costs.md with Kurdish translation) |
 | **Scrap/Disposal Management** | 🟢 Completed (scrap-management.md) |
 | **Multi-Warehouse Transfers** | 🟢 Completed (covered in inter-warehouse-transfers.md) |
-| **Inventory Adjustments** | No dedicated guide |
-| **Stock Valuation Reports** | No documentation |
+| **Inventory Adjustments** | 🟢 Completed (inventory-adjustments.md) |
+| **Stock Valuation Reports** | 🟢 Completed (inventory-reports.md) |
 
 #### 🟡 Existing But Incomplete
 
@@ -301,6 +303,11 @@ The documentation has multi-language support for some features but not consisten
 | getting-started | ✅ | ❌ | ❌ |
 | project-management | ✅ | ❌ | ❌ |
 | department-position-config | ✅ | ✅ | ❌ |
+| withholding-tax | ✅ | ✅ | ❌ |
+| letter-of-credit | ✅ | ✅ | ❌ |
+| inventory-adjustments | ✅ | ✅ | ❌ |
+| inventory-reports | ✅ | ✅ | ❌ |
+| account-groups | ✅ | ✅ | ❌ |
 | All other docs | ✅ | ❌ | ❌ |
 
 ---
