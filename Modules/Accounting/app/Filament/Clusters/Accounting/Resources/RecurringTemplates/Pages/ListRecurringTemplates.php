@@ -13,6 +13,7 @@ class ListRecurringTemplates extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('recurring-templates'),
             Actions\CreateAction::make(),
         ];
     }
