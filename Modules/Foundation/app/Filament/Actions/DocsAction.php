@@ -107,6 +107,7 @@ class DocsAction
             'understanding-sales-quotes' => 'User Guide/understanding-sales-quotes',
             'understanding-purchase-orders' => 'User Guide/understanding-purchase-orders',
             'understanding-project-tasks' => 'User Guide/understanding-project-tasks',
+            'understanding-work-centers' => 'User Guide/understanding-work-centers',
         ];
 
         return $mapping[$slug] ?? $slug;
