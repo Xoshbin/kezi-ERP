@@ -49,6 +49,7 @@ class DocsAction
             'trial-balance-report' => 'User Guide/trial-balance-report',
             'balance-sheet-report' => 'User Guide/balance-sheet-report',
             'profit-loss-report' => 'User Guide/profit-loss-report',
+            'cash-flow-statement' => 'User Guide/cash-flow-statement',
         ];
 
         return $mapping[$slug] ?? $slug;
