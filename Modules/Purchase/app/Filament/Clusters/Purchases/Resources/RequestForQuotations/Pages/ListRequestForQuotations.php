@@ -4,6 +4,7 @@ namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuota
 
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\RequestForQuotationResource;
 
 class ListRequestForQuotations extends ListRecords
@@ -13,6 +14,7 @@ class ListRequestForQuotations extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            DocsAction::make('understanding-rfq'),
             Actions\CreateAction::make(),
         ];
     }
