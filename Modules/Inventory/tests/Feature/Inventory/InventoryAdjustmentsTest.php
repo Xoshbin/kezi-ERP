@@ -162,6 +162,7 @@ it('creates negative adjustment with proper accounting', function () {
 
     // Create cost layer to establish cost basis
     InventoryCostLayer::create([
+        'company_id' => $this->company->id,
         'product_id' => $this->product->id,
         'quantity' => 10.0,
         'cost_per_unit' => Money::of(150, $this->company->currency->code),

@@ -11,6 +11,11 @@ return [
     'type' => 'Type',
     'is_active' => 'Active',
     'is_recoverable' => 'Is Recoverable',
+    'is_recoverable_help' => 'Indicates if the tax is recoverable',
+    'is_group' => 'Is Group',
+    'country' => 'Country',
+    'report_tag' => 'Report Tag',
+    'children' => 'Children Taxes',
 
     // Relations
     'company' => 'Company',

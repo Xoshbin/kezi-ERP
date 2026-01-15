@@ -13,6 +13,9 @@ class ListAdjustmentDocuments extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('adjustment-documents'),
+            \Modules\Foundation\Filament\Actions\DocsAction::make('credit-notes'),
+            \Modules\Foundation\Filament\Actions\DocsAction::make('debit-notes'),
             CreateAction::make(),
         ];
     }

@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'label' => 'Withholding Tax',
     // Labels
     'type_label' => 'Withholding Tax Type',
     'types_label' => 'Withholding Tax Types',

@@ -334,10 +334,21 @@ class ListPayments extends ListRecords
 
 **Conventions:**
 - Add `DocsAction` to the `getHeaderActions()` method on List pages
-- The parameter matches the markdown filename in `docs/User Guide/` (without `.md`)
+- The parameter matches the slug key defined in `DocsAction::mapSlugToDocumentationPath()`
+- **IMPORTANT**: You **MUST** add a mapping entry in `Modules/Foundation/app/Filament/Actions/DocsAction.php` pointing your slug to the correct file path (e.g., `'my-slug' => 'User Guide/my-file'`).
 - Users can click the Help/Docs button in the header to open the guide
 
 ### 10.5. Reference
 
 See [docs/DOCUMENTATION_STANDARD.md](../../docs/DOCUMENTATION_STANDARD.md) for the complete style guide with templates and examples.
+
+### 10.6. Localization/Translation Naming
+
+**Rule:** Translated documentation files **MUST** be placed in the same directory as the original English file and use the language code as a suffix.
+
+**Convention:** `filename.language_code.md` (e.g., `trial-balance-report.ckb.md`, `vendor-bills.ar.md`).
+
+**Do NOT:**
+- Create `ckb/` or `ar/` subdirectories.
+- Rename the file completely (e.g., `kurdish-report.md`).
 

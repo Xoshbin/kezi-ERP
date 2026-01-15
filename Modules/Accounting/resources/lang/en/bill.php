@@ -59,12 +59,20 @@ return [
     'total_amount_company_currency' => 'Total Amount (Company Currency)',
     'total_tax_company_currency' => 'Total Tax (Company Currency)',
     'current_rate' => 'Current rate: :rate',
+    'deferred_start_date' => 'Deferred Start Date',
+    'deferred_end_date' => 'Deferred End Date',
+    'fiscal_position' => 'Fiscal Position',
+    'fiscal_position_helper' => 'Fiscal position used for this bill',
+    'incoterm' => 'Incoterm',
+    'post' => 'Post',
 
     // Actions
     'confirm' => 'Confirm',
     'reset_to_draft' => 'Reset to Draft',
     'confirm_bill' => 'Confirm Bill',
-    'load_from_purchase_order' => 'Load from Purchase Order',
+    'actions' => [
+        'load_from_purchase_order' => 'Load from Purchase Order',
+    ],
     'create_from_purchase_order' => 'Create Bill from PO',
 
     // Fields
@@ -85,6 +93,9 @@ return [
     'notification_bill_reset_success' => 'Bill reset to draft',
     'notification_reset_bill_error' => 'Error resetting bill',
     'notification_update_not_allowed' => 'Update Not Allowed',
+    'errors' => [
+        'cannot_create_bill_title' => 'Cannot Create Bill',
+    ],
 
     // Validation Messages
     'validation_no_line_items' => 'Cannot confirm vendor bill without line items',
@@ -136,6 +147,7 @@ return [
         'status' => 'Status',
         'reason' => 'Reason',
         'reason_placeholder' => 'Describe the reason for this adjustment...',
+        'amount' => 'Amount',
         'total_amount' => 'Total Amount',
         'total_tax' => 'Total Tax',
         'journal_entry' => 'Journal Entry',

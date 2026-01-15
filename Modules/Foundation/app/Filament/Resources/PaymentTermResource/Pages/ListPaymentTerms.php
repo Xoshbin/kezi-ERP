@@ -16,6 +16,7 @@ class ListPaymentTerms extends ListRecords
         return [
             Actions\CreateAction::make(),
             DocsAction::make('payment-terms-guide'),
+            DocsAction::make('incoterms'),
         ];
     }
 }

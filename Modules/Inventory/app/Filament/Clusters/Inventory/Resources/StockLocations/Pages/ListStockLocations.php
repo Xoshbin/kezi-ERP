@@ -4,6 +4,7 @@ namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\StockLocationResource;
 
 class ListStockLocations extends ListRecords
@@ -13,6 +14,7 @@ class ListStockLocations extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            DocsAction::make('inventory-management'),
             CreateAction::make()
                 ->icon('heroicon-o-plus'),
         ];

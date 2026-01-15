@@ -13,6 +13,7 @@ class ListCashAdvances extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('understanding-cash-advances'),
             CreateAction::make(),
         ];
     }

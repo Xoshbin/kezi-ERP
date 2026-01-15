@@ -81,6 +81,7 @@ class ViewBalanceSheet extends Page
                 ->icon('heroicon-o-play')
                 ->color('primary')
                 ->action('generateReport'),
+            \Modules\Foundation\Filament\Actions\DocsAction::make('balance-sheet-report'),
         ];
     }
 

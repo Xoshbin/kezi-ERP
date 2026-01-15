@@ -8,4 +8,12 @@ use Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\WorkCenterRe
 class ListWorkCenters extends ListRecords
 {
     protected static string $resource = WorkCenterResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('understanding-work-centers'),
+            \Filament\Actions\CreateAction::make(),
+        ];
+    }
 }

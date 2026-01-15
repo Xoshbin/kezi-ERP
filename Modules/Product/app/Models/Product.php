@@ -41,6 +41,11 @@ use Spatie\Translatable\HasTranslations;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
+ * @property int|null $default_inventory_account_id
+ * @property int|null $default_cogs_account_id
+ * @property int|null $default_stock_input_account_id
+ * @property \Modules\Inventory\Enums\Inventory\ValuationMethod $inventory_valuation_method
+ * @property \Brick\Money\Money|null $average_cost
  * @property-read Company $company
  * @property-read Account|null $expenseAccount
  * @property-read Account|null $incomeAccount

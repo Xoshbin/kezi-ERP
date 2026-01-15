@@ -32,7 +32,7 @@ class EditStockMove extends EditRecord
             DeleteAction::make()
                 ->icon('heroicon-o-trash')
                 ->visible(fn (): bool => ($this->getRecord() instanceof StockMove) && $this->getRecord()->status === StockMoveStatus::Draft),
-            DocsAction::make('stock-management'),
+            DocsAction::make('stock-movements'),
         ];
     }
 

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('inventory_cost_layers', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->foreignId('product_id')->constrained('products');
             $table->decimal('quantity', 15, 4);
             $table->bigInteger('cost_per_unit');
