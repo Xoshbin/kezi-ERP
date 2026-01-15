@@ -53,7 +53,7 @@ This report identifies gaps between the implemented features in the JMeryar ERP 
 | Feature | Existing Doc | Missing Content |
 |---------|--------------|-----------------|
 | **Assets** | `docs/Developers/asset_analysis_report.md` | 🟢 Completed |
-| **Journal Entries** | `docs/Developers/journal_entry_flow_report.md` | User-facing guide missing |
+| **Journal Entries** | `docs/Developers/journal_entry_flow_report.md` | 🟢 Completed |
 | **Tax Management** | Mentioned in architecture | Comprehensive user guide missing |
 | **Fiscal Positions** | Concept mentioned | User guide on configuration missing |
 
