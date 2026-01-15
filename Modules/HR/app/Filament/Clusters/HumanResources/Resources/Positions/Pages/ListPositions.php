@@ -2,8 +2,9 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\Pages;
 
-use Filament\Actions\CreateAction;
+use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\HR\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;
 
 class ListPositions extends ListRecords
@@ -13,7 +14,8 @@ class ListPositions extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            Actions\CreateAction::make(),
+            DocsAction::make('department-position-config'),
         ];
     }
 }
