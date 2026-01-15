@@ -51,4 +51,5 @@ return [
     'action_generate_opening' => 'دروستکردنی تۆماری دەستپێک',
     'opening_in_progress' => 'دروستکردنی تۆماری دەستپێک لە پڕۆسەدایە...',
     'opening_generated_successfully' => 'تۆماری دەستپێک بە سەرکەوتوویی دروستکرا.',
+    'opening_entry_failed' => 'نەتوانرا تۆماری دەستپێک دروست بکرێت',
 ];

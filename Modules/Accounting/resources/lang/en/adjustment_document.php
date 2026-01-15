@@ -34,4 +34,16 @@ return [
     'post_document' => 'Post Document',
     'notification_document_posted_successfully' => 'Adjustment document posted successfully',
     'notification_document_post_error' => 'Error posting adjustment document',
+    'original_invoice' => 'Original Invoice',
+    'original_vendor_bill' => 'Original Vendor Bill',
+    'help' => [
+        'reference_number' => 'e.g., ADJ-2024-001',
+        'reason' => 'Describe the reason for this adjustment...',
+        'document_type_placeholder' => 'Select document type to link...',
+        'invoice_placeholder' => 'Search for an invoice...',
+        'vendor_bill_placeholder' => 'Search for a vendor bill...',
+    ],
+    'messages' => [
+        'reference_copied' => 'Reference copied!',
+    ],
 ];

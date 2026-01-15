@@ -201,7 +201,7 @@ class EditFiscalYear extends EditRecord
 
                 } catch (\Exception $e) {
                     Notification::make()
-                        ->title('Failed to generate opening entry')
+                        ->title(__('accounting::fiscal_year.opening_entry_failed'))
                         ->body($e->getMessage())
                         ->danger()
                         ->send();

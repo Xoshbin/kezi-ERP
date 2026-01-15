@@ -40,4 +40,6 @@ return [
     // Actions
     'post' => 'ناردن',
     'post_depreciation_success' => 'داخوران بە سەرکەوتوویی نێردرا.',
+    'compute_depreciation_board' => 'خشتەی پاشەکەوتی نرخی بەکارهاتوو ئەژمار بکە',
+    'depreciation_board_computed' => 'خشتەی پاشەکەوتی نرخی بەکارهاتوو ئەژمار کرا',
 ];
