@@ -113,8 +113,8 @@ The HR module has 12 models and 51+ Filament components but minimal user documen
 | Feature | Documentation Status |
 |---------|---------------------|
 | **Employee Management** | 🟢 Completed |
-| **Department/Job Position Configuration** | 🔴 Missing |
-| **Leave Management** | 🔴 Missing |
+| **Department/Job Position Configuration** | 🟢 Completed |
+| **Leave Management** | 🟢 Completed |
 | **Payroll Processing** | 🔴 Missing |
 | **Salary Structures** | 🔴 Missing |
 | **Attendance Tracking** | 🔴 Missing |

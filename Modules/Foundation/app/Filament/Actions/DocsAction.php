@@ -58,6 +58,8 @@ class DocsAction
             'analytic-report' => 'User Guide/analytic-report',
             'cheque-management' => 'User Guide/cheque-management',
             'employee-management' => 'User Guide/employee-management',
+            'leave-management' => 'User Guide/leave-management',
+            'department-position-config' => 'User Guide/department-position-config',
         ];
 
         return $mapping[$slug] ?? $slug;
