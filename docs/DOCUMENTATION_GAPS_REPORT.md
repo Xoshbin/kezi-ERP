@@ -70,7 +70,7 @@ The `Modules/Accounting/app/Filament/Clusters/Accounting/Pages/Reports/` directo
 | Profit & Loss (P&L) | `ViewProfitAndLoss.php` | 🟢 Completed |
 | Cash Flow Statement | `ViewCashFlowStatement.php` | 🟢 Completed |
 | General Ledger | `ViewGeneralLedger.php` | 🟢 Completed |
-| Aged Receivables | `ViewAgedReceivables.php` | 🔴 Missing |
+| Aged Receivables | `ViewAgedReceivables.php` | 🟢 Completed |
 | Aged Payables | `ViewAgedPayables.php` | 🔴 Missing |
 | Partner Ledger | `ViewPartnerLedger.php` | 🔴 Missing |
 | Tax Report | `ViewTaxReport.php` | 🔴 Missing |
