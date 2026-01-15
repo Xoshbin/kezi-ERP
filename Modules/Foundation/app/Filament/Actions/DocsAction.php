@@ -51,6 +51,7 @@ class DocsAction
             'profit-loss-report' => 'User Guide/profit-loss-report',
             'cash-flow-statement' => 'User Guide/cash-flow-statement',
             'general-ledger-report' => 'User Guide/general-ledger-report',
+            'aged-receivables-report' => 'User Guide/aged-receivables-report',
         ];
 
         return $mapping[$slug] ?? $slug;

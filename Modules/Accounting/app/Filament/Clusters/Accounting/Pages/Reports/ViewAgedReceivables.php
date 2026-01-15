@@ -78,6 +78,7 @@ class ViewAgedReceivables extends Page
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('aged-receivables-report'),
             Action::make('generate')
                 ->label(__('accounting::reports.generate_report'))
                 ->icon('heroicon-o-play')
