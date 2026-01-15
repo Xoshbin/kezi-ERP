@@ -16,6 +16,7 @@ class ListFiscalYears extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('understanding-fiscal-years'),
             CreateAction::make(),
         ];
     }

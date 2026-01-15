@@ -13,6 +13,7 @@ class ListProjectBudgets extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('project-budgeting'),
             CreateAction::make(),
         ];
     }
