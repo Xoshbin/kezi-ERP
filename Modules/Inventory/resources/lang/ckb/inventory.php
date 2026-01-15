@@ -38,4 +38,10 @@ return [
 
     // زیادە
     'serial_number_information' => 'زانیاری ژمارەی زنجیرەیی',
+
+    // Widget
+    'warranties_expiring_soon' => 'گەرەنتییەکان بەمزووانە بەسەردەچن',
+    'warranties_expiring_within_30_days' => 'ژمارە زنجیرەییەکان کە گەرەنتییەکانیان لە ٣٠ ڕۆژی داهاتوودا بەسەردەچێت',
+    'no_warranties_expiring' => 'هیچ گەرەنتییەک بەسەر ناچێت',
+    'all_warranties_are_current' => 'هەموو گەرەنتییەکان کاران یان پێشتر بەسەرچوون',
 ];

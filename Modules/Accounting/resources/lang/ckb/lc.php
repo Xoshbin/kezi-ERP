@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'navigation_label' => 'نامەکانی ئیعتماد',
     'beneficiary' => 'سوودمەند',
     'expense_account' => 'هەژماری خەرجی',
     'vendor_bill' => 'پسوڵەی فرۆشیار #',

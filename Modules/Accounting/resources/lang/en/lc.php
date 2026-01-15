@@ -17,4 +17,12 @@ return [
     'issue_date' => 'Issue Date',
     'cancel' => 'Cancel',
     'beneficiary_vendor' => 'Beneficiary (Vendor)',
+    'label' => 'Letter Of Credit',
+    'plural_label' => 'Letter Of Credits',
+    'lc_number' => 'LC Number',
+    'balance' => 'Balance',
+    'amount' => 'Amount',
+    'type' => 'Type',
+    'status' => 'Status',
+    'navigation_group' => 'Letter Of Credits Management',
 ];
