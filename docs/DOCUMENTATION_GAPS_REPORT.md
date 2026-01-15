@@ -200,7 +200,7 @@ The QualityControl module has 99 files. **Documentation Status:**
 | Projects | 🟢 `project-management.md` |
 | Project Budgeting | 🟢 `project-budgeting.md` |
 | Timesheets | 🟢 `timesheet-tracking.md` |
-| Project Tasks | 🔴 Missing dedicated guide |
+| Project Tasks | 🟢 Completed |
 | Project Invoicing | 🔴 Missing |
 | Analytic Integration | 🔴 Missing |
 
