@@ -68,7 +68,7 @@ The `Modules/Accounting/app/Filament/Clusters/Accounting/Pages/Reports/` directo
 | Trial Balance | `ViewTrialBalance.php` | 🟢 Completed |
 | Balance Sheet | `ViewBalanceSheet.php` | 🟢 Completed |
 | Profit & Loss (P&L) | `ViewProfitAndLoss.php` | 🟢 Completed |
-| Cash Flow Statement | `ViewCashFlow.php` | 🔴 Missing |
+| Cash Flow Statement | `ViewCashFlowStatement.php` | 🟢 Completed |
 | General Ledger | `ViewGeneralLedger.php` | 🔴 Missing |
 | Aged Receivables | `ViewAgedReceivables.php` | 🔴 Missing |
 | Aged Payables | `ViewAgedPayables.php` | 🔴 Missing |
