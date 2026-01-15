@@ -50,6 +50,7 @@ class DocsAction
             'balance-sheet-report' => 'User Guide/balance-sheet-report',
             'profit-loss-report' => 'User Guide/profit-loss-report',
             'cash-flow-statement' => 'User Guide/cash-flow-statement',
+            'general-ledger-report' => 'User Guide/general-ledger-report',
         ];
 
         return $mapping[$slug] ?? $slug;
