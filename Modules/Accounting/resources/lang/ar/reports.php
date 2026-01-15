@@ -86,4 +86,10 @@ return [
     'report_error' => 'خطأ في إنشاء التقرير',
     'iraq_vat_return' => 'إقرار ضريبة القيمة المضافة العراقي',
     'navigation_group' => 'التقارير',
+    // Analytic Report
+    'analytic_report' => 'التقرير التحليلي',
+    'analytic_plans' => 'الخطط التحليلية',
+    'select_analytic_plans' => 'اختر الخطط التحليلية',
+    'report_under_construction' => 'هذا التقرير قيد الإنشاء حالياً. عاود التحقق قريباً!',
+    'click_generate_to_view' => 'انقر على "إنشاء تقرير" لعرض التقرير التحليلي.',
 ];

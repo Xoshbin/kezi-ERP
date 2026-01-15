@@ -114,4 +114,10 @@ return [
     'tax_amount' => 'بڕی باج',
     'iraq_vat_return' => 'گەڕانەوەی باجی عێراق (VAT)',
     'navigation_group' => 'ڕاپۆرتەکان',
+    // Analytic Report
+    'analytic_report' => 'ڕاپۆرتی شیکاری',
+    'analytic_plans' => 'پلانەکانی شیکاری',
+    'select_analytic_plans' => 'پلانەکانی شیکاری هەڵبژێرە',
+    'report_under_construction' => 'ئەم ڕاپۆرتە لەژێر دروستکردندایە. بەمزووانە سەردانی بکەرەوە!',
+    'click_generate_to_view' => 'کلیک لە "دروستکردنی ڕاپۆرت" بکە بۆ بینینی ڕاپۆرتی شیکاری.',
 ];
