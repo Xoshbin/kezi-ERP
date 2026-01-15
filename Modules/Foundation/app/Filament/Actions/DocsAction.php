@@ -61,6 +61,7 @@ class DocsAction
             'cheque-management' => 'User Guide/cheque-management',
             'employee-management' => 'User Guide/employee-management',
             'leave-management' => 'User Guide/leave-management',
+            'expense-reports' => 'User Guide/expense-reports',
             'department-position-config' => 'User Guide/department-position-config',
         ];
 
