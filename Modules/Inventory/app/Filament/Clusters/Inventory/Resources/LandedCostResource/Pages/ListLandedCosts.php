@@ -4,6 +4,7 @@ namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\LandedCostReso
 
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\LandedCostResource;
 
 class ListLandedCosts extends ListRecords
@@ -14,6 +15,7 @@ class ListLandedCosts extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            DocsAction::make('landed-costs'),
         ];
     }
 }
