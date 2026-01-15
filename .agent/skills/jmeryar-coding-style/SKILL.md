@@ -341,3 +341,13 @@ class ListPayments extends ListRecords
 
 See [docs/DOCUMENTATION_STANDARD.md](../../docs/DOCUMENTATION_STANDARD.md) for the complete style guide with templates and examples.
 
+### 10.6. Localization/Translation Naming
+
+**Rule:** Translated documentation files **MUST** be placed in the same directory as the original English file and use the language code as a suffix.
+
+**Convention:** `filename.language_code.md` (e.g., `trial-balance-report.ckb.md`, `vendor-bills.ar.md`).
+
+**Do NOT:**
+- Create `ckb/` or `ar/` subdirectories.
+- Rename the file completely (e.g., `kurdish-report.md`).
+
