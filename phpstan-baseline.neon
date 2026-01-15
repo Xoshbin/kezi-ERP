@@ -9468,11 +9468,6 @@ parameters:
 			count: 1
 			path: Modules/Foundation/tests/Unit/Livewire/Synthesizers/MoneySynthTest.php
 
-		-
-			message: '#^Access to an undefined property Modules\\HR\\Models\\LeaveRequest\:\:\$request_number\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/HR/app/Actions/HumanResources/CreateLeaveRequestAction.php
 
 		-
 			message: '#^Method Modules\\HR\\Actions\\HumanResources\\CreatePaymentFromPayrollAction\:\:execute\(\) has invalid return type Modules\\HR\\Actions\\HumanResources\\Payment\.$#'
@@ -9936,29 +9931,6 @@ parameters:
 			count: 1
 			path: Modules/HR/app/Services/HumanResources/AttendanceService.php
 
-		-
-			message: '#^Access to an undefined property Modules\\HR\\Models\\LeaveRequest\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/HR/app/Services/HumanResources/LeaveManagementService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\HR\\Models\\LeaveRequest\:\:\$end_date\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/HR/app/Services/HumanResources/LeaveManagementService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\HR\\Models\\LeaveRequest\:\:\$start_date\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/HR/app/Services/HumanResources/LeaveManagementService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\HR\\Models\\LeaveRequest\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 3
-			path: Modules/HR/app/Services/HumanResources/LeaveManagementService.php
 
 		-
 			message: '#^Access to property \$id on an unknown class Modules\\HR\\Actions\\HumanResources\\Payment\.$#'
