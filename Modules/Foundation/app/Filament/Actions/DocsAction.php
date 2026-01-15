@@ -105,6 +105,7 @@ class DocsAction
             'inventory-adjustments' => 'User Guide/inventory-adjustments',
             'inventory-reports' => 'User Guide/inventory-reports',
             'understanding-sales-quotes' => 'User Guide/understanding-sales-quotes',
+            'understanding-purchase-orders' => 'User Guide/understanding-purchase-orders',
         ];
 
         return $mapping[$slug] ?? $slug;
