@@ -87,3 +87,52 @@ test('all user guides have translations', function () {
 
     $this->assertEmpty($missingTranslations, "Found untranslated User Guides:\n".implode("\n", $missingTranslations));
 });
+
+test('every feature and report has a user guide link', function () {
+    $modulesPath = base_path('Modules');
+    $this->assertDirectoryExists($modulesPath);
+
+    $phpFiles = File::allFiles($modulesPath);
+    $missingDocs = [];
+
+    foreach ($phpFiles as $file) {
+        $path = $file->getRelativePathname();
+
+        // Only look at Filament Pages/Resources directories
+        if (! str_contains($path, '/Filament/') || ! str_contains($path, '/Pages/')) {
+            continue;
+        }
+
+        $content = File::get($file->getRealPath());
+
+        // Skip non-class files or traits/interfaces
+        if (! preg_match('/class\s+\w+/', $content)) {
+            continue;
+        }
+
+        // Skip abstract classes
+        if (Str::contains($content, 'abstract class')) {
+            continue;
+        }
+
+        // Identify "Entry Point" classes:
+        // 1. Resource List Pages (ListRecords, ManageRecords)
+        // 2. Standalone Pages (extending Page, but NOT inside a Resources sub-directory as a side-page)
+        $isResourceEntryPoint = Str::contains($content, 'extends ListRecords') ||
+                                Str::contains($content, 'extends ManageRecords');
+
+        $isStandalonePage = Str::contains($content, 'extends Page') &&
+                            ! str_contains($path, '/Resources/');
+
+        if (! $isResourceEntryPoint && ! $isStandalonePage) {
+            continue;
+        }
+
+        // Check for DocsAction::make
+        if (! preg_match('/(?<!\/\/ )DocsAction::make/', $content)) {
+            $missingDocs[] = $path;
+        }
+    }
+
+    $this->assertEmpty($missingDocs, 'The following Feature Entry Points (List Pages or Reports) are missing a DocsAction documentation link:'.PHP_EOL.PHP_EOL.implode(PHP_EOL, $missingDocs));
+});
