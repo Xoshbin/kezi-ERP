@@ -145,7 +145,7 @@ The HR module has 12 models and 51+ Filament components but minimal user documen
 | Feature | Documentation Status |
 |---------|---------------------|
 | Customer Invoices | 🟢 `customer-invoices.md` (multi-language) |
-| Credit Notes | 🔴 Missing dedicated guide |
+| Credit Notes | 🟢 `credit-notes.md` (multi-language) |
 | Sales Quotes | 🔴 Missing |
 | Dunning Process | 🔴 Missing (despite `DunningLevelResource`) |
 | Revenue Recognition | 🔴 Missing |
