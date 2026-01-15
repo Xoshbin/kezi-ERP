@@ -13,6 +13,7 @@ class ListManufacturingOrders extends ListRecords
     {
         return [
             \Modules\Foundation\Filament\Actions\DocsAction::make('manufacturing-orders'),
+            \Modules\Foundation\Filament\Actions\DocsAction::make('understanding-work-orders'),
             \Filament\Actions\CreateAction::make(),
         ];
     }
