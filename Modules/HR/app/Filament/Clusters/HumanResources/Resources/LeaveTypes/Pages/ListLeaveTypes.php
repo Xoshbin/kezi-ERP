@@ -4,6 +4,7 @@ namespace Modules\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\Pages
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\LeaveTypeResource;
 
 class ListLeaveTypes extends ListRecords
@@ -13,6 +14,7 @@ class ListLeaveTypes extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            DocsAction::make('leave-management'),
             CreateAction::make(),
         ];
     }
