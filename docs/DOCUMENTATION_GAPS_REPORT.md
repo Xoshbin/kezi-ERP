@@ -61,7 +61,7 @@ This report identifies gaps between the implemented features in the JMeryar ERP 
 
 ### 1.2 Accounting Reports — Undocumented
 
-The `Modules/Accounting/app/Filament/Clusters/Accounting/Pages/Reports/` directory contains 11 report pages. **None have dedicated user guides:**
+The `Modules/Accounting/app/Filament/Clusters/Accounting/Pages/Reports/` directory contains 11 report pages. **All reports are now documented:**
 
 | Report | File | Documentation Status |
 |--------|------|---------------------|
@@ -74,7 +74,7 @@ The `Modules/Accounting/app/Filament/Clusters/Accounting/Pages/Reports/` directo
 | Aged Payables | `ViewAgedPayables.php` | 🟢 Completed |
 | Partner Ledger | `ViewPartnerLedger.php` | 🟢 Completed |
 | Tax Report | `ViewTaxReport.php` | 🟢 Completed |
-| Analytic Report | `ViewAnalyticReport.php` | 🔴 Missing |
+| Analytic Report | `ViewAnalyticReport.php` | 🟢 Completed |
 | Currency Gain/Loss Report | Unknown | 🔴 Missing |
 
 > [!IMPORTANT]
