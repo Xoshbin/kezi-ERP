@@ -159,7 +159,7 @@ The HR module has 12 models and 51+ Filament components but minimal user documen
 | Vendor Bills | 🟢 `vendor-bills.md` (multi-language) |
 | Debit Notes | 🟢 `debit-notes.md` (multi-language) |
 | Purchase Orders | 🟢 Completed (multi-language) |
-| Vendor Management | 🔴 Missing |
+| Vendor Management | 🟢 Completed |
 | 3-Way Matching | 🟢 Completed (understanding-purchase-orders.md) |
 
 ---
