@@ -41,7 +41,7 @@ class DocsAction
             'vendor-bills' => 'User Guide/vendor-bills',
             'bank-statements' => 'User Guide/bank-statements',
             'bank-reconciliation' => 'User Guide/bank-reconciliation',
-            'stock-management' => 'User Guide/stock-movements',
+
             'opening-balances' => 'User Guide/opening-balances',
             'payment-terms-guide' => 'User Guide/payment-terms-guide',
             'stock-picking' => 'User Guide/stock-picking',
