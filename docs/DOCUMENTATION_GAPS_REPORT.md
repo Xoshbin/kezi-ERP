@@ -183,9 +183,9 @@ The Manufacturing module has 77 files including 6 models, 7 actions, and 18 Fila
 The QualityControl module has 99 files. **Documentation Status:**
 
 | Feature | Documentation Status |
-|---------|---------------------| 
+|---------|---------------------|
 | Quality Checks | 🟢 Completed |
-| Quality Alerts | 🔴 Missing |
+| Quality Alerts | 🟢 Completed |
 | Quality Points | 🔴 Missing |
 | Quality Teams | 🔴 Missing |
 
