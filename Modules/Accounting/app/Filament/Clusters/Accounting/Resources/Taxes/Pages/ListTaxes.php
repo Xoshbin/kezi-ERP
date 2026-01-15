@@ -18,6 +18,7 @@ class ListTaxes extends ListRecords
     {
         return [
             LocaleSwitcher::make(),
+            \Modules\Foundation\Filament\Actions\DocsAction::make('tax-management'),
             CreateAction::make(),
         ];
     }

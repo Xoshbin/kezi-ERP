@@ -79,6 +79,7 @@ class DocsAction
             'lock-dates' => 'User Guide/lock-dates',
             'fixed-assets' => 'User Guide/fixed-assets',
             'journal-entries' => 'User Guide/journal-entries',
+            'tax-management' => 'User Guide/tax-management',
         ];
 
         return $mapping[$slug] ?? $slug;
