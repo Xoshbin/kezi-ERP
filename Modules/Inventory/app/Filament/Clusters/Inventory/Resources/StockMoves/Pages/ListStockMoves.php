@@ -16,7 +16,7 @@ class ListStockMoves extends ListRecords
         return [
             CreateAction::make()
                 ->icon('heroicon-o-plus'),
-            DocsAction::make('stock-management'),
+
             DocsAction::make('understanding-inventory-ins-and-outs'),
             DocsAction::make('stock-movements'),
             DocsAction::make('scrap-management'),
