@@ -111,6 +111,7 @@ class DocsAction
             'understanding-work-orders' => 'User Guide/understanding-work-orders',
             'understanding-reversals' => 'User Guide/understanding-reversals',
             'understanding-project-invoicing' => 'User Guide/understanding-project-invoicing',
+            'understanding-vendor-management' => 'User Guide/understanding-vendor-management',
         ];
 
         return $mapping[$slug] ?? $slug;
