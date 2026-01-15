@@ -36,8 +36,8 @@ This report identifies gaps between the implemented features in the JMeryar ERP 
 | Feature | Filament Resource | Priority |
 |---------|------------------|----------|
 | **Account Groups** | `AccountGroupResource` | High |
-| **Analytic Accounts** | `AnalyticAccountResource` | High |
-| **Analytic Plans** | `AnalyticPlanResource` | High |
+| **Analytic Accounts** | `AnalyticAccountResource` | 🟢 Completed |
+| **Analytic Plans** | `AnalyticPlanResource` | 🟢 Completed |
 | **Budgets & Budget Control** | `BudgetResource` | 🟢 Completed |
 | **Cheque Management** | `ChequeResource` | 🟢 Completed |
 | **Currency Revaluation** | `CurrencyRevaluationResource` | Medium |
@@ -317,7 +317,7 @@ The documentation has multi-language support for some features but not consisten
 
 ### 🟡 Medium Priority
 
-6. **Analytic Accounting Guide** — Complex feature for cost allocation
+6. ~~**Analytic Accounting Guide** — Complex feature for cost allocation~~ (🟢 Completed)
 7. ~~**Budget Management** — Important for financial planning~~ (🟢 Completed)
 8. **Credit Notes & Debit Notes** — Common adjustments, no guides
 9. **Module Architecture Docs** — Foundation, HR, Payment, Manufacturing

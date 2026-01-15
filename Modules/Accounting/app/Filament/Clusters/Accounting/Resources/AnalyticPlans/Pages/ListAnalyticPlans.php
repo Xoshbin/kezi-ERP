@@ -7,6 +7,7 @@ use Filament\Resources\Pages\ListRecords;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\ListRecords\Concerns\Translatable;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticPlans\AnalyticPlanResource;
+use Modules\Foundation\Filament\Actions\DocsAction;
 
 class ListAnalyticPlans extends ListRecords
 {
@@ -24,6 +25,7 @@ class ListAnalyticPlans extends ListRecords
         return [
             LocaleSwitcher::make(),
             CreateAction::make(),
+            DocsAction::make('analytic-configuration'),
         ];
     }
 }
