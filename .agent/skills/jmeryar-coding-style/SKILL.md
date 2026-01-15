@@ -281,3 +281,37 @@ return [
 | Configuration | SettingsCluster | Fiscal Years, Taxes, Journals, Accounts, Departments, Leave Types, Work Centers |
 | Operational | Original Module Cluster | Invoices, Bills, Payments, Journal Entries, Stock Moves |
 
+## 10. Documentation Standards
+
+**Rule:** All user-facing documentation **MUST** follow the friendly, approachable style defined in `docs/DOCUMENTATION_STANDARD.md`.
+
+### 10.1. Writing Style
+
+- **Conversational Tone:** Write as if explaining to a smart friend who's new to accounting software.
+- **Plain Language:** Avoid jargon; when technical terms are necessary, explain them immediately.
+- **Visual Aids:** Use emoji, ASCII diagrams, and tables to improve scannability.
+- **Real Examples:** Provide concrete, realistic business scenarios—not abstract theory.
+
+### 10.2. Required Elements
+
+Every user guide **MUST** include:
+
+| Section | Purpose |
+|---------|---------|
+| "What is...?" | Explain the concept in simple terms |
+| "Where to Find It" | Navigation instructions with bold menu paths |
+| Step-by-Step Guide | Numbered steps with field descriptions |
+| Troubleshooting | Q&A format for common issues |
+| Related Docs | Links to related guides |
+
+### 10.3. Formatting Rules
+
+- **Bold** for menu items, buttons, and field names
+- Use `→` arrows between menu levels (e.g., **Accounting → Invoices**)
+- Include "In plain English" translations for accounting concepts
+- Use GitHub-style alerts (`[!TIP]`, `[!WARNING]`, etc.) for callouts
+
+### 10.4. Reference
+
+See [docs/DOCUMENTATION_STANDARD.md](../../docs/DOCUMENTATION_STANDARD.md) for the complete style guide with templates and examples.
+
