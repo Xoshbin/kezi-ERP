@@ -12,7 +12,9 @@ return [
     'sections' => [
         'basic_info' => 'Basic Information',
         'vendor_details' => 'Vendor Details',
+        'basic_information' => 'Basic Information',
         'delivery_info' => 'Delivery Information',
+        'delivery_information' => 'Delivery Information',
         'line_items' => 'Line Items',
         'line_items_description' => 'Add products and services to this purchase order',
         'notes' => 'Notes & Terms',
@@ -29,9 +31,11 @@ return [
         'vendor' => 'Vendor',
         'currency' => 'Currency',
         'expected_delivery_date' => 'Expected Delivery Date',
+        'incoterm' => 'Incoterm',
         'delivery_location' => 'Delivery Location',
         'notes' => 'Notes',
         'terms_and_conditions' => 'Terms & Conditions',
+        'exchange_rate' => 'Exchange Rate',
         'total_amount' => 'Total Amount',
         'total_tax' => 'Total Tax',
         'created_by' => 'Created By',
@@ -133,6 +137,7 @@ return [
 
     'notifications' => [
         'confirmed' => 'Purchase order confirmed successfully',
+        'confirm_failed' => 'Confirming purchase order failed',
         'cancelled' => 'Purchase order cancelled successfully',
         'rfq_sent' => 'RFQ sent to vendor successfully.',
         'sent' => 'Purchase order sent to vendor successfully.',

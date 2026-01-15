@@ -9,6 +9,12 @@ return [
     'name' => 'Name',
     'country' => 'Country',
     'company' => 'Company',
+    'auto_apply' => 'Auto Apply',
+    'vat_required' => 'VAT Required',
+    'zip_from' => 'Zip From',
+    'zip_to' => 'Zip To',
+    'criteria' => 'Criteria',
+    'criteria_description' => 'Rules for automatic application of this fiscal position',
 
     // Timestamps
     'created_at' => 'Created At',

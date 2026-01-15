@@ -15,6 +15,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Services\Reports\Consolidation\ConsolidatedProfitAndLossService;
+use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Foundation\Support\NumberFormatter;
 
 class ViewConsolidatedProfitAndLoss extends Page
@@ -87,6 +88,7 @@ class ViewConsolidatedProfitAndLoss extends Page
     protected function getHeaderActions(): array
     {
         return [
+            DocsAction::make('profit-loss-report'),
             Action::make('generate')
                 ->label(__('accounting::reports.generate_report'))
                 ->icon('heroicon-o-play')

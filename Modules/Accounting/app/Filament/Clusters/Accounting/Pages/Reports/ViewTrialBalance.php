@@ -13,6 +13,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
+use Modules\Foundation\Filament\Actions\DocsAction;
 
 class ViewTrialBalance extends Page
 {
@@ -82,6 +83,7 @@ class ViewTrialBalance extends Page
                 ->icon('heroicon-o-play')
                 ->color('primary')
                 ->action('generateReport'),
+            DocsAction::make('trial-balance-report'),
         ];
     }
 

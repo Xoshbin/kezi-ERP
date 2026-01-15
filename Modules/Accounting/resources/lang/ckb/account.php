@@ -4,6 +4,8 @@ return [
     // Labels
     'label' => 'هەژمار',
     'plural_label' => 'هەژمارەکان',
+    'account' => 'هەژمار',
+    'income_account' => 'هەژماری داهات',
 
     // Basic Information
     'company' => 'کۆمپانیا',

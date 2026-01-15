@@ -6,14 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Modules\Foundation\Casts\BaseCurrencyMoneyCast;
 use Modules\Product\Models\Product;
 
+/**
+ * @property float $remaining_quantity
+ * @property \Brick\Money\Money|null $cost_per_unit
+ */
 class InventoryCostLayer extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'company_id',
         'product_id',
         'quantity',
         'cost_per_unit',
@@ -32,12 +36,17 @@ class InventoryCostLayer extends Model
 
     /**
      * The relationships that should always be loaded.
-     * Eager-loading the `product.company.currency` relationship is critical because the `BaseCurrencyMoneyCast`
-     * for monetary fields on this model depends on the currency context provided by the product's company.
-     *
-     * @var list<string>
+     * Eager-loading the `company.currency` relationship is critical for monetary fields.
      */
-    protected $with = ['product.company.currency'];
+    protected $with = ['company.currency', 'product.company.currency'];
+
+    /**
+     * @return BelongsTo<\App\Models\Company, static>
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Company::class);
+    }
 
     /**
      * @return BelongsTo<Product, static>

@@ -3,6 +3,7 @@
 namespace Modules\Foundation\Filament\Resources\PdfSettings\Pages;
 
 use Filament\Resources\Pages\ListRecords;
+use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Foundation\Filament\Resources\PdfSettings\PdfSettingsResource;
 
 class ListPdfSettings extends ListRecords
@@ -12,6 +13,7 @@ class ListPdfSettings extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            DocsAction::make('understanding-pdf-settings'),
             // No create action since we only edit existing company settings
         ];
     }

@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'label' => 'باجی بڕاو',
     // Labels
     'type_label' => 'جۆری باجی ڕاگرتن',
     'types_label' => 'جۆرەکانی باجی ڕاگرتن',

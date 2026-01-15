@@ -7,6 +7,7 @@ use Filament\Resources\Pages\ListRecords;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\ListRecords\Concerns\Translatable;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\AccountGroups\AccountGroupResource;
+use Modules\Foundation\Filament\Actions\DocsAction;
 
 class ListAccountGroups extends ListRecords
 {
@@ -18,6 +19,7 @@ class ListAccountGroups extends ListRecords
     {
         return [
             LocaleSwitcher::make(),
+            DocsAction::make('account-groups'),
             CreateAction::make()
                 ->label(__('filament.actions.create').' '.__('accounting::account_group.label')),
         ];

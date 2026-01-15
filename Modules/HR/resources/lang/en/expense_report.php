@@ -17,6 +17,7 @@ return [
         'notes' => 'Notes',
         'lines' => 'Expense Lines',
         'company' => 'Company',
+        'created_at' => 'Created At',
     ],
     'lines' => [
         'expense_account' => 'Expense Account',

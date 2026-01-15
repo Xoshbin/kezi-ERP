@@ -29,6 +29,18 @@ Ever tried assembling IKEA furniture without instructions? That's how users feel
 
 Every user guide follows a similar pattern. Think of it like a house—you need a foundation, walls, and a roof.
 
+### 0. 📂 File Naming & Location
+
+Before you write a word, make sure your file is named correctly:
+
+- **English Rules**: Use `kebab-case.md` for English files (e.g., `trial-balance-report.md`).
+- **Translation Rules**: Use `filename.lang-code.md` for translations.
+  - Kurdish: `trial-balance-report.ckb.md`
+  - Arabic: `trial-balance-report.ar.md`
+- **Location**: Keep translations **in the same folder** as the original. Don't create language subfolders!
+
+---
+
 ### 1. 📋 Start with the Basics (Frontmatter)
 
 At the very top of every document, include this metadata:
@@ -456,6 +468,20 @@ Before you publish, run through this checklist:
 - [ ] Are menu paths current?
 - [ ] Do screenshots match the current UI?
 - [ ] Are accounting explanations correct?
+
+---
+
+## Developer Integration
+
+Once your guide is written, you need to connect it to the app:
+
+1. **Attach linkage**: Use `DocsAction::make('your-slug')` in the Filament Resource/Page.
+2. **Register mapping**: Update `Modules/Foundation/app/Filament/Actions/DocsAction.php`.
+   - Add your slug to the `$mapping` array:
+     ```php
+     'your-slug' => 'User Guide/your-filename',
+     ```
+   - **Important**: Without this mapping, the link will break!
 
 ---
 

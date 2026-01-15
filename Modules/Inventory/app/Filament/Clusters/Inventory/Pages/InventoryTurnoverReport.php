@@ -232,6 +232,7 @@ class InventoryTurnoverReport extends Page implements HasForms
                     }
                 }),
 
+            \Modules\Foundation\Filament\Actions\DocsAction::make('inventory-reports'),
             Action::make('refresh')
                 ->label(__('inventory::inventory_reports.turnover.actions.refresh'))
                 ->icon('heroicon-o-arrow-path')

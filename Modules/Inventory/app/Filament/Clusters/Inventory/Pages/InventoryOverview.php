@@ -35,4 +35,11 @@ class InventoryOverview extends Page
     {
         return __('inventory::inventory_dashboard.subheading');
     }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('inventory-reports'),
+        ];
+    }
 }

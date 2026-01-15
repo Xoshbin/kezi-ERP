@@ -11,6 +11,11 @@ return [
     'type' => 'جۆر',
     'is_active' => 'چالاکە',
     'is_recoverable' => 'دەتوانرێت وەربگیرێتەوە',
+    'is_recoverable_help' => 'ئاماژەیە بۆ ئەوەی کە ئایا باجەکە دەتوانرێت وەربگیرێتەوە یان نا',
+    'is_group' => 'گرووپە',
+    'country' => 'وڵات',
+    'report_tag' => 'تاگی ڕاپۆرت',
+    'children' => 'باجە لاوەکییەکان',
 
     // Relations
     'company' => 'کۆمپانیا',
