@@ -5,13 +5,17 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\LetterOfCred
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Payment\Models\LCUtilization;
 
 class UtilizationsRelationManager extends RelationManager
 {
     protected static string $relationship = 'utilizations';
 
-    protected static ?string $title = 'LC Utilizations';
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('accounting::lc.lc_utilizations');
+    }
 
     public function table(Table $table): Table
     {

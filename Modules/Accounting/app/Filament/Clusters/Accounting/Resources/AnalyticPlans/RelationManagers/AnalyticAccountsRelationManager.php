@@ -12,12 +12,16 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class AnalyticAccountsRelationManager extends RelationManager
 {
     protected static string $relationship = 'analyticAccounts';
 
-    protected static ?string $title = 'Analytic Accounts';
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('accounting::analytic_account.analytic_accounts');
+    }
 
     public function form(Schema $schema): Schema
     {
