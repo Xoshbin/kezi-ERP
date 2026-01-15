@@ -11,5 +11,6 @@ return [
         'banking_cash' => 'بانک و کاش',
         'financial_planning' => 'پلاندانانی دارایی',
         'administration' => 'بەڕێوەبردن',
+        'reports' => 'ڕاپۆرتەکان',
     ],
 ];

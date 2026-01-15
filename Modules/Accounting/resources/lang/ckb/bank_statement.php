@@ -34,6 +34,7 @@ return [
     'line_date' => 'ڕێکەوت',
     'partner' => 'هاوبەش',
     'status' => 'دۆخ',
+    'add_transaction_line' => 'زیادکردنی هێڵی مامەڵە',
 
     // Reconciliation
     'reconcile' => 'هاوتاکردن',

@@ -59,6 +59,10 @@ return [
         ],
 
         'export_started' => 'Export started successfully.',
+        'export_failed' => 'Export failed',
+        'no_data_to_export' => 'No data available to export',
+        'export_confirmation' => 'Export Inventory Valuation Report',
+        'export_description' => 'This will generate a CSV file containing the current inventory valuation data. The file will be downloaded to your device.',
         'no_data' => 'No inventory data found',
         'no_data_description' => 'No products have inventory for the selected criteria.',
     ],
@@ -81,13 +85,6 @@ return [
             'total_quantity' => 'Total Quantity',
             'average_age' => 'Average Age (Days)',
             'expiring_soon' => 'Expiring Soon',
-        ],
-
-        'buckets' => [
-            'title' => 'Age Distribution',
-            'quantity' => 'Quantity',
-            'value' => 'Value',
-            'percentage' => 'Percentage',
         ],
 
         'buckets' => [
@@ -115,8 +112,6 @@ return [
         'export_started' => 'Export started successfully.',
         'export_failed' => 'Export failed',
         'no_data_to_export' => 'No data available to export',
-        'export_confirmation' => 'Export Inventory Valuation Report',
-        'export_description' => 'This will generate a CSV file containing the current inventory valuation data. The file will be downloaded to your device.',
         'actions' => [
             'export' => 'Export',
             'refresh' => 'Refresh',
@@ -192,14 +187,6 @@ return [
             'title' => 'Search Criteria',
             'product' => 'Product',
             'lot' => 'Lot',
-        ],
-
-        'summary' => [
-            'lot_code' => 'Lot Code',
-            'product' => 'Product',
-            'expiration_date' => 'Expiration Date',
-            'current_quantity' => 'Current Quantity',
-            'total_value' => 'Total Value',
         ],
 
         'summary' => [

@@ -11,5 +11,6 @@ return [
         'banking_cash' => 'Banking & Cash',
         'financial_planning' => 'Financial Planning',
         'administration' => 'Administration',
+        'reports' => 'Reports',
     ],
 ];

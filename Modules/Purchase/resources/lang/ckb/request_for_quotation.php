@@ -15,6 +15,8 @@ return [
         'status' => 'دۆخ',
         'total' => 'کۆی گشتی',
         'date' => 'بەروار',
+        'bid_notes' => 'تێبینییەکانی بەشداربوون',
+        'vendor_reference' => 'سەرچاوەی فرۆشیار',
     ],
     'sections' => [
         'general' => 'زانیاری گشتی',
@@ -28,5 +30,10 @@ return [
         'unit' => 'یەکە',
         'unit_price' => 'نرخی یەکە',
         'tax' => 'باج',
+    ],
+    'actions' => [
+        'record_bid' => 'تۆمارکردنی نرخ',
+        'send_to_vendor' => 'ناردن بۆ فرۆشیار',
+        'convert_to_order' => 'گۆڕین بۆ داواکاری',
     ],
 ];

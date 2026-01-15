@@ -28,11 +28,25 @@ return [
     'select_currency' => 'دراوێک هەڵبژێرە',
 
     // Pages
-    'pages.list.title' => 'هەژمارە شیکارییەکان',
-    'pages.create.title' => 'دروستکردنی هەژماری شیکاری',
-    'pages.edit.title' => 'گۆڕینی هەژماری شیکاری',
+    'pages' => [
+        'list' => [
+            'title' => 'هەژمارە شیکارییەکان',
+        ],
+        'create' => [
+            'title' => 'دروستکردنی هەژماری شیکاری',
+        ],
+        'edit' => [
+            'title' => 'گۆڕینی هەژماری شیکاری',
+        ],
+    ],
 
     // Relation Managers
-    'relation_managers.journal_entry_lines.title' => 'هێڵەکانی تۆماری ڕۆژانە',
-    'relation_managers.analytic_plans.title' => 'پلانە شیکارییەکان',
+    'relation_managers' => [
+        'journal_entry_lines' => [
+            'title' => 'هێڵەکانی تۆماری ڕۆژانە',
+        ],
+        'analytic_plans' => [
+            'title' => 'پلانە شیکارییەکان',
+        ],
+    ],
 ];

@@ -9,6 +9,12 @@ return [
     'name' => 'ناو',
     'country' => 'وڵات',
     'company' => 'کۆمپانیا',
+    'auto_apply' => 'بەکارخستنی خودکار',
+    'vat_required' => 'باج پێویستە',
+    'zip_from' => 'کۆدی پۆستە لە',
+    'zip_to' => 'کۆدی پۆستە بۆ',
+    'criteria' => 'پێوەرەکان',
+    'criteria_description' => 'یاساکان بۆ بەکارخستنی خودکاری ئەم دۆخە داراییە',
 
     // Timestamps
     'created_at' => 'کاتی دروستکردن',

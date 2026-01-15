@@ -4,6 +4,7 @@ return [
     // Labels
     'label' => 'Currency',
     'plural_label' => 'Currencies',
+    'currency' => 'Currency',
 
     // Fields
     'code' => 'Code',
