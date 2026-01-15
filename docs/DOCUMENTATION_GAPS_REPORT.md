@@ -300,6 +300,7 @@ The documentation has multi-language support for some features but not consisten
 | stock-picking | ✅ | ✅ | ❌ |
 | getting-started | ✅ | ❌ | ❌ |
 | project-management | ✅ | ❌ | ❌ |
+| department-position-config | ✅ | ✅ | ❌ |
 | All other docs | ✅ | ❌ | ❌ |
 
 ---
