@@ -91,7 +91,7 @@ The `Modules/Accounting/app/Filament/Clusters/Accounting/Pages/Reports/` directo
 | **Valuation Methods (FIFO/AVCO)** | 🟢 Completed (covered in understanding-inventory-ins-and-outs.md) |
 | **Landed Costs** | 🟢 Completed (landed-costs.md with Kurdish translation) |
 | **Scrap/Disposal Management** | Implemented but undocumented |
-| **Multi-Warehouse Transfers** | Only `inter-warehouse-transfers.md` exists, needs expansion |
+| **Multi-Warehouse Transfers** | 🟢 Completed (covered in inter-warehouse-transfers.md) |
 | **Inventory Adjustments** | No dedicated guide |
 | **Stock Valuation Reports** | No documentation |
 
@@ -147,7 +147,7 @@ The HR module has 12 models and 51+ Filament components but minimal user documen
 | Customer Invoices | 🟢 `customer-invoices.md` (multi-language) |
 | Credit Notes | 🟢 `credit-notes.md` (multi-language) |
 | Sales Quotes | 🔴 Missing |
-| Dunning Process | 🔴 Missing (despite `DunningLevelResource`) |
+| Dunning Process | 🟢 Completed (dunning-levels.md exists) |
 | Revenue Recognition | 🔴 Missing |
 
 #### Purchase Module

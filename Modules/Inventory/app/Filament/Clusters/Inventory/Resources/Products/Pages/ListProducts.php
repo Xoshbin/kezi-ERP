@@ -13,6 +13,7 @@ class ListProducts extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('inventory-management'),
             CreateAction::make(),
         ];
     }

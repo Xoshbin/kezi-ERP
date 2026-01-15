@@ -12,6 +12,7 @@ class ListLetterOfCredits extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('understanding-letter-of-credit'),
             \Filament\Actions\CreateAction::make(),
         ];
     }
