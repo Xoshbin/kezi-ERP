@@ -47,6 +47,7 @@ class DocsAction
             'receipt-payment-vouchers' => 'User Guide/receipt-payment-vouchers',
             'stock-picking' => 'User Guide/stock-picking',
             'trial-balance-report' => 'User Guide/trial-balance-report',
+            'balance-sheet-report' => 'User Guide/balance-sheet-report',
         ];
 
         return $mapping[$slug] ?? $slug;
