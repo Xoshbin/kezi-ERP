@@ -311,7 +311,33 @@ Every user guide **MUST** include:
 - Include "In plain English" translations for accounting concepts
 - Use GitHub-style alerts (`[!TIP]`, `[!WARNING]`, etc.) for callouts
 
-### 10.4. Reference
+### 10.4. Attaching Docs to Filament Pages
+
+**Rule:** Each user guide **MUST** be attached to its corresponding Filament resource or page using `DocsAction`.
+
+**Implementation:**
+
+```php
+use Modules\Foundation\Filament\Actions\DocsAction;
+
+class ListPayments extends ListRecords
+{
+    protected function getHeaderActions(): array
+    {
+        return [
+            CreateAction::make(),
+            DocsAction::make('payments'), // Links to docs/User Guide/payments.md
+        ];
+    }
+}
+```
+
+**Conventions:**
+- Add `DocsAction` to the `getHeaderActions()` method on List pages
+- The parameter matches the markdown filename in `docs/User Guide/` (without `.md`)
+- Users can click the Help/Docs button in the header to open the guide
+
+### 10.5. Reference
 
 See [docs/DOCUMENTATION_STANDARD.md](../../docs/DOCUMENTATION_STANDARD.md) for the complete style guide with templates and examples.
 
