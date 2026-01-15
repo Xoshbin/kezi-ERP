@@ -35,7 +35,7 @@ This report identifies gaps between the implemented features in the JMeryar ERP 
 
 | Feature | Filament Resource | Priority |
 |---------|------------------|----------|
-| **Account Groups** | `AccountGroupResource` | High |
+| **Account Groups** | `AccountGroupResource` | 🟢 Completed |
 | **Analytic Accounts** | `AnalyticAccountResource` | 🟢 Completed |
 | **Analytic Plans** | `AnalyticPlanResource` | 🟢 Completed |
 | **Budgets & Budget Control** | `BudgetResource` | 🟢 Completed |

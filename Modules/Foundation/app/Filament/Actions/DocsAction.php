@@ -69,6 +69,7 @@ class DocsAction
             'budget-management' => 'User Guide/budget-management',
             'analytic-configuration' => 'User Guide/analytic-configuration',
             'adjustment-documents' => 'User Guide/adjustment-documents',
+            'account-groups' => 'User Guide/account-groups',
         ];
 
         return $mapping[$slug] ?? $slug;
