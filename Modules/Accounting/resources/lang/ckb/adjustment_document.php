@@ -31,4 +31,7 @@ return [
     'create_adjustment_document' => 'دروستکردنی بەڵگەنامەی ڕێکخستن',
     'edit_adjustment_document' => 'دەستکاریکردنی بەڵگەنامەی ڕێکخستن',
     'view_adjustment_document' => 'بینینی بەڵگەنامەی ڕێکخستن',
+    'post_document' => 'ناردنی بەڵگەنامە',
+    'notification_document_posted_successfully' => 'بەڵگەنامەی ڕێکخستن بە سەرکەوتوویی نێردرا',
+    'notification_document_post_error' => 'هەڵە لە ناردنی بەڵگەنامەی ڕێکخستن',
 ];

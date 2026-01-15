@@ -4,6 +4,11 @@ return [
     // Basic Information
     'basic_information' => 'زانیاری بنەڕەتی',
     'basic_information_description' => 'وردەکاری ناسنامەی کارمەند و زانیاری پەیوەندی',
+
+    'fields' => [
+        'employee_number' => 'ژمارەی کارمەند',
+    ],
+
     'employee_number' => 'ژمارەی کارمەند',
     'first_name' => 'ناوی یەکەم',
     'last_name' => 'ناوی کۆتایی',

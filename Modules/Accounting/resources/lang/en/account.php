@@ -4,6 +4,8 @@ return [
     // Labels
     'label' => 'Account',
     'plural_label' => 'Accounts',
+    'account' => 'Account',
+    'income_account' => 'Income Account',
 
     // Basic Information
     'company' => 'Company',

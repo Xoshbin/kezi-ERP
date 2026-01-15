@@ -7,6 +7,7 @@ use Filament\Actions\Action;
 use Filament\Pages\Page;
 use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Services\Reports\TaxReportService;
+use Modules\Foundation\Filament\Actions\DocsAction;
 
 class TaxReports extends Page
 {
@@ -51,6 +52,7 @@ class TaxReports extends Page
     protected function getHeaderActions(): array
     {
         return [
+            DocsAction::make('tax-report'),
             Action::make('generate')
                 ->label(__('accounting::reports.generate_report'))
                 ->action(fn () => $this->generate()),

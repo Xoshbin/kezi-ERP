@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'navigation_label' => 'چەکەکان',
     'bank' => 'بانک',
     'bank_name' => 'ناوی بانک',
     'prefix' => 'پێشگر',

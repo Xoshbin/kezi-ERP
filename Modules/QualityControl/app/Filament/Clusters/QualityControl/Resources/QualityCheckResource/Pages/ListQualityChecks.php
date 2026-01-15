@@ -8,4 +8,11 @@ use Modules\QualityControl\Filament\Clusters\QualityControl\Resources\QualityChe
 class ListQualityChecks extends ListRecords
 {
     protected static string $resource = QualityCheckResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('quality-checks'),
+        ];
+    }
 }

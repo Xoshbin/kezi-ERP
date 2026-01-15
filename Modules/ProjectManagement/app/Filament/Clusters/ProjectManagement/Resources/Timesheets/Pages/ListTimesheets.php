@@ -13,6 +13,7 @@ class ListTimesheets extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('timesheet-tracking'),
             CreateAction::make(),
         ];
     }

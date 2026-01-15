@@ -2712,17 +2712,6 @@ parameters:
 			count: 1
 			path: Modules/Accounting/resources/lang/ar/bank_statement.php
 
-		-
-			message: '#^Array has 2 duplicate keys with value ''statement_information'' \(''statement_information'', ''statement_information''\)\.$#'
-			identifier: array.duplicateKey
-			count: 1
-			path: Modules/Accounting/resources/lang/en/bank_statement.php
-
-		-
-			message: '#^Array has 2 duplicate keys with value ''status'' \(''status'', ''status''\)\.$#'
-			identifier: array.duplicateKey
-			count: 1
-			path: Modules/Accounting/resources/lang/en/bank_statement.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
@@ -9469,12 +9458,6 @@ parameters:
 			path: Modules/Foundation/tests/Unit/Livewire/Synthesizers/MoneySynthTest.php
 
 		-
-			message: '#^Access to an undefined property Modules\\HR\\Models\\LeaveRequest\:\:\$request_number\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/HR/app/Actions/HumanResources/CreateLeaveRequestAction.php
-
-		-
 			message: '#^Method Modules\\HR\\Actions\\HumanResources\\CreatePaymentFromPayrollAction\:\:execute\(\) has invalid return type Modules\\HR\\Actions\\HumanResources\\Payment\.$#'
 			identifier: class.notFound
 			count: 1
@@ -9935,30 +9918,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: Modules/HR/app/Services/HumanResources/AttendanceService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\HR\\Models\\LeaveRequest\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/HR/app/Services/HumanResources/LeaveManagementService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\HR\\Models\\LeaveRequest\:\:\$end_date\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/HR/app/Services/HumanResources/LeaveManagementService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\HR\\Models\\LeaveRequest\:\:\$start_date\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/HR/app/Services/HumanResources/LeaveManagementService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\HR\\Models\\LeaveRequest\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 3
-			path: Modules/HR/app/Services/HumanResources/LeaveManagementService.php
 
 		-
 			message: '#^Access to property \$id on an unknown class Modules\\HR\\Actions\\HumanResources\\Payment\.$#'
@@ -10867,18 +10826,6 @@ parameters:
 			path: Modules/Inventory/app/Actions/GoodsReceipt/ValidateGoodsReceiptAction.php
 
 		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$default_inventory_account_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: Modules/Inventory/app/Actions/Inventory/CreateInventoryAdjustmentAction.php
-
-		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$inventory_valuation_method\.$#'
-			identifier: property.notFound
-			count: 2
-			path: Modules/Inventory/app/Actions/Inventory/CreateInventoryAdjustmentAction.php
-
-		-
 			message: '#^Cannot access property \$id on Modules\\Accounting\\Models\\Account\|null\.$#'
 			identifier: property.nonObject
 			count: 2
@@ -10963,12 +10910,6 @@ parameters:
 			path: Modules/Inventory/app/Actions/Inventory/ProcessOutgoingStockAction.php
 
 		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$average_cost\.$#'
-			identifier: property.notFound
-			count: 2
-			path: Modules/Inventory/app/Actions/Inventory/UpdateProductInventoryStatsAction.php
-
-		-
 			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$volume\.$#'
 			identifier: property.notFound
 			count: 2
@@ -10993,21 +10934,9 @@ parameters:
 			path: Modules/Inventory/app/Actions/LandedCost/AllocateLandedCostsAction.php
 
 		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$default_inventory_account_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/Inventory/app/Actions/LandedCost/PostLandedCostAction.php
-
-		-
 			message: '#^Access to an undefined property Modules\\Purchase\\Models\\VendorBill\:\:\$partner_id\.$#'
 			identifier: property.notFound
 			count: 2
-			path: Modules/Inventory/app/Actions/LandedCost/PostLandedCostAction.php
-
-		-
-			message: '#^Cannot access property \$product_id on Modules\\Inventory\\Models\\StockMoveProductLine\|null\.$#'
-			identifier: property.nonObject
-			count: 1
 			path: Modules/Inventory/app/Actions/LandedCost/PostLandedCostAction.php
 
 		-
@@ -11569,19 +11498,7 @@ parameters:
 			path: Modules/Inventory/app/Filament/Clusters/Inventory/Resources/Products/Pages/CreateProduct.php
 
 		-
-			message: '#^Access to an undefined property Modules\\Inventory\\Models\\InventoryCostLayer\:\:\$cost_per_unit\.$#'
-			identifier: property.notFound
-			count: 2
-			path: Modules/Inventory/app/Filament/Clusters/Inventory/Resources/Products/RelationManagers/InventoryCostLayersRelationManager.php
-
-		-
 			message: '#^Access to an undefined property Modules\\Inventory\\Models\\InventoryCostLayer\:\:\$quantity\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/Inventory/app/Filament/Clusters/Inventory/Resources/Products/RelationManagers/InventoryCostLayersRelationManager.php
-
-		-
-			message: '#^Access to an undefined property Modules\\Inventory\\Models\\InventoryCostLayer\:\:\$remaining_quantity\.$#'
 			identifier: property.notFound
 			count: 1
 			path: Modules/Inventory/app/Filament/Clusters/Inventory/Resources/Products/RelationManagers/InventoryCostLayersRelationManager.php
@@ -11609,18 +11526,6 @@ parameters:
 			identifier: method.nonObject
 			count: 1
 			path: Modules/Inventory/app/Filament/Clusters/Inventory/Resources/StockMoves/Actions/ConfirmStockMoveAction.php
-
-		-
-			message: '#^Call to method getKey\(\) on an unknown class Modules\\Inventory\\Filament\\Clusters\\Inventory\\Resources\\StockMoves\\Pages\\Company\.$#'
-			identifier: class.notFound
-			count: 1
-			path: Modules/Inventory/app/Filament/Clusters/Inventory/Resources/StockMoves/Pages/CreateStockMove.php
-
-		-
-			message: '#^PHPDoc tag @var for variable \$tenant contains unknown class Modules\\Inventory\\Filament\\Clusters\\Inventory\\Resources\\StockMoves\\Pages\\Company\.$#'
-			identifier: class.notFound
-			count: 1
-			path: Modules/Inventory/app/Filament/Clusters/Inventory/Resources/StockMoves/Pages/CreateStockMove.php
 
 		-
 			message: '#^Anonymous function never returns null so it can be removed from the return type\.$#'
@@ -12553,12 +12458,6 @@ parameters:
 			path: Modules/Inventory/app/Providers/InventoryServiceProvider.php
 
 		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$average_cost\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/Inventory/app/Services/Inventory/CostValidationService.php
-
-		-
 			message: '#^Method Modules\\Inventory\\Services\\Inventory\\CostValidationService\:\:getSuggestedActions\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -12653,24 +12552,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: Modules/Inventory/app/Services/Inventory/InventoryCSVExportService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$default_cogs_account_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/Inventory/app/Services/Inventory/InventoryMovementValidationService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$default_inventory_account_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/Inventory/app/Services/Inventory/InventoryMovementValidationService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$default_stock_input_account_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/Inventory/app/Services/Inventory/InventoryMovementValidationService.php
 
 		-
 			message: '#^Method Modules\\Inventory\\Services\\Inventory\\InventoryMovementValidationService\:\:getResolutionGuidance\(\) return type has no value type specified in iterable type array\.$#'
@@ -12823,21 +12704,9 @@ parameters:
 			path: Modules/Inventory/app/Services/Inventory/InventoryQueryOptimizationService.php
 
 		-
-			message: '#^Access to an undefined property Modules\\Inventory\\Models\\InventoryCostLayer\:\:\$cost_per_unit\.$#'
-			identifier: property.notFound
-			count: 2
-			path: Modules/Inventory/app/Services/Inventory/InventoryReportingService.php
-
-		-
 			message: '#^Access to an undefined property Modules\\Inventory\\Models\\InventoryCostLayer\:\:\$purchase_date\.$#'
 			identifier: property.notFound
 			count: 1
-			path: Modules/Inventory/app/Services/Inventory/InventoryReportingService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\Inventory\\Models\\InventoryCostLayer\:\:\$remaining_quantity\.$#'
-			identifier: property.notFound
-			count: 5
 			path: Modules/Inventory/app/Services/Inventory/InventoryReportingService.php
 
 		-
@@ -12901,12 +12770,6 @@ parameters:
 			path: Modules/Inventory/app/Services/Inventory/InventoryReportingService.php
 
 		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$inventory_valuation_method\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/Inventory/app/Services/Inventory/InventoryReportingService.php
-
-		-
 			message: '#^Cannot access property \$name on Modules\\Inventory\\Models\\StockLocation\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -12915,6 +12778,12 @@ parameters:
 		-
 			message: '#^Cannot access property \$name on Modules\\Product\\Models\\Product\|null\.$#'
 			identifier: property.nonObject
+			count: 2
+			path: Modules/Inventory/app/Services/Inventory/InventoryReportingService.php
+
+		-
+			message: '#^Cannot call method multipliedBy\(\) on Brick\\Money\\Money\|null\.$#'
+			identifier: method.nonObject
 			count: 2
 			path: Modules/Inventory/app/Services/Inventory/InventoryReportingService.php
 
@@ -13081,48 +12950,6 @@ parameters:
 			path: Modules/Inventory/app/Services/Inventory/InventoryValuationService.php
 
 		-
-			message: '#^Access to an undefined property Modules\\Inventory\\Models\\InventoryCostLayer\:\:\$cost_per_unit\.$#'
-			identifier: property.notFound
-			count: 2
-			path: Modules/Inventory/app/Services/Inventory/InventoryValuationService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\Inventory\\Models\\InventoryCostLayer\:\:\$remaining_quantity\.$#'
-			identifier: property.notFound
-			count: 2
-			path: Modules/Inventory/app/Services/Inventory/InventoryValuationService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$average_cost\.$#'
-			identifier: property.notFound
-			count: 3
-			path: Modules/Inventory/app/Services/Inventory/InventoryValuationService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$default_cogs_account_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: Modules/Inventory/app/Services/Inventory/InventoryValuationService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$default_inventory_account_id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: Modules/Inventory/app/Services/Inventory/InventoryValuationService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$default_stock_input_account_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: Modules/Inventory/app/Services/Inventory/InventoryValuationService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$inventory_valuation_method\.$#'
-			identifier: property.notFound
-			count: 7
-			path: Modules/Inventory/app/Services/Inventory/InventoryValuationService.php
-
-		-
 			message: '#^Access to an undefined property Modules\\Purchase\\Models\\VendorBill\:\:\$exchange_rate_at_creation\.$#'
 			identifier: property.notFound
 			count: 1
@@ -13181,18 +13008,6 @@ parameters:
 			identifier: booleanAnd.rightAlwaysTrue
 			count: 2
 			path: Modules/Inventory/app/Services/Inventory/InventoryValuationService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$average_cost\.$#'
-			identifier: property.notFound
-			count: 2
-			path: Modules/Inventory/app/Services/Inventory/ProductCostAnalysisService.php
-
-		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$inventory_valuation_method\.$#'
-			identifier: property.notFound
-			count: 7
-			path: Modules/Inventory/app/Services/Inventory/ProductCostAnalysisService.php
 
 		-
 			message: '#^If condition is always true\.$#'
@@ -13417,12 +13232,6 @@ parameters:
 			path: Modules/Inventory/app/Services/Inventory/StockReservationService.php
 
 		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$inventory_valuation_method\.$#'
-			identifier: property.notFound
-			count: 2
-			path: Modules/Inventory/app/Services/Inventory/UserFriendlyErrorService.php
-
-		-
 			message: '#^Method Modules\\Inventory\\Services\\Inventory\\UserFriendlyErrorService\:\:convertCostInformationException\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -13596,29 +13405,6 @@ parameters:
 			count: 1
 			path: Modules/Inventory/database/factories/StockMoveProductLineFactory.php
 
-		-
-			message: '#^Array has 2 duplicate keys with value ''buckets'' \(''buckets'', ''buckets''\)\.$#'
-			identifier: array.duplicateKey
-			count: 1
-			path: Modules/Inventory/resources/lang/en/inventory_reports.php
-
-		-
-			message: '#^Array has 2 duplicate keys with value ''export_confirmation'' \(''export_confirmation'', ''export_confirmation''\)\.$#'
-			identifier: array.duplicateKey
-			count: 1
-			path: Modules/Inventory/resources/lang/en/inventory_reports.php
-
-		-
-			message: '#^Array has 2 duplicate keys with value ''export_description'' \(''export_description'', ''export_description''\)\.$#'
-			identifier: array.duplicateKey
-			count: 1
-			path: Modules/Inventory/resources/lang/en/inventory_reports.php
-
-		-
-			message: '#^Array has 2 duplicate keys with value ''summary'' \(''summary'', ''summary''\)\.$#'
-			identifier: array.duplicateKey
-			count: 1
-			path: Modules/Inventory/resources/lang/en/inventory_reports.php
 
 		-
 			message: '#^Access to an undefined property Modules\\Inventory\\Models\\AdjustmentDocument\:\:\$exchange_rate_at_creation\.$#'
@@ -15381,7 +15167,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 24
+			count: 25
 			path: Modules/Inventory/tests/Feature/Inventory/InventoryAdjustmentsTest.php
 
 		-
@@ -16347,7 +16133,7 @@ parameters:
 		-
 			message: '#^Unable to resolve the template type TValue in call to function expect$#'
 			identifier: argument.templateType
-			count: 4
+			count: 3
 			path: Modules/Inventory/tests/Feature/Inventory/ManualInventoryRecordingCostLayerTest.php
 
 		-
@@ -17991,7 +17777,7 @@ parameters:
 		-
 			message: '#^Unable to resolve the template type TValue in call to function expect$#'
 			identifier: argument.templateType
-			count: 12
+			count: 7
 			path: Modules/Inventory/tests/Feature/Inventory/VendorBillFIFOCostLayerTest.php
 
 		-
@@ -21001,12 +20787,6 @@ parameters:
 			path: Modules/Product/app/Models/Product.php
 
 		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$inventory_valuation_method\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/Product/app/Models/Product.php
-
-		-
 			message: '#^Class Modules\\Product\\Models\\Product uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
@@ -21181,12 +20961,6 @@ parameters:
 			path: Modules/Product/tests/Feature/ProductCreationIntegrityTest.php
 
 		-
-			message: '#^Access to an undefined property Modules\\Product\\Models\\Product\:\:\$inventory_valuation_method\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/Product/tests/Feature/ProductCreationIntegrityTest.php
-
-		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
 			count: 10
@@ -21213,12 +20987,6 @@ parameters:
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
 			identifier: method.notFound
-			count: 1
-			path: Modules/Product/tests/Feature/ProductCreationIntegrityTest.php
-
-		-
-			message: '#^Unable to resolve the template type TAndValue in call to method Pest\\Expectation\<Modules\\Product\\Enums\\Products\\ProductType\>\:\:and\(\)$#'
-			identifier: argument.templateType
 			count: 1
 			path: Modules/Product/tests/Feature/ProductCreationIntegrityTest.php
 
@@ -22693,12 +22461,6 @@ parameters:
 			path: Modules/Purchase/app/Filament/Clusters/Purchases/Resources/RequestForQuotations/Pages/EditRequestForQuotation.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Modules\\Product\\Models\\Product\>\|Modules\\Product\\Models\\Product\:\:\$average_cost\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/Purchase/app/Filament/Clusters/Purchases/Resources/RequestForQuotations/Schemas/RequestForQuotationForm.php
-
-		-
 			message: '#^Cannot access property \$current_company_id on App\\Models\\User\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -24129,7 +23891,7 @@ parameters:
 		-
 			message: '#^Unable to resolve the template type TValue in call to function expect$#'
 			identifier: argument.templateType
-			count: 6
+			count: 3
 			path: Modules/Purchase/tests/Feature/Filament/VendorBillFIFOCostLayerFilamentTest.php
 
 		-
@@ -26087,48 +25849,6 @@ parameters:
 			identifier: array.duplicateKey
 			count: 1
 			path: Modules/Sales/resources/lang/ar/invoice.php
-
-		-
-			message: '#^Array has 2 duplicate keys with value ''current_exchange_rate'' \(''current_exchange_rate'', ''current_exchange_rate''\)\.$#'
-			identifier: array.duplicateKey
-			count: 1
-			path: Modules/Sales/resources/lang/ckb/invoice.php
-
-		-
-			message: '#^Array has 2 duplicate keys with value ''exchange_rate_at_creation'' \(''exchange_rate_at_creation'', ''exchange_rate_at_creation''\)\.$#'
-			identifier: array.duplicateKey
-			count: 1
-			path: Modules/Sales/resources/lang/ckb/invoice.php
-
-		-
-			message: '#^Array has 2 duplicate keys with value ''exchange_rate_helper'' \(''exchange_rate_helper'', ''exchange_rate_helper''\)\.$#'
-			identifier: array.duplicateKey
-			count: 1
-			path: Modules/Sales/resources/lang/ckb/invoice.php
-
-		-
-			message: '#^Array has 2 duplicate keys with value ''total_amount_company_currency'' \(''total_amount_company_currency'', ''total_amount_company_currency''\)\.$#'
-			identifier: array.duplicateKey
-			count: 1
-			path: Modules/Sales/resources/lang/ckb/invoice.php
-
-		-
-			message: '#^Array has 2 duplicate keys with value ''total_tax_company_currency'' \(''total_tax_company_currency'', ''total_tax_company_currency''\)\.$#'
-			identifier: array.duplicateKey
-			count: 1
-			path: Modules/Sales/resources/lang/ckb/invoice.php
-
-		-
-			message: '#^Array has 2 duplicate keys with value ''validation_no_line_items'' \(''validation_no_line_items'', ''validation_no_line_items''\)\.$#'
-			identifier: array.duplicateKey
-			count: 1
-			path: Modules/Sales/resources/lang/en/invoice.php
-
-		-
-			message: '#^Array has 2 duplicate keys with value ''validation_zero_total_amount'' \(''validation_zero_total_amount'', ''validation_zero_total_amount''\)\.$#'
-			identifier: array.duplicateKey
-			count: 1
-			path: Modules/Sales/resources/lang/en/invoice.php
 
 		-
 			message: '#^Access to property \$id on an unknown class Modules\\Accounting\\Database\\Factories\\Journal\.$#'

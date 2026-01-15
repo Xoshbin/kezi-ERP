@@ -7,6 +7,7 @@ use Filament\Facades\Filament;
 use Filament\Pages\Page;
 use Illuminate\Contracts\Support\Htmlable;
 use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
+use Modules\Foundation\Filament\Actions\DocsAction;
 
 class ViewReports extends Page
 {
@@ -41,6 +42,13 @@ class ViewReports extends Page
     public function getSubheading(): ?string
     {
         return __('accounting::reports.select_report_description');
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DocsAction::make('understanding-financial-reports'),
+        ];
     }
 
     /**

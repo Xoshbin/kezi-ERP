@@ -493,6 +493,7 @@ class InventoryValuationService
     {
         // Create a new cost layer for FIFO/LIFO tracking
         InventoryCostLayer::create([
+            'company_id' => $product->company_id,
             'product_id' => $product->id,
             'quantity' => $quantity,
             'remaining_quantity' => $quantity,

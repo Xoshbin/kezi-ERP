@@ -13,6 +13,7 @@ class ListPayrolls extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('payroll-processing'),
             CreateAction::make(),
         ];
     }
