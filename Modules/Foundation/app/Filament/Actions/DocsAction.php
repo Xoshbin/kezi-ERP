@@ -67,6 +67,7 @@ class DocsAction
             'quality-alerts' => 'User Guide/quality-alerts',
             'quality-points' => 'User Guide/quality-points',
             'budget-management' => 'User Guide/budget-management',
+            'analytic-configuration' => 'User Guide/analytic-configuration',
         ];
 
         return $mapping[$slug] ?? $slug;
