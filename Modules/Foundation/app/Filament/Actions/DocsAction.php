@@ -80,6 +80,7 @@ class DocsAction
             'fixed-assets' => 'User Guide/fixed-assets',
             'journal-entries' => 'User Guide/journal-entries',
             'tax-management' => 'User Guide/tax-management',
+            'fiscal-positions' => 'User Guide/fiscal-positions',
         ];
 
         return $mapping[$slug] ?? $slug;
