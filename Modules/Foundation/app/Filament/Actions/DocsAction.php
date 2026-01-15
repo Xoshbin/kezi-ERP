@@ -76,6 +76,7 @@ class DocsAction
             'deferred-items' => 'User Guide/deferred-items',
             'dunning-levels' => 'User Guide/dunning-levels',
             'recurring-templates' => 'User Guide/recurring-templates',
+            'lock-dates' => 'User Guide/lock-dates',
         ];
 
         return $mapping[$slug] ?? $slug;

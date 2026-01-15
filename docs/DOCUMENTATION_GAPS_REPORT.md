@@ -45,7 +45,7 @@ This report identifies gaps between the implemented features in the JMeryar ERP 
 | **Dunning Levels** | `DunningLevelResource` | 🟢 Completed |
 | **Recurring Templates** | `RecurringTemplateResource` | 🟢 Completed |
 | **Audit Logs** | `AuditLogResource` | Low |
-| **Lock Dates** | `LockDateResource` | Medium |
+| **Lock Dates** | `LockDateResource` | 🟢 Completed |
 | **Adjustment Documents** | `AdjustmentDocumentResource` | 🟢 Completed |
 
 #### 🟡 Partial Coverage
