@@ -55,6 +55,8 @@ class DocsAction
             'aged-payables-report' => 'User Guide/aged-payables-report',
             'partner-ledger-report' => 'User Guide/partner-ledger-report',
             'tax-report' => 'User Guide/tax-report',
+            'journal-entry-flow' => 'Developers/journal_entry_flow_report',
+            'payroll-processing' => 'User Guide/payroll-processing',
             'analytic-report' => 'User Guide/analytic-report',
             'cheque-management' => 'User Guide/cheque-management',
             'employee-management' => 'User Guide/employee-management',
