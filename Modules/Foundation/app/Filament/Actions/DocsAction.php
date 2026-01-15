@@ -78,6 +78,7 @@ class DocsAction
             'recurring-templates' => 'User Guide/recurring-templates',
             'lock-dates' => 'User Guide/lock-dates',
             'fixed-assets' => 'User Guide/fixed-assets',
+            'journal-entries' => 'User Guide/journal-entries',
         ];
 
         return $mapping[$slug] ?? $slug;
