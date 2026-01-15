@@ -41,4 +41,9 @@ return [
         'vendor' => 'فرۆشیار',
         'both' => 'هەردووکی',
     ],
+    'revaluation_status' => [
+        'draft' => 'ڕەشنووس',
+        'posted' => 'نێردراو',
+        'reversed' => 'پێچەوانەکراوەتەوە',
+    ],
 ];

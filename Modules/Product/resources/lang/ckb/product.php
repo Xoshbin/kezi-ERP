@@ -4,6 +4,7 @@ return [
     // Labels
     'label' => 'بەرهەم',
     'plural_label' => 'بەرهەمەکان',
+    'create' => 'دروستکردنی بەرهەم',
 
     // Basic Information
     'basic_information' => 'زانیاری بنەڕەتی',

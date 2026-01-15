@@ -64,11 +64,13 @@ return [
     'total_tax_company_currency' => 'کۆی باج (بە دراوی کۆمپانیا)',
 
     // Actions
-    'confirm' => 'پەسەندکردن',
-    'reset_to_draft' => 'گەڕانەوە بۆ ڕەشنووس',
-    'confirm_bill' => 'پەسەندکردنی پسوڵە',
-    'load_from_purchase_order' => 'هێنان لە داواکاری کڕین',
-    'create_from_purchase_order' => 'دروستکردن لە داواکاری کڕین',
+    'actions' => [
+        'confirm' => 'پەسەندکردن',
+        'reset_to_draft' => 'گەڕانەوە بۆ ڕەشنووس',
+        'confirm_bill' => 'پەسەندکردنی پسوڵە',
+        'load_from_purchase_order' => 'هێنان لە داواکاری کڕین',
+        'create_from_purchase_order' => 'دروستکردن لە داواکاری کڕین',
+    ],
 
     // Fields
     'purchase_order' => 'داواکاری کڕین',

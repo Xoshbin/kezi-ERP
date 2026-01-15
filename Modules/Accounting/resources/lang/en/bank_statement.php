@@ -34,6 +34,7 @@ return [
     'statement_information' => 'Statement Information',
     'company' => 'Company',
     'status' => 'Status',
+    'add_transaction_line' => 'Add Transaction Line',
 
     // Reconciliation
     'reconcile' => 'Reconcile',
@@ -50,7 +51,6 @@ return [
     'bank_total' => 'Bank Total',
     'system_total' => 'System Total',
     'difference' => 'Difference',
-    'status' => 'Status',
     'balanced' => 'Balanced',
     'not_balanced' => 'Not Balanced',
     'refresh' => 'Refresh',
@@ -79,7 +79,6 @@ return [
     'all_currencies' => 'All Currencies',
 
     // Form Sections
-    'statement_information' => 'Statement Information',
     'statement_information_description' => 'Basic information about the bank statement',
     'statement_lines_description' => 'Individual transactions on the bank statement',
 

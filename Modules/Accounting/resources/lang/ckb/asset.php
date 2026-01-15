@@ -12,6 +12,10 @@ return [
     'purchase_value' => 'نرخی کڕین',
     'salvage_value' => 'تێچوی هەڵگرتن',
     'useful_life_years' => 'تەمەنی بەکارهێنان (ساڵ)',
+    'category' => 'پۆل',
+    'category_name' => 'ناوی پۆل',
+    'create_category' => 'دروستکردنی پۆل',
+    'salvage_value_default' => 'بەهای پاشماوەی بنەڕەتی',
     'useful_life' => 'تەمەنی بەکارهێنان',
     'years' => 'ساڵ',
     'depreciation_method' => 'شێوازی داخوران',
@@ -28,6 +32,10 @@ return [
     'depreciation_entries' => 'تۆمارەکانی داخوران',
     'depreciation_date' => 'بەرواری داخوران',
     'amount' => 'بڕ',
+    'prorata_temporis' => 'بەپێی کات (Prorata)',
+    'declining_factor' => 'فاکتەری دابەزین',
+    'depreciation_info' => 'زانیاری داخوران',
+    'depreciation_info_description' => 'شێوازی داخوران و خشتەی کاتەکەی ڕێکبخە.',
 
     // Actions
     'post' => 'ناردن',

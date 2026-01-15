@@ -4,6 +4,7 @@ return [
     // Labels
     'label' => 'Journal',
     'plural_label' => 'Journals',
+    'journal' => 'Journal',
 
     // Basic fields
     'company' => 'Company',
