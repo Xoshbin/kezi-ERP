@@ -39,7 +39,7 @@ This report identifies gaps between the implemented features in the JMeryar ERP 
 | **Analytic Accounts** | `AnalyticAccountResource` | High |
 | **Analytic Plans** | `AnalyticPlanResource` | High |
 | **Budgets & Budget Control** | `BudgetResource` | High |
-| **Cheque Management** | `ChequeResource` | High |
+| **Cheque Management** | `ChequeResource` | 🟢 Completed |
 | **Currency Revaluation** | `CurrencyRevaluationResource` | Medium |
 | **Deferred Revenue/Expenses** | `DeferredItemResource` | Medium |
 | **Dunning Levels** | `DunningLevelResource` | Medium |
@@ -312,7 +312,7 @@ The documentation has multi-language support for some features but not consisten
 2. **HR Module Guides** — Large module with zero documentation
 3. **Quality Control Guides** — Entire module undocumented
 4. **Accounting Reports Interpretation Guide** — How to read and use each report
-5. **Cheque Management** — Common workflow, undocumented
+5. ~~**Cheque Management** — Common workflow, undocumented~~ (🟢 Completed)
 
 ### 🟡 Medium Priority
 

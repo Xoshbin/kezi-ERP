@@ -14,6 +14,7 @@ class ListCheques extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            \Modules\Foundation\Filament\Actions\DocsAction::make('cheque-management'),
         ];
     }
 }
