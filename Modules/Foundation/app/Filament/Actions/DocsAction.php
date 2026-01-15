@@ -112,6 +112,7 @@ class DocsAction
             'understanding-reversals' => 'User Guide/understanding-reversals',
             'understanding-project-invoicing' => 'User Guide/understanding-project-invoicing',
             'understanding-vendor-management' => 'User Guide/understanding-vendor-management',
+            'understanding-advanced-payments' => 'User Guide/understanding-advanced-payments',
         ];
 
         return $mapping[$slug] ?? $slug;
