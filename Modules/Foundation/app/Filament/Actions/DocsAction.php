@@ -74,6 +74,7 @@ class DocsAction
             'debit-notes' => 'User Guide/debit-notes',
             'currency-revaluation' => 'User Guide/currency-revaluation',
             'deferred-items' => 'User Guide/deferred-items',
+            'dunning-levels' => 'User Guide/dunning-levels',
         ];
 
         return $mapping[$slug] ?? $slug;
