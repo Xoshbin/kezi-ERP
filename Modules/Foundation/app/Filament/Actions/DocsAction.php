@@ -55,6 +55,7 @@ class DocsAction
             'aged-payables-report' => 'User Guide/aged-payables-report',
             'partner-ledger-report' => 'User Guide/partner-ledger-report',
             'tax-report' => 'User Guide/tax-report',
+            'analytic-report' => 'User Guide/analytic-report',
         ];
 
         return $mapping[$slug] ?? $slug;
