@@ -41,7 +41,7 @@ This report identifies gaps between the implemented features in the JMeryar ERP 
 | **Budgets & Budget Control** | `BudgetResource` | 🟢 Completed |
 | **Cheque Management** | `ChequeResource` | 🟢 Completed |
 | **Currency Revaluation** | `CurrencyRevaluationResource` | 🟢 Completed |
-| **Deferred Revenue/Expenses** | `DeferredItemResource` | Medium |
+| **Deferred Revenue/Expenses** | `DeferredItemResource` | 🟢 Completed |
 | **Dunning Levels** | `DunningLevelResource` | Medium |
 | **Recurring Templates** | `RecurringTemplateResource` | Medium |
 | **Audit Logs** | `AuditLogResource` | Low |
