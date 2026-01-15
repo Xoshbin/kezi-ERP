@@ -118,7 +118,7 @@ The HR module has 12 models and 51+ Filament components but minimal user documen
 | **Payroll Processing** | 🟢 Completed |
 | **Salary Structures** | 🔴 Missing |
 | **Attendance Tracking** | 🔴 Missing |
-| **Expense Reports** | 🔴 Missing |
+| **Expense Reports** | 🟢 Completed |
 | **Work Contracts** | 🔴 Missing |
 | Cash Advances | 🟢 `understanding-cash-advances.md` |
 | Petty Cash | 🟢 `understanding-petty-cash.md` |
