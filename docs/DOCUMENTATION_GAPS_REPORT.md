@@ -133,7 +133,7 @@ The HR module has 12 models and 51+ Filament components but minimal user documen
 |---------|---------------------|
 | Payment Allocation Logic | 🟡 Partial in `payments.md` |
 | Partial Payments | 🔴 Missing details |
-| Payment Reversal/Cancellation | 🔴 Missing |
+| Payment Reversal/Cancellation | 🟢 Completed `understanding-reversals.md` |
 | Multi-Currency Payments | 🟡 Mentioned but not detailed |
 | Overpayment Handling | 🔴 Missing |
 | Prepayment Scenarios | 🔴 Missing |
