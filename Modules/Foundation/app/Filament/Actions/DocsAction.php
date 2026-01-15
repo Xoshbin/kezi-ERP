@@ -70,6 +70,7 @@ class DocsAction
             'analytic-configuration' => 'User Guide/analytic-configuration',
             'adjustment-documents' => 'User Guide/adjustment-documents',
             'account-groups' => 'User Guide/account-groups',
+            'credit-notes' => 'User Guide/credit-notes',
         ];
 
         return $mapping[$slug] ?? $slug;

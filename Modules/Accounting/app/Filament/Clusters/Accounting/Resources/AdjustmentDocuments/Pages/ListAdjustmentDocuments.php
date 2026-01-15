@@ -14,6 +14,7 @@ class ListAdjustmentDocuments extends ListRecords
     {
         return [
             \Modules\Foundation\Filament\Actions\DocsAction::make('adjustment-documents'),
+            \Modules\Foundation\Filament\Actions\DocsAction::make('credit-notes'),
             CreateAction::make(),
         ];
     }
