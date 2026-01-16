@@ -71,4 +71,37 @@ return [
         'type' => 'Type',
         'state' => 'State',
     ],
+
+    'sections' => [
+        'actual_quantities' => 'Actual Quantities',
+        'confirm_quantities_description' => 'Confirm the actual quantities that were picked for each move.',
+    ],
+
+    'placeholders' => [
+        'no_lots_assigned' => 'No lots assigned',
+    ],
+
+    'modal' => [
+        'assign_picking' => 'Assign Picking',
+        'assign' => 'Assign',
+        'reserve_stock_description' => 'Reserve stock and assign specific lots for this picking.',
+        'stock_moves' => 'Stock Moves',
+        'review_moves_description' => 'Review and assign lots for each stock move in this picking.',
+        'product' => 'Product',
+        'from' => 'From',
+        'to' => 'To',
+        'lot_assignments' => 'Lot Assignments',
+        'lot' => 'Lot',
+        'quantity' => 'Quantity',
+        'add_lot' => 'Add Lot',
+    ],
+
+    'notifications' => [
+        'error' => 'Error',
+        'validated' => 'Picking Validated',
+        'assigned' => 'Picking Assigned',
+        'assigned_body' => 'The picking has been assigned successfully. Stock has been reserved and lots have been allocated.',
+        'failed_to_assign' => 'Failed to assign picking: :error',
+        'no_lines_to_validate' => 'No lines to validate.',
+    ],
 ];

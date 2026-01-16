@@ -36,4 +36,7 @@ return [
         'send_to_vendor' => 'ناردن بۆ فرۆشیار',
         'convert_to_order' => 'گۆڕین بۆ داواکاری',
     ],
+    'notifications' => [
+        'po_created_success' => 'داواکاری کڕین بە سەرکەوتوویی دروستکرا',
+    ],
 ];

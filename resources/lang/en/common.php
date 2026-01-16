@@ -7,6 +7,7 @@ return [
     'cancel' => 'Cancel',
     'save' => 'Save',
     'create' => 'Create',
+    'close' => 'Close',
     'created_successfully' => ':item created successfully',
     'select_or_create' => 'Select existing or create new',
 

@@ -38,4 +38,7 @@ return [
     'as_of_date' => 'As of date',
     'balance_after' => 'Balance after',
     'reclassify' => 'Reclassify Current Portion',
+    'bank_account' => 'Bank Account',
+    'compute_schedule' => 'Compute Schedule',
+    'recalculate_eir' => 'Recalculate EIR',
 ];

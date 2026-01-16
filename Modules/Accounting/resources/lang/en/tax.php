@@ -41,4 +41,8 @@ return [
 
     // Section
     'basic_information' => 'Basic Information',
+    'placeholders' => [
+        'country' => 'IQ',
+        'report_tag' => 'VAT_SALES_STD',
+    ],
 ];

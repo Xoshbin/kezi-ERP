@@ -12,6 +12,7 @@ return [
     'exchange_rate' => 'Exchange Rate',
     'is_active' => 'Is Active',
     'last_updated_at' => 'Last Updated At',
+    'created' => 'Created',
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
 

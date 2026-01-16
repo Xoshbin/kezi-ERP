@@ -100,4 +100,10 @@ return [
         'invoiced' => 'Fully Invoiced',
         'multiple_invoices' => ':count Invoices',
     ],
+    'form' => [
+        'invoice_date' => 'Invoice Date',
+        'due_date' => 'Due Date',
+        'default_income_account' => 'Default Income Account',
+        'error' => 'Error',
+    ],
 ];

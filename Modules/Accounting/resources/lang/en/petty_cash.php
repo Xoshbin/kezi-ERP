@@ -68,4 +68,11 @@ return [
         'fund_created' => 'Fund created successfully',
         'low_balance_warning' => 'Fund balance is low',
     ],
+    'helpers' => [
+        'replenishment_amount' => 'Amount will be auto-calculated based on fund balance',
+        'replenishment_reference' => 'Bank transfer reference or cheque number',
+        'expense_category' => 'Select the type of expense',
+        'expense_description' => 'Describe the purpose of this expense',
+        'receipt_reference' => 'External receipt number',
+    ],
 ];

@@ -39,10 +39,10 @@
 <table>
     <thead>
     <tr>
-        <th>Account</th>
-        <th>Description</th>
-        <th style="text-align:right">Debit</th>
-        <th style="text-align:right">Credit</th>
+        <th>{{ __('accounting::bill.posting_preview.table.account') }}</th>
+        <th>{{ __('accounting::bill.posting_preview.table.description') }}</th>
+        <th style="text-align:right">{{ __('accounting::bill.posting_preview.table.debit') }}</th>
+        <th style="text-align:right">{{ __('accounting::bill.posting_preview.table.credit') }}</th>
     </tr>
     </thead>
     <tbody>

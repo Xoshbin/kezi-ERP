@@ -29,36 +29,36 @@ class LatestManufacturingOrdersWidget extends BaseWidget
             )
             ->columns([
                 Tables\Columns\TextColumn::make('number')
-                    ->label('MO Number')
+                    ->label(__('manufacturing::manufacturing.widgets.latest_orders.mo_number'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('product.name')
-                    ->label('Product')
+                    ->label(__('manufacturing::manufacturing.widgets.latest_orders.product'))
                     ->searchable()
                     ->limit(30),
 
                 Tables\Columns\TextColumn::make('quantity_to_produce')
-                    ->label('Qty to Produce')
+                    ->label(__('manufacturing::manufacturing.widgets.latest_orders.qty_to_produce'))
                     ->numeric(decimalPlaces: 2),
 
                 Tables\Columns\TextColumn::make('quantity_produced')
-                    ->label('Qty Produced')
+                    ->label(__('manufacturing::manufacturing.widgets.latest_orders.qty_produced'))
                     ->numeric(decimalPlaces: 2),
 
                 Tables\Columns\BadgeColumn::make('status')
-                    ->label('Status')
+                    ->label(__('manufacturing::manufacturing.widgets.latest_orders.status'))
                     ->colors([
                         'warning' => ManufacturingOrderStatus::Confirmed->value,
                         'primary' => ManufacturingOrderStatus::InProgress->value,
                     ]),
 
                 Tables\Columns\TextColumn::make('planned_start_date')
-                    ->label('Planned Start')
+                    ->label(__('manufacturing::manufacturing.widgets.latest_orders.planned_start'))
                     ->date()
                     ->sortable(),
             ])
-            ->heading('Active Manufacturing Orders')
-            ->description('Orders currently in production or ready to start');
+            ->heading(__('manufacturing::manufacturing.widgets.latest_orders.heading'))
+            ->description(__('manufacturing::manufacturing.widgets.latest_orders.description'));
     }
 }

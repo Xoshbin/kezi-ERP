@@ -7,37 +7,41 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class LinesRelationManager extends RelationManager
 {
     protected static string $relationship = 'lines';
 
-    protected static ?string $title = 'Components';
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('manufacturing::manufacturing.bom.components');
+    }
 
     public function form(Schema $schema): Schema
     {
         return $schema->components([
             Forms\Components\Select::make('product_id')
-                ->label('Component Product')
+                ->label(__('manufacturing::manufacturing.lines.component_product'))
                 ->relationship('product', 'name')
                 ->searchable()
                 ->preload()
                 ->required(),
 
             Forms\Components\TextInput::make('quantity_required')
-                ->label('Quantity Required')
+                ->label(__('manufacturing::manufacturing.lines.quantity_required'))
                 ->numeric()
                 ->required()
                 ->minValue(0.0001),
 
             Forms\Components\TextInput::make('quantity_consumed')
-                ->label('Quantity Consumed')
+                ->label(__('manufacturing::manufacturing.lines.quantity_consumed'))
                 ->numeric()
                 ->default(0)
                 ->disabled(),
 
             Forms\Components\TextInput::make('unit_cost')
-                ->label('Unit Cost')
+                ->label(__('manufacturing::manufacturing.lines.unit_cost'))
                 ->numeric()
                 ->disabled(),
         ]);
@@ -48,27 +52,27 @@ class LinesRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('product.name')
-                    ->label('Component')
+                    ->label(__('manufacturing::manufacturing.lines.component'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('quantity_required')
-                    ->label('Qty Required')
+                    ->label(__('manufacturing::manufacturing.lines.qty_required'))
                     ->numeric(decimalPlaces: 4)
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('quantity_consumed')
-                    ->label('Qty Consumed')
+                    ->label(__('manufacturing::manufacturing.lines.qty_consumed'))
                     ->numeric(decimalPlaces: 4)
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('unit_cost')
-                    ->label('Unit Cost')
+                    ->label(__('manufacturing::manufacturing.lines.unit_cost'))
                     ->money(fn ($record) => $record->currency_code ?? 'USD')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('total_cost')
-                    ->label('Total Cost')
+                    ->label(__('manufacturing::manufacturing.lines.total_cost'))
                     ->money(fn ($record) => $record->currency_code ?? 'USD')
                     ->getStateUsing(fn ($record) => $record->quantity_consumed * ($record->unit_cost ?? 0))
                     ->sortable(),

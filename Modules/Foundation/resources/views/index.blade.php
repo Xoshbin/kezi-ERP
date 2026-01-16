@@ -1,5 +1,5 @@
 <x-foundation::layouts.master>
-    <h1>Hello World</h1>
+    <h1>{{ __('foundation::navigation.name') }}</h1>
 
     <p>Module: {!! config('foundation.name') !!}</p>
 </x-foundation::layouts.master>

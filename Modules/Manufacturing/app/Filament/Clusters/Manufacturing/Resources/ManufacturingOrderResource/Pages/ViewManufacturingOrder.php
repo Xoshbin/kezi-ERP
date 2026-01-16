@@ -22,7 +22,7 @@ class ViewManufacturingOrder extends ViewRecord
                 ->visible(fn () => $this->record->status === ManufacturingOrderStatus::Draft),
 
             Action::make('confirm')
-                ->label('Confirm')
+                ->label(__('manufacturing::manufacturing.actions.confirm'))
                 ->icon('heroicon-o-check-circle')
                 ->color('warning')
                 ->requiresConfirmation()
@@ -33,7 +33,7 @@ class ViewManufacturingOrder extends ViewRecord
 
                         Notification::make()
                             ->success()
-                            ->title('Manufacturing Order Confirmed')
+                            ->title(__('manufacturing::manufacturing.notifications.confirmed'))
                             ->body('The manufacturing order has been confirmed and is ready for production.')
                             ->send();
 
@@ -41,14 +41,14 @@ class ViewManufacturingOrder extends ViewRecord
                     } catch (\Exception $e) {
                         Notification::make()
                             ->danger()
-                            ->title('Error')
+                            ->title(__('manufacturing::manufacturing.notifications.error'))
                             ->body($e->getMessage())
                             ->send();
                     }
                 }),
 
             Action::make('start_production')
-                ->label('Start Production')
+                ->label(__('manufacturing::manufacturing.actions.start_production'))
                 ->icon('heroicon-o-play')
                 ->color('primary')
                 ->requiresConfirmation()
@@ -59,7 +59,7 @@ class ViewManufacturingOrder extends ViewRecord
 
                         Notification::make()
                             ->success()
-                            ->title('Production Started')
+                            ->title(__('manufacturing::manufacturing.notifications.started'))
                             ->body('Components have been consumed and production has started.')
                             ->send();
 
@@ -67,14 +67,14 @@ class ViewManufacturingOrder extends ViewRecord
                     } catch (\Exception $e) {
                         Notification::make()
                             ->danger()
-                            ->title('Error')
+                            ->title(__('manufacturing::manufacturing.notifications.error'))
                             ->body($e->getMessage())
                             ->send();
                     }
                 }),
 
             Action::make('complete')
-                ->label('Complete Production')
+                ->label(__('manufacturing::manufacturing.actions.complete_production'))
                 ->icon('heroicon-o-check-badge')
                 ->color('success')
                 ->requiresConfirmation()
@@ -85,7 +85,7 @@ class ViewManufacturingOrder extends ViewRecord
 
                         Notification::make()
                             ->success()
-                            ->title('Production Completed')
+                            ->title(__('manufacturing::manufacturing.notifications.completed'))
                             ->body('Finished goods have been added to inventory.')
                             ->send();
 
@@ -93,14 +93,14 @@ class ViewManufacturingOrder extends ViewRecord
                     } catch (\Exception $e) {
                         Notification::make()
                             ->danger()
-                            ->title('Error')
+                            ->title(__('manufacturing::manufacturing.notifications.error'))
                             ->body($e->getMessage())
                             ->send();
                     }
                 }),
 
             Action::make('cancel')
-                ->label('Cancel')
+                ->label(__('manufacturing::manufacturing.actions.cancel'))
                 ->icon('heroicon-o-x-circle')
                 ->color('danger')
                 ->requiresConfirmation()
@@ -114,14 +114,14 @@ class ViewManufacturingOrder extends ViewRecord
 
                         Notification::make()
                             ->success()
-                            ->title('Manufacturing Order Cancelled')
+                            ->title(__('manufacturing::manufacturing.notifications.cancelled'))
                             ->send();
 
                         redirect()->to(static::getResource()::getUrl('view', ['record' => $this->record]));
                     } catch (\Exception $e) {
                         Notification::make()
                             ->danger()
-                            ->title('Error')
+                            ->title(__('manufacturing::manufacturing.notifications.error'))
                             ->body($e->getMessage())
                             ->send();
                     }

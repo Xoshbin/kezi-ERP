@@ -100,4 +100,10 @@ return [
         'invoiced' => 'بە تەواوی پسوڵەکراوە',
         'multiple_invoices' => ':count پسوڵەکان',
     ],
+    'form' => [
+        'invoice_date' => 'بەرواری پسوولە',
+        'due_date' => 'بەرواری شایستە',
+        'default_income_account' => 'هەژماری داهاتی بنەڕەتی',
+        'error' => 'هەڵە',
+    ],
 ];

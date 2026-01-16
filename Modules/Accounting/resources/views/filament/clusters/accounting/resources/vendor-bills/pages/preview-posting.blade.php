@@ -38,10 +38,10 @@
         <table class="w-full text-sm">
             <thead>
                 <tr class="border-b">
-                    <th class="text-left py-2 pr-2">Account</th>
-                    <th class="text-left py-2 pr-2">Description</th>
-                    <th class="text-right py-2 pr-2">Debit</th>
-                    <th class="text-right py-2 pr-2">Credit</th>
+                    <th class="text-left py-2 pr-2">{{ __('accounting::bill.posting_preview.table.account') }}</th>
+                    <th class="text-left py-2 pr-2">{{ __('accounting::bill.posting_preview.table.description') }}</th>
+                    <th class="text-right py-2 pr-2">{{ __('accounting::bill.posting_preview.table.debit') }}</th>
+                    <th class="text-right py-2 pr-2">{{ __('accounting::bill.posting_preview.table.credit') }}</th>
                 </tr>
             </thead>
             <tbody>

@@ -27,12 +27,12 @@ class AssignPickingAction extends Action
     {
         parent::setUp();
 
-        $this->label(__('Assign'))
+        $this->label(__('inventory::stock_picking.modal.assign'))
             ->icon('heroicon-o-clipboard-document-check')
             ->color('info')
-            ->modalHeading('Assign Picking')
-            ->modalDescription('Reserve stock and assign specific lots for this picking.')
-            ->modalSubmitActionLabel('Assign')
+            ->modalHeading(__('inventory::stock_picking.modal.assign_picking'))
+            ->modalDescription(__('inventory::stock_picking.modal.reserve_stock_description'))
+            ->modalSubmitActionLabel(__('inventory::stock_picking.modal.assign'))
             ->schema($this->getAssignSchema())
             ->action(function (Model $record, array $data) {
                 /** @var StockPicking $record */
@@ -43,17 +43,17 @@ class AssignPickingAction extends Action
     protected function getAssignSchema(): array
     {
         return [
-            Section::make(__('Stock Moves'))
-                ->description(__('Review and assign lots for each stock move in this picking.'))
+            Section::make(__('inventory::stock_picking.modal.stock_moves'))
+                ->description(__('inventory::stock_picking.modal.review_moves_description'))
                 ->schema([
                     Repeater::make('moves')
-                        ->label(__('Stock Moves'))
+                        ->label(__('inventory::stock_picking.modal.stock_moves'))
                         ->schema([
                             \Filament\Forms\Components\Hidden::make('move_id'),
                             \Filament\Forms\Components\Hidden::make('product_line_id'),
 
                             \Filament\Forms\Components\TextInput::make('product_name')
-                                ->label(__('Product'))
+                                ->label(__('inventory::stock_picking.modal.product'))
                                 ->disabled()
                                 ->dehydrated(false)
                                 ->suffix(fn ($get) => 'Qty: '.$get('quantity')),
@@ -63,20 +63,20 @@ class AssignPickingAction extends Action
                             \Filament\Schemas\Components\Grid::make(2)
                                 ->schema([
                                     \Filament\Forms\Components\TextInput::make('from_location')
-                                        ->label(__('From'))
+                                        ->label(__('inventory::stock_picking.modal.from'))
                                         ->disabled()
                                         ->dehydrated(false),
                                     \Filament\Forms\Components\TextInput::make('to_location')
-                                        ->label(__('To'))
+                                        ->label(__('inventory::stock_picking.modal.to'))
                                         ->disabled()
                                         ->dehydrated(false),
                                 ]),
 
                             Repeater::make('lot_lines')
-                                ->label(__('Lot Assignments'))
+                                ->label(__('inventory::stock_picking.modal.lot_assignments'))
                                 ->schema([
                                     Select::make('lot_id')
-                                        ->label(__('Lot'))
+                                        ->label(__('inventory::stock_picking.modal.lot'))
                                         ->options(function ($get) {
                                             $moveData = $get('../../');
                                             // Fallback for getting parent data if relative path fails or structure changes
@@ -95,13 +95,13 @@ class AssignPickingAction extends Action
                                         ->required(),
 
                                     TextInput::make('quantity')
-                                        ->label(__('Quantity'))
+                                        ->label(__('inventory::stock_picking.modal.quantity'))
                                         ->numeric()
                                         ->required()
                                         ->minValue(0.01)
                                         ->step(0.01),
                                 ])
-                                ->addActionLabel(__('Add Lot'))
+                                ->addActionLabel(__('inventory::stock_picking.modal.add_lot'))
                                 ->collapsible()
                                 ->defaultItems(0),
                         ])
@@ -174,8 +174,8 @@ class AssignPickingAction extends Action
             });
 
             Notification::make()
-                ->title(__('Picking Assigned'))
-                ->body(__('The picking has been assigned successfully. Stock has been reserved and lots have been allocated.'))
+                ->title(__('inventory::stock_picking.notifications.assigned'))
+                ->body(__('inventory::stock_picking.notifications.assigned_body'))
                 ->success()
                 ->send();
 
@@ -183,8 +183,8 @@ class AssignPickingAction extends Action
             $this->getLivewire()->redirect(\Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource::getUrl('view', ['record' => $picking]));
         } catch (Exception $e) {
             Notification::make()
-                ->title(__('Error'))
-                ->body(__('Failed to assign picking: :error', ['error' => $e->getMessage()]))
+                ->title(__('inventory::stock_picking.notifications.error'))
+                ->body(__('inventory::stock_picking.notifications.failed_to_assign', ['error' => $e->getMessage()]))
                 ->danger()
                 ->send();
         }
