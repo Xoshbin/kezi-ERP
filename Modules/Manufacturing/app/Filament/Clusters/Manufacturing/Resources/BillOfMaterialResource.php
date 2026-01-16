@@ -66,9 +66,9 @@ class BillOfMaterialResource extends Resource
                     Forms\Components\Select::make('type')
                         ->label(__('manufacturing::manufacturing.bom.type'))
                         ->options([
-                            BOMType::Normal->value => 'Normal',
-                            BOMType::Kit->value => 'Kit',
-                            BOMType::Phantom->value => 'Phantom',
+                            BOMType::Normal->value => __('manufacturing::manufacturing.bom.types.normal'),
+                            BOMType::Kit->value => __('manufacturing::manufacturing.bom.types.kit'),
+                            BOMType::Phantom->value => __('manufacturing::manufacturing.bom.types.phantom'),
                         ])
                         ->default(BOMType::Normal->value)
                         ->required(),
@@ -134,16 +134,16 @@ class BillOfMaterialResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
                     ->options([
-                        BOMType::Normal->value => 'Normal',
-                        BOMType::Kit->value => 'Kit',
-                        BOMType::Phantom->value => 'Phantom',
+                        BOMType::Normal->value => __('manufacturing::manufacturing.bom.types.normal'),
+                        BOMType::Kit->value => __('manufacturing::manufacturing.bom.types.kit'),
+                        BOMType::Phantom->value => __('manufacturing::manufacturing.bom.types.phantom'),
                     ]),
 
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label(__('manufacturing::manufacturing.bom.is_active'))
-                    ->placeholder('All BOMs')
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only'),
+                    ->placeholder(__('manufacturing::manufacturing.placeholders.all_boms'))
+                    ->trueLabel(__('manufacturing::manufacturing.bom.filters.active_only'))
+                    ->falseLabel(__('manufacturing::manufacturing.bom.filters.inactive_only')),
             ])
             ->recordActions([
                 EditAction::make(),

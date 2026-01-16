@@ -36,4 +36,7 @@ return [
         'send_to_vendor' => 'Send to Vendor',
         'convert_to_order' => 'Convert to Order',
     ],
+    'notifications' => [
+        'po_created_success' => 'Purchase Order created successfully',
+    ],
 ];

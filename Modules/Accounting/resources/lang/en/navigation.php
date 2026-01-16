@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'name' => 'Accounting',
     'configuration' => 'Configuration',
     'clusters' => [
         'accounting' => 'Accounting',

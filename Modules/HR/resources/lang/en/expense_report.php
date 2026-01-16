@@ -43,4 +43,8 @@ return [
         'approved' => 'Expense report approved.',
         'created' => 'Expense report created successfully.',
     ],
+    'sections' => [
+        'report_details' => 'Report Details',
+        'expense_lines' => 'Expense Lines',
+    ],
 ];

@@ -99,7 +99,18 @@ return [
 
     // Validation Messages
     'validation_no_line_items' => 'ناکرێت پسووڵەی کڕین بەبێ بڕگەکانی هێڵ پشتڕاست بکرێتەوە',
-    'validation_zero_total_amount' => 'ناکرێت پسووڵەی کڕین بە کۆی گشتی سفر پشتڕاست بکرێتەوە',
+    'validation_zero_total_amount' => 'ناکرێت پسووڵەی کڕین بەبێ کۆی گشتی سفر پشتڕاست بکرێتەوە',
+
+    'register_payment' => [
+        'journal' => 'پەرتووکی ڕۆژانە',
+        'payment_date' => 'ڕێکەوتی پارەدان',
+        'amount' => 'بڕ',
+        'reference' => 'سەرچاوە',
+        'optional_reference' => 'سەرچاوەی ئیختیاری',
+        'description' => 'تۆمارکردنی پارەدان بۆ ئەم پسووڵەی کڕینە',
+    ],
+    'notification_payment_registered' => 'پارەدان بە سەرکەوتوویی تۆمارکرا',
+    'notification_payment_error' => 'هەڵە لە تۆمارکردنی پارەدان',
 
     // Payments Relation Manager
     'payments_relation_manager' => [

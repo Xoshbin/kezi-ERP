@@ -56,7 +56,7 @@ class ProjectInvoicesTable
                 ViewAction::make(),
                 EditAction::make(),
                 Action::make('generate_invoice')
-                    ->label('Generate Invoice')
+                    ->label(__('projectmanagement::project.form.labels.generate_invoice'))
                     ->icon('heroicon-o-document-text')
                     ->color(Color::Green)
                     ->visible(fn ($record) => $record->status === 'draft' && ! $record->invoice_id)

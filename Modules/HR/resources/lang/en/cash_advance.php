@@ -67,4 +67,19 @@ return [
         'cash_return' => 'Cash Return (Employee pays back)',
         'reimbursement' => 'Reimbursement (Company pays employee)',
     ],
+    'sections' => [
+        'advance_details' => 'Advance Details',
+        'request_details' => 'Request Details',
+        'dates_approvals' => 'Dates & Approvals',
+    ],
+    'placeholders' => [
+        'na' => 'N/A',
+        'no_notes' => 'No notes',
+        'pending_approval' => 'Pend. Approval',
+        'not_disbursed' => 'Not Disbursed',
+        'not_settled' => 'Not Settled',
+    ],
+    'approved_by' => 'Approved By',
+    'disbursed_by' => 'Disbursed By',
+    'company' => 'Company',
 ];

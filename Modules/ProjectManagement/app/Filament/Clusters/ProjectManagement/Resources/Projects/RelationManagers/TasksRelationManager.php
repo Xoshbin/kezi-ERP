@@ -54,7 +54,7 @@ class TasksRelationManager extends RelationManager
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('assignedTo.full_name') // Assuming we have or use concatenation
-                    ->label('Assigned To'),
+                    ->label(__('projectmanagement::project.form.labels.assigned_to')),
                 TextColumn::make('status')
                     ->badge(),
                 TextColumn::make('due_date')
@@ -65,7 +65,7 @@ class TasksRelationManager extends RelationManager
                 TextColumn::make('actual_hours')
                     ->numeric(2),
                 ProgressColumn::make('progress_percentage')
-                    ->label('Progress'),
+                    ->label(__('projectmanagement::project.form.labels.progress')),
             ])
             ->filters([
                 //

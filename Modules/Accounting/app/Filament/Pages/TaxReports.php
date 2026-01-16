@@ -92,7 +92,7 @@ class TaxReports extends Page
             );
         } catch (\Exception $e) {
             \Filament\Notifications\Notification::make()
-                ->title('Error generating report')
+                ->title(__('accounting::reports.error_generating_report'))
                 ->body($e->getMessage())
                 ->danger()
                 ->send();

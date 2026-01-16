@@ -70,4 +70,38 @@ return [
         'completed' => 'Completed',
         'cancelled' => 'Cancelled',
     ],
+    'form' => [
+        'sections' => [
+            'invoice_details' => 'Invoice Details',
+            'generation_options' => 'Generation Options',
+            'financials' => 'Financials',
+            'project_details' => 'Project Details',
+            'billing_budget' => 'Billing & Budget',
+            'system' => 'System',
+        ],
+        'labels' => [
+            'budget' => 'Budget',
+            'task' => 'Task',
+            'generate_invoice' => 'Generate Invoice',
+            'utilization' => 'Utilization',
+            'period_start' => 'Period Start',
+            'period_end' => 'Period End',
+            'assigned_to' => 'Assigned To',
+            'progress' => 'Progress',
+            'invoice_number' => 'Invoice #',
+        ],
+        'helper_texts' => [
+            'analytic_account_auto' => 'Automatically created on project creation',
+        ],
+    ],
+    'widgets' => [
+        'overview' => [
+            'active_projects' => 'Active Projects',
+            'currently_active' => 'Currently active projects',
+            'pending_timesheets' => 'Pending Timesheets',
+            'waiting_approval' => 'Waiting for approval',
+            'over_budget' => 'Over Budget Projects',
+            'exceeding_budget' => 'Projects exceeding budget',
+        ],
+    ],
 ];

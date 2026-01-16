@@ -70,4 +70,10 @@ return [
         'revenue_sources' => 'سەرچاوەی داهات',
         'cost_categories' => 'جۆرەکانی خەرجی',
     ],
+
+    'exchange_rates' => [
+        'no_rates' => 'نرخی ئاڵوگۆڕ نییە',
+        'no_recent' => 'نرخی ئەم دواییانە نییە',
+        'update_description' => 'نوێکردنەوەی نرخەکان لە پەڕەی دراوەکان',
+    ],
 ];

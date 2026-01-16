@@ -13,7 +13,7 @@ class CashAdvanceInfolist
     {
         return $schema
             ->components([
-                Section::make('Advance Details')
+                Section::make(__('hr::cash_advance.sections.advance_details'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -25,20 +25,20 @@ class CashAdvanceInfolist
                                 TextEntry::make('employee.full_name')
                                     ->label(__('hr::cash_advance.employee')),
                                 TextEntry::make('company.name')
-                                    ->label('Company'),
+                                    ->label(__('hr::cash_advance.company')),
                                 TextEntry::make('requested_amount')
                                     ->money(fn ($record) => $record->currency->code),
                                 TextEntry::make('approved_amount')
                                     ->money(fn ($record) => $record->currency->code)
-                                    ->placeholder('N/A'),
+                                    ->placeholder(__('hr::cash_advance.placeholders.na')),
                                 TextEntry::make('purpose')
                                     ->columnSpanFull(),
                                 TextEntry::make('notes')
                                     ->columnSpanFull()
-                                    ->placeholder('No notes'),
+                                    ->placeholder(__('hr::cash_advance.placeholders.no_notes')),
                             ]),
                     ]),
-                Section::make('Dates & Approvals')
+                Section::make(__('hr::cash_advance.sections.dates_approvals'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -48,19 +48,19 @@ class CashAdvanceInfolist
                                     ->date(),
                                 TextEntry::make('approved_at')
                                     ->dateTime()
-                                    ->placeholder('Pend. Approval'),
+                                    ->placeholder(__('hr::cash_advance.placeholders.pending_approval')),
                                 TextEntry::make('approvedBy.name')
-                                    ->label('Approved By')
-                                    ->placeholder('N/A'),
+                                    ->label(__('hr::cash_advance.approved_by'))
+                                    ->placeholder(__('hr::cash_advance.placeholders.na')),
                                 TextEntry::make('disbursed_at')
                                     ->dateTime()
-                                    ->placeholder('Not Disbursed'),
+                                    ->placeholder(__('hr::cash_advance.placeholders.not_disbursed')),
                                 TextEntry::make('disbursedBy.name')
-                                    ->label('Disbursed By')
-                                    ->placeholder('N/A'),
+                                    ->label(__('hr::cash_advance.disbursed_by'))
+                                    ->placeholder(__('hr::cash_advance.placeholders.na')),
                                 TextEntry::make('settled_at')
                                     ->dateTime()
-                                    ->placeholder('Not Settled'),
+                                    ->placeholder(__('hr::cash_advance.placeholders.not_settled')),
                             ]),
                     ]),
             ]);

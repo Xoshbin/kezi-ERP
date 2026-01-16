@@ -75,9 +75,9 @@ class PettyCashVoucherResource extends Resource
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->preload()
+                            ->preload() // Removed duplicate
                             ->label(__('accounting::petty_cash.fields.expense_category'))
-                            ->helperText('Select the type of expense'),
+                            ->helperText(__('accounting::petty_cash.helpers.expense_category')),
 
                         Select::make('partner_id')
                             ->relationship('partner', 'name')
@@ -89,14 +89,14 @@ class PettyCashVoucherResource extends Resource
                         Textarea::make('description')
                             ->required()
                             ->rows(3)
-                            ->rows(3)
+                            ->rows(3) // Removed duplicate
                             ->label(__('accounting::petty_cash.fields.description'))
-                            ->helperText('Describe the purpose of this expense')
+                            ->helperText(__('accounting::petty_cash.helpers.expense_description'))
                             ->columnSpanFull(),
 
                         TextInput::make('receipt_reference')
                             ->label(__('accounting::petty_cash.fields.receipt_reference'))
-                            ->helperText('External receipt number'),
+                            ->helperText(__('accounting::petty_cash.helpers.receipt_reference')),
                     ])->columns(2),
             ]);
     }

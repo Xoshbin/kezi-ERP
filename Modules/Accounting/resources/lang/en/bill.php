@@ -93,6 +93,8 @@ return [
     'notification_bill_reset_success' => 'Bill reset to draft',
     'notification_reset_bill_error' => 'Error resetting bill',
     'notification_update_not_allowed' => 'Update Not Allowed',
+    'notification_payment_registered' => 'Payment registered successfully',
+    'notification_payment_error' => 'Error registering payment',
     'errors' => [
         'cannot_create_bill_title' => 'Cannot Create Bill',
     ],
@@ -100,6 +102,15 @@ return [
     // Validation Messages
     'validation_no_line_items' => 'Cannot confirm vendor bill without line items',
     'validation_zero_total_amount' => 'Cannot confirm vendor bill with zero total amount',
+
+    'register_payment' => [
+        'journal' => 'Journal',
+        'payment_date' => 'Payment Date',
+        'amount' => 'Amount',
+        'reference' => 'Reference',
+        'optional_reference' => 'Optional reference',
+        'description' => 'Register a payment for this vendor bill',
+    ],
 
     // Payments Relation Manager
     'payments_relation_manager' => [

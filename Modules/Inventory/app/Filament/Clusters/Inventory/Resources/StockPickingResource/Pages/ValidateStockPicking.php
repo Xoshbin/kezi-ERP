@@ -37,18 +37,6 @@ class ValidateStockPicking extends Page
         foreach ($record->stockMoves as $move) {
             foreach ($move->productLines as $line) {
                 // Find any existing Lot Lines for this move/product line combination
-                // The relationship structure is elaborate: StockMove -> StockMoveLine (which has lot_id) -> StockMoveProductLine
-                // Wait, StockMoveLine links to StockMoveProductLine via `stock_move_product_line_id`?
-                // Or StockMoveLine IS the lot allocation?
-                // Let's check the schema or relationships.
-                // Based on ViewStockPicking:
-                /*
-                 $lotInfo = $move->stockMoveLines
-                    ->where('stock_move_product_line_id', $productLine->id)
-                    ...
-                */
-                // So we can fetch lot info.
-
                 $lotLines = $move->stockMoveLines
                     ->where('stock_move_product_line_id', $line->id)
                     ->map(fn ($l) => [
@@ -74,8 +62,8 @@ class ValidateStockPicking extends Page
     {
         return $schema
             ->schema([
-                Section::make('Actual Quantities')
-                    ->description('Confirm the actual quantities that were picked for each move.')
+                Section::make(__('inventory::stock_picking.sections.actual_quantities'))
+                    ->description(__('inventory::stock_picking.sections.confirm_quantities_description'))
                     ->schema([
                         Repeater::make('moves')
                             ->label(__('inventory::stock_picking.stock_moves'))
@@ -107,7 +95,7 @@ class ValidateStockPicking extends Page
                                     ->dehydrated(false)
                                     ->default(function ($state) {
                                         if (! isset($state['lot_lines']) || empty($state['lot_lines'])) {
-                                            return 'No lots assigned';
+                                            return __('inventory::stock_picking.placeholders.no_lots_assigned');
                                         }
 
                                         return collect($state['lot_lines'])
@@ -131,9 +119,7 @@ class ValidateStockPicking extends Page
                 ->label(__('inventory::stock_picking.validate_done'))
                 ->color('success')
                 ->icon('heroicon-o-check')
-                ->icon('heroicon-o-check')
                 ->action(function () {
-                    // dd('Closure Running');
                     $this->validatePicking();
                 }),
 
@@ -147,13 +133,8 @@ class ValidateStockPicking extends Page
 
     public function validatePicking(): void
     {
-        // dd('validatePicking called', $this->form->getState());
-        \Illuminate\Support\Facades\Log::info('validatePicking called');
+        // \Illuminate\Support\Facades\Log::info('validatePicking called');
         $data = $this->form->getState();
-        // dd('Data Retrieved', $data);
-        if (empty($data['moves'])) {
-            // dd('Moves Empty inside action');
-        }
         $this->processValidation($data, false);
     }
 
@@ -166,16 +147,13 @@ class ValidateStockPicking extends Page
     protected function processValidation(array $data, bool $createBackorder): void
     {
         if (empty($data['moves'])) {
-            Notification::make()->title('Error')->body('No lines to validate.')->danger()->send();
+            Notification::make()->title(__('inventory::stock_picking.notifications.error'))->body(__('inventory::stock_picking.notifications.no_lines_to_validate'))->danger()->send();
 
             return;
         }
 
         try {
             DB::transaction(function () use ($data, $createBackorder) {
-                // Debug removed from here
-                \Illuminate\Support\Facades\Log::info('Validation Start: '.json_encode($data));
-
                 // 1. Prepare Backorder Data
                 $backorderItems = [];
                 foreach ($data['moves'] as $moveData) {
@@ -192,8 +170,6 @@ class ValidateStockPicking extends Page
                         ];
                     }
                 }
-
-                \Illuminate\Support\Facades\Log::info('Backorder Items: '.count($backorderItems));
 
                 // 2. Create Backorder if requested AND needed
                 if ($createBackorder && count($backorderItems) > 0) {
@@ -214,7 +190,6 @@ class ValidateStockPicking extends Page
                     }
 
                     $actualQty = (float) $moveData['actual_quantity'];
-                    \Illuminate\Support\Facades\Log::info("Updating Line {$line->id} to {$actualQty}");
 
                     // Update line quantity to what was actually fulfilled
                     $line->update(['quantity' => $actualQty]);
@@ -232,15 +207,14 @@ class ValidateStockPicking extends Page
                     'state' => StockPickingState::Done,
                     'completed_at' => now(),
                 ]);
-                \Illuminate\Support\Facades\Log::info('Validation Transaction Commit');
             });
 
-            Notification::make()->title('Picking Validated')->success()->send();
+            Notification::make()->title(__('inventory::stock_picking.notifications.validated'))->success()->send();
             $this->redirect(StockPickingResource::getUrl('view', ['record' => $this->record]));
 
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Validation Exception: '.$e->getMessage());
-            Notification::make()->title('Error')->body($e->getMessage())->danger()->send();
+            Notification::make()->title(__('inventory::stock_picking.notifications.error'))->body($e->getMessage())->danger()->send();
         }
     }
 

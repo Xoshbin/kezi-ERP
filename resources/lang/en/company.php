@@ -21,6 +21,8 @@ return [
     'default_depreciation_journal' => 'Default Depreciation Journal',
     'default_bank_account' => 'Default Bank Account',
     'default_outstanding_receipts_account' => 'Default Outstanding Receipts Account',
+    'default_pdc_receivable_account' => 'Default PDC Receivable Account',
+    'default_pdc_payable_account' => 'Default PDC Payable Account',
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
 

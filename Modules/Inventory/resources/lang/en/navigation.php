@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'name' => 'Inventory',
     'groups' => [
         'inventory_settings' => 'Inventory',
     ],

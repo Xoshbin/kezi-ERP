@@ -41,5 +41,13 @@ return [
                 'error' => 'Error confirming payment',
             ],
         ],
+        'cancel' => [
+            'label' => 'Cancel Payment',
+            'notification' => [
+                'success' => 'Payment Cancelled',
+                'success_body' => 'The payment and its journal entry have been successfully reversed.',
+                'error' => 'Cancellation Failed',
+            ],
+        ],
     ],
 ];
