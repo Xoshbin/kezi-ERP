@@ -28,6 +28,15 @@ return [
         'unit_cost' => 'Unit Cost',
         'work_center' => 'Work Center',
         'component' => 'Component',
+        'filters' => [
+            'active_only' => 'Active Only',
+            'inactive_only' => 'Inactive Only',
+        ],
+        'types' => [
+            'kit' => 'Kit / Set',
+            'normal' => 'Normal',
+            'phantom' => 'Phantom',
+        ],
     ],
     'order' => [
         'label' => 'Manufacturing Order',

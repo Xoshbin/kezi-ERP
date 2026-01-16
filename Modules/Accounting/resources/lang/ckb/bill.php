@@ -72,6 +72,7 @@ return [
     'confirm_bill' => 'پشتڕاستکردنەوەی پسووڵە',
     'actions' => [
         'load_from_purchase_order' => 'بارکردن لە داواکاری کڕین',
+        'register_payment' => 'تۆمارکردنی پارەدان',
     ],
     'create_from_purchase_order' => 'دروستکردنی پسووڵە لە داواکاری کڕین',
 

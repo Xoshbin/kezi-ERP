@@ -36,7 +36,7 @@ class ViewVendorBill extends ViewRecord
     {
         return [
             Action::make('register_payment')
-                ->label(__('accounting::bill.payments_relation_manager.create_payment'))
+                ->label(__('accounting::bill.actions.register_payment'))
                 ->icon('heroicon-o-banknotes')
                 ->color('warning')
                 ->modalHeading(__('accounting::bill.payments_relation_manager.create_payment'))
