@@ -72,6 +72,7 @@ return [
     'confirm_bill' => 'Confirm Bill',
     'actions' => [
         'load_from_purchase_order' => 'Load from Purchase Order',
+        'register_payment' => 'Register Payment',
     ],
     'create_from_purchase_order' => 'Create Bill from PO',
 

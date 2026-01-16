@@ -28,6 +28,15 @@ return [
         'unit_cost' => 'تێچووی یەکە',
         'work_center' => 'ناوەندی کار',
         'component' => 'پێکهاتە',
+        'filters' => [
+            'active_only' => 'تەنها چالاکەکان',
+            'inactive_only' => 'تەنها ناچالاکەکان',
+        ],
+        'types' => [
+            'kit' => 'کیت / کۆمەڵە',
+            'normal' => 'ئاسایی',
+            'phantom' => 'وەهمی',
+        ],
     ],
     'order' => [
         'label' => 'داواکاری بەرهەمهێنان',

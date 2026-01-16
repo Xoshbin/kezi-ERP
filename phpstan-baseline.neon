@@ -1626,11 +1626,7 @@ parameters:
 			count: 1
 			path: Modules/Accounting/app/Filament/Clusters/Accounting/Resources/VendorBills/VendorBillResource.php
 
-		-
-			message: '#^Call to static method getUrl\(\) on an unknown class Modules\\Inventory\\Filament\\Resources\\LandedCostResource\.$#'
-			identifier: class.notFound
-			count: 1
-			path: Modules/Accounting/app/Filament/Clusters/Accounting/Resources/VendorBills/VendorBillResource.php
+
 
 		-
 			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
@@ -11677,11 +11673,7 @@ parameters:
 			count: 2
 			path: Modules/Inventory/app/Filament/Clusters/Inventory/Resources/StockPickingResource/Pages/ValidateStockPicking.php
 
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Modules\\Inventory\\Models\\StockMoveProductLine\>\|Modules\\Inventory\\Models\\StockMoveProductLine\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: Modules/Inventory/app/Filament/Clusters/Inventory/Resources/StockPickingResource/Pages/ValidateStockPicking.php
+
 
 		-
 			message: '#^Access to an undefined property Modules\\Inventory\\Filament\\Clusters\\Inventory\\Resources\\StockPickingResource\\Pages\\ValidateStockPicking\:\:\$form\.$#'

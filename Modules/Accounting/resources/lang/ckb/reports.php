@@ -202,4 +202,5 @@ return [
     'select_analytic_plans' => 'پلانەکانی شیکاری هەڵبژێرە',
     'report_under_construction' => 'ئەم ڕاپۆرتە لەژێر دروستکردندایە. بەمزووانە سەردانی بکەرەوە!',
     'click_generate_to_view' => 'کلیک لە "دروستکردنی ڕاپۆرت" بکە بۆ بینینی ڕاپۆرتی شیکاری.',
+    'error_generating_report' => 'هەڵە لە دروستکردنی ڕاپۆرت',
 ];
