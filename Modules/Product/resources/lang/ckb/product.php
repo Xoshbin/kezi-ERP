@@ -66,4 +66,7 @@ return [
     'created_at' => 'کاتی دروستبوون',
     'updated_at' => 'کاتی نوێکردنەوە',
     'deleted_at' => 'کاتی سڕینەوە',
+    'navigation' => [
+        'name' => 'بەرهەمەکان',
+    ],
 ];

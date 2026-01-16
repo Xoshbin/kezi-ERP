@@ -56,7 +56,11 @@ class EditPayment extends EditRecord
                 ->requiresConfirmation()
                 ->action(function (Payment $record) {
                     try {
-                        app(PaymentService::class)->cancel($record, Auth::user(), 'Payment cancelled via UI');
+                        $user = Auth::user();
+                        if (! $user) {
+                            throw new Exception('User not authenticated');
+                        }
+                        app(PaymentService::class)->cancel($record, $user, 'Payment cancelled via UI');
                         Notification::make()
                             ->title(__('accounting::payment.action.cancel.notification.success'))
                             ->body(__('accounting::payment.action.cancel.notification.success_body'))

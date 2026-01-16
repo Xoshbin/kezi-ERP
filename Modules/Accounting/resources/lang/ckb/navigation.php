@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'name' => 'ژمێریاری',
     'configuration' => 'ڕێکخستن',
     'clusters' => [
         'accounting' => 'ژمێریاری',
