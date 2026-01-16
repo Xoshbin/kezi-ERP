@@ -2,6 +2,12 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\ExpenseReports\Schemas;
 
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class ExpenseReportForm
@@ -10,46 +16,51 @@ class ExpenseReportForm
     {
         return $schema
             ->components([
-                \Filament\Schemas\Components\Section::make('Report Details')
+                Section::make(__('hr::expense_report.sections.report_details'))
                     ->schema([
-                        \Filament\Forms\Components\Select::make('cash_advance_id')
+                        Select::make('cash_advance_id')
+                            ->label(__('hr::expense_report.fields.cash_advance'))
                             ->relationship('cashAdvance', 'advance_number')
                             ->searchable()
                             ->preload()
                             ->required(),
-                        \Filament\Forms\Components\DatePicker::make('report_date')
+                        DatePicker::make('report_date')
+                            ->label(__('hr::expense_report.fields.report_date'))
                             ->required()
                             ->default(now()),
-                        \Filament\Forms\Components\Textarea::make('notes')
+                        Textarea::make('notes')
+                            ->label(__('hr::expense_report.fields.notes'))
                             ->columnSpanFull(),
                     ])->columns(2),
-                \Filament\Schemas\Components\Section::make('Expense Lines')
+                Section::make(__('hr::expense_report.sections.expense_lines'))
                     ->schema([
-                        \Filament\Forms\Components\Repeater::make('lines')
-                            // ->relationship('lines')
+                        Repeater::make('lines')
                             ->schema([
-                                \Filament\Forms\Components\Select::make('expense_account_id')
-                                    ->label(__('hr::expense.expense_account'))
+                                Select::make('expense_account_id')
+                                    ->label(__('hr::expense_report.lines.expense_account'))
                                     ->options(\Modules\Accounting\Models\Account::where('type', \Modules\Accounting\Enums\Accounting\AccountType::Expense)->get()->pluck('name', 'id'))
                                     ->searchable()
                                     ->required()
                                     ->columnSpan(2),
-                                \Filament\Forms\Components\DatePicker::make('expense_date')
+                                DatePicker::make('expense_date')
+                                    ->label(__('hr::expense_report.lines.date'))
                                     ->required()
                                     ->default(now()),
-                                \Filament\Forms\Components\TextInput::make('amount')
+                                TextInput::make('amount')
+                                    ->label(__('hr::expense_report.lines.amount'))
                                     ->numeric()
                                     ->required()
-                                    ->label(__('hr::expense.amount'))
                                     ->formatStateUsing(fn ($state) => $state instanceof \Brick\Money\Money ? $state->getAmount()->toFloat() : $state),
-                                \Filament\Forms\Components\TextInput::make('description')
+                                TextInput::make('description')
+                                    ->label(__('hr::expense_report.lines.description'))
                                     ->required()
                                     ->columnSpan(2),
-                                \Filament\Forms\Components\Select::make('partner_id')
-                                    ->label(__('hr::expense.vendor'))
+                                Select::make('partner_id')
+                                    ->label(__('hr::expense_report.lines.partner'))
                                     ->options(\Modules\Foundation\Models\Partner::get()->pluck('name', 'id'))
                                     ->searchable(),
-                                \Filament\Forms\Components\TextInput::make('receipt_reference'),
+                                TextInput::make('receipt_reference')
+                                    ->label(__('hr::expense_report.lines.receipt')),
                             ])
                             ->columns(4)
                             ->defaultItems(0),

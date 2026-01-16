@@ -70,4 +70,38 @@ return [
         'completed' => 'تەواوکراو',
         'cancelled' => 'هەڵوەشاوە',
     ],
+    'form' => [
+        'sections' => [
+            'invoice_details' => 'وردەکاری پسووڵە',
+            'generation_options' => 'هەڵبژاردەکانی دروستکردن',
+            'financials' => 'داراییەکان',
+            'project_details' => 'وردەکاری پڕۆژە',
+            'billing_budget' => 'پارەدان و بودجە',
+            'system' => 'سیستەم',
+        ],
+        'labels' => [
+            'budget' => 'بودجە',
+            'task' => 'ئەرک',
+            'generate_invoice' => 'دروستکردنی پسووڵە',
+            'utilization' => 'بەکارهێنان',
+            'period_start' => 'دەستپێکی ماوە',
+            'period_end' => 'کۆتایی ماوە',
+            'assigned_to' => 'ڕاسپێردراو بۆ',
+            'progress' => 'بەرەوپێشچوون',
+            'invoice_number' => 'ژمارەی پسووڵە',
+        ],
+        'helper_texts' => [
+            'analytic_account_auto' => 'بە شێوەیەکی خۆکارانە دروستکراوە لە کاتی دروستکردنی پڕۆژە',
+        ],
+    ],
+    'widgets' => [
+        'overview' => [
+            'active_projects' => 'پڕۆژە چالاکەکان',
+            'currently_active' => 'پڕۆژە چالاکەکانی ئێستا',
+            'pending_timesheets' => 'فۆرمی کاتی هەڵپەسێردراو',
+            'waiting_approval' => 'لە چاوەڕوانی پەسەندکردن',
+            'over_budget' => 'پڕۆژەکانی سەروو بودجە',
+            'exceeding_budget' => 'ئەو پڕۆژانەی بودجەیان تێپەڕاندووە',
+        ],
+    ],
 ];

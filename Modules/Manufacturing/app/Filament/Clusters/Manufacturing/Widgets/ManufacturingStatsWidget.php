@@ -34,20 +34,20 @@ class ManufacturingStatsWidget extends BaseWidget
             : 0;
 
         return [
-            Stat::make('Pending Orders', $pendingOrders)
-                ->description('Draft & Confirmed')
+            Stat::make(__('manufacturing::manufacturing.widgets.stats.pending_orders'), $pendingOrders)
+                ->description(__('manufacturing::manufacturing.widgets.stats.draft_confirmed'))
                 ->descriptionIcon('heroicon-o-clock')
                 ->color('warning')
                 ->chart($this->getPendingTrend()),
 
-            Stat::make('In Production', $inProgressOrders)
-                ->description('Currently manufacturing')
+            Stat::make(__('manufacturing::manufacturing.widgets.stats.in_production'), $inProgressOrders)
+                ->description(__('manufacturing::manufacturing.widgets.stats.currently_manufacturing'))
                 ->descriptionIcon('heroicon-o-cog-6-tooth')
                 ->color('primary')
                 ->chart($this->getInProgressTrend()),
 
-            Stat::make('Completed', $completedOrders)
-                ->description("{$completionRate}% completion rate")
+            Stat::make(__('manufacturing::manufacturing.widgets.stats.completed'), $completedOrders)
+                ->description(__('manufacturing::manufacturing.widgets.stats.completion_rate', ['rate' => $completionRate]))
                 ->descriptionIcon('heroicon-o-check-circle')
                 ->color('success')
                 ->chart($this->getCompletedTrend()),

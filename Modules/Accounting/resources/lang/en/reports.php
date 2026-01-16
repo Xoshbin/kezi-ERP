@@ -200,4 +200,5 @@ return [
     'select_analytic_plans' => 'Select Analytic Plans',
     'report_under_construction' => 'This report is currently being built. Check back soon!',
     'click_generate_to_view' => 'Click "Generate Report" to view Analytic Report.',
+    'error_generating_report' => 'Error generating report',
 ];

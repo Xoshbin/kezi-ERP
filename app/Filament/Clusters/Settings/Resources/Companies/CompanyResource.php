@@ -189,12 +189,12 @@ class CompanyResource extends Resource
                             ->preload(),
                         TranslatableSelect::make('default_pdc_receivable_account_id')
                             ->relationship('defaultPdcReceivableAccount', 'name')
-                            ->label('Default PDC Receivable Account') // TODO: Add translation
+                            ->label(__('company.default_pdc_receivable_account'))
                             ->searchable()
                             ->preload(),
                         TranslatableSelect::make('default_pdc_payable_account_id')
                             ->relationship('defaultPdcPayableAccount', 'name')
-                            ->label('Default PDC Payable Account') // TODO: Add translation
+                            ->label(__('company.default_pdc_payable_account'))
                             ->searchable()
                             ->preload(),
                     ])

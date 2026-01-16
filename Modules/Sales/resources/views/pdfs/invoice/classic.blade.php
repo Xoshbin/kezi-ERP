@@ -289,7 +289,7 @@
                 <th style="width: 40%;">{{ __('sales::invoice.description') }}</th>
                 <th style="width: 15%;">{{ __('sales::invoice.quantity') }}</th>
                 <th style="width: 20%;">{{ __('sales::invoice.unit_price') }}</th>
-                <th style="width: 25%;">Total</th>
+                <th style="width: 25%;">{{ __('sales::invoice.total') }}</th>
             </tr>
             </thead>
             <tbody>

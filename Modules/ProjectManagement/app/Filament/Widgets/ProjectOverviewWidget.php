@@ -32,18 +32,18 @@ class ProjectOverviewWidget extends BaseWidget
         })->count();
 
         return [
-            Stat::make('Active Projects', $activeProjects)
-                ->description('Currently active projects')
+            Stat::make(__('projectmanagement::project.widgets.overview.active_projects'), $activeProjects)
+                ->description(__('projectmanagement::project.widgets.overview.currently_active'))
                 ->descriptionIcon('heroicon-m-briefcase')
                 ->color('success'),
 
-            Stat::make('Pending Timesheets', $pendingTimesheets)
-                ->description('Waiting for approval')
+            Stat::make(__('projectmanagement::project.widgets.overview.pending_timesheets'), $pendingTimesheets)
+                ->description(__('projectmanagement::project.widgets.overview.waiting_approval'))
                 ->descriptionIcon('heroicon-m-clock')
                 ->color('warning'),
 
-            Stat::make('Over Budget Projects', $overBudgetProjects)
-                ->description('Projects exceeding budget')
+            Stat::make(__('projectmanagement::project.widgets.overview.over_budget'), $overBudgetProjects)
+                ->description(__('projectmanagement::project.widgets.overview.exceeding_budget'))
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
                 ->color('danger'),
         ];

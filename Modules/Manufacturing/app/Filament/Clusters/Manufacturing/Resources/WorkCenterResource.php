@@ -125,7 +125,7 @@ class WorkCenterResource extends Resource
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label(__('manufacturing::manufacturing.work_center.is_active'))
-                    ->placeholder('All')
+                    ->placeholder(__('manufacturing::manufacturing.placeholders.all'))
                     ->trueLabel('Active only')
                     ->falseLabel('Inactive only'),
             ])

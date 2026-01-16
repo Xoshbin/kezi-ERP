@@ -41,4 +41,9 @@ return [
 
     // Section
     'basic_information' => 'زانیاری سەرەتایی',
+
+    'placeholders' => [
+        'country' => 'IQ',
+        'report_tag' => 'VAT_SALES_STD',
+    ],
 ];

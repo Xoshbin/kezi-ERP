@@ -29,6 +29,11 @@ return [
     'total_amount' => 'Total Amount',
     'total_tax' => 'Total Tax',
     'reason' => 'Reason',
+    // PDF table headers
+    'total' => 'Total',
+    'price' => 'Price',
+    'qty' => 'Qty',
+    'subtotal' => 'Subtotal',
 
     // Section Titles and Descriptions
     'customer_currency_info' => 'Customer & Currency Information',

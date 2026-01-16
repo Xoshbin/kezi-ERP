@@ -71,13 +71,13 @@ class PettyCashReplenishmentResource extends Resource
                             ->numeric()
                             ->prefix('IQD')
                             ->label(__('accounting::petty_cash.fields.amount'))
-                            ->helperText('Amount will be auto-calculated based on fund balance'),
+                            ->helperText(__('accounting::petty_cash.helpers.replenishment_amount')),
 
                         Select::make('payment_method')
                             ->options([
-                                'cash' => 'Cash',
-                                'bank_transfer' => 'Bank Transfer',
-                                'cheque' => 'Cheque',
+                                'cash' => __('accounting::petty_cash.payment_methods.cash'),
+                                'bank_transfer' => __('accounting::petty_cash.payment_methods.bank_transfer'),
+                                'cheque' => __('accounting::petty_cash.payment_methods.cheque'),
                             ])
                             ->required()
                             ->default('bank_transfer')
@@ -85,7 +85,7 @@ class PettyCashReplenishmentResource extends Resource
 
                         TextInput::make('reference')
                             ->label(__('accounting::petty_cash.fields.reference'))
-                            ->helperText('Bank transfer reference or cheque number'),
+                            ->helperText(__('accounting::petty_cash.helpers.replenishment_reference')),
                     ])->columns(2),
             ]);
     }
@@ -117,7 +117,7 @@ class PettyCashReplenishmentResource extends Resource
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label(__('accounting::petty_cash.fields.payment_method'))
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => ucwords(str_replace('_', ' ', $state))),
+                    ->formatStateUsing(fn (string $state): string => __('accounting::petty_cash.payment_methods.'.$state)),
 
                 Tables\Columns\TextColumn::make('reference')
                     ->label(__('accounting::petty_cash.fields.reference'))

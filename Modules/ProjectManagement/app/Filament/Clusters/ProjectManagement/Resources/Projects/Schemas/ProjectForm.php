@@ -19,7 +19,7 @@ class ProjectForm
     {
         return $schema
             ->components([
-                Section::make('Project Details')
+                Section::make(__('projectmanagement::project.form.sections.project_details'))
                     ->columns(2)
                     ->schema([
                         TextInput::make('name')
@@ -54,7 +54,7 @@ class ProjectForm
                     ->columns(2)
                     ->schema([
                         TextInput::make('budget_amount')
-                            ->label('Budget')
+                            ->label(__('projectmanagement::project.form.labels.budget'))
                             ->required()
                             ->numeric()
                             ->prefix('$')
@@ -68,7 +68,7 @@ class ProjectForm
                             ->default(true)
                             ->columnSpanFull(),
                     ]),
-                Section::make('System')
+                Section::make(__('projectmanagement::project.form.sections.system'))
                     ->collapsed()
                     ->schema([
                         Select::make('company_id')
@@ -81,7 +81,7 @@ class ProjectForm
                             ->relationship('analyticAccount', 'name')
                             ->disabled()
                             ->dehydrated(false)
-                            ->helperText('Automatically created on project creation'),
+                            ->helperText(__('projectmanagement::project.form.helper_texts.analytic_account_auto')),
                     ]),
             ]);
     }

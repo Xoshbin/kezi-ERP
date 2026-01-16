@@ -68,4 +68,11 @@ return [
         'fund_created' => 'سندوق بە سەرکەوتوویی دروستکرا',
         'low_balance_warning' => 'باڵانسی سندوق کەمە',
     ],
+    'helpers' => [
+        'replenishment_amount' => 'بڕەکە بە شێوەی خۆکارانە حیساب دەکرێت لەسەر بنەمای باڵانسی سندوق',
+        'replenishment_reference' => 'ژمارەی سەرچاوەی حەواڵەی بانکی یان چەک',
+        'expense_category' => 'جۆری خەرجی هەڵبژێرە',
+        'expense_description' => 'مەبەستی ئەم خەرجییە ڕوون بکەرەوە',
+        'receipt_reference' => 'ژمارەی پسووڵەی دەرەکی',
+    ],
 ];
