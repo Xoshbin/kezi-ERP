@@ -26,12 +26,6 @@ class SalesOrderResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'so_number';
 
-    protected static ?string $navigationLabel = 'Sales Orders';
-
-    protected static ?string $modelLabel = 'Sales Order';
-
-    protected static ?string $pluralModelLabel = 'Sales Orders';
-
     protected static ?int $navigationSort = 10;
 
     public static function form(Schema $schema): Schema

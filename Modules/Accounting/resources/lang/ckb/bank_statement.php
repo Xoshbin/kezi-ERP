@@ -34,6 +34,7 @@ return [
     'line_date' => 'ڕێکەوت',
     'partner' => 'هاوبەش',
     'status' => 'دۆخ',
+    'add_transaction_line' => 'زیادکردنی هێڵی مامەڵە',
 
     // Reconciliation
     'reconcile' => 'هاوتاکردن',
@@ -87,4 +88,9 @@ return [
     'amount_in_foreign_currency' => 'بڕ بە پارەی بیانی',
     'amount_in_statement_currency' => 'بڕەکە کە کاریگەری لەسەر بالانسی حسابی بانک دەبێت',
     'original_transaction_amount' => 'بڕی مامەڵەی ڕەسەن پێش گۆڕین',
+    'reverse_write_off' => 'گەڕاندنەوەی پاکتاوکردن',
+    'reverse_write_off_confirmation' => 'ئایا دڵنیایت لە گەڕاندنەوەی ئەم پاکتاوکردنە؟ ئەمە دەبێتە هۆی دروستبوونی تۆمارێکی ژمێریاری پێچەوانە و هێڵەکەی بەیانی بانکی بە ناڕێکخراو نیشان دەدات.',
+    'write_off_reversed_successfully' => 'پاکتاوکردن بە سەرکەوتوویی گەڕێنرایەوە',
+    'error_reversing_write_off' => 'هەڵە لە گەڕاندنەوەی پاکتاوکردن',
+    'write_off_reversal_description' => 'گەڕاندنەوەی پاکتاوکردنی هێڵی بەیانی بانکی',
 ];

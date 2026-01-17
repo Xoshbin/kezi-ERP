@@ -4,6 +4,7 @@ return [
     // Labels
     'label' => 'دراو',
     'plural_label' => 'دراوەکان',
+    'currency' => 'دراو',
 
     // Fields
     'code' => 'کۆد',

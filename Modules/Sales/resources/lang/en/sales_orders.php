@@ -35,6 +35,9 @@ return [
         'created_by' => 'Created By',
         'created_at' => 'Created At',
         'updated_at' => 'Updated At',
+        'exchange_rate' => 'Exchange Rate',
+        'incoterm' => 'Incoterm',
+        'total_tax' => 'Total Tax',
     ],
     'tabs' => [
         'order_lines' => 'Order Lines',
@@ -56,11 +59,17 @@ return [
         'status_can_deliver' => 'Goods are ready for delivery.',
         'status_cannot_deliver' => 'Order must be confirmed before delivery.',
         'status_can_create_bill' => 'Vendor bills can be created from this purchase order.',
+        'exchange_rate' => 'Exchange rate at the time of creation',
     ],
     'sections' => [
         'basic_info' => 'Basic Information',
         'line_items' => 'Line Items',
+        'line_items_description' => 'Manage products and quantities',
         'additional_info' => 'Additional Information',
+        'customer_details' => 'Customer Details',
+        'delivery_info' => 'Delivery Information',
+        'notes' => 'Notes & Terms',
+        'totals' => 'Totals',
     ],
     'statuses' => [
         'quotation' => 'Quotation',
@@ -90,5 +99,11 @@ return [
         'not_invoiced' => 'Not Invoiced',
         'invoiced' => 'Fully Invoiced',
         'multiple_invoices' => ':count Invoices',
+    ],
+    'form' => [
+        'invoice_date' => 'Invoice Date',
+        'due_date' => 'Due Date',
+        'default_income_account' => 'Default Income Account',
+        'error' => 'Error',
     ],
 ];

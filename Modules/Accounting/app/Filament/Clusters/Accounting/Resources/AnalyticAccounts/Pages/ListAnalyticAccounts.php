@@ -5,6 +5,7 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAcco
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\AnalyticAccountResource;
+use Modules\Foundation\Filament\Actions\DocsAction;
 
 class ListAnalyticAccounts extends ListRecords
 {
@@ -19,6 +20,7 @@ class ListAnalyticAccounts extends ListRecords
     {
         return [
             CreateAction::make(),
+            DocsAction::make('analytic-configuration'),
         ];
     }
 }

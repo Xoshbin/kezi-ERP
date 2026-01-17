@@ -14,6 +14,7 @@ class ListProjectTasks extends ListRecords
     {
         return [
             CreateAction::make(),
+            \Modules\Foundation\Filament\Actions\DocsAction::make('understanding-project-tasks'),
         ];
     }
 }

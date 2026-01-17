@@ -15,6 +15,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Services\Reports\CashFlowStatementService;
+use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Foundation\Support\NumberFormatter;
 
 class ViewCashFlowStatement extends Page
@@ -86,6 +87,7 @@ class ViewCashFlowStatement extends Page
     protected function getHeaderActions(): array
     {
         return [
+            DocsAction::make('cash-flow-statement'),
             Action::make('generate')
                 ->label(__('accounting::reports.generate_report'))
                 ->icon('heroicon-o-play')

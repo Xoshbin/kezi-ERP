@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'navigation_label' => 'نامەکانی ئیعتماد',
     'beneficiary' => 'سوودمەند',
     'expense_account' => 'هەژماری خەرجی',
     'vendor_bill' => 'پسوڵەی فرۆشیار #',
@@ -24,4 +25,8 @@ return [
     'type' => 'جۆر',
     'status' => 'دۆخ',
     'navigation_group' => 'بەڕێوەبردنی نامەی ئیعتماد',
+    'lc_details' => 'وردەکارییەکانی LC',
+    'bank_charges' => 'خەرجییە بانکییەکان',
+    'lc_utilizations' => 'بەکارهێنانەکانی LC',
+    'upcoming_expirations' => 'ئەو LCیانەی لە ٣٠ ڕۆژی داهاتوودا بەسەردەچن',
 ];

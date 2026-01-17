@@ -28,11 +28,25 @@ return [
     'select_currency' => 'Select a currency',
 
     // Pages
-    'pages.list.title' => 'Analytic Accounts',
-    'pages.create.title' => 'Create Analytic Account',
-    'pages.edit.title' => 'Edit Analytic Account',
+    'pages' => [
+        'list' => [
+            'title' => 'Analytic Accounts',
+        ],
+        'create' => [
+            'title' => 'Create Analytic Account',
+        ],
+        'edit' => [
+            'title' => 'Edit Analytic Account',
+        ],
+    ],
 
     // Relation Managers
-    'relation_managers.journal_entry_lines.title' => 'Journal Entry Lines',
-    'relation_managers.analytic_plans.title' => 'Analytic Plans',
+    'relation_managers' => [
+        'journal_entry_lines' => [
+            'title' => 'Journal Entry Lines',
+        ],
+        'analytic_plans' => [
+            'title' => 'Analytic Plans',
+        ],
+    ],
 ];

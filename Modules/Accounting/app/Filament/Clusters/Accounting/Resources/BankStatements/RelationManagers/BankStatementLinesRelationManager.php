@@ -19,6 +19,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Modules\Accounting\Actions\Accounting\ReverseJournalEntryAction;
@@ -30,7 +31,10 @@ class BankStatementLinesRelationManager extends RelationManager
 {
     protected static string $relationship = 'bankStatementLines';
 
-    protected static ?string $title = 'Bank Statement Lines';
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('accounting::bank_statement.bank_statement_lines');
+    }
 
     public function form(Schema $schema): Schema
     {
@@ -85,7 +89,7 @@ class BankStatementLinesRelationManager extends RelationManager
                 EditAction::make(),
                 DeleteAction::make(),
                 Action::make('reverse')
-                    ->label('Reverse Write-Off')
+                    ->label(__('accounting::bank_statement.reverse_write_off'))
                     ->icon('heroicon-o-arrow-uturn-left')
                     ->color('danger')
                     ->visible(function (BankStatementLine $record) {
@@ -99,8 +103,8 @@ class BankStatementLinesRelationManager extends RelationManager
                         return $je instanceof JournalEntry && Gate::allows('reverse', $je);
                     })
                     ->requiresConfirmation()
-                    ->modalHeading('Reverse Write-Off')
-                    ->modalDescription('Are you sure you want to reverse this write-off? This will create a reversing journal entry and mark the bank statement line as unreconciled.')
+                    ->modalHeading(__('accounting::bank_statement.reverse_write_off'))
+                    ->modalDescription(__('accounting::bank_statement.reverse_write_off_confirmation'))
                     ->action(function (BankStatementLine $record) {
                         try {
                             $journalEntry = $record->journalEntry;
@@ -115,17 +119,17 @@ class BankStatementLinesRelationManager extends RelationManager
                             $reverseAction = app(ReverseJournalEntryAction::class);
                             $reverseAction->execute(
                                 $journalEntry,
-                                'Bank statement line write-off reversal',
+                                __('accounting::bank_statement.write_off_reversal_description'),
                                 $user
                             );
 
                             Notification::make()
-                                ->title('Write-off reversed successfully')
+                                ->title(__('accounting::bank_statement.write_off_reversed_successfully'))
                                 ->success()
                                 ->send();
                         } catch (Exception $e) {
                             Notification::make()
-                                ->title('Error reversing write-off')
+                                ->title(__('accounting::bank_statement.error_reversing_write_off'))
                                 ->body($e->getMessage())
                                 ->danger()
                                 ->send();

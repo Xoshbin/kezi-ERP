@@ -18,7 +18,7 @@ class LinesRelationManager extends RelationManager
 {
     protected static string $relationship = 'lines';
 
-    protected static ?string $title = 'Components';
+    protected static ?string $title = null;
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {

@@ -13,12 +13,18 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class BudgetLinesRelationManager extends RelationManager
 {
     protected static string $relationship = 'budgetLines';
 
-    protected static ?string $title = 'Budget Lines';
+    protected static ?string $title = null;
+
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('accounting::budget.budget_lines.plural_label');
+    }
 
     public function form(Schema $schema): Schema
     {

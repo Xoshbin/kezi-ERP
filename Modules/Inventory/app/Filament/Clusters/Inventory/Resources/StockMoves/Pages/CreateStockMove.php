@@ -2,6 +2,7 @@
 
 namespace Modules\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages;
 
+use App\Models\Company;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -95,7 +96,7 @@ class CreateStockMove extends CreateRecord
     protected function getHeaderActions(): array
     {
         return [
-            DocsAction::make('stock-management'),
+            DocsAction::make('stock-movements'),
         ];
     }
 }

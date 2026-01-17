@@ -49,7 +49,7 @@ class CurrencyRatesTable
                     }),
 
                 TextColumn::make('created_at')
-                    ->label('Created')
+                    ->label(__('foundation::currency.created'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

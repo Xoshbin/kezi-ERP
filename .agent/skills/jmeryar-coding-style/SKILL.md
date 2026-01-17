@@ -205,3 +205,150 @@ use Modules\Accounting\Enums\InvoiceStatus;
     - `Action::make('name')->label(__('module::file.key'))`
 - **Enum Translations:** Translate enum values in the UI using the `module::file.enum_case` pattern or by implementing a `getLabel()` method on the enum that returns `__('module::file.status.' . $this->value)`.
 - **Naming Convention:** Translation files within `Modules/{Module}/resources/lang/{locale}/` should be named after the feature or entity they describe (e.g., `cash_advance.php` for HR cash advances).
+
+## 9. Filament Cluster Navigation
+
+**Rule:** Module settings/configuration resources **MUST** be registered into the central `SettingsCluster` while remaining in their original module directories.
+
+### 9.1. Cluster Injection Pattern
+
+Configuration resources (e.g., `FiscalYearResource`, `TaxResource`, `DepartmentResource`) should use the **Cluster Injection** pattern:
+
+```php
+// In your resource file
+use App\Filament\Clusters\Settings\SettingsCluster;
+
+class FiscalYearResource extends Resource
+{
+    protected static ?string $cluster = SettingsCluster::class;
+
+    public static function getNavigationGroup(): string
+    {
+        return __('accounting::navigation.groups.accounting_settings');
+    }
+}
+```
+
+### 9.2. Translation Requirements
+
+Add navigation group translations to `Modules/{Module}/resources/lang/{locale}/navigation.php`:
+
+```php
+// Modules/Accounting/resources/lang/en/navigation.php
+return [
+    'groups' => [
+        'accounting_settings' => 'Accounting',
+    ],
+];
+```
+
+### 9.3. Cluster Label Translations
+
+Cluster classes **MUST** use module-scoped translation keys:
+
+```php
+// SettingsCluster uses Foundation module translations
+public static function getNavigationLabel(): string
+{
+    return __('foundation::navigation.clusters.settings');
+}
+
+// InventoryCluster uses Inventory module translations
+public static function getNavigationLabel(): string
+{
+    return __('inventory::navigation.clusters.inventory');
+}
+```
+
+Ensure `clusters` key exists in the module's `navigation.php`:
+
+```php
+// Modules/Foundation/resources/lang/en/navigation.php
+return [
+    'groups' => [
+        'general_settings' => 'General',
+    ],
+    'clusters' => [
+        'settings' => 'Settings',
+    ],
+];
+```
+
+### 9.4. Resource Categorization
+
+| Category | Cluster | Examples |
+|----------|---------|----------|
+| Configuration | SettingsCluster | Fiscal Years, Taxes, Journals, Accounts, Departments, Leave Types, Work Centers |
+| Operational | Original Module Cluster | Invoices, Bills, Payments, Journal Entries, Stock Moves |
+
+## 10. Documentation Standards
+
+**Rule:** All user-facing documentation **MUST** follow the friendly, approachable style defined in `docs/DOCUMENTATION_STANDARD.md`.
+
+### 10.1. Writing Style
+
+- **Conversational Tone:** Write as if explaining to a smart friend who's new to accounting software.
+- **Plain Language:** Avoid jargon; when technical terms are necessary, explain them immediately.
+- **Visual Aids:** Use emoji, ASCII diagrams, and tables to improve scannability.
+- **Real Examples:** Provide concrete, realistic business scenarios—not abstract theory.
+
+### 10.2. Required Elements
+
+Every user guide **MUST** include:
+
+| Section | Purpose |
+|---------|---------|
+| "What is...?" | Explain the concept in simple terms |
+| "Where to Find It" | Navigation instructions with bold menu paths |
+| Step-by-Step Guide | Numbered steps with field descriptions |
+| Troubleshooting | Q&A format for common issues |
+| Related Docs | Links to related guides |
+
+### 10.3. Formatting Rules
+
+- **Bold** for menu items, buttons, and field names
+- Use `→` arrows between menu levels (e.g., **Accounting → Invoices**)
+- Include "In plain English" translations for accounting concepts
+- Use GitHub-style alerts (`[!TIP]`, `[!WARNING]`, etc.) for callouts
+
+### 10.4. Attaching Docs to Filament Pages
+
+**Rule:** Each user guide **MUST** be attached to its corresponding Filament resource or page using `DocsAction`.
+
+**Implementation:**
+
+```php
+use Modules\Foundation\Filament\Actions\DocsAction;
+
+class ListPayments extends ListRecords
+{
+    protected function getHeaderActions(): array
+    {
+        return [
+            CreateAction::make(),
+            DocsAction::make('payments'), // Links to docs/User Guide/payments.md
+        ];
+    }
+}
+```
+
+**Conventions:**
+- Add `DocsAction` to the `getHeaderActions()` method on List pages
+- The parameter matches the slug key defined in `DocsAction::mapSlugToDocumentationPath()`
+- **IMPORTANT**: You **MUST** add a mapping entry in `Modules/Foundation/app/Filament/Actions/DocsAction.php` pointing your slug to the correct file path (e.g., `'my-slug' => 'User Guide/my-file'`).
+- Users can click the Help/Docs button in the header to open the guide
+
+### 10.5. Reference
+
+See [docs/DOCUMENTATION_STANDARD.md](../../docs/DOCUMENTATION_STANDARD.md) for the complete style guide with templates and examples.
+
+### 10.6. Localization/Translation Naming
+
+**Rule:** Translated documentation files **MUST** be placed in the same directory as the original English file and use the language code as a suffix.
+
+**Convention:** `filename.language_code.md` (e.g., `trial-balance-report.ckb.md`, `vendor-bills.ar.md`).
+
+**Do NOT:**
+- Create `ckb/` or `ar/` subdirectories.
+- Rename the file completely (e.g., `kurdish-report.md`).
+

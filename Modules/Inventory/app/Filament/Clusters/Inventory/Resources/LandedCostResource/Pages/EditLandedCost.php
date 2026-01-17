@@ -24,8 +24,8 @@ class EditLandedCost extends EditRecord
                     // Validate: Ensure at least one stock picking is attached
                     if ($record->stockPickings()->count() === 0) {
                         \Filament\Notifications\Notification::make()
-                            ->title('No Stock Pickings Attached')
-                            ->body('Please attach at least one stock picking before posting.')
+                            ->title(__('inventory::landed_cost.notifications.no_pickings'))
+                            ->body(__('inventory::landed_cost.notifications.no_pickings_body'))
                             ->danger()
                             ->send();
 
@@ -46,7 +46,7 @@ class EditLandedCost extends EditRecord
                     app(PostLandedCostAction::class)->execute($record);
 
                     \Filament\Notifications\Notification::make()
-                        ->title('Landed Cost Posted')
+                        ->title(__('inventory::landed_cost.notifications.posted'))
                         ->success()
                         ->send();
 

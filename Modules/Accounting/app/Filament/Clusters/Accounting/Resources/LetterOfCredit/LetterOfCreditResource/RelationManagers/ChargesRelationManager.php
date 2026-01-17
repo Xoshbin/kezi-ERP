@@ -6,13 +6,17 @@ use Filament\Forms;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Payment\Enums\LetterOfCredit\LCChargeType;
 
 class ChargesRelationManager extends RelationManager
 {
     protected static string $relationship = 'charges';
 
-    protected static ?string $title = 'Bank Charges';
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('accounting::lc.bank_charges');
+    }
 
     public function table(Table $table): Table
     {

@@ -25,4 +25,9 @@ return [
     'actions' => [
         'post_landed_cost' => 'Post Landed Cost',
     ],
+    'notifications' => [
+        'no_pickings' => 'No Stock Pickings Attached',
+        'no_pickings_body' => 'Please attach at least one stock picking before posting.',
+        'posted' => 'Landed Cost Posted',
+    ],
 ];

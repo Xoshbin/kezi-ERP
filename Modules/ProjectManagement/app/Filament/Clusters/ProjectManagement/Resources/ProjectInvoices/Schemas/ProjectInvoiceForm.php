@@ -16,7 +16,7 @@ class ProjectInvoiceForm
     {
         return $schema
             ->components([
-                Section::make('Invoice Details')
+                Section::make(__('projectmanagement::project.form.sections.invoice_details'))
                     ->schema([
                         Select::make('project_id')
                             ->relationship('project', 'name')
@@ -35,7 +35,7 @@ class ProjectInvoiceForm
                                     ->afterOrEqual('period_start'),
                             ]),
                     ]),
-                Section::make('Generation Options')
+                Section::make(__('projectmanagement::project.form.sections.generation_options'))
                     ->visible(fn ($operation) => $operation === 'create')
                     ->schema([
                         Toggle::make('include_labor')
@@ -45,7 +45,7 @@ class ProjectInvoiceForm
                             ->default(true)
                             ->label('Include Expenses (Journal Entries)'),
                     ]),
-                Section::make('Financials')
+                Section::make(__('projectmanagement::project.form.sections.financials'))
                     ->visible(fn ($operation) => $operation !== 'create')
                     ->schema([
                         TextInput::make('labor_amount')

@@ -8,8 +8,10 @@ return [
     'tracking_type_none' => 'No Tracking',
     'tracking_type_lot' => 'By Lots/Batches',
     'tracking_type_serial' => 'By Serial Number',
+    'status' => 'Status',
 
     // Serial Numbers
+    'serial_number_information' => 'Serial Number Information',
     'serial_number' => 'Serial Number',
     'serial_numbers' => 'Serial Numbers',
     'serial_code' => 'Serial Code',

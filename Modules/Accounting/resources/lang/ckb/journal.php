@@ -4,6 +4,7 @@ return [
     // Labels
     'label' => 'پەرتووکی ڕۆژانە',
     'plural_label' => 'پەرتووکەکانی ڕۆژانە',
+    'journal' => 'پەرتووکی ڕۆژانە',
 
     // Basic fields
     'company' => 'کۆمپانیا',

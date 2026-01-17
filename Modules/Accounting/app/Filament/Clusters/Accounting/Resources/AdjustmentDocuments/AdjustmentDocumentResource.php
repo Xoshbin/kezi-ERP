@@ -54,7 +54,7 @@ class AdjustmentDocumentResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::navigation.groups.core_accounting');
+        return __('accounting::navigation.groups.transactions');
     }
 
     public static function getModelLabel(): string
@@ -126,7 +126,7 @@ class AdjustmentDocumentResource extends Resource
                         ->label(__('accounting::adjustment_document.reference_number'))
                         ->required()
                         ->maxLength(255)
-                        ->placeholder('e.g., ADJ-2024-001')
+                        ->placeholder(__('accounting::adjustment_document.help.reference_number'))
                         ->columnSpan(2),
                     DatePicker::make('date')
                         ->label(__('accounting::adjustment_document.adjustment_date'))
@@ -145,7 +145,7 @@ class AdjustmentDocumentResource extends Resource
                     Textarea::make('reason')
                         ->label(__('accounting::adjustment_document.reason_for_adjustment'))
                         ->required()
-                        ->placeholder('Describe the reason for this adjustment...')
+                        ->placeholder(__('accounting::adjustment_document.help.reason'))
                         ->rows(3)
                         ->columnSpanFull(),
                 ])
@@ -171,9 +171,9 @@ class AdjustmentDocumentResource extends Resource
                                 $set('document_link_type', 'vendor_bill');
                             }
                         })
-                        ->placeholder('Select document type to link...'),
+                        ->placeholder(__('accounting::adjustment_document.help.document_type_placeholder')),
                     Select::make('original_invoice_id')
-                        ->label('Original Invoice')
+                        ->label(__('accounting::adjustment_document.original_invoice'))
                         ->searchable()
                         ->preload()
                         ->relationship(
@@ -208,9 +208,9 @@ class AdjustmentDocumentResource extends Resource
                                 $set('currency_id', $invoice?->currency_id);
                             }
                         })
-                        ->placeholder('Search for an invoice...'),
+                        ->placeholder(__('accounting::adjustment_document.help.invoice_placeholder')),
                     Select::make('original_vendor_bill_id')
-                        ->label('Original Vendor Bill')
+                        ->label(__('accounting::adjustment_document.original_vendor_bill'))
                         ->searchable()
                         ->preload()
                         ->relationship('originalVendorBill', 'bill_reference', fn ($query) => $query->posted())
@@ -226,7 +226,7 @@ class AdjustmentDocumentResource extends Resource
                                 $set('currency_id', $bill?->currency_id);
                             }
                         })
-                        ->placeholder('Search for a vendor bill...'),
+                        ->placeholder(__('accounting::adjustment_document.help.vendor_bill_placeholder')),
                 ])
                 ->columnSpanFull(),
 
@@ -239,9 +239,9 @@ class AdjustmentDocumentResource extends Resource
                             TableColumn::make(__('accounting::adjustment_document.product'))->width('20%'),
                             TableColumn::make(__('accounting::adjustment_document.description'))->width('20%'),
                             TableColumn::make(__('accounting::adjustment_document.qty'))->width('10%'),
-                            TableColumn::make('Price')->width('15%'),
-                            TableColumn::make('Tax')->width('20%'),
-                            TableColumn::make('Account')->width('15%'),
+                            TableColumn::make(__('accounting::adjustment_document.price'))->width('15%'),
+                            TableColumn::make(__('accounting::adjustment_document.tax'))->width('20%'),
+                            TableColumn::make(__('accounting::adjustment_document.account'))->width('15%'),
                         ])
                         ->live()
                         ->reorderable(false)
@@ -310,7 +310,7 @@ class AdjustmentDocumentResource extends Resource
                                 ->default(1)
                                 ->columnSpan(2),
                             MoneyInput::make('unit_price')
-                                ->label('Price')
+                                ->label(__('accounting::adjustment_document.price'))
                                 ->currencyField('../../currency_id')
                                 ->required()
                                 ->columnSpan(3),
@@ -343,7 +343,7 @@ class AdjustmentDocumentResource extends Resource
                                 })
                                 ->columnSpan(3),
                             TranslatableSelect::forModel('account_id', Account::class)
-                                ->label('Account')
+                                ->label(__('accounting::adjustment_document.account'))
                                 ->searchable()
                                 ->searchableFields(['name', 'code'])
                                 ->preload()
@@ -399,7 +399,7 @@ class AdjustmentDocumentResource extends Resource
                     ->sortable()
                     ->weight('medium')
                     ->copyable()
-                    ->copyMessage('Reference copied!')
+                    ->copyMessage(__('accounting::adjustment_document.messages.reference_copied'))
                     ->icon('heroicon-o-hashtag'),
                 TextColumn::make('company.name')
                     ->label(__('accounting::adjustment_document.company'))

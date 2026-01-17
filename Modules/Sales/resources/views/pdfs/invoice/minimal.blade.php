@@ -290,8 +290,8 @@
             <tr>
                 <th style="width: 45%;">{{ __('sales::invoice.description') }}</th>
                 <th style="width: 15%;">Qty</th>
-                <th style="width: 20%;">Price</th>
-                <th style="width: 20%;">Total</th>
+                <th style="width: 20%;">{{ __('sales::invoice.price') }}</th>
+                <th style="width: 20%;">{{ __('sales::invoice.total') }}</th>
             </tr>
             </thead>
             <tbody>

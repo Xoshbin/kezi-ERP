@@ -13,12 +13,12 @@ class SettingsCluster extends Cluster
 
     public static function getNavigationLabel(): string
     {
-        return __('navigation.clusters.settings');
+        return __('foundation::navigation.clusters.settings');
     }
 
     public static function getClusterBreadcrumb(): string
     {
-        return __('navigation.clusters.settings');
+        return __('foundation::navigation.clusters.settings');
     }
 
     public static function shouldRegisterNavigation(): bool

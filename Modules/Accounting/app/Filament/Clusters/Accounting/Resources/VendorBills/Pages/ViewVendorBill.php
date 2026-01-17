@@ -36,14 +36,14 @@ class ViewVendorBill extends ViewRecord
     {
         return [
             Action::make('register_payment')
-                ->label(__('Register Payment'))
+                ->label(__('accounting::bill.actions.register_payment'))
                 ->icon('heroicon-o-banknotes')
                 ->color('warning')
-                ->modalHeading(__('Register Payment'))
-                ->modalDescription(__('Register a payment for this vendor bill'))
+                ->modalHeading(__('accounting::bill.payments_relation_manager.create_payment'))
+                ->modalDescription(__('accounting::bill.register_payment.description'))
                 ->schema([
                     Select::make('journal_id')
-                        ->label('Journal')
+                        ->label(__('accounting::bill.register_payment.journal'))
                         ->options(function (): array {
                             $tenant = Filament::getTenant();
                             if (! $tenant instanceof Company) {
@@ -66,17 +66,17 @@ class ViewVendorBill extends ViewRecord
                                 ->value('id');
                         }),
                     DatePicker::make('payment_date')
-                        ->label('Payment Date')
+                        ->label(__('accounting::bill.register_payment.payment_date'))
                         ->default(now())
                         ->required(),
                     MoneyInput::make('amount')
-                        ->label('Amount')
+                        ->label(__('accounting::bill.register_payment.amount'))
                         ->currencyField('currency_id')
                         ->default(fn (VendorBill $record) => $record->getRemainingAmount())
                         ->required(),
                     TextInput::make('reference')
-                        ->label('Reference')
-                        ->placeholder('Optional reference'),
+                        ->label(__('accounting::bill.register_payment.reference'))
+                        ->placeholder(__('accounting::bill.register_payment.optional_reference')),
                     Hidden::make('currency_id')
                         ->default(fn (VendorBill $record) => $record->currency_id),
                 ])
@@ -115,12 +115,12 @@ class ViewVendorBill extends ViewRecord
                         app(PaymentService::class)->confirm($payment, $user);
 
                         Notification::make()
-                            ->title(__('Payment registered successfully'))
+                            ->title(__('accounting::bill.notification_payment_registered'))
                             ->success()
                             ->send();
                     } catch (Exception $e) {
                         Notification::make()
-                            ->title(__('Error registering payment'))
+                            ->title(__('accounting::bill.notification_payment_error'))
                             ->body($e->getMessage())
                             ->danger()
                             ->send();

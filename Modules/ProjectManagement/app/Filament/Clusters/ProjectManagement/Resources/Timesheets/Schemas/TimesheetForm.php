@@ -53,7 +53,7 @@ class TimesheetForm
                             ->reactive()
                             ->afterStateUpdated(fn ($state, callable $set) => $set('project_task_id', null)),
                         Select::make('project_task_id')
-                            ->label('Task')
+                            ->label(__('projectmanagement::project.form.labels.task'))
                             ->relationship('projectTask', 'name', function ($query, Get $get) {
                                 $projectId = $get('project_id');
                                 if ($projectId) {

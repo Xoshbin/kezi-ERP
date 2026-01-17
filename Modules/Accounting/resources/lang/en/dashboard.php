@@ -70,4 +70,10 @@ return [
         'revenue_sources' => 'Revenue sources',
         'cost_categories' => 'Cost categories',
     ],
+
+    'exchange_rates' => [
+        'no_rates' => 'No Exchange Rates',
+        'no_recent' => 'No recent exchange rates available',
+        'update_description' => 'Update exchange rates to see current data',
+    ],
 ];
