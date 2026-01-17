@@ -44,18 +44,16 @@ class UpdateRequestForQuotationAction
                 $currencyCode = $rfq->currency->code;
 
                 $line->unit_price = $lineDto->unitPrice ?? \Brick\Money\Money::of(0, $currencyCode);
-                $line->subtotal = \Brick\Money\Money::of(0, $currencyCode);
-                $line->tax_amount = \Brick\Money\Money::of(0, $currencyCode);
-                $line->total = \Brick\Money\Money::of(0, $currencyCode);
 
+                $line->calculateTotals();
                 $line->save();
                 $lines[] = $line;
             }
 
             $rfq->setRelation('lines', collect($lines));
 
-            // Recalculate totals service or logic
-            app(\Modules\Purchase\Services\RequestForQuotationService::class)->calculateTotals($rfq);
+            // Recalculate totals
+            $rfq->calculateTotals();
             $rfq->save();
 
             return $rfq;

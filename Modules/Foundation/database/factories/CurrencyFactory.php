@@ -23,12 +23,17 @@ class CurrencyFactory extends Factory
 
         // Avoid relying on Faker providers; use native random selection for stability
         $currencyCode = $currencies[array_rand($currencies)];
+        $decimalPlaces = match ($currencyCode) {
+            'JPY' => 0,
+            'IQD' => 3,
+            default => 2,
+        };
 
         return [
             'name' => $currencyCode.' Currency',
             'code' => $currencyCode,
-            'symbol' => '$',
-            'decimal_places' => 2,
+            'symbol' => $currencyCode === 'USD' ? '$' : ($currencyCode === 'JPY' ? '¥' : $currencyCode),
+            'decimal_places' => $decimalPlaces,
             'is_active' => true,
         ];
     }

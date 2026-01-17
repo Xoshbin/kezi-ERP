@@ -2,7 +2,6 @@
 
 namespace Modules\Purchase\Actions\Purchases;
 
-use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Purchase\DataTransferObjects\Purchases\UpdatePurchaseOrderDTO;
@@ -56,7 +55,7 @@ class UpdatePurchaseOrderAction
             // Delete existing lines
             $purchaseOrder->lines()->delete();
 
-            // Create new lines from DTO
+            // Create new lines and calculate their totals
             $lines = [];
             foreach ($dto->lines as $lineDto) {
                 $line = new PurchaseOrderLine([
@@ -67,18 +66,22 @@ class UpdatePurchaseOrderAction
                     'quantity' => $lineDto->quantity,
                     'quantity_received' => 0,
                     'unit_price' => $lineDto->unit_price,
-                    'subtotal' => Money::of(0, $purchaseOrder->currency->code),
-                    'total_line_tax' => Money::of(0, $purchaseOrder->currency->code),
-                    'total' => Money::of(0, $purchaseOrder->currency->code),
                     'expected_delivery_date' => $lineDto->expected_delivery_date,
                     'shipping_cost_type' => $lineDto->shipping_cost_type,
                     'notes' => $lineDto->notes,
                 ]);
 
+                // We must associate the PO to the line for DocumentCurrencyMoneyCast to work
+                $line->setRelation('purchaseOrder', $purchaseOrder);
+
+                if ($line->tax_id) {
+                    $line->load('tax');
+                }
+                $line->calculateTotals();
                 $lines[] = $line;
             }
 
-            // Set relation and calculate totals
+            // Set relation and calculate PO totals
             $purchaseOrder->setRelation('lines', collect($lines));
             $purchaseOrder->calculateTotalsFromLines();
             $purchaseOrder->save();
@@ -86,11 +89,6 @@ class UpdatePurchaseOrderAction
             // Save all lines
             foreach ($lines as $line) {
                 $line->purchase_order_id = $purchaseOrder->id;
-                // Load the tax relationship if needed for calculation
-                if ($line->tax_id) {
-                    $line->load('tax');
-                }
-                $line->calculateTotals();
                 $line->save();
             }
 

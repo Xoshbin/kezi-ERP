@@ -34,12 +34,12 @@ class QuoteLineFactory extends Factory
             'quantity' => $quantity,
             'unit' => $this->faker->randomElement(['piece', 'kg', 'hour', 'unit']),
             'line_order' => 0,
-            'unit_price' => $unitPrice * 1000, // Store in minor units (assuming 3 decimal places like IQD)
+            'unit_price' => $unitPrice,
             'discount_percentage' => 0,
             'discount_amount' => 0,
-            'subtotal' => $subtotal * 1000,
+            'subtotal' => round($subtotal, 2),
             'tax_amount' => 0,
-            'total' => $subtotal * 1000,
+            'total' => round($subtotal, 2),
         ];
     }
 
