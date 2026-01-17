@@ -8,4 +8,11 @@ use Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\WorkCenterRe
 class EditWorkCenter extends EditRecord
 {
     protected static string $resource = WorkCenterResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            \Filament\Actions\DeleteAction::make(),
+        ];
+    }
 }

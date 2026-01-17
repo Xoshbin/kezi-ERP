@@ -29,8 +29,9 @@ class BOMService
         $total = \Brick\Money\Money::zero($bom->lines->first()?->currency_code ?? 'USD');
 
         foreach ($bom->lines as $line) {
-            $lineCost = \Brick\Money\Money::ofMinor($line->unit_cost, $line->currency_code)
-                ->multipliedBy($line->quantity);
+            /** @var \Brick\Money\Money $unitCost */
+            $unitCost = $line->unit_cost;
+            $lineCost = $unitCost->multipliedBy($line->quantity);
             $total = $total->plus($lineCost);
         }
 
