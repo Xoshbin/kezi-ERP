@@ -70,7 +70,7 @@ class VendorBillResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::navigation.groups.sales_purchases');
+        return __('accounting::navigation.groups.transactions');
     }
 
     public static function getModelLabel(): string
@@ -745,12 +745,12 @@ class VendorBillResource extends Resource
                         ->label(__('Create Landed Cost'))
                         ->icon('heroicon-o-truck')
                         ->visible(fn (VendorBill $record) => $record->status === VendorBillStatus::Posted)
-                        ->url(fn (VendorBill $record) => \Modules\Inventory\Filament\Resources\LandedCostResource::getUrl('create', [
+                        ->url(fn (VendorBill $record) => \Modules\Inventory\Filament\Clusters\Inventory\Resources\LandedCostResource::getUrl('create', [
                             'vendor_bill_id' => $record->id,
                         ])),
                 ]),
                 Action::make('register_payment')
-                    ->label(__('Register Payment'))
+                    ->label(__('accounting::bill.actions.register_payment'))
                     ->icon('heroicon-o-banknotes')
                     ->color('warning')
                     ->modalHeading(__('Register Payment'))

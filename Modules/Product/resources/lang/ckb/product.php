@@ -4,6 +4,7 @@ return [
     // Labels
     'label' => 'بەرهەم',
     'plural_label' => 'بەرهەمەکان',
+    'create' => 'دروستکردنی بەرهەم',
 
     // Basic Information
     'basic_information' => 'زانیاری بنەڕەتی',
@@ -65,4 +66,7 @@ return [
     'created_at' => 'کاتی دروستبوون',
     'updated_at' => 'کاتی نوێکردنەوە',
     'deleted_at' => 'کاتی سڕینەوە',
+    'navigation' => [
+        'name' => 'بەرهەمەکان',
+    ],
 ];

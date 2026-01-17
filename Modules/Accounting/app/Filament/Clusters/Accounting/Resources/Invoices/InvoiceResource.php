@@ -71,7 +71,7 @@ class InvoiceResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::navigation.groups.sales_purchases');
+        return __('accounting::navigation.groups.transactions');
     }
 
     public static function getModelLabel(): string

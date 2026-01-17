@@ -194,4 +194,11 @@ return [
     'cash_flow_verification_note' => 'The ending cash balance should equal beginning cash plus net change in cash.',
     'iraq_vat_return' => 'Iraq VAT Return',
     'navigation_group' => 'Reports',
+    // Analytic Report
+    'analytic_report' => 'Analytic Report',
+    'analytic_plans' => 'Analytic Plans',
+    'select_analytic_plans' => 'Select Analytic Plans',
+    'report_under_construction' => 'This report is currently being built. Check back soon!',
+    'click_generate_to_view' => 'Click "Generate Report" to view Analytic Report.',
+    'error_generating_report' => 'Error generating report',
 ];

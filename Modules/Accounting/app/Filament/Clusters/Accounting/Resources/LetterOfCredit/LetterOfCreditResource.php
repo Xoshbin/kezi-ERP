@@ -48,14 +48,14 @@ class LetterOfCreditResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::lc.navigation_group');
+        return __('accounting::navigation.groups.transactions');
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('LC Details')
+                Section::make(__('accounting::lc.lc_details'))
                     ->schema([
                         Group::make([
                             ToggleButtons::make('type')

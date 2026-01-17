@@ -14,6 +14,9 @@ return [
     'field_closed_at' => 'Closed At',
     'field_periods_count' => 'Periods',
     'cannot_delete_closed' => 'Cannot delete a closed fiscal year.',
+    'closing_entry_line' => 'Closing Entry Line',
+    'net_profit_to_retained_earnings' => 'Net Profit to Retained Earnings',
+    'net_loss_to_retained_earnings' => 'Net Loss to Retained Earnings',
     'action_close' => 'Close Fiscal Year',
     'wizard_step_preview' => 'Preview Results',
     'wizard_step_preview_desc' => 'Review the calculated P&L for this fiscal year.',
@@ -48,4 +51,5 @@ return [
     'action_generate_opening' => 'Generate Opening Entry',
     'opening_in_progress' => 'Opening entry generation in progress...',
     'opening_generated_successfully' => 'Opening entry generated successfully.',
+    'opening_entry_failed' => 'Failed to generate opening entry',
 ];

@@ -18,6 +18,7 @@ class ListWithholdingTaxTypes extends ListRecords
     {
         return [
             LocaleSwitcher::make(),
+            \Modules\Foundation\Filament\Actions\DocsAction::make('understanding-withholding-tax'),
             CreateAction::make(),
         ];
     }

@@ -13,6 +13,7 @@ class ListDeferredItems extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('deferred-items'),
             Actions\CreateAction::make(),
         ];
     }

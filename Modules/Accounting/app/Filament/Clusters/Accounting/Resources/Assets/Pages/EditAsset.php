@@ -23,7 +23,7 @@ class EditAsset extends EditRecord
     {
         return [
             Action::make('computeDepreciation')
-                ->label('Compute Depreciation Board')
+                ->label(__('accounting::asset.compute_depreciation_board'))
                 ->action('computeDepreciation'),
             DeleteAction::make()
                 ->using(function ($record) {
@@ -42,7 +42,7 @@ class EditAsset extends EditRecord
 
         app(\Modules\Accounting\Services\AssetService::class)->computeDepreciation($asset);
         Notification::make()
-            ->title('Depreciation board computed')
+            ->title(__('accounting::asset.depreciation_board_computed'))
             ->success()
             ->send();
     }

@@ -56,7 +56,7 @@ class BudgetsRelationManager extends RelationManager
                     ->sortable()
                     ->alignEnd(),
                 ProgressColumn::make('utilization_percentage')
-                    ->label('Utilization'),
+                    ->label(__('projectmanagement::project.form.labels.utilization')),
             ])
             ->filters([
                 //

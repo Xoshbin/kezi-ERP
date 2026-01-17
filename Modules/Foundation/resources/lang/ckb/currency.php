@@ -13,6 +13,7 @@ return [
     'is_active' => 'چالاکە',
     'last_updated_at' => 'کۆتا نوێکردنەوە',
     'created_at' => 'کاتی دروستکردن',
+    'created' => 'دروستکراوە',
     'updated_at' => 'کاتی نوێکردنەوە',
 
     // Exchange Rates

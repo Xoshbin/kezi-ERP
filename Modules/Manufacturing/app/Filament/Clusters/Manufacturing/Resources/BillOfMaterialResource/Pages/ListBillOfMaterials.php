@@ -12,6 +12,7 @@ class ListBillOfMaterials extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('bill-of-materials'),
             \Filament\Actions\CreateAction::make(),
         ];
     }

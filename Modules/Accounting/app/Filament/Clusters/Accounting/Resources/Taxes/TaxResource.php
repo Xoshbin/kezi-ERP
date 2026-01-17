@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Taxes;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -10,6 +11,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -18,7 +20,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Modules\Accounting\Enums\Accounting\TaxType;
-use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages\CreateTax;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages\EditTax;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages\ListTaxes;
@@ -27,7 +28,7 @@ use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class TaxResource extends Resource
 {
-    protected static ?string $cluster = AccountingCluster::class;
+    protected static ?string $cluster = SettingsCluster::class;
 
     use Translatable;
 
@@ -50,6 +51,11 @@ class TaxResource extends Resource
     public static function getNavigationLabel(): string
     {
         return __('accounting::tax.plural_label');
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return __('accounting::navigation.groups.administration');
     }
 
     public static function form(Schema $schema): Schema
@@ -80,16 +86,16 @@ class TaxResource extends Resource
                             ])
                             ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
                             ->createOptionAction(fn (Action $a) => $a->name('create-account-option')->modalWidth('lg'))
-                            ->required(fn (\Filament\Forms\Get $get) => ! $get('is_group'))
-                            ->visible(fn (\Filament\Forms\Get $get) => ! $get('is_group')),
+                            ->required(fn (Get $get) => ! $get('is_group'))
+                            ->visible(fn (Get $get) => ! $get('is_group')),
 
                         Select::make('children')
                             ->relationship('children', 'name')
                             ->multiple()
                             ->preload()
                             ->label(__('accounting::tax.children'))
-                            ->visible(fn (\Filament\Forms\Get $get) => $get('is_group'))
-                            ->required(fn (\Filament\Forms\Get $get) => $get('is_group')),
+                            ->visible(fn (Get $get) => $get('is_group'))
+                            ->required(fn (Get $get) => $get('is_group')),
 
                         TextInput::make('name')
                             ->label(__('accounting::tax.name'))
@@ -99,7 +105,7 @@ class TaxResource extends Resource
                             ->label(__('accounting::tax.rate'))
                             ->required()
                             ->numeric()
-                            ->helperText(fn (\Filament\Forms\Get $get) => $get('is_group') ? 'For groups, ensure this matches the sum of children rates.' : null),
+                            ->helperText(fn (Get $get) => $get('is_group') ? 'For groups, ensure this matches the sum of children rates.' : null),
                         Select::make('type')
                             ->label(__('accounting::tax.type'))
                             ->options(collect(TaxType::cases())->mapWithKeys(fn ($c) => [$c->value => $c->label()]))
@@ -108,12 +114,12 @@ class TaxResource extends Resource
                         TextInput::make('country')
                             ->label(__('accounting::tax.country'))
                             ->maxLength(2)
-                            ->placeholder('IQ'),
+                            ->placeholder(__('accounting::tax.placeholders.country')),
 
                         TextInput::make('report_tag')
                             ->label(__('accounting::tax.report_tag'))
                             ->maxLength(255)
-                            ->placeholder('VAT_SALES_STD'),
+                            ->placeholder(__('accounting::tax.placeholders.report_tag')),
 
                         Toggle::make('is_active')
                             ->label(__('accounting::tax.is_active'))
@@ -122,7 +128,7 @@ class TaxResource extends Resource
                             ->label(__('accounting::tax.is_recoverable'))
                             ->helperText(__('accounting::tax.is_recoverable_help'))
                             ->default(true)
-                            ->visible(fn (\Filament\Forms\Get $get) => ! $get('is_group')),
+                            ->visible(fn (Get $get) => ! $get('is_group')),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

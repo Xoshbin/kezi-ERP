@@ -2,7 +2,7 @@
 
 return [
     'label' => 'هەڵسەنگاندنەوەی دراو',
-    'plural_label' => 'هەڵسەنگاندنەوەکانی دراو',
+    'plural_label' => 'هەڵسەنگاندنەکانی دراو',
     'fields' => [
         'revaluation_date' => 'بەرواری هەڵسەنگاندنەوە',
         'description' => 'وەسف',

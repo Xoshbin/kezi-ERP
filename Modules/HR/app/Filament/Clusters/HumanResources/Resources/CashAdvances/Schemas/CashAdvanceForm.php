@@ -10,7 +10,7 @@ class CashAdvanceForm
     {
         return $schema
             ->components([
-                \Filament\Schemas\Components\Section::make('Request Details')
+                \Filament\Schemas\Components\Section::make(__('hr::cash_advance.sections.request_details'))
                     ->schema([
                         \Filament\Forms\Components\Select::make('employee_id')
                             ->relationship('employee', 'first_name')

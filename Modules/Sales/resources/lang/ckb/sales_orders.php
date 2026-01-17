@@ -35,6 +35,9 @@ return [
         'created_by' => 'دروستکراوە لەلایەن',
         'created_at' => 'بەرواری دروستکردن',
         'updated_at' => 'بەرواری نوێکردنەوە',
+        'exchange_rate' => 'ڕێژەی ئاڵوگۆڕ',
+        'incoterm' => 'ئینكۆتێرم',
+        'total_tax' => 'کۆی باج',
     ],
     'tabs' => [
         'order_lines' => 'هێڵەکانی داواکاری',
@@ -44,6 +47,8 @@ return [
         'confirm' => 'پەسەندکردن',
         'cancel' => 'هەڵوەشاندنەوە',
         'create_invoice' => 'دروستکردنی پسوڵە',
+        'create_delivery' => 'دروستکردنی گەیاندن',
+        'view_delivery' => 'بینینی گەیاندن',
         'preview' => 'پێشبینین',
     ],
     'help' => [
@@ -54,11 +59,17 @@ return [
         'status_can_deliver' => 'کاڵاکان ئامادەن بۆ گەیاندن.',
         'status_cannot_deliver' => 'پێویستە داواکارییەکە پەسەند بکرێت پێش گەیاندن.',
         'status_can_create_bill' => 'دەتوانرێت پسوڵەی فرۆشیار دروست بکرێت لەم داواکارییەوە.',
+        'exchange_rate' => 'ڕێژەی ئاڵوگۆڕ لە کاتی دروستکردندا',
     ],
     'sections' => [
         'basic_info' => 'زانیاری سەرەتایی',
         'line_items' => 'بڕگەکانی هێڵ',
+        'line_items_description' => 'بەڕێوەبردنی بەرهەمەکان و بڕەکان',
         'additional_info' => 'زانیاری زیادە',
+        'customer_details' => 'وردەکارییەکانی کڕیار',
+        'delivery_info' => 'زانیاری گەیاندن',
+        'notes' => 'تێبینی و مەرجەکان',
+        'totals' => 'کۆیەکان',
     ],
     'statuses' => [
         'quotation' => 'تەرسیمە',
@@ -88,5 +99,11 @@ return [
         'not_invoiced' => 'پسوڵە نەکراوە',
         'invoiced' => 'بە تەواوی پسوڵەکراوە',
         'multiple_invoices' => ':count پسوڵەکان',
+    ],
+    'form' => [
+        'invoice_date' => 'بەرواری پسوولە',
+        'due_date' => 'بەرواری شایستە',
+        'default_income_account' => 'هەژماری داهاتی بنەڕەتی',
+        'error' => 'هەڵە',
     ],
 ];

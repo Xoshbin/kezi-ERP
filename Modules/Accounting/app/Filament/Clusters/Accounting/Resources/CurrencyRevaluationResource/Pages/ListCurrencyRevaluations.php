@@ -13,6 +13,7 @@ class ListCurrencyRevaluations extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('currency-revaluation'),
             Actions\CreateAction::make(),
         ];
     }

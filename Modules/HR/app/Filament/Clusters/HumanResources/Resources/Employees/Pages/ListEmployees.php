@@ -13,6 +13,7 @@ class ListEmployees extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('employee-management'),
             CreateAction::make(),
         ];
     }

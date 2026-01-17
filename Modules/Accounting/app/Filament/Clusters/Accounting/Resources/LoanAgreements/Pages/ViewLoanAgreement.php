@@ -33,7 +33,7 @@ class ViewLoanAgreement extends ViewRecord
             DocsAction::make('loan-agreements'),
             Actions\EditAction::make(),
             Actions\Action::make('computeSchedule')
-                ->label(__('Compute Schedule'))
+                ->label(__('accounting::loan.compute_schedule'))
                 ->action(function () {
                     $record = $this->getRecord();
                     $loan = $record instanceof LoanAgreement ? $record : null;
@@ -44,7 +44,7 @@ class ViewLoanAgreement extends ViewRecord
                     $loan->refresh();
                 }),
             Actions\Action::make('recalculateEIR')
-                ->label(__('Recalculate EIR'))
+                ->label(__('accounting::loan.recalculate_eir'))
                 ->action(function () {
                     $record = $this->getRecord();
                     $loan = $record instanceof LoanAgreement ? $record : null;
@@ -193,7 +193,7 @@ class ViewLoanAgreement extends ViewRecord
                         })
                         ->required(),
                     Select::make('bank_account_id')
-                        ->label('Bank Account')
+                        ->label(__('accounting::loan.bank_account'))
                         ->searchable()
                         ->preload()
                         ->options(function () {

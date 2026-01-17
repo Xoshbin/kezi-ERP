@@ -38,4 +38,7 @@ return [
     'as_of_date' => 'لە بەرواری',
     'balance_after' => 'باڵانس دوای',
     'reclassify' => 'پۆلێنکردنەوەی بەشی ئێستا',
+    'bank_account' => 'هەژماری بانکی',
+    'compute_schedule' => 'خشتەی هەژمارکردن',
+    'recalculate_eir' => 'هەژمارکردنەوەی EIR',
 ];

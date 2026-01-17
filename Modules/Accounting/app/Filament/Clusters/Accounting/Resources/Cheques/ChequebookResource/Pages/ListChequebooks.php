@@ -5,6 +5,7 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Cheques\Cheq
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Cheques\ChequebookResource;
+use Modules\Foundation\Filament\Actions\DocsAction;
 
 class ListChequebooks extends ListRecords
 {
@@ -13,6 +14,7 @@ class ListChequebooks extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            DocsAction::make('cheque-management'),
             Actions\CreateAction::make(),
         ];
     }

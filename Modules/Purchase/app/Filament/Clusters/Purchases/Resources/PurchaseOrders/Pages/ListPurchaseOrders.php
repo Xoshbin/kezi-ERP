@@ -13,6 +13,7 @@ class ListPurchaseOrders extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('understanding-purchase-orders'),
             CreateAction::make(),
         ];
     }

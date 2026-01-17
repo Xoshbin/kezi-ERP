@@ -41,4 +41,9 @@ return [
         'vendor' => 'Vendor',
         'both' => 'Both',
     ],
+    'revaluation_status' => [
+        'draft' => 'Draft',
+        'posted' => 'Posted',
+        'reversed' => 'Reversed',
+    ],
 ];

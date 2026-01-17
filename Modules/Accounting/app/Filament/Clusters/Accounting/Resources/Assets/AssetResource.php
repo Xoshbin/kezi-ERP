@@ -44,7 +44,7 @@ class AssetResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::navigation.groups.core_accounting');
+        return __('accounting::navigation.groups.financial_planning');
     }
 
     public static function getModelLabel(): string
