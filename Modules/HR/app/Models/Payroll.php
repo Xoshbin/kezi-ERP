@@ -70,6 +70,11 @@ class Payroll extends Model
 {
     use HasFactory;
 
+    protected static function newFactory()
+    {
+        return \Modules\HR\Database\Factories\PayrollFactory::new();
+    }
+
     /**
      * The attributes that are mass assignable.
      *
