@@ -113,6 +113,9 @@ describe('CreateBOMAction', function () {
         $action = app(CreateBOMAction::class);
         $bom = $action->execute($dto);
 
+        // Reload with proper relationships for Money cast to work
+        $bom->load(['lines.company.currency']);
+
         // Assert
         expect($bom)->toBeInstanceOf(BillOfMaterial::class);
         expect($bom->lines)->toHaveCount(3);
@@ -121,18 +124,21 @@ describe('CreateBOMAction', function () {
         $motherboardLine = $bom->lines->where('product_id', $motherboard->id)->first();
         expect($motherboardLine)->not->toBeNull();
         expect((float) $motherboardLine->quantity)->toBe(1.0);
+        expect($motherboardLine->unit_cost)->toBeInstanceOf(Money::class);
         expect($motherboardLine->unit_cost->isEqualTo(Money::of(150000, $currencyCode)))->toBeTrue();
 
         // Verify CPU line
         $cpuLine = $bom->lines->where('product_id', $cpu->id)->first();
         expect($cpuLine)->not->toBeNull();
         expect((float) $cpuLine->quantity)->toBe(1.0);
+        expect($cpuLine->unit_cost)->toBeInstanceOf(Money::class);
         expect($cpuLine->unit_cost->isEqualTo(Money::of(300000, $currencyCode)))->toBeTrue();
 
         // Verify RAM line (2 modules)
         $ramLine = $bom->lines->where('product_id', $ram->id)->first();
         expect($ramLine)->not->toBeNull();
         expect((float) $ramLine->quantity)->toBe(2.0);
+        expect($ramLine->unit_cost)->toBeInstanceOf(Money::class);
         expect($ramLine->unit_cost->isEqualTo(Money::of(50000, $currencyCode)))->toBeTrue();
     });
 

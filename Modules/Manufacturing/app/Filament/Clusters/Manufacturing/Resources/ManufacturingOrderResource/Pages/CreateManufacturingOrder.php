@@ -2,6 +2,7 @@
 
 namespace Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\ManufacturingOrderResource\Pages;
 
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Modules\Manufacturing\DataTransferObjects\CreateManufacturingOrderDTO;
 use Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\ManufacturingOrderResource;
@@ -13,7 +14,9 @@ class CreateManufacturingOrder extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['company_id'] = auth()->user()->currentCompany->id;
+        /** @var \App\Models\Company $tenant */
+        $tenant = Filament::getTenant();
+        $data['company_id'] = $tenant->id;
 
         return $data;
     }

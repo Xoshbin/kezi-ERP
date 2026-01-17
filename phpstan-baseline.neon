@@ -1626,8 +1626,6 @@ parameters:
 			count: 1
 			path: Modules/Accounting/app/Filament/Clusters/Accounting/Resources/VendorBills/VendorBillResource.php
 
-
-
 		-
 			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
 			identifier: property.nonObject
@@ -2707,7 +2705,6 @@ parameters:
 			identifier: array.duplicateKey
 			count: 1
 			path: Modules/Accounting/resources/lang/ar/bank_statement.php
-
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
@@ -11673,8 +11670,6 @@ parameters:
 			count: 2
 			path: Modules/Inventory/app/Filament/Clusters/Inventory/Resources/StockPickingResource/Pages/ValidateStockPicking.php
 
-
-
 		-
 			message: '#^Access to an undefined property Modules\\Inventory\\Filament\\Clusters\\Inventory\\Resources\\StockPickingResource\\Pages\\ValidateStockPicking\:\:\$form\.$#'
 			identifier: property.notFound
@@ -13396,7 +13391,6 @@ parameters:
 			identifier: property.phpDocType
 			count: 1
 			path: Modules/Inventory/database/factories/StockMoveProductLineFactory.php
-
 
 		-
 			message: '#^Access to an undefined property Modules\\Inventory\\Models\\AdjustmentDocument\:\:\$exchange_rate_at_creation\.$#'
@@ -18007,24 +18001,6 @@ parameters:
 			path: Modules/Manufacturing/app/Actions/ConsumeComponentsAction.php
 
 		-
-			message: '#^Call to an undefined method Modules\\Inventory\\Services\\Inventory\\StockMoveService\:\:createAndConfirm\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: Modules/Manufacturing/app/Actions/ConsumeComponentsAction.php
-
-		-
-			message: '#^Instantiated class Modules\\Inventory\\DataTransferObjects\\CreateStockMoveDTO not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: Modules/Manufacturing/app/Actions/ConsumeComponentsAction.php
-
-		-
-			message: '#^Instantiated class Modules\\Inventory\\DataTransferObjects\\StockMoveProductLineDTO not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: Modules/Manufacturing/app/Actions/ConsumeComponentsAction.php
-
-		-
 			message: '#^Method Modules\\Manufacturing\\Actions\\ConsumeComponentsAction\:\:execute\(\) should return Modules\\Manufacturing\\Models\\ManufacturingOrder but returns Modules\\Manufacturing\\Models\\ManufacturingOrder\|null\.$#'
 			identifier: return.type
 			count: 1
@@ -18097,12 +18073,6 @@ parameters:
 			path: Modules/Manufacturing/app/Filament/Clusters/Manufacturing/Resources/ManufacturingOrderResource.php
 
 		-
-			message: '#^Cannot access property \$currentCompany on App\\Models\\User\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: Modules/Manufacturing/app/Filament/Clusters/Manufacturing/Resources/ManufacturingOrderResource/Pages/CreateManufacturingOrder.php
-
-		-
 			message: '#^Cannot access property \$status on Illuminate\\Database\\Eloquent\\Model\|int\|string\|null\.$#'
 			identifier: property.nonObject
 			count: 6
@@ -18167,12 +18137,6 @@ parameters:
 			identifier: class.notFound
 			count: 1
 			path: Modules/Manufacturing/app/Filament/Clusters/Manufacturing/Resources/ManufacturingOrderResource/RelationManagers/LinesRelationManager.php
-
-		-
-			message: '#^Cannot access property \$currentCompany on App\\Models\\User\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: Modules/Manufacturing/app/Filament/Clusters/Manufacturing/Resources/WorkCenterResource/Pages/CreateWorkCenter.php
 
 		-
 			message: '#^Cannot access property \$currentCompany on App\\Models\\User\|null\.$#'
@@ -18277,12 +18241,6 @@ parameters:
 			path: Modules/Manufacturing/app/Http/Controllers/ManufacturingController.php
 
 		-
-			message: '#^Class App\\Casts\\MoneyCast not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: Modules/Manufacturing/app/Models/BOMLine.php
-
-		-
 			message: '#^Class Modules\\Manufacturing\\Models\\BOMLine uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
@@ -18323,12 +18281,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: Modules/Manufacturing/app/Models/ManufacturingOrderLine.php
-
-		-
-			message: '#^Class App\\Casts\\MoneyCast not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: Modules/Manufacturing/app/Models/WorkCenter.php
 
 		-
 			message: '#^Class Modules\\Manufacturing\\Models\\WorkCenter uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -18403,6 +18355,36 @@ parameters:
 			path: Modules/Manufacturing/app/Services/ManufacturingOrderService.php
 
 		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Manufacturing/database/factories/BOMLineFactory.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 4
+			path: Modules/Manufacturing/database/factories/BOMLineFactory.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Manufacturing\\Models\\BillOfMaterial\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Manufacturing/database/factories/BOMLineFactory.php
+
+		-
+			message: '#^Access to property \$id on an unknown class Modules\\Product\\Database\\Factories\\Product\.$#'
+			identifier: class.notFound
+			count: 1
+			path: Modules/Manufacturing/database/factories/BOMLineFactory.php
+
+		-
+			message: '#^Class Modules\\Manufacturing\\Database\\Factories\\BOMLineFactory extends generic class Illuminate\\Database\\Eloquent\\Factories\\Factory but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: Modules/Manufacturing/database/factories/BOMLineFactory.php
+
+		-
 			message: '#^Access to property \$id on an unknown class Modules\\Product\\Database\\Factories\\Product\.$#'
 			identifier: class.notFound
 			count: 1
@@ -18439,10 +18421,280 @@ parameters:
 			path: Modules/Manufacturing/database/factories/ManufacturingOrderFactory.php
 
 		-
+			message: '#^Access to property \$id on an unknown class Modules\\Product\\Database\\Factories\\Product\.$#'
+			identifier: class.notFound
+			count: 1
+			path: Modules/Manufacturing/database/factories/ManufacturingOrderLineFactory.php
+
+		-
+			message: '#^Cannot access property \$company_id on Illuminate\\Database\\Eloquent\\Collection\<int, Modules\\Manufacturing\\Models\\ManufacturingOrder\>\|Modules\\Manufacturing\\Models\\ManufacturingOrder\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: Modules/Manufacturing/database/factories/ManufacturingOrderLineFactory.php
+
+		-
+			message: '#^Class Modules\\Manufacturing\\Database\\Factories\\ManufacturingOrderLineFactory extends generic class Illuminate\\Database\\Eloquent\\Factories\\Factory but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: Modules/Manufacturing/database/factories/ManufacturingOrderLineFactory.php
+
+		-
 			message: '#^Class Modules\\Manufacturing\\Database\\Factories\\WorkCenterFactory extends generic class Illuminate\\Database\\Eloquent\\Factories\\Factory but does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: Modules/Manufacturing/database/factories/WorkCenterFactory.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 7
+			path: Modules/Manufacturing/tests/Feature/Actions/ConsumeComponentsActionTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$product_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: Modules/Manufacturing/tests/Feature/Actions/ConsumeComponentsActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 35
+			path: Modules/Manufacturing/tests/Feature/Actions/ConsumeComponentsActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$destinationLocation\.$#'
+			identifier: property.notFound
+			count: 8
+			path: Modules/Manufacturing/tests/Feature/Actions/ConsumeComponentsActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$sourceLocation\.$#'
+			identifier: property.notFound
+			count: 8
+			path: Modules/Manufacturing/tests/Feature/Actions/ConsumeComponentsActionTest.php
+
+		-
+			message: '#^Access to property \$id on an unknown class Modules\\Product\\Database\\Factories\\Product\.$#'
+			identifier: class.notFound
+			count: 15
+			path: Modules/Manufacturing/tests/Feature/Actions/ConsumeComponentsActionTest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:lines\(\)\.$#'
+			identifier: method.notFound
+			count: 5
+			path: Modules/Manufacturing/tests/Feature/Actions/ConsumeComponentsActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Actions/ConsumeComponentsActionTest.php
+
+		-
+			message: '#^Cannot access property \$quantity_consumed on Modules\\Manufacturing\\Models\\ManufacturingOrderLine\|null\.$#'
+			identifier: property.nonObject
+			count: 5
+			path: Modules/Manufacturing/tests/Feature/Actions/ConsumeComponentsActionTest.php
+
+		-
+			message: '#^Parameter \#1 \$mo of method Modules\\Manufacturing\\Actions\\ConsumeComponentsAction\:\:execute\(\) expects Modules\\Manufacturing\\Models\\ManufacturingOrder, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 7
+			path: Modules/Manufacturing/tests/Feature/Actions/ConsumeComponentsActionTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateBOMActionTest.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Manufacturing\\Models\\BillOfMaterial\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateBOMActionTest.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Manufacturing\\Models\\BillOfMaterial\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateBOMActionTest.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Manufacturing\\Models\\BillOfMaterial\:\:\$is_active\.$#'
+			identifier: property.notFound
+			count: 2
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateBOMActionTest.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Manufacturing\\Models\\BillOfMaterial\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateBOMActionTest.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Manufacturing\\Models\\BillOfMaterial\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateBOMActionTest.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Manufacturing\\Models\\BillOfMaterial\:\:\$product_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateBOMActionTest.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Manufacturing\\Models\\BillOfMaterial\:\:\$quantity\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateBOMActionTest.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Manufacturing\\Models\\BillOfMaterial\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateBOMActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 21
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateBOMActionTest.php
+
+		-
+			message: '#^Access to property \$id on an unknown class Modules\\Product\\Database\\Factories\\Product\.$#'
+			identifier: class.notFound
+			count: 16
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateBOMActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateBOMActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateBOMActionTest.php
+
+		-
+			message: '#^Cannot access property \$quantity on Modules\\Manufacturing\\Models\\BOMLine\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateBOMActionTest.php
+
+		-
+			message: '#^Cannot access property \$unit_cost on Modules\\Manufacturing\\Models\\BOMLine\|null\.$#'
+			identifier: property.nonObject
+			count: 6
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateBOMActionTest.php
+
+		-
+			message: '#^Cannot access property \$work_center_id on Modules\\Manufacturing\\Models\\BOMLine\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateBOMActionTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function expect$#'
+			identifier: argument.templateType
+			count: 12
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateBOMActionTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 8
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateManufacturingOrderActionTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$product_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateManufacturingOrderActionTest.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Manufacturing\\Models\\ManufacturingOrder\:\:\$actual_start_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateManufacturingOrderActionTest.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Manufacturing\\Models\\ManufacturingOrder\:\:\$bom_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateManufacturingOrderActionTest.php
+
+		-
+			message: '#^Access to an undefined property Modules\\Manufacturing\\Models\\ManufacturingOrder\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateManufacturingOrderActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 26
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateManufacturingOrderActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$destinationLocation\.$#'
+			identifier: property.notFound
+			count: 8
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateManufacturingOrderActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$sourceLocation\.$#'
+			identifier: property.notFound
+			count: 8
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateManufacturingOrderActionTest.php
+
+		-
+			message: '#^Access to property \$id on an unknown class Modules\\Product\\Database\\Factories\\Product\.$#'
+			identifier: class.notFound
+			count: 14
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateManufacturingOrderActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateManufacturingOrderActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateManufacturingOrderActionTest.php
+
+		-
+			message: '#^Cannot access property \$quantity_consumed on Modules\\Manufacturing\\Models\\ManufacturingOrderLine\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateManufacturingOrderActionTest.php
+
+		-
+			message: '#^Cannot access property \$quantity_required on Modules\\Manufacturing\\Models\\ManufacturingOrderLine\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateManufacturingOrderActionTest.php
+
+		-
+			message: '#^Parameter \#1 \$bom of method Modules\\Manufacturing\\Database\\Factories\\BOMLineFactory\:\:forBom\(\) expects Modules\\Manufacturing\\Models\\BillOfMaterial, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 4
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateManufacturingOrderActionTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function expect$#'
+			identifier: argument.templateType
+			count: 3
+			path: Modules/Manufacturing/tests/Feature/Actions/CreateManufacturingOrderActionTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$company\.$#'
@@ -18485,6 +18737,78 @@ parameters:
 			identifier: argument.templateType
 			count: 3
 			path: Modules/Manufacturing/tests/Feature/BillOfMaterialTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Filament/BillOfMaterialResourceTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Filament/BillOfMaterialResourceTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Filament/BillOfMaterialResourceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 15
+			path: Modules/Manufacturing/tests/Feature/Filament/BillOfMaterialResourceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Filament/BillOfMaterialResourceTest.php
+
+		-
+			message: '#^Access to property \$id on an unknown class Modules\\Product\\Database\\Factories\\Product\.$#'
+			identifier: class.notFound
+			count: 3
+			path: Modules/Manufacturing/tests/Feature/Filament/BillOfMaterialResourceTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Filament/BillOfMaterialResourceTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Filament/BillOfMaterialResourceTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseMissing\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Filament/BillOfMaterialResourceTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:get\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: Modules/Manufacturing/tests/Feature/Filament/BillOfMaterialResourceTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: Modules/Manufacturing/tests/Feature/Filament/BillOfMaterialResourceTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function expect$#'
+			identifier: argument.templateType
+			count: 2
+			path: Modules/Manufacturing/tests/Feature/Filament/BillOfMaterialResourceTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$billOfMaterial\.$#'

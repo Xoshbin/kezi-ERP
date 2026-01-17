@@ -2,11 +2,13 @@
 
 namespace Modules\Manufacturing\Actions;
 
-use Brick\Money\Money;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Modules\Inventory\DataTransferObjects\CreateStockMoveDTO;
-use Modules\Inventory\DataTransferObjects\StockMoveProductLineDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
+use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
+use Modules\Inventory\Enums\Inventory\StockMoveStatus;
+use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Services\Inventory\StockMoveService;
 use Modules\Manufacturing\Enums\ManufacturingOrderStatus;
 use Modules\Manufacturing\Models\ManufacturingOrder;
@@ -30,27 +32,35 @@ class ConsumeComponentsAction
 
             foreach ($mo->lines as $line) {
                 if ($line->quantity_consumed < $line->quantity_required) {
-                    $quantityToConsume = $line->quantity_required - $line->quantity_consumed;
+                    $quantityToConsume = (float) ($line->quantity_required - $line->quantity_consumed);
 
-                    $productLines[] = new StockMoveProductLineDTO(
-                        productId: $line->product_id,
+                    $productLines[] = new CreateStockMoveProductLineDTO(
+                        product_id: $line->product_id,
                         quantity: $quantityToConsume,
-                        unitPrice: Money::ofMinor($line->unit_cost, $line->currency_code),
+                        from_location_id: $mo->source_location_id,
+                        to_location_id: $mo->destination_location_id,
+                        description: "Component consumption for MO/{$mo->number}",
+                        source_type: ManufacturingOrder::class,
+                        source_id: $mo->id,
                     );
                 }
             }
 
             if (! empty($productLines)) {
                 $stockMoveDTO = new CreateStockMoveDTO(
-                    companyId: $mo->company_id,
-                    sourceLocationId: $mo->source_location_id,
-                    destinationLocationId: $mo->source_location_id, // Virtual production location (same as source for now)
-                    productLines: $productLines,
+                    company_id: $mo->company_id,
+                    move_type: StockMoveType::InternalTransfer,
+                    status: StockMoveStatus::Done,
+                    move_date: Carbon::now(),
+                    created_by_user_id: (int) (Auth::id() ?? 1),
+                    product_lines: $productLines,
                     reference: "MO/{$mo->number}",
-                    scheduledDate: Carbon::now(),
+                    description: 'Component consumption for manufacturing order',
+                    source_type: ManufacturingOrder::class,
+                    source_id: $mo->id,
                 );
 
-                $stockMove = $this->stockMoveService->createAndConfirm($stockMoveDTO);
+                $stockMove = $this->stockMoveService->createMove($stockMoveDTO);
 
                 // Update MO lines with consumed quantities
                 foreach ($mo->lines as $line) {
