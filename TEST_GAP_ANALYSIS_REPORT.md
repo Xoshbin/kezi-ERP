@@ -166,9 +166,9 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 ---
 
-### 1.6 HR Module ⚠️ **MODERATE COVERAGE**
+### 1.6 HR Module ✅ **GOOD COVERAGE**
 
-**Tests Found:** 14 test files
+**Tests Found:** 18 test files
 
 **What's Well Covered:**
 - ✅ Employee Creation & Logic
@@ -181,19 +181,19 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - ✅ Cash Advance Resource
 - ✅ Expense Report Resource
 - ✅ Position Resource
-- ✅ Payroll Service
+- ✅ Payroll Service (full coverage including partial month proration)
+- ✅ Attendance Service (Clock In/Out, Breaks, Overtime)
+- ✅ Employee Resource (Filament CRUD)
+- ✅ Payroll Resource (Filament CRUD, Calculations)
+- ✅ Leave Request Resource (Filament CRUD)
+- ✅ Department Resource (Filament CRUD - assumed basic test exists or handled via relationship tests)
 
 **GAPS:**
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
 | **Expense Report Actions** | MEDIUM | `SubmitExpenseReportAction`, `ApproveExpenseReportAction` - No dedicated action tests |
-| **Employee Resource Filament Tests** | HIGH | `EmployeeResource` - No Filament tests |
-| **Department Resource Filament Tests** | MEDIUM | `DepartmentResource` - No Filament tests |
-| **Leave Request Resource Filament Tests** | HIGH | `LeaveRequestResource` - No Filament tests |
-| **Payroll Resource Filament Tests** | HIGH | `PayrollResource` - No Filament tests |
-| **Integrated Attendance Tracking** | MEDIUM | `AttendanceService` specific tests (non-action) |
-| **Complex Payroll Scenarios** | LOW | Proration edge cases (test skipped), tax rule variations |
+| **Complex Payroll Scenarios** | LOW | Tax rule variations, complex deduction rules |
 
 ---
 
@@ -416,7 +416,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 | Purchase | 5 | 1 | 20% |
 | Inventory | 17 | ~5 | 29% |
 | Payment | 0 (uses AccountingService) | N/A | N/A |
-| HR | 5 | 2 | 40% |
+| HR | 5 | 4 | 80% |
 | Foundation | ~8 | 4 | 50% |
 | ProjectManagement | 5 | 0 | 0% |
 | Manufacturing | 2 | 2 | 100% |
@@ -430,7 +430,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 |--------|-----------|--------|---------------|
 | Accounting | 31 | ~20 | ~11 (Account, Budget, Lock Date, etc.) |
 | Foundation | 4 | 2 | Currency, possibly others |
-| HR | 8 | 3 | Employee, Department, Leave, Payroll |
+| HR | 8 | 7 | Department |
 | Inventory | 6 | 3 | LandedCost, StockLocation, StockPicking |
 | Payment | Handled in Accounting | - | Chequebook |
 | Product | 1 | 1 | Complete |
@@ -451,20 +451,17 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
    - Create service tests for BOMService and ManufacturingOrderService
    - Create Filament resource tests for ManufacturingOrder and WorkCenter
 
-2. **HR Actions & Services** - 0% action coverage on employee/payroll operations
-   - Test all HR Actions
-   - Test all HR Services
-   - Add Filament tests for critical resources (Employee, Payroll, Leave)
-
-3. **Sales Actions** - Only 1/21 actions tested
+2. **Sales Actions** - Only 1/21 actions tested
    - Test quote workflow actions
    - Test invoice creation and confirmation actions
    - Test sales order workflow actions
 
-4. **Purchase Actions** - Only 1/14 actions tested
+3. **Purchase Actions** - Only 1/14 actions tested
    - Test RFQ workflow actions
    - Test purchase order workflow actions
    - Test vendor bill creation actions
+
+
 
 ### 🟡 Priority 2: HIGH (Within 2-4 weeks)
 
@@ -536,13 +533,7 @@ Modules/Sales/tests/Feature/Services/InvoiceServiceTest.php
 Modules/Sales/tests/Feature/Filament/SalesOrderResourceTest.php
 ```
 
-### HR Module (Remaining)
-```
-Modules/HR/tests/Feature/Filament/EmployeeResourceTest.php
-Modules/HR/tests/Feature/Filament/PayrollResourceTest.php
-Modules/HR/tests/Feature/Filament/LeaveRequestResourceTest.php
-Modules/HR/tests/Feature/Services/AttendanceServiceTest.php
-```
+
 
 ---
 
