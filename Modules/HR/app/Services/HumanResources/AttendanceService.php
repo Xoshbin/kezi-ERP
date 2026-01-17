@@ -77,13 +77,13 @@ class AttendanceService
         $clockIn = Carbon::parse($attendance->attendance_date->format('Y-m-d').' '.$attendance->clock_in_time);
         $clockOut = Carbon::parse($attendance->attendance_date->format('Y-m-d').' '.$currentTime);
 
-        $totalMinutes = $clockOut->diffInMinutes($clockIn);
+        $totalMinutes = $clockIn->diffInMinutes($clockOut, false);
 
         // Subtract break time if recorded
         if ($attendance->break_start_time && $attendance->break_end_time) {
             $breakStart = Carbon::parse($attendance->attendance_date->format('Y-m-d').' '.$attendance->break_start_time);
             $breakEnd = Carbon::parse($attendance->attendance_date->format('Y-m-d').' '.$attendance->break_end_time);
-            $breakMinutes = $breakEnd->diffInMinutes($breakStart);
+            $breakMinutes = $breakStart->diffInMinutes($breakEnd, false);
             $totalMinutes -= $breakMinutes;
         }
 
@@ -154,7 +154,7 @@ class AttendanceService
         // Calculate break hours
         $breakStart = Carbon::parse($attendance->attendance_date->format('Y-m-d').' '.$attendance->break_start_time);
         $breakEnd = Carbon::parse($attendance->attendance_date->format('Y-m-d').' '.$currentTime);
-        $breakHours = round($breakEnd->diffInMinutes($breakStart) / 60, 2);
+        $breakHours = round($breakStart->diffInMinutes($breakEnd, false) / 60, 2);
 
         $attendance->update([
             'break_end_time' => $currentTime,
