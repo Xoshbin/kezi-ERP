@@ -58,10 +58,8 @@ class WorkCenterResource extends Resource
                         ->required()
                         ->maxLength(255),
 
-                    Forms\Components\TextInput::make('hourly_cost')
+                    \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('hourly_cost')
                         ->label(__('manufacturing::manufacturing.work_center.hourly_cost'))
-                        ->numeric()
-                        ->prefix(fn () => auth()->user()->currentCompany->currency->symbol ?? '$')
                         ->required()
                         ->minValue(0)
                         ->helperText(__('manufacturing::manufacturing.work_center.cost_helper')),

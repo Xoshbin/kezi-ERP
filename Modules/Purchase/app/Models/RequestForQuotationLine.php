@@ -86,4 +86,31 @@ class RequestForQuotationLine extends Model
     {
         return $this->belongsTo(Tax::class);
     }
+
+    /**
+     * Calculate line totals based on quantity, unit price, and tax.
+     */
+    public function calculateTotals(): void
+    {
+        $currencyCode = $this->rfq?->currency?->code ?? $this->rfq()->first()->currency->code;
+
+        // Calculate subtotal
+        $this->subtotal = $this->unit_price->multipliedBy($this->quantity, \Brick\Math\RoundingMode::HALF_UP);
+
+        // Calculate tax
+        if ($this->tax_id) {
+            $tax = $this->tax ?? $this->tax()->first();
+            if ($tax) {
+                $taxRate = $tax->rate / 100;
+                $this->tax_amount = $this->subtotal->multipliedBy((string) $taxRate, \Brick\Math\RoundingMode::HALF_UP);
+            } else {
+                $this->tax_amount = Money::of(0, $currencyCode);
+            }
+        } else {
+            $this->tax_amount = Money::of(0, $currencyCode);
+        }
+
+        // Calculate total
+        $this->total = $this->subtotal->plus($this->tax_amount);
+    }
 }

@@ -29,15 +29,7 @@ class SalesOrderAccountingFlowTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected User $user;
-
-    protected Company $company;
-
-    protected Currency $currency;
-
     protected Partner $customer;
-
-    protected Product $product;
 
     protected Account $incomeAccount;
 

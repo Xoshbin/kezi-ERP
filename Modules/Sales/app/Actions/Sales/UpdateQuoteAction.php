@@ -110,7 +110,7 @@ class UpdateQuoteAction
                         $updateData['quantity'] = $lineDto->quantity;
                     }
                     if ($lineDto->unitPrice !== null) {
-                        $updateData['unit_price'] = $lineDto->unitPrice->getMinorAmount()->toInt();
+                        $updateData['unit_price'] = $lineDto->unitPrice;
                     }
                     if ($lineDto->productId !== null) {
                         $updateData['product_id'] = $lineDto->productId;

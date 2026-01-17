@@ -19,7 +19,7 @@ use Modules\HR\Models\Payroll;
 
 class PayrollResource extends Resource
 {
-    use Translatable;
+    // use Translatable;
 
     protected static ?string $model = Payroll::class;
 

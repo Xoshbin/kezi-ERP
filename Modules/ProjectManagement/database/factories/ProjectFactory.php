@@ -14,6 +14,7 @@ class ProjectFactory extends Factory
     public function definition(): array
     {
         return [
+            'company_id' => \App\Models\Company::factory(),
             'name' => $this->faker->bs,
             'code' => $this->faker->unique()->bothify('PRJ-####'),
             'description' => $this->faker->sentence,

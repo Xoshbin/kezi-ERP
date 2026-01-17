@@ -29,7 +29,7 @@ class CreateBOMAction
                     'company_id' => $dto->companyId,
                     'product_id' => $lineDTO->productId,
                     'quantity' => $lineDTO->quantity,
-                    'unit_cost' => $lineDTO->unitCost->getMinorAmount()->toInt(),
+                    'unit_cost' => $lineDTO->unitCost, // Let the MoneyCast handle conversion
                     'currency_code' => $lineDTO->unitCost->getCurrency()->getCurrencyCode(),
                     'work_center_id' => $lineDTO->workCenterId,
                 ]);
