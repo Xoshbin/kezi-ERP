@@ -28203,6 +28203,54 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$action\.$#'
 			identifier: property.notFound
+			count: 5
+			path: Modules/Sales/tests/Feature/Actions/Quote/CancelQuoteActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 4
+			path: Modules/Sales/tests/Feature/Actions/Quote/CancelQuoteActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: Modules/Sales/tests/Feature/Actions/Quote/CancelQuoteActionTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Sales/tests/Feature/Actions/Quote/CreateQuoteLineActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$action\.$#'
+			identifier: property.notFound
+			count: 2
+			path: Modules/Sales/tests/Feature/Actions/Quote/CreateQuoteLineActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 6
+			path: Modules/Sales/tests/Feature/Actions/Quote/CreateQuoteLineActionTest.php
+
+		-
+			message: '#^Access to property \$id on an unknown class Modules\\Product\\Database\\Factories\\Product\.$#'
+			identifier: class.notFound
+			count: 2
+			path: Modules/Sales/tests/Feature/Actions/Quote/CreateQuoteLineActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: Modules/Sales/tests/Feature/Actions/Quote/CreateQuoteLineActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$action\.$#'
+			identifier: property.notFound
 			count: 3
 			path: Modules/Sales/tests/Feature/Actions/Quote/RejectQuoteActionTest.php
 
@@ -28235,6 +28283,48 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: Modules/Sales/tests/Feature/Actions/Quote/SendQuoteActionTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: Modules/Sales/tests/Feature/Actions/Quote/UpdateQuoteActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$action\.$#'
+			identifier: property.notFound
+			count: 4
+			path: Modules/Sales/tests/Feature/Actions/Quote/UpdateQuoteActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 10
+			path: Modules/Sales/tests/Feature/Actions/Quote/UpdateQuoteActionTest.php
+
+		-
+			message: '#^Access to property \$id on an unknown class Modules\\Product\\Database\\Factories\\Product\.$#'
+			identifier: class.notFound
+			count: 1
+			path: Modules/Sales/tests/Feature/Actions/Quote/UpdateQuoteActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: Modules/Sales/tests/Feature/Actions/Quote/UpdateQuoteActionTest.php
+
+		-
+			message: '#^Cannot access property \$quantity on Modules\\Sales\\Models\\QuoteLine\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: Modules/Sales/tests/Feature/Actions/Quote/UpdateQuoteActionTest.php
+
+		-
+			message: '#^Cannot access property \$unit_price on Modules\\Sales\\Models\\QuoteLine\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: Modules/Sales/tests/Feature/Actions/Quote/UpdateQuoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property Tests\\TestCase\:\:\$company\.$#'
