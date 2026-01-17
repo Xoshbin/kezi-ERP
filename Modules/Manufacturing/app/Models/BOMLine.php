@@ -2,7 +2,6 @@
 
 namespace Modules\Manufacturing\Models;
 
-use App\Casts\MoneyCast;
 use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +13,11 @@ class BOMLine extends Model
     use HasFactory;
 
     protected $table = 'bom_lines';
+
+    protected static function newFactory(): \Modules\Manufacturing\Database\Factories\BOMLineFactory
+    {
+        return \Modules\Manufacturing\Database\Factories\BOMLineFactory::new();
+    }
 
     protected $fillable = [
         'company_id',
@@ -29,7 +33,7 @@ class BOMLine extends Model
     {
         return [
             'quantity' => 'decimal:4',
-            'unit_cost' => MoneyCast::class,
+            'unit_cost' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
         ];
     }
 

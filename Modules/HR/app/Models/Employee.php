@@ -409,7 +409,7 @@ class Employee extends Model
     {
         /** @var Attendance|null $attendance */
         $attendance = $this->attendances()
-            ->where('attendance_date', $date->format('Y-m-d'))
+            ->whereDate('attendance_date', $date)
             ->first();
 
         return $attendance;

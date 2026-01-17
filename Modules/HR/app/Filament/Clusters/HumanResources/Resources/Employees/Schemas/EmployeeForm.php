@@ -8,10 +8,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Modules\HR\Models\Department;
-use Modules\HR\Models\Employee;
-use Modules\HR\Models\Position;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class EmployeeForm
 {
@@ -61,24 +57,24 @@ class EmployeeForm
             Section::make(__('hr::employee.organizational_details'))
                 ->description(__('hr::employee.organizational_details_description'))
                 ->schema([
-                    TranslatableSelect::forModel('department_id', Department::class)
+                    Select::make('department_id')
                         ->label(__('hr::employee.department'))
+                        ->relationship('department', 'name')
                         ->searchable()
-                        ->searchableFields(['name'])
                         ->preload()
                         ->columnSpan(1),
 
-                    TranslatableSelect::forModel('position_id', Position::class)
+                    Select::make('position_id')
                         ->label(__('hr::employee.position'))
+                        ->relationship('position', 'title')
                         ->searchable()
-                        ->searchableFields(['title'])
                         ->preload()
                         ->columnSpan(1),
 
-                    TranslatableSelect::forModel('manager_id', Employee::class)
+                    Select::make('manager_id')
                         ->label(__('hr::employee.manager'))
-                        ->searchable()
-                        ->searchableFields(['first_name', 'last_name', 'employee_number'])
+                        ->relationship('manager', 'first_name')
+                        ->searchable(['first_name', 'last_name', 'employee_number'])
                         ->preload()
                         ->getOptionLabelUsing(fn ($record) => $record ? $record->first_name.' '.$record->last_name.' ('.$record->employee_number.')' : '')
                         ->columnSpan(1),

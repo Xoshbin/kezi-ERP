@@ -65,3 +65,5 @@ The Accounting module provides:
 ### ✅ **Final Goal**
 
 The goal is to build a trustworthy, immutable, and fully auditable accounting ERP system. It combines the strictness of enterprise systems like Odoo with the flexibility and power of a modern Laravel application.
+
+**Development Status:** We are actively performing a systematic cleanup of the codebase, ensuring all modules pass full static analysis (**PHPStan Level 8+**) and have robust test coverage. We decrement the total number of errors with each task until all technical debt is resolved.

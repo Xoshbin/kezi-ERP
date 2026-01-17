@@ -13,6 +13,8 @@ class TimesheetFactory extends Factory
     public function definition(): array
     {
         return [
+            'company_id' => \App\Models\Company::factory(),
+            'employee_id' => \Modules\HR\Models\Employee::factory(),
             'start_date' => now()->startOfWeek(),
             'end_date' => now()->endOfWeek(),
             'status' => TimesheetStatus::Draft,

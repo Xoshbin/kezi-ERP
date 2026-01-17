@@ -89,11 +89,11 @@ class QuoteLineObserver
 
         // Calculate subtotal before discount
         $quantity = (float) ($line->quantity ?? 0);
-        $grossAmount = $unitPrice->multipliedBy($quantity);
+        $grossAmount = $unitPrice->multipliedBy($quantity, \Brick\Math\RoundingMode::HALF_UP);
 
         // Calculate discount
         $discountPercentage = (float) ($line->discount_percentage ?? 0);
-        $discountAmount = $grossAmount->multipliedBy($discountPercentage / 100);
+        $discountAmount = $grossAmount->multipliedBy($discountPercentage / 100, \Brick\Math\RoundingMode::HALF_UP);
         $line->discount_amount = $discountAmount;
 
         // Subtotal after discount
@@ -104,7 +104,7 @@ class QuoteLineObserver
         $taxAmount = Money::of(0, $currency->code);
         if ($line->tax_id && $line->tax) {
             $taxRate = (float) ($line->tax->rate ?? 0);
-            $taxAmount = $subtotal->multipliedBy($taxRate / 100);
+            $taxAmount = $subtotal->multipliedBy($taxRate / 100, \Brick\Math\RoundingMode::HALF_UP);
         }
         $line->tax_amount = $taxAmount;
 
@@ -112,30 +112,40 @@ class QuoteLineObserver
         $line->total = $subtotal->plus($taxAmount);
 
         // Calculate company currency amounts if exchange rate is available
-        $exchangeRate = $quote->exchange_rate ?? 1.0;
+        $exchangeRate = (float) ($quote->exchange_rate ?? 1.0);
         $company = $quote->company ?? $quote->company()->first();
         $baseCurrencyCode = $company?->currency?->code ?? 'IQD';
 
         if ($currency->id !== $company?->currency_id) {
             $line->unit_price_company_currency = Money::of(
                 $unitPrice->getAmount()->toFloat() * $exchangeRate,
-                $baseCurrencyCode
+                $baseCurrencyCode,
+                null,
+                \Brick\Math\RoundingMode::HALF_UP
             );
             $line->discount_amount_company_currency = Money::of(
                 $discountAmount->getAmount()->toFloat() * $exchangeRate,
-                $baseCurrencyCode
+                $baseCurrencyCode,
+                null,
+                \Brick\Math\RoundingMode::HALF_UP
             );
             $line->subtotal_company_currency = Money::of(
                 $subtotal->getAmount()->toFloat() * $exchangeRate,
-                $baseCurrencyCode
+                $baseCurrencyCode,
+                null,
+                \Brick\Math\RoundingMode::HALF_UP
             );
             $line->tax_amount_company_currency = Money::of(
                 $taxAmount->getAmount()->toFloat() * $exchangeRate,
-                $baseCurrencyCode
+                $baseCurrencyCode,
+                null,
+                \Brick\Math\RoundingMode::HALF_UP
             );
             $line->total_company_currency = Money::of(
                 $line->total->getAmount()->toFloat() * $exchangeRate,
-                $baseCurrencyCode
+                $baseCurrencyCode,
+                null,
+                \Brick\Math\RoundingMode::HALF_UP
             );
         }
     }

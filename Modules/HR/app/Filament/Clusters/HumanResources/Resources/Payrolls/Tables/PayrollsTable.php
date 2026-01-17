@@ -5,6 +5,7 @@ namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Tables;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -82,6 +83,8 @@ class PayrollsTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                DeleteAction::make()
+                    ->visible(fn (Payroll $record): bool => $record->status === 'draft'),
 
                 Action::make('approve')
                     ->label(__('hr::payroll.actions.approve'))

@@ -161,9 +161,13 @@ class PayrollService
             $daysInMonth = $periodStart->daysInMonth;
 
             if ($daysInPeriod < $daysInMonth) {
-                // Prorate the salary
+                // Prorate the salary using RationalMoney to avoid rounding issues during calculation
+                $rationalMoney = $baseSalary->toRational();
                 $prorationFactor = $daysInPeriod / $daysInMonth;
-                $baseSalary = $baseSalary->multipliedBy($prorationFactor, RoundingMode::HALF_UP);
+                $proratedRational = $rationalMoney->multipliedBy($prorationFactor);
+                
+                // Convert back to Money with proper rounding
+                $baseSalary = $proratedRational->to($baseSalary->getContext(), RoundingMode::HALF_UP);
             }
         }
 
@@ -183,14 +187,21 @@ class PayrollService
         if ($contract->hourly_rate) {
             $regularHourlyRate = $contract->hourly_rate;
         } else {
-            // Calculate hourly rate from monthly salary
+            // Calculate hourly rate from monthly salary using RationalMoney to avoid rounding issues
             $monthlyHours = $contract->working_hours_per_week * 4.33; // Approximate monthly hours
-            $regularHourlyRate = $contract->base_salary->dividedBy($monthlyHours, RoundingMode::HALF_UP);
+            $baseSalary = $contract->base_salary;
+            $regularHourlyRate = $baseSalary->toRational()
+                ->dividedBy($monthlyHours)
+                ->to($baseSalary->getContext(), RoundingMode::HALF_UP);
         }
 
-        $overtimeRate = $regularHourlyRate->multipliedBy(1.5, RoundingMode::HALF_UP);
+        $overtimeRate = $regularHourlyRate->toRational()
+            ->multipliedBy(1.5)
+            ->to($regularHourlyRate->getContext(), RoundingMode::HALF_UP);
 
-        return $overtimeRate->multipliedBy($overtimeHours, RoundingMode::HALF_UP);
+        return $overtimeRate->toRational()
+            ->multipliedBy($overtimeHours)
+            ->to($overtimeRate->getContext(), RoundingMode::HALF_UP);
     }
 
     /**
@@ -204,11 +215,17 @@ class PayrollService
         $currency = $contract->currency->code;
 
         // TODO: Implement proper tax calculation based on company's tax rules
-        // For now, using simple percentages
-        $incomeTax = $grossSalary->multipliedBy(0.10, RoundingMode::HALF_UP); // 10% income tax
-        $socialSecurity = $grossSalary->multipliedBy(0.05, RoundingMode::HALF_UP); // 5% social security
+        // For now, using simple percentages with RationalMoney to avoid rounding issues
+        $incomeTax = $grossSalary->toRational()
+            ->multipliedBy('0.10')
+            ->to($grossSalary->getContext(), RoundingMode::HALF_UP); // 10% income tax
+        $socialSecurity = $grossSalary->toRational()
+            ->multipliedBy('0.05')
+            ->to($grossSalary->getContext(), RoundingMode::HALF_UP); // 5% social security
         $healthInsurance = Money::of(50, $currency); // Fixed amount
-        $pensionContribution = $grossSalary->multipliedBy(0.03, RoundingMode::HALF_UP); // 3% pension
+        $pensionContribution = $grossSalary->toRational()
+            ->multipliedBy('0.03')
+            ->to($grossSalary->getContext(), RoundingMode::HALF_UP); // 3% pension
 
         return [
             'income_tax' => $incomeTax,
