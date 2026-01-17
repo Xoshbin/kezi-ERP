@@ -5,6 +5,7 @@ namespace Modules\HR\Models;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -35,7 +36,13 @@ use Spatie\Translatable\HasTranslations;
  */
 class Department extends Model
 {
+    use HasFactory;
     use HasTranslations;
+
+    protected static function newFactory()
+    {
+        return \Modules\HR\Database\Factories\DepartmentFactory::new();
+    }
 
     /**
      * The attributes that are mass assignable.

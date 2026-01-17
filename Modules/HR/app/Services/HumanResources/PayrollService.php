@@ -162,7 +162,7 @@ class PayrollService
 
             if ($daysInPeriod < $daysInMonth) {
                 // Prorate the salary
-                $prorationFactor = $daysInPeriod / $daysInMonth;
+                $prorationFactor = (string) ($daysInPeriod / $daysInMonth);
                 $baseSalary = $baseSalary->multipliedBy($prorationFactor, RoundingMode::HALF_UP);
             }
         }
@@ -205,10 +205,10 @@ class PayrollService
 
         // TODO: Implement proper tax calculation based on company's tax rules
         // For now, using simple percentages
-        $incomeTax = $grossSalary->multipliedBy(0.10, RoundingMode::HALF_UP); // 10% income tax
-        $socialSecurity = $grossSalary->multipliedBy(0.05, RoundingMode::HALF_UP); // 5% social security
+        $incomeTax = $grossSalary->multipliedBy('0.10', RoundingMode::HALF_UP); // 10% income tax
+        $socialSecurity = $grossSalary->multipliedBy('0.05', RoundingMode::HALF_UP); // 5% social security
         $healthInsurance = Money::of(50, $currency); // Fixed amount
-        $pensionContribution = $grossSalary->multipliedBy(0.03, RoundingMode::HALF_UP); // 3% pension
+        $pensionContribution = $grossSalary->multipliedBy('0.03', RoundingMode::HALF_UP); // 3% pension
 
         return [
             'income_tax' => $incomeTax,
