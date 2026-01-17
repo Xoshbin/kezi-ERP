@@ -74,7 +74,8 @@ class ManufacturingOrderResource extends Resource
                         ->searchable()
                         ->preload()
                         ->required()
-                        ->disabled(fn ($get) => $get('bom_id') !== null),
+                        ->disabled(fn ($get) => $get('bom_id') !== null)
+                        ->dehydrated(),
 
                     Forms\Components\TextInput::make('quantity_to_produce')
                         ->label(__('manufacturing::manufacturing.order.quantity_to_produce'))

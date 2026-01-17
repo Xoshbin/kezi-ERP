@@ -14,7 +14,7 @@ use Tests\Builders\CompanyBuilder;
  */
 trait WithConfiguredCompany
 {
-    protected function setupWithConfiguredCompany(): void
+    public function setupWithConfiguredCompany(): void
     {
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
