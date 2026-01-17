@@ -2,6 +2,7 @@
 
 namespace Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -13,7 +14,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Modules\Manufacturing\Filament\Clusters\Manufacturing\ManufacturingCluster;
 use Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\WorkCenterResource\Pages;
 use Modules\Manufacturing\Models\WorkCenter;
 
@@ -21,7 +21,7 @@ class WorkCenterResource extends Resource
 {
     protected static ?string $model = WorkCenter::class;
 
-    protected static ?string $cluster = ManufacturingCluster::class;
+    protected static ?string $cluster = SettingsCluster::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
@@ -35,6 +35,11 @@ class WorkCenterResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return __('manufacturing::manufacturing.work_center.plural_label');
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return __('manufacturing::navigation.groups.manufacturing_settings');
     }
 
     public static function form(Schema $schema): Schema
@@ -120,7 +125,7 @@ class WorkCenterResource extends Resource
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label(__('manufacturing::manufacturing.work_center.is_active'))
-                    ->placeholder('All')
+                    ->placeholder(__('manufacturing::manufacturing.placeholders.all'))
                     ->trueLabel('Active only')
                     ->falseLabel('Inactive only'),
             ])

@@ -84,8 +84,8 @@ class ExchangeRatesWidget extends StatsOverviewWidget
 
         // If no currencies found, show a placeholder
         if (empty($stats)) {
-            $stats[] = Stat::make('No Exchange Rates', 'No recent exchange rates available')
-                ->description('Update exchange rates to see current data')
+            $stats[] = Stat::make(__('accounting::dashboard.exchange_rates.no_rates'), __('accounting::dashboard.exchange_rates.no_recent'))
+                ->description(__('accounting::dashboard.exchange_rates.update_description'))
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
                 ->color('warning');
         }

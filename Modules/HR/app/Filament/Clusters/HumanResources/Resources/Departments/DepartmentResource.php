@@ -2,12 +2,12 @@
 
 namespace Modules\HR\Filament\Clusters\HumanResources\Resources\Departments;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
-use Modules\HR\Filament\Clusters\HumanResources\HumanResourcesCluster;
 use Modules\HR\Filament\Clusters\HumanResources\Resources\Departments\Pages\CreateDepartment;
 use Modules\HR\Filament\Clusters\HumanResources\Resources\Departments\Pages\EditDepartment;
 use Modules\HR\Filament\Clusters\HumanResources\Resources\Departments\Pages\ListDepartments;
@@ -23,7 +23,7 @@ class DepartmentResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office-2';
 
-    protected static ?string $cluster = HumanResourcesCluster::class;
+    protected static ?string $cluster = SettingsCluster::class;
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -40,6 +40,11 @@ class DepartmentResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return __('hr::department.navigation_label');
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return __('hr::navigation.groups.hr_settings');
     }
 
     public static function form(Schema $schema): Schema

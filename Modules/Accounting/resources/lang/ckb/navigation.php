@@ -1,19 +1,17 @@
 <?php
 
 return [
+    'name' => 'ژمێریاری',
     'configuration' => 'ڕێکخستن',
     'clusters' => [
         'accounting' => 'ژمێریاری',
     ],
     'groups' => [
-        'administration' => 'بەڕێوەبردن',
-        'configuration' => 'ڕێکخستن',
-        'sales_purchases' => 'کڕین و فرۆشتن',
+        'accounting_settings' => 'ژمێریاری',
+        'transactions' => 'مامەڵەکان',
         'banking_cash' => 'بانک و کاش',
-        'cheque_management' => 'بەڕێوەبردنی چەک',
-        'petty_cash' => 'پارەی وورد (نەختینە)',
         'financial_planning' => 'پلاندانانی دارایی',
-        'core_accounting' => 'ژمێریاریی بنەڕەتی',
+        'administration' => 'بەڕێوەبردن',
         'reports' => 'ڕاپۆرتەکان',
     ],
 ];

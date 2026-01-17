@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\LockDates;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -13,7 +14,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Modules\Accounting\Enums\Accounting\LockDateType;
-use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\LockDates\Pages\CreateLockDate;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\LockDates\Pages\EditLockDate;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\LockDates\Pages\ListLockDates;
@@ -21,7 +21,7 @@ use Modules\Accounting\Models\LockDate;
 
 class LockDateResource extends Resource
 {
-    protected static ?string $cluster = AccountingCluster::class;
+    protected static ?string $cluster = SettingsCluster::class;
 
     protected static ?string $model = LockDate::class;
 
@@ -42,6 +42,11 @@ class LockDateResource extends Resource
     public static function getNavigationLabel(): string
     {
         return __('accounting::lock_date.plural_label');
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return __('accounting::navigation.groups.administration');
     }
 
     public static function form(Schema $schema): Schema

@@ -15,6 +15,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Models\Account;
+use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\Foundation\Support\TranslatableHelper;
 use Xoshbin\TranslatableSelect\Services\LocaleResolver;
 use Xoshbin\TranslatableSelect\Services\TranslatableSearchService;
@@ -27,7 +28,7 @@ class ViewGeneralLedger extends Page
 
     public static function shouldRegisterNavigation(): bool
     {
-        return true;
+        return false;
     }
 
     protected static ?string $cluster = AccountingCluster::class;
@@ -136,6 +137,7 @@ class ViewGeneralLedger extends Page
     protected function getHeaderActions(): array
     {
         return [
+            DocsAction::make('general-ledger-report'),
             Action::make('generate')
                 ->label(__('accounting::reports.generate_report'))
                 ->icon('heroicon-o-play')

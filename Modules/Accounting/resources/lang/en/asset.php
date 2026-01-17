@@ -12,6 +12,10 @@ return [
     'purchase_value' => 'Purchase Value',
     'salvage_value' => 'Salvage Value',
     'useful_life_years' => 'Useful Life (Years)',
+    'category' => 'Category',
+    'category_name' => 'Category Name',
+    'create_category' => 'Create Category',
+    'salvage_value_default' => 'Default Salvage Value',
     'useful_life' => 'Useful Life',
     'years' => 'years',
     'depreciation_method' => 'Depreciation Method',
@@ -36,4 +40,6 @@ return [
     // Actions
     'post' => 'Post',
     'post_depreciation_success' => 'Depreciation posted successfully.',
+    'compute_depreciation_board' => 'Compute Depreciation Board',
+    'depreciation_board_computed' => 'Depreciation board computed',
 ];

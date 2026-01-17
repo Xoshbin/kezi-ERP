@@ -15,7 +15,7 @@ class ListJournalEntries extends ListRecords
     {
         return [
             CreateAction::make(),
-            DocsAction::make('opening-balances'),
+            DocsAction::make('journal-entries'),
         ];
     }
 }

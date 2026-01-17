@@ -190,6 +190,8 @@ class LotTraceabilityReport extends Page implements HasForms
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('lot-tracking'),
+            \Modules\Foundation\Filament\Actions\DocsAction::make('inventory-reports'),
             Action::make('export')
                 ->label(__('inventory::inventory_reports.lot_trace.actions.export'))
                 ->icon('heroicon-o-arrow-down-tray')

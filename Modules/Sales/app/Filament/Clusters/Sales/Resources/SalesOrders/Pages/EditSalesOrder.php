@@ -42,7 +42,7 @@ class EditSalesOrder extends EditRecord
                         $this->refreshFormData(['status']);
                     } catch (\Exception $e) {
                         \Filament\Notifications\Notification::make()
-                            ->title('Error')
+                            ->title(__('sales::sales_orders.form.error'))
                             ->body($e->getMessage())
                             ->danger()
                             ->send();
@@ -54,15 +54,15 @@ class EditSalesOrder extends EditRecord
                 ->color('primary')
                 ->form([
                     \Filament\Forms\Components\DatePicker::make('invoice_date')
-                        ->label('Invoice Date')
+                        ->label(__('sales::sales_orders.form.invoice_date'))
                         ->required()
                         ->default(now()),
                     \Filament\Forms\Components\DatePicker::make('due_date')
-                        ->label('Due Date')
+                        ->label(__('sales::sales_orders.form.due_date'))
                         ->required()
                         ->default(now()->addDays(30)),
                     \Filament\Forms\Components\Select::make('default_income_account_id')
-                        ->label('Default Income Account')
+                        ->label(__('sales::sales_orders.form.default_income_account'))
                         ->options(\Modules\Accounting\Models\Account::pluck('name', 'id'))
                         ->searchable()
                         ->required(),

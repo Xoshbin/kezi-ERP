@@ -12,6 +12,7 @@ class ListQualityControlPoints extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('quality-points'),
             \Filament\Actions\CreateAction::make(),
         ];
     }

@@ -59,12 +59,21 @@ return [
     'total_amount_company_currency' => 'کۆی گشتی (بە دراوی کۆمپانیا)',
     'total_tax_company_currency' => 'کۆی باج (بە دراوی کۆمپانیا)',
     'current_rate' => 'نرخی ئێستا: :rate',
+    'deferred_start_date' => 'ڕێکەوتی دەستپێکی دواخراو',
+    'deferred_end_date' => 'ڕێکەوتی کۆتایی دواخراو',
+    'fiscal_position' => 'دۆخی دارایی',
+    'fiscal_position_helper' => 'دۆخی دارایی بەکارهاتوو بۆ ئەم پسووڵەیە',
+    'incoterm' => 'ئینکۆتێرم (Incoterm)',
+    'post' => 'ناردن (Post)',
 
     // Actions
     'confirm' => 'پشتڕاستکردنەوە',
     'reset_to_draft' => 'گەڕاندنەوە بۆ ڕەشنووس',
     'confirm_bill' => 'پشتڕاستکردنەوەی پسووڵە',
-    'load_from_purchase_order' => 'بارکردن لە داواکاری کڕین',
+    'actions' => [
+        'load_from_purchase_order' => 'بارکردن لە داواکاری کڕین',
+        'register_payment' => 'تۆمارکردنی پارەدان',
+    ],
     'create_from_purchase_order' => 'دروستکردنی پسووڵە لە داواکاری کڕین',
 
     // Fields
@@ -85,10 +94,24 @@ return [
     'notification_bill_reset_success' => 'پسووڵە گەڕێنرایەوە بۆ ڕەشنووس',
     'notification_reset_bill_error' => 'هەڵە لە گەڕاندنەوەی پسووڵە',
     'notification_update_not_allowed' => 'نوێکردنەوە ڕێگەپێدراو نییە',
+    'errors' => [
+        'cannot_create_bill_title' => 'نەتوانرا پسووڵە دروست بکرێت',
+    ],
 
     // Validation Messages
     'validation_no_line_items' => 'ناکرێت پسووڵەی کڕین بەبێ بڕگەکانی هێڵ پشتڕاست بکرێتەوە',
-    'validation_zero_total_amount' => 'ناکرێت پسووڵەی کڕین بە کۆی گشتی سفر پشتڕاست بکرێتەوە',
+    'validation_zero_total_amount' => 'ناکرێت پسووڵەی کڕین بەبێ کۆی گشتی سفر پشتڕاست بکرێتەوە',
+
+    'register_payment' => [
+        'journal' => 'پەرتووکی ڕۆژانە',
+        'payment_date' => 'ڕێکەوتی پارەدان',
+        'amount' => 'بڕ',
+        'reference' => 'سەرچاوە',
+        'optional_reference' => 'سەرچاوەی ئیختیاری',
+        'description' => 'تۆمارکردنی پارەدان بۆ ئەم پسووڵەی کڕینە',
+    ],
+    'notification_payment_registered' => 'پارەدان بە سەرکەوتوویی تۆمارکرا',
+    'notification_payment_error' => 'هەڵە لە تۆمارکردنی پارەدان',
 
     // Payments Relation Manager
     'payments_relation_manager' => [
@@ -136,6 +159,7 @@ return [
         'status' => 'بارودۆخ',
         'reason' => 'هۆکار',
         'reason_placeholder' => 'هۆکاری ئەم ڕاستکردنەوەیە ڕوون بکەرەوە...',
+        'amount' => 'بڕ',
         'total_amount' => 'کۆی گشتی',
         'total_tax' => 'کۆی باج',
         'journal_entry' => 'تۆماری ڕۆژانە',

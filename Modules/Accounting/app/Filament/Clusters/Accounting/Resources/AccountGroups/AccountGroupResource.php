@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AccountGroups;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -14,7 +15,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
-use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\AccountGroups\Pages\CreateAccountGroup;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\AccountGroups\Pages\EditAccountGroup;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\AccountGroups\Pages\ListAccountGroups;
@@ -22,7 +22,7 @@ use Modules\Accounting\Models\AccountGroup;
 
 class AccountGroupResource extends Resource
 {
-    protected static ?string $cluster = AccountingCluster::class;
+    protected static ?string $cluster = SettingsCluster::class;
 
     use Translatable;
 
@@ -40,6 +40,11 @@ class AccountGroupResource extends Resource
     public static function getNavigationLabel(): string
     {
         return __('accounting::account_group.plural_label');
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return __('accounting::navigation.groups.administration');
     }
 
     public static function form(Schema $schema): Schema

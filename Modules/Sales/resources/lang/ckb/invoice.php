@@ -19,6 +19,8 @@ return [
     'status' => 'دۆخ',
     'payment_state' => 'دۆخی پارەدان',
     'invoice_lines' => 'هێڵەکانی پسووڵە',
+    'invoice_line' => 'هێڵی پسووڵە',
+    'add_invoice_line' => 'زیادکردنی هێڵی پسووڵە',
     'product' => 'بەرهەم',
     'description' => 'پێناسە',
     'quantity' => 'بڕ',
@@ -36,13 +38,6 @@ return [
     'line_items' => 'بەندەکانی پسووڵە',
     'line_items_description' => 'بەرهەم و خزمەتگوزاریەکان بۆ ئەم پسووڵەیە زیاد بکە',
     'company_currency_totals' => 'کۆی گشتی پارەی کۆمپانیا',
-
-    // Exchange Rate Fields
-    'current_exchange_rate' => 'نرخی ئاڵوگۆڕی ئێستا',
-    'exchange_rate_helper' => 'ئەمە نرخی ئاڵوگۆڕی ئێستایە بۆ پارە هەڵبژێردراوەکە',
-    'exchange_rate_at_creation' => 'نرخی ئاڵوگۆڕ لە کاتی دروستکردن',
-    'total_amount_company_currency' => 'کۆی گشتی (پارەی کۆمپانیا)',
-    'total_tax_company_currency' => 'کۆی باج (پارەی کۆمپانیا)',
 
     // Table Columns
     'company_name' => 'کۆمپانیا',
@@ -67,10 +62,19 @@ return [
     'total_tax_company_currency' => 'کۆی باج (پارەی کۆمپانیا)',
     'payment_term' => 'مەرجی پارەدان',
     'reference' => 'بەڵگە',
+    'optional_reference' => 'ئاماژەی ئارەزوومەندانە',
 
     // Actions
     'confirm' => 'پشتڕاستکردنەوە',
     'confirm_invoice' => 'پشتڕاستکردنەوەی پسووڵە',
+    'view_pdf' => 'بینینی PDF',
+    'download_pdf' => 'داگرتنی PDF',
+    'pdf' => 'PDF',
+    'preview_posting' => 'پێشبینینی ناردن',
+    'posting_preview' => 'پێشبینینی ناردن',
+    'close' => 'داخستن',
+    'export_preview_csv' => 'هەناردەکردنی پێشبینین (CSV)',
+    'export_preview_pdf' => 'هەناردەکردنی پێشبینین (PDF)',
 
     // Statuses
     'statuses' => [
@@ -193,4 +197,8 @@ return [
         'more' => 'زیاتر',
         'various' => 'جۆراوجۆر',
     ],
+    'total' => 'کۆی گشتی',
+    'price' => 'نرخ',
+    'qty' => 'بڕ',
+    'subtotal' => 'کۆی لاوەکی',
 ];

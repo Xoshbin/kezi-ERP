@@ -4,6 +4,7 @@ namespace Modules\HR\Filament\Clusters\HumanResources\Resources\ExpenseReports\P
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\HR\Filament\Clusters\HumanResources\Resources\ExpenseReports\ExpenseReportResource;
 
 class ListExpenseReports extends ListRecords
@@ -14,6 +15,7 @@ class ListExpenseReports extends ListRecords
     {
         return [
             CreateAction::make(),
+            DocsAction::make('expense-reports'),
         ];
     }
 }

@@ -13,4 +13,11 @@ class ListQuotes extends ListRecords
     {
         return parent::getTableQuery()->with(['partner', 'currency', 'createdBy']);
     }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('understanding-sales-quotes'),
+        ];
+    }
 }

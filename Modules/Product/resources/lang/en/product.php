@@ -1,6 +1,9 @@
 <?php
 
 return [
+    'navigation' => [
+        'name' => 'Product',
+    ],
     // Labels
     'label' => 'Product',
     'plural_label' => 'Products',

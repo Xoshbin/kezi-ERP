@@ -41,10 +41,10 @@ class InvoicesRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('period_start')
                     ->date()
-                    ->label('Period Start'),
+                    ->label(__('projectmanagement::project.form.labels.period_start')),
                 TextColumn::make('period_end')
                     ->date()
-                    ->label('Period End'),
+                    ->label(__('projectmanagement::project.form.labels.period_end')),
                 TextColumn::make('total_amount')
                     ->money(fn ($record) => $record->project->company->currency->code ?? 'USD')
                     ->sortable()
@@ -52,7 +52,7 @@ class InvoicesRelationManager extends RelationManager
                 TextColumn::make('status')
                     ->badge(),
                 TextColumn::make('invoice.document_number')
-                    ->label('Invoice #'),
+                    ->label(__('projectmanagement::project.form.labels.invoice_number')),
             ])
             ->filters([
                 //

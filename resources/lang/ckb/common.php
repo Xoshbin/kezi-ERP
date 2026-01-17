@@ -7,6 +7,7 @@ return [
     'cancel' => 'هەڵوەشاندنەوە',
     'save' => 'تۆمارکردن',
     'create' => 'دروستکردن',
+    'close' => 'داخستن',
     'created_successfully' => ':item بە سەرکەوتوویی دروستکرا',
     'select_or_create' => 'هەڵبژاردنی هەبوو یان دروستکردنی نوێ',
     'company' => 'کۆمپانیا', // Added this just in case

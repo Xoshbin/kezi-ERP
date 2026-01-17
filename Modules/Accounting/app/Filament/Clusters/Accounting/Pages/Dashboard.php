@@ -55,4 +55,11 @@ class Dashboard extends BaseDashboard
             'xl' => 3,
         ];
     }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            \Modules\Foundation\Filament\Actions\DocsAction::make('getting-started'),
+        ];
+    }
 }

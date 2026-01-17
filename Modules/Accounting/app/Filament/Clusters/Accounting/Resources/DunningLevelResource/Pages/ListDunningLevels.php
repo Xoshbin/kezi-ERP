@@ -14,6 +14,7 @@ class ListDunningLevels extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            \Modules\Foundation\Filament\Actions\DocsAction::make('dunning-levels'),
         ];
     }
 }

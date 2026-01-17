@@ -3,6 +3,7 @@
 return [
     'label' => 'Inventory Cost Layer',
     'plural_label' => 'Inventory Cost Layers',
+    'navigation_group' => 'Inventory',
 
     'sections' => [
         'basic_info' => 'Basic Information',
@@ -40,6 +41,13 @@ return [
         'vendor_bill' => 'Vendor Bill',
         'inventory_adjustment' => 'Inventory Adjustment',
     ],
+
+    'purchase_date' => 'Purchase Date',
+    'quantity' => 'Original Quantity',
+    'remaining_quantity' => 'Remaining Quantity',
+    'cost_per_unit' => 'Cost Per Unit',
+    'total_cost' => 'Total Cost',
+    'created_at' => 'Created At',
 
     // Legacy fields for compatibility
     'info' => 'Cost Layer Information',

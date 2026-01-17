@@ -3,6 +3,7 @@
 namespace Modules\QualityControl\Filament\Clusters\QualityControl\Resources\QualityInspectionTemplateResource\Pages;
 
 use Filament\Resources\Pages\ListRecords;
+use Modules\Foundation\Filament\Actions\DocsAction;
 use Modules\QualityControl\Filament\Clusters\QualityControl\Resources\QualityInspectionTemplateResource;
 
 class ListQualityInspectionTemplates extends ListRecords
@@ -12,6 +13,7 @@ class ListQualityInspectionTemplates extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            DocsAction::make('quality-checks'),
             \Filament\Actions\CreateAction::make(),
         ];
     }

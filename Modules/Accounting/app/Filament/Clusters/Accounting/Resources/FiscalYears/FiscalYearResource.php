@@ -2,6 +2,7 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\FiscalYears;
 
+use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -14,7 +15,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Accounting\Enums\Accounting\FiscalYearState;
-use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\FiscalYears\Pages\CreateFiscalYear;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\FiscalYears\Pages\EditFiscalYear;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\FiscalYears\Pages\ListFiscalYears;
@@ -24,7 +24,7 @@ class FiscalYearResource extends Resource
 {
     protected static ?string $model = FiscalYear::class;
 
-    protected static ?string $cluster = AccountingCluster::class;
+    protected static ?string $cluster = SettingsCluster::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
 
@@ -32,7 +32,7 @@ class FiscalYearResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('accounting::navigation.configuration');
+        return __('accounting::navigation.groups.administration');
     }
 
     public static function getModelLabel(): string

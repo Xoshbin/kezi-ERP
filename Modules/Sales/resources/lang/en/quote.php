@@ -64,6 +64,8 @@ return [
         'preview' => 'Preview',
     ],
     'notifications' => [
+        'created' => 'Quote created successfully',
+        'updated' => 'Quote updated successfully',
         'sent' => 'Quote sent successfully',
         'accepted' => 'Quote marked as accepted',
         'rejected' => 'Quote marked as rejected',

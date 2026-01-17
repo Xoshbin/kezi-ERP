@@ -34,6 +34,7 @@ return [
     'statement_information' => 'Statement Information',
     'company' => 'Company',
     'status' => 'Status',
+    'add_transaction_line' => 'Add Transaction Line',
 
     // Reconciliation
     'reconcile' => 'Reconcile',
@@ -50,7 +51,6 @@ return [
     'bank_total' => 'Bank Total',
     'system_total' => 'System Total',
     'difference' => 'Difference',
-    'status' => 'Status',
     'balanced' => 'Balanced',
     'not_balanced' => 'Not Balanced',
     'refresh' => 'Refresh',
@@ -79,7 +79,6 @@ return [
     'all_currencies' => 'All Currencies',
 
     // Form Sections
-    'statement_information' => 'Statement Information',
     'statement_information_description' => 'Basic information about the bank statement',
     'statement_lines_description' => 'Individual transactions on the bank statement',
 
@@ -89,4 +88,9 @@ return [
     'amount_in_foreign_currency' => 'Amount in Foreign Currency',
     'amount_in_statement_currency' => 'Amount that affects the bank account balance',
     'original_transaction_amount' => 'The original transaction amount before conversion',
+    'reverse_write_off' => 'Reverse Write-Off',
+    'reverse_write_off_confirmation' => 'Are you sure you want to reverse this write-off? This will create a reversing journal entry and mark the bank statement line as unreconciled.',
+    'write_off_reversed_successfully' => 'Write-off reversed successfully',
+    'error_reversing_write_off' => 'Error reversing write-off',
+    'write_off_reversal_description' => 'Bank statement line write-off reversal',
 ];

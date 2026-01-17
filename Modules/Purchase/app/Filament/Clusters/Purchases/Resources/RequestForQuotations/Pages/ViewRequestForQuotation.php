@@ -58,7 +58,7 @@ class ViewRequestForQuotation extends ViewRecord
                     $service->convertToPurchaseOrder($dto);
 
                     \Filament\Notifications\Notification::make()
-                        ->title('Purchase Order created successfully')
+                        ->title(__('purchase::request_for_quotation.notifications.po_created_success'))
                         ->success()
                         ->send();
 

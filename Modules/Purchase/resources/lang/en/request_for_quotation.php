@@ -15,6 +15,8 @@ return [
         'status' => 'Status',
         'total' => 'Total',
         'date' => 'Date',
+        'bid_notes' => 'Bid Notes',
+        'vendor_reference' => 'Vendor Reference',
     ],
     'sections' => [
         'general' => 'General Information',
@@ -28,5 +30,13 @@ return [
         'unit' => 'Unit',
         'unit_price' => 'Unit Price',
         'tax' => 'Tax',
+    ],
+    'actions' => [
+        'record_bid' => 'Record Bid',
+        'send_to_vendor' => 'Send to Vendor',
+        'convert_to_order' => 'Convert to Order',
+    ],
+    'notifications' => [
+        'po_created_success' => 'Purchase Order created successfully',
     ],
 ];
