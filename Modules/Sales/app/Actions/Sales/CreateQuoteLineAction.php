@@ -2,7 +2,6 @@
 
 namespace Modules\Sales\Actions\Sales;
 
-use Brick\Money\Money;
 use Modules\Sales\DataTransferObjects\Sales\CreateQuoteLineDTO;
 use Modules\Sales\Models\Quote;
 use Modules\Sales\Models\QuoteLine;
@@ -18,9 +17,6 @@ class CreateQuoteLineAction
     public function execute(Quote $quote, CreateQuoteLineDTO $dto, int $lineOrder = 0): QuoteLine
     {
         $currency = $quote->currency;
-
-        // Prepare unit price as integer (minor units) if it's a Money object
-        $unitPriceMinor = $dto->unitPrice->getMinorAmount()->toInt();
 
         // Create the line - observer will handle calculations
         return QuoteLine::create([
