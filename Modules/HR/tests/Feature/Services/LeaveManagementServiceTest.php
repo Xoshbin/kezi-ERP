@@ -131,19 +131,24 @@ test('it allows approval of pending request', function () {
 });
 
 test('it prevents creating overlapping leave requests', function () {
-    $leaveType = LeaveType::factory()->create(['company_id' => $this->company->id]);
+    $leaveType = LeaveType::factory()->create([
+        'company_id' => $this->company->id,
+        'code' => 'annual',
+    ]);
 
-    // Existing leave
+    // Existing leave: 6 days (10 to 15)
     LeaveRequest::factory()->create([
         'company_id' => $this->company->id,
         'employee_id' => $this->employee->id,
         'leave_type_id' => $leaveType->id,
         'start_date' => Carbon::now()->addDays(10)->format('Y-m-d'),
         'end_date' => Carbon::now()->addDays(15)->format('Y-m-d'),
+        'days_requested' => 6,
         'status' => 'approved',
     ]);
 
-    // New overlapping request
+    // New overlapping request: 7 days (14 to 20)
+    // Total used would be 6 + 7 = 13, which is < 20 available for 'annual'.
     $dto = new CreateLeaveRequestDTO(
         company_id: $this->company->id,
         employee_id: $this->employee->id,

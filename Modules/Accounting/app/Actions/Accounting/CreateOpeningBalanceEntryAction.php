@@ -68,20 +68,19 @@ class CreateOpeningBalanceEntryAction
                     continue;
                 }
 
-                $amount = $balance->getAmount()->toInt(); // Minor units
-                $debitAmount = 0;
-                $creditAmount = 0;
+                $debit = Money::zero($currencyCode);
+                $credit = Money::zero($currencyCode);
 
-                if ($amount > 0) {
-                    $debitAmount = $amount;
+                if ($balance->isPositive()) {
+                    $debit = $balance;
                 } else {
-                    $creditAmount = abs($amount);
+                    $credit = $balance->abs();
                 }
 
                 $lines[] = new CreateJournalEntryLineDTO(
                     account_id: $account->id,
-                    debit: Money::ofMinor($debitAmount, $currencyCode),
-                    credit: Money::ofMinor($creditAmount, $currencyCode),
+                    debit: $debit,
+                    credit: $credit,
                     description: __('accounting::fiscal_year.opening_balance_label', ['year' => $sourceYear->name]),
                     partner_id: $partnerId,
                     analytic_account_id: null,
@@ -104,32 +103,19 @@ class CreateOpeningBalanceEntryAction
                 // If Net Income is POSITIVE (Profit), it's a CREDIT to Equity.
                 // If Net Income is NEGATIVE (Loss), it's a DEBIT to Equity.
 
-                $niAmount = $netIncome->getAmount()->toInt();
-                $niDebit = 0;
-                $niCredit = 0;
+                $niDebit = Money::zero($currencyCode);
+                $niCredit = Money::zero($currencyCode);
 
-                // Logic check:
-                // Profit = Credit Balance in P&L.
-                // To move to Equity: Debit P&L (closing), Credit Equity.
-                // So Positive Net Income => Credit Equity.
-
-                // My getProfitAndLossBalances returns: Income (Credit) - Expense (Debit).
-                // Wait, getProfitAndLossBalances returns Money objects where values are absolute?
-                // Let's check getProfitAndLossBalances implementation.
-                // It returns $totalIncome - $totalExpenses.
-                // If Income (100) > Expense (80), NetResult = 20 (Positive).
-                // This 20 needs to be CREDITED to Retained Earnings.
-
-                if ($niAmount > 0) {
-                    $niCredit = $niAmount;
+                if ($netIncome->isPositive()) {
+                    $niCredit = $netIncome;
                 } else {
-                    $niDebit = abs($niAmount);
+                    $niDebit = $netIncome->abs();
                 }
 
                 $lines[] = new CreateJournalEntryLineDTO(
                     account_id: $reAccount->id,
-                    debit: Money::ofMinor($niDebit, $currencyCode),
-                    credit: Money::ofMinor($niCredit, $currencyCode),
+                    debit: $niDebit,
+                    credit: $niCredit,
                     description: __('accounting::fiscal_year.unallocated_earnings_label', ['year' => $sourceYear->name]), // We need to add this translation key
                     partner_id: null,
                     analytic_account_id: null,
