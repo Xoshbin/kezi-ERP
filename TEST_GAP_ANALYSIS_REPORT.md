@@ -1,0 +1,561 @@
+# Test Gap Analysis Report - JMeryar ERP
+
+**Date:** 2026-01-16
+**Total Tests Found:** ~1,500 test cases across all modules
+**Test Framework:** Pest PHP with Laravel/Filament testing utilities
+
+---
+
+## Executive Summary
+
+The JMeryar ERP has a **moderately comprehensive** test suite with strong coverage in the accounting core but significant gaps in peripheral modules. The test suite follows good patterns (Service-Action-DTO testing, Filament resource tests) but lacks consistency across all modules and is missing critical test categories like browser tests, edge case coverage, and integration workflows.
+
+### Overall Assessment: **⚠️ MODERATE COVERAGE - SIGNIFICANT GAPS EXIST**
+
+---
+
+## 1. Module-by-Module Analysis
+
+### 1.1 Accounting Module ✅ **STRONGEST COVERAGE**
+
+**Tests Found:** 68 test files
+
+**What's Well Covered:**
+- ✅ Journal Entry Actions (Create, Update, Reverse) - 10 action tests
+- ✅ Loan Management Actions (7 tests covering EIR, schedules, interest accrual)
+- ✅ Bank Reconciliation Service & Actions
+- ✅ Currency Revaluation
+- ✅ Asset Lifecycle (Creation, Depreciation, Disposal)
+- ✅ Dunning Process & Fees
+- ✅ Deferred Revenue Recognition
+- ✅ All Financial Reports (P&L, Balance Sheet, Trial Balance, Cash Flow, Aged Payables/Receivables)
+- ✅ Multi-Currency Journal Entries
+- ✅ Period Locking
+- ✅ Withholding Tax
+- ✅ Fiscal Position Service
+
+**GAPS:**
+
+| Gap | Priority | Description |
+|-----|----------|-------------|
+| **Account Service Tests** | HIGH | `AccountService.php` has no dedicated tests |
+| **AccountGroup Service Tests** | MEDIUM | `AccountGroupService.php` has no dedicated tests |
+| **Recurring Template Processing** | HIGH | `ProcessRecurringTransactionAction.php` - No tests for recurring journal entries |
+| **Opening Balance Entry Creation** | MEDIUM | `CreateOpeningBalanceEntryAction.php` - No tests |
+| **Fiscal Year Actions** | MEDIUM | `CloseFiscalYearAction`, `ReopenFiscalYearAction` - No dedicated tests |
+| **Fiscal Period Actions** | MEDIUM | `CloseFiscalPeriodAction`, `ReopenFiscalPeriodAction` - No dedicated tests |
+| **Asset Category Bill Posting Edge Cases** | LOW | Limited edge case coverage |
+| **Consolidation Reports** | LOW | Only `ConsolidatedTrialBalanceServiceTest` exists; missing P&L and Balance Sheet consolidation tests |
+| **FxGainLossReportService** | MEDIUM | No dedicated tests |
+| **Budget Resource Filament Tests** | MEDIUM | `BudgetResource` - No Filament tests for full CRUD |
+
+---
+
+### 1.2 Sales Module ⚠️ **MODERATE COVERAGE**
+
+**Tests Found:** 22 test files
+
+**What's Well Covered:**
+- ✅ Invoice Resource (CRUD, Confirmation, Validation)
+- ✅ Quote Resource (List, Create, Form validation)
+- ✅ Invoice Line Calculations
+- ✅ Invoice State Transitions
+- ✅ Invoice Number Race Condition
+- ✅ PDF Generation (Multi-language, Routes)
+- ✅ Sales Order to Invoice Flow
+- ✅ Sales Order Accounting Flow
+- ✅ Fiscal Position Integration
+
+**GAPS:**
+
+| Gap | Priority | Description |
+|-----|----------|-------------|
+| **20/21 Sales Actions UNTESTED** | CRITICAL | Only `GenerateInvoicePdfActionTest` exists. Missing tests for: `AcceptQuoteAction`, `CancelQuoteAction`, `ConfirmSalesOrderAction`, `ConvertQuoteToInvoiceAction`, `ConvertQuoteToSalesOrderAction`, `CreateDeliveryFromSalesOrderAction`, `CreateInvoiceAction`, `CreateInvoiceLineAction`, `CreateQuoteAction`, `CreateQuoteLineAction`, `CreateQuoteRevisionAction`, `CreateSalesOrderAction`, `CreateSalesOrderLineAction`, `CreateStockMovesForInvoiceAction`, `RejectQuoteAction`, `SendQuoteAction`, `UpdateInvoiceAction`, `UpdateQuoteAction`, `UpdateSalesOrderAction` |
+| **Invoice Service Tests** | MEDIUM | `InvoiceService.php` - No dedicated unit/feature tests |
+| **Quote Service Tests** | MEDIUM | `QuoteService.php` - No dedicated tests |
+| **Sales Order Resource Filament Tests** | HIGH | `SalesOrderResource` - No Filament tests |
+| **Credit Note Workflow** | HIGH | No dedicated tests for credit note creation from invoices |
+| **Dunning Integration** | MEDIUM | No tests for dunning process integration with invoices |
+
+---
+
+### 1.3 Purchase Module ⚠️ **MODERATE COVERAGE**
+
+**Tests Found:** 27 test files
+
+**What's Well Covered:**
+- ✅ Vendor Bill Resource (Confirmation, Line Items, FIFO Cost Layers)
+- ✅ Purchase Order Resource (CRUD, Create Bill Action, Exchange Rates)
+- ✅ Request for Quotation Resource
+- ✅ Three-Way Matching
+- ✅ Shipping Cost Allocation Service
+- ✅ Vendor Bill Confirmation
+- ✅ Purchase Order to Bill Workflow
+- ✅ Browser test for Purchase Order Line Items (only browser test in codebase!)
+
+**GAPS:**
+
+| Gap | Priority | Description |
+|-----|----------|-------------|
+| **13/14 Purchase Actions UNTESTED** | CRITICAL | Only `PurchaseOrderCreateBillActionTest` exists (Filament test). Missing dedicated tests for: `CancelRequestForQuotationAction`, `ConvertRFQToPurchaseOrderAction`, `CreatePurchaseOrderAction`, `CreatePurchaseOrderLineAction`, `CreateRequestForQuotationAction`, `CreateRequestForQuotationLineAction`, `CreateVendorBillAction`, `CreateVendorBillLineAction`, `RecordVendorBidAction`, `SendRequestForQuotationAction`, `UpdatePurchaseOrderAction`, `UpdateRequestForQuotationAction`, `UpdateVendorBillAction` |
+| **PurchaseOrder Service Tests** | MEDIUM | `PurchaseOrderService.php` - No dedicated tests |
+| **RequestForQuotation Service Tests** | MEDIUM | `RequestForQuotationService.php` - No dedicated tests |
+| **VendorBill Service Tests** | MEDIUM | `VendorBillService.php` - Only workflow tests, no unit tests |
+| **Debit Note Workflow** | HIGH | No dedicated tests for vendor debit notes |
+
+---
+
+### 1.4 Inventory Module ✅ **GOOD COVERAGE**
+
+**Tests Found:** 54 test files
+
+**What's Well Covered:**
+- ✅ Stock Move Creation, Confirmation, Valuation
+- ✅ Adjustment Documents (Create, Post, Multi-currency)
+- ✅ FIFO Cost Layers
+- ✅ Serial Number Tracking & Workflow
+- ✅ Lot Tracking & FEFO
+- ✅ Transfer Order Workflow
+- ✅ Picking/Receipt Workflow
+- ✅ Goods Receipt from Purchase Order
+- ✅ Multi-Location Quantity
+- ✅ Reordering Rules
+- ✅ Landed Cost Allocation (tests exist in workflow tests)
+- ✅ Inventory Valuation Lifecycle
+- ✅ Cost Validation & Determination
+- ✅ CSV Export Verification
+- ✅ Performance Optimization Tests
+
+**GAPS:**
+
+| Gap | Priority | Description |
+|-----|----------|-------------|
+| **LandedCost Actions Tests** | MEDIUM | `CreateLandedCostAction`, `AllocateLandedCostsAction`, `PostLandedCostAction` - No dedicated action tests |
+| **LandedCost Resource Filament Tests** | MEDIUM | `LandedCostResource` - No Filament tests |
+| **StockLocation Resource Filament Tests** | MEDIUM | `StockLocationResource` - No Filament tests |
+| **StockMove Resource Filament Tests** | LOW | Only `ManualStockMoveFilamentTest` exists |
+| **GoodsReceipt Validation Action** | LOW | `ValidateGoodsReceiptAction` - No dedicated tests |
+| **Stock Reservation Service Tests** | LOW | `StockReservationService.php` - Limited coverage |
+
+---
+
+### 1.5 Payment Module ✅ **GOOD COVERAGE**
+
+**Tests Found:** 35 test files
+
+**What's Well Covered:**
+- ✅ All Cheque Actions (Issue, Receive, Deposit, Clear, Bounce, HandOver)
+- ✅ Letter of Credit Actions (Create, Issue, Utilize, Cancel)
+- ✅ Petty Cash Actions (Fund Creation, Voucher Workflow)
+- ✅ Payment Resource (Filament)
+- ✅ Payment Posting Business Logic
+- ✅ Payment Cancellation & Deletion
+- ✅ Multi-Currency Payments
+- ✅ Settlement Strategies
+- ✅ Invoice/Vendor Bill Payment State Integration
+- ✅ Reversals and Cancellations
+
+**GAPS:**
+
+| Gap | Priority | Description |
+|-----|----------|-------------|
+| **CreatePaymentAction Tests** | LOW | Covered indirectly but no dedicated action test file |
+| **UpdatePaymentAction Tests** | LOW | No dedicated tests |
+| **Chequebook Resource Tests** | LOW | `ChequebookResource` - No Filament tests |
+| **Payment Installment Tests** | MEDIUM | `PaymentInstallment` model - No tests for installment logic |
+
+---
+
+### 1.6 HR Module ⚠️ **LIMITED COVERAGE**
+
+**Tests Found:** 10 test files
+
+**What's Well Covered:**
+- ✅ Cash Advance Workflow (Submit, Approve, Disburse, Journal Entries)
+- ✅ Cash Advance Resource (Basic CRUD)
+- ✅ Expense Report Resource (Basic tests)
+- ✅ Position Resource
+- ✅ Payroll Processing & Payment
+- ✅ Expense Report Test
+
+**GAPS:**
+
+| Gap | Priority | Description |
+|-----|----------|-------------|
+| **14/15 HR Actions UNTESTED** | CRITICAL | Missing tests for: `CreateAttendanceAction`, `CreateEmployeeAction`, `CreateEmploymentContractAction`, `CreateLeaveRequestAction`, `CreatePayrollLineAction`, `SubmitExpenseReportAction`, `ApproveExpenseReportAction` and their update variants |
+| **5 HR Services UNTESTED** | HIGH | `AttendanceService`, `EmployeeService`, `LeaveManagementService`, `PayrollService`, `CashAdvanceService` - No dedicated service tests |
+| **Employee Resource Filament Tests** | HIGH | `EmployeeResource` - No Filament tests |
+| **Department Resource Filament Tests** | MEDIUM | `DepartmentResource` - No Filament tests |
+| **Leave Request Resource Filament Tests** | HIGH | `LeaveRequestResource` - No Filament tests |
+| **Leave Type Resource Filament Tests** | MEDIUM | `LeaveTypeResource` - No Filament tests |
+| **Payroll Resource Filament Tests** | HIGH | `PayrollResource` - No Filament tests |
+| **Attendance Tracking Tests** | HIGH | Complete gap - no attendance tests |
+| **Leave Balance Calculation Tests** | HIGH | No tests for leave balance logic |
+| **Employment Contract Tests** | MEDIUM | No tests for contract management |
+
+---
+
+### 1.7 Foundation Module ⚠️ **MODERATE COVERAGE**
+
+**Tests Found:** 30 test files
+
+**What's Well Covered:**
+- ✅ Currency Converter Service
+- ✅ Currency Rate Resource
+- ✅ Sequence Service
+- ✅ Exchange Rate Service (with Historical Fallback)
+- ✅ Payment Terms Integration
+- ✅ PDF Settings Resource
+- ✅ Number Formatter
+- ✅ Translatable Helpers
+
+**GAPS:**
+
+| Gap | Priority | Description |
+|-----|----------|-------------|
+| **Partner Resource Filament Tests** | MEDIUM | Exists only in Accounting module, but Foundation owns the model |
+| **Currency Resource Filament Tests** | LOW | `CurrencyResource` - No Filament tests (but CurrencyRateResource is tested) |
+| **Audit Log Tests** | HIGH | `AuditLog` model - No tests for audit logging functionality |
+| **Document Attachment Tests (Module-level)** | LOW | Tests exist in root but not in module context |
+| **Sequence Service Gaps** | LOW | Race condition tests for sequence generation |
+
+---
+
+### 1.8 ProjectManagement Module ⚠️ **LIMITED COVERAGE**
+
+**Tests Found:** 7 test files
+
+**What's Well Covered:**
+- ✅ Project Creation & Update Actions
+- ✅ Project Resource (Filament)
+- ✅ Project Task Resource (Filament)
+- ✅ Timesheet Resource (Filament)
+- ✅ Project Budgeting
+- ✅ Project Invoicing
+- ✅ Timesheet Workflow
+
+**GAPS:**
+
+| Gap | Priority | Description |
+|-----|----------|-------------|
+| **7/9 ProjectManagement Actions UNTESTED** | HIGH | Missing tests for: `CreateProjectTaskAction`, `CreateTimesheetAction`, `ApproveTimesheetAction`, `RejectTimesheetAction`, `SubmitTimesheetAction`, `CreateProjectBudgetAction` (partial coverage), `CreateProjectInvoiceAction` |
+| **5 Services UNTESTED** | HIGH | `ProjectBudgetService`, `ProjectCostingService`, `ProjectInvoicingService`, `ProjectService` (partial), `TimesheetService` - No dedicated tests |
+| **ProjectBudget Resource Filament Tests** | MEDIUM | `ProjectBudgetResource` - No Filament tests |
+| **ProjectInvoice Resource Filament Tests** | MEDIUM | `ProjectInvoiceResource` - No Filament tests |
+| **Task Time Tracking Integration** | MEDIUM | No tests linking tasks to timesheets |
+| **Project Completion Workflow** | LOW | No end-to-end project completion tests |
+
+---
+
+### 1.9 Manufacturing Module ⚠️ **MODERATE COVERAGE**
+
+**Tests Found:** 2 test files
+
+**What's Well Covered:**
+- ✅ Basic BOM Model Tests
+- ✅ Basic ManufacturingOrder Model Tests (relationships, status)
+- ✅ Create BOM Action (Validation, logic)
+- ✅ Create Manufacturing Order Action
+- ✅ Consume Components Action & Inventory Integration
+- ✅ Manufacturing Accounting Integration (Journal Entries)
+- ✅ BillOfMaterial Resource (Filament CRUD)
+
+**GAPS:**
+
+| Gap | Priority | Description |
+|-----|----------|-------------|
+| Gap | Priority | Description |
+|-----|----------|-------------|
+| **3/7 Manufacturing Actions UNTESTED** | HIGH | Missing: `ConfirmManufacturingOrderAction`, `StartProductionAction`, `ProduceFinishedGoodsAction`. (Covered: CreateBOM, CreateMO, Consume, CreateJournalEntry) |
+| **2 Services UNTESTED** | HIGH | `BOMService`, `ManufacturingOrderService` - No dedicated tests |
+| **2/3 Filament Resources UNTESTED** | HIGH | `ManufacturingOrderResource`, `WorkCenterResource` - No Filament tests (BillOfMaterialResource is covered) |
+| **WorkCenter Model Tests** | HIGH | `WorkCenter` model - No tests |
+| **WorkOrder Model Tests** | HIGH | `WorkOrder` model - No tests |
+| **BOM Costing Tests** | MEDIUM | No tests for BOM cost calculation |
+
+---
+
+### 1.10 QualityControl Module ⚠️ **MODERATE COVERAGE**
+
+**Tests Found:** 8 test files
+
+**What's Well Covered:**
+- ✅ Create Quality Alert Action
+- ✅ Create Quality Check Action
+- ✅ Record Quality Check Result Action
+- ✅ Reject Lot Action
+- ✅ Quality Control Point Service
+- ✅ DefectType Resource (Filament)
+- ✅ QualityAlert Resource (Filament)
+- ✅ QualityCheck Resource (Filament)
+
+**GAPS:**
+
+| Gap | Priority | Description |
+|-----|----------|-------------|
+| **QualityControlPoint Resource Filament Tests** | MEDIUM | `QualityControlPointResource` - No Filament tests |
+| **QualityInspectionTemplate Resource Filament Tests** | MEDIUM | `QualityInspectionTemplateResource` - No Filament tests |
+| **QualityCheck Service Tests** | MEDIUM | `QualityCheckService.php` - No dedicated tests |
+| **Quality Check to Inventory Integration** | LOW | No tests for blocking stock based on quality failures |
+
+---
+
+### 1.11 Product Module ✅ **ADEQUATE COVERAGE**
+
+**Tests Found:** 5 test files
+
+**What's Well Covered:**
+- ✅ Product Resource (Filament)
+- ✅ Product Creation Integrity
+- ✅ Product Factory Tests
+- ✅ Product Tracking Type Tests
+- ✅ Create Option Form Tests
+
+**GAPS:**
+
+| Gap | Priority | Description |
+|-----|----------|-------------|
+| **Product Variant Tests** | LOW | If product variants exist, no dedicated tests |
+| **Product to Inventory Integration** | LOW | No tests for storable product creation with initial stock |
+
+---
+
+## 2. Cross-Cutting Test Gaps
+
+### 2.1 Browser Tests ❌ **SEVERELY LACKING**
+
+**Current State:** Only 1 browser test exists (`PurchaseOrderLineItemsBrowserTest.php`)
+
+**Missing Browser Tests (High Priority):**
+- Invoice creation and posting workflow
+- Payment registration workflow
+- Bank reconciliation wizard
+- Journal entry creation with complex lines
+- Asset depreciation scheduling
+- Any complex form with repeaters/relationships
+
+### 2.2 Integration/E2E Tests ⚠️ **PARTIAL**
+
+**Existing:**
+- `AccountingWorkflowTest.php` - Good end-to-end workflow
+- `CapitalInvestmentTradingFlowTest.php` - Good scenario coverage
+- `ManufacturingAccountingIntegrationTest.php` - Manufacturing to Accounting
+
+**Missing:**
+- Full Sales Cycle: Quote → Sales Order → Invoice → Payment → Dunning
+- Full Purchase Cycle: RFQ → PO → Receipt → Bill → Payment
+- Full HR Cycle: Employee creation → Contract → Payroll → Payment
+- Full Manufacturing Cycle: BOM → MO → Production → Stock Update → Costing
+- Multi-company scenarios
+- Inter-company transaction scenarios
+
+### 2.3 RBAC/Authorization Tests ⚠️ **PARTIAL**
+
+**Existing:**
+- `ResourceAccessTest.php` - Basic resource access
+- `SuperAdminAccessTest.php` - Super admin access
+- `ImmutabilityTest.php` - Immutability of posted documents
+- `BankReconciliationAccessControlTest.php` - Bank reconciliation access
+
+**Missing:**
+- Role-based action visibility tests per resource
+- Permission-based field visibility tests
+- Multi-tenant data isolation tests
+- Cross-company data leakage tests
+
+### 2.4 Edge Case & Error Handling ⚠️ **INCONSISTENT**
+
+**Missing Categories:**
+- Concurrent modification tests (race conditions)
+- Large dataset performance regression tests
+- Invalid data handling tests
+- Network failure simulation tests
+- Transaction rollback verification tests
+
+### 2.5 Architecture Tests ⚠️ **MINIMAL**
+
+**Existing:**
+- `DomainIntegrityTest.php` - Basic architecture rules
+
+**Missing:**
+- Module boundary enforcement tests
+- DTO immutability verification tests
+- Service layer isolation tests
+- Event dispatching verification tests
+- Observer side-effect tests
+
+---
+
+## 3. Action Coverage Summary
+
+| Module | Total Actions | Tested Actions | Coverage |
+|--------|---------------|----------------|----------|
+| Accounting | 48 | ~20 | 42% |
+| Sales | 21 | 1 | 5% |
+| Purchase | 14 | 1 | 7% |
+| Inventory | 28 | ~5 | 18% |
+| Payment | 20 | ~15 | 75% |
+| HR | 15 | 0 | 0% |
+| ProjectManagement | 9 | 2 | 22% |
+| Manufacturing | 7 | 4 | 57% |
+| QualityControl | 4 | 4 | 100% |
+
+---
+
+## 4. Service Coverage Summary
+
+| Module | Total Services | Tested Services | Coverage |
+|--------|----------------|-----------------|----------|
+| Accounting | 33 | ~20 | 61% |
+| Sales | 2 | 0 | 0% |
+| Purchase | 5 | 1 | 20% |
+| Inventory | 17 | ~5 | 29% |
+| Payment | 0 (uses AccountingService) | N/A | N/A |
+| HR | 5 | 0 | 0% |
+| Foundation | ~8 | 4 | 50% |
+| ProjectManagement | 5 | 0 | 0% |
+| Manufacturing | 2 | 0 | 0% |
+| QualityControl | 2 | 1 | 50% |
+
+---
+
+## 5. Filament Resource Coverage Summary
+
+| Module | Resources | Tested | Missing Tests |
+|--------|-----------|--------|---------------|
+| Accounting | 31 | ~20 | ~11 (Account, Budget, Lock Date, etc.) |
+| Foundation | 4 | 2 | Currency, possibly others |
+| HR | 8 | 3 | Employee, Department, Leave, Payroll |
+| Inventory | 6 | 3 | LandedCost, StockLocation, StockPicking |
+| Payment | Handled in Accounting | - | Chequebook |
+| Product | 1 | 1 | Complete |
+| ProjectManagement | 5 | 3 | ProjectBudget, ProjectInvoice |
+| Manufacturing | 3 | 1 | MO & WorkCenter |
+| QualityControl | 5 | 3 | QualityControlPoint, QualityInspectionTemplate |
+| Purchase | 4 | 3 | Mostly covered |
+| Sales | 3 | 2 | SalesOrder |
+
+---
+
+## 6. Prioritized Action Plan
+
+### 🔴 Priority 1: CRITICAL (Immediate)
+
+1. **Manufacturing Module Tests** - Partial coverage achieved
+   - Create remaining action tests (Confirm, Start, Produce)
+   - Create service tests for BOMService and ManufacturingOrderService
+   - Create Filament resource tests for ManufacturingOrder and WorkCenter
+
+2. **HR Actions & Services** - 0% action coverage on employee/payroll operations
+   - Test all HR Actions
+   - Test all HR Services
+   - Add Filament tests for critical resources (Employee, Payroll, Leave)
+
+3. **Sales Actions** - Only 1/21 actions tested
+   - Test quote workflow actions
+   - Test invoice creation and confirmation actions
+   - Test sales order workflow actions
+
+4. **Purchase Actions** - Only 1/14 actions tested
+   - Test RFQ workflow actions
+   - Test purchase order workflow actions
+   - Test vendor bill creation actions
+
+### 🟡 Priority 2: HIGH (Within 2-4 weeks)
+
+5. **Browser Tests** - Only 1 browser test in entire codebase
+   - Add browser tests for complex Filament forms
+   - Add browser tests for critical user workflows
+
+6. **End-to-End Integration Tests**
+   - Full sales cycle test
+   - Full purchase cycle test
+   - Full manufacturing to accounting test
+
+7. **Missing Filament Resource Tests**
+   - Manufacturing resources (critical)
+   - HR resources (high priority)
+   - ProjectManagement resources
+
+### 🟢 Priority 3: MEDIUM (Within 1-2 months)
+
+8. **Service Layer Tests**
+   - Sales services (InvoiceService, QuoteService)
+   - Purchase services (PurchaseOrderService, etc.)
+   - ProjectManagement services
+
+9. **RBAC Extended Tests**
+   - Role-based action visibility
+   - Cross-company data isolation
+
+10. **Edge Case Tests**
+    - Race condition tests
+    - Error handling tests
+    - Validation boundary tests
+
+---
+
+## 7. Recommendations
+
+### 7.1 Immediate Actions
+
+1. **Set up test coverage reporting** (e.g., with `paratest` and coverage)
+2. **Create test templates** for Actions, Services, and Filament Resources
+3. **Prioritize Manufacturing tests** - This module is a black hole of test coverage
+4. **Add browser testing infrastructure** - Extend Pest browser plugin usage
+
+### 7.2 Process Improvements
+
+1. **Enforce TDD** - No PR merges without corresponding tests
+2. **Create test checklists** per module for new features
+3. **Add mutation testing** to verify test quality
+4. **Set minimum coverage thresholds** (suggest 80% for new code)
+
+### 7.3 Technical Debt
+
+1. **Consolidate duplicate test patterns** (e.g., VendorBillResourceTest exists twice)
+2. **Standardize test file locations** (some tests are in Accounting folder for Payment module)
+3. **Create shared test builders** for complex scenarios
+
+---
+
+## Appendix: Files to Create First
+
+### Manufacturing Module (Critical)
+```
+Modules/Manufacturing/tests/Feature/Actions/ConfirmManufacturingOrderActionTest.php
+Modules/Manufacturing/tests/Feature/Actions/StartProductionActionTest.php
+Modules/Manufacturing/tests/Feature/Actions/ProduceFinishedGoodsActionTest.php
+Modules/Manufacturing/tests/Feature/Filament/ManufacturingOrderResourceTest.php
+Modules/Manufacturing/tests/Feature/Filament/WorkCenterResourceTest.php
+Modules/Manufacturing/tests/Feature/Services/BOMServiceTest.php
+Modules/Manufacturing/tests/Feature/Services/ManufacturingOrderServiceTest.php
+```
+
+### HR Module (Critical)
+```
+Modules/HR/tests/Feature/Actions/CreateEmployeeActionTest.php
+Modules/HR/tests/Feature/Actions/ProcessPayrollActionTest.php
+Modules/HR/tests/Feature/Actions/CreateLeaveRequestActionTest.php
+Modules/HR/tests/Feature/Services/PayrollServiceTest.php
+Modules/HR/tests/Feature/Services/LeaveManagementServiceTest.php
+Modules/HR/tests/Feature/Services/AttendanceServiceTest.php
+Modules/HR/tests/Feature/Filament/EmployeeResourceTest.php
+Modules/HR/tests/Feature/Filament/PayrollResourceTest.php
+Modules/HR/tests/Feature/Filament/LeaveRequestResourceTest.php
+```
+
+### Sales Module (High Priority)
+```
+Modules/Sales/tests/Feature/Actions/CreateInvoiceActionTest.php
+Modules/Sales/tests/Feature/Actions/ConfirmSalesOrderActionTest.php
+Modules/Sales/tests/Feature/Actions/ConvertQuoteToInvoiceActionTest.php
+Modules/Sales/tests/Feature/Actions/CreateDeliveryFromSalesOrderActionTest.php
+Modules/Sales/tests/Feature/Services/InvoiceServiceTest.php
+Modules/Sales/tests/Feature/Filament/SalesOrderResourceTest.php
+```
+
+---
+
+*Report Generated: 2026-01-16*
+*Prepared for: JMeryar ERP Development Team*

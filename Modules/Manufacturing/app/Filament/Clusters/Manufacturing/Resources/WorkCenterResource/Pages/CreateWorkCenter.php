@@ -2,6 +2,7 @@
 
 namespace Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\WorkCenterResource\Pages;
 
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources\WorkCenterResource;
 
@@ -11,8 +12,10 @@ class CreateWorkCenter extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['company_id'] = auth()->user()->currentCompany->id;
-        $data['currency_code'] = auth()->user()->currentCompany->currency->code;
+        /** @var \App\Models\Company $tenant */
+        $tenant = Filament::getTenant();
+        $data['company_id'] = $tenant->id;
+        $data['currency_code'] = $tenant->currency->code;
 
         return $data;
     }
