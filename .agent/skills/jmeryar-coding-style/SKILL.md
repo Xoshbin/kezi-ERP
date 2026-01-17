@@ -352,3 +352,14 @@ See [docs/DOCUMENTATION_STANDARD.md](../../docs/DOCUMENTATION_STANDARD.md) for t
 - Create `ckb/` or `ar/` subdirectories.
 - Rename the file completely (e.g., `kurdish-report.md`).
 
+## 11. Continuous Quality Improvement (PHPStan)
+
+**Strategy:** We are systematically resolving PHPStan errors across the entire project. This is an ongoing process where we decrement the total error count with each task we work on.
+
+**Rules:**
+- **Zero Regression:** Never introduce new PHPStan errors into a module that has been cleared.
+- **Incremental Cleanup:** When working on a module (e.g., HR, Sales, Accounting), allocate time to resolve existing PHPStan errors in that module's code and tests.
+- **Explicit Type Hints:** Use PHPDoc (`/** @var ... */`) and class-level docblocks in `TestCase` to resolve "undefined property" errors without breaking runtime inheritance.
+- **Baseline Maintenance:** As errors are fixed, update the `phpstan-baseline.neon` by removing the solved patterns.
+- **Goal:** Our objective is to eventually eliminate all PHPStan errors and maintain a "No errors" state for all modules.
+
