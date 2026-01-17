@@ -13,9 +13,17 @@ class WorkOrderFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id' => 1,
-            'manufacturing_order_id' => 1,
-            'work_center_id' => 1,
+            'company_id' => \App\Models\Company::factory(),
+            'manufacturing_order_id' => function (array $attributes) {
+                return \Modules\Manufacturing\Models\ManufacturingOrder::factory()->create([
+                    'company_id' => $attributes['company_id'],
+                ])->id;
+            },
+            'work_center_id' => function (array $attributes) {
+                return \Modules\Manufacturing\Models\WorkCenter::factory()->create([
+                    'company_id' => $attributes['company_id'],
+                ])->id;
+            },
             'sequence' => 1,
             'name' => $this->faker->sentence(3),
             'status' => WorkOrderStatus::Pending,
