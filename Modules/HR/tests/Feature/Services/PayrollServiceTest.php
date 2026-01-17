@@ -75,7 +75,7 @@ test('it processes payroll correctly', function () {
 });
 
 test('it calculates proration for partial month', function () {
-    $this->markTestSkipped('Skipping due to RoundingNecessaryException in brick/math');
+    $this->markTestSkipped('Skipping due to RoundingNecessaryException in brick/math - requires further investigation of currency precision handling');
     $user = User::factory()->create();
     $user->companies()->attach($this->company);
 
