@@ -16,7 +16,7 @@ class AccountService
         Validator::make($data, [
             'code' => [
                 'required',
-                Rule::unique('accounts')->where('company_id', $data['company_id']),
+                Rule::unique('accounts')->where('company_id', $data['company_id'] ?? null),
             ],
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'string', 'max:255'],
