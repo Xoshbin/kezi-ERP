@@ -25,7 +25,7 @@ class PayrollFactory extends Factory
         return [
             'company_id' => Company::factory(),
             'employee_id' => Employee::factory(),
-            'currency_id' => Currency::factory(),
+            'currency_id' => Currency::factory()->createSafely(),
             'payroll_number' => $this->faker->unique()->numerify('PAY-#####'),
             'period_start_date' => $this->faker->dateTimeThisYear,
             'period_end_date' => $this->faker->dateTimeThisYear,

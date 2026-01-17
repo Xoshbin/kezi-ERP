@@ -71,7 +71,7 @@ it('creates opening balance entry correctly from previous year balances', functi
     JournalEntryLine::factory()->create([
         'journal_entry_id' => $entry->id,
         'account_id' => $assetAccount->id,
-        'debit' => 100000, // 1000.00
+        'debit' => \Brick\Money\Money::ofMinor(100000, $this->company->currency->code), // 100.000
         'credit' => 0,
     ]);
 
@@ -80,7 +80,7 @@ it('creates opening balance entry correctly from previous year balances', functi
         'journal_entry_id' => $entry->id,
         'account_id' => $liabilityAccount->id,
         'debit' => 0,
-        'credit' => 40000, // 400.00
+        'credit' => \Brick\Money\Money::ofMinor(40000, $this->company->currency->code), // 40.000
     ]);
 
     // Income Cr 600 (To balance entry, just for testing data integrity)
@@ -88,7 +88,7 @@ it('creates opening balance entry correctly from previous year balances', functi
         'journal_entry_id' => $entry->id,
         'account_id' => $incomeAccount->id,
         'debit' => 0,
-        'credit' => 60000, // 600.00
+        'credit' => \Brick\Money\Money::ofMinor(60000, $this->company->currency->code), // 60.000
     ]);
 
     // Retained Earnings Account (Equity)
@@ -110,7 +110,7 @@ it('creates opening balance entry correctly from previous year balances', functi
         'journal_entry_id' => $entry->id,
         'account_id' => $retainedEarningsAccount->id,
         'debit' => 0,
-        'credit' => 60000, // 600.00
+        'credit' => \Brick\Money\Money::ofMinor(60000, $this->company->currency->code), // 60.000
     ]);
 
     // 4. Setup New Year (2025)
@@ -237,14 +237,14 @@ it('handles unclosed previous year by simulating P&L closure and preserving part
         'journal_entry_id' => $entry->id,
         'account_id' => $receivableAccount->id,
         'partner_id' => $partnerA->id,
-        'debit' => 100000, // 1000.00
+        'debit' => \Brick\Money\Money::ofMinor(100000, $this->company->currency->code), // 100.000
         'credit' => 0,
     ]);
     JournalEntryLine::factory()->create([
         'journal_entry_id' => $entry->id,
         'account_id' => $salesAccount->id,
         'debit' => 0,
-        'credit' => 100000, // 1000.00
+        'credit' => \Brick\Money\Money::ofMinor(100000, $this->company->currency->code), // 100.000
     ]);
 
     // Sale to Partner B: Dr Receivable 500, Cr Sales 500
@@ -252,14 +252,14 @@ it('handles unclosed previous year by simulating P&L closure and preserving part
         'journal_entry_id' => $entry->id,
         'account_id' => $receivableAccount->id,
         'partner_id' => $partnerB->id,
-        'debit' => 50000, // 500.00
+        'debit' => \Brick\Money\Money::ofMinor(50000, $this->company->currency->code), // 50.000
         'credit' => 0,
     ]);
     JournalEntryLine::factory()->create([
         'journal_entry_id' => $entry->id,
         'account_id' => $salesAccount->id,
         'debit' => 0,
-        'credit' => 50000, // 500.00
+        'credit' => \Brick\Money\Money::ofMinor(50000, $this->company->currency->code), // 50.000
     ]);
 
     // Total Income = 1500. Total Expense = 0. Net Income = 1500 (Credit Balance).
