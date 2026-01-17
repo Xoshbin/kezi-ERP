@@ -75,7 +75,6 @@ test('it processes payroll correctly', function () {
 });
 
 test('it calculates proration for partial month', function () {
-    $this->markTestSkipped('Skipping due to RoundingNecessaryException in brick/math - requires further investigation of currency precision handling');
     $user = User::factory()->create();
     $user->companies()->attach($this->company);
 
@@ -96,11 +95,10 @@ test('it calculates proration for partial month', function () {
     );
 
     // Jan has 31 days. 15 days / 31 days ~= 0.4838
-    // 1,000,000 * 15/31 = 483,870.96 -> 483,871 (HALF_UP)
-    // Wait, diffInDays(1 to 15) is 14 days? +1 = 15.
+    // 1,000,000 * 15/31 = 483,870.96 -> 483,871 (HALF_UP in service with 3 decimals) or 483,870.968
 
     $expectedBase = (1000000 * 15) / 31;
-    $actualBase = $payroll->base_salary->getAmount()->toInt();
+    $actualBase = $payroll->base_salary->getAmount()->toFloat();
 
     // Allow small rounding diff
     expect($actualBase)->toBeGreaterThan(480000)
