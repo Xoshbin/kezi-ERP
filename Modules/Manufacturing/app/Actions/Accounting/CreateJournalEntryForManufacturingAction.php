@@ -29,8 +29,8 @@ class CreateJournalEntryForManufacturingAction
     public function execute(ManufacturingOrder $mo, User $user): JournalEntry
     {
         return DB::transaction(function () use ($mo, $user) {
-            // Load necessary relationships
-            $mo->load('company', 'product', 'lines.product', 'destinationLocation', 'sourceLocation');
+            // Load necessary relationships (include company.currency for Money cast)
+            $mo->load('company.currency', 'product', 'lines.product', 'lines.company.currency', 'destinationLocation', 'sourceLocation');
 
             $company = $mo->company;
             $currency = $company->currency;
@@ -49,8 +49,10 @@ class CreateJournalEntryForManufacturingAction
 
             // Credit Raw Materials for each component consumed
             foreach ($mo->lines as $line) {
-                $lineCost = Money::ofMinor($line->unit_cost * 100, $currency->code)
-                    ->multipliedBy($line->quantity_consumed);
+                // unit_cost is a Money object due to BaseCurrencyMoneyCast
+                /** @var Money $unitCost */
+                $unitCost = $line->unit_cost;
+                $lineCost = $unitCost->multipliedBy($line->quantity_consumed);
 
                 $lineDTOs[] = new CreateJournalEntryLineDTO(
                     account_id: $rawMaterialsAccountId,
