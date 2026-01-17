@@ -19,12 +19,6 @@ class CreateDeliveryTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected User $user;
-
-    protected Company $company;
-
-    protected Product $product;
-
     protected StockLocation $warehouse;
 
     protected function setUp(): void
