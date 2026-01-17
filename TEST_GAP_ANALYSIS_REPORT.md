@@ -58,7 +58,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 **What's Well Covered:**
 - ✅ Invoice Resource (CRUD, Confirmation, Validation)
 - ✅ Quote Resource (List, Create, Form validation)
-- ✅ Sales Order Resource (CRUD, Confirmation, Conversion)
+- ✅ SalesOrder Resource (CRUD, Confirmation, Conversion)
 - ✅ Invoice Line Calculations
 - ✅ Invoice State Transitions
 - ✅ Invoice Number Race Condition
@@ -69,14 +69,16 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - ✅ Create Invoice Action & Service
 - ✅ Confirm Sales Order Action
 - ✅ Convert Quote to Sales Order Action
+- ✅ Convert Quote to Invoice Action
 - ✅ Create Quote Action
 - ✅ Create Delivery from Sales Order Action
+- ✅ Invoice Service (Full CRUD, confirmation, reversal)
 
 **GAPS:**
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **15/21 Sales Actions UNTESTED** | MEDIUM | `AcceptQuoteAction`, `CancelQuoteAction`, `ConvertQuoteToInvoiceAction`, `CreateInvoiceLineAction`, `CreateQuoteLineAction`, `CreateQuoteRevisionAction`, `CreateSalesOrderAction` (Action class), `CreateSalesOrderLineAction`, `CreateStockMovesForInvoiceAction`, `RejectQuoteAction`, `SendQuoteAction`, `UpdateInvoiceAction`, `UpdateQuoteAction`, `UpdateSalesOrderAction` |
+| **14/21 Sales Actions UNTESTED** | MEDIUM | `AcceptQuoteAction`, `CancelQuoteAction`, `CreateInvoiceLineAction`, `CreateQuoteLineAction`, `CreateQuoteRevisionAction`, `CreateSalesOrderAction` (Action class), `CreateSalesOrderLineAction`, `CreateStockMovesForInvoiceAction`, `RejectQuoteAction`, `SendQuoteAction`, `UpdateInvoiceAction`, `UpdateQuoteAction`, `UpdateSalesOrderAction` |
 | **Quote Service Tests** | MEDIUM | `QuoteService.php` - No dedicated tests |
 | **Credit Note Workflow** | HIGH | No dedicated tests for credit note creation from invoices |
 | **Dunning Integration** | MEDIUM | No tests for dunning process integration with invoices |
@@ -527,15 +529,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 ## Appendix: Files to Create First
 
-### Sales Module (High Priority)
-```
-Modules/Sales/tests/Feature/Actions/CreateInvoiceActionTest.php
-Modules/Sales/tests/Feature/Actions/ConfirmSalesOrderActionTest.php
-Modules/Sales/tests/Feature/Actions/ConvertQuoteToInvoiceActionTest.php
-Modules/Sales/tests/Feature/Actions/CreateDeliveryFromSalesOrderActionTest.php
-Modules/Sales/tests/Feature/Services/InvoiceServiceTest.php
-Modules/Sales/tests/Feature/Filament/SalesOrderResourceTest.php
-```
+
 
 
 
