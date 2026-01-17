@@ -23,13 +23,13 @@ class CreateAttendanceAction
                 $clockIn = Carbon::parse($createAttendanceDTO->attendance_date.' '.$createAttendanceDTO->clock_in_time);
                 $clockOut = Carbon::parse($createAttendanceDTO->attendance_date.' '.$createAttendanceDTO->clock_out_time);
 
-                $totalMinutes = $clockOut->diffInMinutes($clockIn);
+                $totalMinutes = $clockIn->diffInMinutes($clockOut);
 
                 // Calculate break time if provided
                 if ($createAttendanceDTO->break_start_time && $createAttendanceDTO->break_end_time) {
                     $breakStart = Carbon::parse($createAttendanceDTO->attendance_date.' '.$createAttendanceDTO->break_start_time);
                     $breakEnd = Carbon::parse($createAttendanceDTO->attendance_date.' '.$createAttendanceDTO->break_end_time);
-                    $breakMinutes = $breakEnd->diffInMinutes($breakStart);
+                    $breakMinutes = $breakStart->diffInMinutes($breakEnd);
                     $breakHours = round($breakMinutes / 60, 2);
                     $totalMinutes -= $breakMinutes;
                 }

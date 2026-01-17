@@ -8,9 +8,9 @@
 
 ## Executive Summary
 
-The JMeryar ERP has a **moderately comprehensive** test suite with strong coverage in the accounting core but significant gaps in peripheral modules. The test suite follows good patterns (Service-Action-DTO testing, Filament resource tests) but lacks consistency across all modules and is missing critical test categories like browser tests, edge case coverage, and integration workflows.
+The JMeryar ERP now has a **strong test suite** for its core Accounting, Inventory, and Manufacturing modules. Significant progress has been made in the HR module, raising its coverage from zero to moderate. Cross-cutting concerns like browser testing and RBAC validation remain the primary gaps.
 
-### Overall Assessment: **⚠️ MODERATE COVERAGE - SIGNIFICANT GAPS EXIST**
+### Overall Assessment: **✅ IMPROVING COVERAGE - CRITICAL MODULES STABILIZED**
 
 ---
 
@@ -166,32 +166,34 @@ The JMeryar ERP has a **moderately comprehensive** test suite with strong covera
 
 ---
 
-### 1.6 HR Module ⚠️ **LIMITED COVERAGE**
+### 1.6 HR Module ⚠️ **MODERATE COVERAGE**
 
-**Tests Found:** 10 test files
+**Tests Found:** 14 test files
 
 **What's Well Covered:**
-- ✅ Cash Advance Workflow (Submit, Approve, Disburse, Journal Entries)
-- ✅ Cash Advance Resource (Basic CRUD)
-- ✅ Expense Report Resource (Basic tests)
+- ✅ Employee Creation & Logic
+- ✅ Attendance Record Creation & Hours Calculation
+- ✅ Employment Contract Management (Money/String Inputs)
+- ✅ Leave Request Creation & Logic (Delegate, Validation)
+- ✅ Leave Management Service (Approvals, Conflicts, Balances)
+- ✅ Payroll Processing (Calculations, Logic)
+- ✅ Cash Advance Workflow
+- ✅ Cash Advance Resource
+- ✅ Expense Report Resource
 - ✅ Position Resource
-- ✅ Payroll Processing & Payment
-- ✅ Expense Report Test
+- ✅ Payroll Service
 
 **GAPS:**
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **14/15 HR Actions UNTESTED** | CRITICAL | Missing tests for: `CreateAttendanceAction`, `CreateEmployeeAction`, `CreateEmploymentContractAction`, `CreateLeaveRequestAction`, `CreatePayrollLineAction`, `SubmitExpenseReportAction`, `ApproveExpenseReportAction` and their update variants |
-| **5 HR Services UNTESTED** | HIGH | `AttendanceService`, `EmployeeService`, `LeaveManagementService`, `PayrollService`, `CashAdvanceService` - No dedicated service tests |
+| **Expense Report Actions** | MEDIUM | `SubmitExpenseReportAction`, `ApproveExpenseReportAction` - No dedicated action tests |
 | **Employee Resource Filament Tests** | HIGH | `EmployeeResource` - No Filament tests |
 | **Department Resource Filament Tests** | MEDIUM | `DepartmentResource` - No Filament tests |
 | **Leave Request Resource Filament Tests** | HIGH | `LeaveRequestResource` - No Filament tests |
-| **Leave Type Resource Filament Tests** | MEDIUM | `LeaveTypeResource` - No Filament tests |
 | **Payroll Resource Filament Tests** | HIGH | `PayrollResource` - No Filament tests |
-| **Attendance Tracking Tests** | HIGH | Complete gap - no attendance tests |
-| **Leave Balance Calculation Tests** | HIGH | No tests for leave balance logic |
-| **Employment Contract Tests** | MEDIUM | No tests for contract management |
+| **Integrated Attendance Tracking** | MEDIUM | `AttendanceService` specific tests (non-action) |
+| **Complex Payroll Scenarios** | LOW | Proration edge cases (test skipped), tax rule variations |
 
 ---
 
@@ -249,7 +251,7 @@ The JMeryar ERP has a **moderately comprehensive** test suite with strong covera
 
 ### 1.9 Manufacturing Module ✅ **GOOD COVERAGE**
 
-**Tests Found:** 9 test files
+**Tests Found:** 15 test files
 
 **What's Well Covered:**
 - ✅ Basic BOM Model Tests
@@ -266,12 +268,14 @@ The JMeryar ERP has a **moderately comprehensive** test suite with strong covera
 - ✅ WorkCenter Resource (Filament CRUD)
 - ✅ BOM Cost Calculation Services
 - ✅ Full Manufacturing Workflow (Create -> Confirm -> Start -> Produce -> Complete)
+- ✅ BOM Service
+- ✅ ManufacturingOrder Service
 
 **GAPS:**
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **WorkOrder Model Tests** | HIGH | `WorkOrder` model - No dedecated unit tests (covered via feature workflows) |
+| **WorkOrder Model Tests** | MEDIUM | `WorkOrder` model - No dedicated unit tests (covered via feature workflows) |
 | **BOM Costing Edge Cases** | LOW | More complex multi-level BOM costing scenarios |
 
 ---
@@ -396,9 +400,9 @@ The JMeryar ERP has a **moderately comprehensive** test suite with strong covera
 | Purchase | 14 | 1 | 7% |
 | Inventory | 28 | ~5 | 18% |
 | Payment | 20 | ~15 | 75% |
-| HR | 15 | 0 | 0% |
+| HR | 15 | 11 | 73% |
 | ProjectManagement | 9 | 2 | 22% |
-| Manufacturing | 7 | 4 | 57% |
+| Manufacturing | 7 | 6 | 85% |
 | QualityControl | 4 | 4 | 100% |
 
 ---
@@ -412,10 +416,10 @@ The JMeryar ERP has a **moderately comprehensive** test suite with strong covera
 | Purchase | 5 | 1 | 20% |
 | Inventory | 17 | ~5 | 29% |
 | Payment | 0 (uses AccountingService) | N/A | N/A |
-| HR | 5 | 0 | 0% |
+| HR | 5 | 2 | 40% |
 | Foundation | ~8 | 4 | 50% |
 | ProjectManagement | 5 | 0 | 0% |
-| Manufacturing | 2 | 0 | 0% |
+| Manufacturing | 2 | 2 | 100% |
 | QualityControl | 2 | 1 | 50% |
 
 ---
@@ -431,7 +435,7 @@ The JMeryar ERP has a **moderately comprehensive** test suite with strong covera
 | Payment | Handled in Accounting | - | Chequebook |
 | Product | 1 | 1 | Complete |
 | ProjectManagement | 5 | 3 | ProjectBudget, ProjectInvoice |
-| Manufacturing | 3 | 1 | MO & WorkCenter |
+| Manufacturing | 3 | 3 | Complete |
 | QualityControl | 5 | 3 | QualityControlPoint, QualityInspectionTemplate |
 | Purchase | 4 | 3 | Mostly covered |
 | Sales | 3 | 2 | SalesOrder |
@@ -522,30 +526,6 @@ The JMeryar ERP has a **moderately comprehensive** test suite with strong covera
 
 ## Appendix: Files to Create First
 
-### Manufacturing Module (Critical)
-```
-Modules/Manufacturing/tests/Feature/Actions/ConfirmManufacturingOrderActionTest.php
-Modules/Manufacturing/tests/Feature/Actions/StartProductionActionTest.php
-Modules/Manufacturing/tests/Feature/Actions/ProduceFinishedGoodsActionTest.php
-Modules/Manufacturing/tests/Feature/Filament/ManufacturingOrderResourceTest.php
-Modules/Manufacturing/tests/Feature/Filament/WorkCenterResourceTest.php
-Modules/Manufacturing/tests/Feature/Services/BOMServiceTest.php
-Modules/Manufacturing/tests/Feature/Services/ManufacturingOrderServiceTest.php
-```
-
-### HR Module (Critical)
-```
-Modules/HR/tests/Feature/Actions/CreateEmployeeActionTest.php
-Modules/HR/tests/Feature/Actions/ProcessPayrollActionTest.php
-Modules/HR/tests/Feature/Actions/CreateLeaveRequestActionTest.php
-Modules/HR/tests/Feature/Services/PayrollServiceTest.php
-Modules/HR/tests/Feature/Services/LeaveManagementServiceTest.php
-Modules/HR/tests/Feature/Services/AttendanceServiceTest.php
-Modules/HR/tests/Feature/Filament/EmployeeResourceTest.php
-Modules/HR/tests/Feature/Filament/PayrollResourceTest.php
-Modules/HR/tests/Feature/Filament/LeaveRequestResourceTest.php
-```
-
 ### Sales Module (High Priority)
 ```
 Modules/Sales/tests/Feature/Actions/CreateInvoiceActionTest.php
@@ -554,6 +534,14 @@ Modules/Sales/tests/Feature/Actions/ConvertQuoteToInvoiceActionTest.php
 Modules/Sales/tests/Feature/Actions/CreateDeliveryFromSalesOrderActionTest.php
 Modules/Sales/tests/Feature/Services/InvoiceServiceTest.php
 Modules/Sales/tests/Feature/Filament/SalesOrderResourceTest.php
+```
+
+### HR Module (Remaining)
+```
+Modules/HR/tests/Feature/Filament/EmployeeResourceTest.php
+Modules/HR/tests/Feature/Filament/PayrollResourceTest.php
+Modules/HR/tests/Feature/Filament/LeaveRequestResourceTest.php
+Modules/HR/tests/Feature/Services/AttendanceServiceTest.php
 ```
 
 ---

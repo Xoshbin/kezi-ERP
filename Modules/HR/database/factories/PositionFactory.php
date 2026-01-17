@@ -14,6 +14,8 @@ use Modules\HR\Models\Position;
  */
 class PositionFactory extends Factory
 {
+    protected $model = Position::class;
+
     /**
      * Define the model's default state.
      *
