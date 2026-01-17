@@ -71,6 +71,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - ✅ Convert Quote to Sales Order Action
 - ✅ Convert Quote to Invoice Action
 - ✅ Create Quote Action
+- ✅ Create Credit Note Action
 - ✅ Create Delivery from Sales Order Action
 - ✅ Invoice Service (Full CRUD, confirmation, reversal)
 
@@ -80,7 +81,6 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 |-----|----------|-------------|
 | **8/21 Sales Actions UNTESTED** | MEDIUM | `CancelQuoteAction`, `CreateQuoteLineAction`, `CreateQuoteRevisionAction`, `CreateSalesOrderLineAction`, `CreateStockMovesForInvoiceAction`, `UpdateQuoteAction`, `UpdateSalesOrderAction` |
 | **Quote Service Tests** | MEDIUM | `QuoteService.php` - No dedicated tests |
-| **Credit Note Workflow** | HIGH | No dedicated tests for credit note creation from invoices |
 | **Dunning Integration** | MEDIUM | No tests for dunning process integration with invoices |
 
 ---
