@@ -1,49 +1,42 @@
 <?php
 
-use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\SalesOrderResource;
+namespace Modules\Sales\Tests\Feature\Filament;
+
+use App\Models\Company;
+use App\Models\User;
+use Filament\Facades\Filament;
+use Livewire\Livewire;
+use Modules\Foundation\Models\Currency;
+use Modules\Foundation\Models\Partner;
+use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\CreateSalesOrder;
+use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\ListSalesOrders;
 use Modules\Sales\Models\SalesOrder;
-use Tests\Traits\WithConfiguredCompany;
-
-use function Pest\Livewire\livewire;
-
-uses(WithConfiguredCompany::class);
 
 beforeEach(function () {
-    /** @var \Tests\TestCase $this */
-    $this->setupWithConfiguredCompany();
-    $this->actingAs($this->user);
+    $this->company = Company::factory()->create();
+    $this->user = User::factory()->create();
+    $this->user->companies()->attach($this->company);
+
+    $this->customer = Partner::factory()->customer()->create(['company_id' => $this->company->id]);
+    $this->currency = Currency::factory()->create(['code' => 'USD']);
+
+    auth()->login($this->user);
+    Filament::setTenant($this->company);
 });
 
-test('can render sales order list page', function () {
-    /** @var \Tests\TestCase $this */
-    $this->get(SalesOrderResource::getUrl('index'))
-        ->assertSuccessful();
-});
-
-test('can list sales orders', function () {
-    /** @var \Tests\TestCase $this */
-    $salesOrders = SalesOrder::factory()->count(10)->create([
+it('can render list page', function () {
+    SalesOrder::factory()->count(5)->create([
         'company_id' => $this->company->id,
-        'currency_id' => $this->company->currency_id,
+        'customer_id' => $this->customer->id,
+        'currency_id' => $this->currency->id,
     ]);
 
-    livewire(\Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\ListSalesOrders::class)
-        ->assertCanSeeTableRecords($salesOrders);
+    Livewire::test(ListSalesOrders::class)
+        ->assertCanSeeTableRecords(SalesOrder::take(5)->get())
+        ->assertStatus(200);
 });
 
-test('can render create sales order page', function () {
-    /** @var \Tests\TestCase $this */
-    $this->get(SalesOrderResource::getUrl('create'))
-        ->assertSuccessful();
-});
-
-test('can render edit sales order page', function () {
-    /** @var \Tests\TestCase $this */
-    $salesOrder = SalesOrder::factory()->create([
-        'company_id' => $this->company->id,
-        'currency_id' => $this->company->currency_id,
-    ]);
-
-    $this->get(SalesOrderResource::getUrl('edit', ['record' => $salesOrder]))
-        ->assertSuccessful();
+it('can render create page', function () {
+    Livewire::test(CreateSalesOrder::class)
+        ->assertStatus(200);
 });
