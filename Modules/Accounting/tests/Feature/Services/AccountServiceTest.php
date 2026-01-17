@@ -1,7 +1,5 @@
 <?php
 
-namespace Modules\Accounting\Tests\Feature\Services;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use Modules\Accounting\Enums\Accounting\AccountType;
@@ -10,174 +8,155 @@ use Modules\Accounting\Models\JournalEntry;
 use Modules\Accounting\Models\JournalEntryLine;
 use Modules\Accounting\Services\AccountService;
 use Modules\Foundation\Exceptions\DeletionNotAllowedException;
-use Tests\TestCase;
 
-class AccountServiceTest extends TestCase
-{
-    use RefreshDatabase;
+uses(RefreshDatabase::class);
 
-    protected AccountService $service;
+beforeEach(function () {
+    $this->service = app(AccountService::class);
+});
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->service = app(AccountService::class);
-    }
+test('can create account with valid data', function () {
+    $company = \App\Models\Company::factory()->create();
 
-    public function test_can_create_account_with_valid_data(): void
-    {
-        $company = \App\Models\Company::factory()->create();
+    $data = [
+        'code' => '1001',
+        'name' => 'Cash',
+        'type' => AccountType::CurrentAssets->value,
+        'company_id' => $company->id,
+    ];
 
-        $data = [
-            'code' => '1001',
-            'name' => 'Cash',
-            'type' => AccountType::CurrentAssets->value,
-            'company_id' => $company->id,
-        ];
+    $account = $this->service->create($data);
 
-        $account = $this->service->create($data);
+    expect($account)->toBeInstanceOf(Account::class);
+    expect($account->name)->toBe('Cash');
+    $this->assertDatabaseHas('accounts', [
+        'code' => '1001',
+        'type' => AccountType::CurrentAssets->value,
+        'company_id' => $company->id,
+    ]);
+});
 
-        $this->assertInstanceOf(Account::class, $account);
-        $this->assertEquals('Cash', $account->name);
-        $this->assertDatabaseHas('accounts', [
-            'code' => '1001',
-            'type' => AccountType::CurrentAssets->value,
-            'company_id' => $company->id,
-        ]);
-    }
+test('create account validation fails missing fields', function () {
+    expect(fn () => $this->service->create([]))
+        ->toThrow(ValidationException::class);
+});
 
-    public function test_create_account_validation_fails_missing_fields(): void
-    {
-        $this->expectException(ValidationException::class);
+test('create account validation fails duplicate code same company', function () {
+    $company = \App\Models\Company::factory()->create();
+    Account::factory()->create([
+        'company_id' => $company->id,
+        'code' => '1001',
+        'type' => AccountType::CurrentAssets,
+    ]);
 
-        $this->service->create([]);
-    }
+    $data = [
+        'code' => '1001',
+        'name' => 'Cash Duplicate',
+        'type' => AccountType::CurrentAssets->value,
+        'company_id' => $company->id,
+    ];
 
-    public function test_create_account_validation_fails_duplicate_code_same_company(): void
-    {
-        $company = \App\Models\Company::factory()->create();
-        Account::factory()->create([
-            'company_id' => $company->id,
-            'code' => '1001',
+    expect(fn () => $this->service->create($data))
+        ->toThrow(ValidationException::class);
+});
+
+test('can create account duplicate code different company', function () {
+    $company1 = \App\Models\Company::factory()->create();
+    $company2 = \App\Models\Company::factory()->create();
+
+    Account::factory()->create([
+        'company_id' => $company1->id,
+        'code' => '1001',
+        'type' => AccountType::CurrentAssets,
+    ]);
+
+    $data = [
+        'code' => '1001',
+        'name' => 'Cash Company 2',
+        'type' => AccountType::CurrentAssets->value,
+        'company_id' => $company2->id,
+    ];
+
+    $account = $this->service->create($data);
+
+    expect($account)->toBeInstanceOf(Account::class);
+    $this->assertDatabaseHas('accounts', [
+        'code' => '1001',
+        'company_id' => $company2->id,
+    ]);
+});
+
+test('can update account with valid data', function () {
+    $account = Account::factory()->create([
             'type' => AccountType::CurrentAssets,
-        ]);
+    ]);
+    $newData = [
+        'code' => '1002',
+        'name' => 'Updated Name',
+        'type' => AccountType::CurrentLiabilities->value,
+        'company_id' => $account->company_id,
+    ];
 
-        $data = [
-            'code' => '1001',
-            'name' => 'Cash Duplicate',
-            'type' => AccountType::CurrentAssets->value,
-            'company_id' => $company->id,
-        ];
+    $updatedAccount = $this->service->update($account, $newData);
 
-        $this->expectException(ValidationException::class);
-        $this->service->create($data);
-    }
+    expect($updatedAccount->code)->toBe('1002');
+    expect($updatedAccount->name)->toBe('Updated Name');
+    $this->assertDatabaseHas('accounts', [
+        'code' => '1002',
+        'type' => AccountType::CurrentLiabilities->value,
+        'company_id' => $account->company_id,
+    ]);
+});
 
-    public function test_can_create_account_duplicate_code_different_company(): void
-    {
-        $company1 = \App\Models\Company::factory()->create();
-        $company2 = \App\Models\Company::factory()->create();
+test('update account validation fails duplicate code same company', function () {
+    $company = \App\Models\Company::factory()->create();
+    $account1 = Account::factory()->create(['company_id' => $company->id, 'code' => '1001', 'type' => AccountType::CurrentAssets]);
+    $account2 = Account::factory()->create(['company_id' => $company->id, 'code' => '1002', 'type' => AccountType::CurrentAssets]);
 
-        Account::factory()->create([
-            'company_id' => $company1->id,
-            'code' => '1001',
-            'type' => AccountType::CurrentAssets,
-        ]);
+    $data = [
+        'code' => '1001', // Duplicate of account1
+        'name' => 'Updated Name',
+        'type' => AccountType::CurrentLiabilities->value,
+        'company_id' => $company->id,
+    ];
 
-        $data = [
-            'code' => '1001',
-            'name' => 'Cash Company 2',
-            'type' => AccountType::CurrentAssets->value,
-            'company_id' => $company2->id,
-        ];
+    expect(fn () => $this->service->update($account2, $data))
+        ->toThrow(ValidationException::class);
+});
 
-        $account = $this->service->create($data);
+test('can update account ignoring self code', function () {
+    $company = \App\Models\Company::factory()->create();
+    $account = Account::factory()->create(['company_id' => $company->id, 'code' => '1001', 'type' => AccountType::CurrentAssets]);
 
-        $this->assertInstanceOf(Account::class, $account);
-        $this->assertDatabaseHas('accounts', [
-            'code' => '1001',
-            'company_id' => $company2->id,
-        ]);
-    }
+    $data = [
+        'code' => '1001', // Same code
+        'name' => 'Updated Name',
+        'type' => AccountType::CurrentLiabilities->value,
+        'company_id' => $company->id,
+    ];
 
-    public function test_can_update_account_with_valid_data(): void
-    {
-        $account = Account::factory()->create([
-             'type' => AccountType::CurrentAssets,
-        ]);
-        $newData = [
-            'code' => '1002',
-            'name' => 'Updated Name',
-            'type' => AccountType::CurrentLiabilities->value,
-            'company_id' => $account->company_id,
-        ];
+    $updatedAccount = $this->service->update($account, $data);
 
-        $updatedAccount = $this->service->update($account, $newData);
+    expect($updatedAccount->name)->toBe('Updated Name');
+});
 
-        $this->assertEquals('1002', $updatedAccount->code);
-        $this->assertEquals('Updated Name', $updatedAccount->name);
-        $this->assertDatabaseHas('accounts', [
-            'code' => '1002',
-            'type' => AccountType::CurrentLiabilities->value,
-            'company_id' => $account->company_id,
-        ]);
-    }
+test('can delete account no journal entries', function () {
+    $account = Account::factory()->create(['type' => AccountType::CurrentAssets]);
 
-    public function test_update_account_validation_fails_duplicate_code_same_company(): void
-    {
-        $company = \App\Models\Company::factory()->create();
-        $account1 = Account::factory()->create(['company_id' => $company->id, 'code' => '1001', 'type' => AccountType::CurrentAssets]);
-        $account2 = Account::factory()->create(['company_id' => $company->id, 'code' => '1002', 'type' => AccountType::CurrentAssets]);
+    $this->service->delete($account);
 
-        $data = [
-            'code' => '1001', // Duplicate of account1
-            'name' => 'Updated Name',
-            'type' => AccountType::CurrentLiabilities->value,
-            'company_id' => $company->id,
-        ];
+    $this->assertDatabaseMissing('accounts', ['id' => $account->id]);
+});
 
-        $this->expectException(ValidationException::class);
-        $this->service->update($account2, $data);
-    }
+test('cannot delete account with journal entries', function () {
+    $account = Account::factory()->create(['type' => AccountType::CurrentAssets]);
+    $journalEntry = JournalEntry::factory()->create(['company_id' => $account->company_id]);
 
-    public function test_can_update_account_ignoring_self_code(): void
-    {
-        $company = \App\Models\Company::factory()->create();
-        $account = Account::factory()->create(['company_id' => $company->id, 'code' => '1001', 'type' => AccountType::CurrentAssets]);
+    JournalEntryLine::factory()->create([
+        'journal_entry_id' => $journalEntry->id,
+        'account_id' => $account->id,
+    ]);
 
-        $data = [
-            'code' => '1001', // Same code
-            'name' => 'Updated Name',
-            'type' => AccountType::CurrentLiabilities->value,
-            'company_id' => $company->id,
-        ];
-
-        $updatedAccount = $this->service->update($account, $data);
-
-        $this->assertEquals('Updated Name', $updatedAccount->name);
-    }
-
-    public function test_can_delete_account_no_journal_entries(): void
-    {
-        $account = Account::factory()->create(['type' => AccountType::CurrentAssets]);
-
-        $this->service->delete($account);
-
-        $this->assertDatabaseMissing('accounts', ['id' => $account->id]);
-    }
-
-    public function test_cannot_delete_account_with_journal_entries(): void
-    {
-        $account = Account::factory()->create(['type' => AccountType::CurrentAssets]);
-        $journalEntry = JournalEntry::factory()->create(['company_id' => $account->company_id]);
-
-        JournalEntryLine::factory()->create([
-            'journal_entry_id' => $journalEntry->id,
-            'account_id' => $account->id,
-        ]);
-
-        $this->expectException(DeletionNotAllowedException::class);
-
-        $this->service->delete($account);
-    }
-}
+    expect(fn () => $this->service->delete($account))
+        ->toThrow(DeletionNotAllowedException::class);
+});
