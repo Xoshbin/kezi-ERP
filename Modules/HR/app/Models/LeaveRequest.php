@@ -40,6 +40,13 @@ use Illuminate\Support\Carbon;
  */
 class LeaveRequest extends Model
 {
+    use \Illuminate\Database\Eloquent\Factories\HasFactory;
+
+    protected static function newFactory()
+    {
+        return \Modules\HR\Database\Factories\LeaveRequestFactory::new();
+    }
+
     /**
      * The attributes that are mass assignable.
      *

@@ -48,6 +48,14 @@ class CreateStockMovesForInvoiceAction
                 return $stockMoves;
             }
 
+            // Filter for storable lines first
+            $storableLines = $invoice->invoiceLines->filter(fn ($line) => $line->product && $line->product->type === \Modules\Product\Enums\Products\ProductType::Storable
+            );
+
+            if ($storableLines->isEmpty()) {
+                return $stockMoves;
+            }
+
             // Create a Delivery picking to group all moves for this invoice
             $picking = StockPicking::create([
                 'company_id' => $invoice->company_id,

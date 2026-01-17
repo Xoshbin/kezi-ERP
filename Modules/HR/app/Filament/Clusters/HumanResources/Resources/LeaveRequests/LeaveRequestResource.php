@@ -17,7 +17,7 @@ use Modules\HR\Models\LeaveRequest;
 
 class LeaveRequestResource extends Resource
 {
-    use Translatable;
+    // use Translatable;
 
     protected static ?string $model = LeaveRequest::class;
 

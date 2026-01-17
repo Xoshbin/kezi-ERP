@@ -128,12 +128,13 @@ describe('Manufacturing Accounting Integration', function () {
 
         // Assert debit to Finished Goods
         expect($debitLine->account_id)->toBe($this->finishedGoodsAccount->id);
-        expect($debitLine->debit->getMinorAmount()->toInt())->toBe(10000); // $100 (20 units * $5)
+        // 20 units * 5.00 IQD = 100 IQD = 100000 minor units (IQD has 3 decimal places)
+        expect($debitLine->debit->getMinorAmount()->toInt())->toBe(100000);
         expect($debitLine->credit->isZero())->toBeTrue();
 
         // Assert credit to Raw Materials
         expect($creditLine->account_id)->toBe($this->rawMaterialsAccount->id);
-        expect($creditLine->credit->getMinorAmount()->toInt())->toBe(10000); // $100
+        expect($creditLine->credit->getMinorAmount()->toInt())->toBe(100000); // 100 IQD
         expect($creditLine->debit->isZero())->toBeTrue();
 
         // Assert entry is balanced
@@ -228,7 +229,8 @@ describe('Manufacturing Accounting Integration', function () {
 
         // Total cost = (10 * $3) + (15 * $2) = $30 + $30 = $60
         $totalCost = $debitLines->first()->debit->getMinorAmount()->toInt();
-        expect($totalCost)->toBe(6000); // $60 in minor units
+        // (10 * 3) + (15 * 2) = 30 + 30 = 60 IQD = 60000 minor units (IQD has 3 decimal places)
+        expect($totalCost)->toBe(60000);
     });
 
     it('links journal entry to manufacturing order', function () {

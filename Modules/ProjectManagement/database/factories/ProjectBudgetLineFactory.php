@@ -12,6 +12,9 @@ class ProjectBudgetLineFactory extends Factory
     public function definition(): array
     {
         return [
+            'company_id' => \App\Models\Company::factory(),
+            'project_budget_id' => \Modules\ProjectManagement\Models\ProjectBudget::factory(),
+            'account_id' => \Modules\Accounting\Models\Account::factory(),
             'description' => $this->faker->words(3, true),
             'budgeted_amount' => $this->faker->randomFloat(2, 1000, 50000),
             'actual_amount' => 0,
