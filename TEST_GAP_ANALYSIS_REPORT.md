@@ -53,7 +53,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 ### 1.2 Sales Module ✅ **GOOD COVERAGE**
 
-**Tests Found:** 28 test files
+**Tests Found:** 29 test files
 
 **What's Well Covered:**
 - ✅ Invoice Resource (CRUD, Confirmation, Validation)
@@ -74,12 +74,13 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - ✅ Create Credit Note Action
 - ✅ Create Delivery from Sales Order Action
 - ✅ Invoice Service (Full CRUD, confirmation, reversal)
+- ✅ Create Invoice from Sales Order Action
 
 **GAPS:**
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **1/21 Sales Actions UNTESTED** | LOW | Only `UpdateInvoiceAction` (implicitly tested) remains |
+| **Sales Actions Coverage** | LOW | 13/21 actions tested. |
 | **Quote Service Tests** | MEDIUM | `QuoteService.php` - No dedicated tests |
 | **Dunning Integration** | MEDIUM | No tests for dunning process integration with invoices |
 
@@ -405,7 +406,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 | Module | Total Actions | Tested Actions | Coverage |
 |--------|---------------|----------------|----------|
 | Accounting | 48 | ~20 | 42% |
-| Sales | 21 | 12 | 57% |
+| Sales | 21 | 13 | 62% |
 | Purchase | 14 | 14 | 100% |
 | Inventory | 21 | 10 | 47% |
 | Payment | 20 | ~15 | 75% |
@@ -459,6 +460,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
    - ✅ Test quote workflow actions (`Accept`, `Reject`, `Send`)
    - ✅ Test invoice update and line creation actions
    - ✅ Test sales order creation action
+   - ✅ Test create invoice from sales order action
 
 2. **Purchase Actions** - 14/14 actions tested (✅ RFQ, Purchase Order, and Vendor Bill critical actions completed)
    - ✅ Test RFQ workflow actions (`Create`, `Send`, `Cancel`, `Record Bid`, `Update`)
