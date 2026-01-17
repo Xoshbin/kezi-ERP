@@ -79,7 +79,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **5/21 Sales Actions UNTESTED** | MEDIUM | `CreateQuoteRevisionAction`, `CreateSalesOrderLineAction`, `CreateStockMovesForInvoiceAction`, `UpdateSalesOrderAction` |
+| **1/21 Sales Actions UNTESTED** | LOW | Only `UpdateInvoiceAction` (implicitly tested) remains |
 | **Quote Service Tests** | MEDIUM | `QuoteService.php` - No dedicated tests |
 | **Dunning Integration** | MEDIUM | No tests for dunning process integration with invoices |
 
