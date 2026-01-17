@@ -17,6 +17,11 @@ class StockMoveValuation extends Model
 {
     use HasFactory;
 
+    protected static function newFactory(): \Modules\Inventory\Database\Factories\StockMoveValuationFactory
+    {
+        return \Modules\Inventory\Database\Factories\StockMoveValuationFactory::new();
+    }
+
     protected $fillable = [
         'company_id',
         'product_id',
