@@ -45,8 +45,15 @@ beforeEach(function () {
 });
 
 test('it processes payroll correctly', function () {
+    $service = app(PayrollService::class);
     $user = User::factory()->create();
-    $user->companies()->attach($this->company);
+
+    /** @var \App\Models\Company $company */
+    $company = $this->company;
+    $user->companies()->attach($company);
+
+    /** @var \Modules\HR\Models\Employee $employee */
+    $employee = $this->employee;
 
     // Mock Gate
     Gate::shouldReceive('forUser')->with($user)->andReturnSelf();
@@ -56,27 +63,29 @@ test('it processes payroll correctly', function () {
     $periodEnd = '2023-01-31';
     $payDate = '2023-02-01';
 
-    // Create attendance (optional for now, as service defaults to 0 if none)
-    // But let's add some presence to test hours calculation if desired.
-    // For now basic test.
-
-    $payroll = $this->service->processPayroll(
-        $this->employee,
+    $payroll = $service->processPayroll(
+        $employee,
         $periodStart,
         $periodEnd,
         $payDate,
         $user
     );
 
-    expect($payroll)->toBeInstanceOf(Payroll::class)
-        ->and($payroll->net_salary->getAmount()->toInt())->toBeGreaterThan(0)
-        ->and($payroll->base_salary->getAmount()->toInt())->toBe(1000000)
-        ->and($payroll->status)->toBe('draft');
+    expect($payroll)->toBeInstanceOf(Payroll::class);
+    expect($payroll->net_salary->getAmount()->toInt())->toBeGreaterThan(0);
+    expect($payroll->base_salary->getAmount()->toInt())->toBe(1000000);
+    expect($payroll->status)->toBe('draft');
 });
 
 test('it calculates proration for partial month', function () {
+    $service = app(PayrollService::class);
     $user = User::factory()->create();
-    $user->companies()->attach($this->company);
+    /** @var \App\Models\Company $company */
+    $company = $this->company;
+    $user->companies()->attach($company);
+
+    /** @var \Modules\HR\Models\Employee $employee */
+    $employee = $this->employee;
 
     Gate::shouldReceive('forUser')->with($user)->andReturnSelf();
     Gate::shouldReceive('authorize')->with('create', Payroll::class)->andReturn(true);
@@ -86,21 +95,17 @@ test('it calculates proration for partial month', function () {
     $periodEnd = '2023-01-15';
     $payDate = '2023-02-01';
 
-    $payroll = $this->service->processPayroll(
-        $this->employee,
+    $payroll = $service->processPayroll(
+        $employee,
         $periodStart,
         $periodEnd,
         $payDate,
         $user
     );
 
-    // Jan has 31 days. 15 days / 31 days ~= 0.4838
-    // 1,000,000 * 15/31 = 483,870.96 -> 483,871 (HALF_UP in service with 3 decimals) or 483,870.968
-
-    $expectedBase = (1000000 * 15) / 31;
     $actualBase = $payroll->base_salary->getAmount()->toFloat();
 
     // Allow small rounding diff
-    expect($actualBase)->toBeGreaterThan(480000)
-        ->and($actualBase)->toBeLessThan(490000);
+    expect($actualBase)->toBeGreaterThan(480000);
+    expect($actualBase)->toBeLessThan(490000);
 });
