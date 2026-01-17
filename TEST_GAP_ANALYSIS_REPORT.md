@@ -51,13 +51,14 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 ---
 
-### 1.2 Sales Module ⚠️ **MODERATE COVERAGE**
+### 1.2 Sales Module ✅ **GOOD COVERAGE**
 
-**Tests Found:** 22 test files
+**Tests Found:** 28 test files
 
 **What's Well Covered:**
 - ✅ Invoice Resource (CRUD, Confirmation, Validation)
 - ✅ Quote Resource (List, Create, Form validation)
+- ✅ Sales Order Resource (CRUD, Confirmation, Conversion)
 - ✅ Invoice Line Calculations
 - ✅ Invoice State Transitions
 - ✅ Invoice Number Race Condition
@@ -65,15 +66,18 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - ✅ Sales Order to Invoice Flow
 - ✅ Sales Order Accounting Flow
 - ✅ Fiscal Position Integration
+- ✅ Create Invoice Action & Service
+- ✅ Confirm Sales Order Action
+- ✅ Convert Quote to Sales Order Action
+- ✅ Create Quote Action
+- ✅ Create Delivery from Sales Order Action
 
 **GAPS:**
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **20/21 Sales Actions UNTESTED** | CRITICAL | Only `GenerateInvoicePdfActionTest` exists. Missing tests for: `AcceptQuoteAction`, `CancelQuoteAction`, `ConfirmSalesOrderAction`, `ConvertQuoteToInvoiceAction`, `ConvertQuoteToSalesOrderAction`, `CreateDeliveryFromSalesOrderAction`, `CreateInvoiceAction`, `CreateInvoiceLineAction`, `CreateQuoteAction`, `CreateQuoteLineAction`, `CreateQuoteRevisionAction`, `CreateSalesOrderAction`, `CreateSalesOrderLineAction`, `CreateStockMovesForInvoiceAction`, `RejectQuoteAction`, `SendQuoteAction`, `UpdateInvoiceAction`, `UpdateQuoteAction`, `UpdateSalesOrderAction` |
-| **Invoice Service Tests** | MEDIUM | `InvoiceService.php` - No dedicated unit/feature tests |
+| **15/21 Sales Actions UNTESTED** | MEDIUM | `AcceptQuoteAction`, `CancelQuoteAction`, `ConvertQuoteToInvoiceAction`, `CreateInvoiceLineAction`, `CreateQuoteLineAction`, `CreateQuoteRevisionAction`, `CreateSalesOrderAction` (Action class), `CreateSalesOrderLineAction`, `CreateStockMovesForInvoiceAction`, `RejectQuoteAction`, `SendQuoteAction`, `UpdateInvoiceAction`, `UpdateQuoteAction`, `UpdateSalesOrderAction` |
 | **Quote Service Tests** | MEDIUM | `QuoteService.php` - No dedicated tests |
-| **Sales Order Resource Filament Tests** | HIGH | `SalesOrderResource` - No Filament tests |
 | **Credit Note Workflow** | HIGH | No dedicated tests for credit note creation from invoices |
 | **Dunning Integration** | MEDIUM | No tests for dunning process integration with invoices |
 
@@ -396,7 +400,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 | Module | Total Actions | Tested Actions | Coverage |
 |--------|---------------|----------------|----------|
 | Accounting | 48 | ~20 | 42% |
-| Sales | 21 | 1 | 5% |
+| Sales | 21 | 6 | 29% |
 | Purchase | 14 | 1 | 7% |
 | Inventory | 28 | ~5 | 18% |
 | Payment | 20 | ~15 | 75% |
@@ -412,7 +416,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 | Module | Total Services | Tested Services | Coverage |
 |--------|----------------|-----------------|----------|
 | Accounting | 33 | ~20 | 61% |
-| Sales | 2 | 0 | 0% |
+| Sales | 2 | 1 | 50% |
 | Purchase | 5 | 1 | 20% |
 | Inventory | 17 | ~5 | 29% |
 | Payment | 0 (uses AccountingService) | N/A | N/A |
@@ -438,7 +442,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 | Manufacturing | 3 | 3 | Complete |
 | QualityControl | 5 | 3 | QualityControlPoint, QualityInspectionTemplate |
 | Purchase | 4 | 3 | Mostly covered |
-| Sales | 3 | 2 | SalesOrder |
+| Sales | 3 | 3 | Complete |
 
 ---
 

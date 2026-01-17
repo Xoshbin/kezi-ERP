@@ -24,13 +24,7 @@ class InvoiceNumberRaceConditionTest extends TestCase
 {
     use RefreshDatabase;
 
-    private Company $company;
-
     private Partner $customer;
-
-    private Currency $currency;
-
-    private User $user;
 
     private Account $incomeAccount;
 

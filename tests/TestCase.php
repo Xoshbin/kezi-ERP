@@ -5,6 +5,21 @@ namespace Tests;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithTime;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
+/**
+ * This docblock provides type hints for PHPStan and IDEs for properties and methods
+ * that are frequently added to test classes via traits (like WithConfiguredCompany)
+ * or dynamically assigned in setup methods across the test suite.
+ *
+ * @property \App\Models\Company $company
+ * @property \App\Models\User $user
+ * @property \Modules\Foundation\Models\Partner $partner
+ * @property \Modules\Foundation\Models\Currency $currency
+ * @property \Modules\Product\Models\Product $product
+ * @property \Modules\Accounting\Models\Account $account
+ *
+ * @method void setupWithConfiguredCompany()
+ * @method \Mockery\MockInterface mock(string $abstract, \Closure $mock = null)
+ */
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
