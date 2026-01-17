@@ -32,7 +32,7 @@ class CreateQuoteLineAction
             'quantity' => $dto->quantity,
             'unit' => $dto->unit,
             'line_order' => $dto->lineOrder ?: $lineOrder,
-            'unit_price' => $unitPriceMinor,
+            'unit_price' => $dto->unitPrice,
             'discount_percentage' => $dto->discountPercentage,
             'discount_amount' => 0, // Will be calculated by observer
             'subtotal' => 0, // Will be calculated by observer

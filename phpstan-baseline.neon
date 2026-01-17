@@ -25848,17 +25848,9 @@ parameters:
 			count: 1
 			path: Modules/Sales/app/Listeners/UpdateSalesOrderDeliveredQuantity.php
 
-		-
-			message: '#^Access to property \$amount_applied on an unknown class Modules\\Foundation\\Models\\PaymentDocumentLink\.$#'
-			identifier: class.notFound
-			count: 1
-			path: Modules/Sales/app/Models/Invoice.php
 
-		-
-			message: '#^Access to property \$payment on an unknown class Modules\\Foundation\\Models\\PaymentDocumentLink\.$#'
-			identifier: class.notFound
-			count: 1
-			path: Modules/Sales/app/Models/Invoice.php
+
+
 
 		-
 			message: '#^Class Modules\\Sales\\Models\\Invoice uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -25866,17 +25858,9 @@ parameters:
 			count: 1
 			path: Modules/Sales/app/Models/Invoice.php
 
-		-
-			message: '#^Generic type Illuminate\\Database\\Eloquent\\Relations\\MorphMany\<Modules\\Foundation\\Models\\DocumentAttachment\> in PHPDoc tag @return does not specify all template types of class Illuminate\\Database\\Eloquent\\Relations\\MorphMany\: TRelatedModel, TDeclaringModel$#'
-			identifier: generics.lessTypes
-			count: 1
-			path: Modules/Sales/app/Models/Invoice.php
 
-		-
-			message: '#^Method Modules\\Sales\\Models\\Invoice\:\:attachments\(\) should return Illuminate\\Database\\Eloquent\\Relations\\MorphMany\<Modules\\Foundation\\Models\\DocumentAttachment\> but returns Illuminate\\Database\\Eloquent\\Relations\\MorphMany\<Modules\\Foundation\\Models\\DocumentAttachment, \$this\(Modules\\Sales\\Models\\Invoice\)\>\.$#'
-			identifier: return.type
-			count: 1
-			path: Modules/Sales/app/Models/Invoice.php
+
+
 
 		-
 			message: '#^Method Modules\\Sales\\Models\\Invoice\:\:scopeDraft\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
@@ -25902,17 +25886,9 @@ parameters:
 			count: 1
 			path: Modules/Sales/app/Models/Invoice.php
 
-		-
-			message: '#^PHPDoc tag @var for variable \$paymentLinks contains unknown class Modules\\Foundation\\Models\\PaymentDocumentLink\.$#'
-			identifier: class.notFound
-			count: 1
-			path: Modules/Sales/app/Models/Invoice.php
 
-		-
-			message: '#^Type Modules\\Foundation\\Models\\PaymentDocumentLink in generic type Illuminate\\Database\\Eloquent\\Collection\<int, Modules\\Foundation\\Models\\PaymentDocumentLink\> in PHPDoc tag @var for variable \$paymentLinks is not subtype of template type TModel of Illuminate\\Database\\Eloquent\\Model of class Illuminate\\Database\\Eloquent\\Collection\.$#'
-			identifier: generics.notSubtype
-			count: 1
-			path: Modules/Sales/app/Models/Invoice.php
+
+
 
 		-
 			message: '#^Class Modules\\Sales\\Models\\Quote uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
