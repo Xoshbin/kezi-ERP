@@ -127,6 +127,9 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - ✅ Transfer Order Workflow
 - ✅ Picking/Receipt Workflow
 - ✅ Goods Receipt from Purchase Order
+- ✅ Goods Receipt Validation Action
+- ✅ Landed Cost Actions (Create, Allocate, Post)
+- ✅ Process Outgoing Stock Action
 - ✅ Multi-Location Quantity
 - ✅ Reordering Rules
 - ✅ Landed Cost Allocation (tests exist in workflow tests)
@@ -139,11 +142,9 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **LandedCost Actions Tests** | MEDIUM | `CreateLandedCostAction`, `AllocateLandedCostsAction`, `PostLandedCostAction` - No dedicated action tests |
 | **LandedCost Resource Filament Tests** | MEDIUM | `LandedCostResource` - No Filament tests |
 | **StockLocation Resource Filament Tests** | MEDIUM | `StockLocationResource` - No Filament tests |
 | **StockMove Resource Filament Tests** | LOW | Only `ManualStockMoveFilamentTest` exists |
-| **GoodsReceipt Validation Action** | LOW | `ValidateGoodsReceiptAction` - No dedicated tests |
 | **Stock Reservation Service Tests** | LOW | `StockReservationService.php` - Limited coverage |
 
 ---
@@ -407,7 +408,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 | Accounting | 48 | ~20 | 42% |
 | Sales | 21 | 12 | 57% |
 | Purchase | 14 | 9 | 64% |
-| Inventory | 28 | ~5 | 18% |
+| Inventory | 21 | 10 | 47% |
 | Payment | 20 | ~15 | 75% |
 | HR | 15 | 11 | 73% |
 | ProjectManagement | 9 | 9 | 100% |

@@ -112,6 +112,8 @@ class Product extends Model
         'tracking_type',
         'deferred_revenue_account_id',
         'deferred_expense_account_id',
+        'weight',
+        'volume',
     ];
 
     protected $casts = [
@@ -124,6 +126,8 @@ class Product extends Model
         'deleted_at' => 'datetime',
         'type' => \Modules\Product\Enums\Products\ProductType::class,
         'tracking_type' => \Modules\Inventory\Enums\Inventory\TrackingType::class,
+        'weight' => 'float',
+        'volume' => 'float',
     ];
 
     protected static function booted(): void
