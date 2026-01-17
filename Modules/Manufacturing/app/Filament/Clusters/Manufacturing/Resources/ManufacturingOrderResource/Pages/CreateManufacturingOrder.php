@@ -18,20 +18,37 @@ class CreateManufacturingOrder extends CreateRecord
         $tenant = Filament::getTenant();
         $data['company_id'] = $tenant->id;
 
+        if (empty($data['product_id']) && ! empty($data['bom_id'])) {
+            $bom = \Modules\Manufacturing\Models\BillOfMaterial::find($data['bom_id']);
+            if ($bom) {
+                $data['product_id'] = $bom->product_id;
+            }
+        }
+
         return $data;
     }
 
     protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
     {
+        /** @var \App\Models\Company $tenant */
+        $tenant = Filament::getTenant();
+
+        if (empty($data['product_id']) && ! empty($data['bom_id'])) {
+            $bom = \Modules\Manufacturing\Models\BillOfMaterial::find($data['bom_id']);
+            if ($bom) {
+                $data['product_id'] = $bom->product_id;
+            }
+        }
+
         $dto = new CreateManufacturingOrderDTO(
-            companyId: $data['company_id'],
+            companyId: $tenant->id,
             bomId: $data['bom_id'],
             productId: $data['product_id'],
             quantityToProduce: (float) $data['quantity_to_produce'],
             sourceLocationId: $data['source_location_id'],
             destinationLocationId: $data['destination_location_id'],
-            plannedStartDate: $data['planned_start_date'] ?? null,
-            plannedEndDate: $data['planned_end_date'] ?? null,
+            plannedStartDate: ! empty($data['planned_start_date']) ? \Carbon\Carbon::parse($data['planned_start_date']) : null,
+            plannedEndDate: ! empty($data['planned_end_date']) ? \Carbon\Carbon::parse($data['planned_end_date']) : null,
             notes: $data['notes'] ?? null,
         );
 

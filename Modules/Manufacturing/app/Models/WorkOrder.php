@@ -12,6 +12,11 @@ class WorkOrder extends Model
 {
     use HasFactory;
 
+    protected static function newFactory(): \Modules\Manufacturing\Database\Factories\WorkOrderFactory
+    {
+        return \Modules\Manufacturing\Database\Factories\WorkOrderFactory::new();
+    }
+
     protected $fillable = [
         'company_id',
         'manufacturing_order_id',

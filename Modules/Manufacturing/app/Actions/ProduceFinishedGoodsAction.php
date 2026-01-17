@@ -37,8 +37,10 @@ class ProduceFinishedGoodsAction
             $totalCost = Money::zero($firstLine->currency_code);
 
             foreach ($mo->lines as $line) {
-                $lineCost = Money::ofMinor($line->unit_cost, $line->currency_code)
-                    ->multipliedBy($line->quantity_consumed);
+                // unit_cost is cast to Money via BaseCurrencyMoneyCast
+                /** @var Money $unitCost */
+                $unitCost = $line->unit_cost;
+                $lineCost = $unitCost->multipliedBy($line->quantity_consumed);
                 $totalCost = $totalCost->plus($lineCost);
             }
 
