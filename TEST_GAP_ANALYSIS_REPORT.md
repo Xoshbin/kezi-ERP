@@ -33,12 +33,12 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - ✅ Period Locking
 - ✅ Withholding Tax
 - ✅ Fiscal Position Service
+- ✅ Account Service (Full CRUD, validation, deletion protection)
 
 **GAPS:**
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **Account Service Tests** | HIGH | `AccountService.php` has no dedicated tests |
 | **AccountGroup Service Tests** | MEDIUM | `AccountGroupService.php` has no dedicated tests |
 | **Recurring Template Processing** | HIGH | `ProcessRecurringTransactionAction.php` - No tests for recurring journal entries |
 | **Opening Balance Entry Creation** | MEDIUM | `CreateOpeningBalanceEntryAction.php` - No tests |
@@ -421,7 +421,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 | Module | Total Services | Tested Services | Coverage |
 |--------|----------------|-----------------|----------|
-| Accounting | 33 | ~20 | 61% |
+| Accounting | 33 | ~21 | 64% |
 | Sales | 2 | 1 | 50% |
 | Purchase | 5 | 1 | 20% |
 | Inventory | 17 | ~5 | 29% |
