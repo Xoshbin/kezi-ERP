@@ -78,7 +78,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **14/21 Sales Actions UNTESTED** | MEDIUM | `AcceptQuoteAction`, `CancelQuoteAction`, `CreateInvoiceLineAction`, `CreateQuoteLineAction`, `CreateQuoteRevisionAction`, `CreateSalesOrderAction` (Action class), `CreateSalesOrderLineAction`, `CreateStockMovesForInvoiceAction`, `RejectQuoteAction`, `SendQuoteAction`, `UpdateInvoiceAction`, `UpdateQuoteAction`, `UpdateSalesOrderAction` |
+| **8/21 Sales Actions UNTESTED** | MEDIUM | `CancelQuoteAction`, `CreateQuoteLineAction`, `CreateQuoteRevisionAction`, `CreateSalesOrderLineAction`, `CreateStockMovesForInvoiceAction`, `UpdateQuoteAction`, `UpdateSalesOrderAction` |
 | **Quote Service Tests** | MEDIUM | `QuoteService.php` - No dedicated tests |
 | **Credit Note Workflow** | HIGH | No dedicated tests for credit note creation from invoices |
 | **Dunning Integration** | MEDIUM | No tests for dunning process integration with invoices |
@@ -402,7 +402,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 | Module | Total Actions | Tested Actions | Coverage |
 |--------|---------------|----------------|----------|
 | Accounting | 48 | ~20 | 42% |
-| Sales | 21 | 6 | 29% |
+| Sales | 21 | 12 | 57% |
 | Purchase | 14 | 1 | 7% |
 | Inventory | 28 | ~5 | 18% |
 | Payment | 20 | ~15 | 75% |
@@ -452,10 +452,10 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 ### 🔴 Priority 1: CRITICAL (Immediate)
 
-1. **Sales Actions** - Only 1/21 actions tested
-   - Test quote workflow actions
-   - Test invoice creation and confirmation actions
-   - Test sales order workflow actions
+1. **Sales Actions** - 12/21 actions tested (✅ Quote, Sales Order, and Invoice workflow critical actions completed)
+   - ✅ Test quote workflow actions (`Accept`, `Reject`, `Send`)
+   - ✅ Test invoice update and line creation actions
+   - ✅ Test sales order creation action
 
 2. **Purchase Actions** - Only 1/14 actions tested
    - Test RFQ workflow actions
