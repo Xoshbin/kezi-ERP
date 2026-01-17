@@ -22,7 +22,7 @@ class SalesOrderFactory extends Factory
         return [
             'company_id' => \App\Models\Company::factory(),
             'customer_id' => \Modules\Foundation\Models\Partner::factory(),
-            'currency_id' => \Modules\Foundation\Models\Currency::factory(),
+            'currency_id' => \Modules\Foundation\Models\Currency::factory()->createSafely(),
             'created_by_user_id' => \App\Models\User::factory(),
             'so_number' => 'SO-'.$this->faker->unique()->numberBetween(1000, 9999),
             'status' => \Modules\Sales\Enums\Sales\SalesOrderStatus::Draft,
