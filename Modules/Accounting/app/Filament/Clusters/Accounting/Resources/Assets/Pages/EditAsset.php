@@ -22,9 +22,9 @@ class EditAsset extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('computeDepreciation')
+            Action::make('compute_depreciation_board')
                 ->label(__('accounting::asset.compute_depreciation_board'))
-                ->action('computeDepreciation'),
+                ->action(fn () => $this->computeDepreciation()),
             DeleteAction::make()
                 ->using(function ($record) {
                     // Use the AssetService to handle deletion with proper business logic

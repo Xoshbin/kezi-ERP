@@ -483,3 +483,49 @@ describe('Vendor Bill Confirmation Business Rules', function () {
         expect($vendorBill->journalEntry)->not->toBeNull();
     });
 });
+
+it('can register payment for a posted vendor bill', function () {
+    $vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
+
+    $vendorBill = VendorBill::factory()->for($this->company)->create([
+        'vendor_id' => $vendor->id,
+        'status' => VendorBillStatus::Posted,
+        'total_amount' => Money::of(1000, $this->company->currency->code),
+    ]);
+
+    $vendorBill->lines()->create([
+        'company_id' => $this->company->id,
+        'description' => 'Test line',
+        'quantity' => 1,
+        'unit_price' => Money::of(1000, $this->company->currency->code),
+        'subtotal' => Money::of(1000, $this->company->currency->code),
+        'total_line_tax' => Money::of(0, $this->company->currency->code),
+        'expense_account_id' => Account::factory()->for($this->company)->create(['type' => 'expense'])->id,
+    ]);
+
+    $bankJournal = \Modules\Accounting\Models\Journal::where('company_id', $this->company->id)
+        ->where('type', 'bank')
+        ->first();
+
+    livewire(EditVendorBill::class, [
+        'record' => $vendorBill->getRouteKey(),
+    ])
+        ->callAction('register_payment', data: [
+            'journal_id' => $bankJournal->id,
+            'payment_date' => now()->toDateString(),
+            'amount' => 1000.00,
+            'reference' => 'PAY-BILL-001',
+        ])
+        ->assertHasNoActionErrors()
+        ->assertNotified();
+
+    $this->assertDatabaseHas('payments', [
+        'company_id' => $this->company->id,
+        'amount' => $vendorBill->total_amount->getMinorAmount()->toInt(),
+        'reference' => 'PAY-BILL-001',
+    ]);
+
+    $this->assertDatabaseHas('payment_document_links', [
+        'vendor_bill_id' => $vendorBill->id,
+    ]);
+});
