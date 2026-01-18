@@ -363,3 +363,45 @@ See [docs/DOCUMENTATION_STANDARD.md](../../docs/DOCUMENTATION_STANDARD.md) for t
 - **Baseline Maintenance:** As errors are fixed, update the `phpstan-baseline.neon` by removing the solved patterns.
 - **Goal:** Our objective is to eventually eliminate all PHPStan errors and maintain a "No errors" state for all modules.
 
+## 12. Testing Strategy
+
+**Strategy:** We adopt a "Pyramid" testing strategy that prioritizes speed and reliability.
+
+### 12.1. Pyramid Layers
+
+1.  **Filament Feature Tests (95% - Primary):**
+    *   **Scope:** Validation, Permissions, Business Logic, Form State, Action Execution, Database/State changes.
+    *   **Why:** Fast (milliseconds), deterministic, runs in database transactions.
+    *   **Tool:** Pest + Filament Testing Plugin.
+    *   **Rule:** If it can be tested with Filament `assertFormSet`, `assertActionCalled`, or `assertSee`, do it here.
+
+2.  **Unit Tests (Support):**
+    *   **Scope:** Complex calculations, Service logic, Model scopes, independent utilities.
+    *   **Why:** Extremely fast, isolated.
+
+3.  **Browser Tests (Smoke Tests Only):**
+    *   **Scope:** "Smoke" tests only. 2-3 tests per critical module max.
+    *   **Purpose:** Prove the JavaScript didn't crash, the page loads, and critical frontend-only interactions work.
+    *   **Rule:** DO NOT use for general feature verification. Only use for end-to-end critical path validation where backend tests are insufficient.
+
+### 12.2. Filament Test Example
+
+```php
+// Modules/Sales/tests/Feature/Filament/CreateInvoiceTest.php
+use function Pest\Livewire\livewire;
+
+it('can create an invoice', function () {
+    livewire(CreateInvoice::class)
+        ->fillForm([
+            'customer_id' => $customer->id,
+            'items' => [
+                ['product_id' => $product->id, 'quantity' => 1]
+            ]
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    assertDatabaseHas('invoices', ['customer_id' => $customer->id]);
+});
+```
+
