@@ -298,6 +298,16 @@ class StockReservationService
     public function releaseForMove(StockMove $move): void
     {
         // Delete all reservations for this move
-        StockReservation::where('move_id', $move->id)->delete();
+        $reservations = StockReservation::where('stock_move_id', $move->id)->get();
+
+        foreach ($reservations as $reservation) {
+            $this->stockQuantService->unreserve(
+                $reservation->company_id,
+                $reservation->product_id,
+                $reservation->location_id,
+                $reservation->quantity
+            );
+            $reservation->delete();
+        }
     }
 }
