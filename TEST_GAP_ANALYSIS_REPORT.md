@@ -141,8 +141,8 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **LandedCost Resource Filament Tests** | MEDIUM | `LandedCostResource` - No Filament tests |
-| **StockLocation Resource Filament Tests** | MEDIUM | `StockLocationResource` - No Filament tests |
+| **LandedCost Resource Filament Tests** | DONE | ✅ |
+| **StockLocation Resource Filament Tests** | DONE | ✅ |
 | **StockMove Resource Filament Tests** | LOW | Only `ManualStockMoveFilamentTest` exists |
 | **Stock Reservation Service Tests** | LOW | `StockReservationService.php` - Limited coverage |
 
