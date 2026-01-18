@@ -19,4 +19,11 @@ class CreateLeaveType extends CreateRecord
             LocaleSwitcher::make(),
         ];
     }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
+
+        return $data;
+    }
 }

@@ -504,8 +504,8 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
    - Full manufacturing to accounting test
 
 7. **Missing Filament Resource Tests**
-   - Manufacturing resources (critical)
-   - HR resources (high priority)
+   - ✅ Manufacturing resources complete
+   - ✅ HR resources complete
    - ✅ ProjectManagement resources complete
 
 ### 🟢 Priority 3: MEDIUM (Within 1-2 months)
@@ -531,7 +531,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 1. **Set up test coverage reporting** (e.g., with `paratest` and coverage)
 2. **Create test templates** for Actions, Services, and Filament Resources
-3. **Prioritize Manufacturing tests** - This module is a black hole of test coverage
+3. **Verify Manufacturing tests** - Ensure complex costing scenarios are covered.
 4. **Shift to Filament Feature Tests** - Stop writing complex browser tests. Use Filament's testing helpers for 95% of UI/Logic verification.
 
 ### 7.2 Process Improvements

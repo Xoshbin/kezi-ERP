@@ -17,7 +17,7 @@ class LeaveTypeFactory extends Factory
             'name' => [
                 'en' => $this->faker->words(2, true),
             ],
-            'code' => $this->faker->unique()->slug,
+            'code' => $this->faker->unique()->bothify('LT###'),
             'description' => $this->faker->sentence,
             'default_days_per_year' => $this->faker->numberBetween(10, 30),
             'requires_approval' => true,
