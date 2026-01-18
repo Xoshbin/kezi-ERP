@@ -58,6 +58,8 @@ class ProjectBudget extends Model
 
     protected $attributes = [
         'is_active' => true,
+        'total_budget' => 0,
+        'total_actual' => 0,
     ];
 
     /**

@@ -251,9 +251,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **5 Services TESTED** | DONE | `ProjectBudgetService`, `ProjectCostingService`, `ProjectInvoicingService`, `ProjectService`, `TimesheetService` covered |
-| **ProjectBudget Resource Filament Tests** | MEDIUM | `ProjectBudgetResource` - No Filament tests |
-| **ProjectInvoice Resource Filament Tests** | MEDIUM | `ProjectInvoiceResource` - No Filament tests |
+| **DONE** | ✅ | `ProjectBudgetResource`, `ProjectInvoiceResource` Filament tests complete |
 | **Project Completion Workflow** | LOW | No end-to-end project completion tests |
 
 ---
@@ -443,7 +441,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 | Inventory | 6 | 3 | LandedCost, StockLocation, StockPicking |
 | Payment | Handled in Accounting | - | Chequebook |
 | Product | 1 | 1 | Complete |
-| ProjectManagement | 5 | 3 | ProjectBudget, ProjectInvoice |
+| ProjectManagement | 5 | 5 | Complete |
 | Manufacturing | 3 | 3 | Complete |
 | QualityControl | 5 | 3 | QualityControlPoint, QualityInspectionTemplate |
 | Purchase | 4 | 3 | Mostly covered |
@@ -499,7 +497,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 7. **Missing Filament Resource Tests**
    - Manufacturing resources (critical)
    - HR resources (high priority)
-   - ProjectManagement resources
+   - ✅ ProjectManagement resources complete
 
 ### 🟢 Priority 3: MEDIUM (Within 1-2 months)
 
