@@ -1,6 +1,6 @@
 # Test Gap Analysis Report - JMeryar ERP
 
-**Date:** 2026-01-17
+**Date:** 2026-01-18
 **Total Tests Found:** ~1,700 test cases across all modules
 **Test Framework:** Pest PHP with Laravel/Filament testing utilities
 
@@ -339,10 +339,11 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 **Current State:**
 - ✅ **Migration Complete:** Laravel Dusk removed, Pest Browser installed and configured.
 - ✅ **Infrastructure:** Ready for new tests.
-- ✅ **Existing:** `PurchaseOrderLineItemsTest.php` (Pest).
+**Existing:**
+- ✅ `PurchaseOrderLineItemsTest.php` (Pest) - Stable & Passing
+- ⚠️ `InvoiceCreationTest.php` (Pest) - Implemented but Skipped (Requires visual debugging)
 
 **Missing Browser Tests (High Priority):**
-- Invoice creation and posting workflow
 - Payment registration workflow
 - Bank reconciliation wizard
 - Journal entry creation with complex lines
