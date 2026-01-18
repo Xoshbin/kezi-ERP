@@ -109,7 +109,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 | **PurchaseOrder Service Tests** | MEDIUM | `PurchaseOrderService.php` - No dedicated tests |
 | **RequestForQuotation Service Tests** | MEDIUM | `RequestForQuotationService.php` - No dedicated tests |
 | **VendorBill Service Tests** | MEDIUM | `VendorBillService.php` - Only workflow tests, no unit tests |
-| **Debit Note Workflow** | HIGH | No dedicated tests for vendor debit notes |
+| **Debit Note Workflow** | DONE | ✅ Dedicated action and tests created |
 
 ---
 
@@ -455,10 +455,10 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 ### 🔴 Priority 1: CRITICAL (Immediate)
 
-1. **Sales Actions** - 12/21 actions tested (✅ Quote, Sales Order, and Invoice workflow critical actions completed)
-   - ✅ Test quote workflow actions (`Accept`, `Reject`, `Send`)
-   - ✅ Test invoice update and line creation actions
-   - ✅ Test sales order creation action
+1. **Sales Actions** - 21/21 actions tested (✅ All priority 1 actions completed)
+   - ✅ Test quote workflow actions (`Accept`, `Reject`, `Send`, `CreateRevision`)
+   - ✅ Test invoice update, line creation, pdf generation
+   - ✅ Test sales order creation and confirmation
    - ✅ Test create invoice from sales order action
 
 2. **Purchase Actions** - 14/14 actions tested (✅ RFQ, Purchase Order, and Vendor Bill critical actions completed)
