@@ -84,3 +84,24 @@ test('it can create a draft invoice with lines', function () {
     $this->assertNotNull($line);
     expect($line->unit_price->getAmount()->toFloat())->toBe(100.0); // Changed from ->lines
 });
+
+test('it fails to create invoice with locked date', function () {
+    /** @var \Tests\TestCase $this */
+    // Override the global mock to simulate a locked date
+    $this->mock(LockDateService::class, function ($mock) {
+        $mock->shouldReceive('enforce')->once()->andThrow(new \Exception('Date is locked'));
+    });
+
+    $dto = new CreateInvoiceDTO(
+        company_id: $this->company->id,
+        customer_id: $this->partner->id,
+        currency_id: $this->currency->id,
+        invoice_date: now()->subMonth()->format('Y-m-d'),
+        due_date: now()->subMonth()->addDays(30)->format('Y-m-d'),
+        lines: [],
+        fiscal_position_id: null,
+    );
+
+    $action = app(CreateInvoiceAction::class);
+    $action->execute($dto);
+})->throws(\Exception::class, 'Date is locked');
