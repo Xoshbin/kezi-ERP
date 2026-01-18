@@ -78,3 +78,20 @@ test('it does not confirm an already confirmed sales order', function () {
     // Should remain unchanged mainly (implementation returns early)
     expect($order->status)->toBe(SalesOrderStatus::Confirmed);
 });
+
+test('it cannot confirm a non-draft sales order', function () {
+    /** @var \Tests\TestCase $this */
+    $salesOrder = SalesOrder::factory()->create([
+        'company_id' => $this->company->id,
+        'customer_id' => $this->partner->id,
+        'currency_id' => $this->currency->id,
+        'created_by_user_id' => $this->user->id,
+        'status' => SalesOrderStatus::Cancelled,
+    ]);
+
+    $action = app(ConfirmSalesOrderAction::class);
+    $result = $action->execute($salesOrder, $this->user);
+
+    expect($result->status)->toBe(SalesOrderStatus::Cancelled)
+        ->and($result->confirmed_at)->toBeNull();
+});
