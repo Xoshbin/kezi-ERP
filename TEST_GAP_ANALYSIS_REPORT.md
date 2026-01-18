@@ -127,6 +127,11 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - ✅ Picking/Receipt Workflow
 - ✅ Goods Receipt from Purchase Order
 - ✅ Goods Receipt Validation Action
+- ✅ Confirm Stock Move Action
+- ✅ Process Incoming Stock Action
+- ✅ Ship Transfer Action
+- ✅ Receive Transfer Action
+- ✅ Create Stock Move Action
 - ✅ Landed Cost Actions (Create, Allocate, Post)
 - ✅ Process Outgoing Stock Action
 - ✅ Multi-Location Quantity
@@ -412,7 +417,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 | Accounting | 48 | ~20 | 42% |
 | Sales | 21 | 13 | 62% |
 | Purchase | 14 | 14 | 100% |
-| Inventory | 21 | 10 | 47% |
+| Inventory | 21 | 15 | 71% |
 | Payment | 20 | ~15 | 75% |
 | HR | 15 | 11 | 73% |
 | ProjectManagement | 9 | 9 | 100% |
