@@ -445,7 +445,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 | Accounting | 31 | ~20 | ~11 (Account, Budget, Lock Date, etc.) |
 | Foundation | 4 | 2 | Currency, possibly others |
 | HR | 8 | 7 | Department |
-| Inventory | 6 | 3 | LandedCost, StockLocation, StockPicking |
+| Inventory | 6 | 4 | StockPicking (Done), LandedCost (Done), StockLocation (Done) |
 | Payment | Handled in Accounting | - | Chequebook |
 | Product | 1 | 1 | Complete |
 | ProjectManagement | 5 | 5 | Complete |
