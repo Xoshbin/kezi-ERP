@@ -494,9 +494,9 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 ### 🟡 Priority 2: HIGH (Within 2-4 weeks)
 
-5. **Browser Tests** - Only 1 browser test in entire codebase
-   - Add browser tests for complex Filament forms
-   - Add browser tests for critical user workflows
+5. **Browser Tests** - **SMOKE TESTS ONLY**
+   - Write ~2-3 simplified smoke tests per critical module (e.g., "Login", "Load Dashboard", "Create One Record").
+   - **DO NOT** aim for comprehensive coverage. Use Filament feature tests instead.
 
 6. **End-to-End Integration Tests**
    - Full sales cycle test
@@ -532,7 +532,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 1. **Set up test coverage reporting** (e.g., with `paratest` and coverage)
 2. **Create test templates** for Actions, Services, and Filament Resources
 3. **Prioritize Manufacturing tests** - This module is a black hole of test coverage
-4. **Add browser testing infrastructure** - Extend Pest browser plugin usage
+4. **Shift to Filament Feature Tests** - Stop writing complex browser tests. Use Filament's testing helpers for 95% of UI/Logic verification.
 
 ### 7.2 Process Improvements
 
