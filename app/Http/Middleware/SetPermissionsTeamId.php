@@ -34,6 +34,9 @@ class SetPermissionsTeamId
             'url' => $request->url(),
             'user_id' => $user?->id,
             'user_email' => $user?->email,
+            'db_connection' => config('database.default'),
+            'db_database' => config('database.connections.'.config('database.default').'.database'),
+            'app_key' => config('app.key'),
         ]);
 
         if ($tenant) {

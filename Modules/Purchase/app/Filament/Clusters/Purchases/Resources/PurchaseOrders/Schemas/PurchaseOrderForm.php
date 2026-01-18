@@ -2,7 +2,6 @@
 
 namespace Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Schemas;
 
-use App\Models\Company;
 use Brick\Money\Money;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -30,7 +29,6 @@ use Modules\Foundation\Models\Currency;
 use Modules\Product\Models\Product;
 use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
 use Modules\Purchase\Models\PurchaseOrder;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PurchaseOrderForm
 {
@@ -161,11 +159,10 @@ class PurchaseOrderForm
                                             ->required(),
                                     ]),
 
-                                TranslatableSelect::forModel('currency_id', Currency::class, 'name')
-                                    ->label(__('purchase::purchase_orders.fields.currency'))
+                                Select::make('currency_id')
+                                    ->options(Currency::all()->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
-                                    ->default(fn () => Filament::getTenant() instanceof Company ? Filament::getTenant()->currency_id : null)
                                     ->required()
                                     ->live()
                                     ->afterStateUpdated(function (callable $set, callable $get, $state) {
@@ -324,13 +321,11 @@ class PurchaseOrderForm
                                 static::updateTotals($set, $get);
                             })
                             ->schema([
-                                TranslatableSelect::forModel('product_id', Product::class, 'name')
-                                    ->label(__('purchase::purchase_orders.fields.product'))
-                                    ->searchableFields(['name', 'sku', 'description'])
+                                Select::make('product_id')
+                                    ->options(Product::all()->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
                                     ->required()
-                                    ->reactive()
                                     ->afterStateUpdated(function (callable $set, $state, callable $get) {
                                         if ($state) {
                                             $product = Product::find($state);
@@ -455,13 +450,8 @@ class PurchaseOrderForm
                                     })
                                     ->columnSpan(3),
 
-                                TranslatableSelect::forModel('tax_id', Tax::class, 'name')
-                                    ->label(__('purchase::purchase_orders.fields.tax'))
-                                    ->options(function () {
-                                        return Tax::where('company_id', Filament::getTenant()?->getKey())
-                                            ->where('is_active', true)
-                                            ->pluck('name', 'id');
-                                    })
+                                Select::make('tax_id')
+                                    ->options(Tax::all()->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
                                     ->live()
