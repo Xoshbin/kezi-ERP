@@ -1085,7 +1085,7 @@ class InventoryValuationService
                 $this->createIncomingStockMoveValuation($product, $quantity, $productTotalCost, $journalEntry, $sourceDocument, $costResult);
 
                 // Update stock quants for the incoming stock - need to pass product line instead of stock move
-                $this->stockQuantService->applyForIncomingProductLine($productLine);
+                // $this->stockQuantService->applyForIncomingProductLine($productLine);
             }
         }
 
