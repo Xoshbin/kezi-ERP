@@ -100,7 +100,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - ✅ Vendor Bill critical actions (`Create`, `Line Creation`, `Update`, `Lock Date enforcement`)
 - ✅ RFQ workflow critical actions (`Create`, `Line Creation`, `Send`, `Cancel`, `Record Bid`, `Update`)
 - ✅ PO workflow critical actions (`Create`, `Line Creation`, `Convert from RFQ`, `Update`)
-- ✅ Browser test for Purchase Order Line Items (only browser test in codebase!)
+- ✅ Browser test for Purchase Order Line Items (Migrated to Pest ✅)
 
 **GAPS:**
 
@@ -334,9 +334,12 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 ## 2. Cross-Cutting Test Gaps
 
-### 2.1 Browser Tests ❌ **SEVERELY LACKING**
+### 2.1 Browser Tests ⚠️ **INFRASTRUCTURE READY - TESTS NEEDED**
 
-**Current State:** Only 1 browser test exists (`PurchaseOrderLineItemsBrowserTest.php`)
+**Current State:**
+- ✅ **Migration Complete:** Laravel Dusk removed, Pest Browser installed and configured.
+- ✅ **Infrastructure:** Ready for new tests.
+- ✅ **Existing:** `PurchaseOrderLineItemsTest.php` (Pest).
 
 **Missing Browser Tests (High Priority):**
 - Invoice creation and posting workflow
@@ -480,6 +483,11 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 5. **Foundation - Audit Log** - ✅ DONE
    - ✅ Implement `AuditLogTest` for `AuditLog` model and observer verification
+
+6. **Browser Test Infrastructure** - ✅ DONE
+   - ✅ Migrate existing Dusk tests to Pest
+   - ✅ Remove Dusk dependency
+   - ✅ Configure Pest Browser Plugin
 
 
 
