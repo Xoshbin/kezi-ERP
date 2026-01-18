@@ -2,7 +2,9 @@
 
 namespace Modules\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\ProjectBudgets\Schemas;
 
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -30,6 +32,8 @@ class ProjectBudgetForm
                         DatePicker::make('end_date'),
                         Textarea::make('description')
                             ->columnSpanFull(),
+                        Hidden::make('company_id')
+                            ->default(fn () => Filament::getTenant()?->id),
                     ])->columns(2),
 
                 Repeater::make('lines')
@@ -48,6 +52,8 @@ class ProjectBudgetForm
                             ->numeric()
                             ->disabled()
                             ->dehydrated(false),
+                        Hidden::make('company_id')
+                            ->default(fn () => Filament::getTenant()?->id),
                     ])
                     ->columns(4)
                     ->columnSpanFull()

@@ -64,6 +64,7 @@ class ProjectInvoice extends Model
         'status' => 'draft',
         'labor_amount' => '0',
         'expense_amount' => '0',
+        'total_amount' => '0',
     ];
 
     /**
