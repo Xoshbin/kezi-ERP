@@ -18,6 +18,12 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->report(function (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('DEBUG_EXCEPTION: '.$e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+        });
         $exceptions->render(function (InsufficientCostInformationException $e, \Illuminate\Http\Request $request) {
             // If this is a Livewire request (Filament uses Livewire), handle it gracefully
             if ($request->header('X-Livewire') || $request->wantsJson()) {
