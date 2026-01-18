@@ -160,7 +160,7 @@ class PurchaseOrderForm
                                     ]),
 
                                 Select::make('currency_id')
-                                    ->options(Currency::all()->pluck('name', 'id'))
+                                    ->options(fn () => Currency::all()->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
                                     ->required()
@@ -322,7 +322,7 @@ class PurchaseOrderForm
                             })
                             ->schema([
                                 Select::make('product_id')
-                                    ->options(Product::all()->pluck('name', 'id'))
+                                    ->options(fn () => Product::all()->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
                                     ->required()
@@ -451,7 +451,7 @@ class PurchaseOrderForm
                                     ->columnSpan(3),
 
                                 Select::make('tax_id')
-                                    ->options(Tax::all()->pluck('name', 'id'))
+                                    ->options(fn () => Tax::all()->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
                                     ->live()
