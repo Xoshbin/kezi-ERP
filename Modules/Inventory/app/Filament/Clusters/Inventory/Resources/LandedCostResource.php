@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -67,8 +68,12 @@ class LandedCostResource extends Resource
 
                         TextInput::make('amount_total')
                             ->required()
-                            ->numeric()
+                            ->rule('numeric')
+                            ->formatStateUsing(fn ($state) => $state instanceof \Brick\Money\Money ? $state->getAmount()->toFloat() : $state)
                             ->label(__('inventory::landed_cost.fields.total_amount')),
+
+                        Hidden::make('company_id')
+                            ->default(fn () => \Filament\Facades\Filament::getTenant()->id),
 
                         Select::make('allocation_method')
                             ->label(__('inventory::landed_cost.fields.allocation_method'))
@@ -85,7 +90,8 @@ class LandedCostResource extends Resource
                             ->options(LandedCostStatus::class)
                             ->required()
                             ->default(LandedCostStatus::Draft)
-                            ->disabled(),
+                            ->disabled()
+                            ->dehydrated(),
                     ])->columns(2),
             ]);
     }
