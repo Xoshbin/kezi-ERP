@@ -39,6 +39,11 @@ class LandedCost extends Model
 {
     use HasFactory;
 
+    protected static function newFactory()
+    {
+        return \Modules\Inventory\Database\Factories\LandedCostFactory::new();
+    }
+
     protected $fillable = [
         'company_id',
         'status',
