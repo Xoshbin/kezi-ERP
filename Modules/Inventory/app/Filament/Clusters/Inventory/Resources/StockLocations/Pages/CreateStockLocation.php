@@ -18,4 +18,11 @@ class CreateStockLocation extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
+
+        return $data;
+    }
 }
