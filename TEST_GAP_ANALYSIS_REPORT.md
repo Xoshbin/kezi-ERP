@@ -339,16 +339,19 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 **Current State:**
 - ✅ **Migration Complete:** Laravel Dusk removed, Pest Browser installed and configured.
 - ✅ **Infrastructure:** Ready for new tests.
-**Existing:**
-- ✅ `PurchaseOrderLineItemsTest.php` (Pest) - Stable & Passing
-- ⚠️ `InvoiceCreationTest.php` (Pest) - Implemented but Skipped (Requires visual debugging)
+- ✅ **Legacy Browser Tests Removed:** All flaky browser tests have been migrated to reliable Filament feature tests.
 
-**Missing Browser Tests (High Priority):**
-- Payment registration workflow
-- Bank reconciliation wizard
-- Journal entry creation with complex lines
-- Asset depreciation scheduling
-- Any complex form with repeaters/relationships
+**Existing (Migrated to Filament Feature Tests):**
+- ✅ `PurchaseOrderLineItemsTest.php`
+- ✅ `AssetDepreciationTest.php`
+- ✅ `PaymentRegistrationTest.php`
+- ✅ `ComplexJournalEntryTest.php`
+- ✅ `BankReconciliationTest.php`
+- ✅ `InvoiceCreationTest.php`
+
+**Missing Browser Tests (Future/Low Priority - Use Filament Feature Tests where possible):**
+- Complex form interactions where standard Livewire testing falls short.
+- Visual regressions for critical UI components.
 
 ### 2.2 Integration/E2E Tests ⚠️ **PARTIAL**
 
