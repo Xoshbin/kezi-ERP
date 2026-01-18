@@ -15,6 +15,10 @@
             <directory>Modules/*/tests/Feature</directory>
             <directory>Modules/*/tests/Unit</directory>
         </testsuite>
+        <testsuite name="Browser">
+            <directory>tests/Browser</directory>
+            <directory>Modules/*/tests/Browser</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
