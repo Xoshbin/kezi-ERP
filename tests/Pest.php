@@ -31,3 +31,6 @@ uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class
         $root.'/Modules/QualityControl/tests/Feature',
         $root.'/Modules/QualityControl/tests/Unit',
     );
+
+uses(Tests\TestCase::class, Illuminate\Foundation\Testing\DatabaseMigrations::class)
+    ->in($root.'/Modules/*/tests/Browser');
