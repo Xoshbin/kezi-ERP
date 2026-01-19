@@ -23,7 +23,7 @@ class QuoteFactory extends Factory
         return [
             'company_id' => \App\Models\Company::factory(),
             'partner_id' => \Modules\Foundation\Models\Partner::factory(),
-            'currency_id' => \Modules\Foundation\Models\Currency::factory(),
+            'currency_id' => \Modules\Foundation\Models\Currency::factory()->createSafely(),
             'created_by_user_id' => \App\Models\User::factory(),
             'quote_number' => 'QT-'.$this->faker->unique()->numberBetween(10000, 99999),
             'quote_date' => now(),

@@ -11,7 +11,6 @@ use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Support\TranslatableHelper;
 use Modules\HR\Models\Employee;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PayrollForm
 {
@@ -46,19 +45,12 @@ class PayrollForm
                         ->preload()
                         ->columnSpan(2),
 
-                    TranslatableSelect::forModel('currency_id', Currency::class)
+                    Select::make('currency_id')
                         ->label(__('hr::payroll.fields.currency'))
+                        ->options(fn () => Currency::all()->mapWithKeys(function ($currency) {
+                            return [$currency->id => TranslatableHelper::getLocalizedValue($currency->name)." ({$currency->code})"];
+                        }))
                         ->searchable()
-                        ->searchableFields(['name', 'code'])
-                        ->preload()
-                        ->getOptionLabelUsing(function ($record) {
-                            if (! $record) {
-                                return '';
-                            }
-                            $currencyName = TranslatableHelper::getLocalizedValue($record->name);
-
-                            return "{$currencyName} ({$record->code})";
-                        })
                         ->required()
                         ->default(fn () => Currency::where('code', 'IQD')->first()?->id)
                         ->columnSpan(1),

@@ -24,10 +24,19 @@ class CreateRequestForQuotationLineAction
 
         $currencyCode = $rfq->currency->code;
 
-        $line->unit_price = $dto->unitPrice ?? \Brick\Money\Money::of(0, $currencyCode);
-        $line->subtotal = \Brick\Money\Money::of(0, $currencyCode);
-        $line->tax_amount = \Brick\Money\Money::of(0, $currencyCode);
-        $line->total = \Brick\Money\Money::of(0, $currencyCode);
+        $unitPrice = $dto->unitPrice ?? \Brick\Money\Money::of(0, $currencyCode);
+        $subtotal = $unitPrice->multipliedBy($dto->quantity, \Brick\Math\RoundingMode::HALF_UP);
+
+        $taxAmount = \Brick\Money\Money::of(0, $currencyCode);
+        if ($dto->tax) {
+            $taxRate = $dto->tax->rate / 100;
+            $taxAmount = $subtotal->multipliedBy((string) $taxRate, \Brick\Math\RoundingMode::HALF_UP);
+        }
+
+        $line->unit_price = $unitPrice;
+        $line->subtotal = $subtotal;
+        $line->tax_amount = $taxAmount;
+        $line->total = $subtotal->plus($taxAmount);
 
         $line->save();
 

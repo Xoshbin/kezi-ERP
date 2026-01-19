@@ -4,15 +4,18 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Budgets;
 
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Modules\Accounting\Enums\Budgets\BudgetStatus;
 use Modules\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Budgets\Pages\CreateBudget;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\Budgets\Pages\EditBudget;
@@ -57,7 +60,11 @@ class BudgetResource extends Resource
                 Select::make('company_id')
                     ->label(__('accounting::budget.form.company_id'))
                     ->relationship('company', 'name')
-                    ->required(),
+                    ->required()
+                    ->live()
+                    ->afterStateUpdated(fn ($state, callable $set) => $set('currency_id', \App\Models\Company::find($state)?->currency_id)),
+                Hidden::make('currency_id')
+                    ->default(fn () => \Filament\Facades\Filament::getTenant()?->currency_id),
                 TextInput::make('name')
                     ->label(__('accounting::budget.form.name'))
                     ->required()
@@ -72,11 +79,11 @@ class BudgetResource extends Resource
                     ->label(__('accounting::budget.form.budget_type'))
                     ->required()
                     ->maxLength(255),
-                TextInput::make('status')
+                Select::make('status')
                     ->label(__('accounting::budget.form.status'))
+                    ->options(BudgetStatus::class)
                     ->required()
-                    ->maxLength(255)
-                    ->default(__('accounting::budget.form.default_status')),
+                    ->default(BudgetStatus::Draft),
             ]);
     }
 
@@ -104,6 +111,7 @@ class BudgetResource extends Resource
                     ->searchable(),
                 TextColumn::make('status')
                     ->label(__('accounting::budget.table.status'))
+                    ->badge()
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->label(__('accounting::budget.table.created_at'))
@@ -121,6 +129,7 @@ class BudgetResource extends Resource
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

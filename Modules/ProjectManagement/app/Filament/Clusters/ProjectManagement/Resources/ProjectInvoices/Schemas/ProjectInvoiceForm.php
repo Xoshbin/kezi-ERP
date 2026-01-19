@@ -2,10 +2,13 @@
 
 namespace Modules\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\ProjectInvoices\Schemas;
 
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Modules\Foundation\Filament\Forms\Components\MoneyInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -34,6 +37,8 @@ class ProjectInvoiceForm
                                     ->required()
                                     ->afterOrEqual('period_start'),
                             ]),
+                        Hidden::make('company_id')
+                            ->default(fn () => Filament::getTenant()?->id),
                     ]),
                 Section::make(__('projectmanagement::project.form.sections.generation_options'))
                     ->visible(fn ($operation) => $operation === 'create')
@@ -48,17 +53,11 @@ class ProjectInvoiceForm
                 Section::make(__('projectmanagement::project.form.sections.financials'))
                     ->visible(fn ($operation) => $operation !== 'create')
                     ->schema([
-                        TextInput::make('labor_amount')
-                            ->numeric()
-                            ->prefix('$')
+                        MoneyInput::make('labor_amount')
                             ->readOnly(),
-                        TextInput::make('expense_amount')
-                            ->numeric()
-                            ->prefix('$')
+                        MoneyInput::make('expense_amount')
                             ->readOnly(),
-                        TextInput::make('total_amount')
-                            ->numeric()
-                            ->prefix('$')
+                        MoneyInput::make('total_amount')
                             ->readOnly(),
                     ])->columns(3),
             ]);

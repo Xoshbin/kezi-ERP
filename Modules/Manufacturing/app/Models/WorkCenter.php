@@ -2,7 +2,6 @@
 
 namespace Modules\Manufacturing\Models;
 
-use App\Casts\MoneyCast;
 use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -33,14 +32,11 @@ class WorkCenter extends Model
 
     public array $translatable = ['name'];
 
-    protected function casts(): array
-    {
-        return [
-            'hourly_cost' => MoneyCast::class,
-            'capacity' => 'decimal:2',
-            'is_active' => 'boolean',
-        ];
-    }
+    protected $casts = [
+        'capacity' => 'decimal:2',
+        'hourly_cost' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
+        'is_active' => 'boolean',
+    ];
 
     /**
      * @return BelongsTo<Company, static>

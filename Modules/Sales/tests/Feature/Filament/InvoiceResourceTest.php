@@ -327,3 +327,37 @@ describe('Invoice Confirmation Business Rules', function () {
         $editWire->assertActionEnabled('post');
     });
 });
+
+it('can register payment for a posted invoice', function () {
+    $invoice = Invoice::factory()->withLines(1)->create([
+        'company_id' => $this->company->id,
+        'status' => InvoiceStatus::Posted,
+        'total_amount' => Money::of(2000, $this->company->currency->code),
+    ]);
+
+    $bankJournal = \Modules\Accounting\Models\Journal::where('company_id', $this->company->id)
+        ->where('type', 'bank')
+        ->first();
+
+    livewire(EditInvoice::class, [
+        'record' => $invoice->getRouteKey(),
+    ])
+        ->callAction('register_payment', data: [
+            'journal_id' => $bankJournal->id,
+            'payment_date' => now()->toDateString(),
+            'amount' => 2000.00,
+            'reference' => 'PAY-INV-001',
+        ])
+        ->assertHasNoActionErrors()
+        ->assertNotified();
+
+    $this->assertDatabaseHas('payments', [
+        'company_id' => $this->company->id,
+        'amount' => $invoice->total_amount->getMinorAmount()->toInt(),
+        'reference' => 'PAY-INV-001',
+    ]);
+
+    $this->assertDatabaseHas('payment_document_links', [
+        'invoice_id' => $invoice->id,
+    ]);
+});

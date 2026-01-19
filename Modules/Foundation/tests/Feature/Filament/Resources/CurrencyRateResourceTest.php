@@ -42,7 +42,8 @@ it('can create a currency rate', function () {
         ->fillForm([
             'currency_id' => $currency->id,
             'rate' => 1.5,
-            'effective_date' => now()->toDateString(),
+            // Use a unique past date to avoid conflicts with other tests and satisfy maxDate validation
+            'effective_date' => $effectiveDate = now()->subYears(10)->format('Y-m-d'),
         ])
         ->call('create')
         ->assertHasNoFormErrors();

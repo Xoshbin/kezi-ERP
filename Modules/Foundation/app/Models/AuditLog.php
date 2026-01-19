@@ -4,7 +4,6 @@ namespace Modules\Foundation\Models;
 
 use App\Models\Company;
 use App\Models\User;
-use Database\Factories\AuditLogFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
+use Modules\Foundation\Database\Factories\AuditLogFactory;
 
 /**
  * @property int $id
@@ -50,6 +50,11 @@ class AuditLog extends Model
 {
     /** @use HasFactory<AuditLogFactory> */
     use HasFactory;
+
+    protected static function newFactory(): AuditLogFactory
+    {
+        return AuditLogFactory::new();
+    }
 
     /**
      * The name of the "updated at" column.

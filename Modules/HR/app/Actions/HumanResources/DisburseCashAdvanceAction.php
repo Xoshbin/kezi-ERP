@@ -105,8 +105,6 @@ class DisburseCashAdvanceAction
                 ],
                 [
                     'name' => $cashAdvance->employee->full_name,
-                    'is_customer' => false,
-                    'is_vendor' => true, // Treat employees as vendors for payments
                     'type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor,
                 ]
             );

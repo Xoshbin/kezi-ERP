@@ -55,7 +55,7 @@ class AllocateLandedCostsAction
     {
         return match ($method) {
             LandedCostAllocationMethod::ByQuantity => $stockMoves->sum(fn (StockMove $move) => $move->productLines->sum('quantity')),
-            LandedCostAllocationMethod::ByCost => $stockMoves->sum(fn (StockMove $move) => $move->stockMoveValuations->sum('cost_impact.amount')), // Assuming cost_impact is Money
+            LandedCostAllocationMethod::ByCost => $stockMoves->sum(fn (StockMove $move) => $move->stockMoveValuations->sum(fn ($v) => $v->cost_impact->getAmount()->toFloat())), // Assuming cost_impact is Money
             LandedCostAllocationMethod::ByWeight => $stockMoves->sum(fn (StockMove $move) => $move->productLines->sum(fn ($line) => $line->product->weight * $line->quantity)),
             LandedCostAllocationMethod::ByVolume => $stockMoves->sum(fn (StockMove $move) => $move->productLines->sum(fn ($line) => $line->product->volume * $line->quantity)),
         };
@@ -65,7 +65,7 @@ class AllocateLandedCostsAction
     {
         return match ($method) {
             LandedCostAllocationMethod::ByQuantity => $move->productLines->sum('quantity'),
-            LandedCostAllocationMethod::ByCost => $move->stockMoveValuations->sum('cost_impact.amount'),
+            LandedCostAllocationMethod::ByCost => $move->stockMoveValuations->sum(fn ($v) => $v->cost_impact->getAmount()->toFloat()),
             LandedCostAllocationMethod::ByWeight => $move->productLines->sum(fn ($line) => $line->product->weight * $line->quantity),
             LandedCostAllocationMethod::ByVolume => $move->productLines->sum(fn ($line) => $line->product->volume * $line->quantity),
         };

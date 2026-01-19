@@ -3,7 +3,6 @@
 namespace Modules\Foundation\Tests\Feature\General;
 
 use Brick\Money\Money;
-use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Models\Account;
 use Modules\Accounting\Models\JournalEntry;
@@ -23,6 +22,10 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
+    // Enable Foreign Keys for SQLite to ensure constraints are enforced
+    if (config('database.default') === 'sqlite') {
+        \Illuminate\Support\Facades\DB::connection()->getPdo()->exec('PRAGMA foreign_keys = ON;');
+    }
 });
 
 // ======================================================================
@@ -154,8 +157,9 @@ test('a user who created a journal entry cannot be deleted', function () {
         'total_credit' => 0,
     ]);
 
-    // Act & Assert: Attempting to delete the user should fail due to the database constraint.
-    $this->expectException(QueryException::class);
+    // Act & Assert: Attempting to delete the user should fail due to our deletion guard.
+    $this->expectException(\Modules\Foundation\Exceptions\DeletionNotAllowedException::class);
+    $this->expectExceptionMessage('Cannot delete a user who has created financial transactions (journal entries).');
     $this->user->delete();
 
     // Verify: The user must still exist.

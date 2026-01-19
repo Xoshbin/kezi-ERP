@@ -296,8 +296,6 @@ test('it throws exception when journal entry lines have different partners for A
         'name' => 'Partner 1',
         'email' => 'partner1@test.com',
         'type' => 'customer',
-        'is_customer' => true,
-        'is_vendor' => false,
     ]);
 
     $partner2 = Partner::create([
@@ -305,8 +303,6 @@ test('it throws exception when journal entry lines have different partners for A
         'name' => 'Partner 2',
         'email' => 'partner2@test.com',
         'type' => 'customer',
-        'is_customer' => true,
-        'is_vendor' => false,
     ]);
 
     // Create journal and journal entry
@@ -444,8 +440,6 @@ test('it successfully creates reconciliation for valid balanced lines', function
         'name' => 'Success Partner',
         'email' => 'success@test.com',
         'type' => 'customer',
-        'is_customer' => true,
-        'is_vendor' => false,
     ]);
 
     // Create journal and journal entry

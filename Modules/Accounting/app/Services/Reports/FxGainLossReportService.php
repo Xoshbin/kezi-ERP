@@ -147,32 +147,49 @@ class FxGainLossReportService
     {
         $currencyCode = $company->currency->code;
 
-        // Get posted revaluations within the date range
-        $revaluations = CurrencyRevaluation::with(['lines.account', 'lines.currency'])
-            ->where('company_id', $company->id)
-            ->whereBetween('revaluation_date', [$startDate->toDateString(), $endDate->toDateString()])
+        // Get posted revaluation lines within the date range
+        // Note: For SQLite/Date compatibility, we use explicit >= and < with endDate+1
+        $results = DB::table('currency_revaluation_lines as crl')
+            ->select([
+                'cr.revaluation_date',
+                'cr.reference',
+                'crl.adjustment_amount',
+                'crl.foreign_currency_balance',
+                'crl.historical_rate',
+                'crl.current_rate',
+                'a.code as account_code',
+                'a.name as account_name',
+                'c.code as currency_code',
+            ])
+            ->join('currency_revaluations as cr', 'crl.currency_revaluation_id', '=', 'cr.id')
+            ->join('accounts as a', 'crl.account_id', '=', 'a.id')
+            ->join('currencies as c', 'crl.currency_id', '=', 'c.id')
+            ->where('cr.company_id', $company->id)
+            ->where('cr.status', \Modules\Accounting\Enums\Currency\RevaluationStatus::Posted->value)
+            ->where('cr.revaluation_date', '>=', $startDate->toDateString())
+            ->where('cr.revaluation_date', '<', $endDate->copy()->addDay()->toDateString())
             ->get();
 
-        $lines = collect();
-
-        foreach ($revaluations as $revaluation) {
-            foreach ($revaluation->lines as $line) {
-                $lines->push(new FxGainLossLineDTO(
-                    date: $revaluation->revaluation_date->toDateString(),
-                    reference: $revaluation->reference ?? '',
-                    description: "Revaluation - {$line->account->code}",
-                    currency_code: $line->currency->code ?? $currencyCode,
-                    foreign_amount: $line->foreign_currency_balance,
-                    original_rate: $line->historical_rate,
-                    settlement_rate: $line->current_rate,
-                    gain_loss_amount: $line->adjustment_amount,
-                    type: 'unrealized',
-                    account_code: $line->account->code ?? null,
-                    account_name: $line->account->name ?? null,
-                ));
+        return $results->map(function ($row) use ($currencyCode) {
+            // Revaluation date might have time part from SQLite, we only want the date
+            $date = $row->revaluation_date;
+            if (str_contains($date, ' ')) {
+                $date = explode(' ', $date)[0];
             }
-        }
 
-        return $lines->filter(fn ($line) => ! $line->gain_loss_amount->isZero());
+            return new FxGainLossLineDTO(
+                date: $date,
+                reference: $row->reference ?? '',
+                description: "Revaluation - {$row->account_code}",
+                currency_code: $row->currency_code ?? $currencyCode,
+                foreign_amount: Money::ofMinor($row->foreign_currency_balance, $row->currency_code),
+                original_rate: (float) $row->historical_rate,
+                settlement_rate: (float) $row->current_rate,
+                gain_loss_amount: Money::ofMinor($row->adjustment_amount, $currencyCode),
+                type: 'unrealized',
+                account_code: $row->account_code,
+                account_name: $row->account_name,
+            );
+        })->filter(fn ($line) => ! $line->gain_loss_amount->isZero());
     }
 }
