@@ -366,7 +366,6 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - `ManufacturingAccountingIntegrationTest.php` - Manufacturing to Accounting
 
 **Missing:**
-- Full Sales Cycle: Quote → Sales Order → Invoice → Payment → Dunning
 - Full Purchase Cycle: RFQ → PO → Receipt → Bill → Payment
 - Full HR Cycle: Employee creation → Contract → Payroll → Payment
 - Full Manufacturing Cycle: BOM → MO → Production → Stock Update → Costing
@@ -507,7 +506,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
    - **DO NOT** aim for comprehensive coverage. Use Filament feature tests instead.
 
 6. **End-to-End Integration Tests**
-   - Full sales cycle test
+   - ✅ Full sales cycle test (Quote → Sales Order → Invoice → Payment → Dunning)
    - Full purchase cycle test
    - Full manufacturing to accounting test
 
