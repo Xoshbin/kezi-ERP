@@ -22,4 +22,4 @@ parameters:
         - '#return type with generic class.*?does not specify its types#'
 
     excludePaths:
-        - Modules/Purchase/tests/Browser/
+        - Modules/Purchase/tests/Browser/ (?)
