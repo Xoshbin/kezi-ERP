@@ -39,6 +39,11 @@ class CurrencyRevaluationLine extends Model
 {
     use HasFactory;
 
+    protected static function newFactory(): \Modules\Accounting\Database\Factories\CurrencyRevaluationLineFactory
+    {
+        return \Modules\Accounting\Database\Factories\CurrencyRevaluationLineFactory::new();
+    }
+
     protected $table = 'currency_revaluation_lines';
 
     /** @var list<string> */
