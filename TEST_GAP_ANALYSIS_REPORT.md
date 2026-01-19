@@ -206,7 +206,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **Expense Report Actions** | MEDIUM | `SubmitExpenseReportAction`, `ApproveExpenseReportAction` - No dedicated action tests |
+| **Expense Report Actions** | DONE | ✅ `SubmitExpenseReportActionTest.php`, `ApproveExpenseReportActionTest.php` created |
 | **Complex Payroll Scenarios** | LOW | Tax rule variations, complex deduction rules |
 
 ---
