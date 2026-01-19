@@ -4,6 +4,7 @@ namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Accounts\Pag
 
 use Exception;
 use Filament\Actions\DeleteAction;
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
@@ -31,6 +32,14 @@ class EditAccount extends EditRecord
                     $this->redirect(AccountResource::getUrl('index'));
                 }),
         ];
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $tenant = Filament::getTenant();
+        $data['company_id'] = $tenant?->getKey() ?? 0;
+
+        return $data;
     }
 
     protected function handleRecordUpdate(Model $record, array $data): Model

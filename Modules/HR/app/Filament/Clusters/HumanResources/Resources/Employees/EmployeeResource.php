@@ -19,7 +19,7 @@ use Modules\HR\Models\Employee;
 
 class EmployeeResource extends Resource
 {
-    use Translatable;
+    // use Translatable;
 
     protected static ?string $model = Employee::class;
 

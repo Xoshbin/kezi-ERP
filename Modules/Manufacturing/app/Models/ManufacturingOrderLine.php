@@ -19,6 +19,11 @@ class ManufacturingOrderLine extends Model
 {
     use HasFactory;
 
+    protected static function newFactory(): \Modules\Manufacturing\Database\Factories\ManufacturingOrderLineFactory
+    {
+        return \Modules\Manufacturing\Database\Factories\ManufacturingOrderLineFactory::new();
+    }
+
     protected $fillable = [
         'company_id',
         'manufacturing_order_id',
@@ -35,7 +40,7 @@ class ManufacturingOrderLine extends Model
         return [
             'quantity_required' => 'decimal:4',
             'quantity_consumed' => 'decimal:4',
-            'unit_cost' => 'decimal:2',
+            'unit_cost' => \Modules\Foundation\Casts\BaseCurrencyMoneyCast::class,
         ];
     }
 

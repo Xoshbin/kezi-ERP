@@ -11,6 +11,8 @@ use Modules\Foundation\Models\AuditLog;
  */
 class AuditLogFactory extends Factory
 {
+    protected $model = AuditLog::class;
+
     /**
      * Define the model's default state.
      *

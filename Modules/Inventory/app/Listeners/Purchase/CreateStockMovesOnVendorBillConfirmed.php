@@ -105,6 +105,14 @@ class CreateStockMovesOnVendorBillConfirmed
             [$stockMove],
             $vendorBill
         );
+
+        // Update stock quants for the incoming stock moves
+        // This is necessary because we removed the automatic quant update from
+        // InventoryValuationService to prevent double-counting in manual actions.
+        $stockQuantService = app(\Modules\Inventory\Services\Inventory\StockQuantService::class);
+        foreach ($stockMove->productLines as $productLine) {
+            $stockQuantService->applyForIncomingProductLine($productLine);
+        }
     }
 
     /**

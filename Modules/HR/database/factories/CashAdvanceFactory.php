@@ -14,7 +14,7 @@ class CashAdvanceFactory extends Factory
         return [
             'company_id' => \App\Models\Company::factory(),
             'employee_id' => \Modules\HR\Models\Employee::factory(),
-            'currency_id' => \Modules\Foundation\Models\Currency::factory(),
+            'currency_id' => \Modules\Foundation\Models\Currency::factory()->createSafely(),
             'advance_number' => $this->faker->unique()->bothify('ADV-####'),
             'requested_amount' => 1000,
             'approved_amount' => null,

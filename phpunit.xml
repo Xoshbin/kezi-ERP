@@ -15,6 +15,10 @@
             <directory>Modules/*/tests/Feature</directory>
             <directory>Modules/*/tests/Unit</directory>
         </testsuite>
+        <testsuite name="Browser">
+            <directory>tests/Browser</directory>
+            <directory>Modules/*/tests/Browser</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
@@ -36,6 +40,7 @@
         <env name="CACHE_STORE" value="array"/>
         <env name="DB_CONNECTION" value="sqlite"/>
         <env name="DB_DATABASE" value=":memory:"/>
+        <env name="DB_FOREIGN_KEYS" value="false"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>

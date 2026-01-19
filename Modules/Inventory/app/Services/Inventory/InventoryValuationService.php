@@ -87,7 +87,7 @@ class InventoryValuationService
      * @param  Model  $sourceDocument  Source document (VendorBill, etc.)
      *
      * @throws Exception When Standard costing is used (not supported)
-     * @throws LockDateException When transaction date is before lock date
+     * @throws \Modules\Accounting\Exceptions\PeriodIsLockedException When transaction date is before lock date
      *
      * @example
      * $service->processIncomingStock(
@@ -107,7 +107,7 @@ class InventoryValuationService
         }
 
         // Calculate total cost for this incoming stock
-        $totalCost = $costPerUnit->multipliedBy($quantity);
+        $totalCost = $costPerUnit->multipliedBy($quantity, \Brick\Math\RoundingMode::HALF_UP);
 
         // Process based on valuation method
         if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
@@ -160,7 +160,7 @@ class InventoryValuationService
      * @param  Model  $sourceDocument  Source document (CustomerInvoice, StockMove, etc.)
      *
      * @throws Exception When Standard costing is used (not supported)
-     * @throws LockDateException When transaction date is before lock date
+     * @throws \Modules\Accounting\Exceptions\PeriodIsLockedException When transaction date is before lock date
      *
      * @example
      * $service->processOutgoingStock(
@@ -215,7 +215,7 @@ class InventoryValuationService
      *
      * @param  AdjustInventoryDTO  $dto  Data transfer object containing adjustment details
      *
-     * @throws LockDateException When adjustment date is before lock date
+     * @throws \Modules\Accounting\Exceptions\PeriodIsLockedException When adjustment date is before lock date
      * @throws Exception When product doesn't have an average cost
      *
      * @example
@@ -237,7 +237,7 @@ class InventoryValuationService
         if (! $product->average_cost) {
             throw new Exception('Product must have an average cost for inventory adjustment');
         }
-        $adjustmentValue = $product->average_cost->multipliedBy($dto->quantity);
+        $adjustmentValue = $product->average_cost->multipliedBy($dto->quantity, RoundingMode::HALF_UP);
 
         $journal = JournalEntry::create([
             'company_id' => $product->company_id,
@@ -281,7 +281,7 @@ class InventoryValuationService
                 throw new RuntimeException("Cannot calculate COGS for product {$product->id}: no positive average cost available");
             }
 
-            return $product->average_cost->multipliedBy($quantity);
+            return $product->average_cost->multipliedBy($quantity, RoundingMode::HALF_UP);
         } else {
             // For FIFO/LIFO, consume inventory cost layers
             return $this->calculateCOGSFromCostLayers($product, $quantity);
@@ -315,7 +315,7 @@ class InventoryValuationService
             if (! $layer->cost_per_unit) {
                 throw new Exception('Cost layer must have a cost per unit');
             }
-            $layerCOGS = $layer->cost_per_unit->multipliedBy($quantityToConsume);
+            $layerCOGS = $layer->cost_per_unit->multipliedBy($quantityToConsume, RoundingMode::HALF_UP);
             $totalCOGS = $totalCOGS->plus($layerCOGS);
 
             // Update the cost layer
@@ -468,9 +468,9 @@ class InventoryValuationService
         $stockQuantService = app(StockQuantService::class);
         $currentQuantity = $stockQuantService->getTotalQuantity($company->id, $product->id);
 
-        $currentValue = ($product->average_cost ?? Money::of(0, $currencyCode))->multipliedBy($currentQuantity);
+        $currentValue = ($product->average_cost ?? Money::of(0, $currencyCode))->multipliedBy($currentQuantity, RoundingMode::HALF_UP);
 
-        $incomingValue = $costPerUnit->multipliedBy($quantity);
+        $incomingValue = $costPerUnit->multipliedBy($quantity, RoundingMode::HALF_UP);
         $totalQuantity = $currentQuantity + $quantity;
         $totalValue = $currentValue->plus($incomingValue);
 
@@ -1085,7 +1085,7 @@ class InventoryValuationService
                 $this->createIncomingStockMoveValuation($product, $quantity, $productTotalCost, $journalEntry, $sourceDocument, $costResult);
 
                 // Update stock quants for the incoming stock - need to pass product line instead of stock move
-                $this->stockQuantService->applyForIncomingProductLine($productLine);
+                // $this->stockQuantService->applyForIncomingProductLine($productLine);
             }
         }
 

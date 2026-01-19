@@ -50,6 +50,19 @@ class OriginalCurrencyMoneyCast extends MoneyCast
             return $currency;
         }
 
+        // Check for currency_id (used in revaluation lines)
+        if (isset($model->currency_id)) {
+            $currency = Currency::findOrFail($model->currency_id);
+            if ($currency instanceof Collection) {
+                $currency = $currency->first();
+                if (! $currency) {
+                    throw new InvalidArgumentException('Currency collection is empty');
+                }
+            }
+
+            return $currency;
+        }
+
         // Return the currency by ID
         throw new InvalidArgumentException('Model does not have an original_currency_id or foreign_currency_id for OriginalCurrencyMoneyCast.');
     }

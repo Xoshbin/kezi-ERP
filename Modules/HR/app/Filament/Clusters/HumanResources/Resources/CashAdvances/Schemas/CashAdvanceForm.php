@@ -22,8 +22,8 @@ class CashAdvanceForm
                             ->relationship('currency', 'code')
                             ->default(fn () => \App\Models\Company::first()?->base_currency_id)
                             ->required(),
-                        \Filament\Forms\Components\TextInput::make('requested_amount')
-                            ->numeric()
+                        \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('requested_amount')
+                            ->currencyField('currency_id')
                             ->label(__('hr::cash_advance.requested_amount'))
                             ->required(),
                         \Filament\Forms\Components\DatePicker::make('expected_return_date')
