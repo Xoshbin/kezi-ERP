@@ -311,8 +311,8 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **QualityControlPoint Resource Filament Tests** | MEDIUM | `QualityControlPointResource` - No Filament tests |
-| **QualityInspectionTemplate Resource Filament Tests** | MEDIUM | `QualityInspectionTemplateResource` - No Filament tests |
+| **QualityControlPoint Resource Filament Tests** | DONE | ✅ Dedicated unit tests created |
+| **QualityInspectionTemplate Resource Filament Tests** | DONE | ✅ Dedicated unit tests created |
 | **QualityCheck Service Tests** | DONE | ✅ `QualityCheckServiceTest.php` - Dedicated unit tests created |
 | **Quality Check to Inventory Integration** | LOW | No tests for blocking stock based on quality failures |
 
