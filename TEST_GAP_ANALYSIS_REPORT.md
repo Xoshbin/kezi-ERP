@@ -263,7 +263,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 ### 1.9 Manufacturing Module ✅ **COMPLETE COVERAGE**
 
-**Tests Found:** 18 test files
+**Tests Found:** 19 test files
 
 **What's Well Covered:**
 - ✅ Basic BOM Model Tests
@@ -283,6 +283,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - ✅ Full Manufacturing Workflow (Create -> Confirm -> Start -> Produce -> Complete)
 - ✅ BOM Service
 - ✅ ManufacturingOrder Service
+- ✅ Full Manufacturing To Accounting Scenario (End-to-End)
 
 **GAPS:**
 
@@ -364,11 +365,11 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - `AccountingWorkflowTest.php` - Good end-to-end workflow
 - `CapitalInvestmentTradingFlowTest.php` - Good scenario coverage
 - `ManufacturingAccountingIntegrationTest.php` - Manufacturing to Accounting
+- `FullManufacturingToAccountingTest.php` - BOM → MO → Production → Stock Update → Costing → Journal
 
 **Missing:**
 - Full Purchase Cycle: RFQ → PO → Receipt → Bill → Payment
 - Full HR Cycle: Employee creation → Contract → Payroll → Payment
-- Full Manufacturing Cycle: BOM → MO → Production → Stock Update → Costing
 - Multi-company scenarios
 - Inter-company transaction scenarios
 
@@ -508,7 +509,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 6. **End-to-End Integration Tests**
    - ✅ Full sales cycle test (Quote → Sales Order → Invoice → Payment → Dunning)
    - ✅ Full purchase cycle test (RFQ → PO → Receipt → Bill → Payment)
-   - Full manufacturing to accounting test
+   - ✅ Full manufacturing to accounting test
 
 7. **Missing Filament Resource Tests**
    - ✅ Manufacturing resources complete
