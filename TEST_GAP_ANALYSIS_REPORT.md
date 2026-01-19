@@ -381,9 +381,9 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - `ImmutabilityTest.php` - Immutability of posted documents
 - `BankReconciliationAccessControlTest.php` - Bank reconciliation access
 - `MultiCompanyIsolationTest.php` - Tenant isolation & cross-company leakage prevention
+- `RoleBasedActionVisibilityTest.php` - Role-based action visibility (Create, Edit actions)
 
 **Missing:**
-- Role-based action visibility tests per resource
 - Permission-based field visibility tests
 
 ### 2.4 Edge Case & Error Handling ⚠️ **INCONSISTENT**
