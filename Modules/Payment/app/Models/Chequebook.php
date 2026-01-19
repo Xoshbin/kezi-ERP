@@ -20,7 +20,10 @@ class Chequebook extends Model
         'company_id',
         'journal_id',
         'name',
+        'bank_name',
+        'bank_account_number',
         'prefix',
+        'digits',
         'start_number',
         'end_number',
         'next_number',
@@ -29,6 +32,7 @@ class Chequebook extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'digits' => 'integer',
         'start_number' => 'integer',
         'end_number' => 'integer',
         'next_number' => 'integer',

@@ -25,6 +25,12 @@ class ChequebookResource extends Resource
 
     protected static ?string $cluster = AccountingCluster::class;
 
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()->id);
+    }
+
     public static function getModelLabel(): string
     {
         return __('accounting::cheque.cheque_book_label');
@@ -54,12 +60,14 @@ class ChequebookResource extends Resource
                             ->label(__('accounting::cheque.bank_account'))
                             ->required()
                             ->maxLength(255),
-                        Select::make('bank_id') // Use relationship for dynamic fetching
-                            ->label(__('accounting::cheque.bank'))
-                             // Assuming we want to link to a currency or a journal.
-                             // But Chequebook model has `bank_name` (string) not ID, based on previous migration.
-                             // Re-checking migration: `bank_name` string.
-                            ->visible(false), // Hiding for now until we clarify if we link to a Bank Account Journal
+                        Select::make('journal_id')
+                            ->label(__('accounting::journal.journal'))
+                            ->options(function () {
+                                return \Modules\Accounting\Models\Journal::where('type', \Modules\Accounting\Enums\Accounting\JournalType::Bank)
+                                    ->pluck('name', 'id');
+                            })
+                            ->required()
+                            ->searchable(),
 
                         TextInput::make('bank_name')
                             ->required()
@@ -84,11 +92,15 @@ class ChequebookResource extends Resource
                             ->numeric()
                             ->required()
                             ->default(1),
+                        TextInput::make('end_number')
+                            ->label(__('accounting::cheque.end_number'))
+                            ->numeric()
+                            ->required(),
                         TextInput::make('next_number') // Helper, maybe read only or editable
                             ->label(__('accounting::cheque.next_number'))
                             ->numeric()
                             ->default(1),
-                    ])->columns(2),
+                    ])->columns(3),
             ]);
     }
 
