@@ -43,4 +43,5 @@ return [
     'next_number' => 'ژمارەی داهاتوو',
     'is_active' => 'چالاکە',
     'start_number' => 'ژمارەی دەستپێک',
+    'end_number' => 'کۆتا ژمارە',
 ];
