@@ -1,7 +1,7 @@
 # Test Gap Analysis Report - JMeryar ERP
 
-**Date:** 2026-01-18
-**Total Tests Found:** ~1,700 test cases across all modules
+**Date:** 2026-01-20
+**Total Tests Found:** ~1,705 test cases across all modules
 **Test Framework:** Pest PHP with Laravel/Filament testing utilities
 
 ---
@@ -368,9 +368,9 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - `FullManufacturingToAccountingTest.php` - BOM → MO → Production → Stock Update → Costing -> Journal
 - `FullHRCycleTest.php` - Employee → Contract → Payroll → Payment
 - `FullPurchaseCycleTest.php` - RFQ → PO → Receipt → Bill → Payment
+- `MultiCompanyIsolationTest.php` - Multi-company isolation & security checks
 
 **Missing:**
-- Multi-company scenarios
 - Inter-company transaction scenarios
 
 ### 2.3 RBAC/Authorization Tests ⚠️ **PARTIAL**
@@ -380,12 +380,11 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - `SuperAdminAccessTest.php` - Super admin access
 - `ImmutabilityTest.php` - Immutability of posted documents
 - `BankReconciliationAccessControlTest.php` - Bank reconciliation access
+- `MultiCompanyIsolationTest.php` - Tenant isolation & cross-company leakage prevention
 
 **Missing:**
 - Role-based action visibility tests per resource
 - Permission-based field visibility tests
-- Multi-tenant data isolation tests
-- Cross-company data leakage tests
 
 ### 2.4 Edge Case & Error Handling ⚠️ **INCONSISTENT**
 
