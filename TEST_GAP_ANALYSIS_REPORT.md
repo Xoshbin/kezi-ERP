@@ -369,9 +369,9 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - `FullHRCycleTest.php` - Employee → Contract → Payroll → Payment
 - `FullPurchaseCycleTest.php` - RFQ → PO → Receipt → Bill → Payment
 - `MultiCompanyIsolationTest.php` - Multi-company isolation & security checks
+- `InterCompanyTransactionTest.php` - Inter-company transaction scenarios
 
 **Missing:**
-- Inter-company transaction scenarios
 
 ### 2.3 RBAC/Authorization Tests ⚠️ **PARTIAL**
 
