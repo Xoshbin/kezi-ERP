@@ -365,11 +365,11 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - `AccountingWorkflowTest.php` - Good end-to-end workflow
 - `CapitalInvestmentTradingFlowTest.php` - Good scenario coverage
 - `ManufacturingAccountingIntegrationTest.php` - Manufacturing to Accounting
-- `FullManufacturingToAccountingTest.php` - BOM → MO → Production → Stock Update → Costing → Journal
+- `FullManufacturingToAccountingTest.php` - BOM → MO → Production → Stock Update → Costing -> Journal
+- `FullHRCycleTest.php` - Employee → Contract → Payroll → Payment
 
 **Missing:**
 - Full Purchase Cycle: RFQ → PO → Receipt → Bill → Payment
-- Full HR Cycle: Employee creation → Contract → Payroll → Payment
 - Multi-company scenarios
 - Inter-company transaction scenarios
 

@@ -5,11 +5,14 @@ namespace Modules\HR\Actions\HumanResources;
 use App\Models\User;
 use InvalidArgumentException;
 use Modules\Accounting\Models\Journal;
+use Modules\Foundation\Models\Partner;
+use Modules\HR\Models\Employee;
 use Modules\HR\Models\Payroll;
 use Modules\Payment\Actions\Payments\CreatePaymentAction;
 use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
 use Modules\Payment\Enums\Payments\PaymentMethod;
 use Modules\Payment\Enums\Payments\PaymentType;
+use Modules\Payment\Models\Payment;
 
 class CreatePaymentFromPayrollAction
 {
@@ -60,13 +63,46 @@ class CreatePaymentFromPayrollAction
             payment_date: $payroll->pay_date->format('Y-m-d'),
             payment_type: PaymentType::Outbound,
             payment_method: PaymentMethod::BankTransfer, // Default for payroll
-            paid_to_from_partner_id: null, // For now, no partner relationship
+            paid_to_from_partner_id: $this->getOrCreatePartnerForEmployee($payroll->employee)->id,
             amount: $payroll->net_salary,
             document_links: [], // No document links for payroll payments
             reference: $reference
         );
 
         // Create the payment
-        return $this->createPaymentAction->execute($createPaymentDTO, $user);
+        $payment = $this->createPaymentAction->execute($createPaymentDTO, $user);
+
+        // Update Payroll status and link payment
+        $payroll->update([
+            'payment_id' => $payment->id,
+            'status' => 'paid',
+        ]);
+
+        return $payment;
+    }
+
+    private function getOrCreatePartnerForEmployee(Employee $employee): Partner
+    {
+        // Check if a partner already exists for this employee
+        // This assumes we might have a way to link them, e.g. via email or a custom field.
+        // For now, we'll search by email.
+        $partner = Partner::where('email', $employee->email)
+            ->where('company_id', $employee->company_id)
+            ->first();
+
+        if ($partner) {
+            return $partner;
+        }
+
+        // Create a new partner for the employee
+        return Partner::create([
+            'company_id' => $employee->company_id,
+            'name' => $employee->first_name . ' ' . $employee->last_name,
+            'email' => $employee->email,
+            'phone' => $employee->phone,
+            'is_customer' => false,
+            'is_vendor' => true,
+            'type' => 'vendor',
+        ]);
     }
 }
