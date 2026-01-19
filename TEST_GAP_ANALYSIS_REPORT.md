@@ -384,7 +384,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 - `RoleBasedActionVisibilityTest.php` - Role-based action visibility (Create, Edit actions)
 
 **Missing:**
-- Permission-based field visibility tests
+
 
 ### 2.4 Edge Case & Error Handling ⚠️ **INCONSISTENT**
 
@@ -566,3 +566,9 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 *Report Generated: 2026-01-16*
 *Prepared for: JMeryar ERP Development Team*
+
+## 8. Future Scope & Deferred Items
+
+The following items have been deferred until after the primary test gaps are closed:
+
+- **RBAC Field Visibility Implementation**: Permission-based field visibility tests. (Deferred pending architectural research outcome - `RBAC_FIELD_VISIBILITY_RESEARCH.md`).
