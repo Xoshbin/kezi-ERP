@@ -95,10 +95,8 @@ class CreatePaymentAction
                             $totalWithheldAmount = $totalWithheldAmount->plus($taxAmount);
 
                             // Convert amounts to Base Currency for Storage
-                            // Note: calculateWithholding returns Money in same currency as input (Payment Currency)
-                            // We must convert to Company Base Currency
-                            $taxAmountBase = $taxAmount->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
-                            $linkAmountBase = $linkAmount->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+                            $taxAmountBase = $this->currencyConverter->convertWithRate($taxAmount, $exchangeRate, $company->currency->code);
+                            $linkAmountBase = $this->currencyConverter->convertWithRate($linkAmount, $exchangeRate, $company->currency->code);
 
                             $whtEntriesToCreate[] = [
                                 'company_id' => $dto->company_id,

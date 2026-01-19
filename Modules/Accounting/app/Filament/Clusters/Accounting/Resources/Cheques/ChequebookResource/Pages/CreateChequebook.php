@@ -8,4 +8,11 @@ use Modules\Accounting\Filament\Clusters\Accounting\Resources\Cheques\Chequebook
 class CreateChequebook extends CreateRecord
 {
     protected static string $resource = ChequebookResource::class;
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
+
+        return $data;
+    }
 }
