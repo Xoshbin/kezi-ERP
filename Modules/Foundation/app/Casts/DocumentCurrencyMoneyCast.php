@@ -138,6 +138,17 @@ class DocumentCurrencyMoneyCast extends MoneyCast
                 }
             }
         }
+
+        // Installment: resolve via installmentable morph relation
+        if (method_exists($model, 'installmentable') && $model->relationLoaded('installmentable')) {
+            $parent = $model->getRelation('installmentable');
+            if ($parent instanceof Model && method_exists($parent, 'currency')) {
+                $currency = $parent->relationLoaded('currency') ? $parent->getRelation('currency') : $parent->currency()->first();
+                if ($currency instanceof Currency) {
+                    return $currency;
+                }
+            }
+        }
         // Add other parent documents here as needed
 
         // Fallback: If relationships are not loaded, perform database queries
@@ -186,6 +197,11 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             $quote = $model->quote()->with('currency')->first();
 
             return $quote->currency ?? throw new InvalidArgumentException('Quote currency not found');
+        }
+        if (method_exists($model, 'installmentable') && $model->getAttribute('installment_id')) {
+            $parent = $model->installmentable()->with('currency')->first();
+
+            return $parent->currency ?? throw new InvalidArgumentException('Installmentable currency not found');
         }
         // Some models expose a direct currency() relationship (e.g., PaymentDocumentLink)
         if (method_exists($model, 'currency')) {

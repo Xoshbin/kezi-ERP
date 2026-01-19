@@ -5,7 +5,6 @@ namespace Modules\Payment\Models;
 use App\Models\Company;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
-use Database\Factories\PaymentInstallmentFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
+use Modules\Payment\Database\Factories\PaymentInstallmentFactory;
 use Modules\Payment\Enums\PaymentInstallments\InstallmentStatus;
 
 /**
@@ -266,5 +266,10 @@ class PaymentInstallment extends Model
         }
 
         return __('payment::payment_installments.due_in_days', ['days' => $daysUntilDue]);
+    }
+
+    protected static function newFactory(): PaymentInstallmentFactory
+    {
+        return PaymentInstallmentFactory::new();
     }
 }

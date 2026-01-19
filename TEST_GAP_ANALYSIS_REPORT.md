@@ -176,7 +176,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 | **CreatePaymentAction Tests** | LOW | Covered indirectly but no dedicated action test file |
 | **UpdatePaymentAction Tests** | LOW | No dedicated tests |
 | **Chequebook Resource Tests** | LOW | `ChequebookResource` - No Filament tests |
-| **Payment Installment Tests** | MEDIUM | `PaymentInstallment` model - No tests for installment logic |
+| **Payment Installment Tests** | DONE | ✅ Dedicated unit tests created in `Modules/Payment/tests/Unit/Models/PaymentInstallmentTest.php` |
 
 ---
 

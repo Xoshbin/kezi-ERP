@@ -27862,469 +27862,469 @@ parameters:
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
 			count: 3
-			path: Modules/Sales/tests/Feature/Actions/ConfirmSalesOrderActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/ConfirmSalesOrderActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
 			identifier: property.notFound
 			count: 3
-			path: Modules/Sales/tests/Feature/Actions/ConfirmSalesOrderActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/ConfirmSalesOrderActionTest.php
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:mock\(\)\.$#'
 			identifier: method.notFound
 			count: 2
-			path: Modules/Sales/tests/Feature/Actions/ConfirmSalesOrderActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/ConfirmSalesOrderActionTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 2
-			path: Modules/Sales/tests/Feature/Actions/ConvertQuoteToInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/ConvertQuoteToInvoiceActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
 			count: 5
-			path: Modules/Sales/tests/Feature/Actions/ConvertQuoteToInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/ConvertQuoteToInvoiceActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$currency\.$#'
 			identifier: property.notFound
 			count: 2
-			path: Modules/Sales/tests/Feature/Actions/ConvertQuoteToInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/ConvertQuoteToInvoiceActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$customer\.$#'
 			identifier: property.notFound
 			count: 3
-			path: Modules/Sales/tests/Feature/Actions/ConvertQuoteToInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/ConvertQuoteToInvoiceActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
 			identifier: property.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/ConvertQuoteToInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/ConvertQuoteToInvoiceActionTest.php
 
 		-
 			message: '#^Access to property \$id on an unknown class Modules\\Product\\Database\\Factories\\Product\.$#'
 			identifier: class.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/ConvertQuoteToInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/ConvertQuoteToInvoiceActionTest.php
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
 			identifier: method.notFound
 			count: 2
-			path: Modules/Sales/tests/Feature/Actions/ConvertQuoteToInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/ConvertQuoteToInvoiceActionTest.php
 
 		-
 			message: '#^Cannot access property \$unit_price on Modules\\Sales\\Models\\InvoiceLine\|null\.$#'
 			identifier: property.nonObject
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/ConvertQuoteToInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/ConvertQuoteToInvoiceActionTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 3
-			path: Modules/Sales/tests/Feature/Actions/CreateDeliveryFromSalesOrderActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateDeliveryFromSalesOrderActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
 			count: 2
-			path: Modules/Sales/tests/Feature/Actions/CreateDeliveryFromSalesOrderActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateDeliveryFromSalesOrderActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$product\.$#'
 			identifier: property.notFound
 			count: 2
-			path: Modules/Sales/tests/Feature/Actions/CreateDeliveryFromSalesOrderActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateDeliveryFromSalesOrderActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
 			identifier: property.notFound
 			count: 2
-			path: Modules/Sales/tests/Feature/Actions/CreateDeliveryFromSalesOrderActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateDeliveryFromSalesOrderActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$warehouse\.$#'
 			identifier: property.notFound
 			count: 2
-			path: Modules/Sales/tests/Feature/Actions/CreateDeliveryFromSalesOrderActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateDeliveryFromSalesOrderActionTest.php
 
 		-
 			message: '#^Access to property \$id on an unknown class Modules\\Accounting\\Database\\Factories\\Journal\.$#'
 			identifier: class.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/CreateDeliveryFromSalesOrderActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateDeliveryFromSalesOrderActionTest.php
 
 		-
 			message: '#^Cannot access property \$productLines on Modules\\Sales\\Actions\\Sales\\StockMove\|null\.$#'
 			identifier: property.nonObject
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/CreateDeliveryFromSalesOrderActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateDeliveryFromSalesOrderActionTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 2
-			path: Modules/Sales/tests/Feature/Actions/CreateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateInvoiceActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
 			count: 6
-			path: Modules/Sales/tests/Feature/Actions/CreateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateInvoiceActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$currency\.$#'
 			identifier: property.notFound
 			count: 3
-			path: Modules/Sales/tests/Feature/Actions/CreateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateInvoiceActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$customer\.$#'
 			identifier: property.notFound
 			count: 4
-			path: Modules/Sales/tests/Feature/Actions/CreateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateInvoiceActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
 			identifier: property.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/CreateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateInvoiceActionTest.php
 
 		-
 			message: '#^Access to property \$id on an unknown class Modules\\Product\\Database\\Factories\\Product\.$#'
 			identifier: class.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/CreateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateInvoiceActionTest.php
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/CreateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateInvoiceActionTest.php
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:mock\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/CreateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateInvoiceActionTest.php
 
 		-
 			message: '#^Cannot access property \$unit_price on Modules\\Sales\\Models\\InvoiceLine\|null\.$#'
 			identifier: property.nonObject
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/CreateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateInvoiceActionTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 5
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateCreditNoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateCreditNoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$arAccount\.$#'
 			identifier: property.notFound
 			count: 2
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateCreditNoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateCreditNoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
 			count: 18
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateCreditNoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateCreditNoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$invoice\.$#'
 			identifier: property.notFound
 			count: 6
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateCreditNoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateCreditNoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$product\.$#'
 			identifier: property.notFound
 			count: 5
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateCreditNoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateCreditNoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$salesDiscountAccount\.$#'
 			identifier: property.notFound
 			count: 5
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateCreditNoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateCreditNoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$salesJournal\.$#'
 			identifier: property.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateCreditNoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateCreditNoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$taxAccount\.$#'
 			identifier: property.notFound
 			count: 3
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateCreditNoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateCreditNoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
 			identifier: property.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateCreditNoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateCreditNoteActionTest.php
 
 		-
 			message: '#^Access to property \$id on an unknown class Modules\\Accounting\\Database\\Factories\\Journal\.$#'
 			identifier: class.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateCreditNoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateCreditNoteActionTest.php
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateCreditNoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateCreditNoteActionTest.php
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateCreditNoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateCreditNoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$currency\.$#'
 			identifier: property.notFound
 			count: 2
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateInvoiceLineActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateInvoiceLineActionTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 3
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateInvoiceLineActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateInvoiceLineActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$action\.$#'
 			identifier: property.notFound
 			count: 3
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateInvoiceLineActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateInvoiceLineActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
 			count: 7
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateInvoiceLineActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateInvoiceLineActionTest.php
 
 		-
 			message: '#^Access to property \$id on an unknown class Modules\\Product\\Database\\Factories\\Product\.$#'
 			identifier: class.notFound
 			count: 2
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateInvoiceLineActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateInvoiceLineActionTest.php
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Invoice/CreateInvoiceLineActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateInvoiceLineActionTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$currency_id\.$#'
 			identifier: property.notFound
 			count: 2
-			path: Modules/Sales/tests/Feature/Actions/Invoice/UpdateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/UpdateInvoiceActionTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$customer_id\.$#'
 			identifier: property.notFound
 			count: 3
-			path: Modules/Sales/tests/Feature/Actions/Invoice/UpdateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/UpdateInvoiceActionTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 3
-			path: Modules/Sales/tests/Feature/Actions/Invoice/UpdateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/UpdateInvoiceActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$action\.$#'
 			identifier: property.notFound
 			count: 4
-			path: Modules/Sales/tests/Feature/Actions/Invoice/UpdateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/UpdateInvoiceActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
 			count: 7
-			path: Modules/Sales/tests/Feature/Actions/Invoice/UpdateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/UpdateInvoiceActionTest.php
 
 		-
 			message: '#^Access to property \$id on an unknown class Modules\\Product\\Database\\Factories\\Product\.$#'
 			identifier: class.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Invoice/UpdateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/UpdateInvoiceActionTest.php
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseMissing\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Invoice/UpdateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/UpdateInvoiceActionTest.php
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Invoice/UpdateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/UpdateInvoiceActionTest.php
 
 		-
 			message: '#^Parameter \$invoice of class Modules\\Sales\\DataTransferObjects\\Sales\\UpdateInvoiceDTO constructor expects Modules\\Sales\\Models\\Invoice, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
 			count: 3
-			path: Modules/Sales/tests/Feature/Actions/Invoice/UpdateInvoiceActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/UpdateInvoiceActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$action\.$#'
 			identifier: property.notFound
 			count: 4
-			path: Modules/Sales/tests/Feature/Actions/Quote/AcceptQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/AcceptQuoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
 			count: 3
-			path: Modules/Sales/tests/Feature/Actions/Quote/AcceptQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/AcceptQuoteActionTest.php
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Quote/AcceptQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/AcceptQuoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$action\.$#'
 			identifier: property.notFound
 			count: 5
-			path: Modules/Sales/tests/Feature/Actions/Quote/CancelQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CancelQuoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
 			count: 4
-			path: Modules/Sales/tests/Feature/Actions/Quote/CancelQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CancelQuoteActionTest.php
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Quote/CancelQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CancelQuoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Quote/CreateQuoteLineActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateQuoteLineActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$action\.$#'
 			identifier: property.notFound
 			count: 2
-			path: Modules/Sales/tests/Feature/Actions/Quote/CreateQuoteLineActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateQuoteLineActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
 			count: 6
-			path: Modules/Sales/tests/Feature/Actions/Quote/CreateQuoteLineActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateQuoteLineActionTest.php
 
 		-
 			message: '#^Access to property \$id on an unknown class Modules\\Product\\Database\\Factories\\Product\.$#'
 			identifier: class.notFound
 			count: 2
-			path: Modules/Sales/tests/Feature/Actions/Quote/CreateQuoteLineActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateQuoteLineActionTest.php
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Quote/CreateQuoteLineActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/CreateQuoteLineActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$action\.$#'
 			identifier: property.notFound
 			count: 3
-			path: Modules/Sales/tests/Feature/Actions/Quote/RejectQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/RejectQuoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
 			count: 2
-			path: Modules/Sales/tests/Feature/Actions/Quote/RejectQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/RejectQuoteActionTest.php
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Quote/RejectQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/RejectQuoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$action\.$#'
 			identifier: property.notFound
 			count: 4
-			path: Modules/Sales/tests/Feature/Actions/Quote/SendQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/SendQuoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
 			count: 3
-			path: Modules/Sales/tests/Feature/Actions/Quote/SendQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/SendQuoteActionTest.php
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Quote/SendQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/SendQuoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Quote/UpdateQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/UpdateQuoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$action\.$#'
 			identifier: property.notFound
 			count: 4
-			path: Modules/Sales/tests/Feature/Actions/Quote/UpdateQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/UpdateQuoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
 			count: 10
-			path: Modules/Sales/tests/Feature/Actions/Quote/UpdateQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/UpdateQuoteActionTest.php
 
 		-
 			message: '#^Access to property \$id on an unknown class Modules\\Product\\Database\\Factories\\Product\.$#'
 			identifier: class.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Quote/UpdateQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/UpdateQuoteActionTest.php
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Quote/UpdateQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/UpdateQuoteActionTest.php
 
 		-
 			message: '#^Cannot access property \$quantity on Modules\\Sales\\Models\\QuoteLine\|null\.$#'
 			identifier: property.nonObject
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Quote/UpdateQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/UpdateQuoteActionTest.php
 
 		-
 			message: '#^Cannot access property \$unit_price on Modules\\Sales\\Models\\QuoteLine\|null\.$#'
 			identifier: property.nonObject
 			count: 1
-			path: Modules/Sales/tests/Feature/Actions/Quote/UpdateQuoteActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/UpdateQuoteActionTest.php
 
 		-
 			message: '#^Access to an undefined property Tests\\TestCase\:\:\$company\.$#'
@@ -28450,55 +28450,55 @@ parameters:
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 11
-			path: Modules/Sales/tests/Feature/Actions/Sales/Sales/GenerateInvoicePdfActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/GenerateInvoicePdfActionTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$invoice_number\.$#'
 			identifier: property.notFound
 			count: 2
-			path: Modules/Sales/tests/Feature/Actions/Sales/Sales/GenerateInvoicePdfActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/GenerateInvoicePdfActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$account\.$#'
 			identifier: property.notFound
 			count: 9
-			path: Modules/Sales/tests/Feature/Actions/Sales/Sales/GenerateInvoicePdfActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/GenerateInvoicePdfActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
 			count: 9
-			path: Modules/Sales/tests/Feature/Actions/Sales/Sales/GenerateInvoicePdfActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/GenerateInvoicePdfActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$currency\.$#'
 			identifier: property.notFound
 			count: 9
-			path: Modules/Sales/tests/Feature/Actions/Sales/Sales/GenerateInvoicePdfActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/GenerateInvoicePdfActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$customer\.$#'
 			identifier: property.notFound
 			count: 9
-			path: Modules/Sales/tests/Feature/Actions/Sales/Sales/GenerateInvoicePdfActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/GenerateInvoicePdfActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$product\.$#'
 			identifier: property.notFound
 			count: 3
-			path: Modules/Sales/tests/Feature/Actions/Sales/Sales/GenerateInvoicePdfActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/GenerateInvoicePdfActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
 			identifier: property.notFound
 			count: 9
-			path: Modules/Sales/tests/Feature/Actions/Sales/Sales/GenerateInvoicePdfActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/GenerateInvoicePdfActionTest.php
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
 			identifier: method.notFound
 			count: 8
-			path: Modules/Sales/tests/Feature/Actions/Sales/Sales/GenerateInvoicePdfActionTest.php
+			path: Modules/Sales/tests/Feature/Actions/Sales/GenerateInvoicePdfActionTest.php
 
 
 		-
