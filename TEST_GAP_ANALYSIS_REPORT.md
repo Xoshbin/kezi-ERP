@@ -39,7 +39,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **AccountGroup Service Tests** | MEDIUM | `AccountGroupService.php` has no dedicated tests |
+| **AccountGroup Service Tests** | DONE | ✅ Dedicated tests created |
 | **Opening Balance Entry Creation** | MEDIUM | `CreateOpeningBalanceEntryAction.php` - No tests |
 | **Fiscal Year Actions** | MEDIUM | `CloseFiscalYearAction`, `ReopenFiscalYearAction` - No dedicated tests |
 | **Fiscal Period Actions** | MEDIUM | `CloseFiscalPeriodAction`, `ReopenFiscalPeriodAction` - No dedicated tests |
