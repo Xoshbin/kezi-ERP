@@ -53,8 +53,6 @@ test('reconcilePayment throws exception when reconciliation is disabled', functi
         'company_id' => $company->id,
         'name' => 'Test Partner',
         'type' => 'customer',
-        'is_customer' => true,
-        'is_vendor' => false,
     ]);
 
     // Create payment manually to ensure correct company relationship

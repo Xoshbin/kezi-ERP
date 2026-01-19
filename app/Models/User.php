@@ -114,4 +114,16 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     {
         return true;
     }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (User $user) {
+            // Principle: The user who creates a financial transaction is a critical part of the audit trail.
+            // Deleting the user would make it impossible to know who was responsible for the entry.
+            // This is enforced here to provide a clean exception message and consistent behavior with other master data.
+            if (\Illuminate\Support\Facades\DB::table('journal_entries')->where('created_by_user_id', $user->id)->exists()) {
+                throw new \Modules\Foundation\Exceptions\DeletionNotAllowedException('Cannot delete a user who has created financial transactions (journal entries).');
+            }
+        });
+    }
 }

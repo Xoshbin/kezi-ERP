@@ -14,6 +14,7 @@ class ProjectTaskFactory extends Factory
     {
         return [
             'company_id' => \App\Models\Company::factory(),
+            'project_id' => \Modules\ProjectManagement\Models\Project::factory(),
             'name' => $this->faker->sentence(3),
             'description' => $this->faker->paragraph,
             'status' => TaskStatus::Pending,

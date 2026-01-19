@@ -46,6 +46,11 @@ class Position extends Model
     use HasFactory;
     use HasTranslations;
 
+    protected static function newFactory()
+    {
+        return \Modules\HR\Database\Factories\PositionFactory::new();
+    }
+
     /**
      * The attributes that are mass assignable.
      *

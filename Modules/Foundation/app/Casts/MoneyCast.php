@@ -61,7 +61,7 @@ abstract class MoneyCast implements CastsAttributes
 
         if (is_numeric($value)) {
             $currency = $this->resolveCurrency($model);
-            $money = Money::of($value, $currency->code);
+            $money = Money::of($value, $currency->code, null, \Brick\Math\RoundingMode::HALF_UP);
 
             return [$key => $money->getMinorAmount()->toInt()];
         }

@@ -33,6 +33,8 @@ return new class extends Migration
             $table->foreignId('default_price_difference_account_id')->nullable()->constrained('accounts');
             $table->unsignedBigInteger('average_cost')->default(0);
             $table->integer('quantity_on_hand')->default(0);
+            $table->decimal('weight', 15, 4)->default(0);
+            $table->decimal('volume', 15, 4)->default(0);
             $table->string('tracking_type')->default('none');
 
             $table->softDeletes();

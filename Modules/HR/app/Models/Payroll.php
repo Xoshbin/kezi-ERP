@@ -70,6 +70,11 @@ class Payroll extends Model
 {
     use HasFactory;
 
+    protected static function newFactory()
+    {
+        return \Modules\HR\Database\Factories\PayrollFactory::new();
+    }
+
     /**
      * The attributes that are mass assignable.
      *
@@ -102,6 +107,9 @@ class Payroll extends Model
         'other_deductions',
         'total_deductions',
         'net_salary',
+        'regular_hours',
+        'overtime_hours',
+        'total_hours',
         'status',
         'processed_by_user_id',
         'processed_at',
@@ -136,6 +144,9 @@ class Payroll extends Model
         'other_deductions' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
         'total_deductions' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
         'net_salary' => \Modules\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+        'regular_hours' => 'decimal:2',
+        'overtime_hours' => 'decimal:2',
+        'total_hours' => 'decimal:2',
         'processed_at' => 'datetime',
         'approved_at' => 'datetime',
         'adjustments' => 'array',

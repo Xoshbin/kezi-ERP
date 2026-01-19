@@ -118,6 +118,11 @@ function createStockReceiptForTest($testCase, Product $product, float $quantity,
     ]);
 
     // Process incoming stock through valuation service
-    // This will handle both journal entries and stock quant updates
+    // This handles cost layer creation (FIFO/LIFO) and journal entry creation
     $valuationService->processIncomingStock($product, $quantity, $costPerUnit, $date, $vendorBill);
+
+    // Update stock quants explicitly
+    foreach ($stockMove->productLines as $productLine) {
+        $quantService->applyForIncomingProductLine($productLine);
+    }
 }

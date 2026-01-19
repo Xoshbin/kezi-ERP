@@ -27,10 +27,10 @@ class ProjectBudgetLineObserver implements ShouldHandleEventsAfterCommit
         $budget = $line->projectBudget;
 
         // Sum all lines
-        $total = $budget->lines()->sum('budgeted_amount');
+        $totalMinor = $budget->lines()->sum('budgeted_amount');
 
-        // Update parent budget
-        // Using updateQuietly to avoid triggering parent observers if any (though currently none specific)
-        $budget->updateQuietly(['budget_amount' => $total]);
+        // Update parent budget with Money object to ensure correct casting
+        $totalMoney = \Brick\Money\Money::ofMinor($totalMinor, $budget->company->currency->code);
+        $budget->updateQuietly(['total_budget' => $totalMoney]);
     }
 }

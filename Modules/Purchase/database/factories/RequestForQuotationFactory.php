@@ -16,7 +16,7 @@ class RequestForQuotationFactory extends Factory
         return [
             'company_id' => \App\Models\Company::factory(),
             'vendor_id' => \Modules\Foundation\Models\Partner::factory()->vendor(),
-            'currency_id' => \Modules\Foundation\Models\Currency::factory(),
+            'currency_id' => \Modules\Foundation\Models\Currency::factory()->createSafely(),
             'created_by_user_id' => \App\Models\User::factory(),
             'rfq_number' => 'RFQ-'.$this->faker->unique()->numberBetween(1000, 9999),
             'rfq_date' => now(),

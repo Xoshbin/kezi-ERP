@@ -21,6 +21,6 @@
     },
     "dependencies": {
         "highlight.js": "^11.11.1",
-        "playwright": "^1.55.0"
+        "playwright": "^1.57.0"
     }
 }

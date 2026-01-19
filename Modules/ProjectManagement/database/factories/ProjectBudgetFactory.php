@@ -12,6 +12,8 @@ class ProjectBudgetFactory extends Factory
     public function definition(): array
     {
         return [
+            'company_id' => \App\Models\Company::factory(),
+            'project_id' => \Modules\ProjectManagement\Models\Project::factory(),
             'name' => 'Project Budget '.$this->faker->year,
             'start_date' => now()->startOfYear(),
             'end_date' => now()->endOfYear(),
