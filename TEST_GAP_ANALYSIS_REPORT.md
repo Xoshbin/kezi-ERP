@@ -507,7 +507,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 6. **End-to-End Integration Tests**
    - ✅ Full sales cycle test (Quote → Sales Order → Invoice → Payment → Dunning)
-   - Full purchase cycle test
+   - ✅ Full purchase cycle test (RFQ → PO → Receipt → Bill → Payment)
    - Full manufacturing to accounting test
 
 7. **Missing Filament Resource Tests**
