@@ -45,8 +45,8 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 | **Fiscal Period Actions** | MEDIUM | `CloseFiscalPeriodAction`, `ReopenFiscalPeriodAction` - No dedicated tests |
 | **Asset Category Bill Posting Edge Cases** | LOW | Limited edge case coverage |
 | **Consolidation Reports** | LOW | Only `ConsolidatedTrialBalanceServiceTest` exists; missing P&L and Balance Sheet consolidation tests |
-| **FxGainLossReportService** | MEDIUM | No dedicated tests |
-| **Budget Resource Filament Tests** | MEDIUM | `BudgetResource` - No Filament tests for full CRUD |
+| **FxGainLossReportService** | DONE | ✅ Dedicated tests created |
+| **Budget Resource Filament Tests** | DONE | ✅ `BudgetResource` CRUD tests created |
 
 ---
 

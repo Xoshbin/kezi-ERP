@@ -83,6 +83,19 @@ class BaseCurrencyMoneyCast extends MoneyCast
             }
         }
 
+        if (method_exists($model, 'currencyRevaluation') && $model->relationLoaded('currencyRevaluation')) {
+            $revaluation = $model->getRelation('currencyRevaluation');
+            if ($revaluation instanceof Model && method_exists($revaluation, 'company')) {
+                $company = $revaluation->relationLoaded('company') ? $revaluation->getRelation('company') : $revaluation->company()->first();
+                if ($company instanceof Model && method_exists($company, 'currency')) {
+                    $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
+                    if ($currency instanceof Currency) {
+                        return $currency;
+                    }
+                }
+            }
+        }
+
         // Add other common parent relationships here as needed (e.g., vendorBill)
 
         // Fallback: If relationships are not loaded, perform database queries
@@ -116,6 +129,13 @@ class BaseCurrencyMoneyCast extends MoneyCast
             $purchaseOrder = $model->purchaseOrder()->with('company.currency')->first();
             if ($purchaseOrder && $purchaseOrder->company && $purchaseOrder->company->currency) {
                 return $purchaseOrder->company->currency;
+            }
+        }
+
+        if (method_exists($model, 'currencyRevaluation') && $model->getAttribute('currency_revaluation_id')) {
+            $revaluation = $model->currencyRevaluation()->with('company.currency')->first();
+            if ($revaluation && $revaluation->company && $revaluation->company->currency) {
+                return $revaluation->company->currency;
             }
         }
 
