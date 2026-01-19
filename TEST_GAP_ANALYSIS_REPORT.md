@@ -108,7 +108,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 |-----|----------|-------------|
 | **PurchaseOrder Service Tests** | MEDIUM | `PurchaseOrderService.php` - No dedicated tests |
 | **RequestForQuotation Service Tests** | MEDIUM | `RequestForQuotationService.php` - No dedicated tests |
-| **VendorBill Service Tests** | MEDIUM | `VendorBillService.php` - Only workflow tests, no unit tests |
+| **VendorBill Service Tests** | DONE | ✅ Dedicated unit tests created in `Modules/Purchase/tests/Unit/Services/VendorBillServiceTest.php` |
 | **Debit Note Workflow** | DONE | ✅ Dedicated action and tests created |
 
 ---
