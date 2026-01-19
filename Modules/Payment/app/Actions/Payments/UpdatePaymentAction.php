@@ -18,7 +18,10 @@ use Modules\Sales\Models\Invoice;
 
 class UpdatePaymentAction
 {
-    public function __construct(private readonly \Modules\Accounting\Services\Accounting\LockDateService $lockDateService) {}
+    public function __construct(
+        private readonly \Modules\Accounting\Services\Accounting\LockDateService $lockDateService,
+        private readonly \Modules\Foundation\Services\CurrencyConverterService $currencyConverter
+    ) {}
 
     public function execute(UpdatePaymentDTO $dto): Payment
     {
@@ -40,24 +43,63 @@ class UpdatePaymentAction
         $this->lockDateService->enforce($payment->company, Carbon::parse($dto->payment_date));
 
         return DB::transaction(function () use ($dto, $payment) {
-            $currencyCode = Currency::findOrFail($dto->currency_id)->code;
+            $company = \App\Models\Company::findOrFail($dto->company_id);
+            $currency = Currency::findOrFail($dto->currency_id);
+            $currencyCode = $currency->code;
+
+            // Get exchange rate for WHT base amount conversion
+            $exchangeRate = 1.0;
+            if ($currency->id !== $company->currency_id) {
+                $exchangeRate = $this->currencyConverter->getExchangeRate(
+                    $currency,
+                    Carbon::parse($dto->payment_date),
+                    $company
+                ) ?? 1.0;
+            }
 
             // Determine payment details based on presence of document links
             if (! empty($dto->document_links)) {
                 // For settlement payments, calculate from document links
                 $totalAmount = Money::of(0, $currencyCode);
+                $totalWithheldAmount = Money::of(0, $currencyCode);
                 $documentTypes = [];
                 $partnerId = null;
+                $whtEntriesToCreate = [];
 
                 foreach ($dto->document_links as $link) {
                     $totalAmount = $totalAmount->plus($link->amount_applied);
                     $documentTypes[$link->document_type] = true;
 
-                    if (! $partnerId) {
-                        if ($link->document_type === 'invoice') {
-                            $partnerId = Invoice::findOrFail($link->document_id)->customer_id;
-                        } elseif ($link->document_type === 'vendor_bill') {
-                            $partnerId = VendorBill::findOrFail($link->document_id)->vendor_id;
+                    // Get Document Partner to check for WHT
+                    $documentPartner = null;
+                    if ($link->document_type === 'invoice') {
+                        $invoice = Invoice::findOrFail($link->document_id);
+                        $documentPartner = $invoice->customer;
+                        $partnerId = $partnerId ?: $invoice->customer_id;
+                    } elseif ($link->document_type === 'vendor_bill') {
+                        $bill = VendorBill::findOrFail($link->document_id);
+                        $documentPartner = $bill->vendor;
+                        $partnerId = $partnerId ?: $bill->vendor_id;
+
+                        // WHT Logic: Currently only for Vendor Bills (Outbound)
+                        if ($documentPartner && $documentPartner->withholding_tax_type_id) {
+                            $whtType = $documentPartner->withholdingTaxType;
+                            $taxAmount = $whtType->calculateWithholding($link->amount_applied);
+                            $totalWithheldAmount = $totalWithheldAmount->plus($taxAmount);
+
+                            // Convert amounts to Base Currency for Storage
+                            $taxAmountBase = $this->currencyConverter->convertWithRate($taxAmount, $exchangeRate, $company->currency->code);
+                            $linkAmountBase = $this->currencyConverter->convertWithRate($link->amount_applied, $exchangeRate, $company->currency->code);
+
+                            $whtEntriesToCreate[] = [
+                                'company_id' => $dto->company_id,
+                                'withholding_tax_type_id' => $whtType->id,
+                                'vendor_id' => $documentPartner->id,
+                                'base_amount' => $linkAmountBase,
+                                'withheld_amount' => $taxAmountBase,
+                                'rate_applied' => $whtType->rate,
+                                'currency_id' => $dto->currency_id,
+                            ];
                         }
                     }
                 }
@@ -66,11 +108,15 @@ class UpdatePaymentAction
                     throw new InvalidArgumentException('A payment cannot be linked to both invoices and vendor bills simultaneously.');
                 }
                 $paymentType = key($documentTypes) === 'invoice' ? PaymentType::Inbound : PaymentType::Outbound;
+
+                // Adjust payment amount (Net Amount)
+                $paymentAmountValue = $totalAmount->minus($totalWithheldAmount);
             } else {
                 // For direct payments, use provided values
-                $totalAmount = $dto->amount;
+                $paymentAmountValue = $dto->amount;
                 $partnerId = $dto->paid_to_from_partner_id;
                 $paymentType = $dto->payment_type;
+                $whtEntriesToCreate = [];
             }
 
             // Update the parent Payment record
@@ -82,10 +128,17 @@ class UpdatePaymentAction
 
                 'payment_method' => $dto->payment_method,
                 'reference' => $dto->reference,
-                'amount' => $totalAmount,
+                'amount' => $paymentAmountValue,
                 'payment_type' => $paymentType,
                 'paid_to_from_partner_id' => $partnerId,
             ]);
+
+            // Clear existing WHT entries and recreate
+            \Modules\Accounting\Models\WithholdingTaxEntry::where('payment_id', $payment->id)->delete();
+            foreach ($whtEntriesToCreate as $whtData) {
+                $whtData['payment_id'] = $payment->id;
+                \Modules\Accounting\Models\WithholdingTaxEntry::create($whtData);
+            }
 
             // Handle settlement payments (document links)
             if (! empty($dto->document_links)) {
