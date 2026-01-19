@@ -43,4 +43,5 @@ return [
     'next_number' => 'Next Number',
     'is_active' => 'Is Active',
     'start_number' => 'Start Number',
+    'end_number' => 'End Number',
 ];
