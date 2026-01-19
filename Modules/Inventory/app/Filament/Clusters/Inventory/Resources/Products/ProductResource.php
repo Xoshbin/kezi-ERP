@@ -225,7 +225,7 @@ class ProductResource extends Resource
                             ->label(__('product.average_cost'))
                             ->currencyField('currency_id')
                             ->disabled()
-                            ->visible(fn (Get $get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value)
+                            ->visible(fn (Get $get) => $get('type') === \Modules\Product\Enums\Products\ProductType::Storable->value && auth()->user()?->can('view_cost_product'))
                             ->helperText(__('product.average_cost_help')),
                     ]),
                     Grid::make(2)->schema([
@@ -456,7 +456,7 @@ class ProductResource extends Resource
                 MoneyColumn::make('average_cost')
                     ->label(__('product.average_cost'))
                     ->sortable()
-                    ->visible(fn () => request()->has('inventory_view'))
+                    ->visible(fn () => request()->has('inventory_view') && auth()->user()?->can('view_cost_product'))
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('quantity_on_hand')
                     ->label(__('product.quantity_on_hand'))

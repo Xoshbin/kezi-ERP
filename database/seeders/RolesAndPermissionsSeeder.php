@@ -45,6 +45,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 // specific
                 'confirm_stock_move',
                 'validate_stock_picking',
+                'view_cost_product',
             ],
             'HR' => [
                 'employee' => ['view_any', 'view', 'create', 'update', 'delete'],
@@ -107,6 +108,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'view_any_stock_move', 'view_stock_move', 'confirm_stock_move',
                 'validate_stock_picking',
                 'view_any_warehouse', 'view_warehouse', 'create_warehouse', 'update_warehouse',
+                'view_cost_product',
             ]);
 
             // 3. Sales Manager
