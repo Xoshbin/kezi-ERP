@@ -173,9 +173,9 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **CreatePaymentAction Tests** | LOW | Covered indirectly but no dedicated action test file |
-| **UpdatePaymentAction Tests** | LOW | No dedicated tests |
-| **Chequebook Resource Tests** | LOW | `ChequebookResource` - No Filament tests |
+| **CreatePaymentAction Tests** | DONE | ✅ Dedicated unit tests created (`CreatePaymentActionTest.php`) |
+| **UpdatePaymentAction Tests** | DONE | ✅ Dedicated unit tests created (`UpdatePaymentActionTest.php`) |
+| **Chequebook Resource Tests** | DONE | ✅ Filament Resource tests created (`ChequebookResourceTest.php`) |
 | **Payment Installment Tests** | DONE | ✅ Dedicated unit tests created in `Modules/Payment/tests/Unit/Models/PaymentInstallmentTest.php` |
 
 ---
@@ -450,7 +450,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 | Foundation | 4 | 2 | Currency, possibly others |
 | HR | 8 | 7 | Department |
 | Inventory | 6 | 4 | StockPicking (Done), LandedCost (Done), StockLocation (Done) |
-| Payment | Handled in Accounting | - | Chequebook |
+| Payment | Handled in Accounting | - | Complete (Chequebook Done) |
 | Product | 1 | 1 | Complete |
 | ProjectManagement | 5 | 5 | Complete |
 | Manufacturing | 3 | 3 | Complete |
