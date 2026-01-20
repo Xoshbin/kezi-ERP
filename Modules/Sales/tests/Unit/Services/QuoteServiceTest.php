@@ -1,8 +1,15 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
+use Modules\Sales\Actions\Sales\AcceptQuoteAction;
+use Modules\Sales\Actions\Sales\CancelQuoteAction;
+use Modules\Sales\Actions\Sales\ConvertQuoteToInvoiceAction;
+use Modules\Sales\Actions\Sales\ConvertQuoteToSalesOrderAction;
 use Modules\Sales\Actions\Sales\CreateQuoteAction;
+use Modules\Sales\Actions\Sales\CreateQuoteRevisionAction;
+use Modules\Sales\Actions\Sales\RejectQuoteAction;
+use Modules\Sales\Actions\Sales\SendQuoteAction;
+use Modules\Sales\Actions\Sales\UpdateQuoteAction;
 use Modules\Sales\DataTransferObjects\Sales\CreateQuoteDTO;
 use Modules\Sales\Enums\Sales\QuoteStatus;
 use Modules\Sales\Events\QuoteCreated;
@@ -11,21 +18,36 @@ use Modules\Sales\Models\Quote;
 use Modules\Sales\Models\QuoteLine;
 use Modules\Sales\Services\QuoteService;
 
-uses(RefreshDatabase::class);
-
 beforeEach(function () {
+    /** @var CreateQuoteAction|\Mockery\MockInterface $createAction */
     $this->createAction = Mockery::mock(CreateQuoteAction::class);
+    /** @var UpdateQuoteAction|\Mockery\MockInterface $updateAction */
+    $this->updateAction = Mockery::mock(UpdateQuoteAction::class);
+    /** @var SendQuoteAction|\Mockery\MockInterface $sendAction */
+    $this->sendAction = Mockery::mock(SendQuoteAction::class);
+    /** @var AcceptQuoteAction|\Mockery\MockInterface $acceptAction */
+    $this->acceptAction = Mockery::mock(AcceptQuoteAction::class);
+    /** @var RejectQuoteAction|\Mockery\MockInterface $rejectAction */
+    $this->rejectAction = Mockery::mock(RejectQuoteAction::class);
+    /** @var CancelQuoteAction|\Mockery\MockInterface $cancelAction */
+    $this->cancelAction = Mockery::mock(CancelQuoteAction::class);
+    /** @var ConvertQuoteToSalesOrderAction|\Mockery\MockInterface $convertToOrderAction */
+    $this->convertToOrderAction = Mockery::mock(ConvertQuoteToSalesOrderAction::class);
+    /** @var ConvertQuoteToInvoiceAction|\Mockery\MockInterface $convertToInvoiceAction */
+    $this->convertToInvoiceAction = Mockery::mock(ConvertQuoteToInvoiceAction::class);
+    /** @var CreateQuoteRevisionAction|\Mockery\MockInterface $revisionAction */
+    $this->revisionAction = Mockery::mock(CreateQuoteRevisionAction::class);
 
     $this->service = new QuoteService(
         createAction: $this->createAction,
-        updateAction: Mockery::mock(\Modules\Sales\Actions\Sales\UpdateQuoteAction::class),
-        sendAction: Mockery::mock(\Modules\Sales\Actions\Sales\SendQuoteAction::class),
-        acceptAction: Mockery::mock(\Modules\Sales\Actions\Sales\AcceptQuoteAction::class),
-        rejectAction: Mockery::mock(\Modules\Sales\Actions\Sales\RejectQuoteAction::class),
-        cancelAction: Mockery::mock(\Modules\Sales\Actions\Sales\CancelQuoteAction::class),
-        convertToOrderAction: Mockery::mock(\Modules\Sales\Actions\Sales\ConvertQuoteToSalesOrderAction::class),
-        convertToInvoiceAction: Mockery::mock(\Modules\Sales\Actions\Sales\ConvertQuoteToInvoiceAction::class),
-        revisionAction: Mockery::mock(\Modules\Sales\Actions\Sales\CreateQuoteRevisionAction::class),
+        updateAction: $this->updateAction,
+        sendAction: $this->sendAction,
+        acceptAction: $this->acceptAction,
+        rejectAction: $this->rejectAction,
+        cancelAction: $this->cancelAction,
+        convertToOrderAction: $this->convertToOrderAction,
+        convertToInvoiceAction: $this->convertToInvoiceAction,
+        revisionAction: $this->revisionAction,
     );
 });
 
@@ -82,5 +104,179 @@ it('marks expired quotes and dispatches events', function () {
     expect($expiredQuote->refresh()->status)->toBe(QuoteStatus::Expired);
     Event::assertDispatched(QuoteExpired::class, function (QuoteExpired $event) use ($expiredQuote) {
         return $event->quote->id === $expiredQuote->id;
+    });
+});
+
+describe('create', function () {
+    it('creates a quote and dispatches QuoteCreated event', function () {
+        Event::fake([QuoteCreated::class]);
+
+        $dto = new CreateQuoteDTO(
+            companyId: 1,
+            partnerId: 1,
+            currencyId: 1,
+            quoteDate: now(),
+            validUntil: now()->addDays(30),
+            lines: [],
+            notes: 'Test Quote',
+            termsAndConditions: 'Terms',
+            exchangeRate: 1.0,
+            createdByUserId: 1,
+        );
+
+        $expectedQuote = Quote::factory()->make();
+
+        $this->createAction->shouldReceive('execute')
+            ->once()
+            ->with($dto)
+            ->andReturn($expectedQuote);
+
+        $quote = $this->service->create($dto);
+
+        expect($quote)->toBe($expectedQuote);
+        Event::assertDispatched(QuoteCreated::class, function ($event) use ($quote) {
+            return $event->quote === $quote;
+        });
+    });
+});
+
+describe('update', function () {
+    it('delegates to UpdateQuoteAction', function () {
+        $dto = new \Modules\Sales\DataTransferObjects\Sales\UpdateQuoteDTO(
+            quoteId: 1,
+            partnerId: 1,
+            currencyId: 1,
+            quoteDate: now(),
+            validUntil: now()->addDays(30),
+            lines: [],
+            notes: 'Updated Notes',
+            termsAndConditions: 'Updated Terms',
+            exchangeRate: 1.0,
+        );
+
+        $expectedQuote = Quote::factory()->make();
+
+        $this->updateAction->shouldReceive('execute')
+            ->once()
+            ->with($dto)
+            ->andReturn($expectedQuote);
+
+        $result = $this->service->update($dto);
+
+        expect($result)->toBe($expectedQuote);
+    });
+});
+
+describe('send', function () {
+    it('delegates to SendQuoteAction', function () {
+        $quote = Quote::factory()->make();
+        $expectedQuote = Quote::factory()->make();
+
+        $this->sendAction->shouldReceive('execute')
+            ->once()
+            ->with($quote)
+            ->andReturn($expectedQuote);
+
+        $result = $this->service->send($quote);
+
+        expect($result)->toBe($expectedQuote);
+    });
+});
+
+describe('accept', function () {
+    it('delegates to AcceptQuoteAction', function () {
+        $quote = Quote::factory()->make();
+        $expectedQuote = Quote::factory()->make();
+
+        $this->acceptAction->shouldReceive('execute')
+            ->once()
+            ->with($quote)
+            ->andReturn($expectedQuote);
+
+        $result = $this->service->accept($quote);
+
+        expect($result)->toBe($expectedQuote);
+    });
+});
+
+describe('reject', function () {
+    it('delegates to RejectQuoteAction with optional reason', function () {
+        $quote = Quote::factory()->make();
+        $expectedQuote = Quote::factory()->make();
+        $reason = 'Too expensive';
+
+        $this->rejectAction->shouldReceive('execute')
+            ->once()
+            ->with($quote, $reason)
+            ->andReturn($expectedQuote);
+
+        $result = $this->service->reject($quote, $reason);
+
+        expect($result)->toBe($expectedQuote);
+    });
+});
+
+describe('cancel', function () {
+    it('delegates to CancelQuoteAction', function () {
+        $quote = Quote::factory()->make();
+        $expectedQuote = Quote::factory()->make();
+
+        $this->cancelAction->shouldReceive('execute')
+            ->once()
+            ->with($quote)
+            ->andReturn($expectedQuote);
+
+        $result = $this->service->cancel($quote);
+
+        expect($result)->toBe($expectedQuote);
+    });
+});
+
+describe('convertToSalesOrder', function () {
+    it('delegates to ConvertQuoteToSalesOrderAction with optional userId', function () {
+        $quote = Quote::factory()->make();
+        $expectedOrder = \Modules\Sales\Models\SalesOrder::factory()->make();
+        $userId = 1;
+
+        $this->convertToOrderAction->shouldReceive('execute')
+            ->once()
+            ->with($quote, $userId)
+            ->andReturn($expectedOrder);
+
+        $result = $this->service->convertToSalesOrder($quote, $userId);
+
+        expect($result)->toBe($expectedOrder);
+    });
+});
+
+describe('convertToInvoice', function () {
+    it('delegates to ConvertQuoteToInvoiceAction', function () {
+        $quote = Quote::factory()->make();
+        $expectedInvoice = \Modules\Sales\Models\Invoice::factory()->make();
+
+        $this->convertToInvoiceAction->shouldReceive('execute')
+            ->once()
+            ->with($quote)
+            ->andReturn($expectedInvoice);
+
+        $result = $this->service->convertToInvoice($quote);
+
+        expect($result)->toBe($expectedInvoice);
+    });
+});
+
+describe('createRevision', function () {
+    it('delegates to CreateQuoteRevisionAction', function () {
+        $quote = Quote::factory()->make();
+        $expectedRevision = Quote::factory()->make();
+
+        $this->revisionAction->shouldReceive('execute')
+            ->once()
+            ->with($quote)
+            ->andReturn($expectedRevision);
+
+        $result = $this->service->createRevision($quote);
+
+        expect($result)->toBe($expectedRevision);
     });
 });
