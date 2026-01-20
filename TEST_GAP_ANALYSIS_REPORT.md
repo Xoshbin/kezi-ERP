@@ -11,7 +11,7 @@
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **Asset Category Bill Posting Edge Cases** | LOW | Limited edge case coverage |
+
 
 ---
 
@@ -114,4 +114,5 @@
 | **StockMove Resource Filament Tests** | 2026-01-20 | Added `StockMoveResourceFilamentTest` with 19 tests covering table listing, filters, view page, and UI actions. |
 | **Sales Actions Coverage** | 2026-01-20 | Expanded tests for `CreateDeliveryFromSalesOrderAction`, `ConvertQuoteToInvoiceAction`, `CreateQuoteAction`, and `CreateQuoteLineAction` covering complex scenarios. |
 | **Project Completion Workflow** | 2026-01-20 | Added `ProjectCompletionTest.php` verifying project status transitions and automatic end date setting. |
+| **Asset Category Bill Posting Edge Cases** | 2026-01-20 | Added `AssetCategoryBillPostingTest.php` with 5 scenarios covering missing GL accounts, foreign currency conversion, zero-value checks, and asset deletion on bill cancellation. |
 

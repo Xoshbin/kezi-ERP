@@ -8,22 +8,43 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use Modules\Accounting\Actions\Assets\CreateAssetAction;
 use Modules\Accounting\Enums\Assets\DepreciationMethod;
+use Modules\Foundation\Services\CurrencyConverterService;
 use Modules\Purchase\Models\VendorBillLine;
 
 class CreateAssetFromVendorBillListener implements ShouldQueue
 {
-    public function __construct(private readonly CreateAssetAction $createAssetAction) {}
+    public function __construct(
+        private readonly CreateAssetAction $createAssetAction,
+        private readonly CurrencyConverterService $currencyConverter,
+    ) {}
 
     public function handle(\Modules\Purchase\Events\VendorBillConfirmed $event): void
     {
         $vendorBill = $event->vendorBill;
+        /** @var \Modules\Foundation\Models\Company $company */
         $company = $vendorBill->company;
 
         // Eager load relationships for efficiency
-        $vendorBill->loadMissing('lines.expenseAccount', 'lines.product', 'currency');
+        $vendorBill->loadMissing('lines.expenseAccount', 'lines.product', 'currency', 'company.currency');
+
+        /** @var \Modules\Foundation\Models\Currency $companyCurrency */
+        $companyCurrency = $company->currency;
+        $billCurrency = $vendorBill->currency;
+
+        // Determine exchange rate: use bill's stored rate or fetch latest
+        /** @var float|null $storedRate */
+        $storedRate = $vendorBill->getAttribute('exchange_rate_at_creation');
+        $exchangeRate = (float) ($storedRate ?? 1.0);
+
+        if ($billCurrency->id !== $companyCurrency->id && ! $storedRate) {
+            $exchangeRate = $this->currencyConverter->getExchangeRate($billCurrency, $vendorBill->bill_date, $company)
+                ?? $this->currencyConverter->getLatestExchangeRate($billCurrency, $company)
+                ?? 1.0;
+        }
 
         foreach ($vendorBill->lines as $line) {
             // Check explicit asset-category selection first, fallback to can_create_assets on account
+            /** @var mixed $category */
             $category = null;
             if ($line->asset_category_id) {
                 $category = \Modules\Accounting\Models\AssetCategory::find($line->asset_category_id);
@@ -58,22 +79,8 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                             ?? $this->line->expense_account_id;
                         $this->useful_life_years = $this->line->product->useful_life_years ?? 5;
                         $this->depreciation_method = $this->line->product->depreciation_method ?? DepreciationMethod::StraightLine;
-                        $this->prorata_temporis = $this->line->product->prorata_temporis ?? false;
+                        $this->prorata_temporis = (bool) ($this->line->product->prorata_temporis ?? false);
                         $this->declining_factor = $this->line->product->declining_factor ?? null;
-                    }
-
-                    public function __get(string $name): mixed
-                    {
-                        return match ($name) {
-                            'asset_account_id' => $this->asset_account_id,
-                            'depreciation_expense_account_id' => $this->depreciation_expense_account_id,
-                            'accumulated_depreciation_account_id' => $this->accumulated_depreciation_account_id,
-                            'useful_life_years' => $this->useful_life_years,
-                            'depreciation_method' => $this->depreciation_method,
-                            'prorata_temporis' => $this->prorata_temporis,
-                            'declining_factor' => $this->declining_factor,
-                            default => null,
-                        };
                     }
                 };
             }
@@ -82,26 +89,50 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                 continue; // Not an asset line
             }
 
+            // Calculate purchase value in company currency
+            $purchaseValueMoney = $this->currencyConverter->convertWithRate(
+                $line->subtotal,
+                $exchangeRate,
+                $companyCurrency->code,
+                false
+            );
+            $purchaseValue = (int) $purchaseValueMoney->getAmount()->toFloat();
+
+            // Prevent creation of assets for zero or negative values
+            if ($purchaseValue <= 0) {
+                continue;
+            }
+
             try {
+                // Extract values to variables to avoid PHPStan confusion on mixed/$category type access
+                $usefulLife = $category->useful_life_years ?? 5;
+                $depMethod = $category->depreciation_method ?? DepreciationMethod::StraightLine;
+                $assetAccId = $category->asset_account_id;
+                $depExpAccId = $category->depreciation_expense_account_id;
+                $accumDepAccId = $category->accumulated_depreciation_account_id;
+                $prorata = $category->prorata_temporis ?? false;
+                $declining = $category->declining_factor ?? null;
+
                 $assetDTO = new \Modules\Accounting\DataTransferObjects\Assets\CreateAssetDTO(
                     company_id: $vendorBill->company_id,
                     name: $line->product->name ?? $line->description,
                     purchase_date: $vendorBill->bill_date,
-                    purchase_value: (int) $line->subtotal->getAmount()->toFloat(),
+                    purchase_value: $purchaseValue,
                     salvage_value: 0,
-                    useful_life_years: $category->useful_life_years,
-                    depreciation_method: $category->depreciation_method,
-                    asset_account_id: $category->asset_account_id,
-                    depreciation_expense_account_id: $category->depreciation_expense_account_id,
-                    accumulated_depreciation_account_id: $category->accumulated_depreciation_account_id,
+                    useful_life_years: $usefulLife,
+                    depreciation_method: $depMethod,
+                    asset_account_id: $assetAccId,
+                    depreciation_expense_account_id: $depExpAccId,
+                    accumulated_depreciation_account_id: $accumDepAccId,
                     currency_id: $vendorBill->currency_id,
-                    prorata_temporis: $category->prorata_temporis ?? false,
-                    declining_factor: $category->declining_factor ?? null,
+                    prorata_temporis: $prorata,
+                    declining_factor: $declining,
                     source_type: get_class($vendorBill),
                     source_id: $vendorBill->id
                 );
 
                 $this->createAssetAction->execute($assetDTO);
+
             } catch (Exception $e) {
                 Log::error('Failed to create asset from vendor bill line.', [
                     'vendor_bill_id' => $vendorBill->id,
