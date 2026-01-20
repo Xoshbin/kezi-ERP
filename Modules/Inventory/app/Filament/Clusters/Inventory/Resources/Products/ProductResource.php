@@ -13,10 +13,12 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -42,7 +44,12 @@ use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\ListP
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers\InventoryCostLayersRelationManager;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers\ReorderingRulesRelationManager;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMovesRelationManager;
+use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers\VariantsRelationManager;
+use Modules\Product\Actions\GenerateProductVariantsAction;
+use Modules\Product\DataTransferObjects\GenerateProductVariantsDTO;
 use Modules\Product\Models\Product;
+use Modules\Product\Models\ProductAttribute;
+use Modules\Product\Models\ProductAttributeValue;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 // use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMovesRelationManager;
@@ -116,6 +123,37 @@ class ProductResource extends Resource
                         ->label(__('product.description'))
                         ->rows(3)
                         ->columnSpanFull(),
+                    Toggle::make('is_template')
+                        ->label(__('product::product.is_template'))
+                        ->helperText(__('product::product.is_template_help'))
+                        ->live()
+                        ->disabled(fn ($record) => $record?->variants()->exists()),
+                ]),
+
+            Section::make(__('product::product.variant_attributes'))
+                ->description(__('product::product.variant_attributes_description'))
+                ->icon('heroicon-o-variable')
+                ->visible(fn (Get $get) => $get('is_template'))
+                ->schema([
+                    Repeater::make('product_attributes')
+                        ->label(__('product::product.attributes'))
+                        ->schema([
+                            Select::make('product_attribute_id')
+                                ->label(__('product::product.attribute'))
+                                ->options(ProductAttribute::active()->pluck('name', 'id'))
+                                ->required()
+                                ->live(),
+                            Select::make('values')
+                                ->label(__('product::product.values'))
+                                ->multiple()
+                                ->options(fn (Get $get) => ProductAttributeValue::where('product_attribute_id', $get('product_attribute_id'))
+                                    ->active()
+                                    ->pluck('name', 'id')
+                                )
+                                ->required(),
+                        ])
+                        ->columns(2)
+                        ->addActionLabel('Add Attribute'),
                 ]),
 
             Section::make(__('product.pricing_information'))
@@ -513,6 +551,14 @@ class ProductResource extends Resource
                     ->placeholder(__('product.all_products'))
                     ->trueLabel(__('product.active_products'))
                     ->falseLabel(__('product.inactive_products')),
+                TernaryFilter::make('is_template')
+                    ->label(__('product::product.is_template')),
+                TernaryFilter::make('is_variant')
+                    ->label(__('product::product.is_variant'))
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereNotNull('parent_product_id'),
+                        false: fn (Builder $query) => $query->whereNull('parent_product_id'),
+                    ),
                 TrashedFilter::make(),
             ])
             ->recordActions([
@@ -545,12 +591,43 @@ class ProductResource extends Resource
             ]);
     }
 
+    public static function getActions(): array
+    {
+        return [
+            \Filament\Actions\Action::make('generate_variants')
+                ->label(__('product::product.actions.generate_variants'))
+                ->color('success')
+                ->icon('heroicon-o-sparkles')
+                ->requiresConfirmation()
+                ->visible(fn (Product $record) => $record->is_template)
+                ->action(function (Product $record, array $state) {
+                    $action = app(GenerateProductVariantsAction::class);
+
+                    $attributeValueMap = [];
+                    foreach ($state['product_attributes'] as $attr) {
+                        $attributeValueMap[$attr['product_attribute_id']] = $attr['values'];
+                    }
+
+                    $action->execute(new GenerateProductVariantsDTO(
+                        templateProductId: $record->id,
+                        attributeValueMap: $attributeValueMap,
+                    ));
+
+                    Notification::make()
+                        ->success()
+                        ->title('Product variants generated successfully.')
+                        ->send();
+                }),
+        ];
+    }
+
     public static function getRelations(): array
     {
         return [
             StockMovesRelationManager::class,
             InventoryCostLayersRelationManager::class,
             ReorderingRulesRelationManager::class,
+            VariantsRelationManager::class,
         ];
     }
 
