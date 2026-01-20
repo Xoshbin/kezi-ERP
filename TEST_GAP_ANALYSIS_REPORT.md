@@ -229,7 +229,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **Partner Resource Filament Tests** | DONE | ✅ Extended PartnerResourceTest & Added Partner Model Unit Tests |
+| **Partner Resource Filament Tests** | DONE | ✅ Extended PartnerResourceTest & Added Partner Model Unit Tests (incl. Default Tax) |
 | **Currency Resource Filament Tests** | LOW | `CurrencyResource` - No Filament tests (but CurrencyRateResource is tested) |
 | **Audit Log Tests** | DONE | ✅ `AuditLogTest` implemented covering Model & Observer |
 | **Document Attachment Tests (Module-level)** | LOW | Tests exist in root but not in module context |
