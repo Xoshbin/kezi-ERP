@@ -65,10 +65,7 @@
 ---
 
 ### 1.8 QualityControl Module
-
-| Gap | Priority | Description |
-|-----|----------|-------------|
-| **Quality Check to Inventory Integration** | LOW | No tests for blocking stock based on quality failures |
+<!-- No active gaps identified -->
 
 ---
 
@@ -125,4 +122,5 @@
 | Gap | Completion Date | Description |
 |-----|-----------------|-------------|
 | **Sequence Service Gaps** | 2026-01-20 | Added `SequenceConcurrencyTest` to verify atomic sequence generation under load. |
+| **Quality Check to Inventory Integration** | 2026-01-20 | Added `QualityInventoryIntegrationTest` and `QualityCheckObserver` to verify automatic lot deactivation on check failure. |
 
