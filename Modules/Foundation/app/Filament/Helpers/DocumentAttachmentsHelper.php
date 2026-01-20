@@ -43,7 +43,35 @@ class DocumentAttachmentsHelper
                     ->downloadable()
                     ->openable()
                     ->deletable($deletableCallback ?? fn ($record) => $record === null)
-                    ->reorderable(),
+                    ->reorderable()
+                    ->saveRelationshipsUsing(function (Forms\Components\FileUpload $component, array $state) {
+                        $record = $component->getModelInstance();
+
+                        if (! $record) {
+                            return;
+                        }
+
+                        // Ensure state is array of paths
+                        $paths = array_values($state);
+
+                        // Get existing paths
+                        $existing = $record->attachments()->pluck('file_path')->toArray();
+
+                        // Delete removed files
+                        $toDelete = array_diff($existing, $paths);
+                        if (! empty($toDelete)) {
+                            $record->attachments()->whereIn('file_path', $toDelete)->get()->each->delete();
+                        }
+
+                        // Create new files
+                        $toCreate = array_diff($paths, $existing);
+                        foreach ($toCreate as $path) {
+                            $record->attachments()->create([
+                                'file_path' => $path,
+                                // Metadata handled by DocumentAttachment observer if missing
+                            ]);
+                        }
+                    }),
             ])
             ->collapsible()
             ->columnSpanFull()

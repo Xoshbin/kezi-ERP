@@ -34,9 +34,7 @@
 
 ### 1.5 Foundation Module
 
-| Gap | Priority | Description |
-|-----|----------|-------------|
-| **Document Attachment Tests (Module-level)** | LOW | Tests exist in root but not in module context |
+<!-- Document Attachment Tests moved to module - completed 2026-01-20 -->
 
 ---
 
@@ -116,4 +114,5 @@
 | **Project Completion Workflow** | 2026-01-20 | Added `ProjectCompletionTest.php` verifying project status transitions and automatic end date setting. |
 | **Asset Category Bill Posting Edge Cases** | 2026-01-20 | Added `AssetCategoryBillPostingTest.php` with 5 scenarios covering missing GL accounts, foreign currency conversion, zero-value checks, and asset deletion on bill cancellation. |
 | **BOM Costing Edge Cases** | 2026-01-20 | Implemented recursive cost calculation in `BOMService` with multi-level support, product average cost fallback, and circular dependency detection. |
+| **Document Attachment Tests (Module-level)** | 2026-01-20 | Refactored Filament feature tests to Pest. Fixed critical attachment saving logic in Edit/Create pages and resolved model/helper discrepancies. All tests passing. |
 

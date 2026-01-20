@@ -54,6 +54,7 @@ class DocumentAttachment extends Model
         'file_size',
         'mime_type',
         'uploaded_by_user_id',
+        'attachments', // Virtual attribute for Filament compatibility
     ];
 
     /**
@@ -130,11 +131,65 @@ class DocumentAttachment extends Model
      */
     protected static function booted(): void
     {
+        static::creating(function (DocumentAttachment $attachment) {
+            if (! $attachment->uploaded_by_user_id) {
+                $user = \Illuminate\Support\Facades\Auth::user();
+                if ($user) {
+                    $attachment->uploaded_by_user_id = (int) $user->id;
+                }
+            }
+
+            if (! $attachment->company_id) {
+                $tenant = \Filament\Facades\Filament::getTenant();
+                if ($tenant instanceof Company) {
+                    $attachment->company_id = $tenant->id;
+                } elseif (\Illuminate\Support\Facades\Auth::check()) {
+                    /** @var \App\Models\User $user */
+                    $user = \Illuminate\Support\Facades\Auth::user();
+                    $attachment->company_id = $user->current_company_id ?? $user->companies()->first()?->id;
+                }
+            }
+
+            // Populate metadata if missing and file exists
+            if ($attachment->file_path && Storage::disk('local')->exists($attachment->file_path)) {
+                if (! $attachment->file_size) {
+                    $attachment->file_size = Storage::disk('local')->size($attachment->file_path);
+                }
+                if (! $attachment->mime_type) {
+                    $mimeType = Storage::disk('local')->mimeType($attachment->file_path);
+                    if ($mimeType !== false) {
+                        $attachment->mime_type = $mimeType;
+                    }
+                }
+                if (! $attachment->file_name) {
+                    // Fallback to basename if original name not provided
+                    $attachment->file_name = basename($attachment->file_path);
+                }
+            }
+        });
+
         static::deleting(function (DocumentAttachment $attachment) {
-            if ($attachment->fileExists()) {
+            // Delete file from storage
+            if ($attachment->file_path && Storage::disk('local')->exists($attachment->file_path)) {
                 Storage::disk('local')->delete($attachment->file_path);
             }
         });
+    }
+
+    /**
+     * Set the file path from 'attachments' attribute (used by Filament).
+     */
+    public function setAttachmentsAttribute(mixed $value): void
+    {
+        $this->attributes['file_path'] = $value;
+    }
+
+    /**
+     * Set the file path from 'attachment' attribute (singular fallback).
+     */
+    public function setAttachmentAttribute(mixed $value): void
+    {
+        $this->attributes['file_path'] = $value;
     }
 
     /**
