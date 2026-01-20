@@ -68,6 +68,11 @@ class ProcessDunningRunAction
             return;
         }
 
+        // Check remaining balance - only dun if > 0
+        if (! $invoice->getRemainingAmount()->isPositive()) {
+            return;
+        }
+
         Log::info("Target Level for Invoice {$invoiceIdentifier}: {$targetLevel->name}");
 
         $currentLevel = $invoice->dunningLevel;
@@ -118,7 +123,7 @@ class ProcessDunningRunAction
 
         // Percentage
         if ($level->fee_percentage > 0) {
-            $percentageFee = $invoice->total_amount->multipliedBy($level->fee_percentage / 100, \Brick\Math\RoundingMode::HALF_UP);
+            $percentageFee = $invoice->getRemainingAmount()->multipliedBy($level->fee_percentage / 100, \Brick\Math\RoundingMode::HALF_UP);
             $feeAmount = $feeAmount->plus($percentageFee);
         }
 
