@@ -11,6 +11,20 @@ use Modules\Manufacturing\Enums\BOMType;
 use Modules\Product\Models\Product;
 use Spatie\Translatable\HasTranslations;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $product_id
+ * @property string $code
+ * @property string $name
+ * @property \Modules\Manufacturing\Enums\BOMType $type
+ * @property float $quantity
+ * @property bool $is_active
+ * @property string|null $notes
+ * @property-read \App\Models\Company $company
+ * @property-read \Modules\Product\Models\Product $product
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Modules\Manufacturing\Models\BOMLine[] $lines
+ */
 class BillOfMaterial extends Model
 {
     use HasFactory;

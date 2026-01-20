@@ -47,7 +47,7 @@
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **BOM Costing Edge Cases** | LOW | More complex multi-level BOM costing scenarios |
+<!-- BOM Costing Edge Cases completed -->
 
 ---
 
@@ -115,4 +115,5 @@
 | **Sales Actions Coverage** | 2026-01-20 | Expanded tests for `CreateDeliveryFromSalesOrderAction`, `ConvertQuoteToInvoiceAction`, `CreateQuoteAction`, and `CreateQuoteLineAction` covering complex scenarios. |
 | **Project Completion Workflow** | 2026-01-20 | Added `ProjectCompletionTest.php` verifying project status transitions and automatic end date setting. |
 | **Asset Category Bill Posting Edge Cases** | 2026-01-20 | Added `AssetCategoryBillPostingTest.php` with 5 scenarios covering missing GL accounts, foreign currency conversion, zero-value checks, and asset deletion on bill cancellation. |
+| **BOM Costing Edge Cases** | 2026-01-20 | Implemented recursive cost calculation in `BOMService` with multi-level support, product average cost fallback, and circular dependency detection. |
 
