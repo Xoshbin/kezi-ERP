@@ -274,3 +274,31 @@ describe('Partner Financial Methods', function () {
         expect($partner->getTotalLifetimeValue()->getAmount()->toInt())->toBe(1500);
     });
 });
+
+describe('Partner Default Tax', function () {
+
+    it('can have a default tax relationship', function () {
+        $tax = \Modules\Accounting\Models\Tax::factory()->for($this->company)->create([
+            'name' => 'VAT 15%',
+            'rate' => 0.15,
+            'is_active' => true,
+        ]);
+
+        $partner = Partner::factory()->for($this->company)->create([
+            'default_tax_id' => $tax->id,
+        ]);
+
+        expect($partner->defaultTax)->not->toBeNull()
+            ->and($partner->defaultTax->id)->toBe($tax->id)
+            ->and($partner->defaultTax->name)->toBe('VAT 15%')
+            ->and($partner->defaultTax->rate)->toBe(0.15);
+    });
+
+    it('returns null when default tax is not set', function () {
+        $partner = Partner::factory()->for($this->company)->create([
+            'default_tax_id' => null,
+        ]);
+
+        expect($partner->defaultTax)->toBeNull();
+    });
+});

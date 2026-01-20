@@ -264,6 +264,40 @@ class PartnerResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->prefixIcon('heroicon-m-globe-alt'),
+                                TranslatableSelect::forModel('default_tax_id', Tax::class, 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->createOptionForm([
+                                        Hidden::make('company_id')
+                                            ->default(function (): ?int {
+                                                $tenant = Filament::getTenant();
+
+                                                return $tenant?->getKey();
+                                            }),
+                                        TextInput::make('name')
+                                            ->label(__('accounting::tax.name'))
+                                            ->required()
+                                            ->maxLength(255),
+                                        TextInput::make('rate')
+                                            ->label(__('accounting::tax.rate'))
+                                            ->required()
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(1)
+                                            ->step(0.01),
+                                        Select::make('type')
+                                            ->label(__('accounting::tax.type'))
+                                            ->options([
+                                                \Modules\Accounting\Enums\Accounting\TaxType::Sales->value => \Modules\Accounting\Enums\Accounting\TaxType::Sales->label(),
+                                                \Modules\Accounting\Enums\Accounting\TaxType::Purchase->value => \Modules\Accounting\Enums\Accounting\TaxType::Purchase->label(),
+                                                \Modules\Accounting\Enums\Accounting\TaxType::Both->value => \Modules\Accounting\Enums\Accounting\TaxType::Both->label(),
+                                            ])
+                                            ->default(\Modules\Accounting\Enums\Accounting\TaxType::Both->value)
+                                            ->required(),
+                                    ])
+                                    ->createOptionModalHeading(__('accounting::partner.create_default_tax'))
+                                    ->helperText(__('accounting::partner.default_tax_help'))
+                                    ->prefixIcon('heroicon-m-percent-badge'),
                             ]),
                     ])
                     ->columnSpanFull()
@@ -432,6 +466,10 @@ class PartnerResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('tax_id')
                     ->label(__('accounting::partner.tax_id'))
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('defaultTax.name')
+                    ->label(__('accounting::partner.default_tax'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
