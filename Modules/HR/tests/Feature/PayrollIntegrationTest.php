@@ -12,20 +12,25 @@ use Modules\Accounting\Models\Journal;
 use Modules\Foundation\Enums\Partners\PartnerType;
 use Modules\Foundation\Models\Currency;
 use Modules\HR\Actions\HumanResources\CreatePaymentFromPayrollAction;
-use Modules\HR\Actions\HumanResources\CreatePayrollLineAction;
 use Modules\HR\Actions\HumanResources\ProcessPayrollAction;
 use Modules\HR\DataTransferObjects\HumanResources\ProcessPayrollDTO;
 use Modules\HR\Models\Employee;
 use Modules\HR\Models\Payroll;
-use Modules\Payment\Actions\Payments\CreatePaymentAction;
 use Modules\Payment\Enums\Payments\PaymentStatus;
 use Modules\Payment\Models\Payment;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
-    $this->user = User::factory()->create();
-    $this->currency = Currency::firstOrCreate(
+/**
+ * Helper to create shared test context.
+ * Returns an array of created models.
+ *
+ * @return array<string, mixed>
+ */
+function createPayrollTestContext(): array
+{
+    $user = User::factory()->create();
+    $currency = Currency::firstOrCreate(
         ['code' => 'IQD'],
         [
             'name' => 'Iraqi Dinar',
@@ -35,56 +40,68 @@ beforeEach(function () {
         ]
     );
 
-    $this->company = Company::factory()->create([
-        'currency_id' => $this->currency->id,
+    $company = Company::factory()->create([
+        'currency_id' => $currency->id,
     ]);
 
     // Create necessary accounts
-    $this->bankAccount = Account::factory()->create([
-        'company_id' => $this->company->id,
-        'currency_id' => $this->currency->id,
+    $bankAccount = Account::factory()->create([
+        'company_id' => $company->id,
+        'currency_id' => $currency->id,
         'code' => '1000',
         'name' => 'Bank',
         'type' => 'bank_and_cash',
     ]);
 
-    $this->salaryPayableAccount = Account::factory()->create([
-        'company_id' => $this->company->id,
-        'currency_id' => $this->currency->id,
+    $salaryPayableAccount = Account::factory()->create([
+        'company_id' => $company->id,
+        'currency_id' => $currency->id,
         'code' => '2000',
         'name' => 'Salary Payable',
         'type' => 'current_liabilities',
     ]);
 
     // Create Journal
-    $this->bankJournal = Journal::factory()->create([
-        'company_id' => $this->company->id,
-        'currency_id' => $this->currency->id,
+    $bankJournal = Journal::factory()->create([
+        'company_id' => $company->id,
+        'currency_id' => $currency->id,
         'type' => JournalType::Bank,
         'name' => 'Bank Journal',
-        'default_debit_account_id' => $this->bankAccount->id,
-        'default_credit_account_id' => $this->bankAccount->id,
+        'default_debit_account_id' => $bankAccount->id,
+        'default_credit_account_id' => $bankAccount->id,
     ]);
 
-    $this->company->update([
-        'default_bank_journal_id' => $this->bankJournal->id,
-        'default_salary_payable_account_id' => $this->salaryPayableAccount->id,
+    $company->update([
+        'default_bank_journal_id' => $bankJournal->id,
+        'default_salary_payable_account_id' => $salaryPayableAccount->id,
     ]);
 
-    $this->employee = Employee::factory()->create([
-        'company_id' => $this->company->id,
+    $employee = Employee::factory()->create([
+        'company_id' => $company->id,
         'is_active' => true,
         'employment_status' => 'active',
         'email' => 'employee@example.com',
     ]);
-});
+
+    return compact('user', 'currency', 'company', 'employee', 'bankJournal', 'salaryPayableAccount', 'bankAccount');
+}
 
 test('full payroll workflow: process payroll then pay it', function () {
+    $context = createPayrollTestContext();
+    /** @var User $user */
+    $user = $context['user'];
+    /** @var Currency $currency */
+    $currency = $context['currency'];
+    /** @var Company $company */
+    $company = $context['company'];
+    /** @var Employee $employee */
+    $employee = $context['employee'];
+
     // 1. Process Payroll (Create Draft)
     $dto = new ProcessPayrollDTO(
-        company_id: $this->company->id,
-        employee_id: $this->employee->id,
-        currency_id: $this->currency->id,
+        company_id: $company->id,
+        employee_id: $employee->id,
+        currency_id: $currency->id,
         payroll_number: '',
         period_start_date: '2025-08-01',
         period_end_date: '2025-08-31',
@@ -106,25 +123,18 @@ test('full payroll workflow: process payroll then pay it', function () {
         other_deductions: Money::of(0, 'IQD'),
         regular_hours: 160,
         overtime_hours: 5,
-        processed_by_user_id: $this->user->id,
+        processed_by_user_id: $user->id,
         notes: null,
         adjustments: [],
         payrollLines: []
     );
 
-    // Use binding or instantiate manually. Action has dependency on CreatePayrollLineAction.
-    // We should rely on container.
     $processAction = app(ProcessPayrollAction::class);
     $payroll = $processAction->execute($dto);
 
     // Verify Processed correct totals
     expect($payroll)->toBeInstanceOf(Payroll::class);
     // Gross = 1000000 + 100000 = 1100000
-
-    // Wait, IQD has 3 decimals? Existing tests use 3 decimals in Money::of?
-    // In existing test: Money::of(5000000, 'IQD') -> 5,000,000 IQD.
-    // Brick\Money\Money handles context.
-    // Let's rely on checking `isEqualTo`.
     expect($payroll->gross_salary->isEqualTo(Money::of(1100000, 'IQD')))->toBeTrue();
     // Deductions = 50000 + 20000 = 70000
     expect($payroll->total_deductions->isEqualTo(Money::of(70000, 'IQD')))->toBeTrue();
@@ -132,7 +142,6 @@ test('full payroll workflow: process payroll then pay it', function () {
     expect($payroll->net_salary->isEqualTo(Money::of(1030000, 'IQD')))->toBeTrue();
 
     // Verify status
-    // As observed, ProcessPayrollAction likely leaves it as 'draft' or doesn't set 'processed'.
     expect($payroll->status)->toBe('draft');
 
     // Simulate Approval/Processing transition
@@ -140,30 +149,35 @@ test('full payroll workflow: process payroll then pay it', function () {
 
     // 2. Create Payment
     $createPaymentAction = app(CreatePaymentFromPayrollAction::class);
-    $payment = $createPaymentAction->execute($payroll, $this->user);
+    $payment = $createPaymentAction->execute($payroll, $user);
 
     expect($payment)->toBeInstanceOf(Payment::class);
     expect($payment->amount->isEqualTo(Money::of(1030000, 'IQD')))->toBeTrue();
     expect($payment->status)->toBe(PaymentStatus::Draft);
-    // CreatePaymentAction usually creates draft or posted depending on args.
-    // CreatePaymentDTO doesn't have status. CreatePaymentAction default status?
-    // Let's assume it creates and maybe we check relation.
 
     $payroll->refresh();
     expect($payroll->status)->toBe('paid');
     expect($payroll->payment_id)->toBe($payment->id);
 
     // Check Partner creation
-    $partner = \Modules\Foundation\Models\Partner::where('email', $this->employee->email)->first();
+    $partner = \Modules\Foundation\Models\Partner::where('email', $employee->email)->first();
     expect($partner)->not->toBeNull();
     expect($partner->type)->toBe(PartnerType::Vendor);
 });
 
 test('payroll observer recalculates totals on update', function () {
+    $context = createPayrollTestContext();
+    /** @var Currency $currency */
+    $currency = $context['currency'];
+    /** @var Company $company */
+    $company = $context['company'];
+    /** @var Employee $employee */
+    $employee = $context['employee'];
+
     $payroll = Payroll::create([
-        'company_id' => $this->company->id,
-        'employee_id' => $this->employee->id,
-        'currency_id' => $this->currency->id,
+        'company_id' => $company->id,
+        'employee_id' => $employee->id,
+        'currency_id' => $currency->id,
         'period_start_date' => '2025-08-01',
         'period_end_date' => '2025-08-31',
         'pay_date' => '2025-08-31',
@@ -181,7 +195,6 @@ test('payroll observer recalculates totals on update', function () {
         'health_insurance' => Money::of(0, 'IQD'),
         'pension_contribution' => Money::of(0, 'IQD'),
         'other_deductions' => Money::of(0, 'IQD'),
-        // Totals calculated by observer on create
     ]);
 
     // Initial check
