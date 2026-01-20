@@ -15,7 +15,13 @@ class PayrollObserver
         if (empty($payroll->payroll_number)) {
             $payroll->payroll_number = $this->generatePayrollNumber($payroll->company_id, $payroll->pay_date);
         }
+    }
 
+    /**
+     * Handle the Payroll "saving" event.
+     */
+    public function saving(Payroll $payroll): void
+    {
         $this->calculatePayrollTotals($payroll);
     }
 
