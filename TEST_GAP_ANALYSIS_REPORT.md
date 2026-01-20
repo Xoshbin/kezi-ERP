@@ -146,6 +146,7 @@ The JMeryar ERP now has a **strong test suite** for its core Accounting, Invento
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
+| **ProductCostAnalysisService Tests** | DONE | ✅ Dedicated unit tests created (`ProductCostAnalysisServiceTest.php`) |
 | **LandedCost Resource Filament Tests** | DONE | ✅ |
 | **StockLocation Resource Filament Tests** | DONE | ✅ |
 | **StockMove Resource Filament Tests** | LOW | Only `ManualStockMoveFilamentTest` exists |
