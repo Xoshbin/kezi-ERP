@@ -24,14 +24,48 @@ class BOMService
         return $this->createBOMAction->execute($dto);
     }
 
-    public function calculateTotalMaterialCost(BillOfMaterial $bom): \Brick\Money\Money
+    /**
+     * @param  int[]  $processedBoms
+     */
+    public function calculateTotalMaterialCost(BillOfMaterial $bom, array $processedBoms = []): \Brick\Money\Money
     {
-        $total = \Brick\Money\Money::zero($bom->lines->first()?->currency_code ?? 'USD');
+        if (in_array($bom->id, $processedBoms)) {
+            throw new \RuntimeException('Circular BOM dependency detected');
+        }
+
+        $processedBoms[] = $bom->id;
+        $currencyCode = $bom->company->currency->code;
+        $total = \Brick\Money\Money::zero($currencyCode);
 
         foreach ($bom->lines as $line) {
-            /** @var \Brick\Money\Money $unitCost */
-            $unitCost = $line->unit_cost;
-            $lineCost = $unitCost->multipliedBy($line->quantity);
+            $component = $line->product;
+            $lineQuantity = $line->quantity;
+
+            if (! $component) {
+                continue;
+            }
+
+            // Check if component has an active BOM
+            $componentBom = BillOfMaterial::where('product_id', $component->id)
+                ->where('company_id', $bom->company_id)
+                ->where('is_active', true)
+                ->with(['lines.product', 'company.currency'])
+                ->first();
+
+            if ($componentBom) {
+                // Recursive calculation: (innerBOMCost / innerBOMQuantity) * lineQuantity
+                $innerCost = $this->calculateTotalMaterialCost($componentBom, $processedBoms);
+                $unitCost = $innerCost->dividedBy($componentBom->quantity, \Brick\Math\RoundingMode::HALF_UP);
+                $lineCost = $unitCost->multipliedBy($lineQuantity, \Brick\Math\RoundingMode::HALF_UP);
+            } else {
+                // Fallback to average_cost, then to unit_cost on line if average_cost is 0
+                $unitCost = $component->average_cost;
+                if (! $unitCost || $unitCost->isZero()) {
+                    $unitCost = $line->unit_cost;
+                }
+                $lineCost = $unitCost->multipliedBy($lineQuantity, \Brick\Math\RoundingMode::HALF_UP);
+            }
+
             $total = $total->plus($lineCost);
         }
 

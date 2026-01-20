@@ -8,6 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Product\Models\Product;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $bom_id
+ * @property int $product_id
+ * @property float $quantity
+ * @property \Brick\Money\Money $unit_cost
+ * @property string $currency_code
+ * @property int|null $work_center_id
+ * @property-read \App\Models\Company $company
+ * @property-read \Modules\Manufacturing\Models\BillOfMaterial $billOfMaterial
+ * @property-read \Modules\Product\Models\Product|null $product
+ */
 class BOMLine extends Model
 {
     use HasFactory;

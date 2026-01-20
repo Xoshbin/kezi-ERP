@@ -79,14 +79,14 @@ describe('BOMService', function () {
         $bom->lines()->createMany([
             [
                 'company_id' => $this->company->id,
-                'product_id' => Product::factory()->create(['company_id' => $this->company->id])->id,
+                'product_id' => Product::factory()->create(['company_id' => $this->company->id, 'average_cost' => 0])->id,
                 'quantity' => 2,
                 'unit_cost' => 500, // 500 minor units
                 'currency_code' => $currencyCode,
             ],
             [
                 'company_id' => $this->company->id,
-                'product_id' => Product::factory()->create(['company_id' => $this->company->id])->id,
+                'product_id' => Product::factory()->create(['company_id' => $this->company->id, 'average_cost' => 0])->id,
                 'quantity' => 1,
                 'unit_cost' => 1500, // 1500 minor units
                 'currency_code' => $currencyCode,
