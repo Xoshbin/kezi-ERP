@@ -40,11 +40,6 @@
 
 ---
 
-### 1.6 ProjectManagement Module
-
-| Gap | Priority | Description |
-|-----|----------|-------------|
-| **Project Completion Workflow** | LOW | No end-to-end project completion tests |
 
 ---
 
@@ -118,4 +113,5 @@
 | **Product to Inventory Integration** | 2026-01-20 | Added `ProductInventoryIntegrationTest` to verify that storable product quantities are correctly tracked via stock ajustes and that service products are excluded. |
 | **StockMove Resource Filament Tests** | 2026-01-20 | Added `StockMoveResourceFilamentTest` with 19 tests covering table listing, filters, view page, and UI actions. |
 | **Sales Actions Coverage** | 2026-01-20 | Expanded tests for `CreateDeliveryFromSalesOrderAction`, `ConvertQuoteToInvoiceAction`, `CreateQuoteAction`, and `CreateQuoteLineAction` covering complex scenarios. |
+| **Project Completion Workflow** | 2026-01-20 | Added `ProjectCompletionTest.php` verifying project status transitions and automatic end date setting. |
 
