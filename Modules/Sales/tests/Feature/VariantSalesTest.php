@@ -3,7 +3,9 @@
 use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
+use Modules\Accounting\Enums\Accounting\JournalType;
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
 use Modules\Accounting\Models\Tax;
 use Modules\Foundation\Models\Partner;
 use Modules\Product\Actions\GenerateProductVariantsAction;
@@ -47,9 +49,20 @@ beforeEach(function () {
         'name' => 'Accounts Receivable',
     ]);
 
-    // Set company default AR account
+    // Create Sales Journal (required for invoice posting)
+    $this->salesJournal = Journal::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => JournalType::Sale,
+        'name' => 'Customer Invoices',
+        'short_code' => 'INV',
+        'default_debit_account_id' => $this->arAccount->id,
+        'default_credit_account_id' => $this->incomeAccount->id,
+    ]);
+
+    // Set company default AR account and Sales Journal
     $this->company->update([
-        'default_accounts_receivable_account_id' => $this->arAccount->id,
+        'default_accounts_receivable_id' => $this->arAccount->id,
+        'default_sales_journal_id' => $this->salesJournal->id,
     ]);
 
     // Create tax
@@ -328,14 +341,14 @@ it('multiple variants can be sold on same invoice with independent revenue track
 
     // Verify invoice has 4 lines
     $invoice->refresh();
-    expect($invoice->lines()->count())->toBe(4);
+    expect($invoice->invoiceLines()->count())->toBe(4);
 
     // Verify total revenue
-    $actualTotal = $invoice->lines()->get()->sum(fn ($line) => $line->subtotal->getAmount()->toFloat());
+    $actualTotal = $invoice->invoiceLines()->get()->sum(fn ($line) => $line->subtotal->getAmount()->toFloat());
     expect($actualTotal)->toBe((float) $totalExpectedRevenue);
 
     // Expected: (2*1100) + (3*1300) + (1*1500) + (4*1700) = 2200 + 3900 + 1500 + 6800 = 14400
-    expect($totalExpectedRevenue)->toBe(14400.0);
+    expect((float) $totalExpectedRevenue)->toBe(14400.0);
 });
 
 it('template product cannot be used in invoice line', function () {
