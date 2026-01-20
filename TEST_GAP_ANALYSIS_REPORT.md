@@ -26,9 +26,8 @@
 
 ### 1.4 HR Module
 
-| Gap | Priority | Description |
-|-----|----------|-------------|
-| **Complex Payroll Scenarios** | LOW | Tax rule variations, complex deduction rules |
+<!-- Complex Payroll Scenarios gap completed -->
+
 
 ---
 
@@ -117,3 +116,4 @@
 | **Document Attachment Tests (Module-level)** | 2026-01-20 | Refactored Filament feature tests to Pest. Fixed critical attachment saving logic in Edit/Create pages and resolved model/helper discrepancies. All tests passing. |
 | **Payroll Integration & Calculation Fixes** | 2026-01-20 | Fixed `PayrollObserver` to recalculate totals on save (not just create). Implemented `PayrollIntegrationTest` covering the full workflow from draft to payment, including payment status and vendor partner creation. |
 
+| **Complex Payroll Scenarios** | 2026-01-20 | Added unit tests for `PayrollService.php` covering salary proration (mid-month transitions), overtime (explicit and derived rates), automatic deductions (Tax, SS, etc.), and accounting line balance. |
