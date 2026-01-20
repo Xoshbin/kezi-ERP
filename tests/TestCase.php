@@ -16,8 +16,17 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
  * @property \Modules\Foundation\Models\Currency $currency
  * @property \Modules\Product\Models\Product $product
  * @property \Modules\Accounting\Models\Account $account
+ * @property \Modules\Accounting\Models\Account $inventoryAccount
+ * @property \Modules\Accounting\Models\Account $stockInputAccount
+ * @property \Modules\Accounting\Models\Account $cogsAccount
+ * @property \Modules\Inventory\Models\StockLocation $vendorLocation
+ * @property \Modules\Inventory\Models\StockLocation $stockLocation
+ * @property \Modules\Inventory\Models\StockLocation $adjustmentLocation
+ * @property \Modules\Inventory\Models\StockLocation $customerLocation
+ * @property \Modules\Foundation\Models\Partner $vendor
  *
  * @method void setupWithConfiguredCompany()
+ * @method void setupInventoryTestEnvironment()
  * @method \Mockery\MockInterface mock(string $abstract, \Closure $mock = null)
  */
 abstract class TestCase extends BaseTestCase
