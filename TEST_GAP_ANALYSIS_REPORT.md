@@ -36,7 +36,6 @@
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **Currency Resource Filament Tests** | LOW | `CurrencyResource` - No Filament tests |
 | **Document Attachment Tests (Module-level)** | LOW | Tests exist in root but not in module context |
 
 ---
@@ -113,6 +112,7 @@
 
 | Gap | Completion Date | Description |
 |-----|-----------------|-------------|
+| **Currency Resource Filament Tests** | 2026-01-20 | Added `CurrencyResourceTest.php` with 17 tests covering listing, creation with validation, editing, deletion, and active status toggling. |
 | **Sequence Service Gaps** | 2026-01-20 | Added `SequenceConcurrencyTest` to verify atomic sequence generation under load. |
 | **Quality Check to Inventory Integration** | 2026-01-20 | Added `QualityInventoryIntegrationTest` and `QualityCheckObserver` to verify automatic lot deactivation on check failure. |
 | **Product to Inventory Integration** | 2026-01-20 | Added `ProductInventoryIntegrationTest` to verify that storable product quantities are correctly tracked via stock ajustes and that service products are excluded. |
