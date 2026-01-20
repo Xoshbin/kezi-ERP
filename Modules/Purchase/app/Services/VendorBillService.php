@@ -143,6 +143,19 @@ class VendorBillService
             // Step 3: Update the vendor bill's status.
             $vendorBill->status = VendorBillStatus::Cancelled;
             $vendorBill->save(); // saveQuietly() isn't needed if the observer handles status changes gracefully
+
+            // Step 4: Delete any linked draft assets
+            // Since we created assets when the bill was posted (VendorBillConfirmed event),
+            // we should remove them if they are still in draft state now that the bill is cancelled.
+            $assets = \Modules\Accounting\Models\Asset::where('source_type', get_class($vendorBill))
+                ->where('source_id', $vendorBill->id)
+                ->get();
+
+            foreach ($assets as $asset) {
+                if ($asset->status === \Modules\Accounting\Enums\Assets\AssetStatus::Draft) {
+                    $asset->delete();
+                }
+            }
         });
     }
 
