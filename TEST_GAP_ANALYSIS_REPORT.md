@@ -74,7 +74,6 @@
 | Gap | Priority | Description |
 |-----|----------|-------------|
 | **Product Variant Tests** | LOW | If product variants exist, no dedicated tests |
-| **Product to Inventory Integration** | LOW | No tests for storable product creation with initial stock |
 
 ---
 
@@ -123,4 +122,5 @@
 |-----|-----------------|-------------|
 | **Sequence Service Gaps** | 2026-01-20 | Added `SequenceConcurrencyTest` to verify atomic sequence generation under load. |
 | **Quality Check to Inventory Integration** | 2026-01-20 | Added `QualityInventoryIntegrationTest` and `QualityCheckObserver` to verify automatic lot deactivation on check failure. |
+| **Product to Inventory Integration** | 2026-01-20 | Added `ProductInventoryIntegrationTest` to verify that storable product quantities are correctly tracked via stock ajustes and that service products are excluded. |
 
