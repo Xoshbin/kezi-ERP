@@ -115,4 +115,5 @@
 | **Asset Category Bill Posting Edge Cases** | 2026-01-20 | Added `AssetCategoryBillPostingTest.php` with 5 scenarios covering missing GL accounts, foreign currency conversion, zero-value checks, and asset deletion on bill cancellation. |
 | **BOM Costing Edge Cases** | 2026-01-20 | Implemented recursive cost calculation in `BOMService` with multi-level support, product average cost fallback, and circular dependency detection. |
 | **Document Attachment Tests (Module-level)** | 2026-01-20 | Refactored Filament feature tests to Pest. Fixed critical attachment saving logic in Edit/Create pages and resolved model/helper discrepancies. All tests passing. |
+| **Payroll Integration & Calculation Fixes** | 2026-01-20 | Fixed `PayrollObserver` to recalculate totals on save (not just create). Implemented `PayrollIntegrationTest` covering the full workflow from draft to payment, including payment status and vendor partner creation. |
 
