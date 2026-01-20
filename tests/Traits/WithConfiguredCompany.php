@@ -11,6 +11,14 @@ use Tests\Builders\CompanyBuilder;
 /**
  * @property \App\Models\Company $company
  * @property \App\Models\User $user
+ * @property \Modules\Accounting\Models\Account $inventoryAccount
+ * @property \Modules\Accounting\Models\Account $stockInputAccount
+ * @property \Modules\Accounting\Models\Account $cogsAccount
+ * @property \Modules\Inventory\Models\StockLocation $vendorLocation
+ * @property \Modules\Inventory\Models\StockLocation $stockLocation
+ * @property \Modules\Inventory\Models\StockLocation $adjustmentLocation
+ * @property \Modules\Inventory\Models\StockLocation $customerLocation
+ * @property \Modules\Foundation\Models\Partner $vendor
  */
 trait WithConfiguredCompany
 {
