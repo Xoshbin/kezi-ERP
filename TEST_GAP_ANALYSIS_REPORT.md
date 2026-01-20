@@ -12,7 +12,6 @@
 | Gap | Priority | Description |
 |-----|----------|-------------|
 | **Asset Category Bill Posting Edge Cases** | LOW | Limited edge case coverage |
-| **Consolidation Reports** | LOW | Missing P&L and Balance Sheet consolidation tests |
 
 ---
 
