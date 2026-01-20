@@ -29,6 +29,14 @@ use Modules\Purchase\Enums\Purchases\VendorBillStatus;
  * @property int $currency_id
  * @property string $fiscal_country
  * @property int|null $parent_company_id
+ * @property int|null $default_salary_payable_account_id
+ * @property int|null $default_salary_expense_account_id
+ * @property int|null $default_payroll_journal_id
+ * @property int|null $default_income_tax_payable_account_id
+ * @property int|null $default_social_security_payable_account_id
+ * @property int|null $default_health_insurance_payable_account_id
+ * @property int|null $default_pension_payable_account_id
+ * @property int|null $default_employee_advance_receivable_account_id
  * @property \Modules\Accounting\Enums\Consolidation\ConsolidationMethod $consolidation_method
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
