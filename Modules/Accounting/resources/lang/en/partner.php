@@ -39,6 +39,9 @@ return [
     'payable_account_help' => 'Account used to track money we owe this partner (vendor bills)',
     'create_receivable_account' => 'Create Receivable Account',
     'create_payable_account' => 'Create Payable Account',
+    'default_tax' => 'Default Tax',
+    'default_tax_help' => 'The default tax rate to automatically apply when creating invoices or bills for this partner',
+    'create_default_tax' => 'Create Default Tax',
 
     // Address
     'address' => 'Address',

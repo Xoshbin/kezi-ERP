@@ -43,6 +43,7 @@ use Xoshbin\CustomFields\Traits\HasCustomFields;
  * @property string|null $zip_code
  * @property string|null $country
  * @property string|null $tax_id
+ * @property int|null $default_tax_id
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -57,6 +58,7 @@ use Xoshbin\CustomFields\Traits\HasCustomFields;
  * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
  * @property-read \Modules\Accounting\Models\FiscalPosition|null $fiscalPosition
+ * @property-read \Modules\Accounting\Models\Tax|null $defaultTax
  *
  * @method static \Modules\Foundation\Database\Factories\PartnerFactory factory($count = null, $state = [])
  * @method static Builder<static>|Partner newModelQuery()
@@ -124,6 +126,7 @@ class Partner extends Model
         'customer_payment_term_id',
         'vendor_payment_term_id',
         'fiscal_position_id',
+        'default_tax_id',
         'is_active',
     ];
 
@@ -278,6 +281,14 @@ class Partner extends Model
     public function fiscalPosition(): BelongsTo
     {
         return $this->belongsTo(\Modules\Accounting\Models\FiscalPosition::class, 'fiscal_position_id');
+    }
+
+    /**
+     * Get the default tax for this partner.
+     */
+    public function defaultTax(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\Tax::class, 'default_tax_id');
     }
 
     /**
