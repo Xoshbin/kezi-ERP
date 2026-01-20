@@ -55,7 +55,21 @@
 
 ### 1.9 Product Module
 
-<!-- Product Variant Tests: N/A - No product variant implementation exists in codebase (verified 2026-01-20) -->
+| Gap | Priority | Description |
+|-----|----------|-------------|
+| **Product Variant Inventory Integration** | CRITICAL | Variants foundation complete (2026-01-20). REQUIRED: Stock tracking per variant, prevent template stock moves, test all inventory operations. See `PRODUCT_VARIANTS_ROADMAP.md` Phase 1. |
+| **Product Variant Accounting Integration** | CRITICAL | REQUIRED: Test invoice/bill creation with variants, verify cost layer calculations, ensure proper account usage. See `PRODUCT_VARIANTS_ROADMAP.md` Phase 1. |
+| **Product Variant Business Logic** | HIGH | Template deletion prevention, attribute update handling, variant regeneration logic. See `PRODUCT_VARIANTS_ROADMAP.md` Phase 2. |
+
+**Foundation Status (2026-01-20):**
+- ✅ Database schema complete (`product_attributes`, `product_attribute_values`, `product_variant_attributes`)
+- ✅ Core logic: `GenerateProductVariantsAction` with Cartesian product generation
+- ✅ UI: Filament resources, template toggle, variant generation action, relation manager
+- ✅ Tests: `ProductVariantTest.php` (2 tests), `ProductResourceTest.php` (1 test) - all passing
+- ✅ Translations: Full EN/CKB support
+- ⚠️ **NOT PRODUCTION READY** - Missing critical inventory and accounting integrations
+
+**Reference:** `PRODUCT_VARIANTS_ROADMAP.md` for complete implementation plan
 
 ---
 
@@ -116,3 +130,4 @@
 | **Stock Movement Concurrency** | 2026-01-20 | Added `StockMoveConcurrencyTest` to verify that simultaneous stock creation and confirmation are handled correctly without race conditions, using `lockForUpdate`. |
 
 | **Complex Payroll Scenarios** | 2026-01-20 | Added unit tests for `PayrollService.php` covering salary proration (mid-month transitions), overtime (explicit and derived rates), automatic deductions (Tax, SS, etc.), and accounting line balance. |
+| **Product Variants Foundation** | 2026-01-20 | Implemented complete foundation: database schema, `GenerateProductVariantsAction`, Filament UI with attribute management, variant generation action, and relation manager. Tests passing. **Integration work required** - see `PRODUCT_VARIANTS_ROADMAP.md`. |
