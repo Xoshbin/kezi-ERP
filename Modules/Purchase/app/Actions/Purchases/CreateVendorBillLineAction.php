@@ -26,8 +26,8 @@ class CreateVendorBillLineAction
         $taxAmount = Money::of(0, $currency->code);
         if ($dto->tax_id) {
             $tax = Tax::findOrFail($dto->tax_id);
-            // $tax->rate is stored as decimal (0.10 for 10%)
-            $taxAmount = $subtotal->multipliedBy((string) $tax->rate, RoundingMode::HALF_UP);
+            $taxRate = $tax->rate / 100;
+            $taxAmount = $subtotal->multipliedBy((string) $taxRate, RoundingMode::HALF_UP);
         }
 
         // 3. Create the model with pre-calculated values.

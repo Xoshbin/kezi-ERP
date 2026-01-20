@@ -94,7 +94,7 @@ beforeEach(function () {
     // Create tax
     $this->tax = Tax::factory()->create([
         'company_id' => $this->company->id,
-        'rate' => 0.10, // 10%
+        'rate' => 10.0, // 10%
     ]);
 
     // Create template product
