@@ -33,7 +33,13 @@ class ProjectService
 
     public function completeProject(Project $project): void
     {
-        $project->update(['status' => ProjectStatus::Completed]);
+        $data = ['status' => ProjectStatus::Completed];
+
+        if (! $project->end_date) {
+            $data['end_date'] = now();
+        }
+
+        $project->update($data);
     }
 
     public function cancelProject(Project $project): void
