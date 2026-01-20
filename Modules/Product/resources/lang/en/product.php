@@ -69,4 +69,26 @@ return [
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
     'deleted_at' => 'Deleted At',
+
+    // Variants and Attributes
+    'is_template' => 'Is Template',
+    'is_template_help' => 'Enable this to create product variants from attributes.',
+    'is_variant' => 'Is Variant',
+    'variant_attributes' => 'Variant Attributes',
+    'variant_attributes_description' => 'Define attributes for this template (e.g., Color, Size)',
+    'attributes' => 'Attributes',
+    'attribute' => 'Attribute',
+    'values' => 'Values',
+    'price' => 'Price',
+    'on_hand' => 'On Hand',
+    'actions' => [
+        'generate_variants' => 'Generate Variants',
+        'generate_variants_success' => 'Product variants generated successfully.',
+    ],
+    'attribute_types' => [
+        'select' => 'Select',
+        'color' => 'Color',
+        'radio' => 'Radio',
+    ],
+    'color_code' => 'Color Code',
 ];

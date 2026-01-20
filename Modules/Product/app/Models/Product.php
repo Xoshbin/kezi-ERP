@@ -46,6 +46,9 @@ use Spatie\Translatable\HasTranslations;
  * @property int|null $default_stock_input_account_id
  * @property \Modules\Inventory\Enums\Inventory\ValuationMethod $inventory_valuation_method
  * @property \Brick\Money\Money|null $average_cost
+ * @property bool $is_template
+ * @property int|null $parent_product_id
+ * @property string|null $variant_sku_suffix
  * @property-read Company $company
  * @property-read Account|null $expenseAccount
  * @property-read Account|null $incomeAccount
@@ -114,6 +117,9 @@ class Product extends Model
         'deferred_expense_account_id',
         'weight',
         'volume',
+        'is_template',
+        'parent_product_id',
+        'variant_sku_suffix',
     ];
 
     protected $casts = [
@@ -128,6 +134,7 @@ class Product extends Model
         'tracking_type' => \Modules\Inventory\Enums\Inventory\TrackingType::class,
         'weight' => 'float',
         'volume' => 'float',
+        'is_template' => 'boolean',
     ];
 
     protected static function booted(): void
@@ -413,5 +420,39 @@ class Product extends Model
     public function manufacturingOrders(): HasMany
     {
         return $this->hasMany(\Modules\Manufacturing\Models\ManufacturingOrder::class);
+    }
+
+    /**
+     * @return BelongsTo<Product, static>
+     */
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Product::class, 'parent_product_id');
+    }
+
+    /**
+     * @return HasMany<Product, static>
+     */
+    public function variants(): HasMany
+    {
+        return $this->hasMany(Product::class, 'parent_product_id');
+    }
+
+    /**
+     * @return HasMany<ProductVariantAttribute, static>
+     */
+    public function variantAttributes(): HasMany
+    {
+        return $this->hasMany(ProductVariantAttribute::class, 'product_id');
+    }
+
+    public function isTemplate(): bool
+    {
+        return $this->is_template;
+    }
+
+    public function isVariant(): bool
+    {
+        return ! empty($this->parent_product_id);
     }
 }
