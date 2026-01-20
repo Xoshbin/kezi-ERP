@@ -67,6 +67,17 @@ class StockMoveService
      */
     public function createMove(CreateStockMoveDTO $dto): StockMove
     {
+        // Validate that no product in the move is a template product
+        foreach ($dto->product_lines as $productLineDTO) {
+            $product = \Modules\Product\Models\Product::find($productLineDTO->product_id);
+
+            if ($product && $product->is_template) {
+                throw new \InvalidArgumentException(
+                    'Cannot create stock moves for template products. Use variants instead.'
+                );
+            }
+        }
+
         // If the move is being created already "done", defer the status change until after lines exist.
         $desiredStatus = $dto->status;
         $initialStatus = $desiredStatus === StockMoveStatus::Done ? StockMoveStatus::Draft : $desiredStatus;

@@ -57,7 +57,6 @@
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **Product Variant Inventory Integration** | CRITICAL | Variants foundation complete (2026-01-20). REQUIRED: Stock tracking per variant, prevent template stock moves, test all inventory operations. See `PRODUCT_VARIANTS_ROADMAP.md` Phase 1. |
 | **Product Variant Accounting Integration** | CRITICAL | REQUIRED: Test invoice/bill creation with variants, verify cost layer calculations, ensure proper account usage. See `PRODUCT_VARIANTS_ROADMAP.md` Phase 1. |
 | **Product Variant Business Logic** | HIGH | Template deletion prevention, attribute update handling, variant regeneration logic. See `PRODUCT_VARIANTS_ROADMAP.md` Phase 2. |
 
@@ -67,7 +66,8 @@
 - ✅ UI: Filament resources, template toggle, variant generation action, relation manager
 - ✅ Tests: `ProductVariantTest.php` (2 tests), `ProductResourceTest.php` (1 test) - all passing
 - ✅ Translations: Full EN/CKB support
-- ⚠️ **NOT PRODUCTION READY** - Missing critical inventory and accounting integrations
+- ✅ **Inventory Integration Complete** (2026-01-20): `ProductVariantInventoryTest.php` (6 tests) - stock tracking per variant, template restrictions, independent stock levels
+- ⚠️ **NOT PRODUCTION READY** - Missing critical accounting integration
 
 **Reference:** `PRODUCT_VARIANTS_ROADMAP.md` for complete implementation plan
 
@@ -131,3 +131,4 @@
 
 | **Complex Payroll Scenarios** | 2026-01-20 | Added unit tests for `PayrollService.php` covering salary proration (mid-month transitions), overtime (explicit and derived rates), automatic deductions (Tax, SS, etc.), and accounting line balance. |
 | **Product Variants Foundation** | 2026-01-20 | Implemented complete foundation: database schema, `GenerateProductVariantsAction`, Filament UI with attribute management, variant generation action, and relation manager. Tests passing. **Integration work required** - see `PRODUCT_VARIANTS_ROADMAP.md`. |
+| **Product Variant Inventory Integration** | 2026-01-20 | Implemented `ProductVariantInventoryTest.php` with 6 comprehensive tests covering: stock move creation for variants, independent stock levels per variant, template product restrictions, stock quant tracking, stock reservations, and multi-location scenarios. Added validation in `StockMoveService` to prevent template products from having stock moves. All tests passing (2098 total). |
