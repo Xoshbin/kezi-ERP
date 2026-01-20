@@ -32,7 +32,7 @@ use Modules\QualityControl\Enums\QualityCheckStatus;
  * @property Carbon|null $inspected_at
  * @property string|null $notes
  */
-#[ObservedBy([AuditLogObserver::class])]
+#[ObservedBy([AuditLogObserver::class, \Modules\QualityControl\Observers\QualityCheckObserver::class])]
 class QualityCheck extends Model
 {
     use HasFactory;
