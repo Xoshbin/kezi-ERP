@@ -66,6 +66,27 @@ return [
     'created_at' => 'کاتی دروستبوون',
     'updated_at' => 'کاتی نوێکردنەوە',
     'deleted_at' => 'کاتی سڕینەوە',
+    // Variants and Attributes
+    'is_template' => 'نموونەیە؟',
+    'is_template_help' => 'ئەمە چالاک بکە بۆ دروستکردنی جۆرەکانی کاڵا لە تایبەتمەندییەکانەوە.',
+    'is_variant' => 'جۆرە؟',
+    'variant_attributes' => 'تایبەتمەندییەکانی جۆر',
+    'variant_attributes_description' => 'دیاریکردنی تایبەتمەندییەکان بۆ ئەم نموونەیە (وەک ڕەنگ، قەبارە)',
+    'attributes' => 'تایبەتمەندییەکان',
+    'attribute' => 'تایبەتمەندی',
+    'values' => 'نرخەکان',
+    'price' => 'نرخ',
+    'on_hand' => 'بەردەست',
+    'actions' => [
+        'generate_variants' => 'دروستکردنی جۆرەکان',
+        'generate_variants_success' => 'جۆرەکانی کاڵا بەسەرکەوتوویی دروستکران.',
+    ],
+    'attribute_types' => [
+        'select' => 'دیاریکردن',
+        'color' => 'ڕەنگ',
+        'radio' => 'ڕادیۆۆ',
+    ],
+    'color_code' => 'کۆدی ڕەنگ',
     'navigation' => [
         'name' => 'بەرهەمەکان',
     ],
