@@ -2,18 +2,23 @@
 
 namespace Modules\Sales\Tests\Feature\Actions;
 
-use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
+use Illuminate\Support\Facades\Event;
 use Modules\Foundation\Models\Currency;
 use Modules\Foundation\Models\Partner;
 use Modules\Sales\Actions\Sales\ConvertQuoteToInvoiceAction;
 use Modules\Sales\Enums\Sales\QuoteStatus;
+use Modules\Sales\Events\QuoteConverted;
+use Modules\Sales\Exceptions\QuoteCannotBeModifiedException;
 use Modules\Sales\Models\Quote;
 use Modules\Sales\Models\QuoteLine;
+use Tests\Traits\WithConfiguredCompany;
+
+uses(\Illuminate\Foundation\Testing\RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
-    $this->company = Company::factory()->create();
+    $this->setupWithConfiguredCompany();
     $this->user = User::factory()->create();
     $this->user->companies()->attach($this->company);
 
@@ -58,4 +63,49 @@ it('convert quote to invoice success', function () {
 
     expect($invoice->invoiceLines)->toHaveCount(1);
     expect($invoice->invoiceLines->first()->unit_price->getAmount()->toInt())->toBe(100);
+});
+
+it('throws exception if quote is not accepted', function () {
+    $quote = Quote::factory()->create([
+        'company_id' => $this->company->id,
+        'status' => QuoteStatus::Draft, // Not Accepted
+    ]);
+
+    $action = app(ConvertQuoteToInvoiceAction::class);
+
+    expect(fn () => $action->execute($quote))
+        ->toThrow(QuoteCannotBeModifiedException::class);
+});
+
+it('dispatches QuoteConverted event and sets timestamp', function () {
+    Event::fake();
+
+    $quote = Quote::factory()->create([
+        'company_id' => $this->company->id,
+        'partner_id' => $this->customer->id,
+        'currency_id' => $this->currency->id,
+        'status' => QuoteStatus::Accepted,
+    ]);
+
+    $incomeAccount = \Modules\Accounting\Models\Account::factory()->create(['company_id' => $this->company->id]);
+
+    QuoteLine::factory()->create([
+        'quote_id' => $quote->id,
+        'product_id' => \Modules\Product\Models\Product::factory()->create(['company_id' => $this->company->id])->id,
+        'quantity' => 1,
+        'unit_price' => Money::of(100, 'USD'),
+        'income_account_id' => $incomeAccount->id,
+    ]);
+
+    $action = app(ConvertQuoteToInvoiceAction::class);
+    $invoice = $action->execute($quote);
+
+    Event::assertDispatched(QuoteConverted::class, function ($event) use ($quote, $invoice) {
+        return $event->quote->id === $quote->id
+            && $event->convertedTo === 'invoice'
+            && $event->targetDocument->id === $invoice->id;
+    });
+
+    $quote->refresh();
+    expect($quote->converted_at)->not->toBeNull();
 });

@@ -55,3 +55,65 @@ it('can create a quote line', function () {
     // Total depends on tax
     expect($line->subtotal->getAmount()->toFloat())->toBe(180.0);
 });
+
+it('calculates subtotal without discount', function () {
+    $quote = Quote::factory()->create([
+        'company_id' => $this->company->id,
+        'currency_id' => $this->company->currency_id,
+    ]);
+
+    $product = Product::factory()->create(['company_id' => $this->company->id]);
+    $account = Account::factory()->create(['company_id' => $this->company->id]);
+
+    $dto = new CreateQuoteLineDTO(
+        description: 'Test Product',
+        quantity: 5.0,
+        unitPrice: Money::of(200, $this->company->currency->code),
+        productId: $product->id,
+        taxId: null,
+        incomeAccountId: $account->id,
+        unit: 'pcs',
+        discountPercentage: 0.0,
+    );
+
+    $line = $this->action->execute($quote, $dto);
+
+    // 5 * 200 = 1000
+    expect($line->subtotal->getAmount()->toFloat())->toBe(1000.0);
+    expect((float) $line->discount_amount->getAmount()->toFloat())->toBe(0.0);
+});
+
+it('calculates tax correctly', function () {
+    $quote = Quote::factory()->create([
+        'company_id' => $this->company->id,
+        'currency_id' => $this->company->currency_id,
+    ]);
+
+    $product = Product::factory()->create(['company_id' => $this->company->id]);
+    $tax = Tax::factory()->create([
+        'company_id' => $this->company->id,
+        'rate' => 10.0, // 10%
+        'type' => \Modules\Accounting\Enums\Accounting\TaxType::Sales,
+    ]);
+    $account = Account::factory()->create(['company_id' => $this->company->id]);
+
+    $dto = new CreateQuoteLineDTO(
+        description: 'Test Product',
+        quantity: 1.0,
+        unitPrice: Money::of(100, $this->company->currency->code),
+        productId: $product->id,
+        taxId: $tax->id,
+        incomeAccountId: $account->id,
+        unit: 'pcs',
+        discountPercentage: 0.0,
+    );
+
+    $line = $this->action->execute($quote, $dto);
+
+    // Subtotal: 100
+    // Tax: 100 * 0.10 = 10
+    // Total: 110
+    expect($line->subtotal->getAmount()->toFloat())->toBe(100.0);
+    expect($line->tax_amount->getAmount()->toFloat())->toBe(10.0);
+    expect($line->total->getAmount()->toFloat())->toBe(110.0);
+});
