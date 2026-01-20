@@ -70,3 +70,44 @@ test('it can create a quote with lines', function () {
     expect($line->product_id)->toBe($this->product->id)
         ->and($line->unit_price->getAmount()->toFloat())->toBe(100.0);
 });
+
+test('it creates a quote without lines', function () {
+    $quoteDto = new CreateQuoteDTO(
+        companyId: $this->company->id,
+        partnerId: $this->partner->id,
+        currencyId: $this->currency->id,
+        createdByUserId: $this->user->id,
+        quoteDate: now(),
+        validUntil: now()->addDays(30),
+        exchangeRate: 1.0,
+        lines: [],
+    );
+
+    $action = app(CreateQuoteAction::class);
+    $quote = $action->execute($quoteDto);
+
+    expect($quote)->toBeInstanceOf(Quote::class)
+        ->and($quote->lines)->toBeEmpty()
+        ->and($quote->total->getAmount()->toFloat())->toBe(0.0);
+});
+
+test('it generates unique quote numbers', function () {
+    $quoteDto1 = new CreateQuoteDTO(
+        companyId: $this->company->id,
+        partnerId: $this->partner->id,
+        currencyId: $this->currency->id,
+        createdByUserId: $this->user->id,
+        quoteDate: now(),
+        validUntil: now()->addDays(30),
+        exchangeRate: 1.0,
+        lines: [],
+    );
+
+    $action = app(CreateQuoteAction::class);
+    $quote1 = $action->execute($quoteDto1);
+    $quote2 = $action->execute($quoteDto1);
+
+    expect($quote1->quote_number)->not->toBeEmpty();
+    expect($quote2->quote_number)->not->toBeEmpty();
+    expect($quote1->quote_number)->not->toBe($quote2->quote_number);
+});
