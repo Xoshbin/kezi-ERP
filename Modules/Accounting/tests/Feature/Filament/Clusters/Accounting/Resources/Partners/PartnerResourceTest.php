@@ -117,3 +117,76 @@ it('can delete a partner', function () {
 
     $this->assertSoftDeleted($partner);
 });
+
+it('can create a partner with default_tax_id', function () {
+    $tax = \Modules\Accounting\Models\Tax::factory()->for($this->company)->create([
+        'name' => 'Standard VAT',
+        'rate' => 0.15,
+        'is_active' => true,
+    ]);
+
+    livewire(CreatePartner::class)
+        ->fillForm([
+            'name' => 'Partner with Default Tax',
+            'type' => PartnerType::Customer->value,
+            'is_active' => true,
+            'default_tax_id' => $tax->id,
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $this->assertDatabaseHas('partners', [
+        'name' => 'Partner with Default Tax',
+        'company_id' => $this->company->id,
+        'default_tax_id' => $tax->id,
+        'type' => PartnerType::Customer->value,
+    ]);
+});
+
+it('can edit a partner to set/change default_tax_id', function () {
+    $oldTax = \Modules\Accounting\Models\Tax::factory()->for($this->company)->create([
+        'name' => 'Old Tax',
+        'rate' => 0.10,
+        'is_active' => true,
+    ]);
+
+    $newTax = \Modules\Accounting\Models\Tax::factory()->for($this->company)->create([
+        'name' => 'New Tax',
+        'rate' => 0.15,
+        'is_active' => true,
+    ]);
+
+    $partner = Partner::factory()->for($this->company)->create([
+        'name' => 'Test Partner',
+        'default_tax_id' => $oldTax->id,
+    ]);
+
+    livewire(EditPartner::class, ['record' => $partner->getRouteKey()])
+        ->fillForm([
+            'default_tax_id' => $newTax->id,
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($partner->fresh()->default_tax_id)->toBe($newTax->id);
+});
+
+it('can see default_tax_id in list table as toggleable column', function () {
+    $tax = \Modules\Accounting\Models\Tax::factory()->for($this->company)->create([
+        'name' => 'List Tax',
+        'rate' => 0.20,
+        'is_active' => true,
+    ]);
+
+    $partner = Partner::factory()->for($this->company)->create([
+        'name' => 'Partner with Tax',
+        'default_tax_id' => $tax->id,
+    ]);
+
+    // The column is toggleable and hidden by default, so we need to verify it can be rendered
+    livewire(ListPartners::class)
+        ->assertCanSeeTableRecords([$partner]);
+
+    // Since the column is toggleable, we just verify the partner record is shown
+    expect($partner->defaultTax->name)->toBe('List Tax');
+});

@@ -35,6 +35,7 @@ class PartnerFactory extends Factory
             'zip_code' => $this->faker->postcode,
             'country' => $this->faker->country,
             'tax_id' => $this->faker->optional()->bothify('??########'),
+            'default_tax_id' => null, // Can be overridden in tests
             'is_active' => $this->faker->boolean,
         ];
     }
