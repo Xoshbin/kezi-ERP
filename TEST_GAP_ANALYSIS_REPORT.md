@@ -15,11 +15,7 @@
 
 ---
 
-### 1.2 Sales Module
-
-| Gap | Priority | Description |
-|-----|----------|-------------|
-| **Sales Actions Coverage** | LOW | 13/21 actions tested |
+<!-- No active gaps identified -->
 
 ---
 
@@ -121,4 +117,5 @@
 | **Quality Check to Inventory Integration** | 2026-01-20 | Added `QualityInventoryIntegrationTest` and `QualityCheckObserver` to verify automatic lot deactivation on check failure. |
 | **Product to Inventory Integration** | 2026-01-20 | Added `ProductInventoryIntegrationTest` to verify that storable product quantities are correctly tracked via stock ajustes and that service products are excluded. |
 | **StockMove Resource Filament Tests** | 2026-01-20 | Added `StockMoveResourceFilamentTest` with 19 tests covering table listing, filters, view page, and UI actions. |
+| **Sales Actions Coverage** | 2026-01-20 | Expanded tests for `CreateDeliveryFromSalesOrderAction`, `ConvertQuoteToInvoiceAction`, `CreateQuoteAction`, and `CreateQuoteLineAction` covering complex scenarios. |
 
