@@ -3,7 +3,6 @@
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\Partners;
 
 use BackedEnum;
-use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -98,35 +97,10 @@ class PartnerResource extends Resource
                                             ->mapWithKeys(fn (\Modules\Foundation\Enums\Partners\PartnerType $type) => [$type->value => $type->label()])
                                     )
                                     ->prefixIcon('heroicon-m-tag'),
-                                TranslatableSelect::forModel('tax_id', Tax::class, 'name')
-                                    ->label(__('accounting::tax.label'))
-                                    ->searchable()
-                                    ->preload()
-                                    ->createOptionForm([
-                                        Select::make('company_id')
-                                            ->relationship('company', 'name')
-                                            ->label(__('accounting::tax.company'))
-                                            ->required(),
-                                        Select::make('tax_account_id')
-                                            ->relationship('taxAccount', 'name')
-                                            ->label(__('accounting::tax.tax_account'))
-                                            ->required(),
-                                        TextInput::make('name')
-                                            ->label(__('accounting::tax.name'))
-                                            ->required()
-                                            ->maxLength(255),
-                                        TextInput::make('rate')
-                                            ->label(__('accounting::tax.rate'))
-                                            ->required()
-                                            ->numeric()
-                                            ->suffix('%'),
-                                    ])
-                                    ->createOptionModalHeading(__('accounting::common.modal_title_create_tax'))
-                                    ->createOptionAction(function (Action $action) {
-                                        return $action
-                                            ->modalWidth('lg');
-                                    })
-                                    ->prefixIcon('heroicon-m-document-text'),
+                                TextInput::make('tax_id')
+                                    ->label(__('accounting::partner.tax_id')) // Ensure this key exists or use 'Tax ID'
+                                    ->maxLength(255)
+                                    ->prefixIcon('heroicon-m-identification'),
                                 Toggle::make('is_active')
                                     ->label(__('accounting::partner.is_active'))
                                     ->default(true)
@@ -535,6 +509,7 @@ class PartnerResource extends Resource
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                \Filament\Actions\DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
