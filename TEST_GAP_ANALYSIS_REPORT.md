@@ -24,10 +24,7 @@
 ---
 
 ### 1.3 Inventory Module
-
-| Gap | Priority | Description |
-|-----|----------|-------------|
-| **StockMove Resource Filament Tests** | LOW | Only `ManualStockMoveFilamentTest` exists |
+<!-- No active gaps identified -->
 
 ---
 
@@ -123,4 +120,5 @@
 | **Sequence Service Gaps** | 2026-01-20 | Added `SequenceConcurrencyTest` to verify atomic sequence generation under load. |
 | **Quality Check to Inventory Integration** | 2026-01-20 | Added `QualityInventoryIntegrationTest` and `QualityCheckObserver` to verify automatic lot deactivation on check failure. |
 | **Product to Inventory Integration** | 2026-01-20 | Added `ProductInventoryIntegrationTest` to verify that storable product quantities are correctly tracked via stock ajustes and that service products are excluded. |
+| **StockMove Resource Filament Tests** | 2026-01-20 | Added `StockMoveResourceFilamentTest` with 19 tests covering table listing, filters, view page, and UI actions. |
 
