@@ -75,7 +75,7 @@
 
 | Gap | Priority | Description |
 |-----|----------|-------------|
-| **Concurrent modification tests** | LOW | Race condition scenarios |
+| **Concurrent modification tests** | LOW | Race condition scenarios (Stock Movement verified 2026-01-20) |
 | **Large dataset performance tests** | LOW | Performance regression tests |
 | **Invalid data handling tests** | LOW | Edge case input validation |
 | **Transaction rollback verification** | LOW | Verify DB rollback on failure |
@@ -115,5 +115,6 @@
 | **BOM Costing Edge Cases** | 2026-01-20 | Implemented recursive cost calculation in `BOMService` with multi-level support, product average cost fallback, and circular dependency detection. |
 | **Document Attachment Tests (Module-level)** | 2026-01-20 | Refactored Filament feature tests to Pest. Fixed critical attachment saving logic in Edit/Create pages and resolved model/helper discrepancies. All tests passing. |
 | **Payroll Integration & Calculation Fixes** | 2026-01-20 | Fixed `PayrollObserver` to recalculate totals on save (not just create). Implemented `PayrollIntegrationTest` covering the full workflow from draft to payment, including payment status and vendor partner creation. |
+| **Stock Movement Concurrency** | 2026-01-20 | Added `StockMoveConcurrencyTest` to verify that simultaneous stock creation and confirmation are handled correctly without race conditions, using `lockForUpdate`. |
 
 | **Complex Payroll Scenarios** | 2026-01-20 | Added unit tests for `PayrollService.php` covering salary proration (mid-month transitions), overtime (explicit and derived rates), automatic deductions (Tax, SS, etc.), and accounting line balance. |
