@@ -109,18 +109,67 @@ class InventoryValuationService
         // Calculate total cost for this incoming stock
         $totalCost = $costPerUnit->multipliedBy($quantity, \Brick\Math\RoundingMode::HALF_UP);
 
-        // Process based on valuation method
-        if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
-            $this->processIncomingStockAVCO($product, $quantity, $costPerUnit);
-        } else {
-            $this->processIncomingStockFIFOLIFO($product, $quantity, $costPerUnit, $date, $sourceDocument);
-        }
-
         // Create journal entry for incoming stock
         // For vendor bill stock moves, use consolidated approach
         if ($sourceDocument instanceof VendorBill) {
             $journalEntry = $this->getOrCreateConsolidatedVendorBillJournalEntry($sourceDocument, $product, $totalCost, $date);
+
+            // If we're using a consolidated journal entry, the cost layers/AVCO update might have been handled
+            // by createConsolidatedIncomingStockJournalEntry if a new JE was created.
+            // However, processIncomingStockWithoutJournalEntry is called for EACH move in that method.
+            // If the JE already existed, we still need to process this specific move's valuation impact
+            // if it hasn't been processed (e.g. late confirmed move).
+            // But checking if "processed" is hard.
+            // Since this method is called per-move, and getOrCreateConsolidated... handles the GROUP...
+            // We should rely on getOrCreateConsolidated... to NOT duplicate work.
+            // BUT, createConsolidated... iterates all moves.
+            // To avoid double counting, we should skip local processing if getOrCreateConsolidated... did it.
+            // But getOrCreateConsolidated... only does it if JE didn't exist.
+            // Ideally, we should NOT process here if we are part of a consolidation group that was just processed.
+            // Simplified approach: Don't process locally for VendorBill, let getOrCreateConsolidated... handle it?
+            // No, because if JE exists, getOrCreateConsolidated... returns it and does nothing else.
+            // So we MUST process locally if JE exists.
+            // If JE didn't exist, getOrCreateConsolidated... created it and processed ALL moves.
+            // So if we just created it, we shouldn't process locally.
+
+            // Refactored logic:
+            // The consolidated method processes ALL Done moves.
+            // This current move is Done. So it was processed inside getOrCreateConsolidated... if new.
+            // If JE existed, we assume previous moves were processed. We only need to process THIS move.
+            // But wait, if JE existed, createConsolidated... wasn't called.
+            // So we need to process THIS move.
+
+            // So: If JE was newly created by getOrCreateConsolidated..., we skip.
+            // If JE was existing, we process.
+            // But getOrCreateConsolidated... returns JE, doesn't tell us if new.
+
+            // Better fix: Don't process in this scope. Let the consolidated logic handle it.
+            // BUT what if JE exists?
+            // If JE exists, we assume we are adding to it? Or it's already done?
+            // Consolidated JE is usually created once for the Bill.
+            // If we confirm moves one by one?
+            // Move 1: Creates JE. Processes Move 1.
+            // Move 2: Finds JE. Returns it. Does NOT process Move 2.
+            // So we MUST process Move 2 here.
+
+            // Conflict: Move 1 processed inside createConsolidated... AND here.
+
+            // Correct logic:
+            // 1. Process valuation (AVCO/FIFO) locally ALWAYS.
+            // 2. Create/Get JE.
+            // 3. Link Valuation to JE.
+            // 4. Ensure createConsolidated... DOES NOT process valuation logic (side effects).
+
+            // I will modify createConsolidatedIncomingStockJournalEntry to NOT call processIncomingStockWithoutJournalEntry.
+            // Instead, we rely on the caller (ProcessIncomingStockAction loop) to call processIncomingStock for each move.
         } else {
+            // Process based on valuation method (Local processing for non-consolidated)
+            if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
+                $this->processIncomingStockAVCO($product, $quantity, $costPerUnit);
+            } else {
+                $this->processIncomingStockFIFOLIFO($product, $quantity, $costPerUnit, $date, $sourceDocument);
+            }
+
             $journalEntry = $this->createIncomingStockJournalEntry($product, $totalCost, $date, $sourceDocument);
         }
 

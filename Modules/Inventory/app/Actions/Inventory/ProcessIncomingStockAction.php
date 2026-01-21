@@ -42,8 +42,9 @@ class ProcessIncomingStockAction
         }
 
         $sourceDocument = $stockMove->source;
+        // For manual stock moves without a source document, use the stock move itself as the source
         if (! $sourceDocument) {
-            throw new Exception('Stock move must have a source document');
+            $sourceDocument = $stockMove;
         }
 
         // Ensure cost is in company base currency
@@ -89,21 +90,14 @@ class ProcessIncomingStockAction
      */
     private function extractCostFromSource(StockMove $stockMove, StockMoveProductLine $productLine): Money
     {
-        $sourceDocument = $stockMove->source;
+        // Use enhanced valuation logic which supports various sources and fallbacks (e.g. manual moves)
+        $costResult = $this->inventoryValuationService->calculateIncomingCostPerUnitEnhanced(
+            $productLine->product,
+            $stockMove,
+            true // Allow fallbacks for manual moves
+        );
 
-        if ($sourceDocument instanceof VendorBill) {
-            return $this->extractCostFromVendorBill($productLine, $sourceDocument);
-        }
-
-        if ($sourceDocument instanceof \Modules\Purchase\Models\PurchaseOrderLine) {
-            return $this->extractCostFromPurchaseOrderLine($productLine, $sourceDocument);
-        }
-
-        if (! $sourceDocument) {
-            throw new Exception('Source document is null');
-        }
-
-        throw new Exception('Unable to extract cost from source document type: '.get_class($sourceDocument));
+        return $costResult->cost;
     }
 
     /**

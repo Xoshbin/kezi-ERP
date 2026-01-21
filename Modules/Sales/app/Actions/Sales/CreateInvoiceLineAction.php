@@ -13,6 +13,11 @@ class CreateInvoiceLineAction
 {
     public function execute(Invoice $invoice, CreateInvoiceLineDTO $dto): InvoiceLine
     {
+        $product = \Modules\Product\Models\Product::find($dto->product_id);
+        if ($product && $product->is_template) {
+            throw new \InvalidArgumentException('Cannot create invoice lines for template products');
+        }
+
         $currency = $invoice->currency;
         $unitPrice = $dto->unit_price; // Already a Money object
 

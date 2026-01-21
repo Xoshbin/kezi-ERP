@@ -368,15 +368,6 @@ it('template product cannot be used in invoice line', function () {
         income_account_id: $this->incomeAccount->id
     );
 
-    // This should work for now (no validation exists yet)
-    // But we document the expected behavior for future implementation
-    $line = $this->createInvoiceLineAction->execute($invoice, $lineDto);
-
-    // Currently this will pass, but in Phase 2 we should add validation
-    // to prevent selling template products directly
-    expect($line->product_id)->toBe($this->template->id);
-
-    // TODO: In Phase 2, add validation to CreateInvoiceLineAction to prevent this:
-    // expect(fn () => $this->createInvoiceLineAction->execute($invoice, $lineDto))
-    //     ->toThrow(\InvalidArgumentException::class, 'Cannot create invoice lines for template products');
-})->skip('Template product validation not yet implemented - deferred to Phase 2');
+    expect(fn () => $this->createInvoiceLineAction->execute($invoice, $lineDto))
+        ->toThrow(\InvalidArgumentException::class, 'Cannot create invoice lines for template products');
+});
