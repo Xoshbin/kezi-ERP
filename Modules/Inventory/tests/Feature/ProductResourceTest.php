@@ -48,7 +48,10 @@ class ProductResourceTest extends TestCase
                     ],
                 ],
             ])
-            ->callAction('generate_variants')
+            ->callAction('generate_variants', data: [
+                'selected_variants' => ['0', '1'],
+                'delete_existing' => false,
+            ])
             ->assertHasNoActionErrors();
 
         // 4. Assertions

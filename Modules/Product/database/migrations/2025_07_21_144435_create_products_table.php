@@ -22,8 +22,16 @@ return new class extends Migration
             $table->string('sku');
             $table->json('description')->nullable();
             $table->unsignedBigInteger('unit_price')->nullable();
+            $table->boolean('has_price_override')->default(false);
             $table->string('type'); // 'service', 'storable product'
             $table->boolean('is_active')->default(true);
+
+            // Variants and Attributes
+            $table->boolean('is_template')->default(false);
+            $table->foreignId('parent_product_id')->nullable()->constrained('products')->nullOnDelete();
+            $table->string('variant_sku_suffix')->nullable();
+            $table->json('product_attributes')->nullable();
+
             $table->timestamps();
 
             $table->string('inventory_valuation_method')->default('avco');
@@ -40,6 +48,8 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->unique(['company_id', 'sku']);
+            $table->index('parent_product_id');
+            $table->index('is_template');
         });
     }
 

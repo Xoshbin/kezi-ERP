@@ -93,4 +93,9 @@ return [
     'color_code' => 'Color Code',
     'delete_existing_variants' => 'Delete Existing Variants',
     'delete_existing_variants_help' => 'Check this to remove current variants before generating new ones. Only works if variants have no transactions.',
+    'variant_generation' => [
+        'options' => 'Options',
+        'preview' => 'Preview',
+        'select_variants' => 'Select variants to generate',
+    ],
 ];

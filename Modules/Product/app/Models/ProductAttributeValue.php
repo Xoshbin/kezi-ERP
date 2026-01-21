@@ -42,6 +42,17 @@ class ProductAttributeValue extends Model
         return $query->where('is_active', true);
     }
 
+    protected static function booted(): void
+    {
+        static::deleting(function (ProductAttributeValue $value) {
+            if (ProductVariantAttribute::where('product_attribute_value_id', $value->id)->exists()) {
+                throw new \RuntimeException(
+                    "Cannot delete attribute value '{$value->name}' because it is being used by one or more product variants."
+                );
+            }
+        });
+    }
+
     protected static function newFactory(): \Modules\Product\Database\Factories\ProductAttributeValueFactory
     {
         return \Modules\Product\Database\Factories\ProductAttributeValueFactory::new();
