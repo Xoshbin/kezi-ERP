@@ -462,15 +462,6 @@ it('template product cannot be used in vendor bill line', function () {
         analytic_account_id: null,
     );
 
-    // This should work for now (no validation exists yet)
-    // But we document the expected behavior for future implementation
-    $line = $this->createVendorBillLineAction->execute($vendorBill, $lineDto);
-
-    // Currently this will pass, but in Phase 2 we should add validation
-    // to prevent purchasing template products directly
-    expect($line->product_id)->toBe($this->template->id);
-
-    // TODO: In Phase 2, add validation to CreateVendorBillLineAction to prevent this:
-    // expect(fn () => $this->createVendorBillLineAction->execute($vendorBill, $lineDto))
-    //     ->toThrow(\InvalidArgumentException::class, 'Cannot create vendor bill lines for template products');
-})->skip('Template product validation not yet implemented - deferred to Phase 2');
+    expect(fn () => $this->createVendorBillLineAction->execute($vendorBill, $lineDto))
+        ->toThrow(\InvalidArgumentException::class, 'Cannot create vendor bill lines for template products');
+});
