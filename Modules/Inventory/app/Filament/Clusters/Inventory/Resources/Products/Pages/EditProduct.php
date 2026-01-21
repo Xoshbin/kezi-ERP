@@ -25,6 +25,12 @@ class EditProduct extends EditRecord
                 ->icon('heroicon-o-sparkles')
                 ->requiresConfirmation()
                 ->visible(fn (Product $record) => $record->is_template)
+                ->form([
+                    \Filament\Forms\Components\Toggle::make('delete_existing')
+                        ->label(__('product::product.delete_existing_variants'))
+                        ->helperText(__('product::product.delete_existing_variants_help'))
+                        ->default(false),
+                ])
                 ->action(function (Product $record, ?array $state = []) {
                     $action = app(\Modules\Product\Actions\GenerateProductVariantsAction::class);
 
@@ -42,6 +48,7 @@ class EditProduct extends EditRecord
                     $action->execute(new \Modules\Product\DataTransferObjects\GenerateProductVariantsDTO(
                         templateProductId: $record->id,
                         attributeValueMap: $attributeValueMap,
+                        deleteExisting: $state['delete_existing'] ?? false,
                     ));
 
                     \Filament\Notifications\Notification::make()

@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Translatable\HasTranslations;
 
+/**
+ * @property int $id
+ * @property int $product_attribute_id
+ * @property string $name
+ */
 class ProductAttributeValue extends Model
 {
     use HasFactory;
