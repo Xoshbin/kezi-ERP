@@ -10,6 +10,7 @@ use Modules\Inventory\Models\StockMoveProductLine;
 use Modules\Inventory\Services\Inventory\InventoryValuationService;
 use Modules\Inventory\Services\Inventory\StockQuantService;
 use Modules\Product\Models\Product;
+use Modules\Purchase\Models\PurchaseOrder;
 use Modules\Purchase\Models\VendorBill;
 use Modules\Purchase\Models\VendorBillLine;
 
@@ -24,9 +25,16 @@ class ProcessIncomingStockAction
     public function execute(StockMove $stockMove): void
     {
         DB::transaction(function () use ($stockMove) {
-            // Process each product line
+            // Process inventory valuation and consolidated journal entry
+            $this->inventoryValuationService->createConsolidatedManualStockMoveJournalEntry($stockMove);
+
+            // Process per-line side effects (Quants, PO status)
             foreach ($stockMove->productLines as $productLine) {
-                $this->processProductLine($stockMove, $productLine);
+                // Update quants for destination location
+                $this->stockQuantService->applyForIncomingProductLine($productLine);
+
+                // Update Purchase Order status if this stock move is related to a PO
+                $this->updatePurchaseOrderStatus($stockMove, $productLine);
             }
         });
     }
@@ -42,8 +50,9 @@ class ProcessIncomingStockAction
         }
 
         $sourceDocument = $stockMove->source;
+        // For manual stock moves without a source document, use the stock move itself as the source
         if (! $sourceDocument) {
-            throw new Exception('Stock move must have a source document');
+            $sourceDocument = $stockMove;
         }
 
         // Ensure cost is in company base currency
@@ -82,6 +91,35 @@ class ProcessIncomingStockAction
 
         // Update quants for destination location
         $this->stockQuantService->applyForIncomingProductLine($productLine);
+
+        // Update Purchase Order status if this stock move is related to a PO
+        $this->updatePurchaseOrderStatus($stockMove, $productLine);
+    }
+
+    /**
+     * Update Purchase Order status when stock moves are completed.
+     */
+    protected function updatePurchaseOrderStatus(StockMove $stockMove, StockMoveProductLine $productLine): void
+    {
+        if ($stockMove->source_type === PurchaseOrder::class && $stockMove->source_id) {
+            $purchaseOrder = PurchaseOrder::find($stockMove->source_id);
+            if ($purchaseOrder) {
+                // Find the corresponding PO line for this product
+                $poLine = $purchaseOrder->lines()
+                    ->where('product_id', $productLine->product_id)
+                    ->first();
+
+                if ($poLine) {
+                    // Increment the received quantity
+                    $poLine->quantity_received += $productLine->quantity;
+                    $poLine->save();
+
+                    // Update PO status based on total received quantities
+                    $purchaseOrder->updateStatusBasedOnReceipts(fromInventoryOperation: true);
+                    $purchaseOrder->save();
+                }
+            }
+        }
     }
 
     /**
@@ -89,21 +127,14 @@ class ProcessIncomingStockAction
      */
     private function extractCostFromSource(StockMove $stockMove, StockMoveProductLine $productLine): Money
     {
-        $sourceDocument = $stockMove->source;
+        // Use enhanced valuation logic which supports various sources and fallbacks (e.g. manual moves)
+        $costResult = $this->inventoryValuationService->calculateIncomingCostPerUnitEnhanced(
+            $productLine->product,
+            $stockMove,
+            true // Allow fallbacks for manual moves
+        );
 
-        if ($sourceDocument instanceof VendorBill) {
-            return $this->extractCostFromVendorBill($productLine, $sourceDocument);
-        }
-
-        if ($sourceDocument instanceof \Modules\Purchase\Models\PurchaseOrderLine) {
-            return $this->extractCostFromPurchaseOrderLine($productLine, $sourceDocument);
-        }
-
-        if (! $sourceDocument) {
-            throw new Exception('Source document is null');
-        }
-
-        throw new Exception('Unable to extract cost from source document type: '.get_class($sourceDocument));
+        return $costResult->cost;
     }
 
     /**

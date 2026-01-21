@@ -12,9 +12,6 @@ class EventServiceProvider extends ServiceProvider
      * @var array<string, array<int, string>>
      */
     protected $listen = [
-        \Modules\Inventory\Events\Inventory\StockMoveConfirmed::class => [
-            \Modules\Inventory\Listeners\Inventory\HandleStockMoveConfirmation::class,
-        ],
         \Modules\Purchase\Events\VendorBillConfirmed::class => [
             \Modules\Inventory\Listeners\Inventory\ProcessInventoryForConfirmedBill::class,
             \Modules\Inventory\Listeners\Purchase\CreateStockMovesOnVendorBillConfirmed::class,

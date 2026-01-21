@@ -13,6 +13,13 @@ class CreateVendorBillLineAction
 {
     public function execute(VendorBill $vendorBill, CreateVendorBillLineDTO $dto): VendorBillLine
     {
+        if ($dto->product_id) {
+            $product = \Modules\Product\Models\Product::find($dto->product_id);
+            if ($product && $product->is_template) {
+                throw new \InvalidArgumentException('Cannot create vendor bill lines for template products');
+            }
+        }
+
         $currency = $vendorBill->currency;
 
         // 1. Explicitly create the Money object from the DTO.

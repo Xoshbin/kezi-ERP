@@ -50,7 +50,7 @@ describe('Inventory System Verification with Sample Figures', function () {
             'default_inventory_account_id' => $this->inventoryAccount->id,
             'default_stock_input_account_id' => $this->stockInputAccount->id,
             'default_cogs_account_id' => $this->cogsAccount->id,
-            'average_cost' => Money::of(0, 'IQD'),
+            'average_cost' => Money::of(50000, 'IQD'), // Initial cost for AVCO calculation
         ]);
 
         // Test basic stock receipt
@@ -109,7 +109,7 @@ function createStockReceiptForTest($testCase, Product $product, float $quantity,
         'from_location_id' => $product->company->vendorLocation->id,  // This will be handled by the factory
         'to_location_id' => $product->company->defaultStockLocation->id, // This will be handled by the factory
         'move_type' => StockMoveType::Incoming,
-        'status' => StockMoveStatus::Done,
+        'status' => StockMoveStatus::Draft, // Start as draft to avoid premature observer processing
         'move_date' => $date,
         'reference' => 'TEST-RECEIPT-'.$date->format('Ymd'),
         'source_type' => VendorBill::class,
@@ -125,4 +125,7 @@ function createStockReceiptForTest($testCase, Product $product, float $quantity,
     foreach ($stockMove->productLines as $productLine) {
         $quantService->applyForIncomingProductLine($productLine);
     }
+
+    // Now mark as done after valuation is complete
+    $stockMove->update(['status' => StockMoveStatus::Done]);
 }
