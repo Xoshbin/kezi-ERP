@@ -20,7 +20,6 @@ use Modules\Inventory\Models\StockMove;
 use Modules\Inventory\Models\StockMoveLine;
 use Modules\Inventory\Models\StockMoveValuation;
 use Modules\Inventory\Models\StockPicking;
-use Modules\Inventory\Services\Inventory\InventoryValuationService;
 use Modules\Inventory\Services\Inventory\StockMoveService;
 use Modules\Inventory\Services\Inventory\StockQuantService;
 use Modules\Product\Models\Product;
@@ -28,7 +27,6 @@ use Modules\Product\Models\Product;
 class CreateInventoryAdjustmentAction
 {
     public function __construct(
-        private readonly InventoryValuationService $valuationService,
         private readonly StockQuantService $stockQuantService,
         private readonly StockMoveService $stockMoveService,
     ) {}
@@ -152,7 +150,7 @@ class CreateInventoryAdjustmentAction
             company_id: $dto->company_id,
             product_lines: [$productLineDto],
             move_type: StockMoveType::Adjustment,
-            status: StockMoveStatus::Done,
+            status: StockMoveStatus::Draft, // Create as draft first
             move_date: $dto->adjustment_date,
             created_by_user_id: $dto->created_by_user_id,
             reference: $dto->reference,
@@ -175,7 +173,7 @@ class CreateInventoryAdjustmentAction
             }
         }
 
-        // Update quants
+        // Manually update quants (observer skips adjustments)
         $this->stockQuantService->adjust(
             $dto->company_id,
             $line->product_id,
@@ -185,8 +183,12 @@ class CreateInventoryAdjustmentAction
             $line->lot_id
         );
 
-        // Process valuation
-        $this->processAdjustmentValuation($move, $quantity);
+        // Create custom adjustment valuation with adjustment accounts
+        $this->processPositiveAdjustmentValuation($move, $quantity);
+
+        // Now mark as done
+        $move->status = StockMoveStatus::Done;
+        $move->save();
     }
 
     /**
@@ -214,7 +216,7 @@ class CreateInventoryAdjustmentAction
             company_id: $dto->company_id,
             product_lines: [$productLineDto],
             move_type: StockMoveType::Adjustment,
-            status: StockMoveStatus::Done,
+            status: StockMoveStatus::Draft, // Create as draft first
             move_date: $dto->adjustment_date,
             created_by_user_id: $dto->created_by_user_id,
             reference: $dto->reference,
@@ -237,7 +239,7 @@ class CreateInventoryAdjustmentAction
             }
         }
 
-        // Update quants
+        // Manually update quants (observer skips adjustments)
         $this->stockQuantService->adjust(
             $dto->company_id,
             $line->product_id,
@@ -247,8 +249,12 @@ class CreateInventoryAdjustmentAction
             $line->lot_id
         );
 
-        // Process valuation
-        $this->processAdjustmentValuation($move, $quantity);
+        // Create custom adjustment valuation with adjustment accounts
+        $this->processNegativeAdjustmentValuation($move, $quantity);
+
+        // Now mark as done
+        $move->status = StockMoveStatus::Done;
+        $move->save();
     }
 
     /**
@@ -262,29 +268,6 @@ class CreateInventoryAdjustmentAction
         $stockMove->update(['picking_id' => $picking->id]);
 
         return $stockMove;
-    }
-
-    /**
-     * Process valuation for adjustment
-     */
-    private function processAdjustmentValuation(StockMove $move, float $quantity): void
-    {
-        if ($move->move_type === StockMoveType::Adjustment) {
-            // Get the first product line to determine adjustment direction
-            $productLine = $move->productLines()->first();
-            if (! $productLine) {
-                return;
-            }
-
-            // Use the adjustment as source document for valuation
-            if ($productLine->from_location_id === $move->company->adjustmentLocation->id) {
-                // Positive adjustment - create adjustment-specific journal entry
-                $this->processPositiveAdjustmentValuation($move, $quantity);
-            } else {
-                // Negative adjustment - create adjustment-specific journal entry
-                $this->processNegativeAdjustmentValuation($move, $quantity);
-            }
-        }
     }
 
     /**

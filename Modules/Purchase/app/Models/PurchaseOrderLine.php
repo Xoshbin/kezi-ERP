@@ -52,6 +52,7 @@ class PurchaseOrderLine extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
+        'company_id',
         'purchase_order_id',
         'product_id',
         'tax_id',

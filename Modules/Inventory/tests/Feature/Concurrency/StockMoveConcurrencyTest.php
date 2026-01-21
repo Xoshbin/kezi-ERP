@@ -6,6 +6,10 @@ use App\Models\Company;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Process;
+use Modules\Accounting\Enums\Accounting\AccountType;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
 use Modules\Inventory\Models\StockLocation;
 use Modules\Product\Enums\Products\ProductType;
 use Modules\Product\Models\Product;
@@ -54,11 +58,29 @@ it('handles concurrent stock moves correctly without race conditions', function 
     /** @var \App\Models\User $user */
     $user = \App\Models\User::factory()->create();
 
+    // Setup accounting defaults for company
+    $purchaseJournal = Journal::factory()->create([
+        'company_id' => $company->id,
+        'type' => JournalType::Purchase,
+    ]);
+    $company->update(['default_purchase_journal_id' => $purchaseJournal->id]);
+
+    $inventoryAccount = Account::factory()->create([
+        'company_id' => $company->id,
+        'type' => AccountType::CurrentAssets,
+    ]);
+    $stockInputAccount = Account::factory()->create([
+        'company_id' => $company->id,
+        'type' => AccountType::CurrentAssets,
+    ]);
+
     /** @var Product $product */
     $product = Product::factory()->create([
         'company_id' => $company->id,
         'name' => 'Concurrent Test Product',
         'type' => ProductType::Storable,
+        'default_inventory_account_id' => $inventoryAccount->id,
+        'default_stock_input_account_id' => $stockInputAccount->id,
     ]);
 
     /** @var StockLocation $sourceLocation */

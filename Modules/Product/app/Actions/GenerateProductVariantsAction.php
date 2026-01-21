@@ -79,6 +79,9 @@ class GenerateProductVariantsAction
         // Odoo usually keeps the same name but displays attributes separately.
         // We'll keep the name from template but add suffix to SKU.
 
+        // Explicitly copy tracking_type from template to ensure it is inherited
+        $variant->tracking_type = $template->tracking_type;
+
         $variant->save();
 
         foreach ($combination as $attributeId => $valueId) {
