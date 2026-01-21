@@ -86,9 +86,11 @@ class StockMoveObserver
 
             if ($stockMove->move_type === StockMoveType::Incoming) {
                 // For incoming moves, update stock quants for each product line
-                foreach ($stockMove->productLines as $productLine) {
-                    $stockQuantService->applyForIncomingProductLine($productLine);
-                }
+                // NOTE: Stock quant updates are handled by ProcessIncomingStockAction via StockMoveConfirmed event.
+                // Removing this redundant call prevents double counting.
+                // foreach ($stockMove->productLines as $productLine) {
+                //     $stockQuantService->applyForIncomingProductLine($productLine);
+                // }
 
                 // Update Purchase Order status if this stock move is related to a PO
                 $this->updatePurchaseOrderStatusFromStockMove($stockMove);

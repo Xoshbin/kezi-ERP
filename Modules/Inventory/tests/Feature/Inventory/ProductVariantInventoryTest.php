@@ -2,6 +2,10 @@
 
 use App\Models\Company;
 use App\Models\User;
+use Modules\Accounting\Enums\Accounting\AccountType;
+use Modules\Accounting\Enums\Accounting\JournalType;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
 use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
@@ -27,6 +31,45 @@ beforeEach(function () {
     $this->fromLocation = StockLocation::factory()->create(['company_id' => $this->company->id]);
     $this->toLocation = StockLocation::factory()->create(['company_id' => $this->company->id]);
 
+    // Create Accounts and Journals required for valuation
+    $this->inventoryAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => AccountType::CurrentAssets,
+        'name' => 'Inventory',
+        'code' => '1400',
+    ]);
+
+    $this->stockInputAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => AccountType::CurrentLiabilities,
+        'name' => 'Stock Input',
+        'code' => '2100',
+    ]);
+
+    $this->cogsAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => AccountType::Expense,
+        'name' => 'COGS',
+        'code' => '5000',
+    ]);
+
+    $this->purchaseJournal = Journal::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => JournalType::Purchase,
+        'name' => 'Vendor Bills',
+    ]);
+
+    $this->salesJournal = Journal::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => JournalType::Sale,
+        'name' => 'Customer Invoices',
+    ]);
+
+    $this->company->update([
+        'default_purchase_journal_id' => $this->purchaseJournal->id,
+        'default_sales_journal_id' => $this->salesJournal->id,
+    ]);
+
     // Create template product
     $this->template = Product::factory()->create([
         'name' => 'T-Shirt',
@@ -34,6 +77,9 @@ beforeEach(function () {
         'is_template' => true,
         'company_id' => $this->company->id,
         'type' => \Modules\Product\Enums\Products\ProductType::Storable,
+        'default_inventory_account_id' => $this->inventoryAccount->id,
+        'default_stock_input_account_id' => $this->stockInputAccount->id,
+        'default_cogs_account_id' => $this->cogsAccount->id,
     ]);
 
     // Create attributes and values
@@ -293,8 +339,101 @@ it('stock quant tracks variant separately', function () {
 });
 
 it('lot tracking works per variant', function () {
-    // Skip this test for now due to lot table schema differences
-    $this->markTestSkipped('Lot tracking test skipped - schema compatibility issue');
+    // Enable lot tracking for template
+    $this->template->update(['tracking_type' => \Modules\Inventory\Enums\Inventory\TrackingType::Lot]);
+
+    $variant = $this->variants->first();
+    // Simulate inheritance (since sync logic is deferred to Phase 2)
+    $variant->update(['tracking_type' => \Modules\Inventory\Enums\Inventory\TrackingType::Lot]);
+
+    // Verify variant inherits lot tracking
+    expect($variant->tracking_type)->toBe(\Modules\Inventory\Enums\Inventory\TrackingType::Lot);
+
+    // Create a lot for the variant
+    $lot = \Modules\Inventory\Models\Lot::create([
+        'company_id' => $this->company->id,
+        'product_id' => $variant->id,
+        'lot_code' => 'LOT-001',
+    ]);
+
+    // Create a mock Purchase Order Line as source to satisfy cost validation
+    // Create purchase journal first (required for PO)
+    $journal = \Modules\Accounting\Models\Journal::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => \Modules\Accounting\Enums\Accounting\JournalType::Purchase,
+    ]);
+
+    // Set default journal on company
+    $this->company->update(['default_purchase_journal_id' => $journal->id]);
+
+    $po = \Modules\Purchase\Models\PurchaseOrder::factory()->create([
+        'company_id' => $this->company->id,
+        'status' => \Modules\Purchase\Enums\Purchases\PurchaseOrderStatus::Confirmed,
+        'currency_id' => $this->company->currency_id,
+    ]);
+    $poLine = \Modules\Purchase\Models\PurchaseOrderLine::factory()->create([
+        'purchase_order_id' => $po->id,
+        'company_id' => $this->company->id,
+        'product_id' => $variant->id,
+        'quantity' => 100.0,
+        'unit_price' => \Brick\Money\Money::of(10, $this->company->currency->code),
+    ]);
+
+    // Create stock move with lot
+    $productLineDto = new \Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO(
+        product_id: $variant->id,
+        quantity: 100.0,
+        from_location_id: $this->fromLocation->id,
+        to_location_id: $this->toLocation->id,
+        description: 'Lot tracking test',
+        source_type: null,
+        source_id: null
+    );
+
+    // Let's create as draft first
+    $dto = new \Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO(
+        company_id: $this->company->id,
+        product_lines: [$productLineDto],
+        move_type: \Modules\Inventory\Enums\Inventory\StockMoveType::Incoming,
+        status: \Modules\Inventory\Enums\Inventory\StockMoveStatus::Draft,
+        move_date: now(),
+        reference: 'SM-LOT-001',
+        description: 'Lot tracking test move',
+        source_type: \Modules\Purchase\Models\PurchaseOrderLine::class,
+        source_id: $poLine->id,
+        created_by_user_id: $this->user->id
+    );
+
+    $stockMove = $this->stockMoveService->createMove($dto);
+
+    // Assign lot by creating a StockMoveLine linked to the StockMoveProductLine
+    $line = $stockMove->productLines->first();
+    expect($line->stockMoveLines->count())->toBe(0); // Ensure no duplicate lines
+
+    \Modules\Inventory\Models\StockMoveLine::create([
+        'company_id' => $this->company->id,
+        'stock_move_product_line_id' => $line->id,
+        'lot_id' => $lot->id,
+        'quantity' => 100.0,
+    ]);
+
+    $line->refresh();
+    expect($line->stockMoveLines->count())->toBe(1); // Ensure only 1 line
+
+    // Confirm the move
+    $confirmDto = new \Modules\Inventory\DataTransferObjects\Inventory\ConfirmStockMoveDTO(
+        stock_move_id: $stockMove->id,
+    );
+    $this->stockMoveService->confirmMove($confirmDto);
+
+    // Verify stock quant has lot
+    $stockQuant = \Modules\Inventory\Models\StockQuant::where('product_id', $variant->id)
+        ->where('location_id', $this->toLocation->id)
+        ->where('lot_id', $lot->id)
+        ->first();
+
+    expect($stockQuant)->not->toBeNull();
+    expect((float) $stockQuant->quantity)->toBe(100.0);
 });
 
 it('stock reservations work per variant', function () {

@@ -110,8 +110,8 @@ class StockMoveService
 
         // Now, if the desired status was done, update it to trigger observers and posting logic.
         if ($desiredStatus === StockMoveStatus::Done) {
-            $stockMove->status = StockMoveStatus::Done;
-            $stockMove->save(); // Triggers 'updated' observer after lines exist
+            $this->confirmMove(new ConfirmStockMoveDTO($stockMove->id));
+            $stockMove->refresh();
         }
 
         return $stockMove->load('productLines');
