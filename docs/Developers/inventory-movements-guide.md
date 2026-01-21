@@ -122,33 +122,70 @@ Layer 3: Bought 75 units @ $11 each on Mar 1    (remaining: 75)
 
 ### Incoming Stock (Purchases)
 
-**Trigger**: When you post a Vendor Bill for storable products
+**Trigger**: When a stock move is confirmed (status changes to `Done`)
 
+**Processing**: **Synchronous** (happens in same database transaction) ✅
+
+**Observer Path**: `StockMoveObserver::handleStockMoveConfirmation()`  
 **Action Path**: `ProcessIncomingStockAction.php`
 
 ```
-                      ProcessIncomingStockAction
-                              │
-    ┌─────────────────────────┴─────────────────────────┐
-    ▼                                                   ▼
-StockQuantService.adjust()                 InventoryValuationService
-(Increase quantity at                      (Update cost layers/avg cost
- destination location)                      + Create journal entries)
+                User Confirms Stock Move (Status → Done)
+                               │
+                               ▼
+                    StockMoveObserver::updated()
+                               │
+        ┌──────────────────────┴──────────────────────┐
+        │     [SAME DATABASE TRANSACTION]             │
+        │                                              │
+        ▼                                              ▼
+StockQuantService.adjust()            InventoryValuationService
+(Increase quantity at                 (Update cost layers/avg cost
+ destination location)                 + Create journal entries)
+        │                                              │
+        └──────────────────────┬──────────────────────┘
+                               ▼
+                    Transaction Commits or Rollbacks
+                    (All-or-nothing guarantee!)
 ```
+
+**Critical Architecture Note** (Updated 2026-01-21):
+- Stock move confirmation is now **synchronous** (not event-driven)
+- The `StockMoveObserver::updated()` method directly calls `ProcessIncomingStockAction::execute()`
+- All inventory valuation happens **within the same database transaction**
+- If cost validation fails, the entire stock move confirmation **rolls back**
+- Exceptions propagate immediately to the user
 
 **What happens step-by-step**:
 
-1. **Create Stock Move** → Records the movement with `move_type = Incoming`
-2. **Update StockQuant** → Increases quantity at warehouse location
-3. **Update Product Cost**:
+1. **User confirms stock move** → Status changes from Draft/Confirmed to Done
+2. **Observer detects change** → `StockMoveObserver::updated()` fires
+3. **Observer calls action synchronously** → `ProcessIncomingStockAction::execute($stockMove)`
+4. **Update StockQuant** → Increases quantity at warehouse location
+5. **Update Product Cost**:
    - **AVCO**: Recalculates weighted average cost
    - **FIFO/LIFO**: Creates a new `InventoryCostLayer`
-4. **Create Journal Entry**:
+6. **Create Journal Entry**:
    - Debit: Inventory Asset (asset increases)
    - Credit: Stock Input Liability (obligation recorded)
+7. **Transaction commits** → All changes saved atomically
 
-**Code Flow**:
+**Code Flow** (Updated Architecture):
 ```php
+// StockMoveObserver::updated()
+if ($stockMove->wasChanged('status') && $stockMove->status === StockMoveStatus::Done) {
+    // Skip vendor bills (consolidated processing) and adjustments (custom logic)
+    if ($stockMove->source_type === VendorBill::class 
+        || $stockMove->move_type === StockMoveType::Adjustment) {
+        return;
+    }
+    
+    // SYNCHRONOUS execution - in same transaction!
+    if ($stockMove->move_type === StockMoveType::Incoming) {
+        app(ProcessIncomingStockAction::class)->execute($stockMove);
+    }
+}
+
 // ProcessIncomingStockAction::execute()
 foreach ($stockMove->productLines as $productLine) {
     // 1. Extract cost from source document (VendorBill)
@@ -164,38 +201,80 @@ foreach ($stockMove->productLines as $productLine) {
 }
 ```
 
+**Exception Handling**:
+```php
+try {
+    $stockMove->update(['status' => StockMoveStatus::Done]);
+    // If cost validation fails here, entire transaction rolls back!
+} catch (InsufficientCostInformationException $e) {
+    // User sees error immediately
+    // Stock move remains in previous status
+    // No partial inventory updates
+}
+```
+
 ---
 
 ### Outgoing Stock (Sales)
 
-**Trigger**: When you post an Invoice for storable products
+**Trigger**: When a stock move is confirmed (status changes to `Done`)
 
+**Processing**: **Synchronous** (happens in same database transaction) ✅
+
+**Observer Path**: `StockMoveObserver::handleStockMoveConfirmation()`  
 **Action Path**: `ProcessOutgoingStockAction.php`
 
 ```
-                      ProcessOutgoingStockAction
-                              │
-    ┌─────────────────────────┴─────────────────────────┐
-    ▼                                                   ▼
-StockReservationService.consume()          InventoryValuationService
-(Decrease quantity at                      (Calculate COGS from layers
- source location)                           + Create journal entries)
+                User Confirms Stock Move (Status → Done)
+                               │
+                               ▼
+                    StockMoveObserver::updated()
+                               │
+        ┌──────────────────────┴──────────────────────┐
+        │     [SAME DATABASE TRANSACTION]             │
+        │                                              │
+        ▼                                              ▼
+StockReservationService.consume()    InventoryValuationService
+(Decrease quantity at                (Calculate COGS from layers
+ source location)                     + Create journal entries)
+        │                                              │
+        └──────────────────────┬──────────────────────┘
+                               ▼
+                    Transaction Commits or Rollbacks
+                    (All-or-nothing guarantee!)
 ```
 
 **What happens step-by-step**:
 
-1. **Create Stock Move** → Records the movement with `move_type = Outgoing`
-2. **Calculate COGS** → Determines the cost using:
+1. **User confirms stock move** → Status changes from Draft/Confirmed to Done
+2. **Observer detects change** → `StockMoveObserver::updated()` fires
+3. **Observer calls action synchronously** → `ProcessOutgoingStockAction::execute($stockMove)`
+4. **Calculate COGS** → Determines the cost using:
    - **AVCO**: Uses `Product.average_cost`
    - **FIFO**: Consumes oldest cost layers first
    - **LIFO**: Consumes newest cost layers first
-3. **Update StockQuant** → Decreases quantity at warehouse location
-4. **Create Journal Entry**:
+5. **Update StockQuant** → Decreases quantity at warehouse location
+6. **Create Journal Entry**:
    - Debit: COGS Expense (expense increases)
    - Credit: Inventory Asset (asset decreases)
+7. **Transaction commits** → All changes saved atomically
 
-**Code Flow**:
+**Code Flow** (Updated Architecture):
 ```php
+// StockMoveObserver::updated()
+if ($stockMove->wasChanged('status') && $stockMove->status === StockMoveStatus::Done) {
+    // Skip vendor bills and adjustments
+    if ($stockMove->source_type === VendorBill::class 
+        || $stockMove->move_type === StockMoveType::Adjustment) {
+        return;
+    }
+    
+    // SYNCHRONOUS execution - in same transaction!
+    if ($stockMove->move_type === StockMoveType::Outgoing) {
+        app(ProcessOutgoingStockAction::class)->execute($stockMove);
+    }
+}
+
 // ProcessOutgoingStockAction::execute()
 foreach ($stockMove->productLines as $productLine) {
     // 1. Calculate COGS and update cost layers
@@ -415,6 +494,14 @@ COGS = (50 × $10) + (30 × $12) = $500 + $360 = $860
 - `ProcessOutgoingStockAction.php` - Handles outgoing stock processing
 - `ConfirmStockMoveAction.php` - Confirms and processes stock moves
 - `CreateStockMoveAction.php` - Creates new stock movements
+
+### Observers ⚡ (Critical Architecture)
+- `StockMoveObserver.php` - **Handles synchronous inventory valuation** (Updated 2026-01-21)
+  - Detects status changes to `Done`
+  - Calls `ProcessIncomingStockAction` or `ProcessOutgoingStockAction` **synchronously**
+  - Ensures atomic transactions for inventory + accounting
+  - Skips VendorBill-sourced moves (consolidated processing)
+  - Skips Adjustment moves (custom accounting logic)
 
 ### Enums
 - `StockMoveType.php` - Movement types (Incoming, Outgoing, etc.)
