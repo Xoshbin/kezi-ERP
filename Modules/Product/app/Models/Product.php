@@ -47,13 +47,14 @@ use Spatie\Translatable\HasTranslations;
  * @property \Modules\Inventory\Enums\Inventory\ValuationMethod $inventory_valuation_method
  * @property \Brick\Money\Money|null $average_cost
  * @property bool $is_template
+ * @property bool $has_price_override
  * @property int|null $parent_product_id
  * @property string|null $variant_sku_suffix
  * @property \Modules\Inventory\Enums\Inventory\TrackingType $tracking_type
  * @property float $weight
  * @property float $volume
- * @property array|null $product_attributes
- * @property array|null $productAttributes
+ * @property array<int, mixed>|null $product_attributes
+ * @property array<int, mixed>|null $productAttributes
  * @property-read Company $company
  * @property-read Account|null $expenseAccount
  * @property-read Account|null $incomeAccount
@@ -125,6 +126,8 @@ class Product extends Model
         'is_template',
         'parent_product_id',
         'variant_sku_suffix',
+        'has_price_override',
+        'product_attributes',
     ];
 
     protected $casts = [
@@ -140,6 +143,8 @@ class Product extends Model
         'weight' => 'float',
         'volume' => 'float',
         'is_template' => 'boolean',
+        'has_price_override' => 'boolean',
+        'product_attributes' => 'array',
     ];
 
     protected static function booted(): void

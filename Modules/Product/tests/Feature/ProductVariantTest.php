@@ -282,4 +282,70 @@ class ProductVariantTest extends TestCase
 
         $action->execute($dto);
     }
+
+    public function test_template_price_syncs_to_variants_without_override()
+    {
+        $template = Product::factory()->create([
+            'is_template' => true,
+            'unit_price' => 100,
+        ]);
+
+        $variant = Product::factory()->create([
+            'parent_product_id' => $template->id,
+            'unit_price' => 100,
+            'has_price_override' => false,
+            'company_id' => $template->company_id,
+        ]);
+
+        $template->unit_price = 150;
+        $template->save();
+
+        $this->assertEquals(150, $variant->fresh()->unit_price->getAmount()->toInt());
+    }
+
+    public function test_template_price_does_not_sync_to_variants_with_override()
+    {
+        $template = Product::factory()->create([
+            'is_template' => true,
+            'unit_price' => 100,
+        ]);
+
+        $variant = Product::factory()->create([
+            'parent_product_id' => $template->id,
+            'unit_price' => 200,
+            'has_price_override' => true,
+            'company_id' => $template->company_id,
+        ]);
+
+        $template->unit_price = 150;
+        $template->save();
+
+        $this->assertEquals(200, $variant->fresh()->unit_price->getAmount()->toInt());
+    }
+
+    public function test_template_name_syncs_to_all_variants()
+    {
+        $template = Product::factory()->create([
+            'is_template' => true,
+            'name' => 'Old Template Name',
+        ]);
+
+        $variant1 = Product::factory()->create([
+            'parent_product_id' => $template->id,
+            'has_price_override' => false,
+            'company_id' => $template->company_id,
+        ]);
+
+        $variant2 = Product::factory()->create([
+            'parent_product_id' => $template->id,
+            'has_price_override' => true,
+            'company_id' => $template->company_id,
+        ]);
+
+        $template->name = 'New Template Name';
+        $template->save();
+
+        $this->assertEquals('New Template Name', $variant1->fresh()->name);
+        $this->assertEquals('New Template Name', $variant2->fresh()->name);
+    }
 }
