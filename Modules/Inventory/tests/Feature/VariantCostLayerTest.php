@@ -3,16 +3,22 @@
 use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
+use Modules\Accounting\Enums\Accounting\AccountType;
+use Modules\Accounting\Enums\Accounting\JournalType;
 use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
 use Modules\Foundation\Models\Partner;
+use Modules\Inventory\Enums\Inventory\StockLocationType;
 use Modules\Inventory\Models\InventoryCostLayer;
+use Modules\Inventory\Models\StockLocation;
 use Modules\Product\Actions\GenerateProductVariantsAction;
+use Spatie\Permission\Models\Permission;
 use Modules\Product\DataTransferObjects\GenerateProductVariantsDTO;
 use Modules\Product\Models\Product;
 use Modules\Product\Models\ProductAttribute;
 use Modules\Product\Models\ProductAttributeValue;
 use Modules\Purchase\Actions\Purchases\CreateVendorBillLineAction;
-use Modules\Purchase\DataTransferObjects\CreateVendorBillLineDTO;
+use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 use Modules\Purchase\Enums\Purchases\VendorBillStatus;
 use Modules\Purchase\Models\VendorBill;
 use Modules\Purchase\Services\VendorBillService;
@@ -32,7 +38,7 @@ beforeEach(function () {
     // Create expense account
     $this->expenseAccount = Account::factory()->create([
         'company_id' => $this->company->id,
-        'type' => 'expense',
+        'type' => AccountType::Expense,
         'code' => '5000',
         'name' => 'COGS',
     ]);
@@ -40,9 +46,48 @@ beforeEach(function () {
     // Create inventory account
     $this->inventoryAccount = Account::factory()->create([
         'company_id' => $this->company->id,
-        'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets,
+        'type' => AccountType::CurrentAssets,
         'code' => '1400',
         'name' => 'Inventory',
+    ]);
+
+    // Create AP account (required for vendor bill posting)
+    $this->apAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => AccountType::Payable,
+        'code' => '2100',
+        'name' => 'Accounts Payable',
+    ]);
+
+    // Create Purchase Journal
+    $this->purchaseJournal = Journal::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => JournalType::Purchase,
+        'name' => 'Vendor Bills',
+        'short_code' => 'BILL',
+        'default_debit_account_id' => $this->expenseAccount->id,
+        'default_credit_account_id' => $this->apAccount->id,
+    ]);
+
+    // Create Stock Locations
+    $this->vendorLocation = StockLocation::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => StockLocationType::Vendor,
+        'name' => 'Vendor Location',
+    ]);
+
+    $this->stockLocation = StockLocation::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => StockLocationType::Internal,
+        'name' => 'Stock Location',
+    ]);
+
+    // Update Company defaults
+    $this->company->update([
+        'default_vendor_location_id' => $this->vendorLocation->id,
+        'default_stock_location_id' => $this->stockLocation->id,
+        'default_accounts_payable_id' => $this->apAccount->id,
+        'default_purchase_journal_id' => $this->purchaseJournal->id,
     ]);
 
     // Create template product with FIFO valuation
@@ -100,6 +145,11 @@ beforeEach(function () {
 
     $action = app(GenerateProductVariantsAction::class);
     $this->variants = $action->execute($dto);
+
+    // Grant permission to post vendor bills
+    setPermissionsTeamId($this->company->id);
+    Permission::create(['name' => 'confirm_vendor_bill']);
+    $this->user->givePermissionTo('confirm_vendor_bill');
 });
 
 it('variant has independent cost layers from other variants', function () {
@@ -109,7 +159,7 @@ it('variant has independent cost layers from other variants', function () {
     // Purchase variant 1 at different prices
     $vendorBill1 = VendorBill::factory()->create([
         'company_id' => $this->company->id,
-        'partner_id' => $this->vendor->id,
+        'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'currency_id' => $this->company->currency->id,
     ]);
@@ -120,7 +170,8 @@ it('variant has independent cost layers from other variants', function () {
         quantity: 100,
         unit_price: Money::of(10, $this->company->currency->code),
         tax_id: null,
-        expense_account_id: $this->expenseAccount->id
+        expense_account_id: $this->expenseAccount->id,
+        analytic_account_id: null,
     );
 
     $this->createVendorBillLineAction->execute($vendorBill1, $line1Dto);
@@ -129,7 +180,7 @@ it('variant has independent cost layers from other variants', function () {
     // Purchase variant 2 at different price
     $vendorBill2 = VendorBill::factory()->create([
         'company_id' => $this->company->id,
-        'partner_id' => $this->vendor->id,
+        'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'currency_id' => $this->company->currency->id,
     ]);
@@ -140,7 +191,8 @@ it('variant has independent cost layers from other variants', function () {
         quantity: 50,
         unit_price: Money::of(25, $this->company->currency->code),
         tax_id: null,
-        expense_account_id: $this->expenseAccount->id
+        expense_account_id: $this->expenseAccount->id,
+        analytic_account_id: null,
     );
 
     $this->createVendorBillLineAction->execute($vendorBill2, $line2Dto);
@@ -159,8 +211,8 @@ it('variant has independent cost layers from other variants', function () {
     expect($costLayers2->first()->product_id)->toBe($variantLargeMetal->id);
 
     // Verify different costs
-    expect($costLayers1->first()->unit_cost->getAmount()->toFloat())->toBe(10.0);
-    expect($costLayers2->first()->unit_cost->getAmount()->toFloat())->toBe(25.0);
+    expect($costLayers1->first()->cost_per_unit->getAmount()->toFloat())->toBe(10.0);
+    expect($costLayers2->first()->cost_per_unit->getAmount()->toFloat())->toBe(25.0);
 });
 
 it('fifo calculation per variant works correctly', function () {
@@ -172,7 +224,7 @@ it('fifo calculation per variant works correctly', function () {
     // Purchase 1: 50 units at $10 each
     $vendorBill1 = VendorBill::factory()->create([
         'company_id' => $this->company->id,
-        'partner_id' => $this->vendor->id,
+        'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'currency_id' => $this->company->currency->id,
     ]);
@@ -183,7 +235,8 @@ it('fifo calculation per variant works correctly', function () {
         quantity: 50,
         unit_price: Money::of(10, $this->company->currency->code),
         tax_id: null,
-        expense_account_id: $this->expenseAccount->id
+        expense_account_id: $this->expenseAccount->id,
+        analytic_account_id: null,
     );
 
     $this->createVendorBillLineAction->execute($vendorBill1, $line1Dto);
@@ -192,7 +245,7 @@ it('fifo calculation per variant works correctly', function () {
     // Purchase 2: 30 units at $12 each
     $vendorBill2 = VendorBill::factory()->create([
         'company_id' => $this->company->id,
-        'partner_id' => $this->vendor->id,
+        'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'currency_id' => $this->company->currency->id,
     ]);
@@ -203,7 +256,8 @@ it('fifo calculation per variant works correctly', function () {
         quantity: 30,
         unit_price: Money::of(12, $this->company->currency->code),
         tax_id: null,
-        expense_account_id: $this->expenseAccount->id
+        expense_account_id: $this->expenseAccount->id,
+        analytic_account_id: null,
     );
 
     $this->createVendorBillLineAction->execute($vendorBill2, $line2Dto);
@@ -212,7 +266,7 @@ it('fifo calculation per variant works correctly', function () {
     // Purchase 3: 20 units at $15 each
     $vendorBill3 = VendorBill::factory()->create([
         'company_id' => $this->company->id,
-        'partner_id' => $this->vendor->id,
+        'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'currency_id' => $this->company->currency->id,
     ]);
@@ -223,7 +277,8 @@ it('fifo calculation per variant works correctly', function () {
         quantity: 20,
         unit_price: Money::of(15, $this->company->currency->code),
         tax_id: null,
-        expense_account_id: $this->expenseAccount->id
+        expense_account_id: $this->expenseAccount->id,
+        analytic_account_id: null,
     );
 
     $this->createVendorBillLineAction->execute($vendorBill3, $line3Dto);
@@ -238,22 +293,22 @@ it('fifo calculation per variant works correctly', function () {
 
     // First layer (oldest)
     expect($costLayers[0]->quantity)->toBe(50.0);
-    expect($costLayers[0]->unit_cost->getAmount()->toFloat())->toBe(10.0);
+    expect($costLayers[0]->cost_per_unit->getAmount()->toFloat())->toBe(10.0);
 
     // Second layer
     expect($costLayers[1]->quantity)->toBe(30.0);
-    expect($costLayers[1]->unit_cost->getAmount()->toFloat())->toBe(12.0);
+    expect($costLayers[1]->cost_per_unit->getAmount()->toFloat())->toBe(12.0);
 
     // Third layer (newest)
     expect($costLayers[2]->quantity)->toBe(20.0);
-    expect($costLayers[2]->unit_cost->getAmount()->toFloat())->toBe(15.0);
+    expect($costLayers[2]->cost_per_unit->getAmount()->toFloat())->toBe(15.0);
 
     // Total quantity should be 100
     $totalQuantity = $costLayers->sum('quantity');
     expect($totalQuantity)->toBe(100.0);
 
     // Total value should be (50*10) + (30*12) + (20*15) = 500 + 360 + 300 = 1160
-    $totalValue = $costLayers->sum(fn ($layer) => $layer->quantity * $layer->unit_cost->getAmount()->toFloat());
+    $totalValue = $costLayers->sum(fn ($layer) => $layer->quantity * $layer->cost_per_unit->getAmount()->toFloat());
     expect($totalValue)->toBe(1160.0);
 });
 
@@ -288,7 +343,7 @@ it('average cost per variant is calculated independently', function () {
     // Purchase 1: 10 units at $100
     $vendorBill1 = VendorBill::factory()->create([
         'company_id' => $this->company->id,
-        'partner_id' => $this->vendor->id,
+        'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'currency_id' => $this->company->currency->id,
     ]);
@@ -299,7 +354,8 @@ it('average cost per variant is calculated independently', function () {
         quantity: 10,
         unit_price: Money::of(100, $this->company->currency->code),
         tax_id: null,
-        expense_account_id: $this->expenseAccount->id
+        expense_account_id: $this->expenseAccount->id,
+        analytic_account_id: null,
     );
 
     $this->createVendorBillLineAction->execute($vendorBill1, $line1Dto);
@@ -308,7 +364,7 @@ it('average cost per variant is calculated independently', function () {
     // Purchase 2: 20 units at $150
     $vendorBill2 = VendorBill::factory()->create([
         'company_id' => $this->company->id,
-        'partner_id' => $this->vendor->id,
+        'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'currency_id' => $this->company->currency->id,
     ]);
@@ -319,7 +375,8 @@ it('average cost per variant is calculated independently', function () {
         quantity: 20,
         unit_price: Money::of(150, $this->company->currency->code),
         tax_id: null,
-        expense_account_id: $this->expenseAccount->id
+        expense_account_id: $this->expenseAccount->id,
+        analytic_account_id: null,
     );
 
     $this->createVendorBillLineAction->execute($vendorBill2, $line2Dto);
@@ -328,7 +385,7 @@ it('average cost per variant is calculated independently', function () {
     // Purchase variant Large at different price
     $vendorBill3 = VendorBill::factory()->create([
         'company_id' => $this->company->id,
-        'partner_id' => $this->vendor->id,
+        'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'currency_id' => $this->company->currency->id,
     ]);
@@ -339,7 +396,8 @@ it('average cost per variant is calculated independently', function () {
         quantity: 15,
         unit_price: Money::of(200, $this->company->currency->code),
         tax_id: null,
-        expense_account_id: $this->expenseAccount->id
+        expense_account_id: $this->expenseAccount->id,
+        analytic_account_id: null,
     );
 
     $this->createVendorBillLineAction->execute($vendorBill3, $line3Dto);
@@ -387,7 +445,7 @@ it('cost layers do not mix between variants even with same template', function (
     foreach ($purchases as $purchase) {
         $vendorBill = VendorBill::factory()->create([
             'company_id' => $this->company->id,
-            'partner_id' => $this->vendor->id,
+            'vendor_id' => $this->vendor->id,
             'status' => VendorBillStatus::Draft,
             'currency_id' => $this->company->currency->id,
         ]);
@@ -398,7 +456,8 @@ it('cost layers do not mix between variants even with same template', function (
             quantity: $purchase['qty'],
             unit_price: Money::of($purchase['price'], $this->company->currency->code),
             tax_id: null,
-            expense_account_id: $this->expenseAccount->id
+            expense_account_id: $this->expenseAccount->id,
+            analytic_account_id: null,
         );
 
         $this->createVendorBillLineAction->execute($vendorBill, $lineDto);
@@ -411,7 +470,7 @@ it('cost layers do not mix between variants even with same template', function (
 
         expect($costLayers)->toHaveCount(1);
         expect($costLayers->first()->quantity)->toBe((float) $purchase['qty']);
-        expect($costLayers->first()->unit_cost->getAmount()->toFloat())->toBe((float) $purchase['price']);
+        expect($costLayers->first()->cost_per_unit->getAmount()->toFloat())->toBe((float) $purchase['price']);
     }
 
     // Verify total cost layers in system = 4 (one per variant)
@@ -439,7 +498,7 @@ it('template product has no cost layers', function () {
 
     $vendorBill = VendorBill::factory()->create([
         'company_id' => $this->company->id,
-        'partner_id' => $this->vendor->id,
+        'vendor_id' => $this->vendor->id,
         'status' => VendorBillStatus::Draft,
         'currency_id' => $this->company->currency->id,
     ]);
@@ -450,7 +509,8 @@ it('template product has no cost layers', function () {
         quantity: 50,
         unit_price: Money::of(20, $this->company->currency->code),
         tax_id: null,
-        expense_account_id: $this->expenseAccount->id
+        expense_account_id: $this->expenseAccount->id,
+        analytic_account_id: null,
     );
 
     $this->createVendorBillLineAction->execute($vendorBill, $lineDto);

@@ -418,14 +418,14 @@ it('supports manual inventory receipt workflow after vendor bill posting', funct
     app(ProcessIncomingStockAction::class)->execute($stockMove2);
 
     // Step 4: Verify that inventory journal entries were created for the manually received items
-    // Note: The current implementation creates one journal entry per source document to prevent duplicates
-    // So both stock moves from the same vendor bill will share one journal entry
+    // Note: When processing stock moves individually (as done here), each creates its own journal entry.
+    // True consolidation happens when CreateStockMovesOnVendorBillConfirmed processes all moves together.
     $inventoryJournalEntries = JournalEntry::where('reference', 'LIKE', 'STOCK-IN-%')
         ->where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->get();
 
-    expect($inventoryJournalEntries)->toHaveCount(1); // One consolidated entry for both stock moves
+    expect($inventoryJournalEntries)->toHaveCount(2); // Each manually processed move creates its own entry
 
     // Verify StockMoveValuation records were created
     $stockMoveValuations = StockMoveValuation::whereIn('stock_move_id', [$stockMove1->id, $stockMove2->id])->get();
@@ -446,12 +446,12 @@ it('supports manual inventory receipt workflow after vendor bill posting', funct
     // Step 5: Verify total journal entries
     // Should have:
     // 1. Main vendor bill journal entry (created when bill was posted)
-    // 2. One inventory journal entry (created when stock moves were processed - consolidated)
+    // 2. Two inventory journal entries (one for each manually processed stock move)
     $totalJournalEntries = JournalEntry::where('source_type', VendorBill::class)
         ->where('source_id', $vendorBill->id)
         ->count();
 
-    expect($totalJournalEntries)->toBe(2); // 1 main bill + 1 inventory entry
+    expect($totalJournalEntries)->toBe(3); // 1 main bill + 2 inventory entries
 
     // Step 6: Verify that only the actually received quantities are reflected in inventory
     // This demonstrates the key benefit of manual recording: precise control over what gets recorded

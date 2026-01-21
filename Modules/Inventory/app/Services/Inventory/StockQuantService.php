@@ -211,12 +211,44 @@ class StockQuantService
 
     public function applyForIncomingProductLine(StockMoveProductLine $productLine): void
     {
-        $this->adjust($productLine->company_id, $productLine->product_id, $productLine->to_location_id, $productLine->quantity, 0);
+        // If product line has detailed moves (lots/serials), process them
+        if ($productLine->stockMoveLines()->exists()) {
+            foreach ($productLine->stockMoveLines as $moveLine) {
+                $this->adjust(
+                    $moveLine->company_id,
+                    $productLine->product_id,
+                    $productLine->to_location_id,
+                    $moveLine->quantity,
+                    0,
+                    $moveLine->lot_id,
+                    $moveLine->serial_number_id
+                );
+            }
+        } else {
+            // Otherwise process as bulk move
+            $this->adjust($productLine->company_id, $productLine->product_id, $productLine->to_location_id, $productLine->quantity, 0);
+        }
     }
 
     public function applyForOutgoingProductLine(StockMoveProductLine $productLine): void
     {
-        $this->adjust($productLine->company_id, $productLine->product_id, $productLine->from_location_id, -$productLine->quantity, 0);
+        // If product line has detailed moves (lots/serials), process them
+        if ($productLine->stockMoveLines()->exists()) {
+            foreach ($productLine->stockMoveLines as $moveLine) {
+                $this->adjust(
+                    $moveLine->company_id,
+                    $productLine->product_id,
+                    $productLine->from_location_id,
+                    -$moveLine->quantity,
+                    0,
+                    $moveLine->lot_id,
+                    $moveLine->serial_number_id
+                );
+            }
+        } else {
+            // Otherwise process as bulk move
+            $this->adjust($productLine->company_id, $productLine->product_id, $productLine->from_location_id, -$productLine->quantity, 0);
+        }
     }
 
     /**

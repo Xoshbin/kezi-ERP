@@ -9,7 +9,6 @@ use Modules\Inventory\DataTransferObjects\Inventory\UpdateStockMoveDTO;
 use Modules\Inventory\DataTransferObjects\Inventory\UpdateStockMoveWithProductLinesDTO;
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
 use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
 use Modules\Inventory\Models\StockMove;
 
 /**
@@ -110,8 +109,8 @@ class StockMoveService
 
         // Now, if the desired status was done, update it to trigger observers and posting logic.
         if ($desiredStatus === StockMoveStatus::Done) {
-            $stockMove->status = StockMoveStatus::Done;
-            $stockMove->save(); // Triggers 'updated' observer after lines exist
+            $this->confirmMove(new ConfirmStockMoveDTO($stockMove->id));
+            $stockMove->refresh();
         }
 
         return $stockMove->load('productLines');
@@ -176,8 +175,6 @@ class StockMoveService
         $move = StockMove::findOrFail($dto->stock_move_id);
         $move->status = StockMoveStatus::Done;
         $move->save();
-
-        StockMoveConfirmed::dispatch($move);
 
         return $move;
     }
