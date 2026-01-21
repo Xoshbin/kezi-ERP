@@ -600,6 +600,12 @@ class ProductResource extends Resource
                 ->icon('heroicon-o-sparkles')
                 ->requiresConfirmation()
                 ->visible(fn (Product $record) => $record->is_template)
+                ->form([
+                    \Filament\Forms\Components\Toggle::make('delete_existing')
+                        ->label(__('product::product.delete_existing_variants'))
+                        ->helperText(__('product::product.delete_existing_variants_help'))
+                        ->default(false),
+                ])
                 ->action(function (Product $record, array $state) {
                     $action = app(GenerateProductVariantsAction::class);
 
@@ -611,6 +617,7 @@ class ProductResource extends Resource
                     $action->execute(new GenerateProductVariantsDTO(
                         templateProductId: $record->id,
                         attributeValueMap: $attributeValueMap,
+                        deleteExisting: $state['delete_existing'] ?? false,
                     ));
 
                     Notification::make()

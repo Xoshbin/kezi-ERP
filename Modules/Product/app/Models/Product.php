@@ -49,6 +49,11 @@ use Spatie\Translatable\HasTranslations;
  * @property bool $is_template
  * @property int|null $parent_product_id
  * @property string|null $variant_sku_suffix
+ * @property \Modules\Inventory\Enums\Inventory\TrackingType $tracking_type
+ * @property float $weight
+ * @property float $volume
+ * @property array|null $product_attributes
+ * @property array|null $productAttributes
  * @property-read Company $company
  * @property-read Account|null $expenseAccount
  * @property-read Account|null $incomeAccount
