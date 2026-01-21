@@ -23,16 +23,63 @@ class GenerateProductVariantsAction
         }
 
         return DB::transaction(function () use ($template, $dto) {
+            if ($dto->deleteExisting && $template->variants()->exists()) {
+                $this->validateVariantsDeletable($template);
+
+                foreach ($template->variants as $variant) {
+                    $variant->forceDelete();
+                }
+            }
+
             $variants = collect();
             $combinations = $this->generateCombinations($dto->attributeValueMap);
 
             foreach ($combinations as $combination) {
-                $variant = $this->createVariant($template, $combination);
+                $details = $this->getVariantDetails($template, $combination);
+
+                if (Product::where('sku', $details['sku'])->exists()) {
+                    continue;
+                }
+
+                $variant = $this->createVariant($template, $combination, $details);
                 $variants->push($variant);
             }
 
             return $variants;
         });
+    }
+
+    private function validateVariantsDeletable(Product $template): void
+    {
+        foreach ($template->variants as $variant) {
+            if ($variant->stockMoveProductLines()->exists() ||
+                $variant->invoiceLines()->exists() ||
+                $variant->vendorBillLines()->exists()) {
+                throw new \RuntimeException(
+                    "Cannot regenerate variants for '{$template->sku}'. ".
+                    "Variant '{$variant->sku}' has existing transactions (Stock Moves, Invoices, or Bills)."
+                );
+            }
+        }
+    }
+
+    /**
+     * @param  array<int, int>  $combination
+     * @return array{suffix: string, sku: string}
+     */
+    private function getVariantDetails(Product $template, array $combination): array
+    {
+        $values = ProductAttributeValue::whereIn('id', array_values($combination))
+            ->orderBy('product_attribute_id')
+            ->get();
+
+        $suffixParts = $values->map(fn ($v) => strtoupper($v->name));
+        $suffix = $suffixParts->implode('-');
+
+        return [
+            'suffix' => $suffix,
+            'sku' => $template->sku.'-'.$suffix,
+        ];
     }
 
     /**
@@ -58,26 +105,15 @@ class GenerateProductVariantsAction
 
     /**
      * @param  array<int, int>  $combination  [attributeId => valueId]
+     * @param  array{suffix: string, sku: string}  $details
      */
-    private function createVariant(Product $template, array $combination): Product
+    private function createVariant(Product $template, array $combination, array $details): Product
     {
-        // Get value names for SKU suffix
-        $values = ProductAttributeValue::whereIn('id', array_values($combination))
-            ->orderBy('product_attribute_id')
-            ->get();
-
-        $suffixParts = $values->map(fn ($v) => strtoupper($v->name));
-        $suffix = $suffixParts->implode('-');
-
         $variant = $template->replicate();
         $variant->parent_product_id = $template->id;
         $variant->is_template = false;
-        $variant->variant_sku_suffix = $suffix;
-        $variant->sku = $template->sku.'-'.$suffix;
-
-        // Ensure name includes variant info if desired, or keep as is.
-        // Odoo usually keeps the same name but displays attributes separately.
-        // We'll keep the name from template but add suffix to SKU.
+        $variant->variant_sku_suffix = $details['suffix'];
+        $variant->sku = $details['sku'];
 
         // Explicitly copy tracking_type from template to ensure it is inherited
         $variant->tracking_type = $template->tracking_type;
