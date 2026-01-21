@@ -10,6 +10,7 @@ use Modules\Inventory\Models\StockMoveProductLine;
 use Modules\Inventory\Services\Inventory\InventoryValuationService;
 use Modules\Inventory\Services\Inventory\StockQuantService;
 use Modules\Product\Models\Product;
+use Modules\Purchase\Models\PurchaseOrder;
 use Modules\Purchase\Models\VendorBill;
 use Modules\Purchase\Models\VendorBillLine;
 
@@ -24,9 +25,16 @@ class ProcessIncomingStockAction
     public function execute(StockMove $stockMove): void
     {
         DB::transaction(function () use ($stockMove) {
-            // Process each product line
+            // Process inventory valuation and consolidated journal entry
+            $this->inventoryValuationService->createConsolidatedManualStockMoveJournalEntry($stockMove);
+
+            // Process per-line side effects (Quants, PO status)
             foreach ($stockMove->productLines as $productLine) {
-                $this->processProductLine($stockMove, $productLine);
+                // Update quants for destination location
+                $this->stockQuantService->applyForIncomingProductLine($productLine);
+
+                // Update Purchase Order status if this stock move is related to a PO
+                $this->updatePurchaseOrderStatus($stockMove, $productLine);
             }
         });
     }
@@ -83,6 +91,35 @@ class ProcessIncomingStockAction
 
         // Update quants for destination location
         $this->stockQuantService->applyForIncomingProductLine($productLine);
+
+        // Update Purchase Order status if this stock move is related to a PO
+        $this->updatePurchaseOrderStatus($stockMove, $productLine);
+    }
+
+    /**
+     * Update Purchase Order status when stock moves are completed.
+     */
+    protected function updatePurchaseOrderStatus(StockMove $stockMove, StockMoveProductLine $productLine): void
+    {
+        if ($stockMove->source_type === PurchaseOrder::class && $stockMove->source_id) {
+            $purchaseOrder = PurchaseOrder::find($stockMove->source_id);
+            if ($purchaseOrder) {
+                // Find the corresponding PO line for this product
+                $poLine = $purchaseOrder->lines()
+                    ->where('product_id', $productLine->product_id)
+                    ->first();
+
+                if ($poLine) {
+                    // Increment the received quantity
+                    $poLine->quantity_received += $productLine->quantity;
+                    $poLine->save();
+
+                    // Update PO status based on total received quantities
+                    $purchaseOrder->updateStatusBasedOnReceipts(fromInventoryOperation: true);
+                    $purchaseOrder->save();
+                }
+            }
+        }
     }
 
     /**

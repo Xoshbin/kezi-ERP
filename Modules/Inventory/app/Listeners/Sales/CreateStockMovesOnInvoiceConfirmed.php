@@ -11,7 +11,6 @@ use Modules\Inventory\Enums\Inventory\StockMoveStatus;
 use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Enums\Inventory\StockPickingState;
 use Modules\Inventory\Enums\Inventory\StockPickingType;
-use Modules\Inventory\Events\Inventory\StockMoveConfirmed;
 use Modules\Inventory\Models\StockLocation;
 use Modules\Inventory\Models\StockMove;
 use Modules\Inventory\Models\StockPicking;
@@ -86,6 +85,7 @@ class CreateStockMovesOnInvoiceConfirmed
 
         foreach ($invoice->invoiceLines as $line) {
             if ($line->product && $line->product->type === ProductType::Storable) {
+                // Create move as Draft (status inherited from createStockMoveForLine change)
                 $stockMove = $this->createStockMoveForLine(
                     $invoice,
                     $line,
@@ -96,13 +96,14 @@ class CreateStockMovesOnInvoiceConfirmed
                 // Attach to picking
                 $stockMove->update(['picking_id' => $picking->getKey()]);
 
-                // Reserve as much as possible from warehouse before processing the move
+                // Reserve as much as possible from warehouse before confirming the move
                 $this->reservationService->reserveForMove($stockMove, $locations['warehouse']->id);
 
-                $stockMoves->push($stockMove);
+                // Now confirm the move to Done. This will trigger the StockMoveObserver->updated loop,
+                // which dispatches StockMoveConfirmed, which triggers ProcessOutgoingStockAction.
+                $stockMove->update(['status' => StockMoveStatus::Done]);
 
-                // Dispatch the StockMoveConfirmed event to trigger valuation and outgoing processing
-                StockMoveConfirmed::dispatch($stockMove);
+                $stockMoves->push($stockMove);
             }
         }
 
@@ -158,7 +159,7 @@ class CreateStockMovesOnInvoiceConfirmed
             company_id: $invoice->company_id,
             product_lines: [$productLineDto],
             move_type: StockMoveType::Outgoing,
-            status: StockMoveStatus::Done,
+            status: StockMoveStatus::Draft,
             move_date: $invoice->posted_at ?? now(),
             reference: $invoice->invoice_number,
             description: "Stock delivery for invoice {$invoice->invoice_number}",

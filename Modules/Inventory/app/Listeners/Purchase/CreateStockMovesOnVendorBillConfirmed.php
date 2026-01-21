@@ -113,6 +113,9 @@ class CreateStockMovesOnVendorBillConfirmed
         foreach ($stockMove->productLines as $productLine) {
             $stockQuantService->applyForIncomingProductLine($productLine);
         }
+
+        // Mark move as Done without triggering redundant event-driven flow
+        $stockMove->update(['status' => StockMoveStatus::Done]);
     }
 
     /**
@@ -144,7 +147,7 @@ class CreateStockMovesOnVendorBillConfirmed
             company_id: $company->getKey(),
             product_lines: $productLineDtos,
             move_type: StockMoveType::Incoming,
-            status: StockMoveStatus::Done,
+            status: StockMoveStatus::Draft,
             move_date: $vendorBill->bill_date,
             reference: $vendorBill->bill_reference,
             description: "Stock receipt from vendor bill {$vendorBill->bill_reference}",
