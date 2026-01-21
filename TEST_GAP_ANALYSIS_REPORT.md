@@ -90,7 +90,7 @@
 | **Concurrent modification tests** | LOW | Race condition scenarios (Stock Movement verified 2026-01-20) |
 | **Large dataset performance tests** | LOW | Performance regression tests |
 | **Invalid data handling tests** | LOW | Edge case input validation |
-| **Transaction rollback verification** | LOW | Verify DB rollback on failure |
+| ~~**Transaction rollback verification**~~ | ~~LOW~~ | ~~Verify DB rollback on failure~~ - **✅ COMPLETED 2026-01-21** See "Inventory Valuation Synchronous Processing" |
 
 ---
 
@@ -133,3 +133,5 @@
 | **Product Variants Foundation** | 2026-01-20 | Implemented complete foundation: database schema, `GenerateProductVariantsAction`, Filament UI with attribute management, variant generation action, and relation manager. Tests passing. **Integration work required** - see `PRODUCT_VARIANTS_ROADMAP.md`. |
 | **Product Variant Inventory Integration** | 2026-01-20 | Implemented `ProductVariantInventoryTest.php` with 6 comprehensive tests covering: stock move creation for variants, independent stock levels per variant, template product restrictions, stock quant tracking, stock reservations, and multi-location scenarios. Added validation in `StockMoveService` to prevent template products from having stock moves. All tests passing (2098 total). |
 | **Product Variant Accounting Integration** | 2026-01-20 | Implemented `VariantSalesTest.php` and `VariantPurchaseTest.php` covering: invoice creation with variants, revenue recognition, independent pricing, vendor bill creation, expense accounts, and cost layer management. Fixed tax calculation logic in `CreateVendorBillLineAction`. All tests passing. |
+| **Inventory Valuation Synchronous Processing** | 2026-01-21 | **CRITICAL ARCHITECTURAL REFACTORING** - Moved from asynchronous event-driven to synchronous transactional processing in `StockMoveObserver`. Inventory valuation now happens atomically with stock move confirmation ensuring ACID properties. Removed redundant `HandleStockMoveConfirmation` listener. Fixed inventory adjustments to use proper adjustment expense accounts (not COGS). Added intelligent observer exclusions for VendorBill and Adjustment moves. **Results:** 100% test pass rate (2115/2115 tests), proper exception propagation, correct double-entry accounting, full Odoo/ERP compliance. Fixed tests: `ConfirmStockMoveActionTest`, `ProcessOutgoingStockActionTest`, `InventoryAccountingModeWorkflowTest`, `InventorySystemVerificationTest`. **All inventory adjustment tests passing**, transaction rollback verified. See technical report for detailed architecture documentation. |
+
