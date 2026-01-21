@@ -154,13 +154,3 @@ it('processes outgoing stock and calculates COGS (FIFO)', function () {
     expect($layer1->remaining_quantity)->toEqual(0)
         ->and($layer2->remaining_quantity)->toEqual(5);
 });
-
-it('throws exception if move has no source document', function () {
-    $move = StockMove::factory()->create([
-        'company_id' => $this->company->id,
-        'source_type' => null,
-        'source_id' => null,
-    ]);
-
-    $this->action->execute($move);
-})->throws(\Exception::class, 'Stock move must have a source document');

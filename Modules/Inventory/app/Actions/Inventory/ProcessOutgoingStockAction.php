@@ -2,7 +2,6 @@
 
 namespace Modules\Inventory\Actions\Inventory;
 
-use Exception;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Models\StockMove;
 use Modules\Inventory\Services\Inventory\InventoryValuationService;
@@ -21,43 +20,13 @@ class ProcessOutgoingStockAction
     public function execute(StockMove $stockMove): void
     {
         DB::transaction(function () use ($stockMove) {
-            $sourceDocument = $stockMove->source;
-            if (! $sourceDocument) {
-                throw new Exception('Stock move must have a source document');
-            }
-
-            // Handle both old structure (direct product) and new structure (product lines)
-            if (isset($stockMove->product_id) && $stockMove->product_id) {
-                // Old structure - single product
-                $product = $stockMove->product;
-                if (! $product instanceof Product) {
-                    throw new Exception('Product not found for stock move');
-                }
-
-                $this->inventoryValuationService->processOutgoingStock(
-                    $product,
-                    $stockMove->quantity,
-                    $stockMove->move_date,
-                    $sourceDocument
-                );
-            } else {
-                // New structure - multiple product lines
-                foreach ($stockMove->productLines as $productLine) {
-                    $product = $productLine->product;
-                    if (! $product instanceof Product) {
-                        throw new Exception('Product not found for product line');
-                    }
-
-                    $this->inventoryValuationService->processOutgoingStock(
-                        $product,
-                        $productLine->quantity,
-                        $stockMove->move_date,
-                        $sourceDocument
-                    );
-                }
-            }
+            // Process inventory valuation and consolidated journal entry
+            // This handles COGS calculation, layer consumption (FIFO/LIFO), and JE creation
+            $this->inventoryValuationService->createConsolidatedManualStockMoveJournalEntry($stockMove);
 
             // Phase 2B: Deduct quants by consuming reservations only (no oversell)
+            // Note: createConsolidatedManualStockMoveJournalEntry updates quantity_on_hand per product,
+            // but consumeForMove handles specific location quants and reservations.
             $this->stockReservationService->consumeForMove($stockMove);
         });
     }
