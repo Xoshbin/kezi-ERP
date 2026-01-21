@@ -822,6 +822,7 @@ class InventoryValuationService
         $isOutgoing = $stockMove->move_type === StockMoveType::Outgoing || $stockMove->move_type === StockMoveType::Adjustment;
 
         // Process each product line in the stock move
+        $calculatedCosts = [];
         foreach ($stockMove->productLines as $productLine) {
             $product = $productLine->product;
             $quantity = $productLine->quantity;
@@ -842,7 +843,7 @@ class InventoryValuationService
                 }
 
                 $cogsAmount = $this->calculateCOGS($product, $quantity);
-                $productTotalCost = $cogsAmount;
+                $calculatedCosts[$productLine->id] = $cogsAmount;
                 $totalCost = $totalCost->plus($cogsAmount);
 
                 if ($cogsAmount->isZero()) {
@@ -857,7 +858,7 @@ class InventoryValuationService
                     debit: $cogsAmount,
                     credit: $zero,
                     description: "COGS for {$product->name} (Qty: {$quantity})",
-                    analytic_account_id: null,
+                    analytic_account_id: $productLine->analytic_account_id,
                     partner_id: null,
                 );
 
@@ -867,7 +868,7 @@ class InventoryValuationService
                     debit: $zero,
                     credit: $cogsAmount,
                     description: "Inventory reduction for {$product->name} (Qty: {$quantity})",
-                    analytic_account_id: null,
+                    analytic_account_id: $productLine->analytic_account_id,
                     partner_id: null,
                 );
 
@@ -880,6 +881,7 @@ class InventoryValuationService
                 // Calculate cost for this product using enhanced method
                 $costResult = $this->calculateIncomingCostPerUnitEnhanced($product, $stockMove, false);
                 $productTotalCost = $costResult->cost->multipliedBy($quantity, RoundingMode::HALF_UP);
+                $calculatedCosts[$productLine->id] = $productTotalCost;
                 $totalCost = $totalCost->plus($productTotalCost);
 
                 // Log any cost determination warnings
@@ -893,7 +895,7 @@ class InventoryValuationService
                     debit: $productTotalCost,
                     credit: $zero,
                     description: "Stock receipt for {$product->name} (Qty: {$quantity})",
-                    analytic_account_id: null,
+                    analytic_account_id: $productLine->analytic_account_id,
                     partner_id: null,
                     original_currency_amount: $this->getOriginalCurrencyAmount($stockMove, $productTotalCost),
                     exchange_rate_at_transaction: $this->getExchangeRateFromSource($stockMove),
@@ -905,14 +907,17 @@ class InventoryValuationService
                     debit: $zero,
                     credit: $productTotalCost,
                     description: "Stock input for {$product->name} (Qty: {$quantity})",
-                    analytic_account_id: null,
+                    analytic_account_id: $productLine->analytic_account_id,
                     partner_id: null,
                     original_currency_amount: $this->getOriginalCurrencyAmount($stockMove, $productTotalCost),
                     exchange_rate_at_transaction: $this->getExchangeRateFromSource($stockMove),
                 );
 
                 // Process inventory valuation for this product (without creating journal entry)
-                $this->processIncomingStockWithoutJournalEntry($product, $quantity, $costResult->cost, Carbon::parse($stockMove->move_date), $stockMove);
+                $sourceDocument = ($stockMove->source_type && class_exists($stockMove->source_type))
+                    ? ($stockMove->source ?? $stockMove)
+                    : $stockMove;
+                $this->processIncomingStockWithoutJournalEntry($product, $quantity, $costResult->cost, Carbon::parse($stockMove->move_date), $sourceDocument);
             }
 
             $productNames[] = $product->name;
@@ -920,31 +925,32 @@ class InventoryValuationService
 
         if (empty($journalEntryLines)) {
             Log::warning("No journal entry lines generated for stock move {$stockMove->id}");
-            // Return a dummy or handle gracefully? For now, re-fetch strict allows throwing if we want.
-            // But let's check if we should return null or existing?
-            // Since method signature returns JournalEntry, we must create one or find one.
-            // If empty lines, it means likely zero value.
-            // To avoid breaking, we might need a zero value entry or just exception?
-            // Let's assume there's always value if quantity > 0.
+
+            return null;
         }
 
         $referencePrefix = $isOutgoing ? 'STOCK-OUT' : 'STOCK-IN';
         $journalId = $isOutgoing ? $company->default_sales_journal_id : $company->default_purchase_journal_id;
         $descriptionPrefix = $isOutgoing ? 'Stock delivery' : 'Stock receipt';
 
-        // Create consolidated journal entry DTO
+        $sourceDocument = ($stockMove->source_type && class_exists($stockMove->source_type))
+            ? ($stockMove->source ?? $stockMove)
+            : $stockMove;
+
+        $reference = "{$referencePrefix}-".class_basename($sourceDocument)."-{$sourceDocument->id}";
+
         $journalEntryDTO = new CreateJournalEntryDTO(
             company_id: $company->id,
             journal_id: $journalId,
             currency_id: $company->currency_id,
             entry_date: Carbon::parse($stockMove->move_date)->toDateString(),
-            reference: "{$referencePrefix}-{$stockMove->reference}",
+            reference: $reference,
             description: "{$descriptionPrefix} for ".implode(', ', $productNames),
             created_by_user_id: (int) (Auth::id() ?? 1),
             is_posted: true,
             lines: $journalEntryLines,
-            source_type: get_class($stockMove),
-            source_id: $stockMove->id,
+            source_type: get_class($sourceDocument),
+            source_id: $sourceDocument->id,
         );
 
         // Create the journal entry
@@ -953,15 +959,9 @@ class InventoryValuationService
         // Create stock move valuations linking to the consolidated journal entry (Outgoing Only - Incoming handled in loop for valuation updates)
         if ($isOutgoing) {
             foreach ($stockMove->productLines as $productLine) {
-                // Re-calculate simply for valuation record or pass from above?
-                // For outgoing, we need to consume stock.
-                // processOutgoingStock already does this? No, we are creating manual entry here.
-                // We need to act like processOutgoingStock but consolidated.
-
                 $product = $productLine->product;
                 $quantity = $productLine->quantity;
-                // Re-calculate COGS locally as we didn't store it per line above easily
-                $cogsAmount = $this->calculateCOGS($product, $quantity);
+                $cogsAmount = $calculatedCosts[$productLine->id] ?? $zero;
 
                 $this->createStockMoveValuation(
                     $product,
@@ -980,17 +980,10 @@ class InventoryValuationService
         } else {
             // For Incoming, we already called processIncomingStockWithoutJournalEntry for valuation updates.
             // But we still need the Valuation Record created linked to THIS journal entry.
-            // The loop above called processIncomingStockWithoutJournalEntry which does NOT create valuation record?
-            // Wait, processIncomingStockWithoutJournalEntry DOES NOT create valuation record?
-            // Checking source... processIncomingStockWithoutJournalEntry calls processIncomingStockAVCO/FIFO which updates cost/layers.
-            // It does NOT create StockMoveValuation.
-            // So we need to create it here similar to original code.
-
             foreach ($stockMove->productLines as $productLine) {
                 $product = $productLine->product;
                 $quantity = $productLine->quantity;
-                $costResult = $this->calculateIncomingCostPerUnitEnhanced($product, $stockMove, false);
-                $productTotalCost = $costResult->cost->multipliedBy($quantity, RoundingMode::HALF_UP);
+                $productTotalCost = $calculatedCosts[$productLine->id] ?? $zero;
 
                 $this->createIncomingStockMoveValuation(
                     $product,
