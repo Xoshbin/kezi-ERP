@@ -12,9 +12,10 @@ use Modules\Product\Models\ProductVariantAttribute;
 class GenerateProductVariantsAction
 {
     /**
+     * @param  array<int, array<int, int>>|null  $filteredCombinations
      * @return Collection<int, Product>
      */
-    public function execute(GenerateProductVariantsDTO $dto): Collection
+    public function execute(GenerateProductVariantsDTO $dto, ?array $filteredCombinations = null): Collection
     {
         $template = Product::findOrFail($dto->templateProductId);
 
@@ -22,7 +23,7 @@ class GenerateProductVariantsAction
             throw new \InvalidArgumentException('Product is not a template.');
         }
 
-        return DB::transaction(function () use ($template, $dto) {
+        return DB::transaction(function () use ($template, $dto, $filteredCombinations) {
             if ($dto->deleteExisting && $template->variants()->exists()) {
                 $this->validateVariantsDeletable($template);
 
@@ -32,7 +33,7 @@ class GenerateProductVariantsAction
             }
 
             $variants = collect();
-            $combinations = $this->generateCombinations($dto->attributeValueMap);
+            $combinations = $filteredCombinations ?? $this->generateCombinations($dto->attributeValueMap);
 
             foreach ($combinations as $combination) {
                 $details = $this->getVariantDetails($template, $combination);
@@ -47,6 +48,33 @@ class GenerateProductVariantsAction
 
             return $variants;
         });
+    }
+
+    /**
+     * @param  array<int, array<int>>  $attributeValueMap
+     * @return array<int, array{sku: string, values: string, combination: array<int, int>}>
+     */
+    public function previewCombinations(int $templateId, array $attributeValueMap): array
+    {
+        $template = Product::findOrFail($templateId);
+        $combinations = $this->generateCombinations($attributeValueMap);
+        $preview = [];
+
+        foreach ($combinations as $combination) {
+            $details = $this->getVariantDetails($template, $combination);
+            $values = ProductAttributeValue::whereIn('id', array_values($combination))
+                ->get()
+                ->map(fn ($v) => $v->name)
+                ->implode(', ');
+
+            $preview[] = [
+                'sku' => $details['sku'],
+                'values' => $values,
+                'combination' => $combination,
+            ];
+        }
+
+        return $preview;
     }
 
     private function validateVariantsDeletable(Product $template): void

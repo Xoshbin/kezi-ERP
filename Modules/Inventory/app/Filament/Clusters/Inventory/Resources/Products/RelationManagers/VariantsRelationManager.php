@@ -28,6 +28,10 @@ class VariantsRelationManager extends RelationManager
                     ->maxLength(255),
                 TextInput::make('variant_sku_suffix')
                     ->disabled(),
+                \Modules\Foundation\Filament\Forms\Components\MoneyInput::make('unit_price')
+                    ->label(__('product.unit_price'))
+                    ->currencyField('currency_id')
+                    ->nullable(),
             ]);
     }
 

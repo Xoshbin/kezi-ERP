@@ -12,6 +12,7 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -23,6 +24,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -46,7 +48,6 @@ use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationMan
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMovesRelationManager;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers\VariantsRelationManager;
 use Modules\Product\Actions\GenerateProductVariantsAction;
-use Modules\Product\DataTransferObjects\GenerateProductVariantsDTO;
 use Modules\Product\Models\Product;
 use Modules\Product\Models\ProductAttribute;
 use Modules\Product\Models\ProductAttributeValue;
@@ -591,6 +592,9 @@ class ProductResource extends Resource
             ]);
     }
 
+    /**
+     * @return array<int, Action>
+     */
     public static function getActions(): array
     {
         return [
@@ -598,31 +602,85 @@ class ProductResource extends Resource
                 ->label(__('product::product.actions.generate_variants'))
                 ->color('success')
                 ->icon('heroicon-o-sparkles')
-                ->requiresConfirmation()
                 ->visible(fn (Product $record) => $record->is_template)
                 ->form([
-                    \Filament\Forms\Components\Toggle::make('delete_existing')
-                        ->label(__('product::product.delete_existing_variants'))
-                        ->helperText(__('product::product.delete_existing_variants_help'))
-                        ->default(false),
+                    Wizard::make([
+                        Wizard\Step::make(__('product::product.variant_generation.options'))
+                            ->schema([
+                                Toggle::make('delete_existing')
+                                    ->label(__('product::product.delete_existing_variants'))
+                                    ->helperText(__('product::product.delete_existing_variants_help'))
+                                    ->default(false),
+                            ]),
+                        Wizard\Step::make(__('product::product.variant_generation.preview'))
+                            ->schema([
+                                CheckboxList::make('selected_variants')
+                                    ->label(__('product::product.variant_generation.select_variants'))
+                                    ->options(function (Product $record, $livewire) {
+                                        $action = app(GenerateProductVariantsAction::class);
+                                        $productAttributes = (isset($livewire->data['product_attributes']) && ! empty($livewire->data['product_attributes']))
+                                            ? $livewire->data['product_attributes']
+                                            : ($record->product_attributes ?? []);
+
+                                        $attributeValueMap = [];
+                                        foreach ($productAttributes as $attr) {
+                                            $attributeValueMap[$attr['product_attribute_id']] = $attr['values'];
+                                        }
+                                        $previews = $action->previewCombinations($record->id, $attributeValueMap);
+
+                                        return collect($previews)->mapWithKeys(fn ($p, $i) => [(string) $i => "{$p['sku']} ({$p['values']})"]);
+                                    })
+                                    ->default(function (Product $record, $livewire) {
+                                        $action = app(GenerateProductVariantsAction::class);
+                                        $productAttributes = (isset($livewire->data['product_attributes']) && ! empty($livewire->data['product_attributes']))
+                                            ? $livewire->data['product_attributes']
+                                            : ($record->product_attributes ?? []);
+
+                                        $attributeValueMap = [];
+                                        foreach ($productAttributes as $attr) {
+                                            $attributeValueMap[$attr['product_attribute_id']] = $attr['values'];
+                                        }
+                                        $previews = $action->previewCombinations($record->id, $attributeValueMap);
+
+                                        return array_map('strval', array_keys($previews));
+                                    })
+                                    ->columns(2)
+                                    ->required(),
+                            ]),
+                    ]),
                 ])
-                ->action(function (Product $record, array $state) {
-                    $action = app(GenerateProductVariantsAction::class);
+                ->action(function (\Filament\Actions\Action $action, Product $record, $livewire) {
+                    $actionLogic = app(GenerateProductVariantsAction::class);
 
                     $attributeValueMap = [];
-                    foreach ($state['product_attributes'] as $attr) {
+                    $productAttributes = (isset($livewire->data['product_attributes']) && ! empty($livewire->data['product_attributes']))
+                        ? $livewire->data['product_attributes']
+                        : ($record->product_attributes ?? []);
+
+                    foreach ($productAttributes as $attr) {
                         $attributeValueMap[$attr['product_attribute_id']] = $attr['values'];
                     }
 
-                    $action->execute(new GenerateProductVariantsDTO(
+                    $allCombinations = $actionLogic->previewCombinations($record->id, $attributeValueMap);
+                    $state = $action->getFormData();
+                    $selectedIndices = $state['selected_variants'] ?? [];
+                    $filteredCombinations = [];
+
+                    foreach ($selectedIndices as $index) {
+                        if (isset($allCombinations[(int) $index])) {
+                            $filteredCombinations[] = $allCombinations[(int) $index]['combination'];
+                        }
+                    }
+
+                    $actionLogic->execute(new \Modules\Product\DataTransferObjects\GenerateProductVariantsDTO(
                         templateProductId: $record->id,
                         attributeValueMap: $attributeValueMap,
                         deleteExisting: $state['delete_existing'] ?? false,
-                    ));
+                    ), $filteredCombinations);
 
                     Notification::make()
                         ->success()
-                        ->title('Product variants generated successfully.')
+                        ->title(__('product::product.actions.generate_variants_success'))
                         ->send();
                 }),
         ];

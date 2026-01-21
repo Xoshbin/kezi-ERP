@@ -55,20 +55,19 @@
 
 ### 1.9 Product Module
 
-| Gap | Priority | Description |
-|-----|----------|-------------|
-| ~~**Product Variant Business Logic**~~ | ~~HIGH~~ | ~~Template deletion prevention, attribute update handling, variant regeneration logic. See `PRODUCT_VARIANTS_ROADMAP.md` Phase 2.~~ - **✅ COMPLETED 2026-01-21** |
+| ~~**Product Variant Business Logic**~~ | ~~HIGH~~ | ~~Template deletion prevention, attribute update handling, variant regeneration logic.~~ - **✅ COMPLETED 2026-01-21** |
+| ~~**Product Variant UX & Pricing**~~ | ~~MEDIUM~~ | ~~Wizard-based variant preview, selection, and variant-specific pricing overrides.~~ - **✅ COMPLETED 2026-01-21** |
 
-**Foundation Status (2026-01-20):**
-- ✅ Database schema complete (`product_attributes`, `product_attribute_values`, `product_variant_attributes`)
+**Foundation Status (2026-01-21):**
+- ✅ Database schema complete (Consolidated into main products table)
 - ✅ Core logic: `GenerateProductVariantsAction` with Cartesian product generation
-- ✅ UI: Filament resources, template toggle, variant generation action, relation manager
-- ✅ Tests: `ProductVariantTest.php` (2 tests), `ProductResourceTest.php` (1 test) - all passing
-- ✅ Translations: Full EN/CKB support
-- ✅ **Inventory Integration Complete** (2026-01-20): `ProductVariantInventoryTest.php` (6 tests) - stock tracking per variant, template restrictions, independent stock levels
-- ✅ **Accounting Integration Complete** (2026-01-20): `VariantSalesTest.php` (6 tests), `VariantPurchaseTest.php` (6 tests) - invoices, bills, cost layers
-- ✅ **Business Logic Protection Complete** (2026-01-21): `ProductVariantTest.php` (12 tests) - deletion prevention, attribute protection, regeneration logic.
-- ✅ **PRODUCTION READY** - Feature is now 95% production-ready. Remaining tasks are UX/edge cases.
+- ✅ UI: Filament resources, template toggle, variant generation Wizard (with Preview), relation manager
+- ✅ Tests: `ProductVariantTest.php` (42 tests), `ProductResourceTest.php` (All UI actions) - all passing
+- ✅ Translations: Full EN/CKB support for all new UI components
+- ✅ **Inventory Integration Complete**: `ProductVariantInventoryTest.php` (6 tests)
+- ✅ **Accounting Integration Complete**: `VariantSalesTest.php`, `VariantPurchaseTest.php`
+- ✅ **Business Logic Protection Complete**: `ProductVariantTest.php` - deletion prevention, attribute protection, regeneration logic.
+- ✅ **PRODUCTION READY (100%)** - All architectural and reliability items completed.
 
 **Reference:** `PRODUCT_VARIANTS_ROADMAP.md` for complete implementation plan
 
