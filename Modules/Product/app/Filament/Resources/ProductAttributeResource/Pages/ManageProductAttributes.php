@@ -19,7 +19,14 @@ class ManageProductAttributes extends ManageRecords
     {
         return [
             \Modules\Foundation\Filament\Actions\DocsAction::make('product-attribute'),
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->mutateFormDataUsing(function (array $data): array {
+                    /** @var \App\Models\Company|null $tenant */
+                    $tenant = \Filament\Facades\Filament::getTenant();
+                    $data['company_id'] = $tenant?->id;
+
+                    return $data;
+                }),
         ];
     }
 }
