@@ -276,7 +276,7 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 | MFG-04 | **By-product/co-product accounting** - If by-products are supported | Medium | High |
 | MFG-05 | **Manufacturing order cancellation tests** - Cancellation with partial consumption | Medium | Medium |
 | MFG-06 | **Work center capacity planning tests** - Capacity and availability checks | Medium | High |
-| MFG-07 | **WIP (Work-in-Progress) valuation tests** - WIP accounting during production | High | High |
+| MFG-07 | **WIP (Work-in-Progress) valuation tests** - WIP accounting during production | High | High | ✅ Completed (2026-01-22) |
 | MFG-08 | **Multi-level BOM explosion tests** - Deep BOM hierarchy handling | Medium | Medium |
 | MFG-09 | **Operations Resource Filament tests** - If OperationsResource exists | Medium | Medium |
 | MFG-10 | **Routing/operations sequence tests** - Manufacturing routing validation | Medium | Medium |
@@ -412,7 +412,7 @@ The following tests are currently skipped and need attention:
 ### Critical Priority (Must Fix)
 1. **E2E-01:** Implement browser smoke tests for critical user journeys
 2. **ACC-01:** Implement Dashboard class and enable dashboard tests
-3. **MFG-07:** Add WIP valuation tests for manufacturing
+3. ~~**MFG-07:** Add WIP valuation tests for manufacturing~~ ✅ Completed (2026-01-22)
 4. ~~**QC-01:** Quality check auto-trigger on goods receipt~~ ✅ Completed (2026-01-23)
 
 ### High Priority
