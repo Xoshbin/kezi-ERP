@@ -1,8 +1,8 @@
 # JMeryar ERP Test Gap Analysis Report
 
-**Date:** 2026-01-22 (Updated)  
-**Test Suite Summary:** 2,176 tests passed, 8 skipped, 8,281 assertions  
-**Duration:** ~43s (parallel)  
+**Date:** 2026-01-23 (Updated)  
+**Test Suite Summary:** 2,241 tests passed, 8 skipped, 8,413 assertions  
+**Duration:** ~46s (parallel)  
 **Development Approach:** Test-Driven Development (TDD)
 
 ---
@@ -29,7 +29,7 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 | **Inventory** | ~90+ tests | ⭐⭐⭐⭐ Good | Medium |
 | **Sales** | ~60+ tests | ⭐⭐⭐⭐ Good | Medium |
 | **Purchase** | ~45+ tests | ⭐⭐⭐⭐ Good | Medium |
-| **HR** | ~29 tests | ⭐⭐⭐ Moderate | High |
+| **HR** | ~94 tests | ⭐⭐⭐⭐ Good | Medium |
 | **Payment** | ~50+ tests | ⭐⭐⭐⭐ Good | Low |
 | **Manufacturing** | ~15 tests | ⭐⭐⭐ Moderate | High |
 | **ProjectManagement** | ~22 tests | ⭐⭐⭐ Moderate | Medium |
@@ -112,23 +112,24 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 - Expense reports
 - Payroll processing
 - Payroll accounting integration
+- **Cash Advance Actions** (Create, Submit, Approve, Reject, Disburse, Settle) ✅ *Added 2026-01-23*
 
 #### ⚠️ Identified Gaps
 
-| Gap ID | Description | Priority | Complexity |
-|--------|-------------|----------|------------|
-| HR-01 | **ApproveCashAdvanceAction unit test missing** - Action exists but no dedicated unit test (only Filament test) | High | Low |
-| HR-02 | **RejectCashAdvanceAction unit test missing** - Action exists but no dedicated unit test | High | Low |
-| HR-03 | **DisburseCashAdvanceAction unit test missing** - Action exists but no dedicated unit test | High | Low |
-| HR-04 | **SettleCashAdvanceAction unit test missing** - Action exists but integration tests cover workflows | Medium | Medium |
-| HR-05 | **CreateCashAdvanceAction unit test missing** - Action exists but only integration tests | Medium | Low |
-| HR-06 | **SubmitCashAdvanceAction unit test missing** - Action exists but no dedicated test file | Medium | Low |
-| HR-07 | **CreatePaymentFromPayrollAction test missing** - Action exists but no test coverage | High | Medium |
-| HR-08 | **CreatePayrollLineAction test missing** - Action exists but no dedicated test | Medium | Low |
-| HR-09 | **Attendance Resource Filament tests** - No Filament tests for AttendanceResource if it exists | Medium | Medium |
-| HR-10 | **Employment Contract Resource tests** - No dedicated Filament resource tests | Medium | Medium |
-| HR-11 | **Leave balance validation edge cases** - Need more tests for complex leave scenarios | Medium | Medium |
-| HR-12 | **Payroll deduction edge cases** - Complex deduction scenarios may need more coverage | Medium | High |
+| Gap ID | Description | Priority | Complexity | Status |
+|--------|-------------|----------|------------|--------|
+| HR-01 | **ApproveCashAdvanceAction unit test missing** - Action exists but no dedicated unit test (only Filament test) | High | Low | ✅ Completed |
+| HR-02 | **RejectCashAdvanceAction unit test missing** - Action exists but no dedicated unit test | High | Low | ✅ Completed |
+| HR-03 | **DisburseCashAdvanceAction unit test missing** - Action exists but no dedicated unit test | High | Low | ✅ Completed |
+| HR-04 | **SettleCashAdvanceAction unit test missing** - Action exists but integration tests cover workflows | Medium | Medium | ✅ Completed |
+| HR-05 | **CreateCashAdvanceAction unit test missing** - Action exists but only integration tests | Medium | Low | ✅ Completed |
+| HR-06 | **SubmitCashAdvanceAction unit test missing** - Action exists but no dedicated test file | Medium | Low | ✅ Completed |
+| HR-07 | **CreatePaymentFromPayrollAction test missing** - Action exists but no test coverage | High | Medium | Pending |
+| HR-08 | **CreatePayrollLineAction test missing** - Action exists but no dedicated test | Medium | Low | Pending |
+| HR-09 | **Attendance Resource Filament tests** - No Filament tests for AttendanceResource if it exists | Medium | Medium | Pending |
+| HR-10 | **Employment Contract Resource tests** - No dedicated Filament resource tests | Medium | Medium | Pending |
+| HR-11 | **Leave balance validation edge cases** - Need more tests for complex leave scenarios | Medium | Medium | Pending |
+| HR-12 | **Payroll deduction edge cases** - Complex deduction scenarios may need more coverage | Medium | High | Pending |
 
 ---
 
@@ -412,7 +413,7 @@ The following tests are currently skipped and need attention:
 4. **QC-01:** Quality check auto-trigger on goods receipt
 
 ### High Priority
-1. **HR-01 to HR-03:** Add missing cash advance action unit tests
+1. ~~**HR-01 to HR-03:** Add missing cash advance action unit tests~~ ✅ Completed
 2. **HR-07:** CreatePaymentFromPayrollAction test
 3. **MFG-01 to MFG-03:** Manufacturing journal entry, scheduling, and scrap tests
 4. **QC-02, QC-06:** Quality gates in production and NCR workflow
@@ -440,7 +441,7 @@ The following tests are currently skipped and need attention:
 
 ### Immediate Actions (Next Sprint)
 1. Fix all skipped tests - total of 8 tests need attention
-2. Implement missing HR action unit tests (5-6 tests)
+2. ~~Implement missing HR action unit tests (5-6 tests)~~ ✅ Completed (65+ tests added)
 3. Add CreateVendorBillFromPurchaseOrderAction dedicated test
 4. Begin browser smoke test implementation
 
@@ -464,7 +465,7 @@ The following tests are currently skipped and need attention:
 |--------|-----------|---------|-----------------|
 | Accounting | ~54+ | 29+ | ~85% |
 | Foundation | ~25+ | N/A | N/A |
-| HR | 29 | 15 | ~60% |
+| HR | 94 | 15 | ~85% |
 | Inventory | ~45+ | 13+ | ~80% |
 | Sales | ~35+ | 22 | ~90% |
 | Purchase | ~25+ | 15 | ~75% |
@@ -476,4 +477,4 @@ The following tests are currently skipped and need attention:
 
 ---
 
-*Report generated based on test results from 2026-01-22 and codebase analysis.*
+*Report generated based on test results from 2026-01-23 and codebase analysis.*
