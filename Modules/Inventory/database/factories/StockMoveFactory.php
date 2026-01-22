@@ -45,7 +45,7 @@ class StockMoveFactory extends Factory
     public function receipt(): static
     {
         return $this->state(fn (array $attributes) => [
-            'move_type' => StockMoveType::Receipt,
+            'move_type' => StockMoveType::Incoming,
         ]);
     }
 
@@ -55,7 +55,7 @@ class StockMoveFactory extends Factory
     public function delivery(): static
     {
         return $this->state(fn (array $attributes) => [
-            'move_type' => StockMoveType::Delivery,
+            'move_type' => StockMoveType::Outgoing,
         ]);
     }
 

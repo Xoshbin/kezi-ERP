@@ -328,7 +328,7 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 
 | Gap ID | Description | Priority | Complexity |
 |--------|-------------|----------|------------|
-| QC-01 | **Quality check on receipt integration** - Auto-trigger checks on goods receipt | High | Medium |
+| QC-01 | **Quality check on receipt integration** - Auto-trigger checks on goods receipt | High | Medium | ✅ Completed (2026-01-23) |
 | QC-02 | **Quality check on production completion** - Manufacturing quality gates | High | Medium |
 | QC-03 | **Statistical process control (SPC)** - If SPC is implemented | Medium | High |
 | QC-04 | **Quality certificate generation** - If COA/COC generation exists | Medium | Medium |
@@ -413,7 +413,7 @@ The following tests are currently skipped and need attention:
 1. **E2E-01:** Implement browser smoke tests for critical user journeys
 2. **ACC-01:** Implement Dashboard class and enable dashboard tests
 3. **MFG-07:** Add WIP valuation tests for manufacturing
-4. **QC-01:** Quality check auto-trigger on goods receipt
+4. ~~**QC-01:** Quality check auto-trigger on goods receipt~~ ✅ Completed (2026-01-23)
 
 ### High Priority
 1. ~~**HR-01 to HR-03:** Add missing cash advance action unit tests~~ ✅ Completed

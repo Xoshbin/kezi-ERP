@@ -8,6 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Product\Models\Product;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $stock_move_product_line_id
+ * @property int|null $lot_id
+ * @property int|null $serial_number_id
+ * @property float $quantity
+ */
 class StockMoveLine extends Model
 {
     use HasFactory;
