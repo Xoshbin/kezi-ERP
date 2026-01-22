@@ -162,6 +162,7 @@ class Company extends Model
         'default_finished_goods_inventory_id',
         'default_raw_materials_inventory_id',
         'default_manufacturing_journal_id',
+        'default_wip_account_id',
         // Cheque Settings
         'default_pdc_receivable_account_id',
         'default_pdc_payable_account_id',
@@ -563,6 +564,14 @@ class Company extends Model
     public function defaultStockInputAccount(): BelongsTo
     {
         return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_stock_input_account_id');
+    }
+
+    /**
+     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     */
+    public function defaultWipAccount(): BelongsTo
+    {
+        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_wip_account_id');
     }
 
     /*
