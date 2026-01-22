@@ -2,6 +2,7 @@
 
 namespace Modules\Manufacturing\Actions;
 
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,7 @@ use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDT
 use Modules\Inventory\Enums\Inventory\StockMoveStatus;
 use Modules\Inventory\Enums\Inventory\StockMoveType;
 use Modules\Inventory\Services\Inventory\StockMoveService;
+use Modules\Manufacturing\Actions\Accounting\CreateJournalEntryForConsumptionAction;
 use Modules\Manufacturing\Enums\ManufacturingOrderStatus;
 use Modules\Manufacturing\Models\ManufacturingOrder;
 
@@ -17,6 +19,7 @@ class ConsumeComponentsAction
 {
     public function __construct(
         private readonly StockMoveService $stockMoveService,
+        private readonly CreateJournalEntryForConsumptionAction $createJournalEntryForConsumptionAction,
     ) {}
 
     public function execute(ManufacturingOrder $mo): ManufacturingOrder
@@ -47,12 +50,14 @@ class ConsumeComponentsAction
             }
 
             if (! empty($productLines)) {
+                $userId = Auth::id() ?? User::first()?->id ?? 1;
+
                 $stockMoveDTO = new CreateStockMoveDTO(
                     company_id: $mo->company_id,
                     move_type: StockMoveType::InternalTransfer,
                     status: StockMoveStatus::Done,
                     move_date: Carbon::now(),
-                    created_by_user_id: (int) (Auth::id() ?? 1),
+                    created_by_user_id: (int) $userId,
                     product_lines: $productLines,
                     reference: "MO/{$mo->number}",
                     description: 'Component consumption for manufacturing order',
@@ -61,6 +66,17 @@ class ConsumeComponentsAction
                 );
 
                 $stockMove = $this->stockMoveService->createMove($stockMoveDTO);
+
+                // Create accounting entries for consumption (RM -> WIP)
+                // We pass the created stock move to ensure we account for exactly what was moved
+                $user = Auth::user() ?? User::find($userId);
+                // Fallback if no user found (should be extremely rare in prod, but possible in incomplete tests)
+                if (!$user) {
+                     // Last resort fallback for testing environments without users
+                     $user = new User(['id' => 1, 'name' => 'System']);
+                }
+
+                $this->createJournalEntryForConsumptionAction->execute($mo, $stockMove, $user);
 
                 // Update MO lines with consumed quantities
                 foreach ($mo->lines as $line) {

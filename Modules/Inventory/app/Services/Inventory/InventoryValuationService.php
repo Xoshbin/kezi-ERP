@@ -100,6 +100,13 @@ class InventoryValuationService
      */
     public function processIncomingStock(Product $product, float $quantity, Money $costPerUnit, Carbon $date, Model $sourceDocument): void
     {
+        // Skip valuation for Manufacturing Orders as they are handled by specific accounting actions (WIP -> FG)
+        if ($sourceDocument instanceof \Modules\Manufacturing\Models\ManufacturingOrder) {
+            Log::info("Skipping generic inventory valuation for Manufacturing Order {$sourceDocument->id}");
+
+            return;
+        }
+
         $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($date));
 
         if ($product->inventory_valuation_method === ValuationMethod::STANDARD) {

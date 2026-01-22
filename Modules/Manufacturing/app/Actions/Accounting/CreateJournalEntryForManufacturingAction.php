@@ -37,31 +37,23 @@ class CreateJournalEntryForManufacturingAction
 
             // Get required account IDs from company configuration
             $finishedGoodsAccountId = $company->default_finished_goods_inventory_id;
-            $rawMaterialsAccountId = $company->default_raw_materials_inventory_id;
+            // $rawMaterialsAccountId is not used here anymore, we credit WIP instead
+            $wipAccountId = $company->default_wip_account_id;
             $manufacturingJournalId = $company->default_manufacturing_journal_id;
 
-            if (! $finishedGoodsAccountId || ! $rawMaterialsAccountId || ! $manufacturingJournalId) {
-                throw new RuntimeException('Manufacturing accounts (Finished Goods, Raw Materials, Manufacturing Journal) are not configured for this company.');
+            if (! $finishedGoodsAccountId || ! $wipAccountId || ! $manufacturingJournalId) {
+                throw new RuntimeException('Manufacturing accounts (Finished Goods, WIP, Manufacturing Journal) are not configured for this company.');
             }
 
             $lineDTOs = [];
             $totalComponentCost = Money::of(0, $currency->code);
 
-            // Credit Raw Materials for each component consumed
+            // Calculate total cost from consumed components to credit WIP
             foreach ($mo->lines as $line) {
                 // unit_cost is a Money object due to BaseCurrencyMoneyCast
                 /** @var Money $unitCost */
                 $unitCost = $line->unit_cost;
                 $lineCost = $unitCost->multipliedBy($line->quantity_consumed);
-
-                $lineDTOs[] = new CreateJournalEntryLineDTO(
-                    account_id: $rawMaterialsAccountId,
-                    debit: Money::of(0, $currency->code),
-                    credit: $lineCost,
-                    description: "Component: {$line->product->name} ({$line->quantity_consumed} units)",
-                    partner_id: null,
-                    analytic_account_id: null,
-                );
 
                 $totalComponentCost = $totalComponentCost->plus($lineCost);
             }
@@ -69,6 +61,16 @@ class CreateJournalEntryForManufacturingAction
             // TODO: Add Manufacturing Overhead if work centers are used
             // For now, the total cost equals component cost
             $totalProductionCost = $totalComponentCost;
+
+            // Credit WIP Account (Transferring cost from WIP to Finished Goods)
+            $lineDTOs[] = new CreateJournalEntryLineDTO(
+                account_id: $wipAccountId,
+                debit: Money::of(0, $currency->code),
+                credit: $totalProductionCost,
+                description: "WIP Clearance: MO/{$mo->number}",
+                partner_id: null,
+                analytic_account_id: null,
+            );
 
             // Debit Finished Goods Inventory
             $lineDTOs[] = new CreateJournalEntryLineDTO(
