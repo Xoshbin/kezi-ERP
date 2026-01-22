@@ -136,7 +136,7 @@ class PayrollsTable
                     ->icon('heroicon-o-eye')
                     ->color(Color::Gray)
                     ->visible(fn (Payroll $record): bool => $record->payment_id !== null)
-                    ->url(fn (Payroll $record): string => route('filament.jmeryar.resources.payments.edit', $record->payment_id))
+                    ->url(fn (Payroll $record): string => route('filament.jmeryar.accounting.resources.payments.edit', ['record' => $record->payment_id, 'tenant' => $record->company_id]))
                     ->openUrlInNewTab(),
             ])
             ->toolbarActions([

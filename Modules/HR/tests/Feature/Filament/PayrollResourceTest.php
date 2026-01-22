@@ -147,4 +147,43 @@ describe('PayrollResource', function () {
             'deleted_at' => null, // If soft deletes
         ]);
     });
+
+    it('can create payment via table action', function () {
+        $currency = Currency::factory()->create(['code' => 'USD']);
+        $employee = Employee::factory()->create(['company_id' => $this->company->id]);
+
+        // Mocking company configuration for payment action
+        $salaryExpenseAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'expense']);
+        $salaryPayableAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'current_liabilities']);
+        $bankAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'current_assets']);
+        $bankJournal = \Modules\Accounting\Models\Journal::factory()->for($this->company)->create([
+            'type' => \Modules\Accounting\Enums\Accounting\JournalType::Bank,
+            'default_debit_account_id' => $bankAccount->id,
+            'default_credit_account_id' => $bankAccount->id,
+        ]);
+
+        $this->company->update([
+            'default_salary_expense_account_id' => $salaryExpenseAccount->id,
+            'default_salary_payable_account_id' => $salaryPayableAccount->id,
+            'default_bank_journal_id' => $bankJournal->id,
+        ]);
+
+        $payroll = Payroll::factory()->create([
+            'company_id' => $this->company->id,
+            'employee_id' => $employee->id,
+            'currency_id' => $currency->id,
+            'status' => 'processed',
+            'base_salary' => 1500,
+        ]);
+
+        $this->actingAs($this->user);
+
+        livewire(ListPayrolls::class)
+            ->callTableAction('pay', $payroll)
+            ->assertHasNoTableActionErrors();
+
+        $payroll->refresh();
+        expect($payroll->status)->toBe('paid');
+        expect($payroll->payment_id)->not->toBeNull();
+    });
 });
