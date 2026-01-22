@@ -264,12 +264,13 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 - Finished goods production
 - Work order management
 - Manufacturing to accounting integration
+- **CreateJournalEntryForManufacturingAction** ✅ *Added 2026-01-22*
 
 #### ⚠️ Identified Gaps
 
-| Gap ID | Description | Priority | Complexity |
-|--------|-------------|----------|------------|
-| MFG-01 | **CreateJournalEntryForManufacturingAction dedicated test** - Only integration test exists | High | Medium |
+| Gap ID | Description | Priority | Complexity | Status |
+|--------|-------------|----------|------------|--------|
+| MFG-01 | **CreateJournalEntryForManufacturingAction dedicated test** - Only integration test exists | High | Medium | ✅ Completed |
 | MFG-02 | **Work order scheduling tests** - Work order time and resource scheduling | High | High |
 | MFG-03 | **Manufacturing scrap handling** - Scrap during production process | High | Medium |
 | MFG-04 | **By-product/co-product accounting** - If by-products are supported | Medium | High |
@@ -417,8 +418,8 @@ The following tests are currently skipped and need attention:
 ### High Priority
 1. ~~**HR-01 to HR-03:** Add missing cash advance action unit tests~~ ✅ Completed
 2. ~~**HR-07:** CreatePaymentFromPayrollAction test~~ ✅ Completed
-3. **MFG-01 to MFG-03:** Manufacturing journal entry, scheduling, and scrap tests
-4. **QC-02, QC-06:** Quality gates in production and NCR workflow
+3. ~~**MFG-01:** CreateJournalEntryForManufacturingAction dedicated test~~ ✅ Completed
+4. **MFG-02, MFG-03:** Manufacturing scheduling, and scrap tests
 5. ~~**PUR-05:** CreateVendorBillFromPurchaseOrderAction dedicated test~~ ✅ Completed
 6. **INT-05:** Quality control blocking workflow integration
 
