@@ -97,11 +97,9 @@ class CreatePaymentFromPayrollAction
         // Create a new partner for the employee
         return Partner::create([
             'company_id' => $employee->company_id,
-            'name' => $employee->first_name . ' ' . $employee->last_name,
+            'name' => $employee->first_name.' '.$employee->last_name,
             'email' => $employee->email,
             'phone' => $employee->phone,
-            'is_customer' => false,
-            'is_vendor' => true,
             'type' => 'vendor',
         ]);
     }
