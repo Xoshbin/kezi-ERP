@@ -98,34 +98,31 @@ test('can create purchase order with line items through filament form', function
 });
 
 test('product selection auto-populates description and unit price', function () {
-    $livewire = Livewire::test(CreatePurchaseOrder::class, ['tenant' => $this->company])
+    Livewire::test(CreatePurchaseOrder::class, ['tenant' => $this->company])
         ->fillForm([
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->company->currency_id,
             'po_date' => now()->format('Y-m-d'),
+            'exchange_rate_at_creation' => 1,
+        ])
+        // First set up an empty line structure
+        ->set('data.lines', [
+            [
+                'product_id' => null,
+                'description' => '',
+                'quantity' => 1,
+                'unit_price' => '',
+                'tax_id' => null,
+            ],
+        ])
+        // Now set the product_id to trigger the afterStateUpdated callback
+        ->set('data.lines.0.product_id', $this->product->id)
+        // Assert that the fields were auto-populated
+        ->assertFormSet([
+            'lines.0.description' => 'Test Product Description',
+            'lines.0.unit_price' => '1000', // Product has unit_price of Money::of(1000, code) = $1000.00
         ]);
-
-    // Initially set up a line with empty data
-    $livewire->set('data.lines', [
-        [
-            'product_id' => null,
-            'description' => '',
-            'quantity' => 1,
-            'unit_price' => '',
-            'tax_id' => null,
-        ],
-    ]);
-
-    // Now select the product - this should trigger auto-population
-    $livewire->set('data.lines.0.product_id', $this->product->id);
-
-    // In Livewire tests, reactive callbacks might not trigger automatically
-    // So we'll test the logic directly by checking if the product data is accessible
-    expect($this->product->description)->toBe('Test Product Description');
-    expect($this->product->unit_price->getAmount()->__toString())->toBe('10');
-
-    // The actual auto-population will be tested in browser tests
-})->skip('Auto-population requires browser testing for reactive callbacks');
+});
 
 test('handles products with null unit price gracefully', function () {
     $productWithoutPrice = Product::factory()->create([
