@@ -90,6 +90,12 @@ class ViewManufacturingOrder extends ViewRecord
                             ->send();
 
                         redirect()->to(static::getResource()::getUrl('view', ['record' => $this->record]));
+                    } catch (\Illuminate\Validation\ValidationException $e) {
+                        Notification::make()
+                            ->danger()
+                            ->title(__('manufacturing::manufacturing.notifications.error'))
+                            ->body(implode("\n", $e->validator->errors()->all()))
+                            ->send();
                     } catch (\Exception $e) {
                         Notification::make()
                             ->danger()

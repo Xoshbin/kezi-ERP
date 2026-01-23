@@ -13,5 +13,6 @@ readonly class CreateQualityCheckDTO
         public ?int $serialNumberId = null,
         public ?int $inspectionTemplateId = null,
         public ?string $notes = null,
+        public bool $isBlocking = false,
     ) {}
 }
