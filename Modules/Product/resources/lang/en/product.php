@@ -29,6 +29,7 @@ return [
     'accounting_configuration_description' => 'Configure the default income and expense accounts for this product.',
     'income_account' => 'Income Account',
     'expense_account' => 'Expense Account',
+    'purchase_tax' => 'Purchase Tax',
 
     // Inventory Management
     'inventory_management' => 'Inventory Management',

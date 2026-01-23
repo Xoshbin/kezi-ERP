@@ -26,6 +26,7 @@ return [
     'accounting_configuration_description' => 'هەژماری بنەڕەتی داهات و خەرجی بۆ ئەم بەرهەمە ڕێکبخە.',
     'income_account' => 'هەژماری داهات',
     'expense_account' => 'هەژماری خەرجی',
+    'purchase_tax' => 'باجی کڕین',
 
     // Inventory Management
     'inventory_management' => 'بەڕێوەبردنی کۆگا',
