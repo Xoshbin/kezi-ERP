@@ -273,7 +273,7 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 | Gap ID | Description | Priority | Complexity | Status |
 |--------|-------------|----------|------------|--------|
 | MFG-01 | **CreateJournalEntryForManufacturingAction dedicated test** - Only integration test exists | High | Medium | ✅ Completed |
-| MFG-02 | **Work order scheduling tests** - Work order time and resource scheduling | High | High |
+| MFG-02 | **Work order scheduling tests** - Work order time and resource scheduling | High | High | ✅ Completed (2026-01-23) |
 | MFG-03 | **Manufacturing scrap handling** - Scrap during production process | High | Medium | ✅ Completed (2026-01-23) |
 | MFG-04 | **By-product/co-product accounting** - If by-products are supported | Medium | High |
 | MFG-05 | **Manufacturing order cancellation tests** - Cancellation with partial consumption | Medium | Medium |
@@ -421,7 +421,7 @@ The following tests are currently skipped and need attention:
 1. ~~**HR-01 to HR-03:** Add missing cash advance action unit tests~~ ✅ Completed
 2. ~~**HR-07:** CreatePaymentFromPayrollAction test~~ ✅ Completed
 3. ~~**MFG-01:** CreateJournalEntryForManufacturingAction dedicated test~~ ✅ Completed
-4. **MFG-02:** Manufacturing scheduling tests
+4. ~~**MFG-02:** Manufacturing scheduling tests~~ ✅ Completed (2026-01-23)
 5. ~~**MFG-03:** Manufacturing scrap handling tests~~ ✅ Completed
 5. ~~**PUR-05:** CreateVendorBillFromPurchaseOrderAction dedicated test~~ ✅ Completed
 6. **INT-05:** Quality control blocking workflow integration
