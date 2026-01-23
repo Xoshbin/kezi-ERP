@@ -15,4 +15,5 @@ return [
     'is_blocking' => 'Blocking',
     'blocking_yes' => 'Blocking',
     'blocking_no' => 'Optional',
+    'quality_gate_failed' => 'Cannot validate picking: All mandatory quality checks must be passed.',
 ];
