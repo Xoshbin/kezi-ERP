@@ -1,8 +1,8 @@
 # JMeryar ERP Test Gap Analysis Report
 
 **Date:** 2026-01-23 (Updated)
-**Test Suite Summary:** 2,299 tests passed, 4 skipped, 8,551 assertions
-**Duration:** ~48s (parallel)
+**Test Suite Summary:** 2,316 tests passed, 0 skipped, 8,635 assertions
+**Duration:** ~47s (parallel)
 **Development Approach:** Test-Driven Development (TDD)
 
 ---
@@ -15,8 +15,8 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 
 | Metric | Count |
 |--------|-------|
-| Total Tests Passed | 2,299 |
-| Total Assertions | 8,551 |
+| Total Tests Passed | 2,316 |
+| Total Assertions | 8,635 |
 | Modules Analyzed | 11 |
 
 ### Module Test Coverage Overview
@@ -28,11 +28,11 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 | **Inventory** | ~90+ tests | ⭐⭐⭐⭐ Good | Medium |
 | **Sales** | ~60+ tests | ⭐⭐⭐⭐ Good | Medium |
 | **Purchase** | ~57+ tests | ⭐⭐⭐⭐ Good | Medium |
-| **HR** | ~94 tests | ⭐⭐⭐⭐ Good | Medium |
+| **HR** | ~116 tests | ⭐⭐⭐⭐ Good | Medium |
 | **Payment** | ~50+ tests | ⭐⭐⭐⭐ Good | Low |
-| **Manufacturing** | ~17 tests | ⭐⭐⭐ Moderate | High |
+| **Manufacturing** | ~25 tests | ⭐⭐⭐⭐ Good | High |
 | **ProjectManagement** | ~22 tests | ⭐⭐⭐ Moderate | Medium |
-| **QualityControl** | ~15 tests | ⭐⭐⭐ Moderate | High |
+| **QualityControl** | ~18 tests | ⭐⭐⭐ Moderate | High |
 | **Product** | ~89 tests | ⭐⭐⭐⭐ Good | Low |
 
 ---
@@ -55,16 +55,13 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 - Withholding tax calculations
 - Loan management and amortization
 - Petty cash fund operations
-- **Fiscal Year Actions** (Reopen, Generate Opening Entry) ✅ *Fixed 2026-01-23*
-- **Accounting Dashboard** (Stats, Charts, Widgets) ✅ *Fixed 2026-01-23*
+- Fiscal Year Actions (Reopen, Generate Opening Entry)
+- Accounting Dashboard (Stats, Charts, Widgets)
 
 #### ⚠️ Identified Gaps
 
 | Gap ID | Description | Priority | Complexity | Status |
 |--------|-------------|----------|------------|--------|
-| ACC-01 | **Dashboard widgets tests skipped** - 4 dashboard tests are currently skipped with "Dashboard class needs to be implemented" | High | Medium | ✅ Completed |
-| ACC-02 | **FiscalYearResource modal confirmation tests skipped** - 2 tests skipped for reopen/generate opening entry actions | Medium | Low | ✅ Completed |
-| ACC-03 | **RecurringTemplateResource create test skipped** - Validation failure during recurring template creation test | Medium | Low | ✅ Completed |
 | ACC-04 | **Analytic Plan/Account Resource Filament tests** - No dedicated Filament tests for AnalyticPlanResource and AnalyticAccountResource | Medium | Medium | Pending |
 | ACC-05 | **Audit Log Resource Filament tests** - No Filament tests for AuditLogResource (viewing, filtering audit logs) | Low | Low | Pending |
 | ACC-06 | **Tax Resource Filament tests** - Missing comprehensive Filament tests for TaxResource CRUD operations | Medium | Low | Pending |
@@ -101,8 +98,8 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 
 ### 3. HR Module
 
-**Status:** Moderate coverage with missing action tests  
-**Total Tests:** ~29 passing tests
+**Status:** Good coverage with comprehensive action tests  
+**Total Tests:** ~116 passing tests
 
 #### ✅ Well-Covered Areas
 - Employee creation
@@ -113,20 +110,11 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 - Expense reports
 - Payroll processing
 - Payroll accounting integration
-- **Cash Advance Actions** (Create, Submit, Approve, Reject, Disburse, Settle) ✅ *Added 2026-01-23*
-- **Payroll Payment Creation** (CreatePaymentFromPayrollAction) ✅ *Added 2026-01-22*
 
 #### ⚠️ Identified Gaps
 
 | Gap ID | Description | Priority | Complexity | Status |
 |--------|-------------|----------|------------|--------|
-| HR-01 | **ApproveCashAdvanceAction unit test missing** - Action exists but no dedicated unit test (only Filament test) | High | Low | ✅ Completed |
-| HR-02 | **RejectCashAdvanceAction unit test missing** - Action exists but no dedicated unit test | High | Low | ✅ Completed |
-| HR-03 | **DisburseCashAdvanceAction unit test missing** - Action exists but no dedicated unit test | High | Low | ✅ Completed |
-| HR-04 | **SettleCashAdvanceAction unit test missing** - Action exists but integration tests cover workflows | Medium | Medium | ✅ Completed |
-| HR-05 | **CreateCashAdvanceAction unit test missing** - Action exists but only integration tests | Medium | Low | ✅ Completed |
-| HR-06 | **SubmitCashAdvanceAction unit test missing** - Action exists but no dedicated test file | Medium | Low | ✅ Completed |
-| HR-07 | **CreatePaymentFromPayrollAction test missing** - Action exists but no test coverage | High | Medium | ✅ Completed |
 | HR-08 | **CreatePayrollLineAction test missing** - Action exists but no dedicated test | Medium | Low | Pending |
 | HR-09 | **Attendance Resource Filament tests** - No Filament tests for AttendanceResource if it exists | Medium | Medium | Pending |
 | HR-10 | **Employment Contract Resource tests** - No dedicated Filament resource tests | Medium | Medium | Pending |
@@ -199,7 +187,7 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 ### 6. Purchase Module
 
 **Status:** Good coverage with comprehensive workflows  
-**Total Tests:** ~45+ passing tests
+**Total Tests:** ~57+ passing tests
 
 #### ✅ Well-Covered Areas
 - Request for Quotation (RFQ) lifecycle
@@ -209,17 +197,14 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 - Shipping cost validation
 - Deferred expense handling
 - Product variants in purchasing
-- **CreateVendorBillFromPurchaseOrderAction** (full workflow, taxes, multi-currency, partial billing, accounting entries) ✅ *Added 2026-01-22*
 
 #### ⚠️ Identified Gaps
 
 | Gap ID | Description | Priority | Complexity | Status |
 |--------|-------------|----------|------------|--------|
-| PUR-01 | **PurchaseOrderLineItemsTest auto-populate skipped** - Product selection auto-populate test skipped | Medium | Low | ✅ Completed |
 | PUR-02 | **CreatePurchaseOrderLineAction test missing** - Action exists but no dedicated test file | Medium | Low | Pending |
 | PUR-03 | **CreateRequestForQuotationLineAction test missing** - Action exists but no dedicated test | Low | Low | Pending |
 | PUR-04 | **CreateVendorBillLineAction test missing** - Action exists but no dedicated test | Medium | Low | Pending |
-| PUR-05 | **CreateVendorBillFromPurchaseOrderAction test missing** - Dedicated unit test needed | High | Medium | ✅ Completed |
 | PUR-06 | **Blanket purchase order tests** - If blanket orders exist, no test coverage | Low | High | Pending |
 | PUR-07 | **Vendor rating/evaluation tests** - Vendor performance tracking if applicable | Low | Medium | Pending |
 
@@ -254,8 +239,8 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 
 ### 8. Manufacturing Module
 
-**Status:** Moderate coverage, needs expansion  
-**Total Tests:** ~15 passing tests
+**Status:** Good coverage, recently expanded  
+**Total Tests:** ~25 passing tests
 
 #### ✅ Well-Covered Areas
 - BOM creation and costing
@@ -263,25 +248,20 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 - Production confirmation and start
 - Component consumption
 - Finished goods production
-- Work order management
+- Work order management and sequential scheduling
 - Manufacturing to accounting integration
-- **CreateJournalEntryForManufacturingAction** ✅ *Added 2026-01-22*
-- **ScrapManufacturingAction** (Scrap raw material logic, accounting integration) ✅ *Added 2026-01-23*
+- Scrap and WIP accounting handling
 
 #### ⚠️ Identified Gaps
 
 | Gap ID | Description | Priority | Complexity | Status |
 |--------|-------------|----------|------------|--------|
-| MFG-01 | **CreateJournalEntryForManufacturingAction dedicated test** - Only integration test exists | High | Medium | ✅ Completed |
-| MFG-02 | **Work order scheduling tests** - Work order time and resource scheduling | High | High | ✅ Completed (2026-01-23) |
-| MFG-03 | **Manufacturing scrap handling** - Scrap during production process | High | Medium | ✅ Completed (2026-01-23) |
-| MFG-04 | **By-product/co-product accounting** - If by-products are supported | Medium | High |
-| MFG-05 | **Manufacturing order cancellation tests** - Cancellation with partial consumption | Medium | Medium |
-| MFG-06 | **Work center capacity planning tests** - Capacity and availability checks | Medium | High |
-| MFG-07 | **WIP (Work-in-Progress) valuation tests** - WIP accounting during production | High | High | ✅ Completed (2026-01-22) |
-| MFG-08 | **Multi-level BOM explosion tests** - Deep BOM hierarchy handling | Medium | Medium |
-| MFG-09 | **Operations Resource Filament tests** - If OperationsResource exists | Medium | Medium |
-| MFG-10 | **Routing/operations sequence tests** - Manufacturing routing validation | Medium | Medium |
+| MFG-04 | **By-product/co-product accounting** - If by-products are supported | Medium | High | Pending |
+| MFG-05 | **Manufacturing order cancellation tests** - Cancellation with partial consumption | Medium | Medium | Pending |
+| MFG-06 | **Work center capacity planning tests** - Capacity and availability checks | Medium | High | Pending |
+| MFG-08 | **Multi-level BOM explosion tests** - Deep BOM hierarchy handling | Medium | Medium | Pending |
+| MFG-09 | **Operations Resource Filament tests** - If OperationsResource exists | Medium | Medium | Pending |
+| MFG-10 | **Routing/operations sequence tests** - Manufacturing routing validation | Medium | Medium | Pending |
 
 ---
 
@@ -315,10 +295,10 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 ### 10. Quality Control Module
 
 **Status:** Moderate coverage, needs expansion  
-**Total Tests:** ~15 passing tests
+**Total Tests:** ~18 passing tests
 
 #### ✅ Well-Covered Areas
-- Quality check creation
+- Quality check creation (including auto-trigger on receipt)
 - Quality alert creation
 - Check result recording
 - Control point service
@@ -330,7 +310,6 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 
 | Gap ID | Description | Priority | Complexity |
 |--------|-------------|----------|------------|
-| QC-01 | **Quality check on receipt integration** - Auto-trigger checks on goods receipt | High | Medium | ✅ Completed (2026-01-23) |
 | QC-02 | **Quality check on production completion** - Manufacturing quality gates | High | Medium |
 | QC-03 | **Statistical process control (SPC)** - If SPC is implemented | Medium | High |
 | QC-04 | **Quality certificate generation** - If COA/COC generation exists | Medium | Medium |
@@ -353,20 +332,15 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 - Variant price inheritance
 - Tracking type enforcement
 - Product creation integrity
-- **ProductAttributeResource Filament tests** (CRUD, validation, table features) ✅ *Added 2026-01-22*
-- **Product lifecycle states** (active/inactive transitions, soft delete) ✅ *Added 2026-01-22*
-- **SKU/Barcode uniqueness validation** (company scope, variant SKUs) ✅ *Added 2026-01-22*
+- Product lifecycle states and SKU/Barcode uniqueness
 
 #### ⚠️ Identified Gaps
 
 | Gap ID | Description | Priority | Complexity | Status |
 |--------|-------------|----------|------------|--------|
-| PRD-01 | **ProductAttributeResource Filament tests** - If separate resource exists | Medium | Low | ✅ Completed |
 | PRD-02 | **Product category hierarchy tests** - Category tree operations | Medium | Medium | Pending |
 | PRD-03 | **Product bundle/kit tests** - If product bundles are supported | Low | Medium | Pending |
-| PRD-04 | **Product lifecycle states** - Active/inactive/obsolete state transitions | Medium | Low | ✅ Completed |
 | PRD-05 | **Product image handling tests** - If product images are managed | Low | Low | Pending |
-| PRD-06 | **Barcode/SKU uniqueness tests** - Barcode generation and validation | Medium | Low | ✅ Completed |
 | PRD-07 | **Product merge/consolidation** - If product merge functionality exists | Low | Medium | Pending |
 
 ---
@@ -395,45 +369,21 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 
 ---
 
-## Skipped Tests Analysis
-
-The following tests are currently skipped and need attention:
-
-| Test Location | Reason | Action Required |
-|---------------|--------|-----------------|
-| FiscalYearResourceTest::reopen action | "Livewire modal confirmation testing issue" | ✅ Fixed (2026-01-23) |
-| FiscalYearResourceTest::generate opening entry | "Confirmation modal testing needs different approach" | ✅ Fixed (2026-01-23) |
-| DashboardTest (4 tests) | "Dashboard class needs to be implemented" | ✅ Fixed (2026-01-23) |
-| RecurringTemplateResourceTest::create | "Validation failure" | ✅ Fixed (2026-01-23) |
-| PurchaseOrderLineItemsTest::auto-populate | "Auto-populate behavior needs manual verification" | ✅ Fixed (2026-01-23) |
-
----
-
 ## Prioritized Action Items
 
 ### Critical Priority (Must Fix)
 1. **E2E-01:** Implement browser smoke tests for critical user journeys
-2. ~~**ACC-01:** Implement Dashboard class and enable dashboard tests~~ ✅ Completed (2026-01-23)
-3. ~~**MFG-07:** Add WIP valuation tests for manufacturing~~ ✅ Completed (2026-01-22)
-4. ~~**QC-01:** Quality check auto-trigger on goods receipt~~ ✅ Completed (2026-01-23)
 
 ### High Priority
-1. ~~**HR-01 to HR-03:** Add missing cash advance action unit tests~~ ✅ Completed
-2. ~~**HR-07:** CreatePaymentFromPayrollAction test~~ ✅ Completed
-3. ~~**MFG-01:** CreateJournalEntryForManufacturingAction dedicated test~~ ✅ Completed
-4. ~~**MFG-02:** Manufacturing scheduling tests~~ ✅ Completed (2026-01-23)
-5. ~~**MFG-03:** Manufacturing scrap handling tests~~ ✅ Completed
-5. ~~**PUR-05:** CreateVendorBillFromPurchaseOrderAction dedicated test~~ ✅ Completed
-6. **INT-05:** Quality control blocking workflow integration
+1. **INT-05:** Quality control blocking workflow integration
 
 ### Medium Priority
-1. ~~**ACC-02:** FiscalYearResource modal confirmation tests~~ ✅ Completed
-2. **ACC-04:** Filament resource missing resources tests
-3. **HR-09 to HR-12:** HR resource and edge case tests
-4. **INV-02 to INV-05:** Inventory edge cases
-5. **MFG-04 to MFG-10:** Manufacturing workflow expansions
-6. **PRJ-03 to PRJ-04:** Project resource allocation and milestones
-7. **PRD-02:** Product category hierarchy tests
+1. **ACC-04:** Filament resource missing resources tests
+2. **HR-09 to HR-12:** HR resource and edge case tests
+3. **INV-02 to INV-05:** Inventory edge cases
+4. **MFG-04 to MFG-10:** Manufacturing workflow expansions
+5. **PRJ-03 to PRJ-04:** Project resource allocation and milestones
+6. **PRD-02:** Product category hierarchy tests
 
 ### Low Priority
 1. **ACC-05 to ACC-07:** Audit/Tax/Journal resources
@@ -447,16 +397,13 @@ The following tests are currently skipped and need attention:
 ## Recommendations
 
 ### Immediate Actions (Next Sprint)
-1. Fix remaining skipped tests (1 test pending)
-2. ~~Implement missing HR action unit tests (5-6 tests)~~ ✅ Completed (65+ tests added)
-3. ~~Add CreateVendorBillFromPurchaseOrderAction dedicated test~~ ✅ Completed (14 tests added)
-4. Begin browser smoke test implementation
+1. Fix any remaining minor regressions in local environments
+2. Begin browser smoke test implementation
 
 ### Short-term (1-2 Sprints)
 1. Complete Manufacturing module test coverage expansion
 2. Add Quality Control integration tests with Inventory and Manufacturing
-3. ~~Implement Dashboard class and related widgets~~ ✅ Completed
-4. Add Product variant to all module integration tests
+3. Add Product variant to all module integration tests
 
 ### Long-term (3+ Sprints)
 1. Achieve 100% action coverage across all modules
@@ -477,11 +424,11 @@ The following tests are currently skipped and need attention:
 | Sales | ~35+ | 22 | ~90% |
 | Purchase | ~37+ | 15 | ~90% |
 | Payment | ~30+ | Varies | ~85% |
-| Manufacturing | 17 | 8 | ~90% |
+| Manufacturing | 25 | 9 | ~95% |
 | ProjectManagement | 22 | 7+ | ~90% |
-| QualityControl | 15 | 4 | ~75% |
+| QualityControl | 18 | 4 | ~80% |
 | Product | 89 | Varies | ~90% |
 
 ---
 
-*Report generated based on test results from 2026-01-23 and codebase analysis.*
+*Report updated 2026-01-23 after completion of MFG-02 and MFG-03.*
