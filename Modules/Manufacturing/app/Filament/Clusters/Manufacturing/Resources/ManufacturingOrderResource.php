@@ -249,6 +249,7 @@ class ManufacturingOrderResource extends Resource
         return [
             RelationManagers\LinesRelationManager::class,
             RelationManagers\WorkOrdersRelationManager::class,
+            RelationManagers\QualityChecksRelationManager::class,
         ];
     }
 

@@ -12,4 +12,7 @@ return [
     'inspected_at' => 'پشکنراوە لە',
     'notes' => 'تێبینیەکان',
     'created_at' => 'دروستکراوە لە',
+    'is_blocking' => 'ڕێگر',
+    'blocking_yes' => 'ڕێگر',
+    'blocking_no' => 'ئارەزوومەندانە',
 ];
