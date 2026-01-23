@@ -135,4 +135,15 @@ return [
         'all_boms' => 'All BOMs',
         'all' => 'All',
     ],
+    'work_order' => [
+        'label' => 'Work Order',
+        'plural_label' => 'Work Orders',
+        'sequence' => 'Sequence',
+        'operation' => 'Operation',
+        'work_center' => 'Work Center',
+        'planned_duration' => 'Planned Duration (Hours)',
+        'planned_start_at' => 'Planned Start',
+        'planned_finished_at' => 'Planned Finished',
+        'status' => 'Status',
+    ],
 ];
