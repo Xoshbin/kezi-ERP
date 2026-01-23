@@ -139,6 +139,13 @@ class BaseCurrencyMoneyCast extends MoneyCast
             }
         }
 
+        if (method_exists($model, 'budget') && $model->getAttribute('budget_id')) {
+            $budget = $model->budget()->with('company.currency')->first();
+            if ($budget && $budget->company && $budget->company->currency) {
+                return $budget->company->currency;
+            }
+        }
+
         // Last resort: Try to get currency from Filament tenant context
         try {
             $tenant = Filament::getTenant();
