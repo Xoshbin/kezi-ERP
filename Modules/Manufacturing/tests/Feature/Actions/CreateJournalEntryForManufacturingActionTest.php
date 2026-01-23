@@ -36,6 +36,13 @@ beforeEach(function () {
         'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets,
     ]);
 
+    $this->wipAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'code' => '1030',
+        'name' => 'WIP',
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets,
+    ]);
+
     // Setup Journal
     $this->manufacturingJournal = Journal::factory()->create([
         'company_id' => $this->company->id,
@@ -49,6 +56,7 @@ beforeEach(function () {
         'default_manufacturing_journal_id' => $this->manufacturingJournal->id,
         'default_raw_materials_inventory_id' => $this->rmAccount->id,
         'default_finished_goods_inventory_id' => $this->fgAccount->id,
+        'default_wip_account_id' => $this->wipAccount->id,
     ]);
 
     $this->action = app(CreateJournalEntryForManufacturingAction::class);
@@ -81,7 +89,7 @@ it('creates a journal entry when manufacturing order is completed', function () 
     expect($journalEntry)->not->toBeNull()
         ->and($mo->refresh()->journal_entry_id)->toBe($journalEntry->id)
         ->and($journalEntry->is_posted)->toBeTrue()
-        ->and($journalEntry->lines)->toHaveCount(3); // 2 credits (RM) + 1 debit (FG)
+        ->and($journalEntry->lines)->toHaveCount(2); // 1 credit (WIP) + 1 debit (FG)
 
     // Total Cost = 20 * 100 + 10 * 50 = 2000 + 500 = 2500
     $expectedTotal = 2500.0;
@@ -91,25 +99,25 @@ it('creates a journal entry when manufacturing order is completed', function () 
         ->and($fgDebit->credit->getAmount()->toFloat())->toBe(0.0)
         ->and($fgDebit->description)->toContain('10.0000 units');
 
-    $rmCreditTotal = $journalEntry->lines()
-        ->where('account_id', $this->rmAccount->id)
+    $wipCreditTotal = $journalEntry->lines()
+        ->where('account_id', $this->wipAccount->id)
         ->get()
         ->sum(fn ($line) => $line->credit->getAmount()->toFloat());
 
-    expect($rmCreditTotal)->toBe($expectedTotal);
+    expect($wipCreditTotal)->toBe($expectedTotal);
 });
 
 it('throws exception if manufacturing accounts are not configured', function () {
     // Arrange
     $this->company->update([
-        'default_raw_materials_inventory_id' => null,
+        'default_wip_account_id' => null,
     ]);
 
     $mo = ManufacturingOrder::factory()->create(['company_id' => $this->company->id]);
 
     // Act & Assert
     expect(fn () => $this->action->execute($mo, $this->user))
-        ->toThrow(\RuntimeException::class, 'Manufacturing accounts (Finished Goods, Raw Materials, Manufacturing Journal) are not configured for this company.');
+        ->toThrow(\RuntimeException::class, 'Manufacturing accounts (Finished Goods, WIP, Manufacturing Journal) are not configured for this company.');
 });
 
 it('handles multi-currency manufacturing costs correctly by using company currency', function () {
@@ -189,11 +197,14 @@ it('handles multi-component BOM consumption accounting', function () {
 
     // Assert
     // Total = 1*100 + 2*50 + 5*10 = 100 + 100 + 50 = 250
-    expect($journalEntry->lines)->toHaveCount(4); // 3 credits + 1 debit
+    // With WIP accounting, we have 1 Debit to FG and 1 Credit to WIP (aggregated)
+    expect($journalEntry->lines)->toHaveCount(2);
 
     $fgDebit = $journalEntry->lines()->where('account_id', $this->fgAccount->id)->first();
     expect($fgDebit->debit->getAmount()->toFloat())->toBe(250.0);
 
-    $rmCredits = $journalEntry->lines()->where('account_id', $this->rmAccount->id)->get();
-    expect($rmCredits)->toHaveCount(3);
+    $wipCredits = $journalEntry->lines()->where('account_id', $this->wipAccount->id)->get();
+    // WIP credit is aggregated
+    expect($wipCredits)->toHaveCount(1)
+        ->and($wipCredits->first()->credit->getAmount()->toFloat())->toBe(250.0);
 });

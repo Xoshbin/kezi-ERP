@@ -21,6 +21,7 @@ beforeEach(function () {
     $this->company->update([
         'default_finished_goods_inventory_id' => Account::factory()->for($this->company)->create(['type' => 'current_assets'])->id,
         'default_raw_materials_inventory_id' => Account::factory()->for($this->company)->create(['type' => 'current_assets'])->id,
+        'default_wip_account_id' => Account::factory()->for($this->company)->create(['type' => 'current_assets'])->id,
         'default_manufacturing_journal_id' => Journal::factory()->for($this->company)->create(['type' => JournalType::Miscellaneous])->id,
     ]);
 
@@ -95,18 +96,19 @@ describe('ManufacturingOrderService', function () {
         $expectedTotalCostMinor = 5000000;
 
         // Verify Journal Lines
-        // Line 1: Credit Raw Materials (Credit)
+        // Line 1: Credit WIP (Credit) - Production moves value from WIP to FG
         // Line 2: Debit Finished Goods (Debit)
+        // Note: Raw Materials are credited when consumed, which happens before this step
         expect($journalEntry->lines)->toHaveCount(2);
 
-        $rawMaterialLine = $journalEntry->lines->where('account_id', $this->company->default_raw_materials_inventory_id)->first();
+        $wipLine = $journalEntry->lines->where('account_id', $this->company->default_wip_account_id)->first();
         $finishedGoodsLine = $journalEntry->lines->where('account_id', $this->company->default_finished_goods_inventory_id)->first();
 
-        expect($rawMaterialLine)->not->toBeNull();
+        expect($wipLine)->not->toBeNull();
         expect($finishedGoodsLine)->not->toBeNull();
 
-        expect($rawMaterialLine->credit->getMinorAmount()->toInt())->toBe($expectedTotalCostMinor);
-        expect($rawMaterialLine->debit->getMinorAmount()->toInt())->toBe(0);
+        expect($wipLine->credit->getMinorAmount()->toInt())->toBe($expectedTotalCostMinor);
+        expect($wipLine->debit->getMinorAmount()->toInt())->toBe(0);
 
         expect($finishedGoodsLine->debit->getMinorAmount()->toInt())->toBe($expectedTotalCostMinor);
         expect($finishedGoodsLine->credit->getMinorAmount()->toInt())->toBe(0);
