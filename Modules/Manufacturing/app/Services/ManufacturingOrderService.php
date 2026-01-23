@@ -50,12 +50,12 @@ class ManufacturingOrderService
 
     public function consumeComponents(ManufacturingOrder $mo): ManufacturingOrder
     {
-        return $this->consumeComponentsAction->execute($mo);
+        return $this->consumeComponentsAction->execute($mo, auth()->user());
     }
 
     public function produceFinishedGoods(ManufacturingOrder $mo): ManufacturingOrder
     {
-        $mo = $this->produceFinishedGoodsAction->execute($mo);
+        $mo = $this->produceFinishedGoodsAction->execute($mo, auth()->user());
 
         event(new ProductionCompleted($mo));
 

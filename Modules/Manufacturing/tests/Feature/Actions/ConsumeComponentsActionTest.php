@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Accounting\Models\Account;
+use Modules\Accounting\Models\Journal;
 use Modules\Inventory\Enums\Inventory\StockLocationType;
 use Modules\Inventory\Models\StockLocation;
 use Modules\Manufacturing\Actions\ConsumeComponentsAction;
@@ -26,6 +28,35 @@ beforeEach(function () {
         'company_id' => $this->company->id,
         'type' => StockLocationType::Internal,
         'name' => 'Finished Goods Warehouse',
+    ]);
+
+    // Setup Accounts for accounting integration
+    $this->rmAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'code' => '1010',
+        'name' => 'Raw Materials',
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets,
+    ]);
+
+    $this->wipAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'code' => '1030',
+        'name' => 'WIP',
+        'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets,
+    ]);
+
+    $this->manufacturingJournal = Journal::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'Manufacturing Operations',
+        'short_code' => 'MFG',
+        'type' => \Modules\Accounting\Enums\Accounting\JournalType::Miscellaneous,
+    ]);
+
+    // Configure Company Defaults
+    $this->company->update([
+        'default_manufacturing_journal_id' => $this->manufacturingJournal->id,
+        'default_raw_materials_inventory_id' => $this->rmAccount->id,
+        'default_wip_account_id' => $this->wipAccount->id,
     ]);
 });
 

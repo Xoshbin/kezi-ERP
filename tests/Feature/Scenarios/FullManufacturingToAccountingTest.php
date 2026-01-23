@@ -79,6 +79,7 @@ beforeEach(function () {
         'default_manufacturing_journal_id' => $this->manufacturingJournal->id,
         'default_raw_materials_inventory_id' => $this->rmAccount->id,
         'default_finished_goods_inventory_id' => $this->fgAccount->id,
+        'default_wip_account_id' => $this->wipAccount->id,
     ]);
 
     // 3. Setup Locations
@@ -263,9 +264,9 @@ it('completes full manufacturing flow to accounting', function () {
 
     $totalCredit = 0.0;
     foreach ($je->lines as $line) {
-        if ($line->account_id === $this->rmAccount->id && $line->credit->isPositive()) {
+        if ($line->account_id === $this->wipAccount->id && $line->credit->isPositive()) {
             $totalCredit += $line->credit->getAmount()->toFloat();
         }
     }
-    expect($totalCredit)->toBe($expectedAmount, 'Total Credit to Raw Materials mismatch');
+    expect($totalCredit)->toBe($expectedAmount, 'Total Credit to WIP mismatch');
 });
