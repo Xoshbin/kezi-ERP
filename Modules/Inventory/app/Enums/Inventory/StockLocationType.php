@@ -9,6 +9,7 @@ enum StockLocationType: string
     case Vendor = 'vendor';
     case InventoryAdjustment = 'inventory_adjustment';
     case Transit = 'transit';
+    case Scrap = 'scrap';
 
     /**
      * Get the translated label for the stock location type.

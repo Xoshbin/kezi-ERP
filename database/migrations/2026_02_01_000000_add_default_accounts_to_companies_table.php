@@ -64,6 +64,7 @@ return new class extends Migration
             $table->foreignId('default_raw_materials_inventory_id')->nullable()->constrained('accounts')->nullOnDelete();
             $table->foreignId('default_manufacturing_journal_id')->nullable();
             $table->foreignId('default_wip_account_id')->nullable()->constrained('accounts')->nullOnDelete();
+            $table->foreignId('default_scrap_account_id')->nullable()->constrained('accounts')->nullOnDelete();
 
             // Cheques / PDC
             $table->foreignId('default_pdc_receivable_account_id')->nullable()->constrained('accounts')->nullOnDelete();
@@ -137,6 +138,8 @@ return new class extends Migration
             $table->dropColumn('default_manufacturing_journal_id');
             $table->dropForeign(['default_wip_account_id']);
             $table->dropColumn('default_wip_account_id');
+            $table->dropForeign(['default_scrap_account_id']);
+            $table->dropColumn('default_scrap_account_id');
 
             $table->dropForeign(['default_pdc_receivable_account_id']);
             $table->dropColumn('default_pdc_receivable_account_id');
