@@ -242,6 +242,16 @@ class ProductResource extends Resource
                                     ->modalWidth('lg');
                             }),
                     ]),
+                    Grid::make(2)->schema([
+                        TranslatableSelect::make('purchaseTaxes')
+                            ->relationship('purchaseTaxes', 'name')
+                            ->label(__('product.purchase_tax'))
+                            ->multiple()
+                            ->nullable()
+                            ->searchable()
+                            ->preload()
+                            ->modifyQueryUsing(fn ($query) => $query->whereIn('type', [\Modules\Accounting\Enums\Accounting\TaxType::Purchase, \Modules\Accounting\Enums\Accounting\TaxType::Both])),
+                    ]),
                 ]),
 
             Section::make(__('product.inventory_management'))

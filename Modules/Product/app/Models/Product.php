@@ -53,6 +53,7 @@ use Spatie\Translatable\HasTranslations;
  * @property \Modules\Inventory\Enums\Inventory\TrackingType $tracking_type
  * @property float $weight
  * @property float $volume
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Modules\Accounting\Models\Tax> $purchaseTaxes
  * @property array<int, mixed>|null $product_attributes
  * @property array<int, mixed>|null $productAttributes
  * @property-read Company $company
@@ -464,5 +465,13 @@ class Product extends Model
     public function isVariant(): bool
     {
         return ! empty($this->parent_product_id);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\Modules\Accounting\Models\Tax, static>
+     */
+    public function purchaseTaxes(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(\Modules\Accounting\Models\Tax::class, 'product_purchase_tax');
     }
 }
