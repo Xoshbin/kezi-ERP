@@ -35,6 +35,7 @@ class QualityCheckService
             lotId: $lotId,
             serialNumberId: $serialNumberId,
             inspectionTemplateId: $controlPoint->inspection_template_id,
+            isBlocking: $controlPoint->is_blocking,
         );
 
         return $this->createQualityCheckAction->execute($dto);

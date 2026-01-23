@@ -15,7 +15,7 @@ class EventServiceProvider extends ServiceProvider
         \Modules\Inventory\Events\StockPickingValidated::class => [
             \Modules\QualityControl\Listeners\CreateQualityChecksForStockPicking::class,
         ],
-        \Modules\Manufacturing\Events\ManufacturingOrderCompleted::class => [
+        \Modules\Manufacturing\Events\ManufacturingOrderConfirmed::class => [
             \Modules\QualityControl\Listeners\CreateQualityChecksForManufacturing::class,
         ],
     ];

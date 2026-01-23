@@ -6,6 +6,7 @@ use Modules\Manufacturing\Actions\ProduceFinishedGoodsAction;
 use Modules\Manufacturing\Enums\ManufacturingOrderStatus;
 use Modules\Manufacturing\Models\ManufacturingOrder;
 use Modules\Manufacturing\Models\ManufacturingOrderLine;
+use Modules\Product\Models\Product;
 use Modules\QualityControl\Enums\QualityCheckStatus;
 use Modules\QualityControl\Models\QualityCheck;
 use Tests\Traits\WithConfiguredCompany;
@@ -204,5 +205,56 @@ describe('Manufacturing Quality Gate', function () {
 
         // Assert
         expect($updatedMo->status)->toBe(ManufacturingOrderStatus::Done);
+    });
+
+    it('triggers blocking check from control point and blocks completion', function () {
+        // 1. Create a blocking Control Point for Manufacturing Output
+        $qcp = \Modules\QualityControl\Models\QualityControlPoint::factory()->create([
+            'company_id' => $this->company->id,
+            'trigger_operation' => \Modules\QualityControl\Enums\QualityTriggerOperation::ManufacturingOutput,
+            'trigger_frequency' => \Modules\QualityControl\Enums\QualityTriggerFrequency::PerOperation,
+            'inspection_template_id' => \Modules\QualityControl\Models\QualityInspectionTemplate::factory()->create(['company_id' => $this->company->id])->id,
+            'is_blocking' => true,
+            'active' => true,
+        ]);
+
+        // 2. Create an MO
+        $mo = ManufacturingOrder::factory()->create([
+            'company_id' => $this->company->id,
+            'product_id' => $qcp->product_id ?? Product::factory()->create(['company_id' => $this->company->id])->id,
+            'status' => ManufacturingOrderStatus::Draft,
+            'quantity_to_produce' => 10,
+        ]);
+
+        ManufacturingOrderLine::create([
+            'company_id' => $this->company->id,
+            'manufacturing_order_id' => $mo->id,
+            'product_id' => $mo->product_id,
+            'quantity_consumed' => 10,
+            'quantity_required' => 10,
+            'unit_cost' => 100,
+            'currency_code' => $this->company->currency->code,
+        ]);
+
+        // 3. Confirm the MO - this should trigger the listener
+        app(\Modules\Manufacturing\Services\ManufacturingOrderService::class)->confirm($mo);
+
+        // 4. Verify a blocking Quality Check was created
+        $this->assertDatabaseHas('quality_checks', [
+            'source_type' => ManufacturingOrder::class,
+            'source_id' => $mo->id,
+            'is_blocking' => true,
+        ]);
+
+        // 5. Start production
+        app(\Modules\Manufacturing\Services\ManufacturingOrderService::class)->startProduction($mo);
+
+        // 6. Attempt to complete - should fail because check is pending
+        // We need to use real ProduceFinishedGoodsAction with real StockMoveService
+        $this->app->instance(StockMoveService::class, mock(StockMoveService::class));
+
+        $action = app(ProduceFinishedGoodsAction::class);
+        expect(fn () => $action->execute($mo))
+            ->toThrow(\Illuminate\Validation\ValidationException::class, 'All mandatory quality checks must be completed.');
     });
 });
