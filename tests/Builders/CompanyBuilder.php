@@ -52,7 +52,10 @@ class CompanyBuilder
             'default_tax_account_id' => ['type' => 'current_liabilities', 'name' => 'Tax Payable'],
             'default_tax_receivable_id' => ['type' => 'current_assets', 'name' => 'Tax Receivable'],
             'default_gain_loss_account_id' => ['type' => 'income', 'name' => 'Gain/Loss on Asset Disposal'],
-
+            // Manufacturing Accounts
+            'default_wip_account_id' => ['type' => 'current_assets', 'name' => 'Work in Progress'],
+            'default_raw_materials_inventory_id' => ['type' => 'current_assets', 'name' => 'Raw Materials'],
+            'default_finished_goods_inventory_id' => ['type' => 'current_assets', 'name' => 'Finished Goods'],
         ];
 
         return $this;
@@ -65,6 +68,7 @@ class CompanyBuilder
             'default_sales_journal_id' => ['type' => JournalType::Sale, 'name' => 'Sales Journal'],
             'default_bank_journal_id' => ['type' => JournalType::Bank, 'name' => 'Bank Journal'],
             'default_depreciation_journal_id' => ['type' => JournalType::Miscellaneous, 'name' => 'Depreciation Journal'],
+            'default_manufacturing_journal_id' => ['type' => JournalType::Miscellaneous, 'name' => 'Manufacturing Operations'],
         ];
 
         return $this;
