@@ -12,4 +12,7 @@ return [
     'inspected_at' => 'Inspected At',
     'notes' => 'Notes',
     'created_at' => 'Created At',
+    'is_blocking' => 'Blocking',
+    'blocking_yes' => 'Blocking',
+    'blocking_no' => 'Optional',
 ];
