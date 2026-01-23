@@ -29,6 +29,7 @@ class CreateQualityCheckAction
                 'inspection_template_id' => $dto->inspectionTemplateId,
                 'status' => QualityCheckStatus::Draft,
                 'notes' => $dto->notes,
+                'is_blocking' => $dto->isBlocking,
             ]);
 
             // If template is provided, create check lines from template parameters

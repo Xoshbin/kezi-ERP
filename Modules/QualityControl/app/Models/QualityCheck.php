@@ -50,11 +50,13 @@ class QualityCheck extends Model
         'inspected_by_user_id',
         'inspected_at',
         'notes',
+        'is_blocking',
     ];
 
     protected $casts = [
         'status' => QualityCheckStatus::class,
         'inspected_at' => 'datetime',
+        'is_blocking' => 'boolean',
     ];
 
     /**

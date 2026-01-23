@@ -77,6 +77,7 @@ return new class extends Migration
             $table->foreignId('lot_id')->nullable()->constrained('lots')->nullOnDelete();
             $table->foreignId('serial_number_id')->nullable()->constrained('serial_numbers')->nullOnDelete();
             $table->foreignId('inspection_template_id')->nullable()->constrained('quality_inspection_templates')->nullOnDelete();
+            $table->boolean('is_blocking')->default(false);
             $table->string('status'); // draft, in_progress, passed, failed, conditionally_accepted
             $table->foreignId('inspected_by_user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('inspected_at')->nullable();
