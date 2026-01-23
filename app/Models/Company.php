@@ -574,6 +574,14 @@ class Company extends Model
         return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_wip_account_id');
     }
 
+    /**
+     * @return BelongsTo<Journal, static>
+     */
+    public function defaultManufacturingJournal(): BelongsTo
+    {
+        return $this->belongsTo(Journal::class, 'default_manufacturing_journal_id');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | HR-related Default Account Relationships
