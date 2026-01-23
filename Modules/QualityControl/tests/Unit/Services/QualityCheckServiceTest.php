@@ -28,6 +28,7 @@ describe('createFromControlPoint', function () {
         $controlPoint = Mockery::mock(QualityControlPoint::class);
         $controlPoint->shouldReceive('getAttribute')->with('company_id')->andReturn(1);
         $controlPoint->shouldReceive('getAttribute')->with('inspection_template_id')->andReturn(5);
+        $controlPoint->shouldReceive('getAttribute')->with('is_blocking')->andReturn(true);
 
         $source = Mockery::mock('alias:SomeSourceModel');
         $source->shouldReceive('getAttribute')->with('id')->andReturn(10);
@@ -52,7 +53,8 @@ describe('createFromControlPoint', function () {
             productId: 100,
             lotId: 200,
             serialNumberId: 300,
-            inspectionTemplateId: 5
+            inspectionTemplateId: 5,
+            isBlocking: true
         );
 
         $expectedQualityCheck = Mockery::mock(QualityCheck::class);
@@ -68,7 +70,8 @@ describe('createFromControlPoint', function () {
                     $arg->productId === $expectedDto->productId &&
                     $arg->lotId === $expectedDto->lotId &&
                     $arg->serialNumberId === $expectedDto->serialNumberId &&
-                    $arg->inspectionTemplateId === $expectedDto->inspectionTemplateId;
+                    $arg->inspectionTemplateId === $expectedDto->inspectionTemplateId &&
+                    $arg->isBlocking === true;
             }))
             ->andReturn($expectedQualityCheck);
 
@@ -90,6 +93,7 @@ describe('createFromControlPoint', function () {
         $controlPoint = Mockery::mock(QualityControlPoint::class);
         $controlPoint->shouldReceive('getAttribute')->with('company_id')->andReturn(2);
         $controlPoint->shouldReceive('getAttribute')->with('inspection_template_id')->andReturn(6);
+        $controlPoint->shouldReceive('getAttribute')->with('is_blocking')->andReturn(false);
         $sourceDummy = new class
         {
             public int $id = 20;

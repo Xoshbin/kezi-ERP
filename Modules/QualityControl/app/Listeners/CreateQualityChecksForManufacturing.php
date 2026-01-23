@@ -2,7 +2,7 @@
 
 namespace Modules\QualityControl\Listeners;
 
-use Modules\Manufacturing\Events\ManufacturingOrderCompleted;
+use Modules\Manufacturing\Events\ManufacturingOrderConfirmed;
 use Modules\QualityControl\Enums\QualityTriggerOperation;
 use Modules\QualityControl\Services\QualityCheckService;
 use Modules\QualityControl\Services\QualityControlPointService;
@@ -14,7 +14,7 @@ class CreateQualityChecksForManufacturing
         private readonly QualityCheckService $checkService,
     ) {}
 
-    public function handle(ManufacturingOrderCompleted $event): void
+    public function handle(ManufacturingOrderConfirmed $event): void
     {
         $mo = $event->manufacturingOrder;
         $product = $mo->product;
@@ -26,7 +26,7 @@ class CreateQualityChecksForManufacturing
         $controlPoints = $this->controlPointService->findTriggeredControlPoints(
             QualityTriggerOperation::ManufacturingOutput,
             $product,
-            $mo->quantity_produced
+            $mo->quantity_to_produce
         );
 
         foreach ($controlPoints as $controlPoint) {

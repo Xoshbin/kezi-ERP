@@ -66,3 +66,22 @@ it('auto-generates sequential check numbers', function () {
     expect($check1->number)->toBe('QC-000001');
     expect($check2->number)->toBe('QC-000002');
 });
+
+it('sets is_blocking from DTO', function () {
+    $company = Company::factory()->create();
+    $product = Product::factory()->create(['company_id' => $company->id]);
+    $picking = StockPicking::factory()->create(['company_id' => $company->id]);
+
+    $dto = new CreateQualityCheckDTO(
+        companyId: $company->id,
+        sourceType: get_class($picking),
+        sourceId: $picking->id,
+        productId: $product->id,
+        isBlocking: true
+    );
+
+    $action = app(CreateQualityCheckAction::class);
+    $check = $action->execute($dto);
+
+    expect($check->is_blocking)->toBeTrue();
+});
