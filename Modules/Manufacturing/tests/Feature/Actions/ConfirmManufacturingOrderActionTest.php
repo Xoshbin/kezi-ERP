@@ -79,6 +79,8 @@ describe('ConfirmManufacturingOrderAction', function () {
         $workOrder = $updatedMo->workOrders->first();
         expect($workOrder->work_center_id)->toBe($workCenter->id);
         expect($workOrder->status)->toBe(Modules\Manufacturing\Enums\WorkOrderStatus::Pending);
+        expect($workOrder->planned_start_at)->not->toBeNull();
+        expect($workOrder->planned_finished_at)->not->toBeNull();
 
         $this->assertDatabaseHas('work_orders', [
             'manufacturing_order_id' => $mo->id,

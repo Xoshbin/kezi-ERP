@@ -8,6 +8,10 @@ use Modules\Manufacturing\Models\ManufacturingOrder;
 
 class ConfirmManufacturingOrderAction
 {
+    public function __construct(
+        private readonly ScheduleWorkOrdersAction $scheduleWorkOrdersAction
+    ) {}
+
     public function execute(ManufacturingOrder $mo): ManufacturingOrder
     {
         return DB::transaction(function () use ($mo) {
@@ -25,7 +29,7 @@ class ConfirmManufacturingOrderAction
             $bom = $mo->billOfMaterial()->with('lines.workCenter')->first();
 
             // Get the first work center from BOM lines (single-operation)
-            $workCenter = $bom->lines->first()?->workCenter;
+            $workCenter = $bom->lines->whereNotNull('work_center_id')->first()?->workCenter;
 
             if ($workCenter) {
                 $mo->workOrders()->create([
@@ -34,9 +38,12 @@ class ConfirmManufacturingOrderAction
                     'sequence' => 1,
                     'name' => "Production: {$mo->product->name}",
                     'status' => 'pending',
-                    'planned_duration' => null, // Can be calculated based on quantity and work center capacity
+                    'planned_duration' => 1.0, // Default duration to ensure scheduling works
                 ]);
             }
+
+            // Schedule work orders
+            $this->scheduleWorkOrdersAction->execute($mo);
 
             return $mo->fresh(['workOrders', 'lines']);
         });
