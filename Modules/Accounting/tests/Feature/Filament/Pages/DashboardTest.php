@@ -5,7 +5,7 @@ namespace Modules\Accounting\Tests\Feature\Filament\Pages;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports\Dashboard;
+use Modules\Accounting\Filament\Clusters\Accounting\Pages\Dashboard;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -20,22 +20,27 @@ beforeEach(function () {
 it('can render dashboard page', function () {
     $this->actingAs($this->user);
 
-    // Skip this test until Dashboard class is properly implemented
-    $this->markTestSkipped('Dashboard class needs to be implemented');
+    $this->get(Dashboard::getUrl())
+        ->assertSuccessful()
+        ->assertSee(__('accounting::dashboard.financial_dashboard'));
 });
 
 it('displays company name in subheading', function () {
     $this->actingAs($this->user);
 
-    // Skip this test until Dashboard class is properly implemented
-    $this->markTestSkipped('Dashboard class needs to be implemented');
+    $this->get(Dashboard::getUrl())
+        ->assertSuccessful()
+        ->assertSee($this->company->name);
 });
 
 it('includes all financial widgets', function () {
     $this->actingAs($this->user);
 
-    // Skip this test until Dashboard class is properly implemented
-    $this->markTestSkipped('Dashboard class needs to be implemented');
+    $this->get(Dashboard::getUrl())
+        ->assertSuccessful()
+        ->assertSeeLivewire(\Modules\Accounting\Filament\Clusters\Accounting\Widgets\FinancialStatsOverview::class)
+        ->assertSeeLivewire(\Modules\Accounting\Filament\Clusters\Accounting\Widgets\IncomeVsExpenseChart::class)
+        ->assertSeeLivewire(\Modules\Accounting\Filament\Clusters\Accounting\Widgets\CashFlowWidget::class);
 });
 
 it('handles user without company', function () {
@@ -43,6 +48,7 @@ it('handles user without company', function () {
     // Don't attach any companies to this user
     $this->actingAs($userWithoutCompany);
 
-    // Skip this test until Dashboard class is properly implemented
-    $this->markTestSkipped('Dashboard class needs to be implemented');
+    // Expect 404 because user has no company and tenancy is required
+    $this->get(Dashboard::getUrl(['tenant' => 'undefined']))
+        ->assertStatus(404);
 });
