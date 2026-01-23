@@ -2,8 +2,10 @@
 
 namespace Modules\Manufacturing\Actions;
 
+use App\Models\User;
 use Brick\Money\Money;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
@@ -19,13 +21,19 @@ class ProduceFinishedGoodsAction
         private readonly StockMoveService $stockMoveService,
     ) {}
 
-    public function execute(ManufacturingOrder $mo): ManufacturingOrder
+    public function execute(ManufacturingOrder $mo, ?User $user = null): ManufacturingOrder
     {
         /** @var ManufacturingOrder */
-        return DB::transaction(function () use ($mo) {
+        return DB::transaction(function () use ($mo, $user) {
             // Validate current status
             if ($mo->status !== ManufacturingOrderStatus::InProgress) {
                 throw new \InvalidArgumentException('Only in-progress manufacturing orders can produce finished goods.');
+            }
+
+            // Resolve user for accountability
+            $currentUser = $user ?? Auth::user();
+            if (! $currentUser) {
+                throw new \RuntimeException('A user is required to record production finished goods.');
             }
 
             // Calculate actual production cost (sum of consumed components)
@@ -53,7 +61,7 @@ class ProduceFinishedGoodsAction
                 move_type: StockMoveType::Incoming, // Production output is a receipt into stock
                 status: StockMoveStatus::Done,
                 move_date: Carbon::now(),
-                created_by_user_id: (int) (auth()->id() ?? 1), // Fallback for testing/console
+                created_by_user_id: $currentUser->id,
                 product_lines: [
                     new CreateStockMoveProductLineDTO(
                         product_id: $mo->product_id,
