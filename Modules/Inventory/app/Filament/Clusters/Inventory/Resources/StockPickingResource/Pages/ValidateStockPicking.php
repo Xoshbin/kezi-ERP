@@ -10,12 +10,8 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\DB;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\StockPickingState;
 use Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource;
 use Modules\Inventory\Models\StockPicking;
-use Modules\Inventory\Services\Inventory\StockReservationService;
 
 class ValidateStockPicking extends Page
 {
@@ -153,106 +149,21 @@ class ValidateStockPicking extends Page
         }
 
         try {
-            DB::transaction(function () use ($data, $createBackorder) {
-                // 1. Prepare Backorder Data
-                $backorderItems = [];
-                foreach ($data['moves'] as $moveData) {
-                    $planned = (float) ($moveData['planned_quantity'] ?? 0);
-                    $actual = (float) ($moveData['actual_quantity'] ?? 0);
-
-                    if ($actual < $planned) {
-                        $backorderItems[] = [
-                            'move_id' => $moveData['move_id'],
-                            'product_line_id' => $moveData['product_line_id'],
-                            'planned' => $planned,
-                            'actual' => $actual,
-                            'backorder_qty' => $planned - $actual,
-                        ];
-                    }
-                }
-
-                // 2. Create Backorder if requested AND needed
-                if ($createBackorder && count($backorderItems) > 0) {
-                    $this->createBackorderRecords($backorderItems);
-                }
-
-                // 3. Update Original Picking Lines to Actual
-                $processedMoveIds = [];
-                foreach ($data['moves'] as $moveData) {
-                    $move = \Modules\Inventory\Models\StockMove::find($moveData['move_id']);
-                    if (! $move) {
-                        continue;
-                    }
-
-                    $line = \Modules\Inventory\Models\StockMoveProductLine::find($moveData['product_line_id']);
-                    if (! $line) {
-                        continue;
-                    }
-
-                    $actualQty = (float) $moveData['actual_quantity'];
-
-                    // Update line quantity to what was actually fulfilled
-                    $line->update(['quantity' => $actualQty]);
-
-                    // Mark Move as Done
-                    if (! in_array($move->id, $processedMoveIds)) {
-                        $move->update(['status' => StockMoveStatus::Done]);
-                        app(StockReservationService::class)->consumeForMove($move);
-                        $processedMoveIds[] = $move->id;
-                    }
-                }
-
-                // 4. Mark Picking as Done
-                $this->record->update([
-                    'state' => StockPickingState::Done,
-                    'completed_at' => now(),
-                ]);
-            });
+            app(\Modules\Inventory\Actions\Inventory\ValidateStockPickingAction::class)
+                ->execute($this->record, $data, $createBackorder);
 
             Notification::make()->title(__('inventory::stock_picking.notifications.validated'))->success()->send();
             $this->redirect(StockPickingResource::getUrl('view', ['record' => $this->record]));
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Notification::make()
+                ->title(__('inventory::stock_picking.notifications.error'))
+                ->body(implode("\n", $e->validator->errors()->all()))
+                ->danger()
+                ->send();
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Validation Exception: '.$e->getMessage());
             Notification::make()->title(__('inventory::stock_picking.notifications.error'))->body($e->getMessage())->danger()->send();
-        }
-    }
-
-    protected function createBackorderRecords(array $backorderItems): void
-    {
-        $backorderPicking = StockPicking::create([
-            'company_id' => $this->record->company_id,
-            'type' => $this->record->type,
-            'state' => StockPickingState::Assigned,
-            'partner_id' => $this->record->partner_id,
-            'scheduled_date' => now(),
-            'origin' => $this->record->reference.' (Backorder)',
-            'created_by_user_id' => \Illuminate\Support\Facades\Auth::id(),
-            'reference' => $this->record->reference.'-BO-'.rand(100, 999),
-        ]);
-
-        $backorderMoves = [];
-
-        foreach ($backorderItems as $item) {
-            $originalMove = \Modules\Inventory\Models\StockMove::find($item['move_id']);
-            $originalLine = \Modules\Inventory\Models\StockMoveProductLine::find($item['product_line_id']);
-
-            // Reuse or Create Backorder Move
-            if (! isset($backorderMoves[$originalMove->id])) {
-                $newMove = $originalMove->replicate();
-                $newMove->picking_id = $backorderPicking->id;
-                $newMove->status = StockMoveStatus::Draft;
-                $newMove->save();
-                $backorderMoves[$originalMove->id] = $newMove;
-            }
-
-            $newMove = $backorderMoves[$originalMove->id];
-
-            // Create Backorder Line
-            $newLine = $originalLine->replicate();
-            $newLine->stock_move_id = $newMove->id;
-            $newLine->quantity = $item['backorder_qty'];
-            $newLine->save();
         }
     }
 }

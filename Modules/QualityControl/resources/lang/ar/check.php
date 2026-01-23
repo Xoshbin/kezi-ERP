@@ -15,4 +15,5 @@ return [
     'is_blocking' => 'حاظر',
     'blocking_yes' => 'حاظر',
     'blocking_no' => 'اختياري',
+    'quality_gate_failed' => 'لا يمكن التحقق من الفحص: يجب اجتياز جميع فحوصات الجودة الإلزامية.',
 ];
