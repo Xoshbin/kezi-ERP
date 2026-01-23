@@ -167,6 +167,7 @@ class Company extends Model
         'default_pdc_receivable_account_id',
         'default_pdc_payable_account_id',
         'default_cheque_expense_account_id',
+        'default_scrap_account_id',
     ];
 
     /**

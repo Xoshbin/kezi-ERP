@@ -30,7 +30,7 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 | **Purchase** | ~57+ tests | ⭐⭐⭐⭐ Good | Medium |
 | **HR** | ~94 tests | ⭐⭐⭐⭐ Good | Medium |
 | **Payment** | ~50+ tests | ⭐⭐⭐⭐ Good | Low |
-| **Manufacturing** | ~15 tests | ⭐⭐⭐ Moderate | High |
+| **Manufacturing** | ~17 tests | ⭐⭐⭐ Moderate | High |
 | **ProjectManagement** | ~22 tests | ⭐⭐⭐ Moderate | Medium |
 | **QualityControl** | ~15 tests | ⭐⭐⭐ Moderate | High |
 | **Product** | ~89 tests | ⭐⭐⭐⭐ Good | Low |
@@ -266,6 +266,7 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 - Work order management
 - Manufacturing to accounting integration
 - **CreateJournalEntryForManufacturingAction** ✅ *Added 2026-01-22*
+- **ScrapManufacturingAction** (Scrap raw material logic, accounting integration) ✅ *Added 2026-01-23*
 
 #### ⚠️ Identified Gaps
 
@@ -273,7 +274,7 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 |--------|-------------|----------|------------|--------|
 | MFG-01 | **CreateJournalEntryForManufacturingAction dedicated test** - Only integration test exists | High | Medium | ✅ Completed |
 | MFG-02 | **Work order scheduling tests** - Work order time and resource scheduling | High | High |
-| MFG-03 | **Manufacturing scrap handling** - Scrap during production process | High | Medium |
+| MFG-03 | **Manufacturing scrap handling** - Scrap during production process | High | Medium | ✅ Completed (2026-01-23) |
 | MFG-04 | **By-product/co-product accounting** - If by-products are supported | Medium | High |
 | MFG-05 | **Manufacturing order cancellation tests** - Cancellation with partial consumption | Medium | Medium |
 | MFG-06 | **Work center capacity planning tests** - Capacity and availability checks | Medium | High |
@@ -420,7 +421,8 @@ The following tests are currently skipped and need attention:
 1. ~~**HR-01 to HR-03:** Add missing cash advance action unit tests~~ ✅ Completed
 2. ~~**HR-07:** CreatePaymentFromPayrollAction test~~ ✅ Completed
 3. ~~**MFG-01:** CreateJournalEntryForManufacturingAction dedicated test~~ ✅ Completed
-4. **MFG-02, MFG-03:** Manufacturing scheduling, and scrap tests
+4. **MFG-02:** Manufacturing scheduling tests
+5. ~~**MFG-03:** Manufacturing scrap handling tests~~ ✅ Completed
 5. ~~**PUR-05:** CreateVendorBillFromPurchaseOrderAction dedicated test~~ ✅ Completed
 6. **INT-05:** Quality control blocking workflow integration
 
@@ -475,7 +477,7 @@ The following tests are currently skipped and need attention:
 | Sales | ~35+ | 22 | ~90% |
 | Purchase | ~37+ | 15 | ~90% |
 | Payment | ~30+ | Varies | ~85% |
-| Manufacturing | 15 | 7 | ~85% |
+| Manufacturing | 17 | 8 | ~90% |
 | ProjectManagement | 22 | 7+ | ~90% |
 | QualityControl | 15 | 4 | ~75% |
 | Product | 89 | Varies | ~90% |
