@@ -36,6 +36,25 @@ class ProduceFinishedGoodsAction
                 throw new \RuntimeException('A user is required to record production finished goods.');
             }
 
+            // Quality Control Gate
+            $mandatoryChecks = $mo->qualityChecks()->where('is_blocking', true)->get();
+
+            if ($mandatoryChecks->isNotEmpty()) {
+                $pendingChecks = $mandatoryChecks->filter(fn ($check) => $check->isPending());
+                if ($pendingChecks->isNotEmpty()) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'quality_checks' => 'All mandatory quality checks must be completed.',
+                    ]);
+                }
+
+                $failedChecks = $mandatoryChecks->filter(fn ($check) => $check->isFailed());
+                if ($failedChecks->isNotEmpty()) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'quality_checks' => 'All mandatory quality checks must be passed.',
+                    ]);
+                }
+            }
+
             // Calculate actual production cost (sum of consumed components)
             $firstLine = $mo->lines->first();
             if (! $firstLine) {
