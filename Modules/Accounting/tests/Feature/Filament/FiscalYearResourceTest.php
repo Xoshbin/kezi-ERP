@@ -111,6 +111,7 @@ it('can reopen a closed fiscal year via action', function () {
     $closingEntry = JournalEntry::factory()->create([
         'company_id' => $this->company->id,
         'state' => JournalEntryState::Posted,
+        'entry_date' => '2024-12-31',
     ]);
 
     JournalEntryLine::factory()->create([

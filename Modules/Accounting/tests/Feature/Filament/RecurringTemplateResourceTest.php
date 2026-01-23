@@ -96,25 +96,25 @@ it('can create a recurring template for journal entry', function () {
             'name' => 'Monthly Rent',
             'frequency' => RecurringFrequency::Monthly,
             'interval' => 1,
-            'start_date' => now(),
+            'start_date' => now()->toDateString(),
             'status' => RecurringStatus::Active,
             'target_type' => RecurringTargetType::JournalEntry,
             'template_data' => [
                 'journal_id' => $journal->id,
                 'currency_id' => $currency->id,
                 'description' => 'Rent Payment',
-                'lines' => [
-                    [
-                        'account_id' => (string) $accountDebit->id,
-                        'debit' => 1000,
-                        'credit' => 0,
-                    ],
-                    [
-                        'account_id' => $accountCredit->id,
-                        'debit' => 0,
-                        'credit' => 1000,
-                    ],
-                ],
+            ],
+        ])
+        ->set('data.template_data.lines', [
+            [
+                'account_id' => $accountDebit->id,
+                'debit' => 1000,
+                'credit' => 0,
+            ],
+            [
+                'account_id' => $accountCredit->id,
+                'debit' => 0,
+                'credit' => 1000,
             ],
         ])
         ->call('create')
@@ -125,7 +125,7 @@ it('can create a recurring template for journal entry', function () {
         'name' => 'Monthly Rent',
         'target_type' => RecurringTargetType::JournalEntry,
     ]);
-})->skip('Validation for account_id inside repeater fails in test environment despite correct tenant context.');
+});
 
 it('validates required fields on create', function () {
     livewire(CreateRecurringTemplate::class)

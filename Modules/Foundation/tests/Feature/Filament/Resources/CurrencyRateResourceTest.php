@@ -18,7 +18,13 @@ beforeEach(function () {
 it('can render currency rates list', function () {
     $this->actingAs($this->user);
 
-    CurrencyRate::factory()->count(5)->for($this->company)->create();
+    CurrencyRate::factory()
+        ->count(5)
+        ->for($this->company)
+        ->sequence(fn ($sequence) => [
+            'effective_date' => now()->subDays($sequence->index)->format('Y-m-d'),
+        ])
+        ->create();
 
     Livewire::test(ListCurrencyRates::class)
         ->assertSuccessful();
@@ -27,7 +33,13 @@ it('can render currency rates list', function () {
 it('can list currency rates', function () {
     $this->actingAs($this->user);
 
-    $rates = CurrencyRate::factory()->count(5)->for($this->company)->create();
+    $rates = CurrencyRate::factory()
+        ->count(5)
+        ->for($this->company)
+        ->sequence(fn ($sequence) => [
+            'effective_date' => now()->subDays($sequence->index)->format('Y-m-d'),
+        ])
+        ->create();
 
     Livewire::test(ListCurrencyRates::class)
         ->assertCanSeeTableRecords($rates);
