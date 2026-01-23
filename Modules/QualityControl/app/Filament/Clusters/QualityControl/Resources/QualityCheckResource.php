@@ -47,6 +47,11 @@ class QualityCheckResource extends Resource
                         TextEntry::make('lot.lot_code')
                             ->label(__('qualitycontrol::check.lot'))
                             ->placeholder('—'),
+                        TextEntry::make('is_blocking')
+                            ->label(__('qualitycontrol::check.is_blocking'))
+                            ->badge()
+                            ->color(fn ($state) => $state ? 'danger' : 'gray')
+                            ->formatStateUsing(fn ($state) => $state ? __('qualitycontrol::check.blocking_yes') : __('qualitycontrol::check.blocking_no')),
                         TextEntry::make('notes')
                             ->label(__('qualitycontrol::check.notes'))
                             ->columnSpanFull(),
@@ -84,6 +89,11 @@ class QualityCheckResource extends Resource
                             ->disabled()
                             ->columnSpan(1),
 
+                        Forms\Components\Toggle::make('is_blocking')
+                            ->label(__('qualitycontrol::check.is_blocking'))
+                            ->disabled()
+                            ->columnSpan(1),
+
                         Forms\Components\Textarea::make('notes')
                             ->label(__('qualitycontrol::check.notes'))
                             ->rows(3)
@@ -118,6 +128,11 @@ class QualityCheckResource extends Resource
                     ->badge()
                     ->formatStateUsing(fn ($state) => $state->label())
                     ->color(fn ($state) => $state->color())
+                    ->sortable(),
+
+                Tables\Columns\IconColumn::make('is_blocking')
+                    ->label(__('qualitycontrol::check.is_blocking'))
+                    ->boolean()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('inspectedByUser.name')

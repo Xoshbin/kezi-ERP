@@ -12,4 +12,7 @@ return [
     'inspected_at' => 'تم الفحص في',
     'notes' => 'ملاحظات',
     'created_at' => 'تم الإنشاء في',
+    'is_blocking' => 'حاظر',
+    'blocking_yes' => 'حاظر',
+    'blocking_no' => 'اختياري',
 ];
