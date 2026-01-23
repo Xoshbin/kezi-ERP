@@ -135,4 +135,15 @@ return [
         'all_boms' => 'هەموو بۆم-ەکان',
         'all' => 'هەموو',
     ],
+    'work_order' => [
+        'label' => 'داواکاری کار',
+        'plural_label' => 'داواکارییەکانی کار',
+        'sequence' => 'ڕیزبەندی',
+        'operation' => 'ئەنجامدان',
+        'work_center' => 'ناوەندی کار',
+        'planned_duration' => 'ماوەی پلان بۆ دانراو (کاتژمێر)',
+        'planned_start_at' => 'دەستپێکی پلان بۆ دانراو',
+        'planned_finished_at' => 'کۆتایی پلان بۆ دانراو',
+        'status' => 'دۆخ',
+    ],
 ];
