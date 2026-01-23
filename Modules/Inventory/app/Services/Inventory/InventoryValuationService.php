@@ -844,9 +844,14 @@ class InventoryValuationService
             }
 
             if ($isOutgoing) {
-                // Outgoing Move Logic (COGS)
-                if (! $product->default_cogs_account_id) {
-                    throw new Exception("Product {$product->id} does not have a COGS account configured");
+                // Outgoing Move Logic (COGS or Scrap)
+                $isScrap = $productLine->toLocation?->type === \Modules\Inventory\Enums\Inventory\StockLocationType::Scrap;
+                $debitAccountId = $isScrap ? $company->default_scrap_account_id : $product->default_cogs_account_id;
+                $accountLabel = $isScrap ? 'Scrap Expense' : 'COGS';
+
+                if (! $debitAccountId) {
+                    $missingConfig = $isScrap ? 'Default Scrap Account (Company)' : "COGS Account (Product {$product->id})";
+                    throw new Exception("Missing accounting configuration: {$missingConfig}");
                 }
 
                 $cogsAmount = $this->calculateCOGS($product, $quantity);
@@ -854,17 +859,17 @@ class InventoryValuationService
                 $totalCost = $totalCost->plus($cogsAmount);
 
                 if ($cogsAmount->isZero()) {
-                    Log::warning("COGS amount is zero for product {$product->id}, skipping line in consolidated entry");
+                    Log::warning("{$accountLabel} amount is zero for product {$product->id}, skipping line in consolidated entry");
 
                     continue;
                 }
 
-                // Add debit line for COGS account
+                // Add debit line for COGS/Scrap account
                 $journalEntryLines[] = new CreateJournalEntryLineDTO(
-                    account_id: $product->default_cogs_account_id,
+                    account_id: $debitAccountId,
                     debit: $cogsAmount,
                     credit: $zero,
-                    description: "COGS for {$product->name} (Qty: {$quantity})",
+                    description: "{$accountLabel} for {$product->name} (Qty: {$quantity})",
                     analytic_account_id: $productLine->analytic_account_id,
                     partner_id: null,
                 );
