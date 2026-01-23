@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('status')->default('pending'); // pending, ready, in_progress, done, cancelled
             $table->decimal('planned_duration', 10, 2)->nullable(); // Planned hours
+            $table->dateTime('planned_start_at')->nullable();
+            $table->dateTime('planned_finished_at')->nullable();
             $table->decimal('actual_duration', 10, 2)->nullable(); // Actual hours
             $table->dateTime('started_at')->nullable();
             $table->dateTime('completed_at')->nullable();
