@@ -22,12 +22,18 @@ class ConsumeComponentsAction
         private readonly CreateJournalEntryForConsumptionAction $createJournalEntryForConsumptionAction,
     ) {}
 
-    public function execute(ManufacturingOrder $mo): ManufacturingOrder
+    public function execute(ManufacturingOrder $mo, ?User $user = null): ManufacturingOrder
     {
-        return DB::transaction(function () use ($mo) {
+        return DB::transaction(function () use ($mo, $user) {
             // Validate current status
             if ($mo->status !== ManufacturingOrderStatus::InProgress) {
                 throw new \InvalidArgumentException('Only in-progress manufacturing orders can consume components.');
+            }
+
+            // Resolve user for accountability
+            $currentUser = $user ?? Auth::user();
+            if (! $currentUser) {
+                throw new \RuntimeException('A user is required to perform component consumption and accounting entries.');
             }
 
             // Create stock move for component consumption
@@ -50,14 +56,12 @@ class ConsumeComponentsAction
             }
 
             if (! empty($productLines)) {
-                $userId = Auth::id() ?? User::first()?->id ?? 1;
-
                 $stockMoveDTO = new CreateStockMoveDTO(
                     company_id: $mo->company_id,
                     move_type: StockMoveType::InternalTransfer,
                     status: StockMoveStatus::Done,
                     move_date: Carbon::now(),
-                    created_by_user_id: (int) $userId,
+                    created_by_user_id: $currentUser->id,
                     product_lines: $productLines,
                     reference: "MO/{$mo->number}",
                     description: 'Component consumption for manufacturing order',
@@ -69,14 +73,7 @@ class ConsumeComponentsAction
 
                 // Create accounting entries for consumption (RM -> WIP)
                 // We pass the created stock move to ensure we account for exactly what was moved
-                $user = Auth::user() ?? User::find($userId);
-                // Fallback if no user found (should be extremely rare in prod, but possible in incomplete tests)
-                if (!$user) {
-                     // Last resort fallback for testing environments without users
-                     $user = new User(['id' => 1, 'name' => 'System']);
-                }
-
-                $this->createJournalEntryForConsumptionAction->execute($mo, $stockMove, $user);
+                $this->createJournalEntryForConsumptionAction->execute($mo, $stockMove, $currentUser);
 
                 // Update MO lines with consumed quantities
                 foreach ($mo->lines as $line) {
