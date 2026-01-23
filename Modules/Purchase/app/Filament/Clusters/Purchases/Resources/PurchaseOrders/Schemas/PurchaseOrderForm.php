@@ -200,7 +200,7 @@ class PurchaseOrderForm
                                             foreach ($lines as $uuid => $line) {
                                                 if (isset($line['product_id'])) {
                                                     $product = Product::find($line['product_id']);
-                                                    if ($product && $product->unit_price) {
+                                                    if ($product instanceof Product && $product->unit_price) {
                                                         // Get the underlying decimal amount from the Money object or value
                                                         $basePrice = $product->unit_price instanceof Money
                                                             ? $product->unit_price->getAmount()->toBigDecimal()
@@ -329,7 +329,7 @@ class PurchaseOrderForm
                                     ->afterStateUpdated(function (callable $set, $state, callable $get) {
                                         if ($state) {
                                             $product = Product::find($state);
-                                            if ($product) {
+                                            if ($product instanceof Product) {
                                                 $set('description', $product->description ?: $product->name);
 
                                                 // Get the exchange rate from the form state
@@ -367,6 +367,12 @@ class PurchaseOrderForm
                                                     $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Freight);
                                                 } elseif (str_contains($name, 'insurance')) {
                                                     $set('shipping_cost_type', \Modules\Foundation\Enums\ShippingCostType::Insurance);
+                                                }
+
+                                                // Auto-populate purchase tax
+                                                $defaultTax = $product->purchaseTaxes()->first();
+                                                if ($defaultTax) {
+                                                    $set('tax_id', $defaultTax->id);
                                                 }
                                             }
                                         }

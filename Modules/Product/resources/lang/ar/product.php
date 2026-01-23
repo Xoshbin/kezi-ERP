@@ -25,6 +25,7 @@ return [
     'accounting_configuration_description' => 'قم بتكوين حسابات الإيراد والمصروف الافتراضية لهذا المنتج.',
     'income_account' => 'حساب الإيراد',
     'expense_account' => 'حساب المصروف',
+    'purchase_tax' => 'ضريبة المشتريات',
 
     // Inventory Management
     'inventory_management' => 'إدارة المخزون',

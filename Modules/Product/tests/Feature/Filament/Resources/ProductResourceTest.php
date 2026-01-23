@@ -111,3 +111,26 @@ it('can delete a product', function () {
 
     //    assertDatabaseMissing($product);
 });
+
+it('can select a purchase tax for a product', function () {
+    $tax = \Modules\Accounting\Models\Tax::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => \Modules\Accounting\Enums\Accounting\TaxType::Purchase,
+    ]);
+
+    $product = Product::factory()->create([
+        'company_id' => $this->company->id,
+    ]);
+
+    livewire(EditProduct::class, [
+        'record' => $product->id,
+    ])
+        ->fillForm([
+            'purchaseTaxes' => [$tax->id],
+        ])
+        ->call('save')
+        ->assertNotified();
+
+    expect($product->fresh()->purchaseTaxes->pluck('id')->toArray())
+        ->toContain($tax->id);
+});

@@ -270,3 +270,36 @@ test('cannot confirm purchase order without line items', function () {
         app(PurchaseOrderService::class)->confirm($purchaseOrder, $this->user);
     })->toThrow(\InvalidArgumentException::class, 'Cannot confirm purchase order without any lines.');
 });
+
+test('product selection auto-populates tax_id', function () {
+    // Create a product with a default purchase tax
+    $purchaseTax = Tax::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'Supplier VAT 15%',
+        'rate' => 15.0,
+        'type' => \Modules\Accounting\Enums\Accounting\TaxType::Purchase,
+    ]);
+
+    $productWithTax = Product::factory()->create([
+        'company_id' => $this->company->id,
+    ]);
+    $productWithTax->purchaseTaxes()->attach($purchaseTax->id);
+
+    Livewire::test(CreatePurchaseOrder::class, ['tenant' => $this->company])
+        ->fillForm([
+            'vendor_id' => $this->vendor->id,
+            'currency_id' => $this->company->currency_id,
+            'po_date' => now()->format('Y-m-d'),
+            'exchange_rate_at_creation' => 1,
+        ])
+        ->set('data.lines', [
+            [
+                'product_id' => null,
+                'tax_id' => null,
+            ],
+        ])
+        ->set('data.lines.0.product_id', $productWithTax->id)
+        ->assertFormSet([
+            'lines.0.tax_id' => $purchaseTax->id,
+        ]);
+});
