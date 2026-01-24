@@ -13,6 +13,7 @@ graph LR
     C --> D[Done]
     A -.-> E[Cancelled]
     B -.-> E
+    C -.-> E
 ```
 
 ### Status Definitions
@@ -91,13 +92,19 @@ graph LR
 
 ### Cancelling an MO
 
-**When**: MO is no longer needed
-**Action**: Click **Cancel** button
-**Available**: Only for Draft or Confirmed status
+**When**: MO is no longer needed or was created by mistake
+**Action**: Click **Cancel** button (available in Header or Table actions)
+**Available**: For **Draft**, **Confirmed**, or **In Progress** status
 **Effect**:
 - Status changes to **Cancelled**
-- No inventory movements occur
-- Cannot be reactivated
+- **Inventory Cleanup**: All reserved stock for this MO is automatically released (unreserved).
+- **Work Orders**: All associated pending or in-progress Work Orders are set to **Cancelled**.
+- **Data Integrity**: Cannot be reactivated once cancelled.
+
+**Guardrails**:
+- **Consumption Block**: You cannot cancel an MO if any components have already been **consumed** (Done stock moves).
+- **Production Block**: You cannot cancel an MO if any finished goods have already been **produced**.
+- **Recommendation**: If production has already started and items were moved/consumed, you should complete the order and then use a "Return" or manual inventory adjustment to reverse the impact (to ensure proper audit trails).
 
 ## Component Consumption
 

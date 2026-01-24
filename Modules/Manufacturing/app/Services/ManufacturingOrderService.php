@@ -23,6 +23,7 @@ class ManufacturingOrderService
         private readonly ConsumeComponentsAction $consumeComponentsAction,
         private readonly ProduceFinishedGoodsAction $produceFinishedGoodsAction,
         private readonly CreateJournalEntryForManufacturingAction $createJournalEntryAction,
+        private readonly \Modules\Manufacturing\Actions\CancelManufacturingOrderAction $cancelAction,
     ) {}
 
     public function create(CreateManufacturingOrderDTO $dto): ManufacturingOrder
@@ -96,9 +97,6 @@ class ManufacturingOrderService
      */
     public function cancel(ManufacturingOrder $mo): ManufacturingOrder
     {
-        $mo->status = \Modules\Manufacturing\Enums\ManufacturingOrderStatus::Cancelled;
-        $mo->save();
-
-        return $mo;
+        return $this->cancelAction->execute($mo);
     }
 }

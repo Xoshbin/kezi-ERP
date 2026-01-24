@@ -258,7 +258,7 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 | Gap ID | Description | Priority | Complexity | Status |
 |--------|-------------|----------|------------|--------|
 | MFG-04 | **By-product/co-product accounting** - If by-products are supported | Medium | High | Pending |
-| MFG-05 | **Manufacturing order cancellation tests** - Cancellation with partial consumption | Medium | Medium | Pending |
+| MFG-05 | **Manufacturing order cancellation tests** - Cancellation with partial consumption | Medium | Medium | Completed |
 | MFG-06 | **Work center capacity planning tests** - Capacity and availability checks | Medium | High | Pending |
 | MFG-08 | **Multi-level BOM explosion tests** - Deep BOM hierarchy handling | Medium | Medium | Pending |
 | MFG-09 | **Operations Resource Filament tests** - If OperationsResource exists | Medium | Medium | Pending |
@@ -433,4 +433,4 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 
 ---
 
-*Report updated 2026-01-24 after completion of MFG-02, MFG-03, QC-02, QC-06, QC-07, INT-05, and INV-04.*
+*Report updated 2026-01-24 after completion of MFG-02, MFG-03, MFG-05, QC-02, QC-06, QC-07, INT-05, and INV-04.*
