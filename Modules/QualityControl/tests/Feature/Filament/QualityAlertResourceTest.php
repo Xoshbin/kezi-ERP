@@ -124,3 +124,43 @@ it('displays navigation badge with new alert count', function () {
 
     expect($badge)->toBe('5');
 });
+
+it('can resolve an alert via the resolve action', function () {
+    $alert = QualityAlert::factory()->create([
+        'company_id' => $this->company->id,
+        'status' => QualityAlertStatus::New,
+    ]);
+
+    livewire(ListQualityAlerts::class)
+        ->callTableAction('resolve', $alert, [
+            'root_cause' => 'Human error',
+            'corrective_action' => 'Training provided',
+            'preventive_action' => 'Added double-check step',
+            'scrap_items' => false,
+        ])
+        ->assertHasNoTableActionErrors();
+
+    expect($alert->fresh())
+        ->status->toBe(QualityAlertStatus::Resolved)
+        ->root_cause->toBe('Human error')
+        ->resolved_at->not->toBeNull();
+});
+
+it('validates CAPA fields when resolving via edit', function () {
+    $alert = QualityAlert::factory()->create([
+        'company_id' => $this->company->id,
+        'status' => QualityAlertStatus::New,
+    ]);
+
+    livewire(EditQualityAlert::class, [
+        'record' => $alert->getRouteKey(),
+    ])
+        ->fillForm([
+            'status' => QualityAlertStatus::Resolved,
+            'root_cause' => '',
+            'corrective_action' => '',
+            'preventive_action' => '',
+        ])
+        ->call('save')
+        ->assertHasFormErrors(['status']);
+});

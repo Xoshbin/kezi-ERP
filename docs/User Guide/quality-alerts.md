@@ -248,9 +248,21 @@ What changes prevent this from happening again?
 **Example**:
 > "1. Implement automated tool change reminders in production system. 2. Add tool wear inspection to daily operator checklist. 3. Train production supervisors on importance of maintenance schedule adherence even during high-volume periods."
 
-**Step 5: Update Status to Resolved**
+**Step 5: Resolve the Alert**
 
-Once corrective actions are **implemented** (not just planned), change status to **Resolved**.
+Click the **Resolve Alert** action button in the top right corner.
+
+A modal window will appear requiring you to document your CAPA findings:
+
+- **Root Cause**: What was the fundamental reason?
+- **Corrective Action**: What immediate fix was applied?
+- **Preventive Action**: What was done to prevent recurrence?
+- **Scrap Items?**: Toggle this if the affecting items need to be moved to scrap immediately.
+
+> [!WARNING]
+> You cannot resolve an alert without filling in all three CAPA fields. This ensures proper documentation for every quality incident.
+
+Click **Confirm** to save. The status will automatically change to **Resolved**.
 
 ---
 
@@ -454,10 +466,10 @@ Quality alerts connect seamlessly with your operations:
 **Q: Why was an alert created automatically?**
 
 A: Alerts are auto-created when:
-1. A **Quality Check** fails (one or more parameters marked as Fail)
+1. A **Quality Check** fails (specifically if it is marked as **Blocking**)
 2. The quality control point is configured to trigger alerts on failure
 
-To prevent auto-creation, adjust your quality control point settings.
+To prevent auto-creation, adjust your quality control point settings, but note that failing a blocking check will always stop the workflow and likely generate an alert for accountability.
 
 **Q: Can I delete an alert?**
 
