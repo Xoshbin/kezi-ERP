@@ -1,6 +1,7 @@
 <?php
 
 use Brick\Money\Money;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Accounting\Enums\Accounting\JournalType;
 use Modules\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\BankStatementResource;
@@ -25,8 +26,27 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
+    Filament::setTenant($this->company);
     // Acting as the authenticated user
     $this->actingAs($this->user);
+});
+
+it('scopes bank statements to the active company', function () {
+    $statementInCompany = BankStatement::factory()->create([
+        'company_id' => $this->company->id,
+        'reference' => 'STMT-IN-COMPANY',
+    ]);
+
+    $otherCompany = \App\Models\Company::factory()->create();
+    $statementInOtherCompany = BankStatement::factory()->create([
+        'company_id' => $otherCompany->id,
+        'reference' => 'STMT-OUT-COMPANY',
+    ]);
+
+    livewire(ListBankStatements::class)
+        ->searchTable('STMT')
+        ->assertCanSeeTableRecords([$statementInCompany])
+        ->assertCanNotSeeTableRecords([$statementInOtherCompany]);
 });
 
 it('can render the list page', function () {

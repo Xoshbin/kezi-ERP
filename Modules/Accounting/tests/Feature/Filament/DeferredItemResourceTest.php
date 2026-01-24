@@ -9,6 +9,7 @@ uses(\Illuminate\Foundation\Testing\RefreshDatabase::class, \Tests\Traits\WithCo
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
+    \Filament\Facades\Filament::setTenant($this->company);
     $this->actingAs($this->user);
 });
 
@@ -23,4 +24,22 @@ it('can list deferred items', function () {
 
     livewire(DeferredItemResource\Pages\ListDeferredItems::class)
         ->assertCanSeeTableRecords([$deferredItem]);
+});
+
+it('scopes deferred items to the active company', function () {
+    $itemInCompany = DeferredItem::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'DEFERRED-IN-COMPANY',
+    ]);
+
+    $otherCompany = \App\Models\Company::factory()->create();
+    $itemInOtherCompany = DeferredItem::factory()->create([
+        'company_id' => $otherCompany->id,
+        'name' => 'DEFERRED-OUT-COMPANY',
+    ]);
+
+    livewire(DeferredItemResource\Pages\ListDeferredItems::class)
+        ->searchTable('DEFERRED')
+        ->assertCanSeeTableRecords([$itemInCompany])
+        ->assertCanNotSeeTableRecords([$itemInOtherCompany]);
 });

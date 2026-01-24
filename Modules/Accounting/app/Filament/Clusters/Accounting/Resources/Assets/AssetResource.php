@@ -300,6 +300,7 @@ class AssetResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id)
             ->with(['company.currency', 'currency', 'assetAccount', 'depreciationExpenseAccount', 'accumulatedDepreciationAccount']);
     }
 

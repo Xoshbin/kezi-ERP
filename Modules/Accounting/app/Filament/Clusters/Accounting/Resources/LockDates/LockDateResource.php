@@ -55,6 +55,8 @@ class LockDateResource extends Resource
             ->components([
                 Section::make(__('accounting::lock_date.basic_information'))
                     ->schema([
+                        \Filament\Forms\Components\Hidden::make('company_id')
+                            ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                         Select::make('lock_type')
                             ->label(__('accounting::lock_date.lock_type'))
                             ->options(
@@ -110,5 +112,11 @@ class LockDateResource extends Resource
             'create' => CreateLockDate::route('/create'),
             'edit' => EditLockDate::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
     }
 }

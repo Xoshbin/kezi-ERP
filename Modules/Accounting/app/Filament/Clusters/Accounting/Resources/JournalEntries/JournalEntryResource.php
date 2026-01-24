@@ -19,7 +19,6 @@ use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -77,6 +76,8 @@ class JournalEntryResource extends Resource
         return $schema->components([
             Section::make(__('accounting::journal_entry.journal_entry'))
                 ->schema([
+                    \Filament\Forms\Components\Hidden::make('company_id')
+                        ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                     TranslatableSelect::forModel('journal_id', Journal::class, 'name')
                         ->label(__('accounting::journal_entry.journal'))
                         ->searchable()
@@ -92,7 +93,7 @@ class JournalEntryResource extends Resource
                         ->preload()
                         ->live()
                         ->default(fn () => (Filament::getTenant() instanceof Company) ? Filament::getTenant()->currency_id : null)
-                        ->afterStateUpdated(function (Set $set, Get $get, $state) {
+                        ->afterStateUpdated(function ($set, $get, $state) {
                             $company = Filament::getTenant();
                             if ($company instanceof Company && $state) {
                                 $rate = CurrencyRate::getLatestRate((int) $state, $company->id) ?? 1;
@@ -123,7 +124,7 @@ class JournalEntryResource extends Resource
                         ->hidden(fn (Get $get) => ! $get('currency_id') ||
                             ($get('currency_id') == (Filament::getTenant() instanceof Company ? Filament::getTenant()->currency_id : null))
                         )
-                        ->afterStateUpdated(function (Set $set, Get $get, $state) {
+                        ->afterStateUpdated(function ($set, $get, $state) {
                             self::updateTotals($set, $get('lines') ?? [], (float) $state);
                         }),
                     DatePicker::make('entry_date')
@@ -202,7 +203,7 @@ class JournalEntryResource extends Resource
                         ->live()
                         ->minItems(2)
                         ->defaultItems(0)
-                        ->afterStateUpdated(function (callable $set, Get $get, $state) {
+                        ->afterStateUpdated(function ($set, $get, $state) {
                             self::updateTotals($set, $state, (float) ($get('exchange_rate') ?? 1));
                         }),
                 ])
@@ -240,6 +241,7 @@ class JournalEntryResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id)
             ->with(['company.currency', 'journal', 'currency']);
     }
 

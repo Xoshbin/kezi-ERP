@@ -14,6 +14,8 @@ return [
     'status' => 'بارودۆخ',
     'created_at' => 'کاتی دروستبوون',
     'updated_at' => 'کاتی نوێکردنەوە',
+    'parent' => 'پلانی سەرەکی',
+    'select_parent' => 'پلانێکی سەرەکی هەڵبژێرە',
 
     // Pages
     'pages' => [

@@ -57,6 +57,8 @@ class FiscalYearResource extends Resource
                 Section::make(__('accounting::fiscal_year.section_general'))
                     ->columns(2)
                     ->schema([
+                        \Filament\Forms\Components\Hidden::make('company_id')
+                            ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                         \Filament\Forms\Components\TextInput::make('name')
                             ->label(__('accounting::fiscal_year.field_name'))
                             ->required()
@@ -88,7 +90,7 @@ class FiscalYearResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('company_id', filament()->getTenant()?->id);
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
     }
 
     public static function table(Table $table): Table

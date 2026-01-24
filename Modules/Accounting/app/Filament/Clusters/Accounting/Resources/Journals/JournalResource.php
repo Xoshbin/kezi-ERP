@@ -65,6 +65,9 @@ class JournalResource extends Resource
             Section::make(__('accounting::journal.details'))
                 ->description(__('accounting::journal.details_description'))
                 ->schema([
+                    \Filament\Forms\Components\Hidden::make('company_id')
+                        ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
+
                     TextInput::make('name')
                         ->label(__('accounting::journal.name'))
                         ->required()
@@ -209,5 +212,11 @@ class JournalResource extends Resource
             'create' => CreateJournal::route('/create'),
             'edit' => EditJournal::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
     }
 }

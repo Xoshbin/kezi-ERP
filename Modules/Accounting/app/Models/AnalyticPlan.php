@@ -50,6 +50,11 @@ class AnalyticPlan extends Model
     /** @use HasFactory<AnalyticPlanFactory> */
     use HasFactory;
 
+    protected static function newFactory(): \Modules\Accounting\Database\Factories\AnalyticPlanFactory
+    {
+        return \Modules\Accounting\Database\Factories\AnalyticPlanFactory::new();
+    }
+
     use HasTranslations;
 
     /** @var array<int, string> */
@@ -121,10 +126,11 @@ class AnalyticPlan extends Model
         // and ensuring timestamps are maintained on the pivot table [9].
         return $this->belongsToMany(
             AnalyticAccount::class,
-            'analytic_account_plan_pivot', // Custom pivot table name [4]
+            'analytic_account_plan_pivots', // Custom pivot table name [4]
             'analytic_plan_id',            // Foreign key on pivot for this model
             'analytic_account_id'          // Foreign key on pivot for the related model
         )->using(AnalyticAccountPlanPivot::class)
+            ->withPivot('company_id')
             ->withTimestamps(); // Assuming created_at and updated_at exist on the pivot table [4, 10]
     }
 

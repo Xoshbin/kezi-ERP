@@ -108,4 +108,21 @@ describe('BudgetResource', function () {
                 'period_start_date' => 'required',
             ]);
     });
+    it('scopes budgets to the active company', function () {
+        $budgetInCompany = Budget::factory()->create([
+            'company_id' => $this->company->id,
+            'name' => 'BUDGET-IN-COMPANY',
+        ]);
+
+        $otherCompany = \App\Models\Company::factory()->create();
+        $budgetInOtherCompany = Budget::factory()->create([
+            'company_id' => $otherCompany->id,
+            'name' => 'BUDGET-OUT-COMPANY',
+        ]);
+
+        livewire(ListBudgets::class)
+            ->searchTable('BUDGET')
+            ->assertCanSeeTableRecords([$budgetInCompany])
+            ->assertCanNotSeeTableRecords([$budgetInOtherCompany]);
+    });
 });

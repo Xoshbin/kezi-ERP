@@ -70,4 +70,10 @@ class CurrencyRateResource extends Resource
             'edit' => EditCurrencyRate::route('/{record}/edit'),
         ];
     }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
+    }
 }

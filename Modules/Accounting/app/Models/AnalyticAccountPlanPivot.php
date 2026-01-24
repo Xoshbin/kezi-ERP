@@ -4,10 +4,12 @@ namespace Modules\Accounting\Models;
 
 use App\Models\Company;
 use Eloquent;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Carbon;
+use Modules\Accounting\Observers\AnalyticAccountPlanPivotObserver;
 
 /**
  * Class AnalyticAccountPlanPivot
@@ -29,6 +31,7 @@ use Illuminate\Support\Carbon;
  *
  * @mixin Eloquent
  */
+#[ObservedBy([AnalyticAccountPlanPivotObserver::class])]
 class AnalyticAccountPlanPivot extends Pivot
 {
     /**

@@ -57,6 +57,8 @@ class LetterOfCreditResource extends Resource
             ->components([
                 Section::make(__('accounting::lc.lc_details'))
                     ->schema([
+                        \Filament\Forms\Components\Hidden::make('company_id')
+                            ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                         Group::make([
                             ToggleButtons::make('type')
                                 ->options(LCType::class)
@@ -241,5 +243,11 @@ class LetterOfCreditResource extends Resource
         return [
             Widgets\UpcomingLCExpirations::class,
         ];
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
     }
 }

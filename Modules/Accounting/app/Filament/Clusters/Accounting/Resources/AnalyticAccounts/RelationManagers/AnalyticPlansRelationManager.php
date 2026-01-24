@@ -2,11 +2,11 @@
 
 namespace Modules\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\RelationManagers;
 
+use Filament\Actions\AttachAction;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use Filament\Actions\DetachAction;
+use Filament\Actions\DetachBulkAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -40,21 +40,28 @@ class AnalyticPlansRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
-                    ->label(__('accounting::analytic_account.name')),
+                    ->label(__('accounting::analytic_account.name'))
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                CreateAction::make(),
+                AttachAction::make()
+                    ->preloadRecordSelect()
+                    ->form(fn (AttachAction $action): array => [
+                        $action->getRecordSelect(),
+                        \Filament\Forms\Components\Hidden::make('company_id')
+                            ->default(Filament::getTenant()->id),
+                    ]),
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                DetachAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DetachBulkAction::make(),
                 ]),
             ]);
     }

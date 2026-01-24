@@ -106,4 +106,23 @@ describe('AccountResource', function () {
                 'name' => 'required',
             ]);
     });
+    it('scopes accounts to the active company', function () {
+        $accountInCompany = Account::factory()->create([
+            'company_id' => $this->company->id,
+            'code' => 'ACC-IN-COMPANY',
+        ]);
+
+        $otherCompany = \App\Models\Company::factory()->create();
+        $accountInOtherCompany = Account::factory()->create([
+            'company_id' => $otherCompany->id,
+            'code' => 'ACC-OUT-COMPANY',
+        ]);
+
+        Filament::setTenant($this->company);
+
+        livewire(ListAccounts::class)
+            ->searchTable('ACC')
+            ->assertCanSeeTableRecords([$accountInCompany])
+            ->assertCanNotSeeTableRecords([$accountInOtherCompany]);
+    });
 });

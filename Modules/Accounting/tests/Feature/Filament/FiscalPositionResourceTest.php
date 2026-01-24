@@ -11,6 +11,14 @@ use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
+use Filament\Facades\Filament;
+
+beforeEach(function () {
+    $this->setupWithConfiguredCompany();
+    Filament::setTenant($this->company);
+    $this->actingAs($this->user);
+});
+
 describe('FiscalPositionResource', function () {
 
     it('can render list page', function () {
@@ -44,5 +52,23 @@ describe('FiscalPositionResource', function () {
             'vat_required' => 1,
             'country' => 'DE',
         ]);
+    });
+
+    it('scopes fiscal positions to the active company', function () {
+        $positionInCompany = FiscalPosition::factory()->create([
+            'company_id' => $this->company->id,
+            'name' => 'POSITION-IN-COMPANY',
+        ]);
+
+        $otherCompany = \App\Models\Company::factory()->create();
+        $positionInOtherCompany = FiscalPosition::factory()->create([
+            'company_id' => $otherCompany->id,
+            'name' => 'POSITION-OUT-COMPANY',
+        ]);
+
+        Livewire::test(ListFiscalPositions::class)
+            ->searchTable('POSITION')
+            ->assertCanSeeTableRecords([$positionInCompany])
+            ->assertCanNotSeeTableRecords([$positionInOtherCompany]);
     });
 });

@@ -67,6 +67,8 @@ class AnalyticAccountResource extends Resource
                     ->label(__('accounting::analytic_account.currency'))
                     ->searchable()
                     ->preload(),
+                \Filament\Forms\Components\Hidden::make('company_id')
+                    ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                 TextInput::make('name')
                     ->label(__('accounting::analytic_account.name'))
                     ->required()
@@ -140,5 +142,11 @@ class AnalyticAccountResource extends Resource
             'create' => CreateAnalyticAccount::route('/create'),
             'edit' => EditAnalyticAccount::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
     }
 }

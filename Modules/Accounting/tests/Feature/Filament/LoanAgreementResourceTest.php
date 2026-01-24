@@ -15,8 +15,31 @@ use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
+use Filament\Facades\Filament;
+use Modules\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\Pages\ListLoanAgreements;
+
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
+    Filament::setTenant($this->company);
+    $this->actingAs($this->user);
+});
+
+it('scopes loan agreements to the active company', function () {
+    $loanInCompany = LoanAgreement::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'LOAN-IN-COMPANY',
+    ]);
+
+    $otherCompany = \App\Models\Company::factory()->create();
+    $loanInOtherCompany = LoanAgreement::factory()->create([
+        'company_id' => $otherCompany->id,
+        'name' => 'LOAN-OUT-COMPANY',
+    ]);
+
+    livewire(ListLoanAgreements::class)
+        ->searchTable('LOAN')
+        ->assertCanSeeTableRecords([$loanInCompany])
+        ->assertCanNotSeeTableRecords([$loanInOtherCompany]);
 });
 
 it('can render the list and create pages', function () {

@@ -12,8 +12,30 @@ use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
+use Filament\Facades\Filament;
+
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
+    Filament::setTenant($this->company);
+    $this->actingAs($this->user);
+});
+
+it('scopes dunning levels to the active company', function () {
+    $levelInCompany = DunningLevel::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'LEVEL-IN-COMPANY',
+    ]);
+
+    $otherCompany = \App\Models\Company::factory()->create();
+    $levelInOtherCompany = DunningLevel::factory()->create([
+        'company_id' => $otherCompany->id,
+        'name' => 'LEVEL-OUT-COMPANY',
+    ]);
+
+    Livewire::test(ListDunningLevels::class)
+        ->searchTable('LEVEL')
+        ->assertCanSeeTableRecords([$levelInCompany])
+        ->assertCanNotSeeTableRecords([$levelInOtherCompany]);
 });
 
 describe('DunningLevelResource', function () {
