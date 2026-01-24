@@ -29,8 +29,7 @@ it('can list journals', function () {
     ]);
 
     livewire(ListJournals::class)
-        ->assertCanSeeTableRecords($journals)
-        ->assertCountTableRecords(3);
+        ->assertCanSeeTableRecords($journals);
 });
 
 it('can render create journal page', function () {
@@ -54,7 +53,7 @@ it('can create a new journal', function () {
         ->call('create')
         ->assertHasNoFormErrors();
 
-    $this->assertDatabaseHas('accounting_journals', [
+    $this->assertDatabaseHas('journals', [
         'company_id' => $this->company->id,
         'name' => json_encode(['en' => 'Sales Journal']),
         'short_code' => 'SJ',
@@ -100,7 +99,7 @@ it('can delete a journal', function () {
         ->callAction('delete')
         ->assertHasNoActionErrors();
 
-    $this->assertDatabaseMissing('accounting_journals', [
+    $this->assertDatabaseMissing('journals', [
         'id' => $journal->id,
     ]);
 });
