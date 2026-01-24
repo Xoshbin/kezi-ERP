@@ -3,17 +3,17 @@
 namespace Modules\Manufacturing\Filament\Clusters\Manufacturing\Resources;
 
 use BackedEnum;
+use Filament\Actions\Action as FilamentAction;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables;
-use Filament\Tables\Actions\Action as TableAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
 use Modules\Manufacturing\Enums\ManufacturingOrderStatus;
 use Modules\Manufacturing\Filament\Clusters\Manufacturing\ManufacturingCluster;
@@ -234,7 +234,7 @@ class ManufacturingOrderResource extends Resource
                 ViewAction::make(),
                 EditAction::make()
                     ->visible(fn ($record) => $record->status === ManufacturingOrderStatus::Draft),
-                TableAction::make('cancel')
+                FilamentAction::make('cancel')
                     ->label(__('manufacturing::manufacturing.actions.cancel'))
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')

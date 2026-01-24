@@ -64,7 +64,7 @@ class QualityChecksRelationManager extends RelationManager
                 // Quality checks are usually auto-created or created via specific actions, not manually here
             ])
             ->actions([
-                ViewAction::make()
+                \Filament\Actions\ViewAction::make()
                     ->url(fn ($record) => QualityCheckResource::getUrl('view', ['record' => $record])),
             ])
             ->bulkActions([
