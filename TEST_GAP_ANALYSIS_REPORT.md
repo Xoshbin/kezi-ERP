@@ -341,7 +341,7 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 
 | Gap ID | Description | Priority | Complexity | Status |
 |--------|-------------|----------|------------|--------|
-| PRD-02 | **Product category hierarchy tests** - Category tree operations | Medium | Medium | Pending |
+| PRD-02 | **Product category hierarchy tests** - Category tree operations | Medium | Medium | Assigned |
 | PRD-03 | **Product bundle/kit tests** - If product bundles are supported | Low | Medium | Pending |
 | PRD-05 | **Product image handling tests** - If product images are managed | Low | Low | Pending |
 | PRD-07 | **Product merge/consolidation** - If product merge functionality exists | Low | Medium | Pending |
