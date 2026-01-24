@@ -113,6 +113,7 @@ class ViewManufacturingOrder extends ViewRecord
                 ->visible(fn () => in_array($this->record->status, [
                     ManufacturingOrderStatus::Draft,
                     ManufacturingOrderStatus::Confirmed,
+                    ManufacturingOrderStatus::InProgress,
                 ]))
                 ->action(function () {
                     try {
