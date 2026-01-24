@@ -37,6 +37,9 @@ return [
             'normal' => 'Normal',
             'phantom' => 'Phantom',
         ],
+        'structure' => 'Structure & Cost',
+        'total_rollup_cost' => 'Total Rollup Cost',
+        'hierarchy' => 'Hierarchy',
     ],
     'order' => [
         'label' => 'Manufacturing Order',

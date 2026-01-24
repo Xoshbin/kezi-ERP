@@ -160,6 +160,7 @@ class BillOfMaterialResource extends Resource
     {
         return [
             RelationManagers\LinesRelationManager::class,
+            RelationManagers\StructureRelationManager::class,
         ];
     }
 
@@ -168,6 +169,7 @@ class BillOfMaterialResource extends Resource
         return [
             'index' => Pages\ListBillOfMaterials::route('/'),
             'create' => Pages\CreateBillOfMaterial::route('/create'),
+            'view' => Pages\ViewBillOfMaterial::route('/{record}'),
             'edit' => Pages\EditBillOfMaterial::route('/{record}/edit'),
         ];
     }

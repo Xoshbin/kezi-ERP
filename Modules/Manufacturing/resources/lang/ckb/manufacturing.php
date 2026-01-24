@@ -37,6 +37,9 @@ return [
             'normal' => 'ئاسایی',
             'phantom' => 'وەهمی',
         ],
+        'structure' => 'پێکهاتە و تێچوو',
+        'total_rollup_cost' => 'کۆی گشتی تێچوو',
+        'hierarchy' => 'پلەبەندی',
     ],
     'order' => [
         'label' => 'داواکاری بەرهەمهێنان',
