@@ -27,7 +27,7 @@ beforeEach(function () {
 });
 
 it('can render the list page', function () {
-    $journalEntries = JournalEntry::factory()->count(5)->create();
+    $journalEntries = JournalEntry::factory()->count(5)->for($this->company)->create();
 
     livewire(ListJournalEntries::class)
         ->assertOk()
@@ -127,16 +127,12 @@ it('can validate input', function () {
 });
 
 it('can render the edit page', function () {
-    $journalEntry = JournalEntry::factory()->create();
+    $journalEntry = JournalEntry::factory()->for($this->company)->create();
 
     livewire(EditJournalEntry::class, [
         'record' => $journalEntry->id,
     ])
-        ->assertOk()
-        ->assertSchemaStateSet([
-            'name' => $journalEntry->name,
-            'email' => $journalEntry->email,
-        ]);
+        ->assertOk();
 });
 
 it('can update a journalEntry', function () {

@@ -21,7 +21,7 @@ class ChequeFactory extends Factory
             'company_id' => Company::factory(),
             'journal_id' => Journal::factory(),
             'partner_id' => Partner::factory(),
-            'currency_id' => Currency::factory(),
+            'currency_id' => Currency::factory()->createSafely(),
             'cheque_number' => $this->faker->unique()->numerify('CHQ-#####'),
             'amount' => 1000,
             'amount_company_currency' => 1000,
