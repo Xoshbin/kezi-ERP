@@ -23,8 +23,30 @@ use function Pest\Livewire\livewire;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
+use Filament\Facades\Filament;
+
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
+    Filament::setTenant($this->company);
+    $this->actingAs($this->user);
+});
+
+it('scopes fiscal years to the active company', function () {
+    $yearInCompany = FiscalYear::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'FY-IN-COMPANY',
+    ]);
+
+    $otherCompany = \App\Models\Company::factory()->create();
+    $yearInOtherCompany = FiscalYear::factory()->create([
+        'company_id' => $otherCompany->id,
+        'name' => 'FY-OUT-COMPANY',
+    ]);
+
+    livewire(ListFiscalYears::class)
+        ->searchTable('FY')
+        ->assertCanSeeTableRecords([$yearInCompany])
+        ->assertCanNotSeeTableRecords([$yearInOtherCompany]);
 });
 
 // =========================================================================

@@ -14,6 +14,8 @@ return [
     'status' => 'Status',
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
+    'parent' => 'Parent Plan',
+    'select_parent' => 'Select a parent plan',
 
     // Pages
     'pages' => [

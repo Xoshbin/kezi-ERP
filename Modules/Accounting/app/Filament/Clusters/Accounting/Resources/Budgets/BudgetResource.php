@@ -57,12 +57,8 @@ class BudgetResource extends Resource
     {
         return $schema
             ->components([
-                Select::make('company_id')
-                    ->label(__('accounting::budget.form.company_id'))
-                    ->relationship('company', 'name')
-                    ->required()
-                    ->live()
-                    ->afterStateUpdated(fn ($state, callable $set) => $set('currency_id', \App\Models\Company::find($state)?->currency_id)),
+                Hidden::make('company_id')
+                    ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                 Hidden::make('currency_id')
                     ->default(fn () => \Filament\Facades\Filament::getTenant()?->currency_id),
                 TextInput::make('name')
@@ -152,5 +148,11 @@ class BudgetResource extends Resource
             'create' => CreateBudget::route('/create'),
             'edit' => EditBudget::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
     }
 }

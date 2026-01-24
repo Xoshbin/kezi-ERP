@@ -17,6 +17,8 @@ class CurrencyRateForm
     {
         return $schema
             ->components([
+                \Filament\Forms\Components\Hidden::make('company_id')
+                    ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                 TranslatableSelect::forModel('currency_id', Currency::class)
                     ->label(__('foundation::currency.exchange_rates.currency'))
                     ->searchable()

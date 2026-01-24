@@ -74,4 +74,21 @@ describe('AssetResource', function () {
         // Verify that entries have been created (for a 5-year life with straight line, we expect multiple entries)
         expect($asset->depreciationEntries()->count())->toBeGreaterThan(0);
     });
+    it('scopes assets to the active company', function () {
+        $assetInCompany = Asset::factory()->create([
+            'company_id' => $this->company->id,
+            'name' => 'ASSET-IN-COMPANY',
+        ]);
+
+        $otherCompany = \App\Models\Company::factory()->create();
+        $assetInOtherCompany = Asset::factory()->create([
+            'company_id' => $otherCompany->id,
+            'name' => 'ASSET-OUT-COMPANY',
+        ]);
+
+        livewire(\Modules\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages\ListAssets::class)
+            ->searchTable('ASSET')
+            ->assertCanSeeTableRecords([$assetInCompany])
+            ->assertCanNotSeeTableRecords([$assetInOtherCompany]);
+    });
 });

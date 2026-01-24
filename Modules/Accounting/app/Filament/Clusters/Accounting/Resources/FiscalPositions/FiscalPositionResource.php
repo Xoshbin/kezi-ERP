@@ -7,7 +7,6 @@ use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -60,10 +59,8 @@ class FiscalPositionResource extends Resource
     {
         return $schema
             ->components([
-                Select::make('company_id')
-                    ->relationship('company', 'name')
-                    ->label(__('accounting::fiscal_position.company'))
-                    ->required(),
+                \Filament\Forms\Components\Hidden::make('company_id')
+                    ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                 TextInput::make('name')
                     ->label(__('accounting::fiscal_position.name'))
                     ->required()
@@ -148,5 +145,11 @@ class FiscalPositionResource extends Resource
             'create' => CreateFiscalPosition::route('/create'),
             'edit' => EditFiscalPosition::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
     }
 }

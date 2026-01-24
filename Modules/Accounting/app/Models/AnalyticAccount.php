@@ -146,7 +146,10 @@ class AnalyticAccount extends Model
     public function analyticPlans(): BelongsToMany
     {
         // The pivot table 'analytic_account_plan_pivot' connects analytic accounts to analytic plans [3, 8]
-        return $this->belongsToMany(AnalyticPlan::class, 'analytic_account_plan_pivot', 'analytic_account_id', 'analytic_plan_id');
+        return $this->belongsToMany(AnalyticPlan::class, 'analytic_account_plan_pivots', 'analytic_account_id', 'analytic_plan_id')
+            ->withPivot('company_id')
+            ->using(AnalyticAccountPlanPivot::class)
+            ->withTimestamps();
     }
 
     /*

@@ -73,6 +73,8 @@ class BankStatementResource extends Resource
             Section::make(__('accounting::bank_statement.statement_information'))
                 ->description(__('accounting::bank_statement.statement_information_description'))
                 ->schema([
+                    \Filament\Forms\Components\Hidden::make('company_id')
+                        ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                     TranslatableSelect::forModel('currency_id', Currency::class, 'name')
                         ->label(__('accounting::bank_statement.currency'))
                         ->searchable()
@@ -350,8 +352,8 @@ class BankStatementResource extends Resource
      */
     public static function getEloquentQuery(): Builder
     {
-        // Tenancy automatically handles company filtering
-        return parent::getEloquentQuery();
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
     }
 
     public static function getRelations(): array

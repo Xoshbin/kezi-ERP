@@ -17,8 +17,26 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
+    \Filament\Facades\Filament::setTenant($this->company);
     // Acting as the authenticated user
     $this->actingAs($this->user);
+});
+
+it('scopes currency rates to the active company', function () {
+    $rateInCompany = CurrencyRate::factory()->create([
+        'company_id' => $this->company->id,
+        'rate' => 1234.5678,
+    ]);
+
+    $otherCompany = \App\Models\Company::factory()->create();
+    $rateInOtherCompany = CurrencyRate::factory()->create([
+        'company_id' => $otherCompany->id,
+        'rate' => 8765.4321,
+    ]);
+
+    livewire(ListCurrencyRates::class)
+        ->assertCanSeeTableRecords([$rateInCompany])
+        ->assertCanNotSeeTableRecords([$rateInOtherCompany]);
 });
 
 it('can render the list page', function () {

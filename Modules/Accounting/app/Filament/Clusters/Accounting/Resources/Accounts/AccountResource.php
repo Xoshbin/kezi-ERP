@@ -85,6 +85,9 @@ class AccountResource extends Resource
                                     }
                                 })
                                 ->helperText(__('accounting::account.group_help')),
+
+                            \Filament\Forms\Components\Hidden::make('company_id')
+                                ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                         ])
                         ->columns(1),
 
@@ -193,5 +196,11 @@ class AccountResource extends Resource
             'create' => CreateAccount::route('/create'),
             'edit' => EditAccount::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
     }
 }

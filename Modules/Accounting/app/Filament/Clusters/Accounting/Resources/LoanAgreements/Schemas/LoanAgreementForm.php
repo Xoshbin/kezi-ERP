@@ -31,6 +31,8 @@ class LoanAgreementForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
+            Hidden::make('company_id')
+                ->default(fn () => Filament::getTenant()?->id),
             Section::make(__('accounting::loan.form.counterparty_currency') ?: 'Counterparty & Currency')
                 ->compact()
                 ->schema([
