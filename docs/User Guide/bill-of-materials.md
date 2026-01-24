@@ -14,9 +14,9 @@ A BOM is a structured list that specifies:
 - Optional work centers for routing
 
 ### BOM Types
-- **Standard BOM**: Regular manufacturing recipe
-- **Phantom BOM**: Components consumed without creating intermediate products
-- **Kit BOM**: Assembly of components without transformation
+- **Normal BOM**: Regular manufacturing recipe. Sub-assemblies of this type must be produced via their own Manufacturing Orders before being used.
+- **Phantom BOM**: Used for virtual sub-assemblies. When an MO is created, Phantom components are automatically "exploded" into their raw material constituents.
+- **Kit BOM**: Used for products that are sold as a set. Similar to Phantoms, they explode into their base components during manufacturing or sales.
 
 ## Creating a Bill of Materials
 
@@ -103,11 +103,18 @@ When you need to update a BOM:
 - Update component costs when supplier prices change
 - Use BOM costing to set product selling prices
 
-### Multi-Level BOMs
-For complex products:
-1. Create BOMs for sub-assemblies first
-2. Then create the final product BOM using sub-assemblies as components
-3. The system will automatically calculate the full cost tree
+### Multi-Level BOMs & Recursive Explosion
+For complex products, the system supports multi-level BOM explosion up to 10 levels deep. 
+
+**How it works:**
+1. Create BOMs for sub-assemblies first.
+2. When creating the final product BOM, use those sub-assemblies as components.
+3. If a sub-assembly BOM is of type **Kit** or **Phantom**, the system automatically "explodes" it during Manufacturing Order creation, replacing it with its raw materials.
+4. If a sub-assembly BOM is of type **Normal**, it remains as a single component that requires its own separate Manufacturing Order.
+
+**Benefits:**
+- **Recursive Math**: Quantities are multiplied accurately through all levels.
+- **Cost Rollup**: The "Structure & Cost" tab provides a total hierarchical breakdown of costs.
 
 ## Common Scenarios
 
