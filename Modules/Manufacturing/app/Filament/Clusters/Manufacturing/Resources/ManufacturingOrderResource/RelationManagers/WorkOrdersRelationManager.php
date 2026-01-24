@@ -100,7 +100,7 @@ class WorkOrdersRelationManager extends RelationManager
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                \Filament\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 //
