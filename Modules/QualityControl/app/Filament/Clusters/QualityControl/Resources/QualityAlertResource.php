@@ -2,6 +2,10 @@
 
 namespace Modules\QualityControl\Filament\Clusters\QualityControl\Resources;
 
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -54,6 +58,15 @@ class QualityAlertResource extends Resource
                             ->options(collect(QualityAlertStatus::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
                             ->required()
                             ->native(false)
+                            ->rules([
+                                fn (callable $get): \Closure => function (string $attribute, $value, \Closure $fail) use ($get) {
+                                    if (in_array($value, [QualityAlertStatus::Resolved->value, QualityAlertStatus::Closed->value])) {
+                                        if (empty($get('root_cause')) || empty($get('corrective_action')) || empty($get('preventive_action'))) {
+                                            $fail('Root cause, corrective action, and preventive action are required to resolve or close the alert.');
+                                        }
+                                    }
+                                },
+                            ])
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('product_id')
@@ -158,12 +171,43 @@ class QualityAlertResource extends Resource
                     ->preload(),
             ])
             ->actions([
-                \Filament\Actions\EditAction::make(),
+                Action::make('resolve')
+                    ->label(__('Resolve Alert'))
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn (QualityAlert $record) => $record->isOpen())
+                    ->form([
+                        Forms\Components\Textarea::make('root_cause')
+                            ->required()
+                            ->label(__('qualitycontrol::alert.root_cause')),
+                        Forms\Components\Textarea::make('corrective_action')
+                            ->required()
+                            ->label(__('qualitycontrol::alert.corrective_action')),
+                        Forms\Components\Textarea::make('preventive_action')
+                            ->required()
+                            ->label(__('qualitycontrol::alert.preventive_action')),
+                        Forms\Components\Toggle::make('scrap_items')
+                            ->label(__('Scrap Items?'))
+                            ->visible(fn (QualityAlert $record) => $record->lot_id !== null || $record->serial_number_id !== null),
+                    ])
+                    ->action(function (QualityAlert $record, array $data) {
+                        app(\Modules\QualityControl\Actions\ResolveQualityAlertAction::class)->execute(
+                            new \Modules\QualityControl\DataTransferObjects\ResolveQualityAlertDTO(
+                                qualityAlertId: $record->id,
+                                rootCause: $data['root_cause'],
+                                correctiveAction: $data['corrective_action'],
+                                preventiveAction: $data['preventive_action'],
+                                scrapItems: $data['scrap_items'] ?? false,
+                                resolvedByUserId: auth()->id(),
+                            )
+                        );
+                    }),
+                EditAction::make(),
             ])
             ->bulkActions([
-                \Filament\Actions\BulkActionGroup::make([
+                BulkActionGroup::make([
                     // Alerts can be deleted if necessary
-                    \Filament\Actions\DeleteBulkAction::make(),
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

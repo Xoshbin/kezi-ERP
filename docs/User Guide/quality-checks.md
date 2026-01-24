@@ -73,7 +73,7 @@ Based on the check line results, the overall status becomes:
 | Status | Meaning | Next Steps |
 |--------|---------|------------|
 | **✅ Passed** | All parameters met standards | Goods can proceed (received, shipped, etc.) |
-| **❌ Failed** | Critical defects found | A **Quality Alert** is generated for remediation |
+| **❌ Failed** | Critical defects found | A **Quality Alert** is automatically generated. The operation is blocked if the check was mandatory. You may need to scrap items or resolve the alert to proceed. |
 | **⚠️ Conditionally Accepted** | Minor issues, but usable | Documented for tracking; goods may proceed with restrictions |
 
 ---

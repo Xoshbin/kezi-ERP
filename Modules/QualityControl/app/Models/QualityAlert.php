@@ -34,7 +34,7 @@ use Modules\QualityControl\Enums\QualityAlertStatus;
  * @property Carbon|null $resolved_at
  * @property Carbon|null $closed_at
  */
-#[ObservedBy([AuditLogObserver::class])]
+#[ObservedBy([AuditLogObserver::class, \Modules\QualityControl\Observers\QualityAlertObserver::class])]
 class QualityAlert extends Model
 {
     use HasFactory;
