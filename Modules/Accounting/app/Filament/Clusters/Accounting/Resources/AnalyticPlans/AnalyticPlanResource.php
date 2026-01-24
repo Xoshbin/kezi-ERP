@@ -60,6 +60,13 @@ class AnalyticPlanResource extends Resource
                     ->label(__('accounting::analytic_plan.name'))
                     ->required()
                     ->maxLength(255),
+                \Filament\Forms\Components\Hidden::make('company_id')
+                    ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
+                Select::make('parent_id')
+                    ->relationship('parent', 'name')
+                    ->label(__('accounting::analytic_plan.parent'))
+                    ->searchable()
+                    ->placeholder(__('accounting::analytic_plan.select_parent')),
             ]);
     }
 
@@ -113,5 +120,11 @@ class AnalyticPlanResource extends Resource
             'create' => CreateAnalyticPlan::route('/create'),
             'edit' => EditAnalyticPlan::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
     }
 }

@@ -33,6 +33,8 @@ class DeferredItemResource extends Resource
     {
         return $schema
             ->components([
+                Forms\Components\Hidden::make('company_id')
+                    ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
@@ -104,5 +106,11 @@ class DeferredItemResource extends Resource
             'create' => Pages\CreateDeferredItem::route('/create'),
             'edit' => Pages\EditDeferredItem::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
     }
 }

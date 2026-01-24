@@ -140,4 +140,10 @@ class AuditLogResource extends Resource
             'edit' => EditAuditLog::route('/{record}/edit'),
         ];
     }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
+    }
 }

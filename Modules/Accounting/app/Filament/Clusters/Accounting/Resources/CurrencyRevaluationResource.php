@@ -29,6 +29,8 @@ class CurrencyRevaluationResource extends Resource
     {
         return $schema
             ->components([
+                \Filament\Forms\Components\Hidden::make('company_id')
+                    ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                 \Filament\Forms\Components\DatePicker::make('revaluation_date')
                     ->label(__('accounting::currency_revaluation.fields.revaluation_date'))
                     ->required()
@@ -98,5 +100,11 @@ class CurrencyRevaluationResource extends Resource
             'index' => Pages\ListCurrencyRevaluations::route('/'),
             'create' => Pages\CreateCurrencyRevaluation::route('/create'),
         ];
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
     }
 }

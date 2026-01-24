@@ -78,6 +78,8 @@ class AdjustmentDocumentResource extends Resource
             Section::make(__('accounting::adjustment_document.document_information'))
                 ->description(__('accounting::adjustment_document.document_information_description'))
                 ->schema([
+                    \Filament\Forms\Components\Hidden::make('company_id')
+                        ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                     TranslatableSelect::forModel('currency_id', Currency::class, 'name')
                         ->required()
                         ->searchable()
@@ -487,5 +489,11 @@ class AdjustmentDocumentResource extends Resource
             'create' => CreateAdjustmentDocument::route('/create'),
             'edit' => EditAdjustmentDocument::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
     }
 }

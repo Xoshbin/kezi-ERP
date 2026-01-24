@@ -76,6 +76,8 @@ class PaymentResource extends Resource
                 ->description(__('accounting::payment.form.direct_payment_description'))
                 ->compact()
                 ->schema([
+                    \Filament\Forms\Components\Hidden::make('company_id')
+                        ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                     Group::make()
                         ->schema([
                             ToggleButtons::make('payment_type')
@@ -318,5 +320,11 @@ class PaymentResource extends Resource
             'create' => CreatePayment::route('/create'),
             'edit' => EditPayment::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
     }
 }

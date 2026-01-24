@@ -50,6 +50,8 @@ class DunningLevelResource extends Resource
             ->components([
                 Section::make(__('accounting::dunning_level.sections.general_information'))
                     ->schema([
+                        \Filament\Forms\Components\Hidden::make('company_id')
+                            ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                         TextInput::make('name')
                             ->label(__('accounting::dunning_level.fields.name'))
                             ->required()
@@ -154,5 +156,11 @@ class DunningLevelResource extends Resource
             'create' => Pages\CreateDunningLevel::route('/create'),
             'edit' => Pages\EditDunningLevel::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
     }
 }

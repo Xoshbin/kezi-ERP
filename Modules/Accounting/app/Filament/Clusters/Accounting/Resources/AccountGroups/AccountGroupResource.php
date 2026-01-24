@@ -54,6 +54,8 @@ class AccountGroupResource extends Resource
                 Section::make(__('accounting::account_group.basic_information'))
                     ->description(__('accounting::account_group.basic_information_description'))
                     ->schema([
+                        \Filament\Forms\Components\Hidden::make('company_id')
+                            ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
                         TextInput::make('code_prefix_start')
                             ->label(__('accounting::account_group.code_prefix_start'))
                             ->required()
@@ -140,5 +142,11 @@ class AccountGroupResource extends Resource
             'create' => CreateAccountGroup::route('/create'),
             'edit' => EditAccountGroup::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
     }
 }
