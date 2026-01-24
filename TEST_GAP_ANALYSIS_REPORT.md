@@ -150,7 +150,7 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 | INV-01 | **StockQuant Resource Filament tests** - No dedicated Filament tests for StockQuantResource if viewing is available | Low | Low |
 | INV-02 | **Reorder rule processing edge cases** - More complex multi-warehouse reorder scenarios | Medium | Medium |
 | INV-03 | **Inter-warehouse transfer cost tracking** - Transfer costs between locations | Medium | High |
-| INV-04 | **Scrap/Waste stock move accounting** - Complete workflow tests for scrap operations | Medium | Medium |
+| INV-04 | **Scrap/Waste stock move accounting** - Complete workflow tests for scrap operations | Medium | Medium | Completed |
 | INV-05 | **Cross-company inventory transfers** - Inter-company inventory movement tests | Medium | High |
 | INV-06 | **Batch picking optimization tests** - If batch picking exists, needs test coverage | Low | Medium |
 
@@ -316,9 +316,9 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 | QC-03 | **Statistical process control (SPC)** - If SPC is implemented | Medium | High |
 | QC-04 | **Quality certificate generation** - If COA/COC generation exists | Medium | Medium |
 | QC-05 | **Supplier quality rating** - Quality-based vendor evaluation | Low | Medium |
-| QC-06 | **Non-conformance workflow** - Complete NCR workflow tests | High | Medium |
-| QC-07 | **Corrective action effectiveness verification** - CAPA follow-up tests | Medium | Low |
-| QC-08 | **Quality dashboard/reports** - Quality metrics reporting tests | Low | Medium |
+| QC-06 | **Non-conformance workflow** - Complete NCR workflow tests | High | Medium | Completed |
+| QC-07 | **Corrective action effectiveness verification** - CAPA follow-up tests | Medium | Low | Completed |
+| QC-08 | **Quality dashboard/reports** - Quality metrics reporting tests | Low | Medium | Pending |
 
 ---
 
@@ -355,7 +355,7 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 | INT-02 | **Manufacturing-to-sales integration** - Make-to-order production triggering | Manufacturing, Sales, Inventory | Medium | High |
 | INT-03 | **Project billing with manufacturing** - Project with manufacturing costs billing | ProjectManagement, Manufacturing, Sales | Low | High |
 | INT-04 | **HR payroll to project costing** - Labor cost allocation to projects | HR, ProjectManagement, Accounting | Medium | Medium |
-| INT-05 | **Quality control blocking workflows** - QC blocking shipments/production | QualityControl, Inventory, Manufacturing | High | Medium | Partially Completed (MFG implementation) |
+| INT-05 | **Quality control blocking workflows** - QC blocking shipments/production | QualityControl, Inventory, Manufacturing | High | Medium | Completed |
 | INT-06 | **Landed cost to manufacturing** - Cost allocation across manufacturing inputs | Inventory, Manufacturing, Accounting | Low | High |
 
 ---
@@ -433,4 +433,4 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 
 ---
 
-*Report updated 2026-01-23 after completion of MFG-02, MFG-03, and QC-02.*
+*Report updated 2026-01-24 after completion of MFG-02, MFG-03, QC-02, QC-06, QC-07, INT-05, and INV-04.*
