@@ -64,7 +64,7 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 | ACC-05 | **Audit Log Resource Filament tests** - Coverage for viewing and scoping of audit logs | Low | Low | Completed |
 | ACC-06 | **Tax Resource Filament tests** - Comprehensive Filament tests for TaxResource CRUD and scoping | Medium | Low | Completed |
 | ACC-07 | **Journal Resource Filament tests** - Dedicated tests for JournalResource and scoping | Low | Low | Completed |
-| ACC-08 | **Post currency revaluation action** - `PostCurrencyRevaluationAction` not explicitly tested for edge cases | Medium | Medium | Pending |
+| ACC-08 | **Post currency revaluation action** - Explicitly tested edge cases (missing accounts, zero adjustments, multi-currency) | Medium | Medium | Completed |
 
 ---
 
@@ -432,4 +432,4 @@ This report provides a comprehensive analysis of test coverage gaps within the *
 
 ---
 
-*Report updated 2026-01-24 after completion of MFG-02, MFG-03, MFG-05, MFG-08, QC-02, QC-06, QC-07, INT-05, INV-04, PRD-02, ACC-04, ACC-05, ACC-06, and ACC-07.*
+*Report updated 2026-01-24 after completion of MFG-02, MFG-03, MFG-05, MFG-08, QC-02, QC-06, QC-07, INT-05, INV-04, PRD-02, ACC-04, ACC-05, ACC-06, ACC-07, and ACC-08.*
