@@ -43,6 +43,7 @@ beforeEach(function () {
         'pay_frequency' => 'monthly',
         'working_hours_per_week' => 40,
     ]);
+
 });
 
 test('it processes payroll correctly', function () {

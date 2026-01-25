@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Modules\HR\Observers\EmployeeObserver;
 
 /**
  * Class Employee
@@ -73,7 +74,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, CashAdvance> $cashAdvances
  * @property-read int|null $cash_advances_count
  */
-#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
+#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class, EmployeeObserver::class])]
 class Employee extends Model
 {
     use HasFactory;
@@ -233,11 +234,7 @@ class Employee extends Model
     {
         return $this->hasOne(EmploymentContract::class)
             ->where('is_active', true)
-            ->where('start_date', '<=', now())
-            ->where(function ($query) {
-                $query->whereNull('end_date')
-                    ->orWhere('end_date', '>=', now());
-            })
+            ->whereDate('start_date', '<=', now())
             ->latest('start_date');
     }
 

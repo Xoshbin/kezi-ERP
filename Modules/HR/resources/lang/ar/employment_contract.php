@@ -1,0 +1,66 @@
+<?php
+
+return [
+    'navigation_label' => 'عقود التوظيف',
+    'model_label' => 'عقد توظيف',
+    'plural_model_label' => 'عقود التوظيف',
+    'basic_information' => 'معلومات أساسية',
+    'basic_information_description' => 'تفاصيل العقد ونوعه.',
+    'compensation_details' => 'تفاصيل التعويضات',
+    'compensation_details_description' => 'الراتب، البدلات، ودورية الدفع.',
+    'working_conditions' => 'ظروف العمل',
+    'working_conditions_description' => 'الساعات، الأيام، واستحقاقات الإجازات.',
+    'probation_and_notice' => 'فترة التجربة والإخطار',
+    'probation_and_notice_description' => 'تفاصيل فترة التجربة وفترة الإخطار.',
+    'additional_information' => 'معلومات إضافية',
+    'additional_information_description' => 'الوصف الوظيفي والشروط.',
+
+    'fields' => [
+        'employee' => 'الموظف',
+        'contract_number' => 'رقم العقد',
+        'contract_type' => 'نوع العقد',
+        'start_date' => 'تاريخ البدء',
+        'end_date' => 'تاريخ الانتهاء',
+        'is_active' => 'نشط',
+        'currency' => 'العملة',
+        'base_salary' => 'الراتب الأساسي',
+        'hourly_rate' => 'أجر الساعة',
+        'pay_frequency' => 'دورية الدفع',
+        'housing_allowance' => 'بدل سكن',
+        'transport_allowance' => 'بدل مواصلات',
+        'meal_allowance' => 'بدل طعام',
+        'other_allowances' => 'بدلات أخرى',
+        'working_hours_per_week' => 'ساعات العمل في الأسبوع',
+        'working_days_per_week' => 'أيام العمل في الأسبوع',
+        'annual_leave_days' => 'أيام الإجازة السنوية',
+        'sick_leave_days' => 'أيام الإجازة المرضية',
+        'maternity_leave_days' => 'أيام إجازة الأمومة',
+        'paternity_leave_days' => 'أيام إجازة الأبوة',
+        'probation_period_months' => 'فترة التجربة (بالأشهر)',
+        'probation_end_date' => 'تاريخ انتهاء فترة التجربة',
+        'notice_period_days' => 'فترة الإخطار (بالأيام)',
+        'terms_and_conditions' => 'الشروط والأحكام',
+        'job_description' => 'الوصف الوظيفي',
+        'status' => 'الحالة',
+    ],
+
+    'types' => [
+        'permanent' => 'دائم',
+        'fixed_term' => 'محدد المدة',
+        'temporary' => 'مؤقت',
+        'consultancy' => 'استشاري',
+        'internship' => 'تدريب',
+    ],
+
+    'frequencies' => [
+        'monthly' => 'شهرياً',
+        'bi_weekly' => 'كل أسبوعين',
+        'weekly' => 'أسبوعياً',
+        'hourly' => 'بالساعة',
+    ],
+
+    'status' => [
+        'active' => 'نشط',
+        'inactive' => 'غير نشط',
+    ],
+];
