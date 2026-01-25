@@ -124,11 +124,15 @@ class EmployeesTable
             ->filters([
                 TrashedFilter::make(),
             ])
-            ->recordActions([
-                EditAction::make(),
+            ->actions([
+                EditAction::make()
+                    ->using(function (\Modules\HR\Models\Employee $record, array $data): \Modules\HR\Models\Employee {
+                        return app(\Modules\HR\Actions\Employees\UpdateEmployeeAction::class)
+                            ->execute($record, \Modules\HR\DataTransferObjects\Employees\EmployeeDTO::fromArray($data));
+                    }),
                 DeleteAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Modules\Foundation\Models\Currency;
 use Modules\HR\Database\Factories\EmploymentContractFactory;
+use Modules\HR\Observers\EmploymentContractObserver;
 
 /**
  * Class EmploymentContract
@@ -54,7 +55,7 @@ use Modules\HR\Database\Factories\EmploymentContractFactory;
  * @property-read Currency $currency
  * @property-read User|null $approvedBy
  */
-#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class])]
+#[ObservedBy([\Modules\Foundation\Observers\AuditLogObserver::class, EmploymentContractObserver::class])]
 class EmploymentContract extends Model
 {
     /** @use HasFactory<EmploymentContractFactory> */

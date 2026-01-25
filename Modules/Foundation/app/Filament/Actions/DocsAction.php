@@ -109,6 +109,7 @@ class DocsAction
             'understanding-work-centers' => 'User Guide/understanding-work-centers',
             'understanding-work-orders' => 'User Guide/understanding-work-orders',
             'attendance-management' => 'User Guide/attendance-management',
+            'employment-contracts' => 'User Guide/employment-contracts',
             'understanding-reversals' => 'User Guide/understanding-reversals',
             'understanding-project-invoicing' => 'User Guide/understanding-project-invoicing',
             'understanding-vendor-management' => 'User Guide/understanding-vendor-management',
