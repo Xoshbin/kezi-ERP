@@ -1,5 +1,6 @@
 <?php
 
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\HR\Filament\Clusters\HumanResources\Resources\Employees\EmployeeResource;
 use Modules\HR\Filament\Clusters\HumanResources\Resources\Employees\Pages\CreateEmployee;
@@ -16,18 +17,19 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
+    Filament::setTenant($this->company);
 });
 
 describe('EmployeeResource', function () {
     it('can render list page', function () {
         $this->actingAs($this->user)
-            ->get(EmployeeResource::getUrl())
+            ->get(EmployeeResource::getUrl('index', tenant: $this->company))
             ->assertSuccessful();
     });
 
     it('can render create page', function () {
         $this->actingAs($this->user)
-            ->get(EmployeeResource::getUrl('create'))
+            ->get(EmployeeResource::getUrl('create', tenant: $this->company))
             ->assertSuccessful();
     });
 
@@ -37,7 +39,7 @@ describe('EmployeeResource', function () {
         ]);
 
         $this->actingAs($this->user)
-            ->get(EmployeeResource::getUrl('edit', ['record' => $employee]))
+            ->get(EmployeeResource::getUrl('edit', ['record' => $employee], tenant: $this->company))
             ->assertSuccessful();
     });
 
@@ -69,8 +71,8 @@ describe('EmployeeResource', function () {
                 'phone' => '1234567890',
                 'department_id' => $department->id,
                 'position_id' => $position->id,
-                'hire_date' => $newData->hire_date,
-                'date_of_birth' => $newData->date_of_birth,
+                'hire_date' => now()->subDay()->toDateString(), // Ensure valid hire date
+                'date_of_birth' => now()->subYears(20)->toDateString(),
                 'gender' => $newData->gender,
                 'marital_status' => $newData->marital_status,
                 'nationality' => $newData->nationality,
@@ -88,6 +90,7 @@ describe('EmployeeResource', function () {
             'first_name' => $newData->first_name,
             'last_name' => $newData->last_name,
             'email' => $newData->email,
+            'company_id' => $this->company->id,
         ]);
     });
 
@@ -109,7 +112,7 @@ describe('EmployeeResource', function () {
     it('can edit employee', function () {
         $employee = Employee::factory()->create([
             'company_id' => $this->company->id,
-            'emergency_contact_phone' => '1234567890', // Valid phone
+            'emergency_contact_phone' => '1234567890',
             'phone' => '1234567890',
         ]);
 

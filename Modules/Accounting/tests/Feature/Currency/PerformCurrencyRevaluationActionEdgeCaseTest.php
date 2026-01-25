@@ -149,6 +149,9 @@ test('it handles multiple currencies and balances accurately', function () {
     $usd = Currency::factory()->create(['code' => 'USD']);
     $eur = Currency::factory()->create(['code' => 'EUR']);
 
+    // Clear any existing rates for these currencies to ensure clean state
+    CurrencyRate::where('company_id', $this->company->id)->whereIn('currency_id', [$usd->id, $eur->id])->delete();
+
     // Rate 1.2 for USD (Gain if asset, as rate was 1.0)
     CurrencyRate::factory()->create(['currency_id' => $usd->id, 'company_id' => $this->company->id, 'rate' => 1.2, 'effective_date' => Carbon::today()]);
     // Rate 0.8 for EUR (Loss if asset, as rate was 1.0)

@@ -12,12 +12,20 @@ class EditEmployee extends EditRecord
 {
     protected static string $resource = EmployeeResource::class;
 
+    protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
+    {
+        /** @var \Modules\HR\Models\Employee $record */
+        return app(\Modules\HR\Actions\Employees\UpdateEmployeeAction::class)
+            ->execute($record, \Modules\HR\DataTransferObjects\Employees\EmployeeDTO::fromArray($data));
+    }
+
     protected function getHeaderActions(): array
     {
         return [
             DeleteAction::make(),
             ForceDeleteAction::make(),
             RestoreAction::make(),
+            \Modules\Foundation\Filament\Actions\DocsAction::make('employee-management'),
         ];
     }
 }
