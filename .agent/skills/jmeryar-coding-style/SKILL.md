@@ -405,3 +405,47 @@ it('can create an invoice', function () {
 });
 ```
 
+## 13. Progressive Disclosure UI Pattern
+
+**Rule:** When implementing complex line items (Repeaters) that exceed 5-6 core fields or cause horizontal overflow, use the **Progressive Disclosure** pattern.
+
+### 13.1. Concept
+- **Essential Fields:** Display only the absolute minimum fields required for the 90% use case directly in the table (e.g., Product, Quantity, Price).
+- **Advanced Fields:** Move secondary or specialized accounting fields (e.g., Deferred Dates, Shipping Types, Asset Categories) into a **Slide-Over Drawer**.
+- **Access:** Add an "Advanced Settings" action to each line item using `extraItemActions()`.
+
+### 13.2. Implementation (Filament 4)
+
+Use `extraItemActions()` with a `slideOver()` action. Ensure state is persisted correctly.
+
+```php
+Repeater::make('lines')
+    ->table([
+        TableColumn::make('product_id')->width('20%'),
+        // ... only 5-6 essential columns
+    ])
+    ->extraItemActions([
+        \Filament\Actions\Action::make('advanced_settings')
+            ->label(__('Advanced Settings'))
+            ->icon('heroicon-m-cog-6-tooth')
+            ->slideOver()
+            ->form([
+                Section::make('Deferred Accounting')
+                    ->schema([
+                        DatePicker::make('deferred_start_date'),
+                        DatePicker::make('deferred_end_date'),
+                    ])->columns(2),
+            ])
+            ->fillForm(fn (Repeater $component, array $arguments) => $component->getRawItemState($arguments['item']))
+            ->action(function (array $data, Repeater $component, array $arguments) {
+                $item = $arguments['item'];
+                $state = $component->getState();
+                $state[$item] = array_merge($state[$item], $data);
+                $component->state($state);
+            }),
+    ])
+```
+
+### 13.3. Real Example: Vendor Bill Lines
+The `VendorBillResource.php` implements this pattern to keep the billing interface clean while supporting complex landed costs and asset acquisitions.
+

@@ -160,6 +160,9 @@ Before clicking **Save**, double-check:
 - [ ] Did you pick the right category?
 
 Click **Save** and you're done! 🎉
+
+> [!TIP]
+> If a feature uses **Advanced Settings** (Slide-Over), clearly document how to access it (e.g., "Click the cog icon ⚙️ on the line item to see more options").
 ```
 
 ---
