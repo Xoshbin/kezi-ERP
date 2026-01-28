@@ -146,8 +146,8 @@ test('it handles multiple currencies and balances accurately', function () {
         'default_bank_journal_id' => $bankJournal->id,
     ]);
 
-    $usd = Currency::factory()->create(['code' => 'USD']);
-    $eur = Currency::factory()->create(['code' => 'EUR']);
+    $usd = Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
+    $eur = Currency::factory()->create(['code' => 'EUR', 'decimal_places' => 2]);
 
     // Clear any existing rates for these currencies to ensure clean state
     CurrencyRate::where('company_id', $this->company->id)->whereIn('currency_id', [$usd->id, $eur->id])->delete();
@@ -160,13 +160,14 @@ test('it handles multiple currencies and balances accurately', function () {
     $account = Account::factory()->for($this->company)->create(['type' => AccountType::Receivable]);
     $journal = Journal::factory()->for($this->company)->create();
 
-    // USD Transaction: 100 USD (original) = 100 IQD (book)
+    // USD Transaction: 100.00 USD (original) = 100.000 IQD (book)
+    // Casts handle Major Unit conversion
     $entryUsd = JournalEntry::factory()->for($this->company)->for($journal)->create(['entry_date' => Carbon::today()->subDays(5), 'state' => 'posted', 'currency_id' => $usd->id]);
-    JournalEntryLine::factory()->for($entryUsd)->create(['account_id' => $account->id, 'debit' => 100, 'original_currency_id' => $usd->id, 'original_currency_amount' => 100, 'exchange_rate_at_transaction' => 1.0]);
+    JournalEntryLine::factory()->for($entryUsd)->create(['account_id' => $account->id, 'debit' => 100, 'credit' => 0, 'original_currency_id' => $usd->id, 'original_currency_amount' => 100, 'exchange_rate_at_transaction' => 1.0]);
 
-    // EUR Transaction: 100 EUR (original) = 100 IQD (book)
+    // EUR Transaction: 100.00 EUR (original) = 100.000 IQD (book)
     $entryEur = JournalEntry::factory()->for($this->company)->for($journal)->create(['entry_date' => Carbon::today()->subDays(5), 'state' => 'posted', 'currency_id' => $eur->id]);
-    JournalEntryLine::factory()->for($entryEur)->create(['account_id' => $account->id, 'debit' => 100, 'original_currency_id' => $eur->id, 'original_currency_amount' => 100, 'exchange_rate_at_transaction' => 1.0]);
+    JournalEntryLine::factory()->for($entryEur)->create(['account_id' => $account->id, 'debit' => 100, 'credit' => 0, 'original_currency_id' => $eur->id, 'original_currency_amount' => 100, 'exchange_rate_at_transaction' => 1.0]);
 
     $dto = new PerformRevaluationDTO(
         company_id: $this->company->id,
