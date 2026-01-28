@@ -18,6 +18,8 @@ return [
     'group_help' => 'Accounts are auto-assigned based on code, but you can override manually.',
     'allow_reconciliation' => 'Allow Reconciliation',
     'allow_reconciliation_help' => 'Allow this account to be used in reconciliation processes (A/R, A/P, Bank).',
+    'can_create_assets' => 'Can Create Assets',
+    'can_create_assets_help' => 'If enabled, vendor bills booked to this account will automatically create draft assets.',
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
 
