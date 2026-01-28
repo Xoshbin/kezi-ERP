@@ -125,4 +125,49 @@ describe('AccountResource', function () {
             ->assertCanSeeTableRecords([$accountInCompany])
             ->assertCanNotSeeTableRecords([$accountInOtherCompany]);
     });
+
+    it('can configure asset creation setting for compatible accounts', function () {
+        // Test Fixed Asset Account (Should see toggle)
+        livewire(CreateAccount::class)
+            ->fillForm([
+                'name' => 'Vehicle Fleet',
+                'code' => '1500',
+                'type' => AccountType::FixedAssets->value,
+                'can_create_assets' => true,
+            ])
+            ->assertFormFieldIsVisible('can_create_assets')
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('accounts', [
+            'code' => '1500',
+            'can_create_assets' => true,
+        ]);
+
+        // Test Expense Account (Should see toggle)
+        livewire(CreateAccount::class)
+            ->fillForm([
+                'name' => 'IT Equipment Expense',
+                'code' => '6000',
+                'type' => AccountType::Expense->value,
+                'can_create_assets' => true,
+            ])
+            ->assertFormFieldIsVisible('can_create_assets')
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('accounts', [
+            'code' => '6000',
+            'can_create_assets' => true,
+        ]);
+
+        // Test Income Account (Should NOT see toggle)
+        livewire(CreateAccount::class)
+            ->fillForm([
+                'name' => 'Sales',
+                'code' => '4000',
+                'type' => AccountType::Income->value,
+            ])
+            ->assertFormFieldIsHidden('can_create_assets');
+    });
 });
