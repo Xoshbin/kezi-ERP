@@ -246,6 +246,9 @@ Forms\Components\Select::make('user_id')
 -   Table filters: `Tables/Filters/`
 -   Actions: `Actions/`
 
+### UI Patterns
+- **Complex Repeaters:** For repeaters with many fields (causing overflow), use `extraItemActions()` with `slideOver()` actions to move secondary fields into a drawer. See `jmeryar-coding-style` for implementation details.
+
 === laravel/core rules ===
 
 ## Do Things the Laravel Way

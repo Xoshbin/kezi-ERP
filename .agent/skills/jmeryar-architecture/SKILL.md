@@ -129,6 +129,7 @@ All financial transactions create journal entries through `CreateJournalEntryAct
 - Resources delegate ALL business logic to Services/Actions
 - Form data → DTOs → Actions (never direct model manipulation)
 - Use `RelationManagers` for line items
+- Use the **Progressive Disclosure** pattern (Slide-Over actions) for complex repeaters to avoid horizontal overflow.
 - Authorization through Policies + Filament Shield for RBAC
 
 ### Settings Cluster Injection
