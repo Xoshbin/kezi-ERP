@@ -127,6 +127,14 @@ class AccountResource extends Resource
                                 ->label(__('accounting::account.allow_reconciliation'))
                                 ->helperText(__('accounting::account.allow_reconciliation_help'))
                                 ->default(false),
+                            Toggle::make('can_create_assets')
+                                ->label(__('accounting::account.can_create_assets'))
+                                ->helperText(__('accounting::account.can_create_assets_help'))
+                                ->default(false)
+                                ->visible(fn ($get) => in_array($get('type'), [
+                                    \Modules\Accounting\Enums\Accounting\AccountType::FixedAssets->value,
+                                    \Modules\Accounting\Enums\Accounting\AccountType::Expense->value,
+                                ])),
                         ])
                         ->columns(2),
                 ])
