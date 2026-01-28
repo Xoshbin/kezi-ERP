@@ -307,20 +307,101 @@ class VendorBillResource extends Resource
                     Repeater::make('lines')
                         ->label(__('accounting::bill.lines'))
                         ->table([
-                            TableColumn::make(__('accounting::bill.product'))->width('18%'),
-                            TableColumn::make(__('accounting::bill.description'))->width('12%'),
-                            TableColumn::make(__('accounting::bill.quantity'))->width('8%'),
-                            TableColumn::make(__('accounting::bill.unit_price'))->width('12%'),
-                            TableColumn::make(__('accounting::bill.expense_account'))->width('18%'),
+                            TableColumn::make(__('accounting::bill.product'))->width('20%'),
+                            TableColumn::make(__('accounting::bill.description'))->width('20%'),
+                            TableColumn::make(__('accounting::bill.quantity'))->width('10%'),
+                            TableColumn::make(__('accounting::bill.unit_price'))->width('15%'),
+                            TableColumn::make(__('accounting::bill.expense_account'))->width('20%'),
                             TableColumn::make(__('accounting::bill.tax'))->width('15%'),
-                            TableColumn::make(__('Shipping Type'))->width('12%'),
-                            TableColumn::make(__('accounting::asset.category'))->width('15%'),
                         ])
                         ->live()
                         ->reorderable(true)
                         ->minItems(1)
                         ->disabled(fn (?VendorBill $record) => $record ? $record->status !== VendorBillStatus::Draft : false)
                         ->deletable(fn (?VendorBill $record) => $record === null || $record->status === VendorBillStatus::Draft)
+                        ->extraItemActions([
+                            \Filament\Actions\Action::make('advanced_settings')
+                                ->label(__('Advanced Settings'))
+                                ->icon('heroicon-m-cog-6-tooth')
+                                ->color('gray')
+                                ->slideOver()
+                                ->form([
+                                    Section::make(__('accounting::bill.deferred_accounting'))
+                                        ->description(__('accounting::bill.deferred_accounting_description'))
+                                        ->schema([
+                                            DatePicker::make('deferred_start_date')
+                                                ->label(__('accounting::bill.deferred_start_date')),
+                                            DatePicker::make('deferred_end_date')
+                                                ->label(__('accounting::bill.deferred_end_date')),
+                                        ])
+                                        ->columns(2),
+                                    Section::make(__('accounting::bill.shipping_assets'))
+                                        ->schema([
+                                            Select::make('shipping_cost_type')
+                                                ->label(__('Shipping Type'))
+                                                ->options(\Modules\Foundation\Enums\ShippingCostType::class)
+                                                ->placeholder(__('None'))
+                                                ->nullable(),
+                                            TranslatableSelect::forModel('asset_category_id', AssetCategory::class, 'name')
+                                                ->label(__('accounting::asset.category'))
+                                                ->searchableFields(['name'])
+                                                ->searchable()
+                                                ->preload()
+                                                ->createOptionForm([
+                                                    Select::make('company_id')
+                                                        ->relationship('company', 'name')
+                                                        ->label(__('accounting::asset.company'))
+                                                        ->required(),
+                                                    TextInput::make('name')
+                                                        ->label(__('accounting::asset.category_name'))
+                                                        ->required(),
+                                                    Select::make('asset_account_id')
+                                                        ->relationship('assetAccount', 'name')
+                                                        ->label(__('accounting::asset.asset_account'))
+                                                        ->required(),
+                                                    Select::make('accumulated_depreciation_account_id')
+                                                        ->relationship('accumulatedDepreciationAccount', 'name')
+                                                        ->label(__('accounting::asset.accumulated_depreciation_account'))
+                                                        ->required(),
+                                                    Select::make('depreciation_expense_account_id')
+                                                        ->relationship('depreciationExpenseAccount', 'name')
+                                                        ->label(__('accounting::asset.depreciation_expense_account'))
+                                                        ->required(),
+                                                    Select::make('depreciation_method')
+                                                        ->options(collect(DepreciationMethod::cases())->mapWithKeys(fn ($m) => [$m->value => $m->label()]))
+                                                        ->label(__('accounting::asset.depreciation_method'))
+                                                        ->required(),
+                                                    TextInput::make('useful_life_years')
+                                                        ->numeric()
+                                                        ->label(__('accounting::asset.useful_life_years'))
+                                                        ->required(),
+                                                    Toggle::make('prorata_temporis')
+                                                        ->label(__('accounting::asset.prorata_temporis'))
+                                                        ->default(false),
+                                                    TextInput::make('declining_factor')
+                                                        ->label(__('accounting::asset.declining_factor'))
+                                                        ->numeric()
+                                                        ->visible(fn ($get) => $get('depreciation_method') === DepreciationMethod::Declining->value)
+                                                        ->required(fn ($get) => $get('depreciation_method') === DepreciationMethod::Declining->value)
+                                                        ->default(2.0),
+                                                    TextInput::make('salvage_value_default')
+                                                        ->numeric()
+                                                        ->label(__('accounting::asset.salvage_value_default'))
+                                                        ->default(0),
+                                                ])
+                                                ->createOptionModalHeading(__('accounting::asset.create_category'))
+                                                ->createOptionAction(fn (Action $action) => $action->modalWidth('lg')),
+                                        ])
+                                        ->columns(2),
+                                ])
+                                ->fillForm(fn (Repeater $component, array $arguments) => $component->getRawItemState($arguments['item']))
+                                ->action(function (array $data, Repeater $component, array $arguments) {
+                                    $item = $arguments['item'];
+                                    $state = $component->getState();
+                                    $state[$item] = array_merge($state[$item], $data);
+                                    $component->state($state);
+                                }),
+                        ])
                         ->schema([
                             TranslatableSelect::forModel('product_id', Product::class, 'name')
                                 ->label(__('accounting::bill.product'))
@@ -388,37 +469,26 @@ class VendorBillResource extends Resource
                                 ->createOptionAction(function (Action $action) {
                                     return $action
                                         ->modalWidth('lg');
-                                })
-                                ->columnSpan(3),
+                                }),
                             TextInput::make('description')
                                 ->label(__('accounting::bill.description'))
                                 ->maxLength(255)
-                                ->required()
-                                ->columnSpan(4),
+                                ->required(),
                             TextInput::make('quantity')
                                 ->label(__('accounting::bill.quantity'))
                                 ->required()
                                 ->numeric()
-                                ->default(1)
-                                ->columnSpan(2),
+                                ->default(1),
                             MoneyInput::make('unit_price')
                                 ->label(__('accounting::bill.unit_price'))
                                 ->currencyField('../../currency_id')
-                                ->required()
-                                ->columnSpan(3),
+                                ->required(),
                             TranslatableSelect::forModel('expense_account_id', Account::class, 'name')
                                 ->label(__('accounting::bill.expense_account'))
                                 ->searchableFields(['name', 'code'])
                                 ->searchable()
                                 ->preload()
-                                ->required()
-                                ->columnSpan(3),
-                            DatePicker::make('deferred_start_date')
-                                ->label(__('accounting::bill.deferred_start_date'))
-                                ->columnSpan(3),
-                            DatePicker::make('deferred_end_date')
-                                ->label(__('accounting::bill.deferred_end_date'))
-                                ->columnSpan(3),
+                                ->required(),
                             TranslatableSelect::forModel('tax_id', Tax::class, 'name')
                                 ->label(__('accounting::bill.tax'))
                                 ->options(function () {
@@ -465,67 +535,8 @@ class VendorBillResource extends Resource
                                 ->createOptionAction(function (Action $action) {
                                     return $action
                                         ->modalWidth('lg');
-                                })
-                                ->columnSpan(3),
-                            Select::make('shipping_cost_type')
-                                ->label(__('Shipping Type'))
-                                ->options(\Modules\Foundation\Enums\ShippingCostType::class)
-                                ->placeholder(__('None'))
-                                ->nullable()
-                                ->columnSpan(3),
-                            TranslatableSelect::forModel('asset_category_id', AssetCategory::class, 'name')
-                                ->label(__('accounting::asset.category'))
-                                ->searchableFields(['name'])
-                                ->searchable()
-                                ->preload()
-                                ->visible(fn ($get) => $get('product_id') === null) // for service/asset purchases without product
-                                ->createOptionForm([
-                                    Select::make('company_id')
-                                        ->relationship('company', 'name')
-                                        ->label(__('accounting::asset.company'))
-                                        ->required(),
-                                    TextInput::make('name')
-                                        ->label(__('accounting::asset.category_name'))
-                                        ->required(),
-                                    Select::make('asset_account_id')
-                                        ->relationship('assetAccount', 'name')
-                                        ->label(__('accounting::asset.asset_account'))
-                                        ->required(),
-                                    Select::make('accumulated_depreciation_account_id')
-                                        ->relationship('accumulatedDepreciationAccount', 'name')
-                                        ->label(__('accounting::asset.accumulated_depreciation_account'))
-                                        ->required(),
-                                    Select::make('depreciation_expense_account_id')
-                                        ->relationship('depreciationExpenseAccount', 'name')
-                                        ->label(__('accounting::asset.depreciation_expense_account'))
-                                        ->required(),
-                                    Select::make('depreciation_method')
-                                        ->options(collect(DepreciationMethod::cases())->mapWithKeys(fn ($m) => [$m->value => $m->label()]))
-                                        ->label(__('accounting::asset.depreciation_method'))
-                                        ->required(),
-                                    TextInput::make('useful_life_years')
-                                        ->numeric()
-                                        ->label(__('accounting::asset.useful_life_years'))
-                                        ->required(),
-                                    Toggle::make('prorata_temporis')
-                                        ->label(__('accounting::asset.prorata_temporis'))
-                                        ->default(false),
-                                    TextInput::make('declining_factor')
-                                        ->label(__('accounting::asset.declining_factor'))
-                                        ->numeric()
-                                        ->visible(fn ($get) => $get('depreciation_method') === DepreciationMethod::Declining->value)
-                                        ->required(fn ($get) => $get('depreciation_method') === DepreciationMethod::Declining->value)
-                                        ->default(2.0),
-                                    TextInput::make('salvage_value_default')
-                                        ->numeric()
-                                        ->label(__('accounting::asset.salvage_value_default'))
-                                        ->default(0),
-                                ])
-                                ->createOptionModalHeading(__('accounting::asset.create_category'))
-                                ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
-                                ->columnSpan(3),
-                        ])
-                        ->columns(18),
+                                }),
+                        ]),
                 ])->columnSpanFull(),
             Section::make(__('accounting::bill.attachments'))
                 ->description(__('accounting::bill.attachments_description'))
