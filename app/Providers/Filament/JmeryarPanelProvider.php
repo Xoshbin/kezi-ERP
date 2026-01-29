@@ -41,10 +41,10 @@ class JmeryarPanelProvider extends PanelProvider
             ->id('jmeryar')
             ->path('jmeryar')
             ->login()
-            ->brandName('Jmeryar')
             ->colors([
-                'primary' => Color::Blue, // Shifting to a more professional "Enterprise Blue"
+                'primary' => Color::Amber,
                 'gray' => Color::Slate, // Slate provides a modern, cleaner gray scale
+
             ])
             ->topNavigation()
             ->maxContentWidth('full')
