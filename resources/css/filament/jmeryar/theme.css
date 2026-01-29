@@ -3,3 +3,157 @@
 @source '../../../../app/Filament';
 @source '../../../../resources/views/filament';
 @source '../../../../Modules';
+
+/* Premium High-Density ERP Theme - Refined Premium+ Aesthetic (Stable Build) */
+
+:root {
+    font-size: 13.5px;
+    --fi-sidebar-width: 14rem;
+}
+
+/* Base Stylings */
+body {
+    background-color: #f8fafc; /* slate-50 */
+    -webkit-font-smoothing: antialiased;
+}
+
+/* --- Flat ERP "Sheet" Design System --- */
+
+.fi-section, 
+.fi-ta-ctn, 
+.fi-modal-window {
+    border: 1px solid rgba(203, 213, 225, 0.8) !important;
+    box-shadow: none !important;
+    border-radius: 0.5rem !important;
+    background-color: white !important;
+}
+
+.fi-section-header {
+    background-color: rgba(248, 250, 252, 0.8) !important;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
+    padding: 0.5rem 1rem !important;
+}
+
+/* Statistics & Widgets */
+.fi-wi-stats-overview-stat {
+    padding: 0.75rem !important;
+    border: 1px solid rgba(203, 213, 225, 0.6) !important;
+    box-shadow: none !important;
+}
+
+.fi-wi-stats-overview-stat-label {
+    font-size: 10px !important;
+    text-transform: uppercase !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.1em !important;
+    color: #64748b !important;
+}
+
+/* --- High-Density Form Elements --- */
+
+.fi-input-wrp {
+    min-height: 30px !important;
+    box-shadow: none !important;
+    border: 1px solid #cbd5e1 !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.fi-input-wrp:focus-within {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important; 
+}
+
+.fi-input {
+    padding: 0.25rem 0.625rem !important;
+    font-size: 13px !important;
+    line-height: 1.25 !important;
+}
+
+/* Narrow Numeric Inputs in Tables */
+.fi-ta-content input[type="number"],
+input[id*="quantity"],
+input[id*="unit_price"] {
+    max-width: 100px !important;
+}
+
+.fi-input-wrp-prefix,
+.fi-input-wrp-suffix {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    background-color: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+}
+
+/* --- Form Labels & Spacing --- */
+
+.fi-fo-field-wrp {
+    margin-bottom: 0.75rem !important;
+}
+
+.fi-fo-field-wrp-label {
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    font-weight: 700 !important;
+    color: #64748b !important;
+    margin-bottom: 0.375rem !important;
+}
+
+/* --- Compact Professional Tables --- */
+
+.fi-ta-cell {
+    padding: 0.375rem 1rem !important;
+}
+
+.fi-ta-header-cell {
+    background-color: rgba(248, 250, 252, 0.9) !important;
+    font-size: 10px !important;
+    text-transform: uppercase !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.075em !important;
+    color: #475569 !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.fi-ta-row {
+    border-bottom: 1px solid rgba(241, 245, 249, 0.6) !important;
+    transition: background-color 0.1s ease-in-out !important;
+}
+
+.fi-ta-row:hover {
+    background-color: rgba(248, 250, 252, 0.8) !important;
+}
+
+/* --- Empty States --- */
+.fi-ta-empty-state {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+}
+
+.fi-ta-empty-state-icon {
+    width: 2rem !important;
+    height: 2rem !important;
+}
+
+/* --- Layout: Sidebar & Topbar --- */
+
+.fi-sidebar {
+    background-color: #0f172a !important;
+    border-right: 1px solid #1e293b !important;
+}
+
+.fi-topbar {
+    background-color: white !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
+}
+
+/* --- Enterprise Buttons --- */
+
+.fi-btn {
+    padding: 0.25rem 0.875rem !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    border-radius: 0.375rem !important;
+    letter-spacing: 0.01em !important;
+}
