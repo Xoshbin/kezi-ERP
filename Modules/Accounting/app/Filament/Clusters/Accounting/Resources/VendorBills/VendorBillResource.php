@@ -356,15 +356,15 @@ class VendorBillResource extends Resource
                                                         ->label(__('accounting::asset.category_name'))
                                                         ->required(),
                                                     Select::make('asset_account_id')
-                                                        ->relationship('assetAccount', 'name')
+                                                        ->options(\Modules\Accounting\Models\Account::all()->pluck('name', 'id'))
                                                         ->label(__('accounting::asset.asset_account'))
                                                         ->required(),
                                                     Select::make('accumulated_depreciation_account_id')
-                                                        ->relationship('accumulatedDepreciationAccount', 'name')
+                                                        ->options(\Modules\Accounting\Models\Account::all()->pluck('name', 'id'))
                                                         ->label(__('accounting::asset.accumulated_depreciation_account'))
                                                         ->required(),
                                                     Select::make('depreciation_expense_account_id')
-                                                        ->relationship('depreciationExpenseAccount', 'name')
+                                                        ->options(\Modules\Accounting\Models\Account::all()->pluck('name', 'id'))
                                                         ->label(__('accounting::asset.depreciation_expense_account'))
                                                         ->required(),
                                                     Select::make('depreciation_method')
