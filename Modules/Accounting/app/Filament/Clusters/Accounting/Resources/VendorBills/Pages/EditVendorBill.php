@@ -429,6 +429,8 @@ class EditVendorBill extends EditRecord
                 'analytic_account_id' => $line->analytic_account_id,
                 'deferred_start_date' => $line->deferred_start_date,
                 'deferred_end_date' => $line->deferred_end_date,
+                'asset_category_id' => $line->asset_category_id,
+                'shipping_cost_type' => $line->shipping_cost_type,
             ];
         })->toArray();
 
