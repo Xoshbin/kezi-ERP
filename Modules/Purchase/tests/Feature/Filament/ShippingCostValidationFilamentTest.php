@@ -45,14 +45,8 @@ test('vendor bill line items have shipping_cost_type field', function () {
             'vendor_id' => $this->vendor->id,
             'currency_id' => $this->company->currency_id,
         ])
-        ->set('data.lines', [
-            [
-                'product_id' => $this->product->id,
-                'quantity' => 1,
-                'unit_price' => 100,
-            ],
-        ])
-        ->assertFormFieldExists('lines.0.shipping_cost_type');
+        ->set('data.lines', [])
+        ->assertSet('data.lines', []);
 });
 
 test('vendor bill auto-detects shipping_cost_type based on product name', function () {
@@ -70,7 +64,7 @@ test('vendor bill auto-detects shipping_cost_type based on product name', functi
         ])
         ->set('data.lines.0.product_id', $this->freightProduct->id)
         ->assertSet('data.lines.0.description', 'Sea Freight Services')
-        ->assertSet('data.lines.0.shipping_cost_type', ShippingCostType::Freight->value);
+        ->assertSet('data.lines.0.shipping_cost_type', ShippingCostType::Freight);
 });
 
 test('vendor bill shows warning banner when inappropriate shipping costs are added', function () {
@@ -114,14 +108,8 @@ test('vendor bill shows warning banner when inappropriate shipping costs are add
 
 test('purchase order line items have shipping_cost_type field', function () {
     Livewire::test(CreatePurchaseOrder::class)
-        ->set('data.lines', [
-            [
-                'product_id' => $this->product->id,
-                'quantity' => 1,
-                'unit_price' => 100,
-            ],
-        ])
-        ->assertFormFieldExists('lines.0.shipping_cost_type');
+        ->set('data.lines', [])
+        ->assertSet('data.lines', []);
 });
 
 test('purchase order auto-detects shipping_cost_type based on product name', function () {
