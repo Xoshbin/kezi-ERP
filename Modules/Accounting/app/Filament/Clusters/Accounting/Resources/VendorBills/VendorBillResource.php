@@ -390,7 +390,8 @@ class VendorBillResource extends Resource
                                                         ->default(0),
                                                 ])
                                                 ->createOptionModalHeading(__('accounting::asset.create_category'))
-                                                ->createOptionAction(fn (Action $action) => $action->modalWidth('lg')),
+                                                ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
+                                                ->createOptionUsing(fn (array $data) => \Modules\Accounting\Models\AssetCategory::create($data)->getKey()),
                                         ])
                                         ->columns(2),
                                 ])
