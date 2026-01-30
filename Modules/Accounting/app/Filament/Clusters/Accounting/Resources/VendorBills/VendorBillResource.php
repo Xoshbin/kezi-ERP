@@ -135,7 +135,7 @@ class VendorBillResource extends Resource
                         ->searchable()
                         ->preload()
                         ->required()
-                        ->columnSpan(2)
+                        ->columnSpan(1)
                         ->createOptionForm([
                             TextInput::make('name')
                                 ->label(__('partner.name'))
@@ -536,6 +536,12 @@ class VendorBillResource extends Resource
                                     return $action
                                         ->modalWidth('lg');
                                 }),
+
+                            // Hidden fields to store advanced settings so they are persisted and saved
+                            Hidden::make('deferred_start_date'),
+                            Hidden::make('deferred_end_date'),
+                            Hidden::make('shipping_cost_type'),
+                            Hidden::make('asset_category_id'),
                         ]),
                 ])->columnSpanFull(),
             Section::make(__('accounting::bill.attachments'))
