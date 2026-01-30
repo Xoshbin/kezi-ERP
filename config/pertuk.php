@@ -38,4 +38,7 @@ return [
         'ar' => 'العربية',
     ],
 
+    'github_repo' => env('PERTUK_GITHUB_REPO', 'username/repo'),
+    'github_branch' => env('PERTUK_GITHUB_BRANCH', 'main'),
+
 ];
