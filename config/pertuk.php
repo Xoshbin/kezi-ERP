@@ -9,8 +9,15 @@ return [
     // Default sort order when front matter 'order' is missing.
     'default_order' => 1000,
 
-    // Excluded files or folders (relative to root).
-    'exclude' => [
+    // Excluded files or folders (relative to root) for file listing
+    'exclude_directories' => [
+        '.DS_Store',
+        'README.md',
+        'Developers',
+    ],
+
+    // Excluded version directories
+    'exclude_versions' => [
         '.DS_Store',
         'README.md',
         'Developers',
@@ -38,11 +45,8 @@ return [
         'ar' => 'العربية',
     ],
 
-    'github_repo' => env('PERTUK_GITHUB_REPO', 'username/repo'),
-    'github_branch' => env('PERTUK_GITHUB_BRANCH', 'main'),
-
-    // Versioning settings
-    'versions' => [],
-    'default_version' => null,
+    // GitHub Repo & Branch for "Edit on GitHub" links
+    'github_repo' => env('PERTUK_GITHUB_REPO', 'username/repo'), // @phpstan-ignore-line
+    'github_branch' => env('PERTUK_GITHUB_BRANCH', 'main'), // @phpstan-ignore-line
 
 ];
