@@ -32,5 +32,5 @@ Consistency is vital for auditing. **Asset Categories** serve as standardized te
 ---
 
 **Learn More:**
-- Follow the [Acquiring Your First Assets Tutorial](../tutorials/story-two.md).
+- Follow the [Acquiring Your First Assets Tutorial](../tutorials/acquiring-first-assets.md).
 - See technical details in [Asset Acquisition Methods (Reference)](../reference/asset-acquisition-methods.md).
