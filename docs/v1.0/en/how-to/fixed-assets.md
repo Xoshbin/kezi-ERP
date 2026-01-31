@@ -28,7 +28,10 @@ There are two ways to record an asset acquisition:
 ### A. Recommended: Via Vendor Bill
 This method is best for new purchases as it links the asset to the original invoice.
 1.  Create a **Vendor Bill**.
-2.  On the line item, select the **Asset Category**.
+2.  On the line item, click the **gear icon** and select the **Asset Category** under the "Shipping & Assets" section.
+
+![Asset Category Selection in Vendor Bill](/docs/images/vendor-bill-asset-category.png)
+
 3.  **Post** the bill. The system will automatically create a draft asset.
 
 ### B. Manual Entry (For Opening Balances)
