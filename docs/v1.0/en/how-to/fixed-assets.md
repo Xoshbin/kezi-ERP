@@ -3,7 +3,7 @@
 This guide explains how to perform specific tasks related to fixed assets in Jmeryar NotebookLM, such as configuration, manual entry, and tracking.
 
 > [!TIP]
-> **New to assets?** If you want a step-by-step walkthrough of your first purchase, follow our [Acquiring Your First Assets Tutorial](../tutorials/story-two.md).
+> **New to assets?** If you want a step-by-step walkthrough of your first purchase, follow our [Acquiring Your First Assets Tutorial](../tutorials/acquiring-first-assets.md).
 > **Want to understand the theory?** Read our [Explanation of Asset Management](../explanation/understanding-asset-management.md).
 
 ---
