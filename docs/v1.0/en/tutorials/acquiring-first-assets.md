@@ -3,7 +3,7 @@
 In this tutorial, you will learn how to purchase equipment for your company (like a car or a computer) and ensure it is tracked automatically as an asset.
 
 ## Prerequisite
-You should have recorded your initial capital injection (see [Story One: Recording Initial Capital](story-one.md)).
+You should have recorded your initial capital injection (see [Story One: Recording Initial Capital](recording-initial-capital.md)).
 
 ---
 
