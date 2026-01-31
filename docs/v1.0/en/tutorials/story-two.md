@@ -13,8 +13,13 @@ Imagine you are buying 5 high-performance computers for your new office from **P
 ### Step 1: Create the Vendor Bill
 Instead of just recording an expense, we will use a **Vendor Bill** to create the asset.
 
+![Vendor Bills List View](/docs/images/vendor-bills-list.png)
+
 1.  Navigate to **Accounting → Purchases → Vendor Bills**.
 2.  Click **Create**.
+
+![Create Vendor Bill Form](/docs/images/vendor-bill-create.png)
+
 3.  Select **Paykar Tech Supplies** as the Vendor.
 4.  Enter a **Bill Reference** (e.g., `INV-2026-001`).
 
@@ -22,7 +27,11 @@ Instead of just recording an expense, we will use a **Vendor Bill** to create th
 Before adding the computers, we need a "template" that tells the system how to handle them.
 
 1.  In the **Line Items** section, click **Add to lines**.
-2.  In the **Category** column (far right), click the **"+"** button to create a new category.
+2.  Click the **gear icon (Settings)** on the line item to open the **Advanced Settings**.
+
+![Asset Category Selection](/docs/images/vendor-bill-asset-category.png)
+
+3.  In the **Shipping & Assets** section, click the **"+"** button next to **Category** to create a new category.
 3.  Fill in the details:
     *   **Category Name**: `Office Electronics`
     *   **Asset Account**: `Office Equipment` (Balance Sheet)
