@@ -143,8 +143,8 @@ class BudgetControlService
         $query = \Modules\Accounting\Models\JournalEntryLine::query()
             ->whereHas('journalEntry', function ($q) use ($line) {
                 $q->where('company_id', $line->company_id)
-                    ->where('entry_date', '>=', $line->budget->period_start_date)
-                    ->where('entry_date', '<=', $line->budget->period_end_date)
+                    ->whereDate('entry_date', '>=', $line->budget->period_start_date)
+                    ->whereDate('entry_date', '<=', $line->budget->period_end_date)
                     ->where('is_posted', true);
             });
 
@@ -252,8 +252,8 @@ class BudgetControlService
                         \Modules\Purchase\Enums\Purchases\PurchaseOrderStatus::PartiallyReceived,
                         \Modules\Purchase\Enums\Purchases\PurchaseOrderStatus::PartiallyBilled,
                     ])
-                    ->where('po_date', '>=', $line->budget->period_start_date)
-                    ->where('po_date', '<=', $line->budget->period_end_date);
+                    ->whereDate('po_date', '>=', $line->budget->period_start_date)
+                    ->whereDate('po_date', '<=', $line->budget->period_end_date);
             })
             ->whereHas('product', function ($q) use ($line) {
                 if ($line->account_id) {
@@ -296,8 +296,8 @@ class BudgetControlService
                     ->whereHas('purchaseOrder', function ($sq) use ($line) {
                         // Ensure the LINKED PO is within the period (otherwise we subtract bills for old POs from new POs?)
                         // Actually, we should subtract bills that are linked to the POs we just summed.
-                        $sq->where('po_date', '>=', $line->budget->period_start_date)
-                            ->where('po_date', '<=', $line->budget->period_end_date);
+                        $sq->whereDate('po_date', '>=', $line->budget->period_start_date)
+                            ->whereDate('po_date', '<=', $line->budget->period_end_date);
                     });
             })
             ->where('expense_account_id', $line->account_id);
