@@ -41,8 +41,8 @@ test('all docs action slugs resolve to existing files', function () {
         $fullSlug = $mappingMethod->invoke(null, $slug);
 
         $baseDocsPath = base_path('docs');
-        $englishPath = "$baseDocsPath/$fullSlug.md";
-        $kurdishPath = "$baseDocsPath/$fullSlug.ckb.md";
+        $englishPath = "$baseDocsPath/en/$fullSlug.md";
+        $kurdishPath = "$baseDocsPath/ckb/$fullSlug.md";
 
         if (! File::exists($englishPath)) {
             $missingFiles[] = "Slug '$slug' maps to '$fullSlug' but ENGLISH file matches not found: $englishPath";
@@ -57,31 +57,25 @@ test('all docs action slugs resolve to existing files', function () {
 });
 
 test('all user guides have translations', function () {
-    $userGuidePath = base_path('docs/User Guide');
-    $this->assertDirectoryExists($userGuidePath);
+    $enDocsPath = base_path('docs/en');
+    $this->assertDirectoryExists($enDocsPath);
 
-    $files = File::files($userGuidePath);
+    $files = File::allFiles($enDocsPath);
     $missingTranslations = [];
 
     foreach ($files as $file) {
-        $filename = $file->getFilename();
+        $filename = $file->getRelativePathname(); // e.g., explanation/understanding-sales-orders.md
 
         // Skip non-markdown files
         if ($file->getExtension() !== 'md') {
             continue;
         }
 
-        // Skip translation files themselves (.ckb.md, .ar.md)
-        if (Str::endsWith($filename, '.ckb.md') || Str::endsWith($filename, '.ar.md')) {
-            continue;
-        }
-
-        // Construct expected Kurdish filename
-        $kurdishFilename = Str::replaceLast('.md', '.ckb.md', $filename);
-        $kurdishPath = $userGuidePath.'/'.$kurdishFilename;
+        // Construct expected Kurdish path
+        $kurdishPath = base_path("docs/ckb/$filename");
 
         if (! File::exists($kurdishPath)) {
-            $missingTranslations[] = "User Guide '$filename' is missing Kurdish translation: $kurdishFilename";
+            $missingTranslations[] = "English doc '$filename' is missing Kurdish translation at: $kurdishPath";
         }
     }
 

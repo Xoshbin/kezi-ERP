@@ -41,4 +41,8 @@ return [
     'github_repo' => env('PERTUK_GITHUB_REPO', 'username/repo'),
     'github_branch' => env('PERTUK_GITHUB_BRANCH', 'main'),
 
+    // Versioning settings
+    'versions' => [],
+    'default_version' => null,
+
 ];

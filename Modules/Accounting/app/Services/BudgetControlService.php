@@ -89,10 +89,13 @@ class BudgetControlService
         // A budget is active and covers the date
         $budgetLines = BudgetLine::query()
             ->whereHas('budget', function ($query) use ($company, $date) {
+                // We compare dates ignoring time for end date inclusion.
+                // If budget ends on 2024-01-31, it covers transactions on 2024-01-31 23:59:59.
+                // DB stores strictly DATE (00:00:00). So we check if period_end_date >= date(transaction_date).
                 $query->where('company_id', $company->id)
                     ->where('status', BudgetStatus::Finalized) // Only check confirmed budgets
-                    ->where('period_start_date', '<=', $date)
-                    ->where('period_end_date', '>=', $date);
+                    ->whereDate('period_start_date', '<=', $date)
+                    ->whereDate('period_end_date', '>=', $date);
             })
             ->when($accountId, fn ($q) => $q->where('account_id', $accountId))
             ->when($analyticAccountId, fn ($q) => $q->where('analytic_account_id', $analyticAccountId))
@@ -100,9 +103,6 @@ class BudgetControlService
             ->get();
 
         if ($budgetLines->isEmpty()) {
-            // No budget defined for this account/period.
-            // Policy: If no budget exists, we allow it (Budgeting is optional).
-            // Or should we strict block? Usually optional.
             return;
         }
 
