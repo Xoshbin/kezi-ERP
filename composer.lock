@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "26db3865ef5f69d2f91edb3facd8f274",
+    "content-hash": "e0447fa3f399e7c4711c5a085310c28c",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -6098,6 +6098,66 @@
             "time": "2022-12-17T21:53:22+00:00"
         },
         {
+            "name": "spatie/commonmark-shiki-highlighter",
+            "version": "2.5.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/commonmark-shiki-highlighter.git",
+                "reference": "ef23368cff226658e9a348fd839b33ae6d95d2c6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/commonmark-shiki-highlighter/zipball/ef23368cff226658e9a348fd839b33ae6d95d2c6",
+                "reference": "ef23368cff226658e9a348fd839b33ae6d95d2c6",
+                "shasum": ""
+            },
+            "require": {
+                "league/commonmark": "^2.4.2",
+                "php": "^8.0",
+                "spatie/shiki-php": "^2.2.2",
+                "symfony/process": "^5.4|^6.4|^7.1|^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.19|^v3.49.0",
+                "phpunit/phpunit": "^9.5",
+                "spatie/phpunit-snapshot-assertions": "^4.2.7",
+                "spatie/ray": "^1.28"
+            },
+            "type": "commonmark-extension",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\CommonMarkShikiHighlighter\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Highlight code blocks with league/commonmark and Shiki",
+            "homepage": "https://github.com/spatie/commonmark-shiki-highlighter",
+            "keywords": [
+                "commonmark-shiki-highlighter",
+                "spatie"
+            ],
+            "support": {
+                "source": "https://github.com/spatie/commonmark-shiki-highlighter/tree/2.5.2"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-11-24T15:27:35+00:00"
+        },
+        {
             "name": "spatie/invade",
             "version": "2.1.0",
             "source": {
@@ -9874,23 +9934,19 @@
         },
         {
             "name": "xoshbin/pertuk",
-            "version": "0.0.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Xoshbin/pertuk.git",
-                "reference": "cd26f43225fdc86e08a1249caec3f21be3666678"
-            },
+            "version": "dev-develop",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Xoshbin/pertuk/zipball/cd26f43225fdc86e08a1249caec3f21be3666678",
-                "reference": "cd26f43225fdc86e08a1249caec3f21be3666678",
-                "shasum": ""
+                "type": "path",
+                "url": "../pertuk",
+                "reference": "3a876db20e37e35cf3d311a3487311b52b99c42f"
             },
             "require": {
                 "illuminate/contracts": "^11.0||^12.0",
                 "league/commonmark": "^2.0",
                 "php": "^8.4 || ^8.3",
+                "spatie/commonmark-shiki-highlighter": "^2.5",
                 "spatie/laravel-package-tools": "^1.16",
+                "spatie/shiki-php": "^2.3",
                 "spatie/yaml-front-matter": "^2.0"
             },
             "require-dev": {
@@ -9920,7 +9976,32 @@
                     "Xoshbin\\Pertuk\\Database\\Factories\\": "database/factories/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Xoshbin\\Pertuk\\Tests\\": "tests/",
+                    "Workbench\\App\\": "workbench/app/"
+                }
+            },
+            "scripts": {
+                "post-autoload-dump": [
+                    "@composer run prepare"
+                ],
+                "prepare": [
+                    "@php vendor/bin/testbench package:discover --ansi"
+                ],
+                "analyse": [
+                    "vendor/bin/phpstan analyse"
+                ],
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "test-coverage": [
+                    "vendor/bin/pest --coverage"
+                ],
+                "format": [
+                    "vendor/bin/pint"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -9934,24 +10015,16 @@
             "description": "A powerful Laravel documentation package with multi-language support, markdown processing, and beautiful UI",
             "homepage": "https://github.com/xoshbin/pertuk",
             "keywords": [
-                "Xoshbin",
                 "docs",
                 "documentation",
                 "laravel",
                 "markdown",
-                "multi-language"
+                "multi-language",
+                "xoshbin"
             ],
-            "support": {
-                "issues": "https://github.com/Xoshbin/pertuk/issues",
-                "source": "https://github.com/Xoshbin/pertuk/tree/0.0.4"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/:vendor_name",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-09-10T03:21:00+00:00"
+            "transport-options": {
+                "relative": true
+            }
         }
     ],
     "packages-dev": [
@@ -12153,33 +12226,33 @@
         },
         {
             "name": "laravel/boost",
-            "version": "v1.8.10",
+            "version": "v2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/boost.git",
-                "reference": "aad8b2a423b0a886c2ce7ee92abbfde69992ff32"
+                "reference": "6f7a9f70c1b2cc5fcef1585e8aa04b8546f150e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/boost/zipball/aad8b2a423b0a886c2ce7ee92abbfde69992ff32",
-                "reference": "aad8b2a423b0a886c2ce7ee92abbfde69992ff32",
+                "url": "https://api.github.com/repos/laravel/boost/zipball/6f7a9f70c1b2cc5fcef1585e8aa04b8546f150e9",
+                "reference": "6f7a9f70c1b2cc5fcef1585e8aa04b8546f150e9",
                 "shasum": ""
             },
             "require": {
                 "guzzlehttp/guzzle": "^7.9",
-                "illuminate/console": "^10.49.0|^11.45.3|^12.41.1",
-                "illuminate/contracts": "^10.49.0|^11.45.3|^12.41.1",
-                "illuminate/routing": "^10.49.0|^11.45.3|^12.41.1",
-                "illuminate/support": "^10.49.0|^11.45.3|^12.41.1",
+                "illuminate/console": "^11.45.3|^12.41.1",
+                "illuminate/contracts": "^11.45.3|^12.41.1",
+                "illuminate/routing": "^11.45.3|^12.41.1",
+                "illuminate/support": "^11.45.3|^12.41.1",
                 "laravel/mcp": "^0.5.1",
-                "laravel/prompts": "0.1.25|^0.3.6",
+                "laravel/prompts": "^0.3.10",
                 "laravel/roster": "^0.2.9",
-                "php": "^8.1"
+                "php": "^8.2"
             },
             "require-dev": {
-                "laravel/pint": "^1.20.0",
+                "laravel/pint": "^1.27.0",
                 "mockery/mockery": "^1.6.12",
-                "orchestra/testbench": "^8.36.0|^9.15.0|^10.6",
+                "orchestra/testbench": "^9.15.0|^10.6",
                 "pestphp/pest": "^2.36.0|^3.8.4|^4.1.5",
                 "phpstan/phpstan": "^2.1.27",
                 "rector/rector": "^2.1"
@@ -12215,7 +12288,7 @@
                 "issues": "https://github.com/laravel/boost/issues",
                 "source": "https://github.com/laravel/boost"
             },
-            "time": "2026-01-14T14:51:16+00:00"
+            "time": "2026-01-28T13:53:50+00:00"
         },
         {
             "name": "laravel/mcp",
@@ -15442,7 +15515,8 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "xoshbin/filament-custom-fields": 10,
-        "xoshbin/filament-translatable-select": 20
+        "xoshbin/filament-translatable-select": 20,
+        "xoshbin/pertuk": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
