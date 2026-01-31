@@ -24,9 +24,13 @@
         "pxlrbt/filament-environment-indicator": "^3.2",
         "xoshbin/filament-custom-fields": "^0.0.2@beta",
         "xoshbin/filament-translatable-select": "dev-main",
-        "xoshbin/pertuk": "^0.0.4"
+        "xoshbin/pertuk": "@dev"
     },
     "repositories": [
+        {
+            "type": "path",
+            "url": "../pertuk"
+        },
         {
             "type": "vcs",
             "url": "https://github.com/xoshbin/filament-custom-fields"
@@ -36,7 +40,7 @@
         "barryvdh/laravel-ide-helper": "^3.6",
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.0",
-        "laravel/boost": "^1.1",
+        "laravel/boost": "^2.0",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.41",
