@@ -1,72 +1,63 @@
-# Fixed Assets Management
+# How to Manage Fixed Assets
 
-Fixed assets are long-term tangible resources used in business operations, such as buildings, machinery, equipment, and vehicles. Their cost is allocated over their useful life through depreciation, ensuring expenses are matched with the revenue they help generate.
+This guide explains how to perform specific tasks related to fixed assets in Jmeryar NotebookLM, such as configuration, manual entry, and tracking.
 
-Jmeryar NotebookLM provides a comprehensive Fixed Assets management system that allows you to track assets, calculate depreciation automatically, and manage disposals.
+> [!TIP]
+> **New to assets?** If you want a step-by-step walkthrough of your first purchase, follow our [Acquiring Your First Assets Tutorial](../tutorials/story-two.md).
+> **Want to understand the theory?** Read our [Explanation of Asset Management](../explanation/understanding-asset-management.md).
 
-## 1. Accessing Fixed Assets
+---
 
-To access the Fixed Assets module:
-1. Navigate to **Accounting** in the main menu.
-2. Click on **Assets** under the **Financial Planning** group.
+## 1. Configure Asset Categories (Setup)
 
-## 2. Creating an Asset
+Asset categories act as templates that automate the accounting for similar items (e.g., "Vehicles" or "Office Electronics").
 
-You can record a new asset manually:
+1.  Navigate to **Accounting → Assets → Asset Categories**.
+2.  Click **Create Category**.
+3.  Fill in the **Accounting Accounts**:
+    *   **Asset Account**: Where the value is tracked on the Balance Sheet.
+    *   **Accumulated Depreciation**: The contra-account for tracked wear and tear.
+    *   **Depreciation Expense**: The P&L account for periodic costs.
+4.  Set the **Useful Life** (years) and **Depreciation Method** (usually Straight Line).
+5.  **Save** the category.
 
-1. Click the **Create Asset** button.
-2. Fill in the **Asset Currency Info**:
-    *   **Name**: A descriptive name for the asset (e.g., "Delivery Truck 2024").
-    *   **Currency**: The currency used for the purchase.
-    *   **Current Exchange Rate**: Automatically fetched if the currency differs from the company default.
-3. Fill in the **Asset Details**:
-    *   **Purchase Date**: The date the asset was acquired.
-    *   **Purchase Value**: The original cost of the asset.
-    *   **Salvage Value**: The estimated value of the asset at the end of its useful life (value you expect to sell it for).
-    *   **Useful Life**: The number of years you expect to use the asset.
-    *   **Prorata Temporis**: Enable this if you want depreciation to be calculated based on the exact number of days the asset was held in the first period, rather than a full period's depreciation.
-    *   **Depreciation Method**: Choose how the asset value decreases over time (see below).
-    *   **Declining Factor**: (Visible only for Declining Balance method) The multiplication factor for the rate.
-4. Configure the **Accounting Accounts**:
-    *   **Asset Account**: The balance sheet account tracking the asset's cost (Fixed Asset type).
-    *   **Depreciation Expense Account**: The expense account where depreciation costs are recorded.
-    *   **Accumulated Depreciation Account**: The contra-asset account accumulating total depreciation.
-5. Click **Create** or **Create & Create Another**.
+## 2. Record a New Asset
 
-## 3. Depreciation Methods
+There are two ways to record an asset acquisition:
 
-Jmeryar supports two primary depreciation methods:
+### A. Recommended: Via Vendor Bill
+This method is best for new purchases as it links the asset to the original invoice.
+1.  Create a **Vendor Bill**.
+2.  On the line item, select the **Asset Category**.
+3.  **Post** the bill. The system will automatically create a draft asset.
 
-### Straight Line
-The most common and simplest method. It spreads the cost evenly over the useful life of the asset.
-*   **Formula**: (Purchase Value - Salvage Value) / Useful Life
+### B. Manual Entry (For Opening Balances)
+Use this if you already own the asset or didn't buy it through a standard bill.
+1.  Navigate to **Accounting → Assets**.
+2.  Click **Create Asset**.
+3.  Enter the **Purchase Date**, **Value**, and **Salvage Value**.
+4.  Select the appropriate **Asset Category** (or fill in the accounts manually).
+5.  **Save** to create as Draft.
 
-### Declining Balance
-An accelerated depreciation method that records higher depreciation expenses in the earlier years of an asset's life.
-*   **Formula**: Book Value at Beginning of Year × (Straight Line Rate × Declining Factor)
+## 3. Manage the Asset Lifecycle
 
-## 4. Asset Lifecycle
+### Confirming an Asset
+All new assets (manual or from bills) start as **Draft**. You must review and **Confirm** them to start depreciation.
 
-### Draft
-New assets start in the **Draft** status. In this state, you can modify all details. Depreciation does not run for draft assets.
+### Posting Depreciation
+1.  Open an asset in **Confirmed** or **Depreciating** status.
+2.  Scroll to the **Depreciation Entries** section.
+3.  Click **Post** on the due entries to record the expense in your General Ledger.
 
-### Confirmed
-Once an asset is reviewed and verified, it moves to **Confirmed**. This locks the core details and prepares it for depreciation.
+## 4. Disposing of an Asset
+When an asset is sold, lost, or scrapped:
+1.  Open the asset record.
+2.  Click the **Dispose** action.
+3.  Enter the **Disposal Date** and **Reason**.
+4.  The system will calculate the final depreciation and gain/loss on disposal.
 
-### Depreciating
-When the depreciation process starts running, the status changes to **Depreciating**.
+---
 
-### Fully Depreciated
-When the asset's book value reaches the salvage value (or zero), the status updates to **Fully Depreciated**.
-
-### Sold / Disposed
-If you sell or scrap the asset before it's fully depreciated, it is marked as **Sold**.
-
-## 5. Depreciation Entries
-
-Jmeryar automates the calculation and posting of depreciation entries.
-
-1. Open a specific **Asset**.
-2. Scroll to the **Depreciation Entries** section.
-3. You will see a schedule of calculated depreciation.
-4. Entries can be **Posted** to the general ledger to officially record the expense.
+**See Also:**
+- [Asset Acquisition Methods (Reference)](../reference/asset-acquisition-methods.md)
+- [How to Create Vendor Bills](vendor-bills.md)
