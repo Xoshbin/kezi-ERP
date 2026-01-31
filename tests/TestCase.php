@@ -42,7 +42,8 @@ abstract class TestCase extends BaseTestCase
         config()->set('app.faker_locale', 'en_US');
 
         // Set default locale for URL generation to fix issues with routes requiring {locale}
-        \Illuminate\Support\Facades\URL::defaults(['locale' => 'en']);
+        $version = \Xoshbin\Pertuk\Services\DocumentationService::getAvailableVersions()[0] ?? 'v1.0';
+        \Illuminate\Support\Facades\URL::defaults(['locale' => 'en', 'version' => $version]);
 
         // Use Laravel's default Faker generator with en_US locale for full provider set
         // Avoid overriding the generator manually to preserve all default providers.

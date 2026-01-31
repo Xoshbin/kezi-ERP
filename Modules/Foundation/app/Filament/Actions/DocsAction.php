@@ -25,7 +25,11 @@ class DocsAction
             ->label($title)
             ->icon('heroicon-o-book-open')
             ->color('info')
-            ->url(route('docs.show', ['slug' => $fullSlug]))
+            ->url(route('pertuk.docs.version.show', [
+                'version' => \Xoshbin\Pertuk\Services\DocumentationService::make()->getVersion() ?? 'v1.0',
+                'locale' => app()->getLocale(),
+                'slug' => $fullSlug,
+            ]))
             ->openUrlInNewTab();
     }
 

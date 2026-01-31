@@ -5,7 +5,7 @@
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-lg font-medium text-gray-900">{{ __('accounting::bank_statement.statement_details') }}</h2>
             <div class="flex items-center space-x-3">
-                <a href="{{ route('docs.show', ['slug' => 'User Guide/payments']) }}" target="_blank"
+                <a href="{{ route('pertuk.docs.version.show', ['slug' => 'how-to/payments']) }}" target="_blank"
                    class="inline-flex items-center text-xs text-gray-500 hover:text-gray-700">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
                          stroke="currentColor">
