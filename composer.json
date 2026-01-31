@@ -24,13 +24,9 @@
         "pxlrbt/filament-environment-indicator": "^3.2",
         "xoshbin/filament-custom-fields": "^0.0.2@beta",
         "xoshbin/filament-translatable-select": "dev-main",
-        "xoshbin/pertuk": "@dev"
+        "xoshbin/pertuk": "^0.1"
     },
     "repositories": [
-        {
-            "type": "path",
-            "url": "../pertuk"
-        },
         {
             "type": "vcs",
             "url": "https://github.com/xoshbin/filament-custom-fields"
