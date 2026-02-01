@@ -7,6 +7,8 @@ use Filament\Clusters\Cluster;
 
 class ProjectManagementCluster extends Cluster
 {
+    protected static bool $shouldRegisterSubNavigation = false;
+
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
 
     public static function shouldRegisterNavigation(): bool
