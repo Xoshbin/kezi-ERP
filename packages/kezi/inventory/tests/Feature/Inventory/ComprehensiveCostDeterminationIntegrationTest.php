@@ -254,6 +254,7 @@ it('demonstrates FIFO cost layer fallback', function () {
     ]);
 
     $costLayer = InventoryCostLayer::factory()->create([
+        'company_id' => $this->company->id,
         'product_id' => $product->id,
         'cost_per_unit' => Money::of(45000, 'IQD'),
         'remaining_quantity' => 20.0,

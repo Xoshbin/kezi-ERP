@@ -18,7 +18,12 @@ use Kezi\Accounting\Models\JournalEntryLine;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->company = Company::factory()->create();
+    $this->company = Company::factory()->create([
+        'currency_id' => \Kezi\Foundation\Models\Currency::firstOrCreate(
+            ['code' => 'IQD'],
+            ['name' => 'Iraqi Dinar', 'symbol' => 'IQD', 'decimal_places' => 3, 'is_active' => true]
+        )->id,
+    ]);
     $this->user = \App\Models\User::factory()->create();
 
     // Setup Journals
