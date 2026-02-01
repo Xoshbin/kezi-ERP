@@ -7,7 +7,6 @@ use App\Filament\Pages\Tenancy\EditCompanyProfile;
 use App\Filament\Pages\Tenancy\RegisterCompany;
 use App\Models\Company;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
-use Coolsam\Modules\ModulesPlugin;
 use CraftForge\FilamentLanguageSwitcher\FilamentLanguageSwitcherPlugin;
 use DutchCodingCompany\FilamentDeveloperLogins\FilamentDeveloperLoginsPlugin;
 use Filament\Http\Middleware\Authenticate;
@@ -27,6 +26,17 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
+use Modules\Accounting\Filament\AccountingPlugin;
+use Modules\Foundation\Filament\FoundationPlugin;
+use Modules\HR\Filament\HRPlugin;
+use Modules\Inventory\Filament\InventoryPlugin;
+use Modules\Manufacturing\Filament\ManufacturingPlugin;
+use Modules\Payment\Filament\PaymentPlugin;
+use Modules\Product\Filament\ProductPlugin;
+use Modules\ProjectManagement\Filament\ProjectManagementPlugin;
+use Modules\Purchase\Filament\PurchasePlugin;
+use Modules\QualityControl\Filament\QualityControlPlugin;
+use Modules\Sales\Filament\SalesPlugin;
 use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 use Xoshbin\CustomFields\CustomFieldsPlugin;
 use Xoshbin\FilamentAiHelper\FilamentAiHelperPlugin;
@@ -49,11 +59,7 @@ class JmeryarPanelProvider extends PanelProvider
             ->topNavigation()
             ->maxContentWidth('full')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverResources(in: base_path('Modules/Foundation/app/Filament/Resources'), for: 'Modules\\Foundation\\Filament\\Resources')
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
-            ->discoverClusters(in: base_path('Modules/Manufacturing/app/Filament/Clusters'), for: 'Modules\\Manufacturing\\Filament\\Clusters')
-            ->discoverClusters(in: base_path('Modules/ProjectManagement/app/Filament/Clusters'), for: 'Modules\\ProjectManagement\\Filament\\Clusters')
-            ->discoverClusters(in: base_path('Modules/QualityControl/app/Filament/Clusters'), for: 'Modules\\QualityControl\\Filament\\Clusters')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->widgets([
                 // Widgets\AccountWidget::class
@@ -87,7 +93,17 @@ class JmeryarPanelProvider extends PanelProvider
             )
             ->plugins([
                 // JmeryarTheme::make(),
-                ModulesPlugin::make(),
+                FoundationPlugin::make(),
+                AccountingPlugin::make(),
+                HRPlugin::make(),
+                InventoryPlugin::make(),
+                ManufacturingPlugin::make(),
+                PaymentPlugin::make(),
+                ProductPlugin::make(),
+                ProjectManagementPlugin::make(),
+                PurchasePlugin::make(),
+                QualityControlPlugin::make(),
+                SalesPlugin::make(),
                 FilamentLanguageSwitcherPlugin::make()
                     ->locales([
                         ['code' => 'ckb', 'name' => 'کوردی'],

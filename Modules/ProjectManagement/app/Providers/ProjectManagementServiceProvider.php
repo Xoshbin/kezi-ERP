@@ -4,14 +4,11 @@ namespace Modules\ProjectManagement\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
 class ProjectManagementServiceProvider extends ServiceProvider
 {
-    use PathNamespace;
-
     protected string $name = 'ProjectManagement';
 
     protected string $nameLower = 'projectmanagement';
@@ -26,7 +23,7 @@ class ProjectManagementServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
+        $this->loadMigrationsFrom(base_path('Modules/ProjectManagement/database/migrations'));
     }
 
     /**
@@ -68,8 +65,8 @@ class ProjectManagementServiceProvider extends ServiceProvider
             $this->loadTranslationsFrom($langPath, $this->nameLower);
             $this->loadJsonTranslationsFrom($langPath);
         } else {
-            $this->loadTranslationsFrom(module_path($this->name, 'resources/lang'), $this->nameLower);
-            $this->loadJsonTranslationsFrom(module_path($this->name, 'resources/lang'));
+            $this->loadTranslationsFrom(base_path('Modules/ProjectManagement/resources/lang'), $this->nameLower);
+            $this->loadJsonTranslationsFrom(base_path('Modules/ProjectManagement/resources/lang'));
         }
     }
 
@@ -78,8 +75,7 @@ class ProjectManagementServiceProvider extends ServiceProvider
      */
     protected function registerConfig(): void
     {
-        $relativeConfigPath = config('modules.paths.generator.config.path');
-        $configPath = module_path($this->name, $relativeConfigPath);
+        $configPath = base_path('Modules/ProjectManagement/config');
 
         if (is_dir($configPath)) {
             $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($configPath));
@@ -98,19 +94,29 @@ class ProjectManagementServiceProvider extends ServiceProvider
     }
 
     /**
+     * Merge config from the given path recursively.
+     */
+    protected function mergeConfigFrom($path, $key): void
+    {
+        $existing = config($key, []);
+        $module_config = require $path;
+
+        config([$key => array_replace_recursive($existing, $module_config)]);
+    }
+
+    /**
      * Register views.
      */
     public function registerViews(): void
     {
         $viewPath = resource_path('views/modules/'.$this->nameLower);
-        $sourcePath = module_path($this->name, 'resources/views');
+        $sourcePath = base_path('Modules/ProjectManagement/resources/views');
 
         $this->publishes([$sourcePath => $viewPath], ['views', $this->nameLower.'-module-views']);
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->nameLower);
 
-        $componentNamespace = $this->module_namespace($this->name, $this->app_path(config('modules.paths.generator.component-class.path')));
-        Blade::componentNamespace($componentNamespace, $this->nameLower);
+        Blade::componentNamespace('Modules\\ProjectManagement\\View\\Components', $this->nameLower);
     }
 
     /**

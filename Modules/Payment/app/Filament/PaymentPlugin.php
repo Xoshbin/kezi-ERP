@@ -2,26 +2,31 @@
 
 namespace Modules\Payment\Filament;
 
-use Coolsam\Modules\Concerns\ModuleFilamentPlugin;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 
 class PaymentPlugin implements Plugin
 {
-    use ModuleFilamentPlugin;
-
-    public function getModuleName(): string
-    {
-        return 'Payment';
-    }
-
     public function getId(): string
     {
         return 'payment';
     }
 
+    public function register(Panel $panel): void
+    {
+        $panel
+            ->discoverResources(in: base_path('Modules/Payment/app/Filament/Resources'), for: 'Modules\\Payment\\Filament\\Resources')
+            ->discoverPages(in: base_path('Modules/Payment/app/Filament/Pages'), for: 'Modules\\Payment\\Filament\\Pages')
+            ->discoverClusters(in: base_path('Modules/Payment/app/Filament/Clusters'), for: 'Modules\\Payment\\Filament\\Clusters');
+    }
+
     public function boot(Panel $panel): void
     {
-        // TODO: Implement boot() method.
+        //
+    }
+
+    public static function make(): static
+    {
+        return new static;
     }
 }

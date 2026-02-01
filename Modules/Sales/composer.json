@@ -1,19 +1,22 @@
 {
-    "name": "nwidart/sales",
-    "description": "",
+    "name": "jmeryar/sales",
+    "description": "Sales module for Jmeryar",
     "authors": [
         {
-            "name": "Nicolas Widart",
-            "email": "n.widart@gmail.com"
+            "name": "Khoshbin",
+            "email": "xoshbin@gmail.com"
         }
     ],
-    "extra": {
-        "laravel": {
-            "providers": [],
-            "aliases": {
-
-            }
-        }
+    "type": "library",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^12.0",
+        "filament/filament": "^4.0",
+        "jmeryar/foundation": "*",
+        "jmeryar/product": "*",
+        "jmeryar/inventory": "*",
+        "jmeryar/accounting": "*",
+        "barryvdh/laravel-dompdf": "^3.1"
     },
     "autoload": {
         "psr-4": {
@@ -22,9 +25,11 @@
             "Modules\\Sales\\Database\\Seeders\\": "database/seeders/"
         }
     },
-    "autoload-dev": {
-        "psr-4": {
-            "Modules\\Sales\\Tests\\": "tests/"
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\Sales\\Providers\\SalesServiceProvider"
+            ]
         }
     }
 }
