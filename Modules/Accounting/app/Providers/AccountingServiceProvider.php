@@ -5,14 +5,11 @@ namespace Modules\Accounting\Providers;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
-use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
 class AccountingServiceProvider extends ServiceProvider
 {
-    use PathNamespace;
-
     protected string $name = 'Accounting';
 
     protected string $nameLower = 'accounting';
@@ -28,7 +25,7 @@ class AccountingServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->registerLivewireComponents();
-        $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
+        $this->loadMigrationsFrom(base_path('Modules/Accounting/database/migrations'));
     }
 
     /**
@@ -100,8 +97,8 @@ class AccountingServiceProvider extends ServiceProvider
             $this->loadTranslationsFrom($langPath, $this->nameLower);
             $this->loadJsonTranslationsFrom($langPath);
         } else {
-            $this->loadTranslationsFrom(module_path($this->name, 'resources/lang'), $this->nameLower);
-            $this->loadJsonTranslationsFrom(module_path($this->name, 'resources/lang'));
+            $this->loadTranslationsFrom(base_path('Modules/Accounting/resources/lang'), $this->nameLower);
+            $this->loadJsonTranslationsFrom(base_path('Modules/Accounting/resources/lang'));
         }
     }
 
@@ -110,7 +107,7 @@ class AccountingServiceProvider extends ServiceProvider
      */
     protected function registerConfig(): void
     {
-        $configPath = module_path($this->name, config('modules.paths.generator.config.path'));
+        $configPath = base_path('Modules/Accounting/config');
 
         if (is_dir($configPath)) {
             $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($configPath));
@@ -155,13 +152,13 @@ class AccountingServiceProvider extends ServiceProvider
     public function registerViews(): void
     {
         $viewPath = resource_path('views/modules/'.$this->nameLower);
-        $sourcePath = module_path($this->name, 'resources/views');
+        $sourcePath = base_path('Modules/Accounting/resources/views');
 
         $this->publishes([$sourcePath => $viewPath], ['views', $this->nameLower.'-module-views']);
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->nameLower);
 
-        Blade::componentNamespace(config('modules.namespace').'\\'.$this->name.'\\View\\Components', $this->nameLower);
+        Blade::componentNamespace('Modules\\Accounting\\View\\Components', $this->nameLower);
     }
 
     protected function registerLivewireComponents(): void

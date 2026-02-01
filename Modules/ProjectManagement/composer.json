@@ -1,19 +1,19 @@
 {
-    "name": "nwidart/projectmanagement",
-    "description": "",
+    "name": "jmeryar/project-management",
+    "description": "Project Management module for Jmeryar",
     "authors": [
         {
-            "name": "Nicolas Widart",
-            "email": "n.widart@gmail.com"
+            "name": "Khoshbin",
+            "email": "xoshbin@gmail.com"
         }
     ],
-    "extra": {
-        "laravel": {
-            "providers": [],
-            "aliases": {
-
-            }
-        }
+    "type": "library",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^12.0",
+        "filament/filament": "^4.0",
+        "jmeryar/foundation": "*",
+        "jmeryar/hr": "*"
     },
     "autoload": {
         "psr-4": {
@@ -22,9 +22,11 @@
             "Modules\\ProjectManagement\\Database\\Seeders\\": "database/seeders/"
         }
     },
-    "autoload-dev": {
-        "psr-4": {
-            "Modules\\ProjectManagement\\Tests\\": "tests/"
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\ProjectManagement\\Providers\\ProjectManagementServiceProvider"
+            ]
         }
     }
 }

@@ -2,26 +2,31 @@
 
 namespace Modules\Sales\Filament;
 
-use Coolsam\Modules\Concerns\ModuleFilamentPlugin;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 
 class SalesPlugin implements Plugin
 {
-    use ModuleFilamentPlugin;
-
-    public function getModuleName(): string
-    {
-        return 'Sales';
-    }
-
     public function getId(): string
     {
         return 'sales';
     }
 
+    public function register(Panel $panel): void
+    {
+        $panel
+            ->discoverResources(in: base_path('Modules/Sales/app/Filament/Resources'), for: 'Modules\\Sales\\Filament\\Resources')
+            ->discoverPages(in: base_path('Modules/Sales/app/Filament/Pages'), for: 'Modules\\Sales\\Filament\\Pages')
+            ->discoverClusters(in: base_path('Modules/Sales/app/Filament/Clusters'), for: 'Modules\\Sales\\Filament\\Clusters');
+    }
+
     public function boot(Panel $panel): void
     {
-        // TODO: Implement boot() method.
+        //
+    }
+
+    public static function make(): static
+    {
+        return new static;
     }
 }
