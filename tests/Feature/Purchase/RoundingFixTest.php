@@ -1,6 +1,6 @@
 <?php
 
-use Modules\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
+use Jmeryar\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
 
 it('handles fractional unit prices with rounding', function () {
     $data = [

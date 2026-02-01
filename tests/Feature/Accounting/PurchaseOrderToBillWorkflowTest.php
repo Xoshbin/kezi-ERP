@@ -7,24 +7,24 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
-use Modules\Accounting\Enums\Accounting\AccountType;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\Partner;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Product\Models\Product;
-use Modules\Purchase\Actions\Purchases\CreatePurchaseOrderAction;
-use Modules\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
-use Modules\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
-use Modules\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
-use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
-use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
-use Modules\Purchase\Models\PurchaseOrder;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Purchase\Services\PurchaseOrderService;
-use Modules\Purchase\Services\VendorBillService;
+use Jmeryar\Accounting\Enums\Accounting\AccountType;
+use Jmeryar\Accounting\Models\Account;
+use Jmeryar\Accounting\Models\JournalEntry;
+use Jmeryar\Foundation\Models\Currency;
+use Jmeryar\Foundation\Models\Partner;
+use Jmeryar\Product\Enums\Products\ProductType;
+use Jmeryar\Product\Models\Product;
+use Jmeryar\Purchase\Actions\Purchases\CreatePurchaseOrderAction;
+use Jmeryar\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
+use Jmeryar\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
+use Jmeryar\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
+use Jmeryar\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
+use Jmeryar\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Jmeryar\Purchase\Enums\Purchases\VendorBillStatus;
+use Jmeryar\Purchase\Models\PurchaseOrder;
+use Jmeryar\Purchase\Models\VendorBill;
+use Jmeryar\Purchase\Services\PurchaseOrderService;
+use Jmeryar\Purchase\Services\VendorBillService;
 
 uses(RefreshDatabase::class);
 
@@ -78,7 +78,7 @@ test('Purchase Order to Vendor Bill Workflow (Double Entry Verification)', funct
     $vendor = Partner::create([
         'company_id' => $company->id,
         'name' => 'Test Vendor',
-        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor,
+        'type' => \Jmeryar\Foundation\Enums\Partners\PartnerType::Vendor,
         'is_active' => true,
     ]);
 

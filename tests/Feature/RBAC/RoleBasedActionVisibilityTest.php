@@ -3,9 +3,9 @@
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ListInvoices;
-use Modules\Sales\Models\Invoice;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ListInvoices;
+use Jmeryar\Sales\Models\Invoice;
+use Jmeryar\Sales\Enums\Sales\InvoiceStatus;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;

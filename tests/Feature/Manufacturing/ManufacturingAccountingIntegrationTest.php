@@ -2,16 +2,16 @@
 
 use App\Models\Company;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Manufacturing\Actions\Accounting\CreateJournalEntryForManufacturingAction;
-use Modules\Manufacturing\Enums\ManufacturingOrderStatus;
-use Modules\Manufacturing\Models\BillOfMaterial;
-use Modules\Manufacturing\Models\ManufacturingOrder;
-use Modules\Manufacturing\Models\ManufacturingOrderLine;
-use Modules\Product\Models\Product;
+use Jmeryar\Accounting\Models\Account;
+use Jmeryar\Accounting\Models\Journal;
+use Jmeryar\Accounting\Models\JournalEntry;
+use Jmeryar\Inventory\Models\StockLocation;
+use Jmeryar\Manufacturing\Actions\Accounting\CreateJournalEntryForManufacturingAction;
+use Jmeryar\Manufacturing\Enums\ManufacturingOrderStatus;
+use Jmeryar\Manufacturing\Models\BillOfMaterial;
+use Jmeryar\Manufacturing\Models\ManufacturingOrder;
+use Jmeryar\Manufacturing\Models\ManufacturingOrderLine;
+use Jmeryar\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

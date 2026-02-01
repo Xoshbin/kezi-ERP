@@ -7,35 +7,35 @@ use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
-use Modules\Accounting\Actions\Dunning\ProcessDunningRunAction;
-use Modules\Accounting\Emails\DunningReminderMail;
-use Modules\Accounting\Enums\Accounting\JournalType;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\DunningLevel;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\Partner;
-use Modules\Payment\Actions\Payments\CreatePaymentAction;
-use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
-use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
-use Modules\Payment\Enums\Payments\PaymentMethod;
-use Modules\Payment\Enums\Payments\PaymentStatus;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Payment\Services\PaymentService;
-use Modules\Product\Models\Product;
-use Modules\Sales\Actions\Sales\AcceptQuoteAction;
-use Modules\Sales\Actions\Sales\ConfirmSalesOrderAction;
-use Modules\Sales\Actions\Sales\ConvertQuoteToSalesOrderAction;
-use Modules\Sales\Actions\Sales\CreateInvoiceFromSalesOrderAction;
-use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Modules\Sales\Enums\Sales\QuoteStatus;
-use Modules\Sales\Enums\Sales\SalesOrderStatus;
-use Modules\Sales\Models\Invoice;
-use Modules\Sales\Models\Quote;
-use Modules\Sales\Models\QuoteLine;
-use Modules\Sales\Models\SalesOrder;
-use Modules\Sales\Services\InvoiceService;
+use Jmeryar\Accounting\Actions\Dunning\ProcessDunningRunAction;
+use Jmeryar\Accounting\Emails\DunningReminderMail;
+use Jmeryar\Accounting\Enums\Accounting\JournalType;
+use Jmeryar\Accounting\Models\Account;
+use Jmeryar\Accounting\Models\DunningLevel;
+use Jmeryar\Accounting\Models\Journal;
+use Jmeryar\Foundation\Models\Currency;
+use Jmeryar\Foundation\Models\Partner;
+use Jmeryar\Payment\Actions\Payments\CreatePaymentAction;
+use Jmeryar\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use Jmeryar\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Jmeryar\Payment\Enums\Payments\PaymentMethod;
+use Jmeryar\Payment\Enums\Payments\PaymentStatus;
+use Jmeryar\Payment\Enums\Payments\PaymentType;
+use Jmeryar\Payment\Services\PaymentService;
+use Jmeryar\Product\Models\Product;
+use Jmeryar\Sales\Actions\Sales\AcceptQuoteAction;
+use Jmeryar\Sales\Actions\Sales\ConfirmSalesOrderAction;
+use Jmeryar\Sales\Actions\Sales\ConvertQuoteToSalesOrderAction;
+use Jmeryar\Sales\Actions\Sales\CreateInvoiceFromSalesOrderAction;
+use Jmeryar\Sales\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
+use Jmeryar\Sales\Enums\Sales\InvoiceStatus;
+use Jmeryar\Sales\Enums\Sales\QuoteStatus;
+use Jmeryar\Sales\Enums\Sales\SalesOrderStatus;
+use Jmeryar\Sales\Models\Invoice;
+use Jmeryar\Sales\Models\Quote;
+use Jmeryar\Sales\Models\QuoteLine;
+use Jmeryar\Sales\Models\SalesOrder;
+use Jmeryar\Sales\Services\InvoiceService;
 use Tests\TestCase;
 use Tests\Traits\WithConfiguredCompany;
 
@@ -64,7 +64,7 @@ class FullSalesCycleTest extends TestCase
 
         $this->customer = Partner::factory()->create([
             'company_id' => $this->company->id,
-            'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
+            'type' => \Jmeryar\Foundation\Enums\Partners\PartnerType::Customer,
             'email' => 'customer@example.com',
         ]);
 
@@ -128,7 +128,7 @@ class FullSalesCycleTest extends TestCase
         ]);
 
         // Send Quote (Required before Accepting)
-        app(\Modules\Sales\Actions\Sales\SendQuoteAction::class)->execute($quote);
+        app(\Jmeryar\Sales\Actions\Sales\SendQuoteAction::class)->execute($quote);
 
         // Accept Quote
         app(AcceptQuoteAction::class)->execute($quote, $this->user);

@@ -1,0 +1,19 @@
+<?php
+
+namespace Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\LockDates\Pages;
+
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+use Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\LockDates\LockDateResource;
+
+class EditLockDate extends EditRecord
+{
+    protected static string $resource = LockDateResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+        ];
+    }
+}

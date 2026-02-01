@@ -9,10 +9,10 @@ use App\Filament\Clusters\Settings\Resources\Companies\RelationManagers\UsersRel
 use App\Models\Company;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Currency;
-use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
+use Jmeryar\Accounting\Models\Account;
+use Jmeryar\Accounting\Models\Journal;
+use Jmeryar\Foundation\Models\Currency;
+use Jmeryar\Inventory\Enums\Inventory\InventoryAccountingMode;
 use Tests\Traits\WithConfiguredCompany;
 
 use function Pest\Laravel\assertDatabaseHas;

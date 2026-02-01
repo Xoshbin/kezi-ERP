@@ -1,17 +1,17 @@
 <?php
 
 use Brick\Money\Money;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Inventory\Actions\LandedCost\PostLandedCostAction;
-use Modules\Inventory\Enums\Inventory\LandedCostStatus;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Enums\Inventory\ValuationMethod;
-use Modules\Inventory\Models\InventoryCostLayer;
-use Modules\Inventory\Models\LandedCost;
-use Modules\Inventory\Models\LandedCostLine;
-use Modules\Inventory\Models\StockMove;
-use Modules\Product\Models\Product;
+use Jmeryar\Accounting\Models\JournalEntry;
+use Jmeryar\Inventory\Actions\LandedCost\PostLandedCostAction;
+use Jmeryar\Inventory\Enums\Inventory\LandedCostStatus;
+use Jmeryar\Inventory\Enums\Inventory\StockMoveStatus;
+use Jmeryar\Inventory\Enums\Inventory\StockMoveType;
+use Jmeryar\Inventory\Enums\Inventory\ValuationMethod;
+use Jmeryar\Inventory\Models\InventoryCostLayer;
+use Jmeryar\Inventory\Models\LandedCost;
+use Jmeryar\Inventory\Models\LandedCostLine;
+use Jmeryar\Inventory\Models\StockMove;
+use Jmeryar\Product\Models\Product;
 
 beforeEach(function () {
     // Setup basic requirements: Company, Currency, Test Product
@@ -20,23 +20,23 @@ beforeEach(function () {
     $this->actingAs($this->user);
 
     // Setup Accounts (Inventory, COGS, Expense)
-    $this->inventoryAccount = \Modules\Accounting\Models\Account::factory()->create([
+    $this->inventoryAccount = \Jmeryar\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => '101000',
         'name' => 'Inventory Asset',
-        'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets,
+        'type' => \Jmeryar\Accounting\Enums\Accounting\AccountType::CurrentAssets,
     ]);
-    $this->cogsAccount = \Modules\Accounting\Models\Account::factory()->create([
+    $this->cogsAccount = \Jmeryar\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => '501000',
         'name' => 'Cost of Goods Sold',
-        'type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense,
+        'type' => \Jmeryar\Accounting\Enums\Accounting\AccountType::Expense,
     ]);
-    $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->create([
+    $this->expenseAccount = \Jmeryar\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => '601000',
         'name' => 'Freight Expense',
-        'type' => \Modules\Accounting\Enums\Accounting\AccountType::Expense,
+        'type' => \Jmeryar\Accounting\Enums\Accounting\AccountType::Expense,
     ]);
 
     // Setup Journals
@@ -44,18 +44,18 @@ beforeEach(function () {
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_expense_account_id' => $this->expenseAccount->id,
         'inventory_adjustment_account_id' => $this->expenseAccount->id, // Add this for safety
-        'default_purchase_journal_id' => \Modules\Accounting\Models\Journal::factory()->create(['company_id' => $this->company->id])->id,
-        'default_sales_journal_id' => \Modules\Accounting\Models\Journal::factory()->create(['company_id' => $this->company->id])->id,
+        'default_purchase_journal_id' => \Jmeryar\Accounting\Models\Journal::factory()->create(['company_id' => $this->company->id])->id,
+        'default_sales_journal_id' => \Jmeryar\Accounting\Models\Journal::factory()->create(['company_id' => $this->company->id])->id,
     ]);
 
     // Setup Locations
-    $this->sourceLocation = \Modules\Inventory\Models\StockLocation::factory()->create([
+    $this->sourceLocation = \Jmeryar\Inventory\Models\StockLocation::factory()->create([
         'company_id' => $this->company->id,
-        'type' => \Modules\Inventory\Enums\Inventory\StockLocationType::Vendor,
+        'type' => \Jmeryar\Inventory\Enums\Inventory\StockLocationType::Vendor,
     ]);
-    $this->destLocation = \Modules\Inventory\Models\StockLocation::factory()->create([
+    $this->destLocation = \Jmeryar\Inventory\Models\StockLocation::factory()->create([
         'company_id' => $this->company->id,
-        'type' => \Modules\Inventory\Enums\Inventory\StockLocationType::Internal,
+        'type' => \Jmeryar\Inventory\Enums\Inventory\StockLocationType::Internal,
     ]);
 });
 
@@ -100,7 +100,7 @@ test('landed cost updates inventory asset and fifo layer when items are in stock
     ]);
 
     // Link product line for query logic
-    $productLine = new \Modules\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO(
+    $productLine = new \Jmeryar\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO(
         $product->id, 10, $this->sourceLocation->id, $this->destLocation->id
     );
     $stockMove->productLines()->create([
@@ -117,7 +117,7 @@ test('landed cost updates inventory asset and fifo layer when items are in stock
         'status' => LandedCostStatus::Draft,
         'amount_total' => Money::of(50, $this->company->currency->code),
         'date' => now(),
-        'allocation_method' => \Modules\Inventory\Enums\Inventory\LandedCostAllocationMethod::ByQuantity,
+        'allocation_method' => \Jmeryar\Inventory\Enums\Inventory\LandedCostAllocationMethod::ByQuantity,
     ]);
 
     $landedCostLine = LandedCostLine::create([
@@ -208,7 +208,7 @@ test('landed cost splits between inventory and cogs when items are partially sol
         'status' => LandedCostStatus::Draft,
         'amount_total' => Money::of(50, $this->company->currency->code),
         'date' => now(),
-        'allocation_method' => \Modules\Inventory\Enums\Inventory\LandedCostAllocationMethod::ByQuantity,
+        'allocation_method' => \Jmeryar\Inventory\Enums\Inventory\LandedCostAllocationMethod::ByQuantity,
     ]);
 
     LandedCostLine::create([

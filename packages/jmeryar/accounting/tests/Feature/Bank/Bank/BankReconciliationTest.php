@@ -1,0 +1,57 @@
+<?php
+
+use Brick\Money\Money;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Jmeryar\Accounting\Models\Account;
+use Jmeryar\Accounting\Models\BankStatement;
+use Jmeryar\Payment\Enums\Payments\PaymentStatus;
+use Jmeryar\Payment\Models\Payment;
+use Tests\Traits\WithConfiguredCompany;
+
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
+
+test('a bank statement line can be reconciled with a payment', function () {
+    // Arrange: Set up the necessary accounts and a payment.
+    $bankAccount = Account::factory()->for($this->company)->create(['type' => 'bank_and_cash']);
+    $this->company->update(['default_bank_account_id' => $bankAccount->id]);
+
+    $currencyCode = $this->company->currency->code;
+    $payment = Payment::factory()
+        ->for($this->company)
+        ->create([
+            'amount' => Money::of(100, $currencyCode),
+            'currency_id' => $this->company->currency_id,
+            'status' => PaymentStatus::Confirmed,
+        ]);
+
+    // Arrange: Create a bank statement and a line that matches the payment.
+    $bankStatement = BankStatement::factory()
+        ->for($this->company)
+        ->for($payment->journal) // We can reuse the payment's journal
+        ->create([
+            'starting_balance' => Money::of(0, $currencyCode),
+            'currency_id' => $this->company->currency_id,
+            'ending_balance' => Money::of(100, $currencyCode),
+        ]);
+
+    // Create the line for the new BankStatement.
+    $bankStatementLine = $bankStatement->bankStatementLines()->create([
+        'company_id' => $this->company->id,
+        'date' => now(),
+        'description' => 'Test line for reconciliation',
+        'amount' => Money::of(100, $currencyCode),
+        'is_reconciled' => false,
+    ]);
+
+    // Act: Reconcile the statement line with the payment.
+    (app(\Jmeryar\Accounting\Services\BankReconciliationService::class))->reconcilePayment($payment, $bankStatementLine, $this->user);
+
+    // Assert: The statement line is now marked as reconciled.
+    $bankStatementLine->refresh();
+    expect($bankStatementLine->is_reconciled)->toBeTrue();
+    expect($bankStatementLine->payment_id)->toBe($payment->id);
+
+    // Assert: The payment is also marked as reconciled.
+    $payment->refresh();
+    expect($payment->status)->toBe(PaymentStatus::Reconciled);
+});

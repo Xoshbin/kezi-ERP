@@ -5,8 +5,8 @@ namespace Database\Seeders;
 use App\Models\Company;
 use Exception;
 use Illuminate\Database\Seeder;
-use Modules\Inventory\Enums\Inventory\StockLocationType;
-use Modules\Inventory\Models\StockLocation;
+use Jmeryar\Inventory\Enums\Inventory\StockLocationType;
+use Jmeryar\Inventory\Models\StockLocation;
 
 class CompanySeeder extends Seeder
 {
@@ -16,7 +16,7 @@ class CompanySeeder extends Seeder
     public function run(): void
     {
         // Find the Iraqi Dinar (IQD) currency.
-        $iqdCurrency = \Modules\Foundation\Models\Currency::where('code', 'IQD')->first();
+        $iqdCurrency = \Jmeryar\Foundation\Models\Currency::where('code', 'IQD')->first();
         if (! $iqdCurrency) {
             throw new Exception('IQD currency not found. Please run the CurrencySeeder first.');
         }

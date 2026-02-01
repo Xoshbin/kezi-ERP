@@ -4,34 +4,34 @@ use App\Models\User;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
 use Livewire\Livewire;
-use Modules\Accounting\Enums\Accounting\AccountType;
-use Modules\Accounting\Enums\Accounting\JournalType;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ViewInvoice;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ViewVendorBill;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Foundation\Enums\Partners\PartnerType;
-use Modules\Foundation\Models\Partner;
-use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
-use Modules\Inventory\Enums\Inventory\StockPickingState;
-use Modules\Inventory\Models\StockPicking;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Product\Models\Product;
-use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
-use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\CreatePurchaseOrder;
-use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\EditPurchaseOrder;
-use Modules\Purchase\Models\PurchaseOrder;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Modules\Sales\Enums\Sales\SalesOrderStatus;
-use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\CreateSalesOrder;
-use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\EditSalesOrder;
-use Modules\Sales\Models\Invoice;
-use Modules\Sales\Models\SalesOrder;
+use Jmeryar\Accounting\Enums\Accounting\AccountType;
+use Jmeryar\Accounting\Enums\Accounting\JournalType;
+use Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
+use Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ViewInvoice;
+use Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
+use Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
+use Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
+use Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ViewVendorBill;
+use Jmeryar\Accounting\Models\Account;
+use Jmeryar\Accounting\Models\JournalEntry;
+use Jmeryar\Foundation\Enums\Partners\PartnerType;
+use Jmeryar\Foundation\Models\Partner;
+use Jmeryar\Inventory\Enums\Inventory\InventoryAccountingMode;
+use Jmeryar\Inventory\Enums\Inventory\StockPickingState;
+use Jmeryar\Inventory\Models\StockPicking;
+use Jmeryar\Product\Enums\Products\ProductType;
+use Jmeryar\Product\Models\Product;
+use Jmeryar\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Jmeryar\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\CreatePurchaseOrder;
+use Jmeryar\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\EditPurchaseOrder;
+use Jmeryar\Purchase\Models\PurchaseOrder;
+use Jmeryar\Purchase\Models\VendorBill;
+use Jmeryar\Sales\Enums\Sales\InvoiceStatus;
+use Jmeryar\Sales\Enums\Sales\SalesOrderStatus;
+use Jmeryar\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\CreateSalesOrder;
+use Jmeryar\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\EditSalesOrder;
+use Jmeryar\Sales\Models\Invoice;
+use Jmeryar\Sales\Models\SalesOrder;
 use Tests\Builders\CompanyBuilder;
 
 // Phase 1 Setup
@@ -220,7 +220,7 @@ test('capital investment and trading cycle flow', function () {
     // We'll try calling 'validate' and if it fails we might need to fill 'lines' with qty_done.
     // Handle Draft -> Confirmed -> Assigned -> Done workflow
     if ($picking->state === StockPickingState::Draft) {
-        Livewire::test(\Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking::class, [
+        Livewire::test(\Jmeryar\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking::class, [
             'record' => $picking->getRouteKey(),
         ])
             ->callAction('confirm');
@@ -230,7 +230,7 @@ test('capital investment and trading cycle flow', function () {
 
     // Conditionally assign if Confirmed
     if ($picking->state === StockPickingState::Confirmed) {
-        Livewire::test(\Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking::class, [
+        Livewire::test(\Jmeryar\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking::class, [
             'record' => $picking->getRouteKey(),
         ])
             ->mountAction('assign')
@@ -246,7 +246,7 @@ test('capital investment and trading cycle flow', function () {
     expect($picking->stockMoves->first()->productLines->count())->toBeGreaterThan(0);
 
     // Validate using ValidateStockPicking page
-    Livewire::test(\Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ValidateStockPicking::class, [
+    Livewire::test(\Jmeryar\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ValidateStockPicking::class, [
         'record' => $picking,
     ])
         ->callAction('validate')
@@ -341,7 +341,7 @@ test('capital investment and trading cycle flow', function () {
 
     // Handle Draft state for Delivery
     if ($delivery->state === StockPickingState::Draft) {
-        Livewire::test(\Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking::class, [
+        Livewire::test(\Jmeryar\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking::class, [
             'record' => $delivery->getRouteKey(),
         ])
             ->callAction('confirm');
@@ -351,7 +351,7 @@ test('capital investment and trading cycle flow', function () {
 
     // Conditionally assign if Confirmed
     if ($delivery->state === StockPickingState::Confirmed) {
-        Livewire::test(\Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking::class, [
+        Livewire::test(\Jmeryar\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking::class, [
             'record' => $delivery->getRouteKey(),
         ])
             ->mountAction('assign')
@@ -361,7 +361,7 @@ test('capital investment and trading cycle flow', function () {
     }
 
     // Validate using ValidateStockPicking page
-    Livewire::test(\Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ValidateStockPicking::class, [
+    Livewire::test(\Jmeryar\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ValidateStockPicking::class, [
         'record' => $delivery,
     ])
         ->callAction('validate');
@@ -411,6 +411,6 @@ test('capital investment and trading cycle flow', function () {
     // expect($this->cashAccount->balance->getAmount()->toInt())->toBe(7200000); // 72,000.00
 
     // Check P&L via ViewProfitAndLoss page?
-    // Livewire::test(\Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports\ViewProfitAndLoss::class)
+    // Livewire::test(\Jmeryar\Accounting\Filament\Clusters\Accounting\Pages\Reports\ViewProfitAndLoss::class)
     //    ->assertSee('12,000');
 });

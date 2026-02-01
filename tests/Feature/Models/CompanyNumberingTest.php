@@ -1,8 +1,8 @@
 <?php
 
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Modules\Sales\Models\Invoice;
+use Jmeryar\Purchase\Enums\Purchases\VendorBillStatus;
+use Jmeryar\Sales\Enums\Sales\InvoiceStatus;
+use Jmeryar\Sales\Models\Invoice;
 use Tests\Traits\WithConfiguredCompany;
 
 describe('Company Numbering Settings', function () {
@@ -19,11 +19,11 @@ describe('Company Numbering Settings', function () {
         expect($defaults)->toHaveKey('invoice');
         expect($defaults)->toHaveKey('vendor_bill');
 
-        expect($defaults['invoice']['type'])->toBe(\Modules\Foundation\Enums\Settings\NumberingType::SLASH_YEAR_MONTH->value);
+        expect($defaults['invoice']['type'])->toBe(\Jmeryar\Foundation\Enums\Settings\NumberingType::SLASH_YEAR_MONTH->value);
         expect($defaults['invoice']['prefix'])->toBe('INV');
         expect($defaults['invoice']['padding'])->toBe(7);
 
-        expect($defaults['vendor_bill']['type'])->toBe(\Modules\Foundation\Enums\Settings\NumberingType::SLASH_YEAR_MONTH->value);
+        expect($defaults['vendor_bill']['type'])->toBe(\Jmeryar\Foundation\Enums\Settings\NumberingType::SLASH_YEAR_MONTH->value);
         expect($defaults['vendor_bill']['prefix'])->toBe('BILL');
         expect($defaults['vendor_bill']['padding'])->toBe(7);
     });
@@ -41,12 +41,12 @@ describe('Company Numbering Settings', function () {
     it('returns custom settings when set', function () {
         $customSettings = [
             'invoice' => [
-                'type' => \Modules\Foundation\Enums\Settings\NumberingType::YEAR_PREFIX->value,
+                'type' => \Jmeryar\Foundation\Enums\Settings\NumberingType::YEAR_PREFIX->value,
                 'prefix' => 'INVOICE',
                 'padding' => 6,
             ],
             'vendor_bill' => [
-                'type' => \Modules\Foundation\Enums\Settings\NumberingType::SLASH_SEPARATED->value,
+                'type' => \Jmeryar\Foundation\Enums\Settings\NumberingType::SLASH_SEPARATED->value,
                 'prefix' => 'PURCHASE',
                 'padding' => 4,
             ],
@@ -85,7 +85,7 @@ describe('Company Numbering Settings', function () {
 
     it('prevents numbering changes when posted invoices exist', function () {
         // Create a posted invoice
-        $invoice = \Modules\Sales\Models\Invoice::factory()->create([
+        $invoice = \Jmeryar\Sales\Models\Invoice::factory()->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Posted,
             'invoice_number' => 'INV-00001',
@@ -100,7 +100,7 @@ describe('Company Numbering Settings', function () {
 
     it('prevents numbering changes when posted vendor bills exist', function () {
         // Create a posted vendor bill
-        $vendorBill = \Modules\Purchase\Models\VendorBill::factory()->create([
+        $vendorBill = \Jmeryar\Purchase\Models\VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'status' => VendorBillStatus::Posted,
             'bill_reference' => 'BILL-00001',
@@ -115,13 +115,13 @@ describe('Company Numbering Settings', function () {
 
     it('prevents numbering changes when both posted invoices and bills exist', function () {
         // Create posted documents
-        \Modules\Sales\Models\Invoice::factory()->create([
+        \Jmeryar\Sales\Models\Invoice::factory()->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Posted,
             'invoice_number' => 'INV-00001',
         ]);
 
-        \Modules\Purchase\Models\VendorBill::factory()->create([
+        \Jmeryar\Purchase\Models\VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'status' => VendorBillStatus::Posted,
             'bill_reference' => 'BILL-00001',
@@ -137,13 +137,13 @@ describe('Company Numbering Settings', function () {
 
     it('allows numbering changes when only draft documents exist', function () {
         // Create draft documents (should not prevent changes)
-        \Modules\Sales\Models\Invoice::factory()->create([
+        \Jmeryar\Sales\Models\Invoice::factory()->create([
             'company_id' => $this->company->id,
             'status' => InvoiceStatus::Draft,
             'invoice_number' => null,
         ]);
 
-        \Modules\Purchase\Models\VendorBill::factory()->create([
+        \Jmeryar\Purchase\Models\VendorBill::factory()->create([
             'company_id' => $this->company->id,
             'status' => VendorBillStatus::Draft,
             // Draft bills can have bill_reference (it's just not auto-generated)

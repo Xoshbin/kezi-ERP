@@ -1,6 +1,6 @@
 <?php
 
-use Modules\Foundation\Filament\Actions\DocsAction;
+use Jmeryar\Foundation\Filament\Actions\DocsAction;
 
 test('docs action generates valid url with locale', function () {
     // Mock the documentation service version if needed, or rely on default
