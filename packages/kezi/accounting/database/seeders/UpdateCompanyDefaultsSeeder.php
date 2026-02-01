@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Kezi\Accounting\Database\Seeders;
 
 use App\Models\Account;
 use App\Models\Company;

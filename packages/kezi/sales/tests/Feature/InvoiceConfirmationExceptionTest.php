@@ -39,7 +39,7 @@ it('shows unhelpful error message when validation exception occurs (current beha
 
     // Assign Permissions
     app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
-    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
     setPermissionsTeamId($company->id);
     $user->assignRole('super_admin');
 

@@ -22,9 +22,9 @@ class DatabaseSeeder extends Seeder
                 \Kezi\Accounting\Database\Seeders\AccountGroupSeeder::class,
                 \Kezi\Accounting\Database\Seeders\AccountSeeder::class,
                 \Kezi\Accounting\Database\Seeders\JournalSeeder::class,
-                UpdateCompanyDefaultsSeeder::class,
+                \Kezi\Accounting\Database\Seeders\UpdateCompanyDefaultsSeeder::class,
                 UserSeeder::class,
-                \Database\Seeders\RolesAndPermissionsSeeder::class,
+                \Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class,
 
                 // 2. Payment terms
                 // Common payment terms for all companies
@@ -78,7 +78,7 @@ class DatabaseSeeder extends Seeder
                 // \Kezi\Accounting\Database\Seeders\LockDateSeeder::class,
 
                 // Note: PostTransactionsSeeder is available for manual execution
-                // Run: php artisan db:seed --class=PostTransactionsSeeder
+                // Run: php artisan db:seed --class="\Kezi\Accounting\Database\Seeders\PostTransactionsSeeder"
                 // This posts some transactions to demonstrate Partner Ledger functionality
             ]);
         });
