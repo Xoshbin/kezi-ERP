@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "46f1ac657ee0de2d57ab93517a748184",
+    "content-hash": "842990e4c25c8d1e107d56305bd7a973",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -2610,18 +2610,18 @@
             "time": "2025-08-22T14:27:06+00:00"
         },
         {
-            "name": "jmeryar/accounting",
+            "name": "kezi/accounting",
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "packages/jmeryar/accounting",
-                "reference": "90ae1ecfce30d2fe997188ff7c7eb3339ad317c7"
+                "url": "packages/kezi/accounting",
+                "reference": "790db2eb5619c8e68b260e5870d8a920530f87fc"
             },
             "require": {
                 "brick/money": "^0.10.1",
                 "filament/filament": "^4.0",
-                "jmeryar/foundation": "*",
-                "jmeryar/product": "*",
+                "kezi/foundation": "*",
+                "kezi/product": "*",
                 "laravel/framework": "^12.0",
                 "php": "^8.2",
                 "spatie/laravel-translatable": "^6.0",
@@ -2631,15 +2631,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Jmeryar\\Accounting\\Providers\\AccountingServiceProvider"
+                        "Kezi\\Accounting\\Providers\\AccountingServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Jmeryar\\Accounting\\": "app/",
-                    "Jmeryar\\Accounting\\Database\\Factories\\": "database/factories/",
-                    "Jmeryar\\Accounting\\Database\\Seeders\\": "database/seeders/"
+                    "Kezi\\Accounting\\": "app/",
+                    "Kezi\\Accounting\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\Accounting\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2648,18 +2648,18 @@
                     "email": "xoshbin@gmail.com"
                 }
             ],
-            "description": "Accounting module for Jmeryar",
+            "description": "Accounting module for Kezi",
             "transport-options": {
                 "relative": true
             }
         },
         {
-            "name": "jmeryar/foundation",
+            "name": "kezi/foundation",
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "packages/jmeryar/foundation",
-                "reference": "4e27b5fe9f0cd5e29528de242f4d0c4b2b77d9b1"
+                "url": "packages/kezi/foundation",
+                "reference": "fe99e736bc4dd79f8ae244bc3e7620d8aef9ad3f"
             },
             "require": {
                 "bezhansalleh/filament-shield": "^4.0",
@@ -2675,15 +2675,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Jmeryar\\Foundation\\Providers\\FoundationServiceProvider"
+                        "Kezi\\Foundation\\Providers\\FoundationServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Jmeryar\\Foundation\\": "app/",
-                    "Jmeryar\\Foundation\\Database\\Factories\\": "database/factories/",
-                    "Jmeryar\\Foundation\\Database\\Seeders\\": "database/seeders/"
+                    "Kezi\\Foundation\\": "app/",
+                    "Kezi\\Foundation\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\Foundation\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2692,23 +2692,23 @@
                     "email": "xoshbin@gmail.com"
                 }
             ],
-            "description": "Foundation module for Jmeryar",
+            "description": "Foundation module for Kezi",
             "transport-options": {
                 "relative": true
             }
         },
         {
-            "name": "jmeryar/hr",
+            "name": "kezi/hr",
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "packages/jmeryar/hr",
-                "reference": "b2301610f80e268d4357cefa18281faf4d587696"
+                "url": "packages/kezi/hr",
+                "reference": "d6c8dbd0b46d5199cd8bdab4714530b7fa77b42d"
             },
             "require": {
                 "brick/money": "^0.10.1",
                 "filament/filament": "^4.0",
-                "jmeryar/foundation": "*",
+                "kezi/foundation": "*",
                 "laravel/framework": "^12.0",
                 "php": "^8.2",
                 "spatie/laravel-translatable": "^6.0"
@@ -2717,15 +2717,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Jmeryar\\HR\\Providers\\HRServiceProvider"
+                        "Kezi\\HR\\Providers\\HRServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Jmeryar\\HR\\": "app/",
-                    "Jmeryar\\HR\\Database\\Factories\\": "database/factories/",
-                    "Jmeryar\\HR\\Database\\Seeders\\": "database/seeders/"
+                    "Kezi\\HR\\": "app/",
+                    "Kezi\\HR\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\HR\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2734,25 +2734,25 @@
                     "email": "xoshbin@gmail.com"
                 }
             ],
-            "description": "HR module for Jmeryar",
+            "description": "HR module for Kezi",
             "transport-options": {
                 "relative": true
             }
         },
         {
-            "name": "jmeryar/inventory",
+            "name": "kezi/inventory",
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "packages/jmeryar/inventory",
-                "reference": "a6b6f29f37221ad67ae631097a8afff53785a5fe"
+                "url": "packages/kezi/inventory",
+                "reference": "10295663ce536f69580b8d9b7dc699a2c6f3e724"
             },
             "require": {
                 "brick/money": "^0.10.1",
                 "filament/filament": "^4.0",
-                "jmeryar/accounting": "*",
-                "jmeryar/foundation": "*",
-                "jmeryar/product": "*",
+                "kezi/accounting": "*",
+                "kezi/foundation": "*",
+                "kezi/product": "*",
                 "laravel/framework": "^12.0",
                 "php": "^8.2"
             },
@@ -2760,15 +2760,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Jmeryar\\Inventory\\Providers\\InventoryServiceProvider"
+                        "Kezi\\Inventory\\Providers\\InventoryServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Jmeryar\\Inventory\\": "app/",
-                    "Jmeryar\\Inventory\\Database\\Factories\\": "database/factories/",
-                    "Jmeryar\\Inventory\\Database\\Seeders\\": "database/seeders/"
+                    "Kezi\\Inventory\\": "app/",
+                    "Kezi\\Inventory\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\Inventory\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2777,25 +2777,25 @@
                     "email": "xoshbin@gmail.com"
                 }
             ],
-            "description": "Inventory module for Jmeryar",
+            "description": "Inventory module for Kezi",
             "transport-options": {
                 "relative": true
             }
         },
         {
-            "name": "jmeryar/manufacturing",
+            "name": "kezi/manufacturing",
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "packages/jmeryar/manufacturing",
-                "reference": "033dfe83624786153df66c4eda616b2f54de94eb"
+                "url": "packages/kezi/manufacturing",
+                "reference": "b06c74df5e1c48ce29061f9d698342a5d59cabbc"
             },
             "require": {
                 "filament/filament": "^4.0",
-                "jmeryar/accounting": "*",
-                "jmeryar/foundation": "*",
-                "jmeryar/inventory": "*",
-                "jmeryar/product": "*",
+                "kezi/accounting": "*",
+                "kezi/foundation": "*",
+                "kezi/inventory": "*",
+                "kezi/product": "*",
                 "laravel/framework": "^12.0",
                 "php": "^8.2",
                 "spatie/laravel-translatable": "^6.0"
@@ -2804,15 +2804,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Jmeryar\\Manufacturing\\Providers\\ManufacturingServiceProvider"
+                        "Kezi\\Manufacturing\\Providers\\ManufacturingServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Jmeryar\\Manufacturing\\": "app/",
-                    "Jmeryar\\Manufacturing\\Database\\Factories\\": "database/factories/",
-                    "Jmeryar\\Manufacturing\\Database\\Seeders\\": "database/seeders/"
+                    "Kezi\\Manufacturing\\": "app/",
+                    "Kezi\\Manufacturing\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\Manufacturing\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2821,23 +2821,23 @@
                     "email": "xoshbin@gmail.com"
                 }
             ],
-            "description": "Manufacturing module for Jmeryar",
+            "description": "Manufacturing module for Kezi",
             "transport-options": {
                 "relative": true
             }
         },
         {
-            "name": "jmeryar/payment",
+            "name": "kezi/payment",
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "packages/jmeryar/payment",
-                "reference": "3a1aa7218570ec6874099e129bd0cb3bedb14b5f"
+                "url": "packages/kezi/payment",
+                "reference": "4e603014468104e805592782f694577573256ca5"
             },
             "require": {
                 "filament/filament": "^4.0",
-                "jmeryar/accounting": "*",
-                "jmeryar/foundation": "*",
+                "kezi/accounting": "*",
+                "kezi/foundation": "*",
                 "laravel/framework": "^12.0",
                 "php": "^8.2"
             },
@@ -2845,15 +2845,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Jmeryar\\Payment\\Providers\\PaymentServiceProvider"
+                        "Kezi\\Payment\\Providers\\PaymentServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Jmeryar\\Payment\\": "app/",
-                    "Jmeryar\\Payment\\Database\\Factories\\": "database/factories/",
-                    "Jmeryar\\Payment\\Database\\Seeders\\": "database/seeders/"
+                    "Kezi\\Payment\\": "app/",
+                    "Kezi\\Payment\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\Payment\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2862,22 +2862,22 @@
                     "email": "xoshbin@gmail.com"
                 }
             ],
-            "description": "Payment module for Jmeryar",
+            "description": "Payment module for Kezi",
             "transport-options": {
                 "relative": true
             }
         },
         {
-            "name": "jmeryar/product",
+            "name": "kezi/product",
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "packages/jmeryar/product",
-                "reference": "a7f35fbaa8950bb9cdd0cff1bc57415e8c76fe9a"
+                "url": "packages/kezi/product",
+                "reference": "229cbfb89fbf8b2aa0a6bbe9dc261e86fbda4258"
             },
             "require": {
                 "filament/filament": "^4.0",
-                "jmeryar/foundation": "*",
+                "kezi/foundation": "*",
                 "laravel/framework": "^12.0",
                 "php": "^8.2",
                 "spatie/laravel-translatable": "^6.0"
@@ -2886,15 +2886,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Jmeryar\\Product\\Providers\\ProductServiceProvider"
+                        "Kezi\\Product\\Providers\\ProductServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Jmeryar\\Product\\": "app/",
-                    "Jmeryar\\Product\\Database\\Factories\\": "database/factories/",
-                    "Jmeryar\\Product\\Database\\Seeders\\": "database/seeders/"
+                    "Kezi\\Product\\": "app/",
+                    "Kezi\\Product\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\Product\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2903,23 +2903,23 @@
                     "email": "xoshbin@gmail.com"
                 }
             ],
-            "description": "Product module for Jmeryar",
+            "description": "Product module for Kezi",
             "transport-options": {
                 "relative": true
             }
         },
         {
-            "name": "jmeryar/project-management",
+            "name": "kezi/project-management",
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "packages/jmeryar/project-management",
-                "reference": "a972083611aa2be47898df33dda0294d1df6de86"
+                "url": "packages/kezi/project-management",
+                "reference": "8e2590903ce2f403e7d09d5838dbebe3c75a8983"
             },
             "require": {
                 "filament/filament": "^4.0",
-                "jmeryar/foundation": "*",
-                "jmeryar/hr": "*",
+                "kezi/foundation": "*",
+                "kezi/hr": "*",
                 "laravel/framework": "^12.0",
                 "php": "^8.2"
             },
@@ -2927,15 +2927,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Jmeryar\\ProjectManagement\\Providers\\ProjectManagementServiceProvider"
+                        "Kezi\\ProjectManagement\\Providers\\ProjectManagementServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Jmeryar\\ProjectManagement\\": "app/",
-                    "Jmeryar\\ProjectManagement\\Database\\Factories\\": "database/factories/",
-                    "Jmeryar\\ProjectManagement\\Database\\Seeders\\": "database/seeders/"
+                    "Kezi\\ProjectManagement\\": "app/",
+                    "Kezi\\ProjectManagement\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\ProjectManagement\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2944,25 +2944,25 @@
                     "email": "xoshbin@gmail.com"
                 }
             ],
-            "description": "Project Management module for Jmeryar",
+            "description": "Project Management module for Kezi",
             "transport-options": {
                 "relative": true
             }
         },
         {
-            "name": "jmeryar/purchase",
+            "name": "kezi/purchase",
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "packages/jmeryar/purchase",
-                "reference": "32aa33d4a347c0396e9add27cc5256629959abb4"
+                "url": "packages/kezi/purchase",
+                "reference": "65df4059009f71fdba7aaa5dcf9544e943167f98"
             },
             "require": {
                 "filament/filament": "^4.0",
-                "jmeryar/accounting": "*",
-                "jmeryar/foundation": "*",
-                "jmeryar/inventory": "*",
-                "jmeryar/product": "*",
+                "kezi/accounting": "*",
+                "kezi/foundation": "*",
+                "kezi/inventory": "*",
+                "kezi/product": "*",
                 "laravel/framework": "^12.0",
                 "php": "^8.2"
             },
@@ -2970,15 +2970,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Jmeryar\\Purchase\\Providers\\PurchaseServiceProvider"
+                        "Kezi\\Purchase\\Providers\\PurchaseServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Jmeryar\\Purchase\\": "app/",
-                    "Jmeryar\\Purchase\\Database\\Factories\\": "database/factories/",
-                    "Jmeryar\\Purchase\\Database\\Seeders\\": "database/seeders/"
+                    "Kezi\\Purchase\\": "app/",
+                    "Kezi\\Purchase\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\Purchase\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2987,24 +2987,24 @@
                     "email": "xoshbin@gmail.com"
                 }
             ],
-            "description": "Purchase module for Jmeryar",
+            "description": "Purchase module for Kezi",
             "transport-options": {
                 "relative": true
             }
         },
         {
-            "name": "jmeryar/quality-control",
+            "name": "kezi/quality-control",
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "packages/jmeryar/quality-control",
-                "reference": "7587aa399f0c115a7c88113fb7f6ef62abbd1196"
+                "url": "packages/kezi/quality-control",
+                "reference": "61c625d1112dc7535334a2721c7b81f9598db4f9"
             },
             "require": {
                 "filament/filament": "^4.0",
-                "jmeryar/foundation": "*",
-                "jmeryar/inventory": "*",
-                "jmeryar/manufacturing": "*",
+                "kezi/foundation": "*",
+                "kezi/inventory": "*",
+                "kezi/manufacturing": "*",
                 "laravel/framework": "^12.0",
                 "php": "^8.2"
             },
@@ -3012,15 +3012,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Jmeryar\\QualityControl\\Providers\\QualityControlServiceProvider"
+                        "Kezi\\QualityControl\\Providers\\QualityControlServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Jmeryar\\QualityControl\\": "app/",
-                    "Jmeryar\\QualityControl\\Database\\Factories\\": "database/factories/",
-                    "Jmeryar\\QualityControl\\Database\\Seeders\\": "database/seeders/"
+                    "Kezi\\QualityControl\\": "app/",
+                    "Kezi\\QualityControl\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\QualityControl\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -3029,26 +3029,26 @@
                     "email": "xoshbin@gmail.com"
                 }
             ],
-            "description": "Quality Control module for Jmeryar",
+            "description": "Quality Control module for Kezi",
             "transport-options": {
                 "relative": true
             }
         },
         {
-            "name": "jmeryar/sales",
+            "name": "kezi/sales",
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "packages/jmeryar/sales",
-                "reference": "6facbf7ac9a3b2ea6ff6b69af5d7ee3d803f5269"
+                "url": "packages/kezi/sales",
+                "reference": "faeacf2104782f53217785bfd815727316e3b4b7"
             },
             "require": {
                 "barryvdh/laravel-dompdf": "^3.1",
                 "filament/filament": "^4.0",
-                "jmeryar/accounting": "*",
-                "jmeryar/foundation": "*",
-                "jmeryar/inventory": "*",
-                "jmeryar/product": "*",
+                "kezi/accounting": "*",
+                "kezi/foundation": "*",
+                "kezi/inventory": "*",
+                "kezi/product": "*",
                 "laravel/framework": "^12.0",
                 "php": "^8.2"
             },
@@ -3056,15 +3056,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Jmeryar\\Sales\\Providers\\SalesServiceProvider"
+                        "Kezi\\Sales\\Providers\\SalesServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Jmeryar\\Sales\\": "app/",
-                    "Jmeryar\\Sales\\Database\\Factories\\": "database/factories/",
-                    "Jmeryar\\Sales\\Database\\Seeders\\": "database/seeders/"
+                    "Kezi\\Sales\\": "app/",
+                    "Kezi\\Sales\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\Sales\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -3073,7 +3073,7 @@
                     "email": "xoshbin@gmail.com"
                 }
             ],
-            "description": "Sales module for Jmeryar",
+            "description": "Sales module for Kezi",
             "transport-options": {
                 "relative": true
             }

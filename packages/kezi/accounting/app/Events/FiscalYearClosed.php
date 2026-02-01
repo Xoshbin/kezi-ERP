@@ -1,0 +1,19 @@
+<?php
+
+namespace Kezi\Accounting\Events;
+
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
+use Kezi\Accounting\Models\FiscalYear;
+
+class FiscalYearClosed
+{
+    use Dispatchable, SerializesModels;
+
+    /**
+     * Create a new event instance.
+     */
+    public function __construct(
+        public FiscalYear $fiscalYear
+    ) {}
+}

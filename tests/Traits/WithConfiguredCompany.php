@@ -4,21 +4,21 @@ namespace Tests\Traits;
 
 use App\Models\User;
 use Filament\Facades\Filament;
-use Jmeryar\Inventory\Enums\Inventory\StockLocationType;
-use Jmeryar\Inventory\Models\StockLocation;
+use Kezi\Inventory\Enums\Inventory\StockLocationType;
+use Kezi\Inventory\Models\StockLocation;
 use Tests\Builders\CompanyBuilder;
 
 /**
  * @property \App\Models\Company $company
  * @property \App\Models\User $user
- * @property \Jmeryar\Accounting\Models\Account $inventoryAccount
- * @property \Jmeryar\Accounting\Models\Account $stockInputAccount
- * @property \Jmeryar\Accounting\Models\Account $cogsAccount
- * @property \Jmeryar\Inventory\Models\StockLocation $vendorLocation
- * @property \Jmeryar\Inventory\Models\StockLocation $stockLocation
- * @property \Jmeryar\Inventory\Models\StockLocation $adjustmentLocation
- * @property \Jmeryar\Inventory\Models\StockLocation $customerLocation
- * @property \Jmeryar\Foundation\Models\Partner $vendor
+ * @property \Kezi\Accounting\Models\Account $inventoryAccount
+ * @property \Kezi\Accounting\Models\Account $stockInputAccount
+ * @property \Kezi\Accounting\Models\Account $cogsAccount
+ * @property \Kezi\Inventory\Models\StockLocation $vendorLocation
+ * @property \Kezi\Inventory\Models\StockLocation $stockLocation
+ * @property \Kezi\Inventory\Models\StockLocation $adjustmentLocation
+ * @property \Kezi\Inventory\Models\StockLocation $customerLocation
+ * @property \Kezi\Foundation\Models\Partner $vendor
  */
 trait WithConfiguredCompany
 {
@@ -71,7 +71,7 @@ trait WithConfiguredCompany
 
         // Set the current panel to ensures URL generation and middleware work correctly
         \Filament\Facades\Filament::setTenant($this->company);
-        \Filament\Facades\Filament::setCurrentPanel(\Filament\Facades\Filament::getPanel('jmeryar'));
+        \Filament\Facades\Filament::setCurrentPanel(\Filament\Facades\Filament::getPanel('kezi'));
 
         // Set up Filament tenant context
         Filament::setTenant($this->company);
@@ -84,9 +84,9 @@ trait WithConfiguredCompany
     protected function setupInventoryTestEnvironment(): void
     {
         // 1. Create inventory-specific GL accounts
-        $this->inventoryAccount = \Jmeryar\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Valuation', 'type' => 'current_assets']);
-        $this->stockInputAccount = \Jmeryar\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Input', 'type' => 'current_liabilities']);
-        $this->cogsAccount = \Jmeryar\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Cost of Goods Sold', 'type' => 'expense']);
+        $this->inventoryAccount = \Kezi\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Valuation', 'type' => 'current_assets']);
+        $this->stockInputAccount = \Kezi\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Input', 'type' => 'current_liabilities']);
+        $this->cogsAccount = \Kezi\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Cost of Goods Sold', 'type' => 'expense']);
 
         // 2. Create the necessary physical locations
         $this->vendorLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::Vendor]);
@@ -104,6 +104,6 @@ trait WithConfiguredCompany
         ]);
 
         // 4. Create a default vendor for the tests
-        $this->vendor = \Jmeryar\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Jmeryar\Foundation\Enums\Partners\PartnerType::Vendor]);
+        $this->vendor = \Kezi\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Kezi\Foundation\Enums\Partners\PartnerType::Vendor]);
     }
 }

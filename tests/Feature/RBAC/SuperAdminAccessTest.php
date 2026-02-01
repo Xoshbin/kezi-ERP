@@ -3,8 +3,8 @@
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ListInvoices;
-use Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ListVendorBills;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ListInvoices;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ListVendorBills;
 use Spatie\Permission\PermissionRegistrar;
 
 use function Pest\Livewire\livewire;
@@ -52,7 +52,7 @@ beforeEach(function () {
 
     // Set Filament context
     Filament::setTenant($this->company);
-    Filament::setCurrentPanel(Filament::getPanel('jmeryar'));
+    Filament::setCurrentPanel(Filament::getPanel('kezi'));
 });
 
 test('super admin has correct role after team context is set', function () {

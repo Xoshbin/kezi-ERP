@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-use Jmeryar\Inventory\Enums\Inventory\InventoryAccountingMode;
+use Kezi\Inventory\Enums\Inventory\InventoryAccountingMode;
 
 class CompanyFactory extends Factory
 {
@@ -16,7 +16,7 @@ class CompanyFactory extends Factory
             'tax_id' => strtoupper(Str::random(10)),
             // Let Laravel handle creation unless specified otherwise in the test.
             'currency_id' => function () {
-                $currency = \Jmeryar\Foundation\Models\Currency::firstOrCreate(
+                $currency = \Kezi\Foundation\Models\Currency::firstOrCreate(
                     ['code' => 'IQD'],
                     [
                         'name' => 'Iraqi Dinar',
