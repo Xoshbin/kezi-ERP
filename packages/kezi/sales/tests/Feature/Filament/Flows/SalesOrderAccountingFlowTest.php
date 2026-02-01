@@ -66,7 +66,7 @@ class SalesOrderAccountingFlowTest extends TestCase
         // Let's assume for now removing it fixes the SQL error.
 
         // Permission Setup
-        $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+        $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
         setPermissionsTeamId($this->company->id);
         $this->user->assignRole('super_admin');
 

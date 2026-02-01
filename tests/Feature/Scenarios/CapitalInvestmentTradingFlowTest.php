@@ -102,7 +102,7 @@ beforeEach(function () {
 
     // Assign Permissions
     app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
-    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
     setPermissionsTeamId($this->company->id);
     $this->user->assignRole('super_admin');
 

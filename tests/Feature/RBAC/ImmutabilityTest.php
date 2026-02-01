@@ -20,7 +20,7 @@ beforeEach(function () {
     // Seed Permissions
     // Resetting database via RefreshDatabase handles table clearing,
     // but we need the seed to populate permissions table again for each test
-    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
 });
 
 test('journal entry immutability: cannot delete posted journal entry even with permission', function () {
