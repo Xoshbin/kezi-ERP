@@ -1,12 +1,12 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Foundation\Filament\Resources\Currencies\CurrencyResource;
 use Kezi\Foundation\Filament\Resources\Currencies\Pages\CreateCurrency;
 use Kezi\Foundation\Filament\Resources\Currencies\Pages\EditCurrency;
 use Kezi\Foundation\Filament\Resources\Currencies\Pages\ListCurrencies;
 use Kezi\Foundation\Models\Currency;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -25,7 +25,7 @@ it('can render currency list page', function () {
 });
 
 it('displays currencies in the table', function () {
-    $currency = Currency::factory()->create([
+    $currency = Currency::factory()->createSafely([
         'code' => 'TST',
         'name' => 'Test Currency',
         'symbol' => 'T$',
@@ -43,13 +43,13 @@ it('displays currencies in the table', function () {
 });
 
 it('can search currencies by code', function () {
-    $usdCurrency = Currency::factory()->create([
+    $usdCurrency = Currency::factory()->createSafely([
         'code' => 'USD',
         'name' => 'US Dollar',
         'symbol' => '$',
     ]);
 
-    $eurCurrency = Currency::factory()->create([
+    $eurCurrency = Currency::factory()->createSafely([
         'code' => 'EUR',
         'name' => 'Euro',
         'symbol' => '€',
@@ -62,13 +62,13 @@ it('can search currencies by code', function () {
 });
 
 it('can search currencies by name', function () {
-    $usdCurrency = Currency::factory()->create([
+    $usdCurrency = Currency::factory()->createSafely([
         'code' => 'USD',
         'name' => 'US Dollar',
         'symbol' => '$',
     ]);
 
-    $eurCurrency = Currency::factory()->create([
+    $eurCurrency = Currency::factory()->createSafely([
         'code' => 'EUR',
         'name' => 'Euro',
         'symbol' => '€',
@@ -169,7 +169,7 @@ it('validates exchange rate is numeric', function () {
 // ==========================================
 
 it('can render edit currency page', function () {
-    $currency = Currency::factory()->create([
+    $currency = Currency::factory()->createSafely([
         'code' => 'EDI',
         'name' => 'Edit Currency',
         'symbol' => 'E$',
@@ -180,7 +180,7 @@ it('can render edit currency page', function () {
 });
 
 it('can update an existing currency', function () {
-    $currency = Currency::factory()->create([
+    $currency = Currency::factory()->createSafely([
         'code' => 'OLD',
         'name' => 'Old Currency',
         'symbol' => 'O$',
@@ -207,7 +207,7 @@ it('can update an existing currency', function () {
 });
 
 it('loads existing currency data in edit form', function () {
-    $currency = Currency::factory()->create([
+    $currency = Currency::factory()->createSafely([
         'code' => 'LOD',
         'name' => 'Load Currency',
         'symbol' => 'L$',
@@ -227,7 +227,7 @@ it('loads existing currency data in edit form', function () {
 // ==========================================
 
 it('can delete a currency from edit page', function () {
-    $currency = Currency::factory()->create([
+    $currency = Currency::factory()->createSafely([
         'code' => 'DEL',
         'name' => 'Delete Currency',
         'symbol' => 'D$',
@@ -265,14 +265,14 @@ it('can bulk delete currencies from list page', function () {
 // ==========================================
 
 it('displays active and inactive currencies', function () {
-    $activeCurrency = Currency::factory()->create([
+    $activeCurrency = Currency::factory()->createSafely([
         'code' => 'ACT',
         'name' => 'Active Currency',
         'symbol' => 'A$',
         'is_active' => true,
     ]);
 
-    $inactiveCurrency = Currency::factory()->create([
+    $inactiveCurrency = Currency::factory()->createSafely([
         'code' => 'INA',
         'name' => 'Inactive Currency',
         'symbol' => 'I$',
@@ -285,7 +285,7 @@ it('displays active and inactive currencies', function () {
 });
 
 it('can toggle currency active status', function () {
-    $currency = Currency::factory()->create([
+    $currency = Currency::factory()->createSafely([
         'code' => 'TGL',
         'name' => 'Toggle Currency',
         'symbol' => 'T$',

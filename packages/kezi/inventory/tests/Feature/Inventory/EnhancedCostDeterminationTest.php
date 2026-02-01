@@ -74,6 +74,7 @@ it('uses vendor bill cost as highest priority source', function () {
     ]);
 
     VendorBillLine::factory()->create([
+        'company_id' => $this->company->id,
         'vendor_bill_id' => $vendorBill->id,
         'product_id' => $product->id,
         'quantity' => 10,

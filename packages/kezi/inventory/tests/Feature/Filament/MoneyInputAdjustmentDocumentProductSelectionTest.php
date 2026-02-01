@@ -7,11 +7,11 @@ use App\Models\User;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument;
 use Kezi\Accounting\Models\Account;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Product\Models\Product;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
@@ -35,7 +35,7 @@ class MoneyInputAdjustmentDocumentProductSelectionTest extends TestCase
         // Create test data
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
-        $this->currency = Currency::factory()->create(['code' => 'USD']);
+        $this->currency = Currency::factory()->createSafely(['code' => 'USD']);
 
         $this->company->update(['currency_id' => $this->currency->id]);
 

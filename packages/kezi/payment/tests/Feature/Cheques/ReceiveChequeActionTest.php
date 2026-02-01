@@ -21,7 +21,7 @@ it('can receive a customer cheque', function () {
     // $user->companies()->attach($company); // Skip attach to avoid column error
 
     // Use existing IQD currency or create it if not exists to avoid unique constraint error
-    $currency = Currency::firstWhere('code', 'IQD') ?? Currency::factory()->create(['code' => 'IQD']);
+    $currency = Currency::firstWhere('code', 'IQD') ?? Currency::factory()->createSafely(['code' => 'IQD']);
     // Bank Journal
     $journal = Journal::factory()->create(['company_id' => $company->id]);
     $partner = Partner::factory()->create(['company_id' => $company->id]);

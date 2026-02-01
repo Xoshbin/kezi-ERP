@@ -175,7 +175,7 @@ it('converts asset purchase value to company currency', function () {
     // Base currency is IQD (from WithConfiguredCompany trait)
 
     // Create USD Currency
-    $usd = \Kezi\Foundation\Models\Currency::factory()->create([
+    $usd = \Kezi\Foundation\Models\Currency::factory()->createSafely([
         'code' => 'USD',
         'name' => 'US Dollar',
         'symbol' => '$',

@@ -47,7 +47,7 @@ test('it returns available providers only', function () {
 test('it stores exchange rate for a currency', function () {
     // Arrange
     $company = $this->company;
-    $currency = Currency::factory()->create(['code' => 'EUR', 'is_active' => true]);
+    $currency = Currency::factory()->createSafely(['code' => 'EUR', 'is_active' => true]);
     $rate = 1.1234;
     $effectiveDate = Carbon::today();
 
@@ -66,7 +66,7 @@ test('it stores exchange rate for a currency', function () {
 test('it updates existing rate for same currency and date', function () {
     // Arrange
     $company = $this->company;
-    $currency = Currency::factory()->create(['code' => 'EUR', 'is_active' => true]);
+    $currency = Currency::factory()->createSafely(['code' => 'EUR', 'is_active' => true]);
     $effectiveDate = Carbon::today();
 
     // Create initial rate
@@ -84,7 +84,7 @@ test('it updates existing rate for same currency and date', function () {
 test('it gets latest rate for a currency', function () {
     // Arrange
     $company = $this->company;
-    $currency = Currency::factory()->create(['code' => 'EUR', 'is_active' => true]);
+    $currency = Currency::factory()->createSafely(['code' => 'EUR', 'is_active' => true]);
 
     CurrencyRate::factory()->create([
         'currency_id' => $currency->id,
@@ -111,7 +111,7 @@ test('it gets latest rate for a currency', function () {
 test('it gets rate for a specific date', function () {
     // Arrange
     $company = $this->company;
-    $currency = Currency::factory()->create(['code' => 'EUR', 'is_active' => true]);
+    $currency = Currency::factory()->createSafely(['code' => 'EUR', 'is_active' => true]);
     $targetDate = Carbon::today()->subDays(5);
 
     CurrencyRate::factory()->create([
@@ -146,7 +146,7 @@ test('it gets rate for a specific date', function () {
 test('it detects significant rate changes', function () {
     // Arrange
     $company = $this->company;
-    $currency = Currency::factory()->create(['code' => 'EUR', 'is_active' => true]);
+    $currency = Currency::factory()->createSafely(['code' => 'EUR', 'is_active' => true]);
 
     CurrencyRate::factory()->create([
         'currency_id' => $currency->id,
@@ -175,7 +175,7 @@ test('it detects significant rate changes', function () {
 test('it calculates rate volatility', function () {
     // Arrange
     $company = $this->company;
-    $currency = Currency::factory()->create(['code' => 'EUR', 'is_active' => true]);
+    $currency = Currency::factory()->createSafely(['code' => 'EUR', 'is_active' => true]);
 
     // Create rates with some variation
     for ($i = 0; $i < 10; $i++) {

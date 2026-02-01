@@ -23,7 +23,7 @@ beforeEach(function () {
 });
 
 it('can create an invoice from a confirmed sales order', function () {
-    $currency = \Kezi\Foundation\Models\Currency::where('code', 'USD')->first() ?? \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $currency = \Kezi\Foundation\Models\Currency::where('code', 'USD')->first() ?? \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD']);
 
     $customer = \Kezi\Foundation\Models\Partner::factory()->create([
         'company_id' => $this->company->id,
@@ -112,7 +112,7 @@ it('prevents creation if sales order is not in a valid state', function () {
 });
 
 it('prevents creation if invoice already exists', function () {
-    $currency = \Kezi\Foundation\Models\Currency::where('code', 'USD')->first() ?? \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $currency = \Kezi\Foundation\Models\Currency::where('code', 'USD')->first() ?? \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD']);
 
     $so = SalesOrder::factory()->create([
         'company_id' => $this->company->id,
@@ -146,7 +146,7 @@ it('prevents creation if invoice already exists', function () {
 });
 
 it('enforces lock date', function () {
-    $currency = \Kezi\Foundation\Models\Currency::where('code', 'USD')->first() ?? \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $currency = \Kezi\Foundation\Models\Currency::where('code', 'USD')->first() ?? \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD']);
 
     // Set lock date in future
     LockDate::factory()->create([

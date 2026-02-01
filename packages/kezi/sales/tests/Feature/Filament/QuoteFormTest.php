@@ -2,11 +2,11 @@
 
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\Partner;
 use Kezi\Product\Models\Product;
 use Kezi\Sales\Filament\Clusters\Sales\Resources\Quotes\Pages\CreateQuote;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -119,7 +119,7 @@ it('shows exchange rate field for foreign currency', function () {
     $partner = Partner::factory()->for($this->company)->create();
 
     // Create USD currency
-    $usd = Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
+    $usd = Currency::factory()->createSafely(['code' => 'USD', 'decimal_places' => 2]);
 
     Livewire::test(CreateQuote::class)
         ->fillForm([

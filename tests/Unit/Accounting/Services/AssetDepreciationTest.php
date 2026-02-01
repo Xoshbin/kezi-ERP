@@ -22,7 +22,7 @@ class AssetDepreciationTest extends TestCase
     {
         parent::setUp();
         $this->service = app(AssetService::class);
-        $this->currency = Currency::factory()->create(['code' => 'USD']);
+        $this->currency = Currency::factory()->createSafely(['code' => 'USD']);
     }
 
     public function test_straight_line_standard()

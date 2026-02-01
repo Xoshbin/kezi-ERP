@@ -32,8 +32,8 @@ beforeEach(function () {
     $this->user = User::factory()->create();
 
     // Set up currencies
-    $this->usdCurrency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
-    $this->iqdCurrency = Currency::where('code', 'IQD')->first() ?? Currency::factory()->create(['code' => 'IQD', 'decimal_places' => 3]);
+    $this->usdCurrency = Currency::where('code', 'USD')->first() ?? Currency::factory()->createSafely(['code' => 'USD', 'decimal_places' => 2]);
+    $this->iqdCurrency = Currency::where('code', 'IQD')->first() ?? Currency::factory()->createSafely(['code' => 'IQD', 'decimal_places' => 3]);
 
     // Set company currency to IQD
     $this->company->update(['currency_id' => $this->iqdCurrency->id]);

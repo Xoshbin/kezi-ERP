@@ -12,7 +12,7 @@ it('creates an RFQ with correct default status', function () {
     $user = \App\Models\User::factory()->create();
     $company = \App\Models\Company::factory()->create();
     $vendor = Partner::factory()->vendor()->create(['company_id' => $company->id]);
-    $currency = Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::factory()->createSafely(['code' => 'USD']);
 
     $dto = new \Kezi\Purchase\DataTransferObjects\Purchases\CreateRFQDTO(
         companyId: $company->id,
@@ -35,7 +35,7 @@ it('can send an RFQ', function () {
     $user = \App\Models\User::factory()->create();
     $company = \App\Models\Company::factory()->create();
     $vendor = Partner::factory()->vendor()->create(['company_id' => $company->id]);
-    $currency = Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::factory()->createSafely(['code' => 'USD']);
 
     $rfq = RequestForQuotation::factory()->create([
         'company_id' => $company->id,
@@ -55,7 +55,7 @@ it('can convert RFQ to Purchase Order', function () {
     $this->actingAs($user);
     $company = \App\Models\Company::factory()->create();
     $vendor = Partner::factory()->vendor()->create(['company_id' => $company->id]);
-    $currency = Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::factory()->createSafely(['code' => 'USD']);
 
     $rfq = RequestForQuotation::factory()->create([
         'company_id' => $company->id,

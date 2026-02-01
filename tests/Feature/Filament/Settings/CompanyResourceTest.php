@@ -8,11 +8,11 @@ use App\Filament\Clusters\Settings\Resources\Companies\RelationManagers\Accounts
 use App\Filament\Clusters\Settings\Resources\Companies\RelationManagers\UsersRelationManager;
 use App\Models\Company;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\Journal;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Inventory\Enums\Inventory\InventoryAccountingMode;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 use function Pest\Laravel\assertDatabaseHas;
@@ -55,7 +55,7 @@ it('can render create company page', function () {
 it('can create company', function () {
     /** @var \Tests\TestCase $this */
     /** @var Currency $currency */
-    $currency = Currency::factory()->create();
+    $currency = Currency::factory()->createSafely();
 
     Livewire::test(CreateCompany::class)
         ->fillForm([

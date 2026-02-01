@@ -17,7 +17,7 @@ use Kezi\ProjectManagement\Models\ProjectTask;
 use Kezi\ProjectManagement\Models\Timesheet;
 
 beforeEach(function () {
-    $this->currency = \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'IQD', 'name' => 'Iraqi Dinar', 'symbol' => 'IQD']);
+    $this->currency = \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'IQD', 'name' => 'Iraqi Dinar', 'symbol' => 'IQD']);
     $this->company = Company::factory()->create([
         'currency_id' => $this->currency->id,
     ]);

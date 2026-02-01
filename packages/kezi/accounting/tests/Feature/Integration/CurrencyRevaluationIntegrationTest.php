@@ -30,7 +30,7 @@ it('generates correct journal entry upon revaluation', function () {
     $baseCurrency = $company->currency;
 
     // Create Foreign Currency (USD)
-    $usd = Currency::factory()->create(['code' => 'USD']);
+    $usd = Currency::factory()->createSafely(['code' => 'USD']);
 
     // Set OLD Rate (e.g., 1 USD = 1.0 Base) - When transaction happened
     // This is implicitly defined by the transaction's exchange rate

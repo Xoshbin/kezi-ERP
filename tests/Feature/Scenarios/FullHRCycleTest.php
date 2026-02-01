@@ -16,8 +16,6 @@ use Kezi\HR\Actions\HumanResources\ProcessPayrollAction;
 use Kezi\HR\DataTransferObjects\HumanResources\CreateEmployeeDTO;
 use Kezi\HR\DataTransferObjects\HumanResources\CreateEmploymentContractDTO;
 use Kezi\HR\DataTransferObjects\HumanResources\ProcessPayrollDTO;
-use Kezi\HR\Enums\ContractType;
-use Kezi\HR\Enums\PayFrequency;
 use Kezi\HR\Models\Employee;
 use Kezi\HR\Models\EmploymentContract;
 use Kezi\HR\Models\Payroll;
@@ -26,7 +24,7 @@ use Kezi\Payment\Models\Payment;
 test('full HR cycle: employee -> contract -> payroll -> payment', function () {
     // --- Setup ---
     $company = Company::factory()->create();
-    $currency = Currency::factory()->create(['code' => 'USD', 'symbol' => '$']);
+    $currency = Currency::factory()->createSafely(['code' => 'USD', 'symbol' => '$']);
 
     // Create necessary accounts
     $bankAccount = Account::factory()->create([

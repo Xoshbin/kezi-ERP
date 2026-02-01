@@ -76,6 +76,7 @@ it('demonstrates complete cost determination workflow from vendor bill to manual
     ]);
 
     VendorBillLine::factory()->create([
+        'company_id' => $this->company->id,
         'vendor_bill_id' => $vendorBill->id,
         'product_id' => $product->id,
         'quantity' => 100,
