@@ -139,6 +139,7 @@ it('falls back to cost layer for FIFO/LIFO products', function () {
     ]);
 
     $costLayer = InventoryCostLayer::factory()->create([
+        'company_id' => $this->company->id,
         'product_id' => $product->id,
         'cost_per_unit' => Money::of(35000, 'IQD'),
         'remaining_quantity' => 5.0,
