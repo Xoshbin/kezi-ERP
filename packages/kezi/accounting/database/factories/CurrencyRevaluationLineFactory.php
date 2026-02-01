@@ -19,7 +19,7 @@ class CurrencyRevaluationLineFactory extends Factory
     public function definition(): array
     {
         $revaluation = CurrencyRevaluation::factory()->create();
-        $currency = Currency::factory()->create();
+        $currency = Currency::factory()->createSafely();
 
         return [
             'currency_revaluation_id' => $revaluation->id,

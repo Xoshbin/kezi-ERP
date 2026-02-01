@@ -49,7 +49,7 @@ test('duplicate tax ID for a company in the same fiscal country is prevented', f
 
 test('creating a currency with an existing code is prevented', function () {
     // Arrange: Create the initial currency.
-    Currency::factory()->create(['code' => 'XYZ']); // Use a unique code to avoid conflicts.
+    Currency::factory()->createSafely(['code' => 'XYZ']); // Use a unique code to avoid conflicts.
 
     // Arrange: Prepare the data for the duplicate currency.
     $duplicateData = [

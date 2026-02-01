@@ -63,6 +63,7 @@ it('updates actuals from journal entries', function () {
     ]);
 
     $budgetLine = ProjectBudgetLine::factory()->create([
+        'company_id' => $this->company->id,
         'project_budget_id' => $budget->id,
         'account_id' => $expenseAccount->id,
         'budgeted_amount' => 1000, // 1000.00
@@ -117,6 +118,7 @@ it('updates actuals ignores entries outside dates', function () {
     ]);
 
     $budgetLine = ProjectBudgetLine::factory()->create([
+        'company_id' => $this->company->id,
         'project_budget_id' => $budget->id,
         'account_id' => $expenseAccount->id,
         'budgeted_amount' => 1000,
@@ -156,6 +158,7 @@ it('gets budget variance report', function () {
     ]);
 
     ProjectBudgetLine::factory()->create([
+        'company_id' => $this->company->id,
         'project_budget_id' => $budget->id,
         'account_id' => $account->id,
         'budgeted_amount' => 1000, // 1000.00
@@ -179,6 +182,7 @@ it('gets budget utilization percentage', function () {
 
     // Add lines with actuals (since method calculates from lines)
     ProjectBudgetLine::factory()->create([
+        'company_id' => $this->company->id,
         'project_budget_id' => $budget->id,
         'budgeted_amount' => 1000,
         'actual_amount' => 500, // 500.00

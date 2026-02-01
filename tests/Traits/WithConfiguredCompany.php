@@ -29,7 +29,7 @@ trait WithConfiguredCompany
 
         // Seed roles and permissions
         if (\Spatie\Permission\Models\Role::count() === 0) {
-            $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+            $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
         }
 
         $this->company = CompanyBuilder::new()

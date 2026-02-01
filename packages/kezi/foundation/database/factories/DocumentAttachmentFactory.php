@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Kezi\Foundation\Database\Factories;
 
 use App\Models\Company;
 use App\Models\User;

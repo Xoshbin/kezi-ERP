@@ -368,10 +368,24 @@ class InventoryValuationService
             }
 
             $quantityToConsume = min($remainingQuantity, $layer->remaining_quantity);
-            if (! $layer->cost_per_unit) {
+            $costPerUnit = $layer->cost_per_unit;
+            if (! $costPerUnit) {
                 throw new Exception('Cost layer must have a cost per unit');
             }
-            $layerCOGS = $layer->cost_per_unit->multipliedBy($quantityToConsume, RoundingMode::HALF_UP);
+
+            // Ensure the cost is in the company's base currency before adding to total COGS
+            if ($costPerUnit->getCurrency()->getCurrencyCode() !== $currencyCode) {
+                $foreignCurrency = \Kezi\Foundation\Models\Currency::where('code', $costPerUnit->getCurrency()->getCurrencyCode())->first();
+                $costPerUnit = $this->currencyConverter->convertToBaseCurrency(
+                    $costPerUnit,
+                    $foreignCurrency,
+                    $company->currency,
+                    $layer->purchase_date ?? now(),
+                    $company
+                );
+            }
+
+            $layerCOGS = $costPerUnit->multipliedBy($quantityToConsume, RoundingMode::HALF_UP);
             $totalCOGS = $totalCOGS->plus($layerCOGS);
 
             // Update the cost layer

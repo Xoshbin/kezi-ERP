@@ -41,7 +41,7 @@ it('can render create analytic account page', function () {
 });
 
 it('can create a new analytic account', function () {
-    $currency = Currency::factory()->create();
+    $currency = Currency::factory()->createSafely();
 
     $newData = [
         'company_id' => $this->company->id,

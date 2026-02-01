@@ -19,7 +19,7 @@ uses(WithConfiguredCompany::class);
 beforeEach(function () {
     /** @var \Tests\TestCase $this */
     $this->setupWithConfiguredCompany();
-    $this->currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD']);
+    $this->currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->createSafely(['code' => 'USD']);
     $this->company->update(['currency_id' => $this->currency->id]);
 });
 

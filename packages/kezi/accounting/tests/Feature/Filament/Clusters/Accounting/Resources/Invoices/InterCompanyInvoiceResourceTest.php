@@ -16,8 +16,8 @@ use function Pest\Livewire\livewire;
 
 beforeEach(function () {
     // Setup Companies
-    $this->companyA = Company::factory()->create(['name' => 'Company A', 'currency_id' => Currency::factory()->create(['code' => 'USD'])->id]);
-    $this->companyB = Company::factory()->create(['name' => 'Company B', 'currency_id' => Currency::factory()->create(['code' => 'EUR'])->id]);
+    $this->companyA = Company::factory()->create(['name' => 'Company A', 'currency_id' => Currency::factory()->createSafely(['code' => 'USD'])->id]);
+    $this->companyB = Company::factory()->create(['name' => 'Company B', 'currency_id' => Currency::factory()->createSafely(['code' => 'EUR'])->id]);
 
     // Setup Admin User for Company A
     $user = \App\Models\User::factory()->create();

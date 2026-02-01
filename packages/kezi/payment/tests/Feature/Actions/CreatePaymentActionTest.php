@@ -140,7 +140,7 @@ it('throws exception for settlement payment without document links', function ()
 
 it('correctly converts WHT amount to base currency in multi-currency payment', function () {
     // Arrange
-    $usdCurrency = \Kezi\Foundation\Models\Currency::factory()->create([
+    $usdCurrency = \Kezi\Foundation\Models\Currency::factory()->createSafely([
         'code' => 'USD',
         'decimal_places' => 2,
     ]);

@@ -21,7 +21,7 @@ it('created a purchase order line with valid data (Happy Path)', function () {
     $company = $this->company;
 
     /** @var \Kezi\Foundation\Models\Currency $currency */
-    $currency = \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $currency = \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD']);
 
     /** @var \Kezi\Purchase\Models\PurchaseOrder $purchaseOrder */
     $purchaseOrder = PurchaseOrder::factory()->create([
@@ -69,7 +69,7 @@ it('updates parent purchase order totals after line creation', function () {
     $company = $this->company;
 
     /** @var \Kezi\Foundation\Models\Currency $currency */
-    $currency = \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $currency = \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD']);
 
     /** @var \Kezi\Purchase\Models\PurchaseOrder $purchaseOrder */
     $purchaseOrder = PurchaseOrder::factory()->create([
@@ -108,7 +108,7 @@ it('calculates tax correctly when tax is provided', function () {
     $company = $this->company;
 
     /** @var \Kezi\Foundation\Models\Currency $currency */
-    $currency = \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $currency = \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD']);
 
     /** @var \Kezi\Purchase\Models\PurchaseOrder $purchaseOrder */
     $purchaseOrder = PurchaseOrder::factory()->create([
@@ -156,7 +156,7 @@ it('handles zero quantity or price correctly', function () {
     $company = $this->company;
 
     /** @var \Kezi\Foundation\Models\Currency $currency */
-    $currency = \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $currency = \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD']);
 
     /** @var \Kezi\Purchase\Models\PurchaseOrder $purchaseOrder */
     $purchaseOrder = PurchaseOrder::factory()->create([
@@ -201,7 +201,7 @@ it('ensures relationship integrity', function () {
     $company = $this->company;
 
     /** @var \Kezi\Foundation\Models\Currency $currency */
-    $currency = \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $currency = \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD']);
 
     /** @var \Kezi\Purchase\Models\PurchaseOrder $purchaseOrder */
     $purchaseOrder = PurchaseOrder::factory()->create([

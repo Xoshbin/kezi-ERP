@@ -22,7 +22,6 @@ class InventoryCostLayerFactory extends Factory
     public function definition(): array
     {
         $quantity = $this->faker->numberBetween(1, 100);
-        $costPerUnit = Money::of($this->faker->numberBetween(10000, 100000), 'IQD');
 
         return [
             'company_id' => \App\Models\Company::factory(),
@@ -34,7 +33,12 @@ class InventoryCostLayerFactory extends Factory
             },
             'quantity' => $quantity,
             'remaining_quantity' => $quantity,
-            'cost_per_unit' => $costPerUnit,
+            'cost_per_unit' => function (array $attributes) {
+                $company = \App\Models\Company::find($attributes['company_id']);
+                $currencyCode = $company?->currency?->code ?? 'IQD';
+
+                return Money::of($this->faker->numberBetween(1000, 10000), $currencyCode);
+            },
             'purchase_date' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'source_type' => 'Test',
             'source_id' => 1,

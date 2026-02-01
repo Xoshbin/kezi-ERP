@@ -4,12 +4,12 @@ namespace Kezi\Purchase\tests\Feature\Filament\Resources\PurchaseOrderResource\P
 
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\CurrencyRate;
 use Kezi\Foundation\Models\Partner;
 use Kezi\Product\Models\Product;
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\CreatePurchaseOrder;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -21,7 +21,7 @@ beforeEach(function () {
 
     // Setup currencies
     $this->iqd = $this->company->currency; // Base currency
-    $this->usd = Currency::factory()->create([
+    $this->usd = Currency::factory()->createSafely([
         'code' => 'USD',
         'name' => 'US Dollar',
         'symbol' => '$',

@@ -16,7 +16,7 @@ uses(RefreshDatabase::class);
 
 test('generates iraq vat return correctly', function () {
     $company = Company::factory()->create();
-    $currency = Currency::where('code', 'IQD')->first() ?? Currency::factory()->create(['code' => 'IQD']); // Iraq normally IQD, but let's assume functioning in IQD or converting
+    $currency = Currency::where('code', 'IQD')->first() ?? Currency::factory()->createSafely(['code' => 'IQD']); // Iraq normally IQD, but let's assume functioning in IQD or converting
     $company->update(['currency_id' => $currency->id]);
 
     $taxAccountSales = Account::factory()->create(['company_id' => $company->id]);

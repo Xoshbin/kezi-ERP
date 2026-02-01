@@ -41,7 +41,7 @@ it('correctly casts money fields on various related models', function (
     int $expectedMinor,
 ) {
     // Arrange: Create the currency and the parent document (e.g., Invoice, VendorBill).
-    $currency = Currency::factory()->create([
+    $currency = Currency::factory()->createSafely([
         'code' => $currencyCode,
         'decimal_places' => $currencyCode === 'IQD' ? 3 : 2,
     ]);

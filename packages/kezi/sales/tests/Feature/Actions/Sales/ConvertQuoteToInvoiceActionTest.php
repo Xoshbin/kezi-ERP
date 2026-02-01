@@ -22,7 +22,7 @@ beforeEach(function () {
     $this->user = User::factory()->create();
     $this->user->companies()->attach($this->company);
 
-    $this->currency = Currency::factory()->create(['code' => 'USD', 'symbol' => '$']);
+    $this->currency = Currency::factory()->createSafely(['code' => 'USD', 'symbol' => '$']);
     $this->customer = Partner::factory()->customer()->create(['company_id' => $this->company->id]);
 });
 

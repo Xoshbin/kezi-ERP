@@ -58,7 +58,7 @@ it('validates revaluation creation', function () {
 it('can create a currency revaluation', function () {
     $this->actingAs($this->user);
 
-    $currency = Currency::factory()->create();
+    $currency = Currency::factory()->createSafely();
 
     livewire(CurrencyRevaluationResource\Pages\CreateCurrencyRevaluation::class)
         ->fillForm([

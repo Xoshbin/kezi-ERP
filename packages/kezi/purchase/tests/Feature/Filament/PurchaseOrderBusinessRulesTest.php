@@ -5,13 +5,13 @@ namespace Kezi\Purchase\Tests\Feature\Filament;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\Partner;
 use Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus;
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\EditPurchaseOrder;
 use Kezi\Purchase\Models\PurchaseOrder;
 use Kezi\Purchase\Models\VendorBill;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class PurchaseOrderBusinessRulesTest extends TestCase
@@ -39,7 +39,7 @@ class PurchaseOrderBusinessRulesTest extends TestCase
             'company_id' => $this->company->id,
         ]);
 
-        $this->currency = Currency::factory()->create([
+        $this->currency = Currency::factory()->createSafely([
             'code' => 'USD',
             'name' => 'US Dollar',
         ]);

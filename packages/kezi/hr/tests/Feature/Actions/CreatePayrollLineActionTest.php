@@ -19,7 +19,7 @@ it('can create a payroll line with valid data (Happy Path)', function () {
     $company = $this->company;
 
     /** @var \Kezi\Foundation\Models\Currency $currency */
-    $currency = Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::factory()->createSafely(['code' => 'USD']);
 
     /** @var \Kezi\HR\Models\Payroll $payroll */
     $payroll = Payroll::factory()->create([
@@ -85,7 +85,7 @@ it('handles money and currency conversion correctly when passed as strings', fun
     $company = $this->company;
 
     /** @var \Kezi\Foundation\Models\Currency $currency */
-    $currency = Currency::factory()->create(['code' => 'EUR']);
+    $currency = Currency::factory()->createSafely(['code' => 'EUR']);
 
     /** @var \Kezi\HR\Models\Payroll $payroll */
     $payroll = Payroll::factory()->create([
@@ -139,11 +139,11 @@ it('handles different company currency correctly', function () {
     /** @phpstan-ignore-next-line */
     $company = $this->company;
 
-    $usd = Currency::factory()->create(['code' => 'USD']);
+    $usd = Currency::factory()->createSafely(['code' => 'USD']);
     $company->currency_id = $usd->id;
     $company->save();
 
-    $eur = Currency::factory()->create(['code' => 'EUR']);
+    $eur = Currency::factory()->createSafely(['code' => 'EUR']);
 
     /** @var \Kezi\HR\Models\Payroll $payroll */
     $payroll = Payroll::factory()->create([
@@ -190,7 +190,7 @@ it('correctly handles nullable fields', function () {
     /** @var \App\Models\Company $company */
     /** @phpstan-ignore-next-line */
     $company = $this->company;
-    $currency = Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::factory()->createSafely(['code' => 'USD']);
 
     /** @var \Kezi\HR\Models\Payroll $payroll */
     $payroll = Payroll::factory()->create([
@@ -235,7 +235,7 @@ it('ensures relationship integrity', function () {
     /** @var \App\Models\Company $company */
     /** @phpstan-ignore-next-line */
     $company = $this->company;
-    $currency = Currency::factory()->create();
+    $currency = Currency::factory()->createSafely();
 
     /** @var \Kezi\HR\Models\Payroll $payroll */
     $payroll = Payroll::factory()->create(['company_id' => $company->id, 'currency_id' => $currency->id]);

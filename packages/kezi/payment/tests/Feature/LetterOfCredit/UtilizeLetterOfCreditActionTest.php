@@ -19,6 +19,7 @@ beforeEach(function () {
 it('utilizes LC against vendor bill successfully', function () {
     $user = User::factory()->create();
     $lc = LetterOfCredit::factory()->create([
+        'company_id' => $this->company->id,
         'status' => LCStatus::Issued,
         'amount' => Money::of(100000, 'IQD'),
         'balance' => Money::of(100000, 'IQD'),
@@ -26,7 +27,7 @@ it('utilizes LC against vendor bill successfully', function () {
     ]);
 
     $vendorBill = VendorBill::factory()->create([
-        'company_id' => $lc->company_id,
+        'company_id' => $this->company->id,
         'vendor_id' => $lc->vendor_id,
     ]);
 
@@ -97,13 +98,14 @@ it('marks LC as fully utilized when balance is zero', function () {
 it('throws exception when utilization exceeds balance', function () {
     $user = User::factory()->create();
     $lc = LetterOfCredit::factory()->create([
+        'company_id' => $this->company->id,
         'status' => LCStatus::Issued,
         'amount' => Money::of(100000, 'IQD'),
         'balance' => Money::of(100000, 'IQD'),
     ]);
 
     $vendorBill = VendorBill::factory()->create([
-        'company_id' => $lc->company_id,
+        'company_id' => $this->company->id,
     ]);
 
     $dto = new UtilizeLCDTO(

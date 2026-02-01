@@ -17,7 +17,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     app()[PermissionRegistrar::class]->forgetCachedPermissions();
-    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
 
     $this->company = \App\Models\Company::factory()->create();
     $this->user = User::factory()->create();

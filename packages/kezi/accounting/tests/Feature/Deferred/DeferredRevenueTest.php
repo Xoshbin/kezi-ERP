@@ -21,7 +21,7 @@ class DeferredRevenueTest extends TestCase
     {
         $user = \App\Models\User::factory()->create();
         $company = \App\Models\Company::factory()->create();
-        $currency = \Kezi\Foundation\Models\Currency::factory()->create();
+        $currency = \Kezi\Foundation\Models\Currency::factory()->createSafely();
         $company->currency_id = $currency->id;
         $company->save();
 

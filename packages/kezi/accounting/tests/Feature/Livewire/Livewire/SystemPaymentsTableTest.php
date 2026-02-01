@@ -1,11 +1,9 @@
 <?php
 
 use App\Models\Company;
-use App\Models\User;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Livewire\Accounting\SystemPaymentsTable;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\BankStatement;
@@ -13,17 +11,16 @@ use Kezi\Accounting\Models\Journal;
 use Kezi\Foundation\Models\Partner;
 use Kezi\Payment\Enums\Payments\PaymentStatus;
 use Kezi\Payment\Models\Payment;
+use Livewire\Livewire;
+use Tests\Traits\WithConfiguredCompany;
 
-uses(RefreshDatabase::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     // Set locale to English for consistent test assertions
     app()->setLocale('en');
 
-    $this->company = Company::factory()->create();
-    $this->user = User::factory()->create();
-    $this->user->companies()->attach($this->company);
-    $this->actingAs($this->user);
+    $this->setupWithConfiguredCompany();
 
     // Set up Filament tenant context
     Filament::setTenant($this->company);

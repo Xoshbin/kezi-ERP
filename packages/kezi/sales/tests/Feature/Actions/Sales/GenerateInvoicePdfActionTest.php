@@ -16,7 +16,7 @@ use Kezi\Sales\Models\InvoiceLine;
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->company = Company::factory()->create();
-    $this->currency = Currency::factory()->create(['code' => 'USD']);
+    $this->currency = Currency::factory()->createSafely(['code' => 'USD']);
     $this->customer = Partner::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'customer',
