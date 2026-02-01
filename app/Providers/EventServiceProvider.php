@@ -5,11 +5,11 @@ namespace App\Providers;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Jmeryar\Accounting\Listeners\Asset\CreateAssetFromVendorBillListener;
-use Jmeryar\Inventory\Events\Inventory\StockMoveConfirmed;
-use Jmeryar\Inventory\Listeners\Inventory\HandleStockMoveConfirmation;
-use Jmeryar\Inventory\Listeners\Inventory\ProcessInventoryForConfirmedBill;
-use Jmeryar\Purchase\Events\VendorBillConfirmed;
+use Kezi\Accounting\Listeners\Asset\CreateAssetFromVendorBillListener;
+use Kezi\Inventory\Events\Inventory\StockMoveConfirmed;
+use Kezi\Inventory\Listeners\Inventory\HandleStockMoveConfirmation;
+use Kezi\Inventory\Listeners\Inventory\ProcessInventoryForConfirmedBill;
+use Kezi\Purchase\Events\VendorBillConfirmed;
 
 class EventServiceProvider extends ServiceProvider
 {

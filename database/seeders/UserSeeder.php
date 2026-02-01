@@ -17,17 +17,17 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        // Find the company 'Jmeryar Solutions'
-        $company = Company::where('name', 'Jmeryar Solutions')->first();
+        // Find the company 'Kezi Solutions'
+        $company = Company::where('name', 'Kezi Solutions')->first();
 
         // If the company is not found, throw an exception.
         if (! $company) {
-            throw new Exception('Company "Jmeryar Solutions" not found. Please run the CompanySeeder first.');
+            throw new Exception('Company "Kezi Solutions" not found. Please run the CompanySeeder first.');
         }
 
         // Create the admin user
         $user = User::updateOrCreate(
-            ['email' => 'admin@jmeryar.com'],
+            ['email' => 'admin@kezi.com'],
             [
                 'name' => 'Admin',
                 'password' => Hash::make('password'),

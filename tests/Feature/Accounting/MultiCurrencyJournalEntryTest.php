@@ -7,11 +7,11 @@ use App\Models\User;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Jmeryar\Accounting\Models\Account;
-use Jmeryar\Accounting\Models\Journal;
-use Jmeryar\Accounting\Models\JournalEntry;
-use Jmeryar\Foundation\Models\Currency;
-use Jmeryar\Foundation\Models\CurrencyRate;
+use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Models\Journal;
+use Kezi\Accounting\Models\JournalEntry;
+use Kezi\Foundation\Models\Currency;
+use Kezi\Foundation\Models\CurrencyRate;
 use Tests\TestCase;
 
 class MultiCurrencyJournalEntryTest extends TestCase
@@ -92,7 +92,7 @@ class MultiCurrencyJournalEntryTest extends TestCase
 
         // verifying Page logic via Livewire is best.
 
-        \Livewire\Livewire::test(\Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
+        \Livewire\Livewire::test(\Kezi\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry::class)
             ->set('data.journal_id', $journal->id)
             ->set('data.currency_id', $this->usd->id)
             ->set('data.entry_date', $entryDate)
@@ -155,7 +155,7 @@ class MultiCurrencyJournalEntryTest extends TestCase
 
         // Create lines locally to match structure (Action usually does this)
         // We'll trust the factory/seeder or create manually
-        $line1 = \Jmeryar\Accounting\Models\JournalEntryLine::create([
+        $line1 = \Kezi\Accounting\Models\JournalEntryLine::create([
             'journal_entry_id' => $entry->id,
             'company_id' => $this->company->id,
             'account_id' => $account->id,
@@ -167,7 +167,7 @@ class MultiCurrencyJournalEntryTest extends TestCase
             'currency_id' => $this->usd->id,
         ]);
 
-        $line2 = \Jmeryar\Accounting\Models\JournalEntryLine::create([
+        $line2 = \Kezi\Accounting\Models\JournalEntryLine::create([
             'journal_entry_id' => $entry->id,
             'company_id' => $this->company->id,
             'account_id' => $account->id,
@@ -186,7 +186,7 @@ class MultiCurrencyJournalEntryTest extends TestCase
         // Change Rate to 1600
         $newRate = 1600;
 
-        \Livewire\Livewire::test(\Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, ['record' => $entry->getRouteKey()])
+        \Livewire\Livewire::test(\Kezi\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry::class, ['record' => $entry->getRouteKey()])
             ->assertSet('data.exchange_rate', 1500) // checks if it loaded correctly
             ->set('data.exchange_rate', $newRate)
             // Assert that the Header Totals (mapped to data.total_debit/total_credit usually? No, let's check the logic)

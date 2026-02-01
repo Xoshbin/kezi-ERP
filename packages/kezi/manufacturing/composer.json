@@ -1,0 +1,35 @@
+{
+    "name": "kezi/manufacturing",
+    "description": "Manufacturing module for Kezi",
+    "authors": [
+        {
+            "name": "Khoshbin",
+            "email": "xoshbin@gmail.com"
+        }
+    ],
+    "type": "library",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^12.0",
+        "filament/filament": "^4.0",
+        "kezi/foundation": "*",
+        "kezi/product": "*",
+        "kezi/inventory": "*",
+        "kezi/accounting": "*",
+        "spatie/laravel-translatable": "^6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kezi\\Manufacturing\\": "app/",
+            "Kezi\\Manufacturing\\Database\\Factories\\": "database/factories/",
+            "Kezi\\Manufacturing\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Kezi\\Manufacturing\\Providers\\ManufacturingServiceProvider"
+            ]
+        }
+    }
+}

@@ -1,11 +1,11 @@
 <?php
 
-namespace Database\Factories\Jmeryar\ProjectManagement\app\Models;
+namespace Database\Factories\Kezi\ProjectManagement\app\Models;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Jmeryar\ProjectManagement\app\Models\Project>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Kezi\ProjectManagement\app\Models\Project>
  */
 class ProjectFactory extends Factory
 {

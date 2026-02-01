@@ -4,29 +4,29 @@ use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
-use Jmeryar\Accounting\Models\Account;
-use Jmeryar\Accounting\Models\Journal;
-use Jmeryar\Accounting\Models\JournalEntry;
-use Jmeryar\Inventory\Enums\Inventory\StockLocationType;
-use Jmeryar\Inventory\Enums\Inventory\StockMoveStatus;
-use Jmeryar\Inventory\Enums\Inventory\StockMoveType;
-use Jmeryar\Inventory\Models\StockLocation;
-use Jmeryar\Inventory\Models\StockMove;
-use Jmeryar\Manufacturing\Actions\Accounting\CreateJournalEntryForManufacturingAction;
-use Jmeryar\Manufacturing\Actions\ConfirmManufacturingOrderAction;
-use Jmeryar\Manufacturing\Actions\ConsumeComponentsAction;
-use Jmeryar\Manufacturing\Actions\CreateBOMAction;
-use Jmeryar\Manufacturing\Actions\CreateManufacturingOrderAction;
-use Jmeryar\Manufacturing\Actions\ProduceFinishedGoodsAction;
-use Jmeryar\Manufacturing\Actions\StartProductionAction;
-use Jmeryar\Manufacturing\DataTransferObjects\BOMLineDTO;
-use Jmeryar\Manufacturing\DataTransferObjects\CreateBOMDTO;
-use Jmeryar\Manufacturing\DataTransferObjects\CreateManufacturingOrderDTO;
-use Jmeryar\Manufacturing\Enums\BOMType;
-use Jmeryar\Manufacturing\Enums\ManufacturingOrderStatus;
-use Jmeryar\Manufacturing\Models\ManufacturingOrder;
-use Jmeryar\Product\Enums\Products\ProductType;
-use Jmeryar\Product\Models\Product;
+use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Models\Journal;
+use Kezi\Accounting\Models\JournalEntry;
+use Kezi\Inventory\Enums\Inventory\StockLocationType;
+use Kezi\Inventory\Enums\Inventory\StockMoveStatus;
+use Kezi\Inventory\Enums\Inventory\StockMoveType;
+use Kezi\Inventory\Models\StockLocation;
+use Kezi\Inventory\Models\StockMove;
+use Kezi\Manufacturing\Actions\Accounting\CreateJournalEntryForManufacturingAction;
+use Kezi\Manufacturing\Actions\ConfirmManufacturingOrderAction;
+use Kezi\Manufacturing\Actions\ConsumeComponentsAction;
+use Kezi\Manufacturing\Actions\CreateBOMAction;
+use Kezi\Manufacturing\Actions\CreateManufacturingOrderAction;
+use Kezi\Manufacturing\Actions\ProduceFinishedGoodsAction;
+use Kezi\Manufacturing\Actions\StartProductionAction;
+use Kezi\Manufacturing\DataTransferObjects\BOMLineDTO;
+use Kezi\Manufacturing\DataTransferObjects\CreateBOMDTO;
+use Kezi\Manufacturing\DataTransferObjects\CreateManufacturingOrderDTO;
+use Kezi\Manufacturing\Enums\BOMType;
+use Kezi\Manufacturing\Enums\ManufacturingOrderStatus;
+use Kezi\Manufacturing\Models\ManufacturingOrder;
+use Kezi\Product\Enums\Products\ProductType;
+use Kezi\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(WithConfiguredCompany::class);
@@ -42,21 +42,21 @@ beforeEach(function () {
         'company_id' => $this->company->id,
         'code' => '1010',
         'name' => 'Raw Materials',
-        'type' => \Jmeryar\Accounting\Enums\Accounting\AccountType::CurrentAssets,
+        'type' => \Kezi\Accounting\Enums\Accounting\AccountType::CurrentAssets,
     ]);
 
     $this->fgAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => '1020',
         'name' => 'Finished Goods',
-        'type' => \Jmeryar\Accounting\Enums\Accounting\AccountType::CurrentAssets,
+        'type' => \Kezi\Accounting\Enums\Accounting\AccountType::CurrentAssets,
     ]);
 
     $this->wipAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => '1030',
         'name' => 'Work in Progress',
-        'type' => \Jmeryar\Accounting\Enums\Accounting\AccountType::CurrentAssets,
+        'type' => \Kezi\Accounting\Enums\Accounting\AccountType::CurrentAssets,
     ]);
 
     // 2. Setup Journals
@@ -64,14 +64,14 @@ beforeEach(function () {
         'company_id' => $this->company->id,
         'name' => 'Stock Journal',
         'short_code' => 'STJ',
-        'type' => \Jmeryar\Accounting\Enums\Accounting\JournalType::Miscellaneous,
+        'type' => \Kezi\Accounting\Enums\Accounting\JournalType::Miscellaneous,
     ]);
 
     $this->manufacturingJournal = Journal::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Manufacturing Operations',
         'short_code' => 'MFG',
-        'type' => \Jmeryar\Accounting\Enums\Accounting\JournalType::Miscellaneous,
+        'type' => \Kezi\Accounting\Enums\Accounting\JournalType::Miscellaneous,
     ]);
 
     // Configure Company Defaults

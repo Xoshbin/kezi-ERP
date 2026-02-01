@@ -1,0 +1,34 @@
+{
+    "name": "kezi/purchase",
+    "description": "Purchase module for Kezi",
+    "authors": [
+        {
+            "name": "Khoshbin",
+            "email": "xoshbin@gmail.com"
+        }
+    ],
+    "type": "library",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^12.0",
+        "filament/filament": "^4.0",
+        "kezi/foundation": "*",
+        "kezi/product": "*",
+        "kezi/inventory": "*",
+        "kezi/accounting": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kezi\\Purchase\\": "app/",
+            "Kezi\\Purchase\\Database\\Factories\\": "database/factories/",
+            "Kezi\\Purchase\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Kezi\\Purchase\\Providers\\PurchaseServiceProvider"
+            ]
+        }
+    }
+}

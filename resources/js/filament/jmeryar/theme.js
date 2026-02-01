@@ -1,5 +1,5 @@
 // Import the custom theme CSS file, which in turn imports the base Filament theme.
-import '../../../css/filament/jmeryar/theme.css';
+import '../../../css/filament/kezi/theme.css';
 
 // AlpineJS component for money input formatting
 // document.addEventListener('alpine:init', () => {

@@ -1,9 +1,9 @@
 # Accounting Terminology Glossary
-# Official terminology dictionary for the Jmeryar NotebookLM application
+# Official terminology dictionary for the Kezi NotebookLM application
 
 metadata:
   title: "Accounting Terminology Glossary"
-  description: "Official terminology dictionary for the Jmeryar NotebookLM application"
+  description: "Official terminology dictionary for the Kezi NotebookLM application"
   version: "2.0"
   lastUpdated: "2025-09-12"
   languages: ["en", "ar", "ckb"]

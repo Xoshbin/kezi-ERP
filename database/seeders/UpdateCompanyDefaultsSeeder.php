@@ -6,7 +6,7 @@ use App\Models\Account;
 use App\Models\Company;
 use Exception;
 use Illuminate\Database\Seeder;
-use Jmeryar\Accounting\Models\Journal;
+use Kezi\Accounting\Models\Journal;
 
 class UpdateCompanyDefaultsSeeder extends Seeder
 {
@@ -16,18 +16,18 @@ class UpdateCompanyDefaultsSeeder extends Seeder
      */
     public function run(): void
     {
-        $company = Company::where('name', 'Jmeryar Solutions')->first();
+        $company = Company::where('name', 'Kezi Solutions')->first();
         if (! $company) {
-            throw new Exception('Company "Jmeryar Solutions" not found. Please run the CompanySeeder first.');
+            throw new Exception('Company "Kezi Solutions" not found. Please run the CompanySeeder first.');
         }
 
         // Find the default accounts and journals created by other seeders.
-        $apAccount = \Jmeryar\Accounting\Models\Account::where('code', '210101')->where('company_id', $company->id)->first();
-        $arAccount = \Jmeryar\Accounting\Models\Account::where('code', '120101')->where('company_id', $company->id)->first();
-        $salesDiscountAccount = \Jmeryar\Accounting\Models\Account::where('code', '490101')->where('company_id', $company->id)->first();
-        $bankAccount = \Jmeryar\Accounting\Models\Account::where('code', '110101')->where('company_id', $company->id)->first(); // Using 'Bank Account (USD)'
-        $outstandingReceiptsAccount = \Jmeryar\Accounting\Models\Account::where('code', '110301')->where('company_id', $company->id)->first();
-        $taxAccount = \Jmeryar\Accounting\Models\Account::where('code', '220101')->where('company_id', $company->id)->first(); // Using 'VAT Payable' as a sensible default
+        $apAccount = \Kezi\Accounting\Models\Account::where('code', '210101')->where('company_id', $company->id)->first();
+        $arAccount = \Kezi\Accounting\Models\Account::where('code', '120101')->where('company_id', $company->id)->first();
+        $salesDiscountAccount = \Kezi\Accounting\Models\Account::where('code', '490101')->where('company_id', $company->id)->first();
+        $bankAccount = \Kezi\Accounting\Models\Account::where('code', '110101')->where('company_id', $company->id)->first(); // Using 'Bank Account (USD)'
+        $outstandingReceiptsAccount = \Kezi\Accounting\Models\Account::where('code', '110301')->where('company_id', $company->id)->first();
+        $taxAccount = \Kezi\Accounting\Models\Account::where('code', '220101')->where('company_id', $company->id)->first(); // Using 'VAT Payable' as a sensible default
 
         // ** FIXED: Query journals by their unique short_code for reliability **
         $purchaseJournal = Journal::where('short_code', 'BILL')->where('company_id', $company->id)->first();

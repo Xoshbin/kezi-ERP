@@ -1,0 +1,11 @@
+{
+    "name": "Inventory",
+    "alias": "inventory",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Kezi\\Inventory\\Providers\\InventoryServiceProvider"
+    ],
+    "files": []
+}

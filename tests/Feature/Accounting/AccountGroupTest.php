@@ -2,10 +2,10 @@
 
 use App\Models\Company;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Jmeryar\Accounting\Enums\Accounting\RootAccountType;
-use Jmeryar\Accounting\Models\Account;
-use Jmeryar\Accounting\Models\AccountGroup;
-use Jmeryar\Accounting\Services\AccountGroupService;
+use Kezi\Accounting\Enums\Accounting\RootAccountType;
+use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Models\AccountGroup;
+use Kezi\Accounting\Services\AccountGroupService;
 
 uses(RefreshDatabase::class);
 

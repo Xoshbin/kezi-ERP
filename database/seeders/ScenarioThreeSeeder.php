@@ -8,39 +8,39 @@ use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Jmeryar\Accounting\Actions\Accounting\CreateJournalEntryAction;
-use Jmeryar\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use Jmeryar\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use Jmeryar\Accounting\Models\Account;
-use Jmeryar\Accounting\Models\Journal;
-use Jmeryar\Foundation\Models\Currency;
-use Jmeryar\Foundation\Models\Partner;
-use Jmeryar\Inventory\DataTransferObjects\Inventory\ConfirmStockMoveDTO;
-use Jmeryar\Inventory\Enums\Inventory\InventoryAccountingMode;
-use Jmeryar\Inventory\Enums\Inventory\StockPickingState;
-use Jmeryar\Inventory\Models\StockPicking;
-use Jmeryar\Inventory\Services\Inventory\StockMoveService;
-use Jmeryar\Payment\Actions\Payments\CreatePaymentAction;
-use Jmeryar\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
-use Jmeryar\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
-use Jmeryar\Payment\Enums\Payments\PaymentMethod;
-use Jmeryar\Payment\Enums\Payments\PaymentType;
-use Jmeryar\Payment\Services\PaymentService;
-use Jmeryar\Product\Models\Product;
-use Jmeryar\Purchase\Actions\Purchases\CreatePurchaseOrderAction;
-use Jmeryar\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
-use Jmeryar\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
-use Jmeryar\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
-use Jmeryar\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
-use Jmeryar\Purchase\Services\PurchaseOrderService;
-use Jmeryar\Purchase\Services\VendorBillService;
-use Jmeryar\Sales\Actions\Sales\ConfirmSalesOrderAction;
-use Jmeryar\Sales\Actions\Sales\CreateInvoiceFromSalesOrderAction;
-use Jmeryar\Sales\Actions\Sales\CreateSalesOrderAction;
-use Jmeryar\Sales\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
-use Jmeryar\Sales\DataTransferObjects\Sales\CreateSalesOrderDTO;
-use Jmeryar\Sales\DataTransferObjects\Sales\CreateSalesOrderLineDTO;
-use Jmeryar\Sales\Services\InvoiceService;
+use Kezi\Accounting\Actions\Accounting\CreateJournalEntryAction;
+use Kezi\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Kezi\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Models\Journal;
+use Kezi\Foundation\Models\Currency;
+use Kezi\Foundation\Models\Partner;
+use Kezi\Inventory\DataTransferObjects\Inventory\ConfirmStockMoveDTO;
+use Kezi\Inventory\Enums\Inventory\InventoryAccountingMode;
+use Kezi\Inventory\Enums\Inventory\StockPickingState;
+use Kezi\Inventory\Models\StockPicking;
+use Kezi\Inventory\Services\Inventory\StockMoveService;
+use Kezi\Payment\Actions\Payments\CreatePaymentAction;
+use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Kezi\Payment\Enums\Payments\PaymentMethod;
+use Kezi\Payment\Enums\Payments\PaymentType;
+use Kezi\Payment\Services\PaymentService;
+use Kezi\Product\Models\Product;
+use Kezi\Purchase\Actions\Purchases\CreatePurchaseOrderAction;
+use Kezi\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
+use Kezi\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
+use Kezi\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
+use Kezi\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
+use Kezi\Purchase\Services\PurchaseOrderService;
+use Kezi\Purchase\Services\VendorBillService;
+use Kezi\Sales\Actions\Sales\ConfirmSalesOrderAction;
+use Kezi\Sales\Actions\Sales\CreateInvoiceFromSalesOrderAction;
+use Kezi\Sales\Actions\Sales\CreateSalesOrderAction;
+use Kezi\Sales\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
+use Kezi\Sales\DataTransferObjects\Sales\CreateSalesOrderDTO;
+use Kezi\Sales\DataTransferObjects\Sales\CreateSalesOrderLineDTO;
+use Kezi\Sales\Services\InvoiceService;
 
 /**
  * Scenario Three Seeder - Complete Business Workflow with Manual Inventory Recording
@@ -68,7 +68,7 @@ class ScenarioThreeSeeder extends Seeder
     {
         DB::transaction(function () {
             // Get foundational data - requires main DatabaseSeeder to have been run first
-            $company = Company::where('name', 'Jmeryar Solutions')->first();
+            $company = Company::where('name', 'Kezi Solutions')->first();
 
             if (! $company) {
                 $this->command->error('');
@@ -98,7 +98,7 @@ class ScenarioThreeSeeder extends Seeder
             $this->command->info('');
 
             // Get user associated with the company (through pivot table)
-            $user = User::where('email', 'admin@jmeryar.com')->firstOrFail();
+            $user = User::where('email', 'admin@kezi.com')->firstOrFail();
             $iqdCurrency = Currency::where('code', 'IQD')->firstOrFail();
 
             // Get accounts

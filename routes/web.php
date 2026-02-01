@@ -3,9 +3,9 @@
 use App\Models\Company;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Jmeryar\Sales\Actions\Sales\GenerateInvoicePdfAction;
-use Jmeryar\Sales\Enums\Sales\InvoiceStatus;
-use Jmeryar\Sales\Models\Invoice;
+use Kezi\Sales\Actions\Sales\GenerateInvoicePdfAction;
+use Kezi\Sales\Enums\Sales\InvoiceStatus;
+use Kezi\Sales\Models\Invoice;
 
 Route::get('/', function () {
     return view('welcome');

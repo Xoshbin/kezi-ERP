@@ -7,24 +7,24 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
-use Jmeryar\Accounting\Enums\Accounting\AccountType;
-use Jmeryar\Accounting\Models\Account;
-use Jmeryar\Accounting\Models\JournalEntry;
-use Jmeryar\Foundation\Models\Currency;
-use Jmeryar\Foundation\Models\Partner;
-use Jmeryar\Product\Enums\Products\ProductType;
-use Jmeryar\Product\Models\Product;
-use Jmeryar\Purchase\Actions\Purchases\CreatePurchaseOrderAction;
-use Jmeryar\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
-use Jmeryar\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
-use Jmeryar\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
-use Jmeryar\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
-use Jmeryar\Purchase\Enums\Purchases\PurchaseOrderStatus;
-use Jmeryar\Purchase\Enums\Purchases\VendorBillStatus;
-use Jmeryar\Purchase\Models\PurchaseOrder;
-use Jmeryar\Purchase\Models\VendorBill;
-use Jmeryar\Purchase\Services\PurchaseOrderService;
-use Jmeryar\Purchase\Services\VendorBillService;
+use Kezi\Accounting\Enums\Accounting\AccountType;
+use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Models\JournalEntry;
+use Kezi\Foundation\Models\Currency;
+use Kezi\Foundation\Models\Partner;
+use Kezi\Product\Enums\Products\ProductType;
+use Kezi\Product\Models\Product;
+use Kezi\Purchase\Actions\Purchases\CreatePurchaseOrderAction;
+use Kezi\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
+use Kezi\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
+use Kezi\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
+use Kezi\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
+use Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
+use Kezi\Purchase\Models\PurchaseOrder;
+use Kezi\Purchase\Models\VendorBill;
+use Kezi\Purchase\Services\PurchaseOrderService;
+use Kezi\Purchase\Services\VendorBillService;
 
 uses(RefreshDatabase::class);
 
@@ -78,7 +78,7 @@ test('Purchase Order to Vendor Bill Workflow (Double Entry Verification)', funct
     $vendor = Partner::create([
         'company_id' => $company->id,
         'name' => 'Test Vendor',
-        'type' => \Jmeryar\Foundation\Enums\Partners\PartnerType::Vendor,
+        'type' => \Kezi\Foundation\Enums\Partners\PartnerType::Vendor,
         'is_active' => true,
     ]);
 

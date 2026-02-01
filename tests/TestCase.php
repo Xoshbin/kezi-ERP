@@ -12,18 +12,18 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
  *
  * @property \App\Models\Company $company
  * @property \App\Models\User $user
- * @property \Jmeryar\Foundation\Models\Partner $partner
- * @property \Jmeryar\Foundation\Models\Currency $currency
- * @property \Jmeryar\Product\Models\Product $product
- * @property \Jmeryar\Accounting\Models\Account $account
- * @property \Jmeryar\Accounting\Models\Account $inventoryAccount
- * @property \Jmeryar\Accounting\Models\Account $stockInputAccount
- * @property \Jmeryar\Accounting\Models\Account $cogsAccount
- * @property \Jmeryar\Inventory\Models\StockLocation $vendorLocation
- * @property \Jmeryar\Inventory\Models\StockLocation $stockLocation
- * @property \Jmeryar\Inventory\Models\StockLocation $adjustmentLocation
- * @property \Jmeryar\Inventory\Models\StockLocation $customerLocation
- * @property \Jmeryar\Foundation\Models\Partner $vendor
+ * @property \Kezi\Foundation\Models\Partner $partner
+ * @property \Kezi\Foundation\Models\Currency $currency
+ * @property \Kezi\Product\Models\Product $product
+ * @property \Kezi\Accounting\Models\Account $account
+ * @property \Kezi\Accounting\Models\Account $inventoryAccount
+ * @property \Kezi\Accounting\Models\Account $stockInputAccount
+ * @property \Kezi\Accounting\Models\Account $cogsAccount
+ * @property \Kezi\Inventory\Models\StockLocation $vendorLocation
+ * @property \Kezi\Inventory\Models\StockLocation $stockLocation
+ * @property \Kezi\Inventory\Models\StockLocation $adjustmentLocation
+ * @property \Kezi\Inventory\Models\StockLocation $customerLocation
+ * @property \Kezi\Foundation\Models\Partner $vendor
  *
  * @method void setupWithConfiguredCompany()
  * @method void setupInventoryTestEnvironment()

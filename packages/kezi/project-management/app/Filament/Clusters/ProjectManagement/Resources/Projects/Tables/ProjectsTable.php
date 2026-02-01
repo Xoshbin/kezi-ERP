@@ -1,0 +1,113 @@
+<?php
+
+namespace Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\Projects\Tables;
+
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Table;
+use Kezi\ProjectManagement\Enums\ProjectStatus;
+use Kezi\ProjectManagement\Models\Project;
+use Kezi\ProjectManagement\Services\ProjectService;
+
+class ProjectsTable
+{
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('code')
+                    ->label(__('projectmanagement::project.project.code'))
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
+                TextColumn::make('name')
+                    ->label(__('projectmanagement::project.project.name'))
+                    ->searchable()
+                    ->sortable()
+                    ->limit(30),
+                TextColumn::make('customer.name')
+                    ->label(__('projectmanagement::project.project.customer'))
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('manager.first_name')
+                    ->label(__('projectmanagement::project.project.manager'))
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('status')
+                    ->label(__('projectmanagement::project.project.status'))
+                    ->badge()
+                    ->sortable(),
+                TextColumn::make('budget_amount')
+                    ->label(__('projectmanagement::project.project.budget_amount'))
+                    ->money(fn ($record) => $record->company->currency->code ?? 'USD')
+                    ->sortable()
+                    ->alignEnd(),
+                IconColumn::make('is_billable')
+                    ->label(__('projectmanagement::project.project.is_billable'))
+                    ->boolean()
+                    ->toggleable(),
+                TextColumn::make('billing_type')
+                    ->label(__('projectmanagement::project.project.billing_type'))
+                    ->badge()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('start_date')
+                    ->label(__('projectmanagement::project.project.start_date'))
+                    ->date()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('end_date')
+                    ->label(__('projectmanagement::project.project.end_date'))
+                    ->date()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                TrashedFilter::make(),
+            ])
+            ->recordActions([
+                EditAction::make(),
+            ])
+            ->actions([
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    Action::make('activate')
+                        ->icon('heroicon-o-play')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->visible(fn (Project $record) => $record->status === ProjectStatus::Draft || $record->status === ProjectStatus::OnHold)
+                        ->action(fn (Project $record, ProjectService $service) => $service->activateProject($record)),
+                    Action::make('complete')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->visible(fn (Project $record) => $record->status === ProjectStatus::Active)
+                        ->action(fn (Project $record, ProjectService $service) => $service->completeProject($record)),
+                    Action::make('cancel')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->visible(fn (Project $record) => ! in_array($record->status, [ProjectStatus::Completed, ProjectStatus::Cancelled]))
+                        ->action(fn (Project $record, ProjectService $service) => $service->cancelProject($record)),
+                    DeleteAction::make(),
+                ]),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
+                ]),
+            ]);
+    }
+}

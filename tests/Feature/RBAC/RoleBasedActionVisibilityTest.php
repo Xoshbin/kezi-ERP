@@ -3,9 +3,9 @@
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ListInvoices;
-use Jmeryar\Sales\Models\Invoice;
-use Jmeryar\Sales\Enums\Sales\InvoiceStatus;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ListInvoices;
+use Kezi\Sales\Models\Invoice;
+use Kezi\Sales\Enums\Sales\InvoiceStatus;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
@@ -52,7 +52,7 @@ beforeEach(function () {
 
     // Set Filament context
     Filament::setTenant($this->company);
-    Filament::setCurrentPanel(Filament::getPanel('jmeryar'));
+    Filament::setCurrentPanel(Filament::getPanel('kezi'));
 });
 
 test('viewer cannot see create invoice action', function () {
