@@ -11,7 +11,7 @@ use Kezi\Inventory\Models\StockMoveValuation;
 it('can create and post a landed cost', function () {
     // 1. Setup Data
     $company = \App\Models\Company::factory()->create();
-    $currency = \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $currency = \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD']);
     $company->currency_id = $currency->id;
 
     // Create test accounts for journal entries

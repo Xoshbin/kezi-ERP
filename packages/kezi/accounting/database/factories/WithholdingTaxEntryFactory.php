@@ -36,7 +36,7 @@ class WithholdingTaxEntryFactory extends Factory
             'base_amount' => $baseAmount,
             'withheld_amount' => $withheldAmount,
             'rate_applied' => $rate,
-            'currency_id' => Currency::factory(),
+            'currency_id' => Currency::factory()->createSafely(),
             'withholding_tax_certificate_id' => null,
         ];
     }

@@ -10,7 +10,7 @@ use function Pest\Livewire\livewire;
 it('shows unhelpful error message when validation exception occurs (current behavior)', function () {
     // 1. Setup Data with Deprecated Account to trigger ValidationException in CreateJournalEntryAction
     $company = \App\Models\Company::factory()->create();
-    $currency = \Kezi\Foundation\Models\Currency::factory()->create(); // Ensure currency exists
+    $currency = \Kezi\Foundation\Models\Currency::factory()->createSafely(); // Ensure currency exists
     // Fix: Account factory might need company or config.
     // Assuming simple factory works.
     $deprecatedAccount = Account::factory()->create([

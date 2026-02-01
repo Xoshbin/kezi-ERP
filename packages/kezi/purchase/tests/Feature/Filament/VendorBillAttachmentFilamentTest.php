@@ -9,13 +9,13 @@ use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Livewire\Livewire;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
 use Kezi\Accounting\Models\Account;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\Partner;
 use Kezi\Product\Models\Product;
 use Kezi\Purchase\Models\VendorBill;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class VendorBillAttachmentFilamentTest extends TestCase
@@ -47,7 +47,7 @@ class VendorBillAttachmentFilamentTest extends TestCase
         // Set up Filament tenant context
         Filament::setTenant($this->company);
 
-        $this->currency = Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
+        $this->currency = Currency::factory()->createSafely(['code' => 'USD', 'decimal_places' => 2]);
         $this->vendor = Partner::factory()->create(['company_id' => $this->company->id]);
         $this->expenseAccount = Account::factory()->create(['company_id' => $this->company->id]);
         $this->product = Product::factory()->create([

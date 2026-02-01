@@ -19,7 +19,7 @@ use Kezi\ProjectManagement\Models\Project;
 use Kezi\ProjectManagement\Services\ProjectService;
 
 beforeEach(function () {
-    $this->currency = Currency::factory()->create(['code' => 'IQD', 'name' => 'Iraqi Dinar', 'symbol' => 'IQD']);
+    $this->currency = Currency::factory()->createSafely(['code' => 'IQD', 'name' => 'Iraqi Dinar', 'symbol' => 'IQD']);
     $this->company = Company::factory()->create([
         'currency_id' => $this->currency->id,
     ]);

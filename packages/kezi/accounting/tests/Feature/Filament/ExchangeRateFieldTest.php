@@ -3,7 +3,6 @@
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
 use Kezi\Accounting\Models\Account;
 use Kezi\Foundation\Models\Currency;
@@ -21,6 +20,7 @@ use Kezi\Sales\Enums\Sales\InvoiceStatus;
 use Kezi\Sales\Models\Invoice;
 use Kezi\Sales\Models\InvoiceLine;
 use Kezi\Sales\Services\InvoiceService;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -31,7 +31,7 @@ beforeEach(function () {
     $this->actingAs($this->user);
 
     // Create foreign currency (USD)
-    $this->foreignCurrency = Currency::factory()->create([
+    $this->foreignCurrency = Currency::factory()->createSafely([
         'code' => 'USD',
         'name' => ['en' => 'US Dollar'],
         'symbol' => '$',

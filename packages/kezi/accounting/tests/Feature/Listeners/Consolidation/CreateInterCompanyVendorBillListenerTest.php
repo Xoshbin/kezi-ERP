@@ -18,7 +18,7 @@ use Kezi\Sales\Models\InvoiceLine;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->currency = Currency::factory()->create(['code' => 'USD']);
+    $this->currency = Currency::factory()->createSafely(['code' => 'USD']);
 });
 
 test('it handles invoice confirmed event and creates reciprocal bill', function () {

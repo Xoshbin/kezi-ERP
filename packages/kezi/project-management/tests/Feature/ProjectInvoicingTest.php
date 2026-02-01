@@ -17,7 +17,7 @@ use Kezi\ProjectManagement\Services\ProjectInvoicingService;
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->currency = Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
+    $this->currency = Currency::factory()->createSafely(['code' => 'USD', 'decimal_places' => 2]);
     $this->company = Company::factory()->create([
         'currency_id' => $this->currency->id,
     ]);

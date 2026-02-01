@@ -87,7 +87,7 @@ it('can search templates by name', function () {
 // =========================================================================
 
 it('can create a recurring template for journal entry', function () {
-    $currency = Currency::factory()->create();
+    $currency = Currency::factory()->createSafely();
     $journal = Journal::factory()->create(['company_id' => $this->company->id]);
     [$accountDebit, $accountCredit] = Account::factory()->count(2)->create(['company_id' => $this->company->id]);
 
@@ -167,7 +167,7 @@ it('can load existing template data in edit form', function () {
 });
 
 it('can update a recurring template', function () {
-    $currency = Currency::factory()->create();
+    $currency = Currency::factory()->createSafely();
     $journal = Journal::factory()->create(['company_id' => $this->company->id]);
     $account = Account::factory()->create(['company_id' => $this->company->id]);
 
@@ -201,7 +201,7 @@ it('can update a recurring template', function () {
 });
 
 it('can pause a recurring template', function () {
-    $currency = Currency::factory()->create();
+    $currency = Currency::factory()->createSafely();
     $journal = Journal::factory()->create(['company_id' => $this->company->id]);
     $account = Account::factory()->create(['company_id' => $this->company->id]);
 

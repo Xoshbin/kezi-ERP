@@ -8,7 +8,7 @@ use Kezi\Foundation\Models\CurrencyRate;
 
 test('can convert between same currency', function () {
     $company = Company::factory()->create();
-    $currency = Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::factory()->createSafely(['code' => 'USD']);
 
     $amount = Money::of(100, 'USD');
     $service = app(\Kezi\Foundation\Services\CurrencyConverterService::class);
@@ -20,9 +20,9 @@ test('can convert between same currency', function () {
 });
 
 test('can convert to base currency', function () {
-    $baseCurrency = Currency::factory()->create(['code' => 'USD']);
+    $baseCurrency = Currency::factory()->createSafely(['code' => 'USD']);
     $company = Company::factory()->create(['currency_id' => $baseCurrency->id]);
-    $foreignCurrency = Currency::factory()->create(['code' => 'EUR']);
+    $foreignCurrency = Currency::factory()->createSafely(['code' => 'EUR']);
 
     // Create exchange rate: 1 EUR = 1.5 USD
     CurrencyRate::factory()->create([
@@ -42,9 +42,9 @@ test('can convert to base currency', function () {
 });
 
 test('can convert from base currency', function () {
-    $baseCurrency = Currency::factory()->create(['code' => 'USD']);
+    $baseCurrency = Currency::factory()->createSafely(['code' => 'USD']);
     $company = Company::factory()->create(['currency_id' => $baseCurrency->id]);
-    $foreignCurrency = Currency::factory()->create(['code' => 'EUR']);
+    $foreignCurrency = Currency::factory()->createSafely(['code' => 'EUR']);
 
     // Create exchange rate: 1 EUR = 1.5 USD
     CurrencyRate::factory()->create([
@@ -64,10 +64,10 @@ test('can convert from base currency', function () {
 });
 
 test('can convert between foreign currencies via base currency', function () {
-    $baseCurrency = Currency::factory()->create(['code' => 'USD']);
+    $baseCurrency = Currency::factory()->createSafely(['code' => 'USD']);
     $company = Company::factory()->create(['currency_id' => $baseCurrency->id]);
-    $currency1 = Currency::factory()->create(['code' => 'EUR']);
-    $currency2 = Currency::factory()->create(['code' => 'GBP']);
+    $currency1 = Currency::factory()->createSafely(['code' => 'EUR']);
+    $currency2 = Currency::factory()->createSafely(['code' => 'GBP']);
 
     // Create exchange rates
     // 1 EUR = 1.5 USD
@@ -97,9 +97,9 @@ test('can convert between foreign currencies via base currency', function () {
 });
 
 test('throws exception when no exchange rate found', function () {
-    $baseCurrency = Currency::factory()->create(['code' => 'USD']);
+    $baseCurrency = Currency::factory()->createSafely(['code' => 'USD']);
     $company = Company::factory()->create(['currency_id' => $baseCurrency->id]);
-    $foreignCurrency = Currency::factory()->create(['code' => 'EUR']);
+    $foreignCurrency = Currency::factory()->createSafely(['code' => 'EUR']);
 
     $amount = Money::of(100, 'EUR');
     $service = app(\Kezi\Foundation\Services\CurrencyConverterService::class);
@@ -158,11 +158,11 @@ test('convertWithRate correctly handles 1000 USD to IQD at 1460', function () {
 
 test('reproduces 1000 USD to IQD conversion bug', function () {
     // Setup IQD as base currency with 3 decimal places
-    $baseCurrency = Currency::factory()->create(['code' => 'IQD', 'decimal_places' => 3]);
+    $baseCurrency = Currency::factory()->createSafely(['code' => 'IQD', 'decimal_places' => 3]);
     $company = Company::factory()->create(['currency_id' => $baseCurrency->id]);
 
     // Setup USD as foreign currency with 2 decimal places
-    $usdCurrency = Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
+    $usdCurrency = Currency::factory()->createSafely(['code' => 'USD', 'decimal_places' => 2]);
 
     // Rate: 1 USD = 1460 IQD
     CurrencyRate::factory()->create([

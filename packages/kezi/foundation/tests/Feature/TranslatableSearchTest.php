@@ -30,7 +30,7 @@ class TranslatableSearchTest extends TestCase
         app()->setLocale('en');
 
         // Create a currency with translations
-        $currency = Currency::factory()->create([
+        $currency = Currency::factory()->createSafely([
             'name' => [
                 'en' => 'US Dollar',
                 'ckb' => 'دۆلاری ئەمریکی',
@@ -63,7 +63,7 @@ class TranslatableSearchTest extends TestCase
     /** @test */
     public function it_returns_results_in_current_locale()
     {
-        $currency = Currency::factory()->create([
+        $currency = Currency::factory()->createSafely([
             'name' => [
                 'en' => 'Euro',
                 'ckb' => 'یۆرۆ',
@@ -181,7 +181,7 @@ class TranslatableSearchTest extends TestCase
     /** @test */
     public function it_handles_missing_translations_gracefully()
     {
-        $currency = Currency::factory()->create([
+        $currency = Currency::factory()->createSafely([
             'name' => [
                 'en' => 'British Pound',
                 // Missing Kurdish and Arabic translations
@@ -232,7 +232,7 @@ class TranslatableSearchTest extends TestCase
     {
         // Create multiple currencies
         for ($i = 1; $i <= 60; $i++) {
-            Currency::factory()->create([
+            Currency::factory()->createSafely([
                 'name' => [
                     'en' => "Currency $i",
                     'ckb' => "دراو $i",
@@ -255,7 +255,7 @@ class TranslatableSearchTest extends TestCase
     /** @test */
     public function it_can_get_all_translations_for_debugging()
     {
-        $currency = Currency::factory()->create([
+        $currency = Currency::factory()->createSafely([
             'name' => [
                 'en' => 'Japanese Yen',
                 'ckb' => 'یەنی ژاپۆنی',

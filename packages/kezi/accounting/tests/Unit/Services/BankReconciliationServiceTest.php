@@ -13,14 +13,14 @@ use Kezi\Accounting\Models\Journal;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Payment\Enums\Payments\PaymentStatus;
 use Kezi\Payment\Models\Payment;
+use Tests\Traits\WithConfiguredCompany;
 
-uses(RefreshDatabase::class);
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 // Setup a default company, user, and journal for all tests
 beforeEach(function () {
-    $this->company = Company::factory()->create();
-    $this->user = User::factory()->create();
-    $this->user->companies()->attach($this->company);
+    $this->setupWithConfiguredCompany();
+
     $this->bankJournal = Journal::factory()->create([
         'company_id' => $this->company->id,
         'type' => JournalType::Bank,
@@ -29,7 +29,11 @@ beforeEach(function () {
 
 it('throws an exception if the company is missing default accounts', function () {
     // Arrange - Enable reconciliation so we can test the account configuration logic
-    $this->company->update(['enable_reconciliation' => true]);
+    $this->company->update([
+        'enable_reconciliation' => true,
+        'default_bank_account_id' => null,
+        'default_outstanding_receipts_account_id' => null,
+    ]);
 
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,

@@ -19,7 +19,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
 
-    $this->usdCurrency = Currency::factory()->create(['code' => 'USD']);
+    $this->usdCurrency = Currency::factory()->createSafely(['code' => 'USD']);
     $this->journal = Journal::factory()->create(['company_id' => $this->company->id]);
     $this->account1 = Account::factory()->create(['company_id' => $this->company->id]);
     $this->account2 = Account::factory()->create(['company_id' => $this->company->id]);

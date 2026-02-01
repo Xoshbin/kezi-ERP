@@ -122,7 +122,7 @@ it('throws exception if manufacturing accounts are not configured', function () 
 
 it('handles multi-currency manufacturing costs correctly by using company currency', function () {
     // Note: The action currently uses the company currency for all entries
-    $otherCurrency = Currency::factory()->create(['code' => 'USD']);
+    $otherCurrency = Currency::factory()->createSafely(['code' => 'USD']);
     $this->company->update(['currency_id' => $otherCurrency->id]);
     $this->company->refresh();
 

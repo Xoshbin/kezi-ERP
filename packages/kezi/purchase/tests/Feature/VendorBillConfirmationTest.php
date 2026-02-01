@@ -6,17 +6,17 @@ use App\Models\Company;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Actions\Accounting\BuildVendorBillPostingPreviewAction;
 use Kezi\Accounting\Enums\Accounting\AccountType;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill as FilamentEditVendorBill;
 use Kezi\Accounting\Models\Account;
-use Kezi\Accounting\Models\Journal; // Adjust namespace if needed
-use Kezi\Foundation\Models\Currency;
+use Kezi\Accounting\Models\Journal;
+use Kezi\Foundation\Models\Currency; // Adjust namespace if needed
 use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
 use Kezi\Purchase\Models\VendorBill;
 use Kezi\Purchase\Models\VendorBillLine;
 use Kezi\Purchase\Services\VendorBillService;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class VendorBillConfirmationTest extends TestCase
@@ -51,7 +51,7 @@ class VendorBillConfirmationTest extends TestCase
         $this->actingAs($this->user);
         \Filament\Facades\Filament::setTenant($this->company);
 
-        $this->company->update(['currency_id' => Currency::factory()->create(['code' => 'USD'])->id]);
+        $this->company->update(['currency_id' => Currency::factory()->createSafely(['code' => 'USD'])->id]);
 
         $this->payableAccount = Account::factory()->create([
             'company_id' => $this->company->id,

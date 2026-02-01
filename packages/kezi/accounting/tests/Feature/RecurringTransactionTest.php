@@ -43,7 +43,7 @@ class RecurringTransactionTest extends TestCase
         $this->user->companies()->attach($this->company);
         $this->actingAs($this->user);
 
-        $this->currency = Currency::factory()->create(['code' => 'USD']);
+        $this->currency = Currency::factory()->createSafely(['code' => 'USD']);
         $this->journal = Journal::factory()->create(['company_id' => $this->company->id]);
 
         $this->accountDebit = Account::factory()->create([

@@ -15,7 +15,7 @@ use Kezi\Foundation\Models\Partner;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->baseCurrency = Currency::factory()->create(['code' => 'USD']);
+    $this->baseCurrency = Currency::factory()->createSafely(['code' => 'USD']);
 
     // Parent Company
     $this->parentCompany = Company::factory()->create([

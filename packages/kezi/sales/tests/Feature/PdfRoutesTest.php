@@ -15,7 +15,7 @@ beforeEach(function () {
     // Use tenancy setup instead of company_id
     $this->user->companies()->attach($this->company);
 
-    $this->currency = Currency::factory()->create(['code' => 'USD']);
+    $this->currency = Currency::factory()->createSafely(['code' => 'USD']);
     $this->customer = Partner::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Foundation\Enums\Partners\PartnerType::Customer,

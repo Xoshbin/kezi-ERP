@@ -2,7 +2,6 @@
 
 use App\Models\Company;
 use App\Models\User;
-use Livewire\Livewire;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\Partner;
 use Kezi\Inventory\Enums\Inventory\StockPickingState;
@@ -11,12 +10,13 @@ use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource;
 use Kezi\Inventory\Models\StockLocation;
 use Kezi\Inventory\Models\StockPicking;
 use Kezi\Product\Models\Product;
+use Livewire\Livewire;
 
 beforeEach(function () {
     $this->actingAs(User::factory()->create());
 
     $this->company = Company::factory()->create();
-    $this->currency = Currency::factory()->create(['code' => 'USD']);
+    $this->currency = Currency::factory()->createSafely(['code' => 'USD']);
     $this->company->update(['currency_id' => $this->currency->id]);
 
     // Set tenant context

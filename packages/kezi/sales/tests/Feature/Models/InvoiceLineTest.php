@@ -9,7 +9,7 @@ uses(RefreshDatabase::class);
 
 it('correctly resolves currency through its parent invoice relationship', function () {
     // Arrange
-    $usd = Currency::factory()->create(['code' => 'USD']);
+    $usd = Currency::factory()->createSafely(['code' => 'USD']);
     $invoice = Invoice::factory()->create(['currency_id' => $usd->id]);
     $line = InvoiceLine::factory()->create(['invoice_id' => $invoice->id]);
 

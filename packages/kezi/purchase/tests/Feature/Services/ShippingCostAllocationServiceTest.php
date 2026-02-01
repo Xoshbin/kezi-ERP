@@ -64,7 +64,7 @@ class ShippingCostAllocationServiceTest extends TestCase
         // DDP means seller pays everything. If buyer pays freight, it's a warning.
         $bill = VendorBill::factory()->create([
             'incoterm' => Incoterm::Ddp,
-            'currency_id' => \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'USD'])->id,
+            'currency_id' => \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD'])->id,
         ]);
 
         VendorBillLine::factory()->create([
@@ -89,7 +89,7 @@ class ShippingCostAllocationServiceTest extends TestCase
         // EXW means buyer pays everything. Freight is allowed.
         $bill = VendorBill::factory()->create([
             'incoterm' => Incoterm::Exw,
-            'currency_id' => \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'USD'])->id,
+            'currency_id' => \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD'])->id,
         ]);
 
         VendorBillLine::factory()->create([

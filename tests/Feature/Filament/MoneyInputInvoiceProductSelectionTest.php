@@ -35,7 +35,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
         // Create test data
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
-        $this->currency = \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+        $this->currency = \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD']);
 
         $this->company->update(['currency_id' => $this->currency->id]);
 
