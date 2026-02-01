@@ -20,7 +20,10 @@ beforeEach(function () {
     $this->actingAs($this->user);
 
     $this->company = Company::factory()->create();
-    $this->currency = Currency::factory()->create(['code' => 'USD']);
+    $this->currency = Currency::firstOrCreate(
+        ['code' => 'USD'],
+        ['name' => 'US Dollar', 'symbol' => '$', 'decimal_places' => 2, 'is_active' => true]
+    );
     $this->company->update(['currency_id' => $this->currency->id]);
 
     // Set tenant context
