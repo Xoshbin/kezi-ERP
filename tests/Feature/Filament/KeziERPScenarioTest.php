@@ -157,7 +157,7 @@ test('Kezi ERP complete accounting scenario - Full Workflow', function () {
     // Authenticate as the user
     // Assign Super Admin to ensure they have permissions for all actions
     app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
-    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
     setPermissionsTeamId($company->id);
     $user->assignRole('super_admin');
 

@@ -15,8 +15,8 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     // Setup Currencies
-    $usd = Currency::factory()->create(['code' => 'USD', 'symbol' => '$']);
-    $eur = Currency::factory()->create(['code' => 'EUR', 'symbol' => '€']);
+    $usd = Currency::factory()->createSafely(['code' => 'USD', 'symbol' => '$']);
+    $eur = Currency::factory()->createSafely(['code' => 'EUR', 'symbol' => '€']);
 
     /** @var Company $parent */
     $parent = Company::factory()->create([

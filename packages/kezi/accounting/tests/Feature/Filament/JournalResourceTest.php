@@ -38,7 +38,7 @@ it('can render create journal page', function () {
 });
 
 it('can create a new journal', function () {
-    $currency = \Kezi\Foundation\Models\Currency::factory()->create();
+    $currency = \Kezi\Foundation\Models\Currency::factory()->createSafely();
 
     $newData = [
         'name' => 'Sales Journal',

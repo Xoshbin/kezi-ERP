@@ -244,7 +244,7 @@ describe('CreateVendorBillFromPurchaseOrderAction', function () {
     });
 
     it('handles multi-currency purchase orders', function () {
-        $usd = Currency::factory()->create(['code' => 'USD']);
+        $usd = Currency::factory()->createSafely(['code' => 'USD']);
 
         $po = PurchaseOrder::factory()->for($this->company)->create([
             'status' => PurchaseOrderStatus::Confirmed,

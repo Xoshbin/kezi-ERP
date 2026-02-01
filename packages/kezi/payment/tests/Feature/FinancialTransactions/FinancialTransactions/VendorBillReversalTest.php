@@ -16,7 +16,7 @@ use Tests\Traits\WithConfiguredCompany;
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
-    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
     setPermissionsTeamId($this->company->id);
     $this->user->assignRole('super_admin');
 });

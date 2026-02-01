@@ -23,7 +23,7 @@ it('creates a purchase order with lines and calculates totals', function () {
         'type' => \Kezi\Foundation\Enums\Partners\PartnerType::Vendor,
     ]);
 
-    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->createSafely(['code' => 'USD']);
     $product = Product::factory()->create(['company_id' => $this->company->id]);
 
     $lineDto = new CreatePurchaseOrderLineDTO(
@@ -64,7 +64,7 @@ it('throws PeriodIsLockedException for locked periods', function () {
     $vendor = Partner::factory()->create([
         'company_id' => $this->company->id,
     ]);
-    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->createSafely(['code' => 'USD']);
 
     $dto = new CreatePurchaseOrderDTO(
         company_id: $this->company->id,

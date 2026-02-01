@@ -31,8 +31,8 @@ class ConsolidatedTrialBalanceServiceTest extends TestCase
         parent::setUp();
 
         // Setup Currency
-        $this->usd = Currency::factory()->create(['code' => 'USD', 'symbol' => '$']);
-        $this->eur = Currency::factory()->create(['code' => 'EUR', 'symbol' => '€']);
+        $this->usd = Currency::factory()->createSafely(['code' => 'USD', 'symbol' => '$']);
+        $this->eur = Currency::factory()->createSafely(['code' => 'EUR', 'symbol' => '€']);
 
         // Setup Companies
 

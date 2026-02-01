@@ -2,9 +2,9 @@
 
 namespace Kezi\Purchase\Tests\Feature\Filament;
 
-use Livewire\Livewire;
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\Pages\CreateRequestForQuotation;
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\Pages\ListRequestForQuotations;
+use Livewire\Livewire;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class, \Tests\Traits\WithConfiguredCompany::class);
 
@@ -36,7 +36,7 @@ it('can render create page', function () {
 
 it('can create an RFQ', function () {
     $product = \Kezi\Product\Models\Product::factory()->create(['company_id' => $this->company->id]);
-    $currency = \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $currency = \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD']);
 
     $this->actingAs($this->user);
 

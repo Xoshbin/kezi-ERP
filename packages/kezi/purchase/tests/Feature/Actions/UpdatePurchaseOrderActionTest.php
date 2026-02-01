@@ -25,7 +25,7 @@ it('updates a purchase order and replaces lines', function () {
         'type' => \Kezi\Foundation\Enums\Partners\PartnerType::Vendor,
     ]);
 
-    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->createSafely(['code' => 'USD']);
     $product = Product::factory()->create(['company_id' => $this->company->id]);
 
     $po = PurchaseOrder::factory()->create([

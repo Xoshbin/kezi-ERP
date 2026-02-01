@@ -26,7 +26,7 @@ it('creates a vendor bill line with valid data (Happy Path)', function () {
     $expenseAccount = Account::factory()->create(['company_id' => $company->id]);
 
     /** @var \Kezi\Foundation\Models\Currency $currency */
-    $currency = Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::factory()->createSafely(['code' => 'USD']);
 
     /** @var \Kezi\Purchase\Models\VendorBill $vendorBill */
     $vendorBill = VendorBill::factory()->create([
@@ -76,7 +76,7 @@ it('updates parent vendor bill totals after line creation', function () {
     $company = $this->company;
 
     /** @var \Kezi\Foundation\Models\Currency $currency */
-    $currency = Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::factory()->createSafely(['code' => 'USD']);
 
     /** @var \Kezi\Purchase\Models\VendorBill $vendorBill */
     $vendorBill = VendorBill::factory()->create([
@@ -117,7 +117,7 @@ it('calculates line and parent tax correctly', function () {
     $company = $this->company;
 
     /** @var \Kezi\Foundation\Models\Currency $currency */
-    $currency = Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::factory()->createSafely(['code' => 'USD']);
 
     /** @var \Kezi\Purchase\Models\VendorBill $vendorBill */
     $vendorBill = VendorBill::factory()->create([
@@ -166,10 +166,10 @@ it('handles different currencies between Bill and DTO unit price', function () {
     $company = $this->company;
 
     /** @var \Kezi\Foundation\Models\Currency $usd */
-    $usd = Currency::factory()->create(['code' => 'USD']);
+    $usd = Currency::factory()->createSafely(['code' => 'USD']);
 
     /** @var \Kezi\Foundation\Models\Currency $eur */
-    $eur = Currency::factory()->create(['code' => 'EUR']);
+    $eur = Currency::factory()->createSafely(['code' => 'EUR']);
 
     /** @var \Kezi\Purchase\Models\VendorBill $vendorBill */
     $vendorBill = VendorBill::factory()->create([
@@ -205,7 +205,7 @@ it('handles zero quantity or price correctly', function () {
     /** @phpstan-ignore-next-line */
     $company = $this->company;
 
-    $currency = Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::factory()->createSafely(['code' => 'USD']);
     $vendorBill = VendorBill::factory()->create([
         'company_id' => $company->id,
         'currency_id' => $currency->id,
@@ -249,7 +249,7 @@ it('ensures relationship integrity', function () {
     $company = $this->company;
 
     /** @var Currency $currency */
-    $currency = Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::factory()->createSafely(['code' => 'USD']);
 
     /** @var VendorBill $vendorBill */
     $vendorBill = VendorBill::factory()->create([
@@ -292,7 +292,7 @@ it('throws exception when using a template product', function () {
     $company = $this->company;
 
     /** @var Currency $currency */
-    $currency = Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::factory()->createSafely(['code' => 'USD']);
 
     /** @var VendorBill $vendorBill */
     $vendorBill = VendorBill::factory()->create([

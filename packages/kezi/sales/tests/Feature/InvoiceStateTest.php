@@ -53,7 +53,7 @@ it('updates invoice status to posted in UI after confirmation', function () {
 
     // Assign Permissions
     app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
-    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
     setPermissionsTeamId($company->id);
     $user->assignRole('super_admin');
 

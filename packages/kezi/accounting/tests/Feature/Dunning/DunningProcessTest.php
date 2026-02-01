@@ -35,7 +35,7 @@ class DunningProcessTest extends TestCase
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
         $this->user->companies()->attach($this->company);
-        $this->currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD']);
+        $this->currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->createSafely(['code' => 'USD']);
         $this->customer = Partner::factory()->create([
             'company_id' => $this->company->id,
             'email' => 'customer@example.com',

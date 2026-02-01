@@ -14,9 +14,6 @@ use Kezi\Payment\Models\PettyCash\PettyCashFund;
 use Kezi\Payment\Models\PettyCash\PettyCashVoucher;
 
 beforeEach(function () {
-    $this->company = Company::factory()->create();
-    $this->user = User::factory()->create();
-
     $currency = Currency::firstOrCreate(
         ['code' => 'IQD'],
         [
@@ -26,6 +23,11 @@ beforeEach(function () {
             'is_active' => true,
         ]
     );
+
+    $this->company = Company::factory()->create([
+        'currency_id' => $currency->id,
+    ]);
+    $this->user = User::factory()->create();
 
     // Create and configure cash journal BEFORE creating fund
     $cashJournal = \Kezi\Accounting\Models\Journal::factory()->create([

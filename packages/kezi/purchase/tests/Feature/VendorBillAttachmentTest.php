@@ -32,7 +32,7 @@ class VendorBillAttachmentTest extends TestCase
         $this->user = User::factory()->create();
         $this->user->companies()->attach($this->company);
 
-        $currency = Currency::factory()->create();
+        $currency = Currency::factory()->createSafely();
         $vendor = Partner::factory()->create(['company_id' => $this->company->id]);
 
         $this->vendorBill = VendorBill::factory()->create([

@@ -19,10 +19,10 @@ class CurrencyFactory extends Factory
      */
     public function definition(): array
     {
-        $currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'SEK', 'NZD'];
+        $currencies = ['IQD', 'USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'SEK', 'NZD'];
 
-        // Avoid relying on Faker providers; use native random selection for stability
-        $currencyCode = $currencies[array_rand($currencies)];
+        // Default to IQD for stability in tests, as it's the primary currency in the app
+        $currencyCode = 'IQD';
         $decimalPlaces = match ($currencyCode) {
             'JPY' => 0,
             'IQD' => 3,

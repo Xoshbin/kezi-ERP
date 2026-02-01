@@ -19,7 +19,7 @@ beforeEach(function () {
     app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
     // Seed roles and permissions
-    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
 
     // Create company
     $this->company = \App\Models\Company::factory()->create();

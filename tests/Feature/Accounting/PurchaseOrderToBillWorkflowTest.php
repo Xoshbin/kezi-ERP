@@ -38,7 +38,7 @@ test('Purchase Order to Vendor Bill Workflow (Double Entry Verification)', funct
 
     // Assign Permissions
     app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
-    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
     setPermissionsTeamId($company->id);
     $user->assignRole('super_admin');
 

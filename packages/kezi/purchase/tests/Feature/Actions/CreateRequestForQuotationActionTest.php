@@ -27,7 +27,7 @@ it('creates a request for quotation with lines and calculates totals', function 
         'type' => \Kezi\Foundation\Enums\Partners\PartnerType::Vendor,
     ]);
 
-    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->createSafely(['code' => 'USD']);
     $product = Product::factory()->create(['company_id' => $this->company->id]);
 
     $lineDto1 = new CreateRFQLineDTO(

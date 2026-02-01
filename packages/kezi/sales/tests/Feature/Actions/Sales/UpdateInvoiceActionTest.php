@@ -20,7 +20,7 @@ beforeEach(function () {
 });
 
 it('updates an invoice and its lines', function () {
-    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->createSafely(['code' => 'USD']);
 
     $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,

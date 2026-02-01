@@ -83,7 +83,7 @@ test('it creates revaluation lines for foreign currency balances', function () {
     $baseCurrencyCode = $company->currency->code;
 
     // Create a foreign currency
-    $usd = Currency::factory()->create(['code' => 'USD', 'is_active' => true]);
+    $usd = Currency::factory()->createSafely(['code' => 'USD', 'is_active' => true]);
 
     // Create exchange rate
     CurrencyRate::factory()->create([

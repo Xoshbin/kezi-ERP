@@ -24,7 +24,7 @@ beforeEach(function () {
     $this->user->companies()->attach($this->company);
     $this->actingAs($this->user);
 
-    $this->currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD']);
+    $this->currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->createSafely(['code' => 'USD']);
 
     $this->customer = Partner::factory()->create([
         'company_id' => $this->company->id,
@@ -211,7 +211,7 @@ it('does not downgrade dunning level', function () {
 it('processes multi currency invoice dunning fees correctly on remaining amount', function () {
     Mail::fake();
 
-    $eur = Currency::factory()->create(['code' => 'EUR']);
+    $eur = Currency::factory()->createSafely(['code' => 'EUR']);
 
     $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
