@@ -6,6 +6,8 @@ use Filament\Clusters\Cluster;
 
 class ManufacturingCluster extends Cluster
 {
+    protected static bool $shouldRegisterSubNavigation = false;
+
     protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
     public static function getNavigationLabel(): string

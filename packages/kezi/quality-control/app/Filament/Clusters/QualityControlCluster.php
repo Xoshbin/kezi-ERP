@@ -6,6 +6,8 @@ use Filament\Clusters\Cluster;
 
 class QualityControlCluster extends Cluster
 {
+    protected static bool $shouldRegisterSubNavigation = false;
+
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shield-check';
 
     protected static ?int $navigationSort = 50;

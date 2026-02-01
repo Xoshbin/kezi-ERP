@@ -9,6 +9,8 @@ class InventoryCluster extends Cluster
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-cube';
 
+    protected static bool $shouldRegisterSubNavigation = false;
+
     protected static ?int $navigationSort = 40;
 
     public static function getNavigationLabel(): string

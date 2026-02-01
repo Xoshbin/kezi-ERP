@@ -9,6 +9,8 @@ class SalesCluster extends Cluster
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-cart';
 
+    protected static bool $shouldRegisterSubNavigation = false;
+
     protected static ?int $navigationSort = 20;
 
     public static function getNavigationLabel(): string
