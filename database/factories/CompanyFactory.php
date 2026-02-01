@@ -15,19 +15,7 @@ class CompanyFactory extends Factory
             'address' => '123 Test Street, Test City',
             'tax_id' => strtoupper(Str::random(10)),
             // Let Laravel handle creation unless specified otherwise in the test.
-            'currency_id' => function () {
-                $currency = \Kezi\Foundation\Models\Currency::firstOrCreate(
-                    ['code' => 'IQD'],
-                    [
-                        'name' => 'Iraqi Dinar',
-                        'symbol' => 'IQD',
-                        'is_active' => true,
-                        'decimal_places' => 3,
-                    ]
-                );
-
-                return $currency->id;
-            },
+            'currency_id' => \Kezi\Foundation\Models\Currency::factory(),
             'fiscal_country' => 'IQ', // Default to Iraq as per project spec
             'parent_company_id' => null,
             'enable_reconciliation' => false, // Default to disabled for security

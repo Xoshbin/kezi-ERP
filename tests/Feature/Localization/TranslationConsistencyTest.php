@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
  * in all supported locales (en, ckb).
  */
 test('all module translation keys used in filament code exist in locale files', function () {
-    $modulesPath = base_path('Modules');
+    $modulesPath = base_path('packages/kezi');
     $this->assertDirectoryExists($modulesPath);
 
     // Supported locales

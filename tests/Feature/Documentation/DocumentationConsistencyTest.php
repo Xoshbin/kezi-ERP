@@ -5,8 +5,8 @@ use Illuminate\Support\Str;
 use Kezi\Foundation\Filament\Actions\DocsAction;
 
 test('all docs action slugs resolve to existing files', function () {
-    $modulesPath = base_path('Modules');
-    $this->assertDirectoryExists($modulesPath, "Modules directory not found at $modulesPath");
+    $modulesPath = base_path('packages/kezi');
+    $this->assertDirectoryExists($modulesPath, "Packages directory not found at $modulesPath");
 
     $phpFiles = File::allFiles($modulesPath);
     $slugsFound = [];
@@ -85,7 +85,7 @@ test('all user guides have translations', function () {
 });
 
 test('every feature and report has a user guide link', function () {
-    $modulesPath = base_path('Modules');
+    $modulesPath = base_path('packages/kezi');
     $this->assertDirectoryExists($modulesPath);
 
     $phpFiles = File::allFiles($modulesPath);
