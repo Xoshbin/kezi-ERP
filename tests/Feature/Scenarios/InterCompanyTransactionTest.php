@@ -3,18 +3,18 @@
 use App\Models\User;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
-use Jmeryar\Accounting\Enums\Accounting\AccountType;
-use Jmeryar\Accounting\Models\Account;
-use Jmeryar\Accounting\Services\Consolidation\InterCompanyEliminationService;
-use Jmeryar\Foundation\Enums\Partners\PartnerType;
-use Jmeryar\Foundation\Models\Partner;
-use Jmeryar\Product\Models\Product;
-use Jmeryar\Purchase\Actions\Purchases\CreateVendorBillAction;
-use Jmeryar\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use Jmeryar\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use Jmeryar\Sales\Actions\Sales\CreateInvoiceAction;
-use Jmeryar\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
-use Jmeryar\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use Kezi\Accounting\Enums\Accounting\AccountType;
+use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Services\Consolidation\InterCompanyEliminationService;
+use Kezi\Foundation\Enums\Partners\PartnerType;
+use Kezi\Foundation\Models\Partner;
+use Kezi\Product\Models\Product;
+use Kezi\Purchase\Actions\Purchases\CreateVendorBillAction;
+use Kezi\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use Kezi\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Kezi\Sales\Actions\Sales\CreateInvoiceAction;
+use Kezi\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
+use Kezi\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 use Tests\Builders\CompanyBuilder;
 
 uses(Tests\Traits\WithConfiguredCompany::class);
@@ -109,9 +109,9 @@ it('correctly identifies inter-company balances when transactions occur between 
     $invoice = app(CreateInvoiceAction::class)->execute($invoiceDto);
     // Confirm/Post the invoice
     // Using InvoiceService to confirm as per memory "Invoice confirmation is performed via ... InvoiceService::confirm"
-    app(\Jmeryar\Sales\Services\InvoiceService::class)->confirm($invoice, $this->userA);
+    app(\Kezi\Sales\Services\InvoiceService::class)->confirm($invoice, $this->userA);
 
-    expect($invoice->fresh()->status->value)->toBe(\Jmeryar\Sales\Enums\Sales\InvoiceStatus::Posted->value);
+    expect($invoice->fresh()->status->value)->toBe(\Kezi\Sales\Enums\Sales\InvoiceStatus::Posted->value);
 
     // 6. Company B: Create and Post Vendor Bill from Company A
     // Switch context to Company B
@@ -147,9 +147,9 @@ it('correctly identifies inter-company balances when transactions occur between 
 
     $bill = app(CreateVendorBillAction::class)->execute($billDto);
     // Post the bill
-    app(\Jmeryar\Purchase\Services\VendorBillService::class)->confirm($bill, $this->userB);
+    app(\Kezi\Purchase\Services\VendorBillService::class)->confirm($bill, $this->userB);
 
-    expect($bill->fresh()->status->value)->toBe(\Jmeryar\Purchase\Enums\Purchases\VendorBillStatus::Posted->value);
+    expect($bill->fresh()->status->value)->toBe(\Kezi\Purchase\Enums\Purchases\VendorBillStatus::Posted->value);
 
     // 7. Verify Inter-Company Elimination Service identifies these balances
     $service = app(InterCompanyEliminationService::class);

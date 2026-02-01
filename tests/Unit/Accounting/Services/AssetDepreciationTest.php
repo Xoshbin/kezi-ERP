@@ -4,10 +4,10 @@ namespace Tests\Unit\Accounting\Services;
 
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Jmeryar\Accounting\Enums\Assets\DepreciationMethod;
-use Jmeryar\Accounting\Models\Asset;
-use Jmeryar\Accounting\Services\AssetService;
-use Jmeryar\Foundation\Models\Currency;
+use Kezi\Accounting\Enums\Assets\DepreciationMethod;
+use Kezi\Accounting\Models\Asset;
+use Kezi\Accounting\Services\AssetService;
+use Kezi\Foundation\Models\Currency;
 use Tests\TestCase;
 
 class AssetDepreciationTest extends TestCase

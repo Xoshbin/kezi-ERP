@@ -42,7 +42,7 @@ class ScenarioOneSeeder extends Seeder
 
         // Step 1.1: Create Company
         $company = DB::table('companies')->insertGetId([
-            'name' => 'Jmeryar Solutions',
+            'name' => 'Kezi Solutions',
             'address' => 'Slemani, Kurdistan Region, Iraq',
             'tax_id' => null,
             'currency_id' => $iqd,
@@ -66,7 +66,7 @@ class ScenarioOneSeeder extends Seeder
 
         // Step 1.3: Create User (Soran)
         $user = DB::table('users')->updateOrInsert(
-            ['email' => 'soran@jmeryarerp.com'],
+            ['email' => 'soran@kezierp.com'],
             [
                 'name' => 'Soran',
                 'password' => Hash::make('SecurePassword123!'),
@@ -75,7 +75,7 @@ class ScenarioOneSeeder extends Seeder
             ]
         );
         // updateOrInsert returns boolean, we need ID.
-        $userId = DB::table('users')->where('email', 'soran@jmeryarerp.com')->value('id');
+        $userId = DB::table('users')->where('email', 'soran@kezierp.com')->value('id');
 
         // Attach user to company
         DB::table('company_user')->updateOrInsert(
@@ -156,7 +156,7 @@ class ScenarioOneSeeder extends Seeder
             'entry_date' => now(),
             'entry_number' => 'DRAFT/2026/0001',
             'reference' => 'Initial Capital Investment',
-            'description' => "Soran's personal funds transferred to the Jmeryar Solutions bank account",
+            'description' => "Soran's personal funds transferred to the Kezi Solutions bank account",
             'created_by_user_id' => $user,
             'is_posted' => false,
             'state' => 'draft',
@@ -199,7 +199,7 @@ class ScenarioOneSeeder extends Seeder
         ]);
 
         // Step 5.0: Call WHT Seeder
-        (new \Jmeryar\Accounting\Database\Seeders\WithholdingTaxTypeSeeder)->run();
+        (new \Kezi\Accounting\Database\Seeders\WithholdingTaxTypeSeeder)->run();
         $whtTypeId = DB::table('withholding_tax_types')->where('name', 'like', '%Services%')->value('id');
 
         // Step 5.1: Create Vendor
@@ -256,7 +256,7 @@ class ScenarioOneSeeder extends Seeder
             'total_credit' => 3000000,
             'hash' => $vbJeHash,
             'previous_hash' => $jeHash,
-            'source_type' => 'Jmeryar\Purchase\Models\VendorBill',
+            'source_type' => 'Kezi\Purchase\Models\VendorBill',
             'source_id' => $vendorBillId,
             'created_at' => now(),
             'updated_at' => now(),
@@ -348,7 +348,7 @@ class ScenarioOneSeeder extends Seeder
             'total_credit' => 5000000,
             'hash' => $invJeHash,
             'previous_hash' => $vbJeHash,
-            'source_type' => 'Jmeryar\Sales\Models\Invoice',
+            'source_type' => 'Kezi\Sales\Models\Invoice',
             'source_id' => $invoiceId,
             'created_at' => now(),
             'updated_at' => now(),
@@ -418,7 +418,7 @@ class ScenarioOneSeeder extends Seeder
             'total_credit' => 5000000,
             'hash' => $payJeHash,
             'previous_hash' => $invJeHash,
-            'source_type' => 'Jmeryar\Payment\Models\Payment',
+            'source_type' => 'Kezi\Payment\Models\Payment',
             'source_id' => $paymentId,
             'created_at' => now(),
             'updated_at' => now(),
@@ -497,7 +497,7 @@ class ScenarioOneSeeder extends Seeder
             'total_credit' => 3000000,
             'hash' => $vendorPayJeHash,
             'previous_hash' => $payJeHash,
-            'source_type' => 'Jmeryar\Payment\Models\Payment',
+            'source_type' => 'Kezi\Payment\Models\Payment',
             'source_id' => $vendorPaymentId,
             'created_at' => now(),
             'updated_at' => now(),
@@ -591,7 +591,7 @@ class ScenarioOneSeeder extends Seeder
             'total_credit' => 500000,
             'hash' => $cnJeHash,
             'previous_hash' => $vendorPayJeHash,
-            'source_type' => 'Jmeryar\Accounting\Models\AdjustmentDocument',
+            'source_type' => 'Kezi\Accounting\Models\AdjustmentDocument',
             'source_id' => $creditNoteId,
             'created_at' => now(),
             'updated_at' => now(),

@@ -1,0 +1,102 @@
+<?php
+
+namespace Kezi\Manufacturing\Services;
+
+use Kezi\Manufacturing\Actions\Accounting\CreateJournalEntryForManufacturingAction;
+use Kezi\Manufacturing\Actions\ConfirmManufacturingOrderAction;
+use Kezi\Manufacturing\Actions\ConsumeComponentsAction;
+use Kezi\Manufacturing\Actions\CreateManufacturingOrderAction;
+use Kezi\Manufacturing\Actions\ProduceFinishedGoodsAction;
+use Kezi\Manufacturing\Actions\StartProductionAction;
+use Kezi\Manufacturing\DataTransferObjects\CreateManufacturingOrderDTO;
+use Kezi\Manufacturing\Events\ManufacturingOrderConfirmed;
+use Kezi\Manufacturing\Events\ProductionCompleted;
+use Kezi\Manufacturing\Events\ProductionStarted;
+use Kezi\Manufacturing\Models\ManufacturingOrder;
+
+class ManufacturingOrderService
+{
+    public function __construct(
+        private readonly CreateManufacturingOrderAction $createAction,
+        private readonly ConfirmManufacturingOrderAction $confirmAction,
+        private readonly StartProductionAction $startProductionAction,
+        private readonly ConsumeComponentsAction $consumeComponentsAction,
+        private readonly ProduceFinishedGoodsAction $produceFinishedGoodsAction,
+        private readonly CreateJournalEntryForManufacturingAction $createJournalEntryAction,
+        private readonly \Kezi\Manufacturing\Actions\CancelManufacturingOrderAction $cancelAction,
+    ) {}
+
+    public function create(CreateManufacturingOrderDTO $dto): ManufacturingOrder
+    {
+        return $this->createAction->execute($dto);
+    }
+
+    public function confirm(ManufacturingOrder $mo): ManufacturingOrder
+    {
+        $mo = $this->confirmAction->execute($mo);
+
+        event(new ManufacturingOrderConfirmed($mo));
+
+        return $mo;
+    }
+
+    public function startProduction(ManufacturingOrder $mo): ManufacturingOrder
+    {
+        $mo = $this->startProductionAction->execute($mo);
+
+        event(new ProductionStarted($mo));
+
+        return $mo;
+    }
+
+    public function consumeComponents(ManufacturingOrder $mo): ManufacturingOrder
+    {
+        return $this->consumeComponentsAction->execute($mo, auth()->user());
+    }
+
+    public function produceFinishedGoods(ManufacturingOrder $mo): ManufacturingOrder
+    {
+        $mo = $this->produceFinishedGoodsAction->execute($mo, auth()->user());
+
+        event(new ProductionCompleted($mo));
+
+        return $mo;
+    }
+
+    /**
+     * Complete full production workflow: consume components + produce finished goods + create journal entry
+     */
+    public function completeProduction(ManufacturingOrder $mo): ManufacturingOrder
+    {
+        // First consume components
+        $mo = $this->consumeComponents($mo);
+
+        // Then produce finished goods
+        $mo = $this->produceFinishedGoods($mo);
+
+        // Create journal entry for the manufacturing transaction
+        $journalEntry = $this->createJournalEntryAction->execute($mo, auth()->user());
+
+        // Link journal entry to manufacturing order
+        $mo->journal_entry_id = $journalEntry->id;
+        $mo->save();
+
+        return $mo;
+    }
+
+    /**
+     * Alias for completeProduction for Filament UI
+     */
+    public function complete(ManufacturingOrder $mo): ManufacturingOrder
+    {
+        return $this->completeProduction($mo);
+    }
+
+    /**
+     * Cancel a manufacturing order
+     */
+    public function cancel(ManufacturingOrder $mo): ManufacturingOrder
+    {
+        return $this->cancelAction->execute($mo);
+    }
+}

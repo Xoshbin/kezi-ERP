@@ -1,0 +1,166 @@
+<?php
+
+namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Widgets;
+
+use Brick\Math\RoundingMode;
+use Brick\Money\Money;
+use Carbon\Carbon;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Database\Eloquent\Model;
+use Kezi\Sales\Enums\Sales\InvoiceStatus;
+use Kezi\Sales\Models\Invoice;
+
+class AgingAnalysisWidget extends BaseWidget
+{
+    public ?Model $record = null;
+
+    protected function getStats(): array
+    {
+        if (! $this->record instanceof Invoice) {
+            return [];
+        }
+
+        $invoice = $this->record;
+
+        // Only show aging for posted invoices that are not fully paid
+        if ($invoice->status !== InvoiceStatus::Posted || $invoice->paymentState === \Kezi\Foundation\Enums\Shared\PaymentState::Paid) {
+            return [
+                Stat::make(__('accounting::invoice.aging_widget.status'), __('accounting::invoice.aging_widget.not_applicable'))
+                    ->description(__('accounting::invoice.aging_widget.not_applicable_desc'))
+                    ->color('gray'),
+            ];
+        }
+
+        $daysOutstanding = $this->calculateDaysOutstanding($invoice);
+        $outstandingAmount = $this->calculateOutstandingAmount($invoice);
+        $agingBucket = $this->getAgingBucket($daysOutstanding);
+
+        return [
+            Stat::make(__('accounting::invoice.aging_widget.days_outstanding'), $daysOutstanding)
+                ->description(__('accounting::invoice.aging_widget.days_since_due'))
+                ->color($this->getDaysOutstandingColor($daysOutstanding))
+                ->icon('heroicon-o-clock'),
+
+            Stat::make(__('accounting::invoice.aging_widget.outstanding_amount'), $this->formatMoney($outstandingAmount))
+                ->description(__('accounting::invoice.aging_widget.remaining_balance'))
+                ->color($this->getOutstandingAmountColor($daysOutstanding))
+                ->icon('heroicon-o-currency-dollar'),
+
+            Stat::make(__('accounting::invoice.aging_widget.aging_bucket'), $agingBucket['label'])
+                ->description(__('accounting::invoice.aging_widget.aging_category'))
+                ->color($agingBucket['color'])
+                ->icon('heroicon-o-chart-bar'),
+
+            Stat::make(__('accounting::invoice.aging_widget.payment_progress'), $this->getPaymentProgress($invoice))
+                ->description(__('accounting::invoice.aging_widget.payment_status'))
+                ->color($this->getPaymentProgressColor($invoice))
+                ->icon('heroicon-o-banknotes'),
+        ];
+    }
+
+    private function calculateDaysOutstanding(Invoice $invoice): int
+    {
+        // Due date is always set for posted invoices
+
+        $dueDate = Carbon::parse($invoice->due_date);
+        $today = Carbon::today();
+
+        return (int) max(0, $today->diffInDays($dueDate, false));
+    }
+
+    private function calculateOutstandingAmount(Invoice $invoice): Money
+    {
+        $totalAmount = $invoice->total_amount;
+        $paidAmount = $invoice->getPaidAmount();
+
+        return $totalAmount->minus($paidAmount);
+    }
+
+    /**
+     * @return array{label: string, color: string}
+     */
+    private function getAgingBucket(int $daysOutstanding): array
+    {
+        if ($daysOutstanding <= 0) {
+            return [
+                'label' => __('accounting::invoice.aging_widget.current'),
+                'color' => 'success',
+            ];
+        } elseif ($daysOutstanding <= 30) {
+            return [
+                'label' => __('accounting::invoice.aging_widget.bucket_1_30'),
+                'color' => 'warning',
+            ];
+        } elseif ($daysOutstanding <= 60) {
+            return [
+                'label' => __('accounting::invoice.aging_widget.bucket_31_60'),
+                'color' => 'danger',
+            ];
+        } elseif ($daysOutstanding <= 90) {
+            return [
+                'label' => __('accounting::invoice.aging_widget.bucket_61_90'),
+                'color' => 'danger',
+            ];
+        } else {
+            return [
+                'label' => __('accounting::invoice.aging_widget.bucket_90_plus'),
+                'color' => 'gray',
+            ];
+        }
+    }
+
+    private function getDaysOutstandingColor(int $daysOutstanding): string
+    {
+        if ($daysOutstanding <= 0) {
+            return 'success';
+        } elseif ($daysOutstanding <= 30) {
+            return 'warning';
+        } else {
+            return 'danger';
+        }
+    }
+
+    private function getOutstandingAmountColor(int $daysOutstanding): string
+    {
+        return $this->getDaysOutstandingColor($daysOutstanding);
+    }
+
+    private function getPaymentProgress(Invoice $invoice): string
+    {
+        $totalAmount = $invoice->total_amount;
+        $paidAmount = $invoice->getPaidAmount();
+
+        if ($totalAmount->isZero()) {
+            return '100%';
+        }
+
+        $percentage = $paidAmount->dividedBy($totalAmount->getAmount(), RoundingMode::HALF_UP)->multipliedBy(100);
+
+        return \Kezi\Foundation\Support\NumberFormatter::formatPercentage($percentage->getAmount()->toFloat(), 1);
+    }
+
+    private function getPaymentProgressColor(Invoice $invoice): string
+    {
+        return match ($invoice->paymentState) {
+            \Kezi\Foundation\Enums\Shared\PaymentState::NotPaid => 'gray',
+            \Kezi\Foundation\Enums\Shared\PaymentState::PartiallyPaid => 'warning',
+            \Kezi\Foundation\Enums\Shared\PaymentState::Paid => 'success',
+        };
+    }
+
+    private function formatMoney(Money $money): string
+    {
+        return \Kezi\Foundation\Support\NumberFormatter::formatMoney($money);
+    }
+
+    protected function getColumns(): int
+    {
+        return 4;
+    }
+
+    public function getColumnSpan(): int|string|array
+    {
+        return 'full';
+    }
+}

@@ -122,7 +122,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
             // Deleting the user would make it impossible to know who was responsible for the entry.
             // This is enforced here to provide a clean exception message and consistent behavior with other master data.
             if (\Illuminate\Support\Facades\DB::table('journal_entries')->where('created_by_user_id', $user->id)->exists()) {
-                throw new \Jmeryar\Foundation\Exceptions\DeletionNotAllowedException('Cannot delete a user who has created financial transactions (journal entries).');
+                throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException('Cannot delete a user who has created financial transactions (journal entries).');
             }
         });
     }

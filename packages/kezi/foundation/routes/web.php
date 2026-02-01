@@ -1,0 +1,8 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use Kezi\Foundation\Http\Controllers\FoundationController;
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('foundations', FoundationController::class)->names('foundation');
+});

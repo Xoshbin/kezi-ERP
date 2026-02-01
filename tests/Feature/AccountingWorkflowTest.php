@@ -1,27 +1,27 @@
 <?php
 
 use Brick\Money\Money;
-use Jmeryar\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use Jmeryar\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use Jmeryar\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
-use Jmeryar\Inventory\Enums\Adjustments\AdjustmentDocumentType;
-use Jmeryar\Inventory\Models\AdjustmentDocument;
-use Jmeryar\Inventory\Services\AdjustmentDocumentService;
-use Jmeryar\Payment\Actions\Payments\CreatePaymentAction;
-use Jmeryar\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
-use Jmeryar\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
-use Jmeryar\Payment\Enums\Payments\PaymentMethod;
-use Jmeryar\Payment\Enums\Payments\PaymentType;
-use Jmeryar\Payment\Services\PaymentService;
-use Jmeryar\Purchase\Actions\Purchases\CreateVendorBillAction;
-use Jmeryar\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
-use Jmeryar\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
-use Jmeryar\Purchase\Enums\Purchases\VendorBillStatus;
-use Jmeryar\Purchase\Services\VendorBillService;
-use Jmeryar\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
-use Jmeryar\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-use Jmeryar\Sales\Enums\Sales\InvoiceStatus;
-use Jmeryar\Sales\Services\InvoiceService;
+use Kezi\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Kezi\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Kezi\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
+use Kezi\Inventory\Enums\Adjustments\AdjustmentDocumentType;
+use Kezi\Inventory\Models\AdjustmentDocument;
+use Kezi\Inventory\Services\AdjustmentDocumentService;
+use Kezi\Payment\Actions\Payments\CreatePaymentAction;
+use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Kezi\Payment\Enums\Payments\PaymentMethod;
+use Kezi\Payment\Enums\Payments\PaymentType;
+use Kezi\Payment\Services\PaymentService;
+use Kezi\Purchase\Actions\Purchases\CreateVendorBillAction;
+use Kezi\Purchase\DataTransferObjects\Purchases\CreateVendorBillDTO;
+use Kezi\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
+use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
+use Kezi\Purchase\Services\VendorBillService;
+use Kezi\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
+use Kezi\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use Kezi\Sales\Enums\Sales\InvoiceStatus;
+use Kezi\Sales\Services\InvoiceService;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class, WithConfiguredCompany::class);
@@ -33,10 +33,10 @@ test('the entire accounting workflow from setup to credit note', function () {
     $currencyCode = $currency->code;
     $bankAccount = $this->company->defaultBankAccount;
     $arAccount = $this->company->defaultAccountsReceivable;
-    $itEquipmentAccount = \Jmeryar\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'current_assets']);
+    $itEquipmentAccount = \Kezi\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'current_assets']);
     $apAccount = $this->company->defaultAccountsPayable;
-    $equityAccount = \Jmeryar\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'equity']);
-    $revenueAccount = \Jmeryar\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income']);
+    $equityAccount = \Kezi\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'equity']);
+    $revenueAccount = \Kezi\Accounting\Models\Account::factory()->for($this->company)->create(['type' => 'income']);
     $salesDiscountAccount = $this->company->defaultSalesDiscountAccount;
     $bankJournal = $this->company->defaultBankJournal;
 
@@ -47,7 +47,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     $goodwillDiscount = Money::of(500_000, $currencyCode);
 
     // Step 3: Capital Injection
-    $createJournalEntryAction = app(\Jmeryar\Accounting\Actions\Accounting\CreateJournalEntryAction::class);
+    $createJournalEntryAction = app(\Kezi\Accounting\Actions\Accounting\CreateJournalEntryAction::class);
     $capitalEntryDto = new CreateJournalEntryDTO(
         company_id: $this->company->id,
         journal_id: $bankJournal->id,
@@ -84,7 +84,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($capitalEntry->total_credit->isEqualTo($initialCapitalInvestment))->toBeTrue();
 
     // Step 4: Purchasing a Fixed Asset
-    $vendor = \Jmeryar\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Paykar Tech Supplies', 'type' => \Jmeryar\Foundation\Enums\Partners\PartnerType::Vendor]);
+    $vendor = \Kezi\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Paykar Tech Supplies', 'type' => \Kezi\Foundation\Enums\Partners\PartnerType::Vendor]);
     // Arrange: Prepare the DTOs for the Action.
     $lineDto = new CreateVendorBillLineDTO(
         description: 'High-End Laptop for Business Use',
@@ -128,7 +128,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     expect($purchaseEntry->lines->where('account_id', $apAccount->id)->first()->credit->isEqualTo($highEndLaptopCost))->toBeTrue();
 
     // Step 5: Providing a Service & Invoicing
-    $customer = \Jmeryar\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Hawre Trading Group', 'type' => \Jmeryar\Foundation\Enums\Partners\PartnerType::Customer]);
+    $customer = \Kezi\Foundation\Models\Partner::factory()->for($this->company)->create(['name' => 'Hawre Trading Group', 'type' => \Kezi\Foundation\Enums\Partners\PartnerType::Customer]);
     $lineDto = new CreateInvoiceLineDTO(
         description: 'On-site IT Infrastructure Setup',
         quantity: 1,
@@ -149,7 +149,7 @@ test('the entire accounting workflow from setup to credit note', function () {
     );
 
     // Act: Create the invoice using the Action.
-    $invoice = (app(\Jmeryar\Sales\Actions\Sales\CreateInvoiceAction::class))->execute($invoiceDto);
+    $invoice = (app(\Kezi\Sales\Actions\Sales\CreateInvoiceAction::class))->execute($invoiceDto);
 
     // The rest of the test remains the same...
     $invoiceService = app(InvoiceService::class);

@@ -5,8 +5,8 @@ namespace Database\Seeders;
 use App\Models\Company;
 use Exception;
 use Illuminate\Database\Seeder;
-use Jmeryar\Inventory\Enums\Inventory\StockLocationType;
-use Jmeryar\Inventory\Models\StockLocation;
+use Kezi\Inventory\Enums\Inventory\StockLocationType;
+use Kezi\Inventory\Models\StockLocation;
 
 class CompanySeeder extends Seeder
 {
@@ -16,14 +16,14 @@ class CompanySeeder extends Seeder
     public function run(): void
     {
         // Find the Iraqi Dinar (IQD) currency.
-        $iqdCurrency = \Jmeryar\Foundation\Models\Currency::where('code', 'IQD')->first();
+        $iqdCurrency = \Kezi\Foundation\Models\Currency::where('code', 'IQD')->first();
         if (! $iqdCurrency) {
             throw new Exception('IQD currency not found. Please run the CurrencySeeder first.');
         }
 
         // Create the main company record.
         $company = Company::updateOrCreate(
-            ['name' => 'Jmeryar Solutions'],
+            ['name' => 'Kezi Solutions'],
             [
                 'address' => 'Slemani, Iraq',
                 'tax_id' => '123456789-IQ',

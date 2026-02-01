@@ -32,7 +32,7 @@ class PostTransactionsSeeder extends Seeder
 
         // Post some invoices to create customer receivables
         // Only post 1 invoice to leave enough draft invoices for tests
-        $invoicesToPost = \Jmeryar\Sales\Models\Invoice::where('status', 'draft')
+        $invoicesToPost = \Kezi\Sales\Models\Invoice::where('status', 'draft')
             ->whereIn('invoice_number', ['INV-001'])
             ->get();
 
@@ -46,7 +46,7 @@ class PostTransactionsSeeder extends Seeder
         }
 
         // Post some vendor bills to create vendor payables
-        $vendorBillsToPost = \Jmeryar\Purchase\Models\VendorBill::where('status', 'draft')
+        $vendorBillsToPost = \Kezi\Purchase\Models\VendorBill::where('status', 'draft')
             ->limit(2)
             ->get();
 
@@ -61,7 +61,7 @@ class PostTransactionsSeeder extends Seeder
 
         // Confirm some payments to create payment transactions
         // Reduce to 2 payments to keep the seeder minimal but still demonstrate functionality
-        $paymentsToConfirm = \Jmeryar\Payment\Models\Payment::whereNull('status')
+        $paymentsToConfirm = \Kezi\Payment\Models\Payment::whereNull('status')
             ->orWhere('status', 'draft')
             ->limit(2)
             ->get();

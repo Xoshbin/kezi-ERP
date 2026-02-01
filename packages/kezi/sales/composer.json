@@ -1,0 +1,35 @@
+{
+    "name": "kezi/sales",
+    "description": "Sales module for Kezi",
+    "authors": [
+        {
+            "name": "Khoshbin",
+            "email": "xoshbin@gmail.com"
+        }
+    ],
+    "type": "library",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^12.0",
+        "filament/filament": "^4.0",
+        "kezi/foundation": "*",
+        "kezi/product": "*",
+        "kezi/inventory": "*",
+        "kezi/accounting": "*",
+        "barryvdh/laravel-dompdf": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kezi\\Sales\\": "app/",
+            "Kezi\\Sales\\Database\\Factories\\": "database/factories/",
+            "Kezi\\Sales\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Kezi\\Sales\\Providers\\SalesServiceProvider"
+            ]
+        }
+    }
+}
