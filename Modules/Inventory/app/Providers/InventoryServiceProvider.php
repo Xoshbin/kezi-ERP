@@ -4,14 +4,11 @@ namespace Modules\Inventory\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
 class InventoryServiceProvider extends ServiceProvider
 {
-    use PathNamespace;
-
     protected string $name = 'Inventory';
 
     protected string $nameLower = 'inventory';
@@ -26,7 +23,7 @@ class InventoryServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
+        $this->loadMigrationsFrom(base_path('Modules/Inventory/database/migrations'));
     }
 
     /**
@@ -73,7 +70,7 @@ class InventoryServiceProvider extends ServiceProvider
             $this->mergeGlobalTranslations($langPath);
         } else {
             // Load translations from the module's resources/lang directory (Laravel Modules v12 best practice)
-            $moduleLang = module_path($this->name, 'resources/lang');
+            $moduleLang = base_path('Modules/Inventory/resources/lang');
             $this->loadTranslationsFrom($moduleLang, $this->nameLower);
             $this->loadJsonTranslationsFrom($moduleLang);
             $this->mergeGlobalTranslations($moduleLang);
@@ -139,7 +136,7 @@ class InventoryServiceProvider extends ServiceProvider
      */
     protected function registerConfig(): void
     {
-        $configPath = module_path($this->name, config('modules.paths.generator.config.path'));
+        $configPath = base_path('Modules/Inventory/config');
 
         if (is_dir($configPath)) {
             $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($configPath));
@@ -184,13 +181,13 @@ class InventoryServiceProvider extends ServiceProvider
     public function registerViews(): void
     {
         $viewPath = resource_path('views/modules/'.$this->nameLower);
-        $sourcePath = module_path($this->name, 'resources/views');
+        $sourcePath = base_path('Modules/Inventory/resources/views');
 
         $this->publishes([$sourcePath => $viewPath], ['views', $this->nameLower.'-module-views']);
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->nameLower);
 
-        Blade::componentNamespace(config('modules.namespace').'\\'.$this->name.'\\View\\Components', $this->nameLower);
+        Blade::componentNamespace('Modules\\Inventory\\View\\Components', $this->nameLower);
     }
 
     /**

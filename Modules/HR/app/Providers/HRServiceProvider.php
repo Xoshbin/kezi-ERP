@@ -4,14 +4,11 @@ namespace Modules\HR\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
 class HRServiceProvider extends ServiceProvider
 {
-    use PathNamespace;
-
     protected string $name = 'HR';
 
     protected string $nameLower = 'hr';
@@ -26,7 +23,7 @@ class HRServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
+        $this->loadMigrationsFrom(base_path('Modules/HR/database/migrations'));
     }
 
     /**
@@ -68,8 +65,8 @@ class HRServiceProvider extends ServiceProvider
             $this->loadTranslationsFrom($langPath, $this->nameLower);
             $this->loadJsonTranslationsFrom($langPath);
         } else {
-            $this->loadTranslationsFrom(module_path($this->name, 'resources/lang'), $this->nameLower);
-            $this->loadJsonTranslationsFrom(module_path($this->name, 'resources/lang'));
+            $this->loadTranslationsFrom(base_path('Modules/HR/resources/lang'), $this->nameLower);
+            $this->loadJsonTranslationsFrom(base_path('Modules/HR/resources/lang'));
         }
     }
 
@@ -78,7 +75,7 @@ class HRServiceProvider extends ServiceProvider
      */
     protected function registerConfig(): void
     {
-        $configPath = module_path($this->name, config('modules.paths.generator.config.path'));
+        $configPath = base_path('Modules/HR/config');
 
         if (is_dir($configPath)) {
             $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($configPath));
@@ -123,13 +120,13 @@ class HRServiceProvider extends ServiceProvider
     public function registerViews(): void
     {
         $viewPath = resource_path('views/modules/'.$this->nameLower);
-        $sourcePath = module_path($this->name, 'resources/views');
+        $sourcePath = base_path('Modules/HR/resources/views');
 
         $this->publishes([$sourcePath => $viewPath], ['views', $this->nameLower.'-module-views']);
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->nameLower);
 
-        Blade::componentNamespace(config('modules.namespace').'\\'.$this->name.'\\View\\Components', $this->nameLower);
+        Blade::componentNamespace('Modules\\HR\\View\\Components', $this->nameLower);
     }
 
     /**

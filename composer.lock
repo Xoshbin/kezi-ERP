@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0222accad89842b73992a25757fd7121",
+    "content-hash": "644e7507ab6d99b4a9ae1b2e9dfbd573",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -816,83 +816,6 @@
                 }
             ],
             "time": "2024-07-16T11:13:48+00:00"
-        },
-        {
-            "name": "coolsam/modules",
-            "version": "v5.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/savannabits/filament-modules.git",
-                "reference": "4bc32eac6524f5e712311dd2f7f1cce3baded980"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/savannabits/filament-modules/zipball/4bc32eac6524f5e712311dd2f7f1cce3baded980",
-                "reference": "4bc32eac6524f5e712311dd2f7f1cce3baded980",
-                "shasum": ""
-            },
-            "require": {
-                "filament/filament": "^4.0|^5.0",
-                "nwidart/laravel-modules": "^11.0|^12.0",
-                "php": "^8.3",
-                "spatie/laravel-package-tools": "^1.15.0"
-            },
-            "require-dev": {
-                "barryvdh/laravel-ide-helper": "^3.5",
-                "laravel/pint": "^1.0",
-                "nunomaduro/larastan": "^3.1.0",
-                "orchestra/testbench": "^9.12",
-                "pestphp/pest-plugin-laravel": "^3.1",
-                "pestphp/pest-plugin-livewire": "^3.0",
-                "phpstan/extension-installer": "^1.4.3",
-                "spatie/laravel-ray": "^1.39"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "aliases": {
-                        "FilamentModules": "FilamentModules"
-                    },
-                    "providers": [
-                        "Coolsam\\Modules\\ModulesServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Coolsam\\Modules\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sam Maosa",
-                    "email": "maosa.sam@gmail.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Organize your Filament Code into modules using nwidart/laravel-modules",
-            "homepage": "https://github.com/savannabits/filament-modules",
-            "keywords": [
-                "FilamentModules",
-                "coolsam",
-                "filament",
-                "laravel"
-            ],
-            "support": {
-                "issues": "https://github.com/savannabits/filament-modules/issues",
-                "source": "https://github.com/savannabits/filament-modules"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/coolsam",
-                    "type": "github"
-                }
-            ],
-            "time": "2026-01-26T08:52:19+00:00"
         },
         {
             "name": "craft-forge/filament-language-switcher",
@@ -2685,6 +2608,475 @@
                 }
             ],
             "time": "2025-08-22T14:27:06+00:00"
+        },
+        {
+            "name": "jmeryar/accounting",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "Modules/Accounting",
+                "reference": "9d608900c3320c2a317f9b9801ffc4a6ea2eb045"
+            },
+            "require": {
+                "brick/money": "^0.10.1",
+                "filament/filament": "^4.0",
+                "jmeryar/foundation": "*",
+                "jmeryar/product": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2",
+                "spatie/laravel-translatable": "^6.0",
+                "xoshbin/filament-translatable-select": "dev-main"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Modules\\Accounting\\Providers\\AccountingServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Modules\\Accounting\\": "app/",
+                    "Modules\\Accounting\\Database\\Factories\\": "database/factories/",
+                    "Modules\\Accounting\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Accounting module for Jmeryar",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "jmeryar/foundation",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "Modules/Foundation",
+                "reference": "ddb837123152e63b4b9689f29bdf4a7e5f20af02"
+            },
+            "require": {
+                "bezhansalleh/filament-shield": "^4.0",
+                "brick/money": "^0.10.1",
+                "filament/filament": "^4.0",
+                "laravel/framework": "^12.0",
+                "php": "^8.2",
+                "spatie/laravel-permission": "^6.0",
+                "spatie/laravel-translatable": "^6.0",
+                "xoshbin/filament-custom-fields": "^0.0.2@beta"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Modules\\Foundation\\Providers\\FoundationServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Modules\\Foundation\\": "app/",
+                    "Modules\\Foundation\\Database\\Factories\\": "database/factories/",
+                    "Modules\\Foundation\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Foundation module for Jmeryar",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "jmeryar/hr",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "Modules/HR",
+                "reference": "8b59d3caf9abca98d580a9e9535a52028e23a49a"
+            },
+            "require": {
+                "brick/money": "^0.10.1",
+                "filament/filament": "^4.0",
+                "jmeryar/foundation": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2",
+                "spatie/laravel-translatable": "^6.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Modules\\HR\\Providers\\HRServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Modules\\HR\\": "app/",
+                    "Modules\\HR\\Database\\Factories\\": "database/factories/",
+                    "Modules\\HR\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "HR module for Jmeryar",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "jmeryar/inventory",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "Modules/Inventory",
+                "reference": "771845f2e385148ffe49132dfc4225f4e5f22919"
+            },
+            "require": {
+                "brick/money": "^0.10.1",
+                "filament/filament": "^4.0",
+                "jmeryar/accounting": "*",
+                "jmeryar/foundation": "*",
+                "jmeryar/product": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Modules\\Inventory\\Providers\\InventoryServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Modules\\Inventory\\": "app/",
+                    "Modules\\Inventory\\Database\\Factories\\": "database/factories/",
+                    "Modules\\Inventory\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Inventory module for Jmeryar",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "jmeryar/manufacturing",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "Modules/Manufacturing",
+                "reference": "d2abfcb6541bc817c9470e820c8f911887d2226a"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "jmeryar/accounting": "*",
+                "jmeryar/foundation": "*",
+                "jmeryar/inventory": "*",
+                "jmeryar/product": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2",
+                "spatie/laravel-translatable": "^6.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Modules\\Manufacturing\\Providers\\ManufacturingServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Modules\\Manufacturing\\": "app/",
+                    "Modules\\Manufacturing\\Database\\Factories\\": "database/factories/",
+                    "Modules\\Manufacturing\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Manufacturing module for Jmeryar",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "jmeryar/payment",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "Modules/Payment",
+                "reference": "94a638283dc11797c549ebdf100e107e5666e331"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "jmeryar/accounting": "*",
+                "jmeryar/foundation": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Modules\\Payment\\Providers\\PaymentServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Modules\\Payment\\": "app/",
+                    "Modules\\Payment\\Database\\Factories\\": "database/factories/",
+                    "Modules\\Payment\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Payment module for Jmeryar",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "jmeryar/product",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "Modules/Product",
+                "reference": "ef6d2688803be3a2a3045b246b2ebd659acc985a"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "jmeryar/foundation": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2",
+                "spatie/laravel-translatable": "^6.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Modules\\Product\\Providers\\ProductServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Modules\\Product\\": "app/",
+                    "Modules\\Product\\Database\\Factories\\": "database/factories/",
+                    "Modules\\Product\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Product module for Jmeryar",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "jmeryar/project-management",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "Modules/ProjectManagement",
+                "reference": "1ff8dfd04f8b25b457bffc081c4bec5c35b5cf34"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "jmeryar/foundation": "*",
+                "jmeryar/hr": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Modules\\ProjectManagement\\Providers\\ProjectManagementServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Modules\\ProjectManagement\\": "app/",
+                    "Modules\\ProjectManagement\\Database\\Factories\\": "database/factories/",
+                    "Modules\\ProjectManagement\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Project Management module for Jmeryar",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "jmeryar/purchase",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "Modules/Purchase",
+                "reference": "ae1212bd0a128426ebc3cbd000f9d895b17d8d4e"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "jmeryar/accounting": "*",
+                "jmeryar/foundation": "*",
+                "jmeryar/inventory": "*",
+                "jmeryar/product": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Modules\\Purchase\\Providers\\PurchaseServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Modules\\Purchase\\": "app/",
+                    "Modules\\Purchase\\Database\\Factories\\": "database/factories/",
+                    "Modules\\Purchase\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Purchase module for Jmeryar",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "jmeryar/quality-control",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "Modules/QualityControl",
+                "reference": "ac32c84525a22d4f02064de6cad6650fd6e290c8"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "jmeryar/foundation": "*",
+                "jmeryar/inventory": "*",
+                "jmeryar/manufacturing": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Modules\\QualityControl\\Providers\\QualityControlServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Modules\\QualityControl\\": "app/",
+                    "Modules\\QualityControl\\Database\\Factories\\": "database/factories/",
+                    "Modules\\QualityControl\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Quality Control module for Jmeryar",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "jmeryar/sales",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "Modules/Sales",
+                "reference": "6abd4e10688727831d0f913e21d4e9e15742c9d0"
+            },
+            "require": {
+                "barryvdh/laravel-dompdf": "^3.1",
+                "filament/filament": "^4.0",
+                "jmeryar/accounting": "*",
+                "jmeryar/foundation": "*",
+                "jmeryar/inventory": "*",
+                "jmeryar/product": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Modules\\Sales\\Providers\\SalesServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Modules\\Sales\\": "app/",
+                    "Modules\\Sales\\Database\\Factories\\": "database/factories/",
+                    "Modules\\Sales\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Sales module for Jmeryar",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "kirschbaum-development/eloquent-power-joins",
@@ -4672,95 +5064,6 @@
             "time": "2025-11-20T02:34:59+00:00"
         },
         {
-            "name": "nwidart/laravel-modules",
-            "version": "v11.1.10",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/nWidart/laravel-modules.git",
-                "reference": "6a987af3103bcf2dc31ebd18a68373bc8c7a99f7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/nWidart/laravel-modules/zipball/6a987af3103bcf2dc31ebd18a68373bc8c7a99f7",
-                "reference": "6a987af3103bcf2dc31ebd18a68373bc8c7a99f7",
-                "shasum": ""
-            },
-            "require": {
-                "ext-dom": "*",
-                "ext-json": "*",
-                "ext-simplexml": "*",
-                "php": ">=8.2",
-                "wikimedia/composer-merge-plugin": "^2.1"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^v3.52",
-                "laravel/framework": "^v11.33",
-                "laravel/pint": "^1.16",
-                "mockery/mockery": "^1.6",
-                "orchestra/testbench": "^v9.0",
-                "phpstan/phpstan": "^1.4",
-                "phpunit/phpunit": "^11.0",
-                "spatie/phpunit-snapshot-assertions": "^5.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "aliases": {
-                        "Module": "Nwidart\\Modules\\Facades\\Module"
-                    },
-                    "providers": [
-                        "Nwidart\\Modules\\LaravelModulesServiceProvider"
-                    ]
-                },
-                "branch-alias": {
-                    "dev-master": "11.0-dev"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "src/helpers.php"
-                ],
-                "psr-4": {
-                    "Nwidart\\Modules\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Widart",
-                    "email": "n.widart@gmail.com",
-                    "homepage": "https://nicolaswidart.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Laravel Module management",
-            "keywords": [
-                "laravel",
-                "module",
-                "modules",
-                "nwidart",
-                "rad"
-            ],
-            "support": {
-                "issues": "https://github.com/nWidart/laravel-modules/issues",
-                "source": "https://github.com/nWidart/laravel-modules/tree/v11.1.10"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/dcblogdev",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/nwidart",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-02-18T09:58:04+00:00"
-        },
-        {
             "name": "openspout/openspout",
             "version": "v4.32.0",
             "source": {
@@ -6445,22 +6748,22 @@
         },
         {
             "name": "spatie/shiki-php",
-            "version": "2.3.2",
+            "version": "2.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/shiki-php.git",
-                "reference": "a2e78a9ff8a1290b25d550be8fbf8285c13175c5"
+                "reference": "9d50ff4d9825d87d3283a6695c65ae9c3c3caa6b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/shiki-php/zipball/a2e78a9ff8a1290b25d550be8fbf8285c13175c5",
-                "reference": "a2e78a9ff8a1290b25d550be8fbf8285c13175c5",
+                "url": "https://api.github.com/repos/spatie/shiki-php/zipball/9d50ff4d9825d87d3283a6695c65ae9c3c3caa6b",
+                "reference": "9d50ff4d9825d87d3283a6695c65ae9c3c3caa6b",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "php": "^8.0",
-                "symfony/process": "^5.4|^6.4|^7.1"
+                "symfony/process": "^5.4|^6.4|^7.1|^8.0"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^v3.0",
@@ -6498,7 +6801,7 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/shiki-php/tree/2.3.2"
+                "source": "https://github.com/spatie/shiki-php/tree/2.3.3"
             },
             "funding": [
                 {
@@ -6506,7 +6809,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-21T14:16:57+00:00"
+            "time": "2026-02-01T09:30:04+00:00"
         },
         {
             "name": "spatie/yaml-front-matter",
@@ -9688,62 +9991,6 @@
             "time": "2024-11-21T01:49:47+00:00"
         },
         {
-            "name": "wikimedia/composer-merge-plugin",
-            "version": "v2.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/wikimedia/composer-merge-plugin.git",
-                "reference": "a03d426c8e9fb2c9c569d9deeb31a083292788bc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/composer-merge-plugin/zipball/a03d426c8e9fb2c9c569d9deeb31a083292788bc",
-                "reference": "a03d426c8e9fb2c9c569d9deeb31a083292788bc",
-                "shasum": ""
-            },
-            "require": {
-                "composer-plugin-api": "^1.1||^2.0",
-                "php": ">=7.2.0"
-            },
-            "require-dev": {
-                "composer/composer": "^1.1||^2.0",
-                "ext-json": "*",
-                "mediawiki/mediawiki-phan-config": "0.11.1",
-                "php-parallel-lint/php-parallel-lint": "~1.3.1",
-                "phpspec/prophecy": "~1.15.0",
-                "phpunit/phpunit": "^8.5||^9.0",
-                "squizlabs/php_codesniffer": "~3.7.1"
-            },
-            "type": "composer-plugin",
-            "extra": {
-                "class": "Wikimedia\\Composer\\Merge\\V2\\MergePlugin",
-                "branch-alias": {
-                    "dev-master": "2.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Wikimedia\\Composer\\Merge\\V2\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bryan Davis",
-                    "email": "bd808@wikimedia.org"
-                }
-            ],
-            "description": "Composer plugin to merge multiple composer.json files",
-            "support": {
-                "issues": "https://github.com/wikimedia/composer-merge-plugin/issues",
-                "source": "https://github.com/wikimedia/composer-merge-plugin/tree/v2.1.0"
-            },
-            "time": "2023-04-15T19:07:00+00:00"
-        },
-        {
             "name": "xoshbin/filament-custom-fields",
             "version": "v0.0.2-beta",
             "source": {
@@ -12215,16 +12462,16 @@
         },
         {
             "name": "laravel/boost",
-            "version": "v2.0.4",
+            "version": "v2.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/boost.git",
-                "reference": "6f7a9f70c1b2cc5fcef1585e8aa04b8546f150e9"
+                "reference": "00eede2041a9bac83eabbd3b3f16bd4aa91277c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/boost/zipball/6f7a9f70c1b2cc5fcef1585e8aa04b8546f150e9",
-                "reference": "6f7a9f70c1b2cc5fcef1585e8aa04b8546f150e9",
+                "url": "https://api.github.com/repos/laravel/boost/zipball/00eede2041a9bac83eabbd3b3f16bd4aa91277c9",
+                "reference": "00eede2041a9bac83eabbd3b3f16bd4aa91277c9",
                 "shasum": ""
             },
             "require": {
@@ -12277,7 +12524,7 @@
                 "issues": "https://github.com/laravel/boost/issues",
                 "source": "https://github.com/laravel/boost"
             },
-            "time": "2026-01-28T13:53:50+00:00"
+            "time": "2026-02-01T09:52:44+00:00"
         },
         {
             "name": "laravel/mcp",
