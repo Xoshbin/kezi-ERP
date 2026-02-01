@@ -18,4 +18,9 @@ class AccountingCluster extends Cluster
     {
         return false;
     }
+
+    public static function getUrl(array $parameters = [], bool $isAbsolute = true, ?string $panel = null, ?\Illuminate\Database\Eloquent\Model $tenant = null): string
+    {
+        return Pages\Dashboard::getUrl($parameters, $isAbsolute, $panel, $tenant);
+    }
 }

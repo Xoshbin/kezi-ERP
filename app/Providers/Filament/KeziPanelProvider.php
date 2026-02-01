@@ -25,7 +25,6 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
 use Kezi\Accounting\Filament\AccountingPlugin;
 use Kezi\Foundation\Filament\FoundationPlugin;
 use Kezi\HR\Filament\HRPlugin;
@@ -37,9 +36,9 @@ use Kezi\ProjectManagement\Filament\ProjectManagementPlugin;
 use Kezi\Purchase\Filament\PurchasePlugin;
 use Kezi\QualityControl\Filament\QualityControlPlugin;
 use Kezi\Sales\Filament\SalesPlugin;
+use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
 use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 use Xoshbin\CustomFields\CustomFieldsPlugin;
-use Xoshbin\FilamentAiHelper\FilamentAiHelperPlugin;
 use Xoshbin\KeziTheme\KeziTheme;
 
 class KeziPanelProvider extends PanelProvider
@@ -83,7 +82,7 @@ class KeziPanelProvider extends PanelProvider
             ], isPersistent: true)
             ->brandName('')
             ->globalSearch(false)
-            ->viteTheme('resources/js/filament/kezi/theme.js')
+            ->viteTheme('resources/css/filament/kezi/theme.css')
             ->tenant(Company::class)
             ->tenantRegistration(RegisterCompany::class)
             ->tenantProfile(EditCompanyProfile::class)
@@ -133,11 +132,6 @@ class KeziPanelProvider extends PanelProvider
                         'Admin' => 'admin@kezi.com',
                     ]),
                 FilamentShieldPlugin::make(),
-                // FilamentAiHelperPlugin::make()
-                //     ->buttonLabel('AccounTech Pro')
-                //     ->buttonIcon('heroicon-o-sparkles')
-                //     ->modalWidth('2xl')
-                //     ->enabled(fn () => (bool) config('filament-ai-helper.enabled', true) && !empty(config('filament-ai-helper.gemini.api_key'))),
             ]);
     }
 }

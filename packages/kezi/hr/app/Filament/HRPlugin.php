@@ -15,8 +15,8 @@ class HRPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel
-            ->discoverResources(in: __DIR__ . '/Resources', for: 'Kezi\\HR\\Filament\\Resources')
-            ->discoverPages(in: __DIR__ . '/Pages', for: 'Kezi\\HR\\Filament\\Pages')
+            ->discoverResources(in: __DIR__, for: 'Kezi\\HR\\Filament')
+            ->discoverPages(in: __DIR__, for: 'Kezi\\HR\\Filament')
             ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Kezi\\HR\\Filament\\Clusters');
     }
 

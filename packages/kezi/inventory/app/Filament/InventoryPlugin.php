@@ -15,8 +15,8 @@ class InventoryPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel
-            ->discoverResources(in: __DIR__ . '/Resources', for: 'Kezi\\Inventory\\Filament\\Resources')
-            ->discoverPages(in: __DIR__ . '/Pages', for: 'Kezi\\Inventory\\Filament\\Pages')
+            ->discoverResources(in: __DIR__, for: 'Kezi\\Inventory\\Filament')
+            ->discoverPages(in: __DIR__, for: 'Kezi\\Inventory\\Filament')
             ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Kezi\\Inventory\\Filament\\Clusters');
     }
 
