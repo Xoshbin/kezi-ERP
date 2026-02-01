@@ -15,8 +15,8 @@ class FoundationPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel
-            ->discoverResources(in: __DIR__ . '/Resources', for: 'Kezi\\Foundation\\Filament\\Resources')
-            ->discoverPages(in: __DIR__ . '/Pages', for: 'Kezi\\Foundation\\Filament\\Pages')
+            ->discoverResources(in: __DIR__, for: 'Kezi\\Foundation\\Filament')
+            ->discoverPages(in: __DIR__, for: 'Kezi\\Foundation\\Filament')
             ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Kezi\\Foundation\\Filament\\Clusters');
     }
 

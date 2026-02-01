@@ -15,8 +15,8 @@ class ManufacturingPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel
-            ->discoverResources(in: __DIR__ . '/Resources', for: 'Kezi\\Manufacturing\\Filament\\Resources')
-            ->discoverPages(in: __DIR__ . '/Pages', for: 'Kezi\\Manufacturing\\Filament\\Pages')
+            ->discoverResources(in: __DIR__, for: 'Kezi\\Manufacturing\\Filament')
+            ->discoverPages(in: __DIR__, for: 'Kezi\\Manufacturing\\Filament')
             ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Kezi\\Manufacturing\\Filament\\Clusters');
     }
 

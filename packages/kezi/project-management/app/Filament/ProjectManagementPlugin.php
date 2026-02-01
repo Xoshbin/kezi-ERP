@@ -15,8 +15,8 @@ class ProjectManagementPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel
-            ->discoverResources(in: __DIR__ . '/Resources', for: 'Kezi\\ProjectManagement\\Filament\\Resources')
-            ->discoverPages(in: __DIR__ . '/Pages', for: 'Kezi\\ProjectManagement\\Filament\\Pages')
+            ->discoverResources(in: __DIR__, for: 'Kezi\\ProjectManagement\\Filament')
+            ->discoverPages(in: __DIR__, for: 'Kezi\\ProjectManagement\\Filament')
             ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Kezi\\ProjectManagement\\Filament\\Clusters');
     }
 

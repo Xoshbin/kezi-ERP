@@ -15,8 +15,8 @@ class QualityControlPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel
-            ->discoverResources(in: __DIR__ . '/Resources', for: 'Kezi\\QualityControl\\Filament\\Resources')
-            ->discoverPages(in: __DIR__ . '/Pages', for: 'Kezi\\QualityControl\\Filament\\Pages')
+            ->discoverResources(in: __DIR__, for: 'Kezi\\QualityControl\\Filament')
+            ->discoverPages(in: __DIR__, for: 'Kezi\\QualityControl\\Filament')
             ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Kezi\\QualityControl\\Filament\\Clusters');
     }
 
