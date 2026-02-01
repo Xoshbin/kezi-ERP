@@ -4,7 +4,7 @@ namespace Kezi\Purchase\tests\Feature;
 
 use App\Models\Company;
 use App\Models\User;
-use Database\Seeders\RolesAndPermissionsSeeder;
+use Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Kezi\Accounting\Actions\Accounting\BuildVendorBillPostingPreviewAction;
 use Kezi\Accounting\Enums\Accounting\AccountType;

@@ -4,13 +4,13 @@ namespace Kezi\Foundation\Models;
 
 use App\Models\Company;
 use App\Models\User;
-use Database\Factories\DocumentAttachmentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Kezi\Foundation\Database\Factories\DocumentAttachmentFactory;
 
 /**
  * @property int $id
