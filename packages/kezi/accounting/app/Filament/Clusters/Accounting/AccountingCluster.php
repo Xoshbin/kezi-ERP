@@ -9,6 +9,8 @@ class AccountingCluster extends Cluster
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calculator';
 
+    protected static bool $shouldRegisterSubNavigation = false;
+
     public static function getNavigationLabel(): string
     {
         return __('accounting::navigation.clusters.accounting');
@@ -16,7 +18,7 @@ class AccountingCluster extends Cluster
 
     public static function shouldRegisterNavigation(): bool
     {
-        return false;
+        return true;
     }
 
     public static function getUrl(array $parameters = [], bool $isAbsolute = true, ?string $panel = null, ?\Illuminate\Database\Eloquent\Model $tenant = null): string

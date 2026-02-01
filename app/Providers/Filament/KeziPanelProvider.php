@@ -57,6 +57,123 @@ class KeziPanelProvider extends PanelProvider
             ])
             ->topNavigation()
             ->maxContentWidth('full')
+            ->navigation(function (\Filament\Navigation\NavigationBuilder $builder): \Filament\Navigation\NavigationBuilder {
+                $panel = \Filament\Facades\Filament::getCurrentPanel();
+                $currentUrl = request()->url();
+
+                // Identify the active cluster
+                $activeCluster = null;
+                foreach ($panel->getClusters() as $cluster) {
+                    $clusterUrl = $cluster::getUrl();
+                    if (str_starts_with($currentUrl, $clusterUrl)) {
+                        $activeCluster = $cluster;
+                        break;
+                    }
+                }
+
+                $groups = [];
+
+                if ($activeCluster) {
+                    // Show resources belonging to the active cluster
+                    foreach ($panel->getResources() as $resource) {
+                        if (! $resource::canAccess()) {
+                            continue;
+                        }
+                        if ($resource::getCluster() !== $activeCluster) {
+                            continue;
+                        }
+
+                        $groupLabel = $resource::getNavigationGroup() ?? null;
+                        $item = \Filament\Navigation\NavigationItem::make($resource::getNavigationLabel())
+                            ->icon($resource::getNavigationIcon() ?? 'heroicon-o-document-text')
+                            ->url($resource::getUrl())
+                            ->isActiveWhen(fn () => request()->routeIs($resource::getRouteBaseName().'.*'))
+                            ->sort($resource::getNavigationSort());
+
+                        if ($groupLabel) {
+                            $groups[$groupLabel][] = $item;
+                        } else {
+                            $groups[''][] = $item;
+                        }
+                    }
+
+                    // Show pages belonging to the active cluster
+                    foreach ($panel->getPages() as $page) {
+                        if (! $page::canAccess()) {
+                            continue;
+                        }
+                        if (is_subclass_of($page, \Filament\Clusters\Cluster::class)) {
+                            continue;
+                        }
+                        if ($page::getCluster() !== $activeCluster) {
+                            continue;
+                        }
+
+                        $groupLabel = $page::getNavigationGroup() ?? null;
+                        $item = \Filament\Navigation\NavigationItem::make($page::getNavigationLabel())
+                            ->icon($page::getNavigationIcon() ?? 'heroicon-o-document-text')
+                            ->url($page::getUrl())
+                            ->isActiveWhen(fn () => request()->url() === $page::getUrl())
+                            ->sort($page::getNavigationSort());
+
+                        if ($groupLabel) {
+                            $groups[$groupLabel][] = $item;
+                        } else {
+                            $groups[''][] = $item;
+                        }
+                    }
+                } else {
+                    // Not in a cluster - show general dashboard and non-clustered items
+                    foreach ($panel->getResources() as $resource) {
+                        if (! $resource::canAccess()) {
+                            continue;
+                        }
+                        if ($resource::getCluster()) {
+                            continue;
+                        }
+
+                        foreach ($resource::getNavigationItems() as $item) {
+                            $groupLabel = $resource::getNavigationGroup() ?? 'Management';
+                            $groups[$groupLabel][] = $item;
+                        }
+                    }
+
+                    foreach ($panel->getPages() as $page) {
+                        if (! $page::canAccess()) {
+                            continue;
+                        }
+                        if (is_subclass_of($page, \Filament\Clusters\Cluster::class)) {
+                            continue;
+                        }
+                        if ($page::getCluster()) {
+                            continue;
+                        }
+
+                        foreach ($page::getNavigationItems() as $item) {
+                            $groupLabel = $page::getNavigationGroup() ?? 'Pages';
+                            $groups[$groupLabel][] = $item;
+                        }
+                    }
+                }
+
+                $navGroups = [];
+
+                // Add un-grouped items first
+                if (isset($groups[''])) {
+                    $navGroups[] = \Filament\Navigation\NavigationGroup::make()->items($groups['']);
+                    unset($groups['']);
+                }
+
+                foreach ($groups as $label => $items) {
+                    if (empty($items)) {
+                        continue;
+                    }
+                    usort($items, fn ($a, $b) => ($a->getSort() ?? 0) <=> ($b->getSort() ?? 0));
+                    $navGroups[] = \Filament\Navigation\NavigationGroup::make($label)->items($items);
+                }
+
+                return $builder->groups($navGroups);
+            })
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

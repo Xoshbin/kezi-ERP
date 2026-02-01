@@ -9,6 +9,8 @@ class HumanResourcesCluster extends Cluster
 {
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
+    protected static bool $shouldRegisterSubNavigation = false;
+
     public static function getNavigationLabel(): string
     {
         return __('hr::navigation.label');
