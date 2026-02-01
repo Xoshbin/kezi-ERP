@@ -2,11 +2,11 @@
 
 namespace Kezi\Foundation\Tests\Feature\Filament\Resources;
 
-use Livewire\Livewire;
 use Kezi\Foundation\Filament\Resources\CurrencyRates\Pages\CreateCurrencyRate;
 use Kezi\Foundation\Filament\Resources\CurrencyRates\Pages\ListCurrencyRates;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\CurrencyRate;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(WithConfiguredCompany::class);
@@ -48,7 +48,7 @@ it('can list currency rates', function () {
 it('can create a currency rate', function () {
     $this->actingAs($this->user);
 
-    $currency = Currency::factory()->create();
+    $currency = Currency::factory()->createSafely();
 
     Livewire::test(CreateCurrencyRate::class)
         ->fillForm([

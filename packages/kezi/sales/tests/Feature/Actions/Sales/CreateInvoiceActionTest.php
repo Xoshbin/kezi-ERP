@@ -20,7 +20,7 @@ beforeEach(function () {
     /** @var \Tests\TestCase $this */
     $this->setupWithConfiguredCompany();
     $this->user = User::factory()->create();
-    $this->currency = Currency::factory()->create(['code' => 'USD']);
+    $this->currency = Currency::factory()->createSafely(['code' => 'USD']);
     $this->partner = Partner::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'customer',

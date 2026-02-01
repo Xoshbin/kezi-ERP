@@ -7,7 +7,7 @@ use Kezi\Foundation\Models\CurrencyRate;
 
 test('currency rate can be created', function () {
     $company = Company::factory()->create();
-    $currency = Currency::factory()->create();
+    $currency = Currency::factory()->createSafely();
 
     $rate = CurrencyRate::create([
         'company_id' => $company->id,
@@ -25,7 +25,7 @@ test('currency rate can be created', function () {
 });
 
 test('currency rate belongs to currency', function () {
-    $currency = Currency::factory()->create();
+    $currency = Currency::factory()->createSafely();
     $rate = CurrencyRate::factory()->create(['currency_id' => $currency->id]);
 
     expect($rate->currency)->toBeInstanceOf(Currency::class);
@@ -33,7 +33,7 @@ test('currency rate belongs to currency', function () {
 });
 
 test('currency has many rates', function () {
-    $currency = Currency::factory()->create();
+    $currency = Currency::factory()->createSafely();
     $rate1 = CurrencyRate::factory()->create(['currency_id' => $currency->id]);
     $rate2 = CurrencyRate::factory()->create(['currency_id' => $currency->id]);
 
@@ -44,7 +44,7 @@ test('currency has many rates', function () {
 
 test('get rate for date returns correct rate', function () {
     $company = Company::factory()->create();
-    $currency = Currency::factory()->create();
+    $currency = Currency::factory()->createSafely();
 
     // Create rates for different dates
     CurrencyRate::factory()->create([
@@ -78,7 +78,7 @@ test('get rate for date returns correct rate', function () {
 
 test('get latest rate returns most recent', function () {
     $company = Company::factory()->create();
-    $currency = Currency::factory()->create();
+    $currency = Currency::factory()->createSafely();
 
     CurrencyRate::factory()->create([
         'company_id' => $company->id,
@@ -100,7 +100,7 @@ test('get latest rate returns most recent', function () {
 
 test('rate casts to decimal', function () {
     $company = Company::factory()->create();
-    $currency = Currency::factory()->create();
+    $currency = Currency::factory()->createSafely();
     $rate = CurrencyRate::factory()->create([
         'company_id' => $company->id,
         'currency_id' => $currency->id,

@@ -2,9 +2,8 @@
 
 namespace Kezi\Accounting\Tests\Feature\Accounting;
 
-use App\Models\Company;
-use App\Models\User;
 use Brick\Money\Money;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Kezi\Accounting\Actions\Accounting\ApplyWithholdingTaxAction;
 use Kezi\Accounting\Actions\Accounting\CreateWithholdingTaxTypeAction;
 use Kezi\Accounting\DataTransferObjects\Accounting\ApplyWithholdingTaxDTO;
@@ -16,14 +15,14 @@ use Kezi\Accounting\Models\WithholdingTaxType;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\Partner;
 use Kezi\Payment\Models\Payment;
+use Tests\Traits\WithConfiguredCompany;
+
+uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
-    $this->company = Company::factory()->create();
-    $this->currency = Currency::query()->firstOrCreate(
-        ['code' => 'IQD'],
-        ['name' => ['en' => 'Iraqi Dinar'], 'symbol' => 'د.ع', 'decimal_places' => 0, 'is_active' => true]
-    );
+    $this->setupWithConfiguredCompany();
+    $this->currency = $this->company->currency;
+
     $this->whtAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'WHT Payable',

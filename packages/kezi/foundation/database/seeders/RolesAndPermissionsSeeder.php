@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Kezi\Foundation\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;

@@ -18,7 +18,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     // Setup currencies
-    $this->currency = Currency::factory()->create(['code' => 'USD']);
+    $this->currency = Currency::factory()->createSafely(['code' => 'USD']);
 });
 
 test('it creates reciprocal vendor bill when invoice is posted to inter-company partner', function () {

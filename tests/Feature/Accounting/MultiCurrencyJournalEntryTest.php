@@ -37,7 +37,7 @@ class MultiCurrencyJournalEntryTest extends TestCase
         Filament::setTenant($this->company);
 
         // Add Permissions
-        $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+        $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
         setPermissionsTeamId($this->company->id);
         $this->user->assignRole('super_admin');
 

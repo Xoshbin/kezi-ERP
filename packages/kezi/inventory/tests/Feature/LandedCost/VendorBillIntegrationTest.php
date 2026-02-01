@@ -11,7 +11,7 @@ use function Pest\Livewire\livewire;
 it('can pre-fill landed cost from vendor bill', function () {
     // 1. Setup Data
     $company = \App\Models\Company::factory()->create();
-    $currency = \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $currency = \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD']);
     $company->currency_id = $currency->id;
     $company->save();
 

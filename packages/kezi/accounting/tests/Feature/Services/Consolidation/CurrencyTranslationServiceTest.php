@@ -14,8 +14,8 @@ use Kezi\Foundation\Models\CurrencyRate;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->baseCurrency = Currency::factory()->create(['code' => 'USD']);
-    $this->foreignCurrency = Currency::factory()->create(['code' => 'EUR']);
+    $this->baseCurrency = Currency::factory()->createSafely(['code' => 'USD']);
+    $this->foreignCurrency = Currency::factory()->createSafely(['code' => 'EUR']);
 
     $this->company = Company::factory()->create(['currency_id' => $this->baseCurrency->id]);
 

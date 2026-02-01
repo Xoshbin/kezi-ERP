@@ -37,7 +37,7 @@ describe('EmploymentContractResource', function () {
         $contract = EmploymentContract::factory()->create([
             'company_id' => $this->company->id,
             'employee_id' => Employee::factory()->create(['company_id' => $this->company->id])->id,
-            'currency_id' => Currency::factory()->create()->id,
+            'currency_id' => Currency::factory()->createSafely()->id,
         ]);
 
         $this->actingAs($this->user)
@@ -49,7 +49,7 @@ describe('EmploymentContractResource', function () {
         $contracts = EmploymentContract::factory()->count(3)->create([
             'company_id' => $this->company->id,
             'employee_id' => Employee::factory()->create(['company_id' => $this->company->id])->id,
-            'currency_id' => Currency::factory()->create()->id,
+            'currency_id' => Currency::factory()->createSafely()->id,
         ]);
 
         livewire(ListEmploymentContracts::class)
@@ -58,7 +58,7 @@ describe('EmploymentContractResource', function () {
 
     it('can create contract and generate contract number', function () {
         $employee = Employee::factory()->create(['company_id' => $this->company->id]);
-        $currency = Currency::factory()->create(['decimal_places' => 2]);
+        $currency = Currency::factory()->createSafely(['code' => 'USD', 'decimal_places' => 2]);
         $startDate = now()->toDateString();
 
         livewire(CreateEmploymentContract::class)
@@ -117,7 +117,7 @@ describe('EmploymentContractResource', function () {
         $otherContract = EmploymentContract::factory()->create([
             'company_id' => $otherCompany->id,
             'employee_id' => Employee::factory()->create(['company_id' => $otherCompany->id])->id,
-            'currency_id' => Currency::factory()->create()->id,
+            'currency_id' => Currency::factory()->createSafely()->id,
         ]);
 
         // livewire(ListEmploymentContracts::class)
@@ -125,7 +125,7 @@ describe('EmploymentContractResource', function () {
     });
 
     it('can edit contract', function () {
-        $currency = Currency::factory()->create(['decimal_places' => 2]);
+        $currency = Currency::factory()->createSafely(['code' => 'USD', 'decimal_places' => 2]);
         $contract = EmploymentContract::factory()->create([
             'company_id' => $this->company->id,
             'employee_id' => Employee::factory()->create(['company_id' => $this->company->id])->id,
@@ -149,7 +149,7 @@ describe('EmploymentContractResource', function () {
         $contract = EmploymentContract::factory()->create([
             'company_id' => $this->company->id,
             'employee_id' => Employee::factory()->create(['company_id' => $this->company->id])->id,
-            'currency_id' => Currency::factory()->create()->id,
+            'currency_id' => Currency::factory()->createSafely()->id,
         ]);
 
         livewire(ListEmploymentContracts::class)

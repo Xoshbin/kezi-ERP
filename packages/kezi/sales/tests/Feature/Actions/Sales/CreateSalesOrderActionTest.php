@@ -23,7 +23,7 @@ it('creates a sales order with lines and calculates totals', function () {
         'company_id' => $this->company->id,
         'type' => \Kezi\Foundation\Enums\Partners\PartnerType::Customer,
     ]);
-    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->createSafely(['code' => 'USD']);
     $product = Product::factory()->create(['company_id' => $this->company->id]);
     $location = StockLocation::factory()->create(['company_id' => $this->company->id]);
 
@@ -74,7 +74,7 @@ it('respects lock date service', function () {
         'company_id' => $this->company->id,
         'type' => \Kezi\Foundation\Enums\Partners\PartnerType::Customer,
     ]);
-    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->createSafely(['code' => 'USD']);
 
     $dto = new CreateSalesOrderDTO(
         company_id: $this->company->id,

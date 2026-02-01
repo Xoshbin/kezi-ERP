@@ -49,7 +49,7 @@ it('can render the create page', function () {
 
 it('can create a currency rate', function () {
     // Create a new currency for this test with proper translatable name
-    $currency = Currency::factory()->create([
+    $currency = Currency::factory()->createSafely([
         'code' => 'TEST',
         'name' => [
             'en' => 'Test Currency',
@@ -165,7 +165,7 @@ it('validates required fields', function () {
 
 it('validates rate is numeric and positive', function () {
     // Create a new currency for this test with proper translatable name
-    $currency = Currency::factory()->create([
+    $currency = Currency::factory()->createSafely([
         'code' => 'TEST2',
         'name' => [
             'en' => 'Test Currency 2',

@@ -25,7 +25,7 @@ it('records a vendor bid', function () {
         'type' => \Kezi\Foundation\Enums\Partners\PartnerType::Vendor,
     ]);
 
-    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->createSafely(['code' => 'USD']);
 
     $rfq = RequestForQuotation::factory()->create([
         'company_id' => $this->company->id,

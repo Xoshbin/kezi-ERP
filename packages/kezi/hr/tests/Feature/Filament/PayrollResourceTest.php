@@ -33,7 +33,7 @@ describe('PayrollResource', function () {
 
     it('can render edit page', function () {
         $employee = Employee::factory()->create(['company_id' => $this->company->id]);
-        $currency = Currency::factory()->create(['code' => 'USD']);
+        $currency = Currency::factory()->createSafely(['code' => 'USD']);
 
         $payroll = Payroll::factory()->create([
             'company_id' => $this->company->id,
@@ -47,7 +47,7 @@ describe('PayrollResource', function () {
     });
 
     it('can list payrolls', function () {
-        $currency = Currency::factory()->create(['code' => 'USD']);
+        $currency = Currency::factory()->createSafely(['code' => 'USD']);
         $employee = Employee::factory()->create(['company_id' => $this->company->id]);
 
         $payrolls = Payroll::factory()->count(3)->create([
@@ -61,7 +61,7 @@ describe('PayrollResource', function () {
     });
 
     it('can create payroll', function () {
-        $currency = Currency::factory()->create(['code' => 'USD']);
+        $currency = Currency::factory()->createSafely(['code' => 'USD']);
         $employee = Employee::factory()->create(['company_id' => $this->company->id]);
 
         $newData = Payroll::factory()->make([
@@ -104,7 +104,7 @@ describe('PayrollResource', function () {
     });
 
     it('can edit payroll', function () {
-        $currency = Currency::factory()->create(['code' => 'USD']);
+        $currency = Currency::factory()->createSafely(['code' => 'USD']);
         $employee = Employee::factory()->create(['company_id' => $this->company->id]);
 
         $payroll = Payroll::factory()->create([
@@ -130,7 +130,7 @@ describe('PayrollResource', function () {
     });
 
     it('can delete payroll', function () {
-        $currency = Currency::factory()->create(['code' => 'USD']);
+        $currency = Currency::factory()->createSafely(['code' => 'USD']);
         $employee = Employee::factory()->create(['company_id' => $this->company->id]);
 
         $payroll = Payroll::factory()->create([
@@ -149,7 +149,7 @@ describe('PayrollResource', function () {
     });
 
     it('can create payment via table action', function () {
-        $currency = Currency::factory()->create(['code' => 'USD']);
+        $currency = Currency::factory()->createSafely(['code' => 'USD']);
         $employee = Employee::factory()->create(['company_id' => $this->company->id]);
 
         // Mocking company configuration for payment action

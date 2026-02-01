@@ -1,10 +1,16 @@
 <?php
 
-namespace Database\Seeders;
+namespace Kezi\Accounting\Database\Seeders;
 
 use App\Models\User;
 use Exception;
 use Illuminate\Database\Seeder;
+use Kezi\Payment\Models\Payment;
+use Kezi\Payment\Services\PaymentService;
+use Kezi\Purchase\Models\VendorBill;
+use Kezi\Purchase\Services\VendorBillService;
+use Kezi\Sales\Models\Invoice;
+use Kezi\Sales\Services\InvoiceService;
 
 class PostTransactionsSeeder extends Seeder
 {
@@ -32,7 +38,7 @@ class PostTransactionsSeeder extends Seeder
 
         // Post some invoices to create customer receivables
         // Only post 1 invoice to leave enough draft invoices for tests
-        $invoicesToPost = \Kezi\Sales\Models\Invoice::where('status', 'draft')
+        $invoicesToPost = Invoice::where('status', 'draft')
             ->whereIn('invoice_number', ['INV-001'])
             ->get();
 
@@ -46,7 +52,7 @@ class PostTransactionsSeeder extends Seeder
         }
 
         // Post some vendor bills to create vendor payables
-        $vendorBillsToPost = \Kezi\Purchase\Models\VendorBill::where('status', 'draft')
+        $vendorBillsToPost = VendorBill::where('status', 'draft')
             ->limit(2)
             ->get();
 
@@ -61,7 +67,7 @@ class PostTransactionsSeeder extends Seeder
 
         // Confirm some payments to create payment transactions
         // Reduce to 2 payments to keep the seeder minimal but still demonstrate functionality
-        $paymentsToConfirm = \Kezi\Payment\Models\Payment::whereNull('status')
+        $paymentsToConfirm = Payment::whereNull('status')
             ->orWhere('status', 'draft')
             ->limit(2)
             ->get();

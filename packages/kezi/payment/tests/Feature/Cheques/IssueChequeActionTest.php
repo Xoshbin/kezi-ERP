@@ -21,7 +21,7 @@ it('can issue a payable cheque', function () {
     $user = User::factory()->create();
     $user->companies()->attach($company);
     $user->refresh();
-    $currency = Currency::firstWhere('code', 'IQD') ?? Currency::factory()->create(['code' => 'IQD']);
+    $currency = Currency::firstWhere('code', 'IQD') ?? Currency::factory()->createSafely(['code' => 'IQD']);
     $journal = Journal::factory()->create(['company_id' => $company->id]);
     $partner = Partner::factory()->create(['company_id' => $company->id]);
     $chequebook = Chequebook::factory()->create([

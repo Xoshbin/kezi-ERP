@@ -7,10 +7,12 @@ parameters:
 
     paths:
         - app/
-        - Modules/
+        - packages/kezi/
 
     # Level 10 is the highest level
     level: 8
+
+    reportUnmatchedIgnoredErrors: false
 
     ignoreErrors:
         # Laravel relationship covariance issues - these are inherent to Laravel's type system
@@ -22,4 +24,4 @@ parameters:
         - '#return type with generic class.*?does not specify its types#'
 
     excludePaths:
-        - Modules/Purchase/tests/Browser/ (?)
+        - packages/kezi/purchase/tests/Browser/ (?)

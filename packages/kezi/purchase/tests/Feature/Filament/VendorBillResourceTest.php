@@ -418,7 +418,7 @@ describe('Vendor Bill Confirmation Business Rules', function () {
 
     it('handles exchange rate fallback during vendor bill confirmation via UI', function () {
         // Create foreign currency
-        $usd = Currency::factory()->create(['code' => 'USD']);
+        $usd = Currency::factory()->createSafely(['code' => 'USD']);
 
         // Create current exchange rate (not for historical date)
         CurrencyRate::factory()->create([

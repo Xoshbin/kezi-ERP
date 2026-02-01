@@ -44,7 +44,7 @@ class InvoicePostingIntegrationTest extends TestCase
         parent::setUp();
 
         // Create test data
-        $this->currency = Currency::factory()->create(['code' => 'USD']);
+        $this->currency = Currency::factory()->createSafely(['code' => 'USD']);
         $this->company = Company::factory()->create(['currency_id' => $this->currency->id]);
         $this->customer = Partner::factory()->create(['company_id' => $this->company->id]);
         $this->user = User::factory()->create();

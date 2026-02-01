@@ -21,7 +21,7 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
 
     // Create foreign currency (USD)
-    $this->foreignCurrency = Currency::factory()->create([
+    $this->foreignCurrency = Currency::factory()->createSafely([
         'code' => 'USD',
         'name' => ['en' => 'US Dollar'],
         'symbol' => '$',

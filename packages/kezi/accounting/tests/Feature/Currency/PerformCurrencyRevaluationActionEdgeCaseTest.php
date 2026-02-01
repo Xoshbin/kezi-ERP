@@ -28,7 +28,7 @@ test('it throws exception when posting if default gain/loss account is missing',
     // Arrange
     $this->company->update(['default_gain_loss_account_id' => null]);
 
-    $usd = Currency::factory()->create(['code' => 'USD']);
+    $usd = Currency::factory()->createSafely(['code' => 'USD']);
     CurrencyRate::factory()->create([
         'currency_id' => $usd->id,
         'company_id' => $this->company->id,
@@ -73,7 +73,7 @@ test('it throws exception when posting if default bank journal is missing', func
         'default_bank_journal_id' => null,
     ]);
 
-    $usd = Currency::factory()->create(['code' => 'USD']);
+    $usd = Currency::factory()->createSafely(['code' => 'USD']);
     CurrencyRate::factory()->create([
         'currency_id' => $usd->id,
         'company_id' => $this->company->id,
@@ -146,8 +146,8 @@ test('it handles multiple currencies and balances accurately', function () {
         'default_bank_journal_id' => $bankJournal->id,
     ]);
 
-    $usd = Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
-    $eur = Currency::factory()->create(['code' => 'EUR', 'decimal_places' => 2]);
+    $usd = Currency::factory()->createSafely(['code' => 'USD', 'decimal_places' => 2]);
+    $eur = Currency::factory()->createSafely(['code' => 'EUR', 'decimal_places' => 2]);
 
     // Clear any existing rates for these currencies to ensure clean state
     CurrencyRate::where('company_id', $this->company->id)->whereIn('currency_id', [$usd->id, $eur->id])->delete();
@@ -203,7 +203,7 @@ test('it handles revaluation for specific accounts only', function () {
     $account1 = Account::factory()->for($this->company)->create(['type' => AccountType::Receivable]);
     $account2 = Account::factory()->for($this->company)->create(['type' => AccountType::Receivable]);
 
-    $usd = Currency::factory()->create(['code' => 'USD']);
+    $usd = Currency::factory()->createSafely(['code' => 'USD']);
     CurrencyRate::factory()->create(['currency_id' => $usd->id, 'company_id' => $this->company->id, 'rate' => 1.5, 'effective_date' => Carbon::today()]);
 
     $journal = Journal::factory()->for($this->company)->create();

@@ -149,6 +149,7 @@ describe('Inventory CSV Export Verification', function () {
 
         // Create cost layer for the special product
         InventoryCostLayer::factory()->create([
+            'company_id' => test()->company->id,
             'product_id' => $specialProduct->id,
             'remaining_quantity' => 10,
             'cost_per_unit' => Money::of(5000000, 'IQD'),
@@ -180,6 +181,7 @@ describe('Inventory CSV Export Verification', function () {
 
             // Create cost layer for each product
             InventoryCostLayer::factory()->create([
+                'company_id' => test()->company->id,
                 'product_id' => $product->id,
                 'remaining_quantity' => rand(1, 100),
                 'cost_per_unit' => Money::of(5000000, 'IQD'),
@@ -344,6 +346,7 @@ function setupExportTestData(): void
 
         // Create cost layers
         InventoryCostLayer::factory()->create([
+            'company_id' => test()->company->id,
             'product_id' => $product->id,
             'remaining_quantity' => 100 + ($index * 50),
             'cost_per_unit' => Money::of(10000000 + ($index * 1000000), 'IQD'),
