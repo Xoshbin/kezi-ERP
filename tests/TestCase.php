@@ -12,18 +12,18 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
  *
  * @property \App\Models\Company $company
  * @property \App\Models\User $user
- * @property \Modules\Foundation\Models\Partner $partner
- * @property \Modules\Foundation\Models\Currency $currency
- * @property \Modules\Product\Models\Product $product
- * @property \Modules\Accounting\Models\Account $account
- * @property \Modules\Accounting\Models\Account $inventoryAccount
- * @property \Modules\Accounting\Models\Account $stockInputAccount
- * @property \Modules\Accounting\Models\Account $cogsAccount
- * @property \Modules\Inventory\Models\StockLocation $vendorLocation
- * @property \Modules\Inventory\Models\StockLocation $stockLocation
- * @property \Modules\Inventory\Models\StockLocation $adjustmentLocation
- * @property \Modules\Inventory\Models\StockLocation $customerLocation
- * @property \Modules\Foundation\Models\Partner $vendor
+ * @property \Jmeryar\Foundation\Models\Partner $partner
+ * @property \Jmeryar\Foundation\Models\Currency $currency
+ * @property \Jmeryar\Product\Models\Product $product
+ * @property \Jmeryar\Accounting\Models\Account $account
+ * @property \Jmeryar\Accounting\Models\Account $inventoryAccount
+ * @property \Jmeryar\Accounting\Models\Account $stockInputAccount
+ * @property \Jmeryar\Accounting\Models\Account $cogsAccount
+ * @property \Jmeryar\Inventory\Models\StockLocation $vendorLocation
+ * @property \Jmeryar\Inventory\Models\StockLocation $stockLocation
+ * @property \Jmeryar\Inventory\Models\StockLocation $adjustmentLocation
+ * @property \Jmeryar\Inventory\Models\StockLocation $customerLocation
+ * @property \Jmeryar\Foundation\Models\Partner $vendor
  *
  * @method void setupWithConfiguredCompany()
  * @method void setupInventoryTestEnvironment()

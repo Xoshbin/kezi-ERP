@@ -1,0 +1,23 @@
+<?php
+
+namespace Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\DunningLevelResource\Pages;
+
+use Filament\Facades\Filament;
+use Filament\Resources\Pages\CreateRecord;
+use Jmeryar\Accounting\Actions\Dunning\CreateDunningLevelAction;
+use Jmeryar\Accounting\DataTransferObjects\DunningLevelDTO;
+use Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\DunningLevelResource;
+
+class CreateDunningLevel extends CreateRecord
+{
+    protected static string $resource = DunningLevelResource::class;
+
+    protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
+    {
+        $data['company_id'] = Filament::getTenant()->id;
+
+        $dto = DunningLevelDTO::fromArray($data);
+
+        return app(CreateDunningLevelAction::class)->execute($dto);
+    }
+}

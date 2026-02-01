@@ -1,0 +1,32 @@
+{
+    "name": "jmeryar/payment",
+    "description": "Payment module for Jmeryar",
+    "authors": [
+        {
+            "name": "Khoshbin",
+            "email": "xoshbin@gmail.com"
+        }
+    ],
+    "type": "library",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^12.0",
+        "filament/filament": "^4.0",
+        "jmeryar/foundation": "*",
+        "jmeryar/accounting": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jmeryar\\Payment\\": "app/",
+            "Jmeryar\\Payment\\Database\\Factories\\": "database/factories/",
+            "Jmeryar\\Payment\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Jmeryar\\Payment\\Providers\\PaymentServiceProvider"
+            ]
+        }
+    }
+}

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "644e7507ab6d99b4a9ae1b2e9dfbd573",
+    "content-hash": "46f1ac657ee0de2d57ab93517a748184",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -2614,8 +2614,8 @@
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "Modules/Accounting",
-                "reference": "9d608900c3320c2a317f9b9801ffc4a6ea2eb045"
+                "url": "packages/jmeryar/accounting",
+                "reference": "90ae1ecfce30d2fe997188ff7c7eb3339ad317c7"
             },
             "require": {
                 "brick/money": "^0.10.1",
@@ -2631,15 +2631,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Modules\\Accounting\\Providers\\AccountingServiceProvider"
+                        "Jmeryar\\Accounting\\Providers\\AccountingServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Modules\\Accounting\\": "app/",
-                    "Modules\\Accounting\\Database\\Factories\\": "database/factories/",
-                    "Modules\\Accounting\\Database\\Seeders\\": "database/seeders/"
+                    "Jmeryar\\Accounting\\": "app/",
+                    "Jmeryar\\Accounting\\Database\\Factories\\": "database/factories/",
+                    "Jmeryar\\Accounting\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2658,8 +2658,8 @@
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "Modules/Foundation",
-                "reference": "ddb837123152e63b4b9689f29bdf4a7e5f20af02"
+                "url": "packages/jmeryar/foundation",
+                "reference": "4e27b5fe9f0cd5e29528de242f4d0c4b2b77d9b1"
             },
             "require": {
                 "bezhansalleh/filament-shield": "^4.0",
@@ -2675,15 +2675,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Modules\\Foundation\\Providers\\FoundationServiceProvider"
+                        "Jmeryar\\Foundation\\Providers\\FoundationServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Modules\\Foundation\\": "app/",
-                    "Modules\\Foundation\\Database\\Factories\\": "database/factories/",
-                    "Modules\\Foundation\\Database\\Seeders\\": "database/seeders/"
+                    "Jmeryar\\Foundation\\": "app/",
+                    "Jmeryar\\Foundation\\Database\\Factories\\": "database/factories/",
+                    "Jmeryar\\Foundation\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2702,8 +2702,8 @@
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "Modules/HR",
-                "reference": "8b59d3caf9abca98d580a9e9535a52028e23a49a"
+                "url": "packages/jmeryar/hr",
+                "reference": "b2301610f80e268d4357cefa18281faf4d587696"
             },
             "require": {
                 "brick/money": "^0.10.1",
@@ -2717,15 +2717,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Modules\\HR\\Providers\\HRServiceProvider"
+                        "Jmeryar\\HR\\Providers\\HRServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Modules\\HR\\": "app/",
-                    "Modules\\HR\\Database\\Factories\\": "database/factories/",
-                    "Modules\\HR\\Database\\Seeders\\": "database/seeders/"
+                    "Jmeryar\\HR\\": "app/",
+                    "Jmeryar\\HR\\Database\\Factories\\": "database/factories/",
+                    "Jmeryar\\HR\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2744,8 +2744,8 @@
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "Modules/Inventory",
-                "reference": "771845f2e385148ffe49132dfc4225f4e5f22919"
+                "url": "packages/jmeryar/inventory",
+                "reference": "a6b6f29f37221ad67ae631097a8afff53785a5fe"
             },
             "require": {
                 "brick/money": "^0.10.1",
@@ -2760,15 +2760,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Modules\\Inventory\\Providers\\InventoryServiceProvider"
+                        "Jmeryar\\Inventory\\Providers\\InventoryServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Modules\\Inventory\\": "app/",
-                    "Modules\\Inventory\\Database\\Factories\\": "database/factories/",
-                    "Modules\\Inventory\\Database\\Seeders\\": "database/seeders/"
+                    "Jmeryar\\Inventory\\": "app/",
+                    "Jmeryar\\Inventory\\Database\\Factories\\": "database/factories/",
+                    "Jmeryar\\Inventory\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2787,8 +2787,8 @@
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "Modules/Manufacturing",
-                "reference": "d2abfcb6541bc817c9470e820c8f911887d2226a"
+                "url": "packages/jmeryar/manufacturing",
+                "reference": "033dfe83624786153df66c4eda616b2f54de94eb"
             },
             "require": {
                 "filament/filament": "^4.0",
@@ -2804,15 +2804,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Modules\\Manufacturing\\Providers\\ManufacturingServiceProvider"
+                        "Jmeryar\\Manufacturing\\Providers\\ManufacturingServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Modules\\Manufacturing\\": "app/",
-                    "Modules\\Manufacturing\\Database\\Factories\\": "database/factories/",
-                    "Modules\\Manufacturing\\Database\\Seeders\\": "database/seeders/"
+                    "Jmeryar\\Manufacturing\\": "app/",
+                    "Jmeryar\\Manufacturing\\Database\\Factories\\": "database/factories/",
+                    "Jmeryar\\Manufacturing\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2831,8 +2831,8 @@
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "Modules/Payment",
-                "reference": "94a638283dc11797c549ebdf100e107e5666e331"
+                "url": "packages/jmeryar/payment",
+                "reference": "3a1aa7218570ec6874099e129bd0cb3bedb14b5f"
             },
             "require": {
                 "filament/filament": "^4.0",
@@ -2845,15 +2845,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Modules\\Payment\\Providers\\PaymentServiceProvider"
+                        "Jmeryar\\Payment\\Providers\\PaymentServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Modules\\Payment\\": "app/",
-                    "Modules\\Payment\\Database\\Factories\\": "database/factories/",
-                    "Modules\\Payment\\Database\\Seeders\\": "database/seeders/"
+                    "Jmeryar\\Payment\\": "app/",
+                    "Jmeryar\\Payment\\Database\\Factories\\": "database/factories/",
+                    "Jmeryar\\Payment\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2872,8 +2872,8 @@
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "Modules/Product",
-                "reference": "ef6d2688803be3a2a3045b246b2ebd659acc985a"
+                "url": "packages/jmeryar/product",
+                "reference": "a7f35fbaa8950bb9cdd0cff1bc57415e8c76fe9a"
             },
             "require": {
                 "filament/filament": "^4.0",
@@ -2886,15 +2886,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Modules\\Product\\Providers\\ProductServiceProvider"
+                        "Jmeryar\\Product\\Providers\\ProductServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Modules\\Product\\": "app/",
-                    "Modules\\Product\\Database\\Factories\\": "database/factories/",
-                    "Modules\\Product\\Database\\Seeders\\": "database/seeders/"
+                    "Jmeryar\\Product\\": "app/",
+                    "Jmeryar\\Product\\Database\\Factories\\": "database/factories/",
+                    "Jmeryar\\Product\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2913,8 +2913,8 @@
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "Modules/ProjectManagement",
-                "reference": "1ff8dfd04f8b25b457bffc081c4bec5c35b5cf34"
+                "url": "packages/jmeryar/project-management",
+                "reference": "a972083611aa2be47898df33dda0294d1df6de86"
             },
             "require": {
                 "filament/filament": "^4.0",
@@ -2927,15 +2927,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Modules\\ProjectManagement\\Providers\\ProjectManagementServiceProvider"
+                        "Jmeryar\\ProjectManagement\\Providers\\ProjectManagementServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Modules\\ProjectManagement\\": "app/",
-                    "Modules\\ProjectManagement\\Database\\Factories\\": "database/factories/",
-                    "Modules\\ProjectManagement\\Database\\Seeders\\": "database/seeders/"
+                    "Jmeryar\\ProjectManagement\\": "app/",
+                    "Jmeryar\\ProjectManagement\\Database\\Factories\\": "database/factories/",
+                    "Jmeryar\\ProjectManagement\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2954,8 +2954,8 @@
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "Modules/Purchase",
-                "reference": "ae1212bd0a128426ebc3cbd000f9d895b17d8d4e"
+                "url": "packages/jmeryar/purchase",
+                "reference": "32aa33d4a347c0396e9add27cc5256629959abb4"
             },
             "require": {
                 "filament/filament": "^4.0",
@@ -2970,15 +2970,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Modules\\Purchase\\Providers\\PurchaseServiceProvider"
+                        "Jmeryar\\Purchase\\Providers\\PurchaseServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Modules\\Purchase\\": "app/",
-                    "Modules\\Purchase\\Database\\Factories\\": "database/factories/",
-                    "Modules\\Purchase\\Database\\Seeders\\": "database/seeders/"
+                    "Jmeryar\\Purchase\\": "app/",
+                    "Jmeryar\\Purchase\\Database\\Factories\\": "database/factories/",
+                    "Jmeryar\\Purchase\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -2997,8 +2997,8 @@
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "Modules/QualityControl",
-                "reference": "ac32c84525a22d4f02064de6cad6650fd6e290c8"
+                "url": "packages/jmeryar/quality-control",
+                "reference": "7587aa399f0c115a7c88113fb7f6ef62abbd1196"
             },
             "require": {
                 "filament/filament": "^4.0",
@@ -3012,15 +3012,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Modules\\QualityControl\\Providers\\QualityControlServiceProvider"
+                        "Jmeryar\\QualityControl\\Providers\\QualityControlServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Modules\\QualityControl\\": "app/",
-                    "Modules\\QualityControl\\Database\\Factories\\": "database/factories/",
-                    "Modules\\QualityControl\\Database\\Seeders\\": "database/seeders/"
+                    "Jmeryar\\QualityControl\\": "app/",
+                    "Jmeryar\\QualityControl\\Database\\Factories\\": "database/factories/",
+                    "Jmeryar\\QualityControl\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [
@@ -3039,8 +3039,8 @@
             "version": "dev-feature/packages",
             "dist": {
                 "type": "path",
-                "url": "Modules/Sales",
-                "reference": "6abd4e10688727831d0f913e21d4e9e15742c9d0"
+                "url": "packages/jmeryar/sales",
+                "reference": "6facbf7ac9a3b2ea6ff6b69af5d7ee3d803f5269"
             },
             "require": {
                 "barryvdh/laravel-dompdf": "^3.1",
@@ -3056,15 +3056,15 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Modules\\Sales\\Providers\\SalesServiceProvider"
+                        "Jmeryar\\Sales\\Providers\\SalesServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Modules\\Sales\\": "app/",
-                    "Modules\\Sales\\Database\\Factories\\": "database/factories/",
-                    "Modules\\Sales\\Database\\Seeders\\": "database/seeders/"
+                    "Jmeryar\\Sales\\": "app/",
+                    "Jmeryar\\Sales\\Database\\Factories\\": "database/factories/",
+                    "Jmeryar\\Sales\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "authors": [

@@ -1,0 +1,11 @@
+{
+    "name": "QualityControl",
+    "alias": "qualitycontrol",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Jmeryar\\QualityControl\\Providers\\QualityControlServiceProvider"
+    ],
+    "files": []
+}

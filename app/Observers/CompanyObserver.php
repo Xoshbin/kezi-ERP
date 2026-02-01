@@ -3,7 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Company;
-use Modules\Foundation\Exceptions\DeletionNotAllowedException;
+use Jmeryar\Foundation\Exceptions\DeletionNotAllowedException;
 
 class CompanyObserver
 {

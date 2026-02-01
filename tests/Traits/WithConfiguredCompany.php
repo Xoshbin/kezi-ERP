@@ -4,21 +4,21 @@ namespace Tests\Traits;
 
 use App\Models\User;
 use Filament\Facades\Filament;
-use Modules\Inventory\Enums\Inventory\StockLocationType;
-use Modules\Inventory\Models\StockLocation;
+use Jmeryar\Inventory\Enums\Inventory\StockLocationType;
+use Jmeryar\Inventory\Models\StockLocation;
 use Tests\Builders\CompanyBuilder;
 
 /**
  * @property \App\Models\Company $company
  * @property \App\Models\User $user
- * @property \Modules\Accounting\Models\Account $inventoryAccount
- * @property \Modules\Accounting\Models\Account $stockInputAccount
- * @property \Modules\Accounting\Models\Account $cogsAccount
- * @property \Modules\Inventory\Models\StockLocation $vendorLocation
- * @property \Modules\Inventory\Models\StockLocation $stockLocation
- * @property \Modules\Inventory\Models\StockLocation $adjustmentLocation
- * @property \Modules\Inventory\Models\StockLocation $customerLocation
- * @property \Modules\Foundation\Models\Partner $vendor
+ * @property \Jmeryar\Accounting\Models\Account $inventoryAccount
+ * @property \Jmeryar\Accounting\Models\Account $stockInputAccount
+ * @property \Jmeryar\Accounting\Models\Account $cogsAccount
+ * @property \Jmeryar\Inventory\Models\StockLocation $vendorLocation
+ * @property \Jmeryar\Inventory\Models\StockLocation $stockLocation
+ * @property \Jmeryar\Inventory\Models\StockLocation $adjustmentLocation
+ * @property \Jmeryar\Inventory\Models\StockLocation $customerLocation
+ * @property \Jmeryar\Foundation\Models\Partner $vendor
  */
 trait WithConfiguredCompany
 {
@@ -84,9 +84,9 @@ trait WithConfiguredCompany
     protected function setupInventoryTestEnvironment(): void
     {
         // 1. Create inventory-specific GL accounts
-        $this->inventoryAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Valuation', 'type' => 'current_assets']);
-        $this->stockInputAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Input', 'type' => 'current_liabilities']);
-        $this->cogsAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Cost of Goods Sold', 'type' => 'expense']);
+        $this->inventoryAccount = \Jmeryar\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Valuation', 'type' => 'current_assets']);
+        $this->stockInputAccount = \Jmeryar\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Input', 'type' => 'current_liabilities']);
+        $this->cogsAccount = \Jmeryar\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Cost of Goods Sold', 'type' => 'expense']);
 
         // 2. Create the necessary physical locations
         $this->vendorLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::Vendor]);
@@ -104,6 +104,6 @@ trait WithConfiguredCompany
         ]);
 
         // 4. Create a default vendor for the tests
-        $this->vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor]);
+        $this->vendor = \Jmeryar\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Jmeryar\Foundation\Enums\Partners\PartnerType::Vendor]);
     }
 }

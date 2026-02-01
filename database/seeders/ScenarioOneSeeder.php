@@ -199,7 +199,7 @@ class ScenarioOneSeeder extends Seeder
         ]);
 
         // Step 5.0: Call WHT Seeder
-        (new \Modules\Accounting\Database\Seeders\WithholdingTaxTypeSeeder)->run();
+        (new \Jmeryar\Accounting\Database\Seeders\WithholdingTaxTypeSeeder)->run();
         $whtTypeId = DB::table('withholding_tax_types')->where('name', 'like', '%Services%')->value('id');
 
         // Step 5.1: Create Vendor
@@ -256,7 +256,7 @@ class ScenarioOneSeeder extends Seeder
             'total_credit' => 3000000,
             'hash' => $vbJeHash,
             'previous_hash' => $jeHash,
-            'source_type' => 'Modules\Purchase\Models\VendorBill',
+            'source_type' => 'Jmeryar\Purchase\Models\VendorBill',
             'source_id' => $vendorBillId,
             'created_at' => now(),
             'updated_at' => now(),
@@ -348,7 +348,7 @@ class ScenarioOneSeeder extends Seeder
             'total_credit' => 5000000,
             'hash' => $invJeHash,
             'previous_hash' => $vbJeHash,
-            'source_type' => 'Modules\Sales\Models\Invoice',
+            'source_type' => 'Jmeryar\Sales\Models\Invoice',
             'source_id' => $invoiceId,
             'created_at' => now(),
             'updated_at' => now(),
@@ -418,7 +418,7 @@ class ScenarioOneSeeder extends Seeder
             'total_credit' => 5000000,
             'hash' => $payJeHash,
             'previous_hash' => $invJeHash,
-            'source_type' => 'Modules\Payment\Models\Payment',
+            'source_type' => 'Jmeryar\Payment\Models\Payment',
             'source_id' => $paymentId,
             'created_at' => now(),
             'updated_at' => now(),
@@ -497,7 +497,7 @@ class ScenarioOneSeeder extends Seeder
             'total_credit' => 3000000,
             'hash' => $vendorPayJeHash,
             'previous_hash' => $payJeHash,
-            'source_type' => 'Modules\Payment\Models\Payment',
+            'source_type' => 'Jmeryar\Payment\Models\Payment',
             'source_id' => $vendorPaymentId,
             'created_at' => now(),
             'updated_at' => now(),
@@ -591,7 +591,7 @@ class ScenarioOneSeeder extends Seeder
             'total_credit' => 500000,
             'hash' => $cnJeHash,
             'previous_hash' => $vendorPayJeHash,
-            'source_type' => 'Modules\Accounting\Models\AdjustmentDocument',
+            'source_type' => 'Jmeryar\Accounting\Models\AdjustmentDocument',
             'source_id' => $creditNoteId,
             'created_at' => now(),
             'updated_at' => now(),

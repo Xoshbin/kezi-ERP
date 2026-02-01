@@ -3,11 +3,11 @@
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Enums\Accounting\JournalEntryState;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\ListJournalEntries;
-use Modules\Accounting\Models\JournalEntry;
+use Jmeryar\Accounting\Enums\Accounting\JournalEntryState;
+use Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
+use Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
+use Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\ListJournalEntries;
+use Jmeryar\Accounting\Models\JournalEntry;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 

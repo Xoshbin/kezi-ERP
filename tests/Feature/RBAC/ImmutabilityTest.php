@@ -2,12 +2,12 @@
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Enums\Accounting\JournalEntryState;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Modules\Sales\Models\Invoice;
+use Jmeryar\Accounting\Enums\Accounting\JournalEntryState;
+use Jmeryar\Accounting\Models\JournalEntry;
+use Jmeryar\Purchase\Enums\Purchases\VendorBillStatus;
+use Jmeryar\Purchase\Models\VendorBill;
+use Jmeryar\Sales\Enums\Sales\InvoiceStatus;
+use Jmeryar\Sales\Models\Invoice;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 

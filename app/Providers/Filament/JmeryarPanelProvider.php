@@ -26,17 +26,17 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
-use Modules\Accounting\Filament\AccountingPlugin;
-use Modules\Foundation\Filament\FoundationPlugin;
-use Modules\HR\Filament\HRPlugin;
-use Modules\Inventory\Filament\InventoryPlugin;
-use Modules\Manufacturing\Filament\ManufacturingPlugin;
-use Modules\Payment\Filament\PaymentPlugin;
-use Modules\Product\Filament\ProductPlugin;
-use Modules\ProjectManagement\Filament\ProjectManagementPlugin;
-use Modules\Purchase\Filament\PurchasePlugin;
-use Modules\QualityControl\Filament\QualityControlPlugin;
-use Modules\Sales\Filament\SalesPlugin;
+use Jmeryar\Accounting\Filament\AccountingPlugin;
+use Jmeryar\Foundation\Filament\FoundationPlugin;
+use Jmeryar\HR\Filament\HRPlugin;
+use Jmeryar\Inventory\Filament\InventoryPlugin;
+use Jmeryar\Manufacturing\Filament\ManufacturingPlugin;
+use Jmeryar\Payment\Filament\PaymentPlugin;
+use Jmeryar\Product\Filament\ProductPlugin;
+use Jmeryar\ProjectManagement\Filament\ProjectManagementPlugin;
+use Jmeryar\Purchase\Filament\PurchasePlugin;
+use Jmeryar\QualityControl\Filament\QualityControlPlugin;
+use Jmeryar\Sales\Filament\SalesPlugin;
 use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 use Xoshbin\CustomFields\CustomFieldsPlugin;
 use Xoshbin\FilamentAiHelper\FilamentAiHelperPlugin;
@@ -116,12 +116,12 @@ class JmeryarPanelProvider extends PanelProvider
                     ->showBorder(true),
                 CustomFieldsPlugin::make()
                     ->modelTypes([
-                        \Modules\Foundation\Models\Partner::class => __('Partners'),
-                        \Modules\Product\Models\Product::class => __('Products'),
-                        \Modules\HR\Models\Employee::class => __('Employees'),
-                        \Modules\HR\Models\Department::class => __('Departments'),
-                        \Modules\HR\Models\Position::class => __('Positions'),
-                        \Modules\Accounting\Models\Asset::class => __('Assets'),
+                        \Jmeryar\Foundation\Models\Partner::class => __('Partners'),
+                        \Jmeryar\Product\Models\Product::class => __('Products'),
+                        \Jmeryar\HR\Models\Employee::class => __('Employees'),
+                        \Jmeryar\HR\Models\Department::class => __('Departments'),
+                        \Jmeryar\HR\Models\Position::class => __('Positions'),
+                        \Jmeryar\Accounting\Models\Asset::class => __('Assets'),
                     ])
                     ->cluster(SettingsCluster::class)
                     ->navigationSort(5),

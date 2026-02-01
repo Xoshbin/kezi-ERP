@@ -1,0 +1,43 @@
+<?php
+
+namespace Jmeryar\Accounting\Database\Factories;
+
+use Brick\Money\Money;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Jmeryar\Accounting\Enums\Assets\DepreciationEntryStatus;
+use Jmeryar\Accounting\Models\Asset;
+use Jmeryar\Accounting\Models\DepreciationEntry;
+
+/**
+ * @extends Factory<DepreciationEntry>
+ */
+class DepreciationEntryFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var class-string<\Jmeryar\Accounting\Models\DepreciationEntry>
+     */
+    protected $model = \Jmeryar\Accounting\Models\DepreciationEntry::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        $asset = Asset::factory();
+
+        return [
+            'asset_id' => $asset,
+            'company_id' => function (array $attributes) {
+                return Asset::find($attributes['asset_id'])->company_id;
+            },
+            'depreciation_date' => $this->faker->date(),
+            'amount' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
+            'journal_entry_id' => null, // FIX: Default to null, as it's created later.
+            'status' => DepreciationEntryStatus::Posted, // FIX: Align with the status set by the service.
+        ];
+    }
+}

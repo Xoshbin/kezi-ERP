@@ -3,8 +3,8 @@
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ListInvoices;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ListVendorBills;
+use Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ListInvoices;
+use Jmeryar\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ListVendorBills;
 use Spatie\Permission\PermissionRegistrar;
 
 use function Pest\Livewire\livewire;

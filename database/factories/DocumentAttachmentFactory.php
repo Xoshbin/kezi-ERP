@@ -5,8 +5,8 @@ namespace Database\Factories;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Modules\Foundation\Models\DocumentAttachment;
-use Modules\Sales\Models\Invoice;
+use Jmeryar\Foundation\Models\DocumentAttachment;
+use Jmeryar\Sales\Models\Invoice;
 
 /**
  * @extends Factory<DocumentAttachment>

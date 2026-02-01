@@ -1,0 +1,290 @@
+<?php
+
+namespace Jmeryar\Payment\Services;
+
+use App\Models\User;
+use Brick\Money\Money;
+use Exception;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
+use Jmeryar\Accounting\Actions\Accounting\CreateJournalEntryForPaymentAction;
+use Jmeryar\Accounting\Services\ExchangeGainLossService;
+use Jmeryar\Accounting\Services\JournalEntryService;
+use Jmeryar\Foundation\Models\AuditLog;
+use Jmeryar\Foundation\Services\CurrencyConverterService;
+use Jmeryar\Payment\Enums\Payments\PaymentStatus;
+use Jmeryar\Payment\Events\PaymentConfirmed;
+use Jmeryar\Payment\Models\Payment;
+use Jmeryar\Payment\Models\PaymentDocumentLink;
+use Jmeryar\Purchase\Enums\Purchases\VendorBillStatus;
+use Jmeryar\Purchase\Models\VendorBill;
+use Jmeryar\Purchase\Services\VendorBillService;
+use Jmeryar\Sales\Enums\Sales\InvoiceStatus;
+use Jmeryar\Sales\Models\Invoice;
+use Jmeryar\Sales\Services\InvoiceService;
+
+class PaymentService
+{
+    public function __construct(
+        protected JournalEntryService $journalEntryService,
+        protected CreateJournalEntryForPaymentAction $createJournalEntryForPaymentAction,
+        protected InvoiceService $invoiceService,
+        protected VendorBillService $vendorBillService,
+        protected CurrencyConverterService $currencyConverter,
+        protected ExchangeGainLossService $exchangeGainLossService,
+    ) {}
+
+    /**
+     * Confirm a draft payment, locking it and creating the journal entry.
+     */
+    public function confirm(Payment $payment, User $user): Payment
+    {
+        if ($payment->status !== PaymentStatus::Draft) {
+            throw new \Jmeryar\Foundation\Exceptions\UpdateNotAllowedException('Only draft payments can be confirmed.');
+        }
+
+        return DB::transaction(function () use ($payment, $user) {
+            // Process multi-currency amounts before confirming
+            $this->processMultiCurrencyPayment($payment);
+
+            // Create the corresponding journal entry.
+            $journalEntry = $this->createJournalEntryForPaymentAction->execute($payment, $user);
+
+            $payment->journal_entry_id = $journalEntry->id;
+            $payment->status = PaymentStatus::Confirmed;
+            $payment->save();
+
+            // After confirming the payment, update the status of linked documents.
+            $this->updateLinkedDocumentStatus($payment, $user);
+
+            PaymentConfirmed::dispatch($payment);
+
+            return $payment;
+        });
+    }
+
+    /**
+     * Checks linked documents and updates their status to 'Paid' if fully paid.
+     * Ensures documents are properly posted before marking as paid.
+     * Uses the HasPaymentState trait for accurate multi-currency payment state calculation.
+     */
+    protected function updateLinkedDocumentStatus(Payment $payment, User $user): void
+    {
+        $payment->load('paymentDocumentLinks.invoice', 'paymentDocumentLinks.vendorBill');
+
+        foreach ($payment->paymentDocumentLinks as $link) {
+            if ($link->invoice) {
+                $invoice = $link->invoice;
+
+                // Use the HasPaymentState trait for accurate multi-currency calculation
+                if ($invoice->isFullyPaid()) {
+                    // If invoice is still draft, post it first to ensure all business logic is executed
+                    if ($invoice->status === InvoiceStatus::Draft) {
+                        $this->invoiceService->confirm($invoice, $user);
+                        $invoice->refresh(); // Reload to get the updated status
+                    }
+
+                    // Only mark as paid if it's already posted
+                    if ($invoice->status === InvoiceStatus::Posted) {
+                        $invoice->status = InvoiceStatus::Paid;
+                        $invoice->save();
+                    }
+                }
+            }
+
+            if ($link->vendorBill) {
+                $vendorBill = $link->vendorBill;
+
+                // Use the HasPaymentState trait for accurate multi-currency calculation
+                if ($vendorBill->isFullyPaid()) {
+                    // If vendor bill is still draft, post it first to ensure all business logic is executed
+                    if ($vendorBill->status === VendorBillStatus::Draft) {
+                        $this->vendorBillService->post($vendorBill, $user);
+                        $vendorBill->refresh(); // Reload to get the updated status
+                    }
+
+                    // Only mark as paid if it's already posted
+                    if ($vendorBill->status === VendorBillStatus::Posted) {
+                        $vendorBill->status = VendorBillStatus::Paid;
+                        $vendorBill->save();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Cancels a confirmed payment by creating a reversing journal entry and a detailed audit log.
+     */
+    public function cancel(Payment $payment, User $user, string $reason): void // Add $reason parameter
+    {
+        if ($payment->status !== PaymentStatus::Confirmed) {
+            throw new Exception('Only confirmed payments can be cancelled.');
+        }
+
+        DB::transaction(function () use ($payment, $user, $reason) {
+            $originalEntry = $payment->journalEntry;
+            if (! $originalEntry) {
+                throw new Exception('Cannot cancel payment without a journal entry.');
+            }
+
+            // Step 1: Create the explicit audit log with the reason.
+            AuditLog::create([
+                'user_id' => $user->id,
+                'event_type' => 'cancellation',
+                'auditable_type' => get_class($payment),
+                'auditable_id' => $payment->id,
+                'description' => 'Payment Cancelled: '.$reason,
+                'old_values' => ['status' => $payment->status],
+                'new_values' => ['status' => PaymentStatus::Canceled],
+                'ip_address' => request()->ip(),
+            ]);
+
+            // Step 2: Create the reversal.
+            $this->journalEntryService->createReversal(
+                $originalEntry,
+                'Cancellation of Payment #'.$payment->id.': '.$reason,
+                $user
+            );
+
+            // Step 3: Update the payment's status.
+            $payment->status = PaymentStatus::Canceled;
+            $payment->save();
+        });
+    }
+
+    /**
+     * Deletes a payment, but only if it is in a draft state.
+     * Enforces the accounting principle of immutability for confirmed transactions.
+     *
+     * @param  Payment  $payment  The payment to be deleted.
+     *
+     * @throws \Jmeryar\Foundation\Exceptions\DeletionNotAllowedException If the payment is not in a draft state.
+     */
+    public function delete(Payment $payment): void
+    {
+        // THE GUARD CLAUSE: This is the core of the fix.
+        if ($payment->status !== PaymentStatus::Draft) {
+            throw new \Jmeryar\Foundation\Exceptions\DeletionNotAllowedException('Confirmed payments cannot be deleted. Please create a reversal entry instead.');
+        }
+
+        // If the payment is a draft, proceed with deletion.
+        $payment->delete();
+    }
+
+    /**
+     * Process multi-currency amounts for a payment.
+     * Captures exchange rate and converts amounts to company base currency.
+     */
+    protected function processMultiCurrencyPayment(Payment $payment): void
+    {
+        // Load necessary relationships
+        $payment->load(['company', 'currency']);
+
+        // If payment is in company base currency, set rate to 1.0
+        if ($payment->currency_id === $payment->company->currency_id) {
+            $payment->exchange_rate_at_payment = 1.0;
+            $payment->amount_company_currency = $payment->amount;
+
+            return;
+        }
+
+        // Get exchange rate for the payment date
+        $exchangeRate = $this->currencyConverter->getExchangeRate($payment->currency, $payment->payment_date, $payment->company);
+
+        // If no exchange rate is found, skip multi-currency processing for backward compatibility
+        if (! $exchangeRate) {
+            // For backward compatibility, just set the rate to 1.0 and use original amount
+            $payment->exchange_rate_at_payment = 1.0;
+            $payment->amount_company_currency = $payment->amount;
+
+            return;
+        }
+
+        // Convert amount to company currency
+        $companyCurrency = $payment->company->currency;
+
+        $amountCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
+            $payment->amount,
+            $payment->currency,
+            $companyCurrency,
+            $payment->payment_date,
+            $payment->company
+        );
+
+        // Update payment with converted amounts
+        $payment->update([
+            'exchange_rate_at_payment' => $exchangeRate,
+            'amount_company_currency' => $amountCompanyCurrency,
+        ]);
+    }
+
+    /**
+     * Apply a payment to documents with exchange gain/loss calculation.
+     * This method handles payment application with multi-currency support.
+     *
+     * @param  array<int, array{document_type: string, document_id: int, amount_applied: string}>  $applications
+     * @return array<int, PaymentDocumentLink>
+     */
+    public function applyToDocuments(Payment $payment, array $applications, User $user): array
+    {
+        if ($payment->status !== PaymentStatus::Confirmed) {
+            throw new Exception('Only confirmed payments can be applied to documents');
+        }
+
+        $links = [];
+
+        return DB::transaction(function () use ($payment, $applications, &$links) {
+            foreach ($applications as $application) {
+                $document = $this->getDocument($application['document_type'], $application['document_id']);
+                $amountApplied = Money::of($application['amount_applied'], $payment->currency->code);
+
+                // Create payment document link
+                $link = $this->createPaymentDocumentLink($payment, $document, $amountApplied);
+                $links[] = $link;
+
+                // Calculate and post exchange gain/loss if applicable
+                $this->exchangeGainLossService->processRealizedGainLoss(
+                    $payment,
+                    $document,
+                    $amountApplied
+                );
+            }
+
+            return $links;
+        });
+    }
+
+    /**
+     * Get document by type and ID.
+     */
+    protected function getDocument(string $documentType, int $documentId): Invoice|VendorBill
+    {
+        return match ($documentType) {
+            'invoice' => Invoice::findOrFail($documentId),
+            'vendor_bill' => VendorBill::findOrFail($documentId),
+            default => throw new InvalidArgumentException("Invalid document type: {$documentType}")
+        };
+    }
+
+    /**
+     * Create payment document link.
+     */
+    protected function createPaymentDocumentLink(Payment $payment, Model $document, Money $amountApplied): PaymentDocumentLink
+    {
+        $linkData = [
+            'company_id' => $payment->company_id,
+            'payment_id' => $payment->id,
+            'amount_applied' => $amountApplied,
+        ];
+
+        if ($document instanceof Invoice) {
+            $linkData['invoice_id'] = $document->id;
+        } elseif ($document instanceof VendorBill) {
+            $linkData['vendor_bill_id'] = $document->id;
+        }
+
+        return PaymentDocumentLink::create($linkData);
+    }
+}

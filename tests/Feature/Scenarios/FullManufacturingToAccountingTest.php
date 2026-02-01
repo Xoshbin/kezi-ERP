@@ -4,29 +4,29 @@ use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Inventory\Enums\Inventory\StockLocationType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Inventory\Models\StockMove;
-use Modules\Manufacturing\Actions\Accounting\CreateJournalEntryForManufacturingAction;
-use Modules\Manufacturing\Actions\ConfirmManufacturingOrderAction;
-use Modules\Manufacturing\Actions\ConsumeComponentsAction;
-use Modules\Manufacturing\Actions\CreateBOMAction;
-use Modules\Manufacturing\Actions\CreateManufacturingOrderAction;
-use Modules\Manufacturing\Actions\ProduceFinishedGoodsAction;
-use Modules\Manufacturing\Actions\StartProductionAction;
-use Modules\Manufacturing\DataTransferObjects\BOMLineDTO;
-use Modules\Manufacturing\DataTransferObjects\CreateBOMDTO;
-use Modules\Manufacturing\DataTransferObjects\CreateManufacturingOrderDTO;
-use Modules\Manufacturing\Enums\BOMType;
-use Modules\Manufacturing\Enums\ManufacturingOrderStatus;
-use Modules\Manufacturing\Models\ManufacturingOrder;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Product\Models\Product;
+use Jmeryar\Accounting\Models\Account;
+use Jmeryar\Accounting\Models\Journal;
+use Jmeryar\Accounting\Models\JournalEntry;
+use Jmeryar\Inventory\Enums\Inventory\StockLocationType;
+use Jmeryar\Inventory\Enums\Inventory\StockMoveStatus;
+use Jmeryar\Inventory\Enums\Inventory\StockMoveType;
+use Jmeryar\Inventory\Models\StockLocation;
+use Jmeryar\Inventory\Models\StockMove;
+use Jmeryar\Manufacturing\Actions\Accounting\CreateJournalEntryForManufacturingAction;
+use Jmeryar\Manufacturing\Actions\ConfirmManufacturingOrderAction;
+use Jmeryar\Manufacturing\Actions\ConsumeComponentsAction;
+use Jmeryar\Manufacturing\Actions\CreateBOMAction;
+use Jmeryar\Manufacturing\Actions\CreateManufacturingOrderAction;
+use Jmeryar\Manufacturing\Actions\ProduceFinishedGoodsAction;
+use Jmeryar\Manufacturing\Actions\StartProductionAction;
+use Jmeryar\Manufacturing\DataTransferObjects\BOMLineDTO;
+use Jmeryar\Manufacturing\DataTransferObjects\CreateBOMDTO;
+use Jmeryar\Manufacturing\DataTransferObjects\CreateManufacturingOrderDTO;
+use Jmeryar\Manufacturing\Enums\BOMType;
+use Jmeryar\Manufacturing\Enums\ManufacturingOrderStatus;
+use Jmeryar\Manufacturing\Models\ManufacturingOrder;
+use Jmeryar\Product\Enums\Products\ProductType;
+use Jmeryar\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(WithConfiguredCompany::class);
@@ -42,21 +42,21 @@ beforeEach(function () {
         'company_id' => $this->company->id,
         'code' => '1010',
         'name' => 'Raw Materials',
-        'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets,
+        'type' => \Jmeryar\Accounting\Enums\Accounting\AccountType::CurrentAssets,
     ]);
 
     $this->fgAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => '1020',
         'name' => 'Finished Goods',
-        'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets,
+        'type' => \Jmeryar\Accounting\Enums\Accounting\AccountType::CurrentAssets,
     ]);
 
     $this->wipAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => '1030',
         'name' => 'Work in Progress',
-        'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets,
+        'type' => \Jmeryar\Accounting\Enums\Accounting\AccountType::CurrentAssets,
     ]);
 
     // 2. Setup Journals
@@ -64,14 +64,14 @@ beforeEach(function () {
         'company_id' => $this->company->id,
         'name' => 'Stock Journal',
         'short_code' => 'STJ',
-        'type' => \Modules\Accounting\Enums\Accounting\JournalType::Miscellaneous,
+        'type' => \Jmeryar\Accounting\Enums\Accounting\JournalType::Miscellaneous,
     ]);
 
     $this->manufacturingJournal = Journal::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Manufacturing Operations',
         'short_code' => 'MFG',
-        'type' => \Modules\Accounting\Enums\Accounting\JournalType::Miscellaneous,
+        'type' => \Jmeryar\Accounting\Enums\Accounting\JournalType::Miscellaneous,
     ]);
 
     // Configure Company Defaults

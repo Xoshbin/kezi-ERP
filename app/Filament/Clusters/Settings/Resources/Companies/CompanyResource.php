@@ -23,7 +23,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
+use Jmeryar\Inventory\Enums\Inventory\InventoryAccountingMode;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class CompanyResource extends Resource
@@ -68,7 +68,7 @@ class CompanyResource extends Resource
                         Textarea::make('address')
                             ->label(__('company.address'))
                             ->columnSpanFull(),
-                        TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class)
+                        TranslatableSelect::forModel('currency_id', \Jmeryar\Foundation\Models\Currency::class)
                             ->label(__('company.currency_id'))
                             ->searchable()
                             ->preload()
