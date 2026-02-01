@@ -20,7 +20,8 @@ use Kezi\Purchase\Services\VendorBillService;
 use Spatie\Permission\Models\Permission;
 
 beforeEach(function () {
-    $this->company = Company::factory()->create();
+    $this->currency = \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'NZD']);
+    $this->company = Company::factory()->create(['currency_id' => $this->currency->id]);
     $this->user = User::factory()->create();
 
     $this->user->companies()->attach($this->company);
@@ -105,8 +106,15 @@ it('prevents posting a vendor bill that exceeds the budget', function () {
         'bill_date' => now(),
     ]);
 
+    $product = \Kezi\Product\Models\Product::factory()->create([
+        'company_id' => $this->company->id,
+        'expense_account_id' => $this->expenseAccount->id,
+    ]);
+
     \Kezi\Purchase\Models\VendorBillLine::factory()->create([
         'vendor_bill_id' => $bill->id,
+        'product_id' => $product->id,
+        'company_id' => $this->company->id,
         'expense_account_id' => $this->expenseAccount->id,
         'subtotal' => Money::of(1500, $currencyCode),
         'subtotal_company_currency' => Money::of(1500, $currencyCode),
