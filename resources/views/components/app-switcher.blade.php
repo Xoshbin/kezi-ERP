@@ -16,8 +16,8 @@
     }
     // List of clusters to hide from the app switcher
     $hiddenClusters = [
-        'Modules\Payment\Filament\Clusters\Payment\PaymentCluster',
-        'Modules\Product\Filament\Clusters\Product\ProductCluster',
+        'Jmeryar\Payment\Filament\Clusters\Payment\PaymentCluster',
+        'Jmeryar\Product\Filament\Clusters\Product\ProductCluster',
     ];
 @endphp
 

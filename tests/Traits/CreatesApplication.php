@@ -18,18 +18,18 @@ trait CreatesApplication
 
     protected function createConfiguredCompany(): Company
     {
-        $currency = \Modules\Foundation\Models\Currency::firstOrCreate(['code' => 'IQD'], ['name' => 'Iraqi Dinar', 'symbol' => 'IQD', 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => 3]);
+        $currency = \Jmeryar\Foundation\Models\Currency::firstOrCreate(['code' => 'IQD'], ['name' => 'Iraqi Dinar', 'symbol' => 'IQD', 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => 3]);
         $company = Company::factory()->create(['currency_id' => $currency->id]);
 
         // Create all necessary accounts first.
         $accounts = [
-            'default_accounts_payable_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => 'Liability', 'name' => 'Accounts Payable']),
-            'default_tax_receivable_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => 'Asset', 'name' => 'Tax Receivable']),
-            'default_accounts_receivable_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => 'Asset', 'name' => 'Accounts Receivable']),
-            'default_sales_discount_account_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => 'Expense', 'name' => 'Sales Discount']),
-            'default_tax_account_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => 'Liability', 'name' => 'Tax Payable']),
-            'default_bank_account_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => 'bank_and_cash', 'name' => 'Bank']),
-            'default_outstanding_receipts_account_id' => \Modules\Accounting\Models\Account::factory()->for($company)->create(['type' => 'current_assets', 'name' => 'Outstanding Receipts']),
+            'default_accounts_payable_id' => \Jmeryar\Accounting\Models\Account::factory()->for($company)->create(['type' => 'Liability', 'name' => 'Accounts Payable']),
+            'default_tax_receivable_id' => \Jmeryar\Accounting\Models\Account::factory()->for($company)->create(['type' => 'Asset', 'name' => 'Tax Receivable']),
+            'default_accounts_receivable_id' => \Jmeryar\Accounting\Models\Account::factory()->for($company)->create(['type' => 'Asset', 'name' => 'Accounts Receivable']),
+            'default_sales_discount_account_id' => \Jmeryar\Accounting\Models\Account::factory()->for($company)->create(['type' => 'Expense', 'name' => 'Sales Discount']),
+            'default_tax_account_id' => \Jmeryar\Accounting\Models\Account::factory()->for($company)->create(['type' => 'Liability', 'name' => 'Tax Payable']),
+            'default_bank_account_id' => \Jmeryar\Accounting\Models\Account::factory()->for($company)->create(['type' => 'bank_and_cash', 'name' => 'Bank']),
+            'default_outstanding_receipts_account_id' => \Jmeryar\Accounting\Models\Account::factory()->for($company)->create(['type' => 'current_assets', 'name' => 'Outstanding Receipts']),
         ];
 
         $accountIds = collect($accounts)->mapWithKeys(fn ($account, $key) => [$key => $account->id])->all();

@@ -1,0 +1,11 @@
+{
+    "name": "ProjectManagement",
+    "alias": "projectmanagement",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Jmeryar\\ProjectManagement\\Providers\\ProjectManagementServiceProvider"
+    ],
+    "files": []
+}

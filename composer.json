@@ -38,10 +38,6 @@
     "repositories": [
         {
             "type": "path",
-            "url": "Modules/*"
-        },
-        {
-            "type": "path",
             "url": "packages/*/*"
         },
         {

@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
-use Modules\Accounting\Listeners\PostJournalEntry;
-use Modules\Foundation\Livewire\Synthesizers\MoneySynth;
+use Jmeryar\Accounting\Listeners\PostJournalEntry;
+use Jmeryar\Foundation\Livewire\Synthesizers\MoneySynth;
 
 class AppServiceProvider extends ServiceProvider
 {

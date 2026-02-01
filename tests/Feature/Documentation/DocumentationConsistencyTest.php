@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use Modules\Foundation\Filament\Actions\DocsAction;
+use Jmeryar\Foundation\Filament\Actions\DocsAction;
 
 test('all docs action slugs resolve to existing files', function () {
     $modulesPath = base_path('Modules');

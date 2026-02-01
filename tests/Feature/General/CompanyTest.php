@@ -12,11 +12,11 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 beforeEach(function () {
     // This ensures that the specific currencies needed for this test file are
     // always available in the database before any test runs.
-    \Modules\Foundation\Models\Currency::firstOrCreate(
+    \Jmeryar\Foundation\Models\Currency::firstOrCreate(
         ['code' => 'IQD'],
         ['name' => 'Iraqi Dinar', 'symbol' => 'IQD', 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => 3]
     );
-    \Modules\Foundation\Models\Currency::firstOrCreate(
+    \Jmeryar\Foundation\Models\Currency::firstOrCreate(
         ['code' => 'USD'],
         ['name' => 'US Dollar', 'symbol' => '$', 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => 2]
     );
@@ -25,11 +25,11 @@ beforeEach(function () {
 test('a company with an IQD base currency can issue an invoice in USD', function () {
     // Arrange: $this->company is our IQD-based company from the WithConfiguredCompany trait.
     // Arrange: Fetch the USD currency, which is now guaranteed to exist.
-    $usd = \Modules\Foundation\Models\Currency::where('code', 'USD')->firstOrFail();
+    $usd = \Jmeryar\Foundation\Models\Currency::where('code', 'USD')->firstOrFail();
 
     // Act: Create an invoice FOR our IQD company, but explicitly
     // override the currency relationship to use USD.
-    $usdInvoice = \Modules\Sales\Models\Invoice::factory()
+    $usdInvoice = \Jmeryar\Sales\Models\Invoice::factory()
         ->for($this->company)
         ->for($usd, 'currency') // This is the key step
         ->create();
