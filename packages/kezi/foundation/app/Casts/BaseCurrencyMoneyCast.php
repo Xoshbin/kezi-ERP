@@ -24,43 +24,12 @@ class BaseCurrencyMoneyCast extends MoneyCast
     protected function resolveCurrency(Model $model): Currency
     {
         // This is the most efficient path, traversing loaded relationships.
-        if (method_exists($model, 'company') && $model->relationLoaded('company')) {
-            $company = $model->getRelation('company');
-            if ($company instanceof Model && method_exists($company, 'currency')) {
-                $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
-                if ($currency instanceof Currency) {
-                    return $currency;
-                }
-            }
-        }
-        if (method_exists($model, 'journalEntry') && $model->relationLoaded('journalEntry')) {
-            $journalEntry = $model->getRelation('journalEntry');
-            if ($journalEntry instanceof Model && method_exists($journalEntry, 'company')) {
-                $company = $journalEntry->relationLoaded('company') ? $journalEntry->getRelation('company') : $journalEntry->company()->first();
-                if ($company instanceof Model && method_exists($company, 'currency')) {
-                    $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
-                    if ($currency instanceof Currency) {
-                        return $currency;
-                    }
-                }
-            }
-        }
-        if (method_exists($model, 'asset') && $model->relationLoaded('asset')) {
-            $asset = $model->getRelation('asset');
-            if ($asset instanceof Model && method_exists($asset, 'company')) {
-                $company = $asset->relationLoaded('company') ? $asset->getRelation('company') : $asset->company()->first();
-                if ($company instanceof Model && method_exists($company, 'currency')) {
-                    $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
-                    if ($currency instanceof Currency) {
-                        return $currency;
-                    }
-                }
-            }
-        }
-        if (method_exists($model, 'product') && $model->relationLoaded('product')) {
-            $product = $model->getRelation('product');
-            if ($product instanceof Model && method_exists($product, 'company')) {
-                $company = $product->relationLoaded('company') ? $product->getRelation('company') : $product->company()->first();
+
+        // Prioritize Document relationships over Product/Asset
+        if (method_exists($model, 'vendorBill') && $model->relationLoaded('vendorBill')) {
+            $vendorBill = $model->getRelation('vendorBill');
+            if ($vendorBill instanceof Model && method_exists($vendorBill, 'company')) {
+                $company = $vendorBill->relationLoaded('company') ? $vendorBill->getRelation('company') : $vendorBill->company()->first();
                 if ($company instanceof Model && method_exists($company, 'currency')) {
                     $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
                     if ($currency instanceof Currency) {
@@ -83,6 +52,32 @@ class BaseCurrencyMoneyCast extends MoneyCast
             }
         }
 
+        if (method_exists($model, 'budget') && $model->relationLoaded('budget')) {
+            $budget = $model->getRelation('budget');
+            if ($budget instanceof Model && method_exists($budget, 'company')) {
+                $company = $budget->relationLoaded('company') ? $budget->getRelation('company') : $budget->company()->first();
+                if ($company instanceof Model && method_exists($company, 'currency')) {
+                    $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
+                    if ($currency instanceof Currency) {
+                        return $currency;
+                    }
+                }
+            }
+        }
+
+        if (method_exists($model, 'journalEntry') && $model->relationLoaded('journalEntry')) {
+            $journalEntry = $model->getRelation('journalEntry');
+            if ($journalEntry instanceof Model && method_exists($journalEntry, 'company')) {
+                $company = $journalEntry->relationLoaded('company') ? $journalEntry->getRelation('company') : $journalEntry->company()->first();
+                if ($company instanceof Model && method_exists($company, 'currency')) {
+                    $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
+                    if ($currency instanceof Currency) {
+                        return $currency;
+                    }
+                }
+            }
+        }
+
         if (method_exists($model, 'currencyRevaluation') && $model->relationLoaded('currencyRevaluation')) {
             $revaluation = $model->getRelation('currencyRevaluation');
             if ($revaluation instanceof Model && method_exists($revaluation, 'company')) {
@@ -96,7 +91,41 @@ class BaseCurrencyMoneyCast extends MoneyCast
             }
         }
 
-        // Add other common parent relationships here as needed (e.g., vendorBill)
+        if (method_exists($model, 'company') && $model->relationLoaded('company')) {
+            $company = $model->getRelation('company');
+            if ($company instanceof Model && method_exists($company, 'currency')) {
+                $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
+                if ($currency instanceof Currency) {
+                    return $currency;
+                }
+            }
+        }
+
+        if (method_exists($model, 'asset') && $model->relationLoaded('asset')) {
+            $asset = $model->getRelation('asset');
+            if ($asset instanceof Model && method_exists($asset, 'company')) {
+                $company = $asset->relationLoaded('company') ? $asset->getRelation('company') : $asset->company()->first();
+                if ($company instanceof Model && method_exists($company, 'currency')) {
+                    $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
+                    if ($currency instanceof Currency) {
+                        return $currency;
+                    }
+                }
+            }
+        }
+
+        if (method_exists($model, 'product') && $model->relationLoaded('product')) {
+            $product = $model->getRelation('product');
+            if ($product instanceof Model && method_exists($product, 'company')) {
+                $company = $product->relationLoaded('company') ? $product->getRelation('company') : $product->company()->first();
+                if ($company instanceof Model && method_exists($company, 'currency')) {
+                    $currency = $company->relationLoaded('currency') ? $company->getRelation('currency') : $company->currency()->first();
+                    if ($currency instanceof Currency) {
+                        return $currency;
+                    }
+                }
+            }
+        }
 
         // Fallback: If relationships are not loaded, perform database queries
         // This is less efficient but ensures the cast always works

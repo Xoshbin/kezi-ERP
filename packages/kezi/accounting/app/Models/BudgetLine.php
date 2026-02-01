@@ -89,6 +89,15 @@ class BudgetLine extends Model
         'updated_at' => 'datetime',
     ];
 
+    /**
+     * The relationships that should always be loaded.
+     * Eager-loading the `budget.company.currency` relationship is critical because the `BaseCurrencyMoneyCast`
+     * for monetary fields on this model depends on the currency context provided by the parent budget's company.
+     *
+     * @var list<string>
+     */
+    protected $with = ['budget.company.currency'];
+
     /*
     |--------------------------------------------------------------------------
     | Relationships
