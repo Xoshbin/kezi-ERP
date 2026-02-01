@@ -11,6 +11,8 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Widgets\IncomeVsExpenseChart;
 
 class Dashboard extends BaseDashboard
 {
+    protected static ?string $cluster = \Kezi\Accounting\Filament\Clusters\Accounting\AccountingCluster::class;
+
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
 
     public static function getNavigationLabel(): string

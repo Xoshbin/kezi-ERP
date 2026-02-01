@@ -15,8 +15,8 @@ class PurchasePlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel
-            ->discoverResources(in: __DIR__ . '/Resources', for: 'Kezi\\Purchase\\Filament\\Resources')
-            ->discoverPages(in: __DIR__ . '/Pages', for: 'Kezi\\Purchase\\Filament\\Pages')
+            ->discoverResources(in: __DIR__, for: 'Kezi\\Purchase\\Filament')
+            ->discoverPages(in: __DIR__, for: 'Kezi\\Purchase\\Filament')
             ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Kezi\\Purchase\\Filament\\Clusters');
     }
 

@@ -15,8 +15,8 @@ class ProductPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel
-            ->discoverResources(in: __DIR__ . '/Resources', for: 'Kezi\\Product\\Filament\\Resources')
-            ->discoverPages(in: __DIR__ . '/Pages', for: 'Kezi\\Product\\Filament\\Pages')
+            ->discoverResources(in: __DIR__, for: 'Kezi\\Product\\Filament')
+            ->discoverPages(in: __DIR__, for: 'Kezi\\Product\\Filament')
             ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Kezi\\Product\\Filament\\Clusters');
     }
 
