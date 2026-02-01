@@ -33,7 +33,7 @@ it('prevents double conversion', function () {
         'converted_to_purchase_order_id' => $po->id,
     ]);
 
-    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->createSafely(['code' => 'USD']);
     $product = Product::factory()->create(['company_id' => $this->company->id]);
     $expenseAccount = \Kezi\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
@@ -79,7 +79,7 @@ it('creates a vendor bill with lines and calculates totals', function () {
     ]);
     $vendor->update(['fiscal_position_id' => $fiscalPosition->id]);
 
-    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->createSafely(['code' => 'USD']);
     $product = Product::factory()->create(['company_id' => $this->company->id]);
     $expenseAccount = \Kezi\Accounting\Models\Account::factory()->create([
         'company_id' => $this->company->id,
@@ -126,7 +126,7 @@ it('throws PeriodIsLockedException for locked periods', function () {
     ]);
 
     $vendor = Partner::factory()->create(['company_id' => $this->company->id]);
-    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->createSafely(['code' => 'USD']);
 
     $dto = new CreateVendorBillDTO(
         company_id: $this->company->id,
@@ -147,7 +147,7 @@ it('throws PeriodIsLockedException for locked periods', function () {
 it('validates purchase order compatibility', function () {
     $vendor = Partner::factory()->create(['company_id' => $this->company->id]);
     $otherVendor = Partner::factory()->create(['company_id' => $this->company->id]);
-    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD']);
+    $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->createSafely(['code' => 'USD']);
 
     $po = PurchaseOrder::factory()->create([
         'company_id' => $this->company->id,

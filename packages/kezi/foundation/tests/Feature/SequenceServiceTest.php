@@ -21,7 +21,7 @@ class SequenceServiceTest extends TestCase
     {
         parent::setUp();
 
-        $currency = Currency::factory()->create(['code' => 'USD']);
+        $currency = Currency::factory()->createSafely(['code' => 'USD']);
         $this->company = Company::factory()->create(['currency_id' => $currency->id]);
         $this->sequenceService = app(\Kezi\Foundation\Services\SequenceService::class);
     }
@@ -70,7 +70,7 @@ class SequenceServiceTest extends TestCase
 
     public function test_it_creates_separate_sequences_for_different_companies()
     {
-        $currency = Currency::factory()->create(['code' => 'EUR']);
+        $currency = Currency::factory()->createSafely(['code' => 'EUR']);
         $company2 = Company::factory()->create(['currency_id' => $currency->id]);
 
         $number1Company1 = $this->sequenceService->getNextInvoiceNumber($this->company);

@@ -2,7 +2,6 @@
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Livewire\Livewire;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
 use Kezi\Accounting\Models\Account;
@@ -12,6 +11,7 @@ use Kezi\Foundation\Models\Partner;
 use Kezi\Product\Models\Product;
 use Kezi\Sales\Enums\Sales\InvoiceStatus;
 use Kezi\Sales\Models\Invoice;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class, WithConfiguredCompany::class);
@@ -30,7 +30,7 @@ beforeEach(function () {
 
 it('can create invoice with attachments through filament', function () {
     $customer = Partner::factory()->create(['company_id' => $this->company->id]);
-    $currency = Currency::factory()->create();
+    $currency = Currency::factory()->createSafely();
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'income_account_id' => $this->incomeAccount->id,
@@ -186,7 +186,7 @@ it('displays existing attachments in edit form', function () {
 
 it('supports multiple file types in filament upload', function () {
     $customer = Partner::factory()->create(['company_id' => $this->company->id]);
-    $currency = Currency::factory()->create();
+    $currency = Currency::factory()->createSafely();
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'income_account_id' => $this->incomeAccount->id,
@@ -234,7 +234,7 @@ it('supports multiple file types in filament upload', function () {
 
 it('validates max file size', function () {
     $customer = Partner::factory()->create(['company_id' => $this->company->id]);
-    $currency = Currency::factory()->create();
+    $currency = Currency::factory()->createSafely();
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'income_account_id' => $this->incomeAccount->id,

@@ -35,7 +35,7 @@ class WithholdingTaxCertificateFactory extends Factory
             'period_end' => $periodEnd,
             'total_base_amount' => $this->faker->numberBetween(500000, 50000000),
             'total_withheld_amount' => $this->faker->numberBetween(25000, 2500000),
-            'currency_id' => Currency::factory(),
+            'currency_id' => Currency::factory()->createSafely(),
             'status' => WithholdingTaxCertificateStatus::Draft,
             'notes' => null,
         ];

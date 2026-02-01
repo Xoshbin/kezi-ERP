@@ -23,15 +23,13 @@ class EmploymentContractFactory extends Factory
      */
     public function definition(): array
     {
-        $currency = Currency::firstOrCreate(
-            ['code' => 'IQD'],
-            [
-                'name' => 'Iraqi Dinar',
-                'symbol' => 'IQD',
-                'is_active' => true,
-                'decimal_places' => 3,
-            ]
-        );
+        $currency = Currency::factory()->createSafely([
+            'code' => 'IQD',
+            'name' => 'Iraqi Dinar',
+            'symbol' => 'IQD',
+            'is_active' => true,
+            'decimal_places' => 3,
+        ]);
 
         return [
             'company_id' => Company::factory(),

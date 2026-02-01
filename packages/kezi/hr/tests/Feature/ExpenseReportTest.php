@@ -75,7 +75,7 @@ test('can create expense report with lines and calculates total', function () {
 
 test('cannot create expense line with different currency than advance', function () {
     $otherCurrency = \Kezi\Foundation\Models\Currency::firstWhere('code', 'USD')
-        ?? \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+        ?? \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD']);
 
     // Advance is in Company Currency (e.g. IQD). Try to add USD line.
     $amountUSD = Money::of(100, 'USD');

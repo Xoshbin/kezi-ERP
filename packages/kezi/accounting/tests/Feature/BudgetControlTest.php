@@ -20,7 +20,7 @@ use Kezi\Purchase\Services\VendorBillService;
 use Spatie\Permission\Models\Permission;
 
 beforeEach(function () {
-    $this->currency = \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'NZD']);
+    $this->currency = \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'NZD']);
     $this->company = Company::factory()->create(['currency_id' => $this->currency->id]);
     $this->user = User::factory()->create();
 

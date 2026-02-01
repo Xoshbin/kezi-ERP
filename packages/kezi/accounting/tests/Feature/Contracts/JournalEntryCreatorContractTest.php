@@ -15,7 +15,7 @@ it('can create a journal entry via the contract', function () {
     $company = \App\Models\Company::factory()->create();
     $user = \App\Models\User::factory()->create();
     $journal = \Kezi\Accounting\Models\Journal::factory()->for($company)->create();
-    $currency = \Kezi\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+    $currency = \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD']);
 
     $account1 = \Kezi\Accounting\Models\Account::factory()->for($company)->create();
     $account2 = \Kezi\Accounting\Models\Account::factory()->for($company)->create();

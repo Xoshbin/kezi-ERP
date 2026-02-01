@@ -14,7 +14,7 @@ use Kezi\Purchase\Models\VendorBill;
 use function Pest\Livewire\livewire;
 
 beforeEach(function () {
-    $currency = \Kezi\Foundation\Models\Currency::factory()->create([
+    $currency = \Kezi\Foundation\Models\Currency::factory()->createSafely([
         'code' => 'USD',
         'decimal_places' => 2,
     ]);

@@ -4,7 +4,6 @@ use App\Models\Company;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Filament\Facades\Filament;
-use Livewire\Livewire;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
 use Kezi\Accounting\Models\Account;
 use Kezi\Foundation\Models\Currency;
@@ -12,6 +11,7 @@ use Kezi\Foundation\Models\Partner;
 use Kezi\Sales\Enums\Sales\InvoiceStatus;
 use Kezi\Sales\Models\Invoice;
 use Kezi\Sales\Models\InvoiceLine;
+use Livewire\Livewire;
 use Tests\Traits\WithSuperAdminRole;
 
 uses(WithSuperAdminRole::class);
@@ -30,7 +30,7 @@ beforeEach(function () {
     // Set up Filament tenant context
     Filament::setTenant($this->company);
 
-    $this->currency = Currency::factory()->create(['code' => 'USD']);
+    $this->currency = Currency::factory()->createSafely(['code' => 'USD']);
     $this->customer = Partner::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'customer',

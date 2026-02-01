@@ -7,7 +7,6 @@ use App\Models\User;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\Partner;
@@ -17,6 +16,7 @@ use Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\Edi
 use Kezi\Purchase\Models\PurchaseOrder;
 use Kezi\Purchase\Models\PurchaseOrderLine;
 use Kezi\Purchase\Models\VendorBill;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class PurchaseOrderCreateBillActionTest extends TestCase
@@ -45,7 +45,7 @@ class PurchaseOrderCreateBillActionTest extends TestCase
         $this->user = User::factory()->create();
         $this->user->companies()->attach($this->company);
 
-        $this->currency = Currency::factory()->create(['code' => 'USD']);
+        $this->currency = Currency::factory()->createSafely(['code' => 'USD']);
         $this->vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
         $this->tax = Tax::factory()->create(['company_id' => $this->company->id]);
         $this->product = Product::factory()->create(['company_id' => $this->company->id]);

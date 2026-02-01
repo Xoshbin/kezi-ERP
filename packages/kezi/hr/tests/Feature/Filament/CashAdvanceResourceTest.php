@@ -42,7 +42,7 @@ describe('CashAdvanceResource', function () {
 
     it('can create cash advance', function () {
         $employee = Employee::factory()->create(['company_id' => $this->company->id]);
-        $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->create(['code' => 'USD']);
+        $currency = Currency::where('code', 'USD')->first() ?? Currency::factory()->createSafely(['code' => 'USD']);
 
         livewire(CreateCashAdvance::class, ['tenant' => $this->company->id])
             ->fillForm([

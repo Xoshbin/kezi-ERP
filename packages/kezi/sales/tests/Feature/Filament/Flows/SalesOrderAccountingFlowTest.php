@@ -6,7 +6,6 @@ use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Enums\Accounting\AccountType;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
 use Kezi\Accounting\Models\Account;
@@ -23,6 +22,7 @@ use Kezi\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\CreateSalesOr
 use Kezi\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\ViewSalesOrder;
 use Kezi\Sales\Models\Invoice;
 use Kezi\Sales\Models\SalesOrder;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class SalesOrderAccountingFlowTest extends TestCase
@@ -44,14 +44,13 @@ class SalesOrderAccountingFlowTest extends TestCase
         parent::setUp();
 
         // 1. Setup Data
-        $this->company = Company::factory()->create();
-        // Company factory already creates or gets IQD currency.
-        $this->currency = $this->company->currency;
-
-        // Ensure decimal places are correct if factory didn't set them (though factory logic seems to try)
-        if ($this->currency->decimal_places !== 3) {
-            $this->currency->update(['decimal_places' => 3]);
-        }
+        $this->currency = Currency::firstOrCreate(
+            ['code' => 'IQD'],
+            ['name' => 'Iraqi Dinar', 'symbol' => 'IQD', 'decimal_places' => 3, 'is_active' => true]
+        );
+        $this->company = Company::factory()->create([
+            'currency_id' => $this->currency->id,
+        ]);
 
         $this->user = User::factory()->create();
         // Manually attaching company if relationship exists, or just skipping if column missing.

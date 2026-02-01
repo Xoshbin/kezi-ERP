@@ -17,8 +17,8 @@ uses(RefreshDatabase::class);
 
 test('correctly creates journal entry for vendor bill with currency conversion', function () {
     // 1. Setup Currencies
-    $iqd = Currency::factory()->create(['code' => 'IQD', 'decimal_places' => 3]); // Base
-    $usd = Currency::factory()->create(['code' => 'USD', 'decimal_places' => 2]);
+    $iqd = Currency::factory()->createSafely(['code' => 'IQD', 'decimal_places' => 3]); // Base
+    $usd = Currency::factory()->createSafely(['code' => 'USD', 'decimal_places' => 2]);
 
     // 2. Setup Company with IQD base
     $company = Company::factory()->create([
