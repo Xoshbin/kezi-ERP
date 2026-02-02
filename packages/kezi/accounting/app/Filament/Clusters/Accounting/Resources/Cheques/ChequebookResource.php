@@ -43,7 +43,7 @@ class ChequebookResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('Bank & Cash');
+        return __('accounting::navigation.groups.banking_cash');
     }
 
     public static function form(Schema $schema): Schema
