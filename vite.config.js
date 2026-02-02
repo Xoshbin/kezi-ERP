@@ -8,7 +8,7 @@ export default defineConfig({
             input: [
                 "resources/css/app.css",
                 "resources/js/app.js",
-                "resources/js/filament/jmeryar/theme.js",
+                "resources/css/filament/kezi/theme.css",
             ],
             refresh: true,
         }),

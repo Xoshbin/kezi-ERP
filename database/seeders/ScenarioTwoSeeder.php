@@ -8,34 +8,34 @@ use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
-use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
-use Modules\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\Partner;
-use Modules\Payment\Actions\Payments\CreatePaymentAction;
-use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
-use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
-use Modules\Payment\Enums\Payments\PaymentMethod;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Payment\Services\PaymentService;
-use Modules\Product\Models\Product;
-use Modules\Purchase\Actions\Purchases\CreatePurchaseOrderAction;
-use Modules\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
-use Modules\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
-use Modules\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
-use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
-use Modules\Purchase\Services\PurchaseOrderService;
-use Modules\Purchase\Services\VendorBillService;
-use Modules\Sales\Actions\Sales\ConfirmSalesOrderAction;
-use Modules\Sales\Actions\Sales\CreateInvoiceFromSalesOrderAction;
-use Modules\Sales\Actions\Sales\CreateSalesOrderAction;
-use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
-use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderDTO;
-use Modules\Sales\DataTransferObjects\Sales\CreateSalesOrderLineDTO;
-use Modules\Sales\Services\InvoiceService;
+use Kezi\Accounting\Actions\Accounting\CreateJournalEntryAction;
+use Kezi\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Kezi\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Models\Journal;
+use Kezi\Foundation\Models\Currency;
+use Kezi\Foundation\Models\Partner;
+use Kezi\Payment\Actions\Payments\CreatePaymentAction;
+use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Kezi\Payment\Enums\Payments\PaymentMethod;
+use Kezi\Payment\Enums\Payments\PaymentType;
+use Kezi\Payment\Services\PaymentService;
+use Kezi\Product\Models\Product;
+use Kezi\Purchase\Actions\Purchases\CreatePurchaseOrderAction;
+use Kezi\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
+use Kezi\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
+use Kezi\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
+use Kezi\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
+use Kezi\Purchase\Services\PurchaseOrderService;
+use Kezi\Purchase\Services\VendorBillService;
+use Kezi\Sales\Actions\Sales\ConfirmSalesOrderAction;
+use Kezi\Sales\Actions\Sales\CreateInvoiceFromSalesOrderAction;
+use Kezi\Sales\Actions\Sales\CreateSalesOrderAction;
+use Kezi\Sales\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
+use Kezi\Sales\DataTransferObjects\Sales\CreateSalesOrderDTO;
+use Kezi\Sales\DataTransferObjects\Sales\CreateSalesOrderLineDTO;
+use Kezi\Sales\Services\InvoiceService;
 
 /**
  * Scenario Two Seeder - Complete Business Workflow
@@ -55,7 +55,7 @@ class ScenarioTwoSeeder extends Seeder
     {
         DB::transaction(function () {
             // Get foundational data - requires main DatabaseSeeder to have been run first
-            $company = Company::where('name', 'Jmeryar Solutions')->first();
+            $company = Company::where('name', 'Kezi Solutions')->first();
 
             if (! $company) {
                 $this->command->error('');
@@ -70,7 +70,7 @@ class ScenarioTwoSeeder extends Seeder
             }
 
             // Get user associated with the company (through pivot table)
-            $user = User::where('email', 'admin@jmeryar.com')->firstOrFail();
+            $user = User::where('email', 'admin@kezi.com')->firstOrFail();
             $iqdCurrency = Currency::where('code', 'IQD')->firstOrFail();
 
             // Get accounts

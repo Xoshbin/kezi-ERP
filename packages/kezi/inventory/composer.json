@@ -1,0 +1,34 @@
+{
+    "name": "kezi/inventory",
+    "description": "Inventory module for Kezi",
+    "authors": [
+        {
+            "name": "Khoshbin",
+            "email": "xoshbin@gmail.com"
+        }
+    ],
+    "type": "library",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^12.0",
+        "filament/filament": "^4.0",
+        "kezi/foundation": "*",
+        "kezi/product": "*",
+        "kezi/accounting": "*",
+        "brick/money": "^0.10.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kezi\\Inventory\\": "app/",
+            "Kezi\\Inventory\\Database\\Factories\\": "database/factories/",
+            "Kezi\\Inventory\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Kezi\\Inventory\\Providers\\InventoryServiceProvider"
+            ]
+        }
+    }
+}

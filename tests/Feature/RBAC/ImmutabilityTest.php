@@ -2,12 +2,12 @@
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Enums\Accounting\JournalEntryState;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Modules\Sales\Models\Invoice;
+use Kezi\Accounting\Enums\Accounting\JournalEntryState;
+use Kezi\Accounting\Models\JournalEntry;
+use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
+use Kezi\Purchase\Models\VendorBill;
+use Kezi\Sales\Enums\Sales\InvoiceStatus;
+use Kezi\Sales\Models\Invoice;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -20,7 +20,7 @@ beforeEach(function () {
     // Seed Permissions
     // Resetting database via RefreshDatabase handles table clearing,
     // but we need the seed to populate permissions table again for each test
-    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
 });
 
 test('journal entry immutability: cannot delete posted journal entry even with permission', function () {

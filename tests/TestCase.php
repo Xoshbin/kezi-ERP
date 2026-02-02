@@ -12,18 +12,18 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
  *
  * @property \App\Models\Company $company
  * @property \App\Models\User $user
- * @property \Modules\Foundation\Models\Partner $partner
- * @property \Modules\Foundation\Models\Currency $currency
- * @property \Modules\Product\Models\Product $product
- * @property \Modules\Accounting\Models\Account $account
- * @property \Modules\Accounting\Models\Account $inventoryAccount
- * @property \Modules\Accounting\Models\Account $stockInputAccount
- * @property \Modules\Accounting\Models\Account $cogsAccount
- * @property \Modules\Inventory\Models\StockLocation $vendorLocation
- * @property \Modules\Inventory\Models\StockLocation $stockLocation
- * @property \Modules\Inventory\Models\StockLocation $adjustmentLocation
- * @property \Modules\Inventory\Models\StockLocation $customerLocation
- * @property \Modules\Foundation\Models\Partner $vendor
+ * @property \Kezi\Foundation\Models\Partner $partner
+ * @property \Kezi\Foundation\Models\Currency $currency
+ * @property \Kezi\Product\Models\Product $product
+ * @property \Kezi\Accounting\Models\Account $account
+ * @property \Kezi\Accounting\Models\Account $inventoryAccount
+ * @property \Kezi\Accounting\Models\Account $stockInputAccount
+ * @property \Kezi\Accounting\Models\Account $cogsAccount
+ * @property \Kezi\Inventory\Models\StockLocation $vendorLocation
+ * @property \Kezi\Inventory\Models\StockLocation $stockLocation
+ * @property \Kezi\Inventory\Models\StockLocation $adjustmentLocation
+ * @property \Kezi\Inventory\Models\StockLocation $customerLocation
+ * @property \Kezi\Foundation\Models\Partner $vendor
  *
  * @method void setupWithConfiguredCompany()
  * @method void setupInventoryTestEnvironment()

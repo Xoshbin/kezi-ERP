@@ -12,7 +12,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        \Modules\HR\Models\Payroll::class => \Modules\HR\Policies\PayrollPolicy::class,
+        \Kezi\HR\Models\Payroll::class => \Kezi\HR\Policies\PayrollPolicy::class,
     ];
 
     /**
