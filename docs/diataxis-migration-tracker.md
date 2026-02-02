@@ -12,7 +12,7 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
 
 | Module | Status | Total Docs | Completed |
 | :--- | :--- | :---: | :---: |
-| Accounting | 🟡 In Progress | 15 | 10 |
+| Accounting | 🟡 In Progress | 15 | 11 |
 | Inventory | 🔴 Pending | 10 | 0 |
 | HR & Payroll | 🔴 Pending | 5 | 0 |
 | Manufacturing | 🔴 Pending | 4 | 0 |
@@ -43,7 +43,11 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
     - [x] [How-to: Bank Reconciliation](v1.0/en/how-to/bank-reconciliation.md)
     - [x] [Explanation: Understanding Reconciliation](v1.0/en/explanation/understanding-reconciliation.md)
     - [x] [Reference: Payment Methods & Statuses](v1.0/en/reference/payment-methods.md)
-- [ ] **Opening Balances**
+- [x] **Opening Balances** (Migrated)
+    - [x] [Tutorial: Setting Up Opening Balances](v1.0/en/tutorials/setting-opening-balances.md)
+    - [x] [How-to: Recording Opening Balances](v1.0/en/how-to/recording-opening-balances.md)
+    - [x] [Explanation: Opening Balance Concepts](v1.0/en/explanation/opening-balance-concepts.md)
+    - [x] [Reference: Import Templates](v1.0/en/reference/opening-balance-import-template.md)
 - [ ] **Financial Reports** (General Ledger, P&L, Balance Sheet)
 
 ### 📦 Inventory & Warehouse
