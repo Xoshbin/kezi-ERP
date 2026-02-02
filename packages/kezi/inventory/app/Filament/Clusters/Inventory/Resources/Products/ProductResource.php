@@ -69,7 +69,7 @@ class ProductResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('Products');
+        return __('inventory::navigation.groups.products');
     }
 
     public static function getModelLabel(): string

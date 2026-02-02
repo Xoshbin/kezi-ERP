@@ -55,7 +55,7 @@ class StockLocationResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('Configuration');
+        return __('inventory::navigation.groups.configuration');
     }
 
     public static function form(Schema $schema): Schema

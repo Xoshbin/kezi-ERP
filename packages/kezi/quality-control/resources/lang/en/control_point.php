@@ -2,6 +2,8 @@
 
 return [
     'navigation_label' => 'Control Points',
+    'label' => 'Control Point',
+    'plural_label' => 'Control Points',
     'section_basic' => 'Basic Information',
     'name' => 'Name',
     'trigger_operation' => 'Trigger Operation',

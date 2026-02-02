@@ -2,6 +2,8 @@
 
 return [
     'navigation_label' => 'ئامادەبوون',
+    'label' => 'ئامادەبوون',
+    'plural_label' => 'ئامادەبوونەکان',
     'employee' => 'فەرمانبەر',
     'attendance_date' => 'بەرواری ئامادەبوون',
     'clock_in_time' => 'کاتی دەستپێکردن',
