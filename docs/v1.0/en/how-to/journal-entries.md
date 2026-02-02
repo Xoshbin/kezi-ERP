@@ -1,122 +1,68 @@
 ---
-title: Journal Entries
-icon: heroicon-o-book-open
+title: Manual Journal Entries
+icon: heroicon-o-pencil-square
 order: 2
 ---
 
-# Journal Entries: Manual Accounting Records
+# Recording Manual Journal Entries
 
-This guide explains how **Journal Entries** work in the system. While most entries are created automatically (like creating an invoice), sometimes you need to record transactions manually to keep your books balanced.
-
----
-
-## What is a Journal Entry?
-
-Think of a **Journal Entry** as the raw data of accounting. It's a record of a financial transaction that affects at least two accounts.
-
-**Why does this matter?**
-1.  **Correction**: Fix mistakes or adjust balances.
-2.  **Non-standard transactions**: Record things like depreciation, payroll, or bank fees manually if needed.
-3.  **Opening Balances**: Bring in data from previous systems.
+While most accounting records are created automatically, you may need to record manual entries for adjustments, corrections, or non-standard transactions (like depreciation).
 
 ---
 
-## Where to Find It
+## When to Use Manual Entries
 
-Navigate to: **Accounting → Accounting → Journal Entries**
-
-You will see a list of all journal entries (both automatic and manual).
+Use this guide when you need to:
+1.  **Correct Mistakes**: Reclassify an expense to a different account.
+2.  **Record Depreciation**: Log monthly asset value loss.
+3.  **Accruals & Prepayments**: Adjust for income or expenses belonging to different periods.
+4.  **Opening Balances**: Record your initial account balances.
 
 ---
 
-## Creating a Manual Journal Entry
+## Creating a Manual Entry
 
-Let's walk through creating a new manual entry.
+### 1. Navigate to the Module
+Go to **Accounting → Accounting → Journal Entries** and click **Create**.
 
-### Step 1: Start Fresh
-
-Navigate to **Accounting → Journal Entries → Create**
-
-You'll see a form with these header fields:
+### 2. Enter Header Information
+Fill in the basic details for the entry:
 
 | Field | Description | Example |
-|-------|-------------|---------|
-| **Journal** | The book this entry belongs to (e.g., Miscellaneous, Bank) | "Miscellaneous Operations" |
-| **Reference** | A unique reference for this transaction | "ADJ/2024/001" |
-| **Date** | The date of the transaction | Today's date |
-| **Currency** | Transaction currency | "USD" |
+| :--- | :--- | :--- |
+| **Journal** | The specific "book" for this entry. | *Miscellaneous Operations* |
+| **Reference** | A unique ID or description for the adjustment. | *ADJ-2024-001* |
+| **Date** | The effective date of the transaction. | *2024-01-31* |
 
-### Step 2: Add Journal Items (Lines)
+### 3. Add Journal Items (The Double-Entry)
+Add lines to the entry. Every entry must have at least two lines, and **Total Debits must equal Total Credits**.
 
-This is where you define the "Double-Entry". You must add at least two lines.
+1.  **Select Account**: Choose the GL account affected.
+2.  **Partner (Optional)**: Select a vendor or customer if the line relates to one.
+3.  **Label**: Enter a clear description for this specific line.
+4.  **Debit / Credit**: Enter the amount. 
 
-| Field | Description |
-|-------|-------------|
-| **Account** | The general ledger account (e.g., 5001 Office Expense) |
-| **Partner** | (Optional) The customer or vendor associated with this line |
-| **Label** | Description of this specific line |
-| **Debit** | Amount increasing assets/expenses or decreasing liabilities/equity |
-| **Credit** | Amount increasing liabilities/equity/income or decreasing assets |
+> [!TIP]
+> Use the **Label** field to explain *why* this line is being recorded. This is invaluable during audits.
 
-> [!IMPORTANT]
-> **The Double-Entry Rule**: Total **Debit** must equal Total **Credit**. The system will not allow you to post an unbalanced entry.
-
-### Step 3: Review and Save
-
-1.  Check that the **Differences** amount at the bottom is **0.00**.
-2.  Click **Create** to save as a **Draft**.
+### 4. Verification and Posting
+1.  **Check Balance**: Ensure the "Difference" at the bottom of the table is **0.00**.
+2.  **Save as Draft**: Click **Create** to save your work. The entry is now in **Draft** status and has not yet affected your financials.
+3.  **Post**: Once reviewed, click **Post**. The entry is now finalized and locked.
 
 ---
 
-## Understanding Statuses
+## Reversing an Incorrect Entry
 
-Your journal entry goes through these stages:
+If you have already **Posted** an entry and discovered a mistake, you cannot edit it. You must reverse it:
 
-┌─────────┐      ┌─────────┐
-│  Draft  │ ──▶ │ Posted  │
-└─────────┘      └─────────┘
-    📝              ✅
-
-### 📝 Draft
-- The entry is saved but **does not affect** your financial reports yet.
-- You can still edit or delete it.
-- Useful for preparing entries before finalizing.
-
-### ✅ Posted
-- The entry is "official" and updates your General Ledger.
-- It is now locked and cannot be deleted (to ensure audit trails).
-- Appears in your Trial Balance and other reports.
-
----
-
-## Reversing an Entry
-
-If you made a mistake in a **Posted** entry, you cannot simply delete it. Instead, you must **Reverse** it.
-
-1.  Open the Posted entry.
-2.  Click the **Reverse Entry** button (if available) or create a new entry with opposite Debit/Credit values.
-3.  This creates a "cancellation" record, keeping your audit history clean.
-
----
-
-## Troubleshooting
-
-### Common Questions
-
-**Q: Why can't I post my entry?**
-A: Check if your debits and credits are equal. The system requires a balanced entry. Also, check if the date is within a **Locked Period**.
-
-**Q: Can I import entries?**
-A: Yes! Use the **Import** action on the list page to upload a CSV/Excel file of journal entries.
-
-**Q: Where is the money coming from?**
-A: Remember:
-- **Debit** = Asset increases (Money coming in/Expense incurred)
-- **Credit** = Liability/Income increases (Source of funds)
+1.  Open the Posted Journal Entry.
+2.  Click the **Reverse** button in the header.
+3.  Choose the reversal date (usually the same as the original or today).
+4.  The system creates a new entry with swapped Debit/Credit values to nullify the original.
 
 ---
 
 ## Related Documentation
-
-- [Chart of Accounts](chart-of-accounts.md) - Understanding your accounts
-- [General Ledger](general-ledger-report.md) - Seeing the big picture
+- [Automatic Journal Flow](../explanation/automatic-journal-flow.md) - How the system creates entries for you.
+- [Common GL Entry Types](../reference/common-gl-entry-types.md) - Quick reference for adjustment patterns.
