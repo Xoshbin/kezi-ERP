@@ -4,6 +4,8 @@ return [
     // Labels
     'label' => 'بەرهەم',
     'plural_label' => 'بەرهەمەکان',
+    'category' => 'هاوپۆل',
+    'categories' => 'هاوپۆلەکان',
     'create' => 'دروستکردنی بەرهەم',
 
     // Basic Information

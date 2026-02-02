@@ -52,7 +52,7 @@ class StockMoveResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('Operations');
+        return __('inventory::navigation.groups.operations');
     }
 
     public static function getModelLabel(): string

@@ -28,9 +28,19 @@ class QualityInspectionTemplateResource extends Resource
         return __('qualitycontrol::template.navigation_label');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('qualitycontrol::template.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('qualitycontrol::template.plural_label');
+    }
+
     public static function getNavigationGroup(): string
     {
-        return __('Configuration');
+        return __('qualitycontrol::navigation.groups.configuration');
     }
 
     public static function form(Schema $schema): Schema

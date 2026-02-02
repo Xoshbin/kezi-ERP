@@ -29,9 +29,19 @@ class QualityControlPointResource extends Resource
         return __('qualitycontrol::control_point.navigation_label');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('qualitycontrol::control_point.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('qualitycontrol::control_point.plural_label');
+    }
+
     public static function getNavigationGroup(): string
     {
-        return __('Configuration');
+        return __('qualitycontrol::navigation.groups.configuration');
     }
 
     public static function form(Schema $schema): Schema

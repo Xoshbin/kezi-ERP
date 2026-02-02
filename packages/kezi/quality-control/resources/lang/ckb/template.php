@@ -2,6 +2,8 @@
 
 return [
     'navigation_label' => 'قاڵبەکانی پشکنین',
+    'label' => 'قاڵبی پشکنین',
+    'plural_label' => 'قاڵبەکانی پشکنین',
     'section_basic' => 'زانیاری بنەڕەتی',
     'section_parameters' => 'پێوەرەکانی پشکنین',
     'name' => 'ناو',

@@ -38,7 +38,7 @@ class CompanyResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('General');
+        return __('foundation::navigation.groups.general_settings');
     }
 
     protected static ?string $cluster = SettingsCluster::class;
