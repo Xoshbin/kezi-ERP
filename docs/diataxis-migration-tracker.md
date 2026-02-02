@@ -12,7 +12,7 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
 
 | Module | Status | Total Docs | Completed |
 | :--- | :--- | :---: | :---: |
-| Accounting | 🟡 In Progress | 15 | 4 |
+| Accounting | 🟡 In Progress | 15 | 5 |
 | Inventory | 🔴 Pending | 10 | 0 |
 | HR & Payroll | 🔴 Pending | 5 | 0 |
 | Manufacturing | 🔴 Pending | 4 | 0 |
@@ -33,9 +33,10 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
     - [x] [Tutorial: Recording Your First Bill](v1.0/en/tutorials/recording-your-first-vendor-bill.md)
     - [x] [How-to: Manage Vendor Bills](v1.0/en/how-to/vendor-bills.md)
     - [x] [Explanation: Understanding Vendor Bills](v1.0/en/explanation/understanding-vendor-bills.md)
-- [ ] **Journal Entries**
-    - **Missing**: Reference tables for common GL entry types.
-    - **How to Update**: Focus the How-to on manual adjustments. Create an explanation doc for the "Automatic Journal Flow".
+- [x] **Journal Entries** (Migrated)
+    - [x] [How-to: Manual Journal Entries](v1.0/en/how-to/journal-entries.md)
+    - [x] [Explanation: Automatic Journal Flow](v1.0/en/explanation/automatic-journal-flow.md)
+    - [x] [Reference: Common GL Entry Types](v1.0/en/reference/common-gl-entry-types.md)
 - [ ] **Payments & Bank Recon**
 - [ ] **Opening Balances**
 - [ ] **Financial Reports** (General Ledger, P&L, Balance Sheet)
