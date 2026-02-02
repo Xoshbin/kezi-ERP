@@ -2,16 +2,16 @@
 
 use App\Models\Company;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Manufacturing\Actions\Accounting\CreateJournalEntryForManufacturingAction;
-use Modules\Manufacturing\Enums\ManufacturingOrderStatus;
-use Modules\Manufacturing\Models\BillOfMaterial;
-use Modules\Manufacturing\Models\ManufacturingOrder;
-use Modules\Manufacturing\Models\ManufacturingOrderLine;
-use Modules\Product\Models\Product;
+use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Models\Journal;
+use Kezi\Accounting\Models\JournalEntry;
+use Kezi\Inventory\Models\StockLocation;
+use Kezi\Manufacturing\Actions\Accounting\CreateJournalEntryForManufacturingAction;
+use Kezi\Manufacturing\Enums\ManufacturingOrderStatus;
+use Kezi\Manufacturing\Models\BillOfMaterial;
+use Kezi\Manufacturing\Models\ManufacturingOrder;
+use Kezi\Manufacturing\Models\ManufacturingOrderLine;
+use Kezi\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

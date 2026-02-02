@@ -2,10 +2,10 @@
 
 use App\Models\Company;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Enums\Accounting\RootAccountType;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\AccountGroup;
-use Modules\Accounting\Services\AccountGroupService;
+use Kezi\Accounting\Enums\Accounting\RootAccountType;
+use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Models\AccountGroup;
+use Kezi\Accounting\Services\AccountGroupService;
 
 uses(RefreshDatabase::class);
 

@@ -3,35 +3,35 @@
 use App\Models\User;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
+use Kezi\Accounting\Enums\Accounting\AccountType;
+use Kezi\Accounting\Enums\Accounting\JournalType;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ViewInvoice;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ViewVendorBill;
+use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Models\JournalEntry;
+use Kezi\Foundation\Enums\Partners\PartnerType;
+use Kezi\Foundation\Models\Partner;
+use Kezi\Inventory\Enums\Inventory\InventoryAccountingMode;
+use Kezi\Inventory\Enums\Inventory\StockPickingState;
+use Kezi\Inventory\Models\StockPicking;
+use Kezi\Product\Enums\Products\ProductType;
+use Kezi\Product\Models\Product;
+use Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\CreatePurchaseOrder;
+use Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\EditPurchaseOrder;
+use Kezi\Purchase\Models\PurchaseOrder;
+use Kezi\Purchase\Models\VendorBill;
+use Kezi\Sales\Enums\Sales\InvoiceStatus;
+use Kezi\Sales\Enums\Sales\SalesOrderStatus;
+use Kezi\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\CreateSalesOrder;
+use Kezi\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\EditSalesOrder;
+use Kezi\Sales\Models\Invoice;
+use Kezi\Sales\Models\SalesOrder;
 use Livewire\Livewire;
-use Modules\Accounting\Enums\Accounting\AccountType;
-use Modules\Accounting\Enums\Accounting\JournalType;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ViewInvoice;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ViewVendorBill;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Foundation\Enums\Partners\PartnerType;
-use Modules\Foundation\Models\Partner;
-use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
-use Modules\Inventory\Enums\Inventory\StockPickingState;
-use Modules\Inventory\Models\StockPicking;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Product\Models\Product;
-use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
-use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\CreatePurchaseOrder;
-use Modules\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\EditPurchaseOrder;
-use Modules\Purchase\Models\PurchaseOrder;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Modules\Sales\Enums\Sales\SalesOrderStatus;
-use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\CreateSalesOrder;
-use Modules\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\EditSalesOrder;
-use Modules\Sales\Models\Invoice;
-use Modules\Sales\Models\SalesOrder;
 use Tests\Builders\CompanyBuilder;
 
 // Phase 1 Setup
@@ -102,7 +102,7 @@ beforeEach(function () {
 
     // Assign Permissions
     app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
-    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
     setPermissionsTeamId($this->company->id);
     $this->user->assignRole('super_admin');
 
@@ -220,7 +220,7 @@ test('capital investment and trading cycle flow', function () {
     // We'll try calling 'validate' and if it fails we might need to fill 'lines' with qty_done.
     // Handle Draft -> Confirmed -> Assigned -> Done workflow
     if ($picking->state === StockPickingState::Draft) {
-        Livewire::test(\Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking::class, [
+        Livewire::test(\Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking::class, [
             'record' => $picking->getRouteKey(),
         ])
             ->callAction('confirm');
@@ -230,7 +230,7 @@ test('capital investment and trading cycle flow', function () {
 
     // Conditionally assign if Confirmed
     if ($picking->state === StockPickingState::Confirmed) {
-        Livewire::test(\Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking::class, [
+        Livewire::test(\Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking::class, [
             'record' => $picking->getRouteKey(),
         ])
             ->mountAction('assign')
@@ -246,7 +246,7 @@ test('capital investment and trading cycle flow', function () {
     expect($picking->stockMoves->first()->productLines->count())->toBeGreaterThan(0);
 
     // Validate using ValidateStockPicking page
-    Livewire::test(\Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ValidateStockPicking::class, [
+    Livewire::test(\Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ValidateStockPicking::class, [
         'record' => $picking,
     ])
         ->callAction('validate')
@@ -341,7 +341,7 @@ test('capital investment and trading cycle flow', function () {
 
     // Handle Draft state for Delivery
     if ($delivery->state === StockPickingState::Draft) {
-        Livewire::test(\Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking::class, [
+        Livewire::test(\Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking::class, [
             'record' => $delivery->getRouteKey(),
         ])
             ->callAction('confirm');
@@ -351,7 +351,7 @@ test('capital investment and trading cycle flow', function () {
 
     // Conditionally assign if Confirmed
     if ($delivery->state === StockPickingState::Confirmed) {
-        Livewire::test(\Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking::class, [
+        Livewire::test(\Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ViewStockPicking::class, [
             'record' => $delivery->getRouteKey(),
         ])
             ->mountAction('assign')
@@ -361,7 +361,7 @@ test('capital investment and trading cycle flow', function () {
     }
 
     // Validate using ValidateStockPicking page
-    Livewire::test(\Modules\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ValidateStockPicking::class, [
+    Livewire::test(\Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages\ValidateStockPicking::class, [
         'record' => $delivery,
     ])
         ->callAction('validate');
@@ -411,6 +411,6 @@ test('capital investment and trading cycle flow', function () {
     // expect($this->cashAccount->balance->getAmount()->toInt())->toBe(7200000); // 72,000.00
 
     // Check P&L via ViewProfitAndLoss page?
-    // Livewire::test(\Modules\Accounting\Filament\Clusters\Accounting\Pages\Reports\ViewProfitAndLoss::class)
+    // Livewire::test(\Kezi\Accounting\Filament\Clusters\Accounting\Pages\Reports\ViewProfitAndLoss::class)
     //    ->assertSee('12,000');
 });
