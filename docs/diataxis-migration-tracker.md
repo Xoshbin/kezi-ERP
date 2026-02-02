@@ -12,7 +12,7 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
 
 | Module | Status | Total Docs | Completed |
 | :--- | :--- | :---: | :---: |
-| Accounting | 🟡 In Progress | 15 | 5 |
+| Accounting | 🟡 In Progress | 15 | 10 |
 | Inventory | 🔴 Pending | 10 | 0 |
 | HR & Payroll | 🔴 Pending | 5 | 0 |
 | Manufacturing | 🔴 Pending | 4 | 0 |
@@ -37,7 +37,12 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
     - [x] [How-to: Manual Journal Entries](v1.0/en/how-to/journal-entries.md)
     - [x] [Explanation: Automatic Journal Flow](v1.0/en/explanation/automatic-journal-flow.md)
     - [x] [Reference: Common GL Entry Types](v1.0/en/reference/common-gl-entry-types.md)
-- [ ] **Payments & Bank Recon**
+- [x] **Payments & Bank Recon** (Migrated)
+    - [x] [Tutorial: Paying Your First Vendor Bill](v1.0/en/tutorials/paying-vendor-bill.md)
+    - [x] [How-to: Recording Payments](v1.0/en/how-to/recording-payments.md)
+    - [x] [How-to: Bank Reconciliation](v1.0/en/how-to/bank-reconciliation.md)
+    - [x] [Explanation: Understanding Reconciliation](v1.0/en/explanation/understanding-reconciliation.md)
+    - [x] [Reference: Payment Methods & Statuses](v1.0/en/reference/payment-methods.md)
 - [ ] **Opening Balances**
 - [ ] **Financial Reports** (General Ledger, P&L, Balance Sheet)
 
