@@ -4,10 +4,10 @@ namespace Tests\Unit\Accounting\Services;
 
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Enums\Assets\DepreciationMethod;
-use Modules\Accounting\Models\Asset;
-use Modules\Accounting\Services\AssetService;
-use Modules\Foundation\Models\Currency;
+use Kezi\Accounting\Enums\Assets\DepreciationMethod;
+use Kezi\Accounting\Models\Asset;
+use Kezi\Accounting\Services\AssetService;
+use Kezi\Foundation\Models\Currency;
 use Tests\TestCase;
 
 class AssetDepreciationTest extends TestCase
@@ -22,7 +22,7 @@ class AssetDepreciationTest extends TestCase
     {
         parent::setUp();
         $this->service = app(AssetService::class);
-        $this->currency = Currency::factory()->create(['code' => 'USD']);
+        $this->currency = Currency::factory()->createSafely(['code' => 'USD']);
     }
 
     public function test_straight_line_standard()

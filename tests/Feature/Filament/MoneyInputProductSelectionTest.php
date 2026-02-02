@@ -20,13 +20,13 @@ class MoneyInputProductSelectionTest extends TestCase
 
     private User $user;
 
-    private \Modules\Foundation\Models\Currency $currency;
+    private \Kezi\Foundation\Models\Currency $currency;
 
-    private \Modules\Foundation\Models\Partner $vendor;
+    private \Kezi\Foundation\Models\Partner $vendor;
 
-    private \Modules\Product\Models\Product $product;
+    private \Kezi\Product\Models\Product $product;
 
-    private \Modules\Accounting\Models\Account $expenseAccount;
+    private \Kezi\Accounting\Models\Account $expenseAccount;
 
     protected function setUp(): void
     {
@@ -35,21 +35,21 @@ class MoneyInputProductSelectionTest extends TestCase
         // Create test data
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
-        $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+        $this->currency = \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD']);
 
         $this->company->update(['currency_id' => $this->currency->id]);
 
-        $this->vendor = \Modules\Foundation\Models\Partner::factory()->vendor()->create([
+        $this->vendor = \Kezi\Foundation\Models\Partner::factory()->vendor()->create([
             'company_id' => $this->company->id,
         ]);
 
-        $this->expenseAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $this->expenseAccount = \Kezi\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'expense',
         ]);
 
         // Create a product with a specific Money unit price
-        $this->product = \Modules\Product\Models\Product::factory()->create([
+        $this->product = \Kezi\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Test Product',
             'unit_price' => Money::of('150.75', $this->currency->code), // Specific price to test
@@ -111,7 +111,7 @@ class MoneyInputProductSelectionTest extends TestCase
     public function it_handles_products_with_different_price_formats(): void
     {
         // Test with integer price
-        $integerProduct = \Modules\Product\Models\Product::factory()->create([
+        $integerProduct = \Kezi\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Integer Price Product',
             'unit_price' => Money::of('100', $this->currency->code),
@@ -119,7 +119,7 @@ class MoneyInputProductSelectionTest extends TestCase
         ]);
 
         // Test with decimal price
-        $decimalProduct = \Modules\Product\Models\Product::factory()->create([
+        $decimalProduct = \Kezi\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Decimal Price Product',
             'unit_price' => Money::of('99.99', $this->currency->code),
@@ -162,7 +162,7 @@ class MoneyInputProductSelectionTest extends TestCase
     public function it_handles_products_with_null_unit_price(): void
     {
         // Create a product with null unit price
-        $nullPriceProduct = \Modules\Product\Models\Product::factory()->create([
+        $nullPriceProduct = \Kezi\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'No Price Product',
             'unit_price' => null,

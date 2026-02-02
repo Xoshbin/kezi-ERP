@@ -1,0 +1,11 @@
+{
+    "name": "ProjectManagement",
+    "alias": "projectmanagement",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Kezi\\ProjectManagement\\Providers\\ProjectManagementServiceProvider"
+    ],
+    "files": []
+}

@@ -3,9 +3,9 @@
 use App\Models\Company;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Modules\Sales\Actions\Sales\GenerateInvoicePdfAction;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Modules\Sales\Models\Invoice;
+use Kezi\Sales\Actions\Sales\GenerateInvoicePdfAction;
+use Kezi\Sales\Enums\Sales\InvoiceStatus;
+use Kezi\Sales\Models\Invoice;
 
 Route::get('/', function () {
     return view('welcome');

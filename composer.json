@@ -13,20 +13,33 @@
         "barryvdh/laravel-dompdf": "^3.1",
         "bezhansalleh/filament-shield": "^4.0",
         "brick/money": "^0.10.1",
-        "coolsam/modules": "^5.0",
         "craft-forge/filament-language-switcher": "^1.0",
         "dutchcodingcompany/filament-developer-logins": "^2.0",
         "filament/filament": "^4.0",
+        "kezi/accounting": "*",
+        "kezi/foundation": "*",
+        "kezi/hr": "*",
+        "kezi/inventory": "*",
+        "kezi/manufacturing": "*",
+        "kezi/payment": "*",
+        "kezi/product": "*",
+        "kezi/project-management": "*",
+        "kezi/purchase": "*",
+        "kezi/quality-control": "*",
+        "kezi/sales": "*",
         "lara-zeus/spatie-translatable": "^1.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "nwidart/laravel-modules": "^11.0",
         "pxlrbt/filament-environment-indicator": "^3.2",
         "xoshbin/filament-custom-fields": "^0.0.2@beta",
         "xoshbin/filament-translatable-select": "dev-main",
-        "xoshbin/pertuk": "^0.0.4"
+        "xoshbin/pertuk": "^0.1"
     },
     "repositories": [
+        {
+            "type": "path",
+            "url": "packages/*/*"
+        },
         {
             "type": "vcs",
             "url": "https://github.com/xoshbin/filament-custom-fields"
@@ -36,7 +49,7 @@
         "barryvdh/laravel-ide-helper": "^3.6",
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.0",
-        "laravel/boost": "^1.1",
+        "laravel/boost": "^2.0",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.41",
@@ -51,18 +64,7 @@
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/",
-            "Modules\\Accounting\\": "Modules/Accounting/app/",
-            "Modules\\Foundation\\": "Modules/Foundation/app/",
-            "Modules\\HR\\": "Modules/HR/app/",
-            "Modules\\Inventory\\": "Modules/Inventory/app/",
-            "Modules\\Manufacturing\\": "Modules/Manufacturing/app/",
-            "Modules\\Payment\\": "Modules/Payment/app/",
-            "Modules\\Product\\": "Modules/Product/app/",
-            "Modules\\ProjectManagement\\": "Modules/ProjectManagement/app/",
-            "Modules\\Purchase\\": "Modules/Purchase/app/",
-            "Modules\\QualityControl\\": "Modules/QualityControl/app/",
-            "Modules\\Sales\\": "Modules/Sales/app/"
+            "Database\\Seeders\\": "database/seeders/"
         }
     },
     "autoload-dev": {
@@ -101,11 +103,6 @@
     "extra": {
         "laravel": {
             "dont-discover": []
-        },
-        "merge-plugin": {
-            "include": [
-                "Modules/*/composer.json"
-            ]
         }
     },
     "config": {
@@ -114,8 +111,7 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "php-http/discovery": true,
-            "wikimedia/composer-merge-plugin": true
+            "php-http/discovery": true
         }
     },
     "minimum-stability": "dev",

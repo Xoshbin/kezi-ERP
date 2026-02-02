@@ -1,0 +1,11 @@
+{
+    "name": "Product",
+    "alias": "product",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Kezi\\Product\\Providers\\ProductServiceProvider"
+    ],
+    "files": []
+}

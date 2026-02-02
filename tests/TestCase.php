@@ -12,12 +12,21 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
  *
  * @property \App\Models\Company $company
  * @property \App\Models\User $user
- * @property \Modules\Foundation\Models\Partner $partner
- * @property \Modules\Foundation\Models\Currency $currency
- * @property \Modules\Product\Models\Product $product
- * @property \Modules\Accounting\Models\Account $account
+ * @property \Kezi\Foundation\Models\Partner $partner
+ * @property \Kezi\Foundation\Models\Currency $currency
+ * @property \Kezi\Product\Models\Product $product
+ * @property \Kezi\Accounting\Models\Account $account
+ * @property \Kezi\Accounting\Models\Account $inventoryAccount
+ * @property \Kezi\Accounting\Models\Account $stockInputAccount
+ * @property \Kezi\Accounting\Models\Account $cogsAccount
+ * @property \Kezi\Inventory\Models\StockLocation $vendorLocation
+ * @property \Kezi\Inventory\Models\StockLocation $stockLocation
+ * @property \Kezi\Inventory\Models\StockLocation $adjustmentLocation
+ * @property \Kezi\Inventory\Models\StockLocation $customerLocation
+ * @property \Kezi\Foundation\Models\Partner $vendor
  *
  * @method void setupWithConfiguredCompany()
+ * @method void setupInventoryTestEnvironment()
  * @method \Mockery\MockInterface mock(string $abstract, \Closure $mock = null)
  */
 abstract class TestCase extends BaseTestCase
@@ -31,6 +40,10 @@ abstract class TestCase extends BaseTestCase
 
         // Ensure Faker uses a known-good locale with all expected providers
         config()->set('app.faker_locale', 'en_US');
+
+        // Set default locale for URL generation to fix issues with routes requiring {locale}
+        $version = \Xoshbin\Pertuk\Services\DocumentationService::getAvailableVersions()[0] ?? 'v1.0';
+        \Illuminate\Support\Facades\URL::defaults(['locale' => 'en', 'version' => $version]);
 
         // Use Laravel's default Faker generator with en_US locale for full provider set
         // Avoid overriding the generator manually to preserve all default providers.

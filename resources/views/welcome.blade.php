@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Jmeryar</title>
+    <title>Kezi</title>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
@@ -28,7 +28,7 @@
             <div class="container mx-auto px-6 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <a href="/" class="text-2xl font-bold text-gray-800 dark:text-white">Jmeryar</a>
+                        <a href="/" class="text-2xl font-bold text-gray-800 dark:text-white">Kezi</a>
                     </div>
                     <nav class="hidden md:flex items-center space-x-6">
                         @if (Route::has('login'))
@@ -122,7 +122,7 @@
         <footer class="bg-white dark:bg-gray-800 py-8">
             <div class="container mx-auto px-6">
                 <div class="flex flex-col md:flex-row items-center justify-between">
-                    <p class="text-gray-600 dark:text-gray-300">&copy; {{ date('Y') }} Jmeryar. All rights reserved.
+                    <p class="text-gray-600 dark:text-gray-300">&copy; {{ date('Y') }} Kezi. All rights reserved.
                     </p>
                     <div class="flex mt-4 md:mt-0 space-x-6">
                         <a href="#"

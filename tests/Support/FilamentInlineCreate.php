@@ -5,7 +5,7 @@ namespace Tests\Support;
 use App\Models\Company;
 use Filament\Facades\Filament;
 use Illuminate\Support\Arr;
-use Modules\Foundation\Enums\Partners\PartnerType;
+use Kezi\Foundation\Enums\Partners\PartnerType;
 
 class FilamentInlineCreate
 {
@@ -19,7 +19,7 @@ class FilamentInlineCreate
         return auth()->user()?->companies()->firstOrFail()->getKey();
     }
 
-    public static function partner(array $overrides = []): \Modules\Foundation\Models\Partner
+    public static function partner(array $overrides = []): \Kezi\Foundation\Models\Partner
     {
         $defaults = [
             'company_id' => self::companyId(),
@@ -28,10 +28,10 @@ class FilamentInlineCreate
             'email' => 'ap@test.local',
         ];
 
-        return \Modules\Foundation\Models\Partner::factory()->create(array_merge($defaults, $overrides));
+        return \Kezi\Foundation\Models\Partner::factory()->create(array_merge($defaults, $overrides));
     }
 
-    public static function currency(array $overrides = []): \Modules\Foundation\Models\Currency
+    public static function currency(array $overrides = []): \Kezi\Foundation\Models\Currency
     {
         $defaults = [
             'code' => 'EUR',
@@ -39,7 +39,7 @@ class FilamentInlineCreate
             'symbol' => '€',
         ];
 
-        return \Modules\Foundation\Models\Currency::query()->firstOrCreate(
+        return \Kezi\Foundation\Models\Currency::query()->firstOrCreate(
             ['code' => Arr::get($overrides, 'code', $defaults['code'])],
             array_merge($defaults, $overrides)
         );
@@ -60,18 +60,18 @@ class FilamentInlineCreate
         return Journal::factory()->for($company)->create($data);
     }
 
-    public static function account(array $overrides = []): \Modules\Accounting\Models\Account
+    public static function account(array $overrides = []): \Kezi\Accounting\Models\Account
     {
         $company = $overrides['company'] ?? auth()->user()?->companies()->first();
 
         $defaults = [
             'code' => '100100',
             'name' => 'Main Bank',
-            'type' => \Modules\Accounting\Enums\Accounting\AccountType::BankAndCash,
+            'type' => \Kezi\Accounting\Enums\Accounting\AccountType::BankAndCash,
         ];
 
         $data = array_merge($defaults, Arr::except($overrides, ['company']));
 
-        return \Modules\Accounting\Models\Account::factory()->for($company)->create($data);
+        return \Kezi\Accounting\Models\Account::factory()->for($company)->create($data);
     }
 }

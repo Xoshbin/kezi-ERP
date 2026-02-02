@@ -282,27 +282,36 @@ return [
 | Operational | Original Module Cluster | Invoices, Bills, Payments, Journal Entries, Stock Moves |
 
 ## 10. Documentation Standards
-
-**Rule:** All user-facing documentation **MUST** follow the friendly, approachable style defined in `docs/DOCUMENTATION_STANDARD.md`.
-
-### 10.1. Writing Style
-
-- **Conversational Tone:** Write as if explaining to a smart friend who's new to accounting software.
-- **Plain Language:** Avoid jargon; when technical terms are necessary, explain them immediately.
-- **Visual Aids:** Use emoji, ASCII diagrams, and tables to improve scannability.
-- **Real Examples:** Provide concrete, realistic business scenarios—not abstract theory.
-
-### 10.2. Required Elements
-
-Every user guide **MUST** include:
-
-| Section | Purpose |
-|---------|---------|
-| "What is...?" | Explain the concept in simple terms |
-| "Where to Find It" | Navigation instructions with bold menu paths |
-| Step-by-Step Guide | Numbered steps with field descriptions |
-| Troubleshooting | Q&A format for common issues |
-| Related Docs | Links to related guides |
+ 
+ **Rule:** All documentation **MUST** follow the **Diátaxis framework**, which categorizes documentation into four distinct quadrants based on user needs. See [docs/DOCUMENTATION_STANDARD.md](../../docs/DOCUMENTATION_STANDARD.md) for the complete guide.
+ 
+ ### 10.1. The 4 Quadrants
+ 
+ | Quadrant | Goal | Tone | Directory |
+ | :--- | :--- | :--- | :--- |
+ | **1. Tutorials** | *Learning*: Guide beginners through a complete workflow. | Teacher ("Let's do this") | `docs/tutorials/` |
+ | **2. How-to Guides** | *Task*: Solve a specific problem for a user who is stuck. | Helper ("How to X") | `docs/how-to/` |
+ | **3. Reference** | *Information*: Technical facts and specs (APIs, Classes). | Neutral/Dictionary | `docs/reference/` |
+ | **4. Explanation** | *Understanding*: Context, history, and design decisions. | Architect/Expert | `docs/explanation/` |
+ 
+ ### 10.2. Writing Style
+ 
+ - **Conversational Tone:** Especially for Tutorials and How-to guides, write as if explaining to a smart friend.
+ - **Plain Language:** Avoid jargon; explain technical terms immediately.
+ - **Visual Aids:** Use emojis, ASCII diagrams, and tables.
+ - **Real Examples:** Provide concrete, realistic business scenarios.
+ 
+ ### 10.3. Required Elements (User Guides)
+ 
+ Most "User Guides" fall into **How-to** or **Tutorials**. Ensure they include:
+ 
+ | Section | Purpose |
+ |---------|---------|
+ | "What is...?" | Explain the concept in simple terms |
+ | "Where to Find It" | Navigation instructions with bold menu paths |
+ | Step-by-Step Guide | Numbered steps with field descriptions |
+ | Troubleshooting | Q&A format for common issues |
+ | Related Docs | Links to related quadrants |
 
 ### 10.3. Formatting Rules
 
@@ -404,4 +413,48 @@ it('can create an invoice', function () {
     assertDatabaseHas('invoices', ['customer_id' => $customer->id]);
 });
 ```
+
+## 13. Progressive Disclosure UI Pattern
+
+**Rule:** When implementing complex line items (Repeaters) that exceed 5-6 core fields or cause horizontal overflow, use the **Progressive Disclosure** pattern.
+
+### 13.1. Concept
+- **Essential Fields:** Display only the absolute minimum fields required for the 90% use case directly in the table (e.g., Product, Quantity, Price).
+- **Advanced Fields:** Move secondary or specialized accounting fields (e.g., Deferred Dates, Shipping Types, Asset Categories) into a **Slide-Over Drawer**.
+- **Access:** Add an "Advanced Settings" action to each line item using `extraItemActions()`.
+
+### 13.2. Implementation (Filament 4)
+
+Use `extraItemActions()` with a `slideOver()` action. Ensure state is persisted correctly.
+
+```php
+Repeater::make('lines')
+    ->table([
+        TableColumn::make('product_id')->width('20%'),
+        // ... only 5-6 essential columns
+    ])
+    ->extraItemActions([
+        \Filament\Actions\Action::make('advanced_settings')
+            ->label(__('Advanced Settings'))
+            ->icon('heroicon-m-cog-6-tooth')
+            ->slideOver()
+            ->form([
+                Section::make('Deferred Accounting')
+                    ->schema([
+                        DatePicker::make('deferred_start_date'),
+                        DatePicker::make('deferred_end_date'),
+                    ])->columns(2),
+            ])
+            ->fillForm(fn (Repeater $component, array $arguments) => $component->getRawItemState($arguments['item']))
+            ->action(function (array $data, Repeater $component, array $arguments) {
+                $item = $arguments['item'];
+                $state = $component->getState();
+                $state[$item] = array_merge($state[$item], $data);
+                $component->state($state);
+            }),
+    ])
+```
+
+### 13.3. Real Example: Vendor Bill Lines
+The `VendorBillResource.php` implements this pattern to keep the billing interface clean while supporting complex landed costs and asset acquisitions.
 

@@ -4,13 +4,21 @@ namespace Tests\Traits;
 
 use App\Models\User;
 use Filament\Facades\Filament;
-use Modules\Inventory\Enums\Inventory\StockLocationType;
-use Modules\Inventory\Models\StockLocation;
+use Kezi\Inventory\Enums\Inventory\StockLocationType;
+use Kezi\Inventory\Models\StockLocation;
 use Tests\Builders\CompanyBuilder;
 
 /**
  * @property \App\Models\Company $company
  * @property \App\Models\User $user
+ * @property \Kezi\Accounting\Models\Account $inventoryAccount
+ * @property \Kezi\Accounting\Models\Account $stockInputAccount
+ * @property \Kezi\Accounting\Models\Account $cogsAccount
+ * @property \Kezi\Inventory\Models\StockLocation $vendorLocation
+ * @property \Kezi\Inventory\Models\StockLocation $stockLocation
+ * @property \Kezi\Inventory\Models\StockLocation $adjustmentLocation
+ * @property \Kezi\Inventory\Models\StockLocation $customerLocation
+ * @property \Kezi\Foundation\Models\Partner $vendor
  */
 trait WithConfiguredCompany
 {
@@ -21,7 +29,7 @@ trait WithConfiguredCompany
 
         // Seed roles and permissions
         if (\Spatie\Permission\Models\Role::count() === 0) {
-            $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+            $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
         }
 
         $this->company = CompanyBuilder::new()
@@ -63,7 +71,7 @@ trait WithConfiguredCompany
 
         // Set the current panel to ensures URL generation and middleware work correctly
         \Filament\Facades\Filament::setTenant($this->company);
-        \Filament\Facades\Filament::setCurrentPanel(\Filament\Facades\Filament::getPanel('jmeryar'));
+        \Filament\Facades\Filament::setCurrentPanel(\Filament\Facades\Filament::getPanel('kezi'));
 
         // Set up Filament tenant context
         Filament::setTenant($this->company);
@@ -76,9 +84,9 @@ trait WithConfiguredCompany
     protected function setupInventoryTestEnvironment(): void
     {
         // 1. Create inventory-specific GL accounts
-        $this->inventoryAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Valuation', 'type' => 'current_assets']);
-        $this->stockInputAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Input', 'type' => 'current_liabilities']);
-        $this->cogsAccount = \Modules\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Cost of Goods Sold', 'type' => 'expense']);
+        $this->inventoryAccount = \Kezi\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Valuation', 'type' => 'current_assets']);
+        $this->stockInputAccount = \Kezi\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Input', 'type' => 'current_liabilities']);
+        $this->cogsAccount = \Kezi\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Cost of Goods Sold', 'type' => 'expense']);
 
         // 2. Create the necessary physical locations
         $this->vendorLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::Vendor]);
@@ -96,6 +104,6 @@ trait WithConfiguredCompany
         ]);
 
         // 4. Create a default vendor for the tests
-        $this->vendor = \Modules\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor]);
+        $this->vendor = \Kezi\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Kezi\Foundation\Enums\Partners\PartnerType::Vendor]);
     }
 }

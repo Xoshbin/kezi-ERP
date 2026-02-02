@@ -5,45 +5,45 @@ use Brick\Money\Money;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
-use Modules\Accounting\Enums\Accounting\AccountType;
-use Modules\Accounting\Enums\Accounting\JournalType;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Enums\Partners\PartnerType;
-use Modules\Foundation\Models\Partner;
-use Modules\Inventory\Actions\GoodsReceipt\CreateGoodsReceiptFromPurchaseOrderAction;
-use Modules\Inventory\Actions\GoodsReceipt\ValidateGoodsReceiptAction;
-use Modules\Inventory\DataTransferObjects\ReceiveGoodsFromPurchaseOrderDTO;
-use Modules\Inventory\DataTransferObjects\ReceiveGoodsLineDTO;
-use Modules\Inventory\DataTransferObjects\ValidateGoodsReceiptDTO;
-use Modules\Inventory\Enums\Inventory\StockLocationType;
-use Modules\Inventory\Enums\Inventory\StockPickingState;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Payment\Actions\Payments\CreatePaymentAction;
-use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
-use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
-use Modules\Payment\Enums\Payments\PaymentMethod;
-use Modules\Payment\Enums\Payments\PaymentStatus;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Payment\Services\PaymentService;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Product\Models\Product;
-use Modules\Purchase\Actions\Purchases\ConvertRFQToPurchaseOrderAction;
-use Modules\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
-use Modules\Purchase\Actions\Purchases\RecordVendorBidAction;
-use Modules\Purchase\Actions\Purchases\SendRequestForQuotationAction;
-use Modules\Purchase\DataTransferObjects\Purchases\ConvertRFQToPurchaseOrderDTO;
-use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
-use Modules\Purchase\DataTransferObjects\Purchases\UpdateRFQDTO;
-use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
-use Modules\Purchase\Enums\Purchases\RequestForQuotationStatus;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
-use Modules\Purchase\Models\PurchaseOrder;
-use Modules\Purchase\Models\RequestForQuotation;
-use Modules\Purchase\Models\RequestForQuotationLine;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Purchase\Services\PurchaseOrderService;
-use Modules\Purchase\Services\VendorBillService;
+use Kezi\Accounting\Enums\Accounting\AccountType;
+use Kezi\Accounting\Enums\Accounting\JournalType;
+use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Models\Journal;
+use Kezi\Foundation\Enums\Partners\PartnerType;
+use Kezi\Foundation\Models\Partner;
+use Kezi\Inventory\Actions\GoodsReceipt\CreateGoodsReceiptFromPurchaseOrderAction;
+use Kezi\Inventory\Actions\GoodsReceipt\ValidateGoodsReceiptAction;
+use Kezi\Inventory\DataTransferObjects\ReceiveGoodsFromPurchaseOrderDTO;
+use Kezi\Inventory\DataTransferObjects\ReceiveGoodsLineDTO;
+use Kezi\Inventory\DataTransferObjects\ValidateGoodsReceiptDTO;
+use Kezi\Inventory\Enums\Inventory\StockLocationType;
+use Kezi\Inventory\Enums\Inventory\StockPickingState;
+use Kezi\Inventory\Models\StockLocation;
+use Kezi\Payment\Actions\Payments\CreatePaymentAction;
+use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Kezi\Payment\Enums\Payments\PaymentMethod;
+use Kezi\Payment\Enums\Payments\PaymentStatus;
+use Kezi\Payment\Enums\Payments\PaymentType;
+use Kezi\Payment\Services\PaymentService;
+use Kezi\Product\Enums\Products\ProductType;
+use Kezi\Product\Models\Product;
+use Kezi\Purchase\Actions\Purchases\ConvertRFQToPurchaseOrderAction;
+use Kezi\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
+use Kezi\Purchase\Actions\Purchases\RecordVendorBidAction;
+use Kezi\Purchase\Actions\Purchases\SendRequestForQuotationAction;
+use Kezi\Purchase\DataTransferObjects\Purchases\ConvertRFQToPurchaseOrderDTO;
+use Kezi\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
+use Kezi\Purchase\DataTransferObjects\Purchases\UpdateRFQDTO;
+use Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Kezi\Purchase\Enums\Purchases\RequestForQuotationStatus;
+use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
+use Kezi\Purchase\Models\PurchaseOrder;
+use Kezi\Purchase\Models\RequestForQuotation;
+use Kezi\Purchase\Models\RequestForQuotationLine;
+use Kezi\Purchase\Models\VendorBill;
+use Kezi\Purchase\Services\PurchaseOrderService;
+use Kezi\Purchase\Services\VendorBillService;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(WithConfiguredCompany::class);
@@ -187,7 +187,7 @@ test('full purchase cycle: rfq -> po -> receipt -> bill -> payment', function ()
         new ReceiveGoodsLineDTO(
             purchaseOrderLineId: $poLine->id,
             quantityToReceive: 50
-        )
+        ),
     ];
 
     $validateDto = new ValidateGoodsReceiptDTO(
@@ -253,7 +253,7 @@ test('full purchase cycle: rfq -> po -> receipt -> bill -> payment', function ()
             document_type: 'vendor_bill',
             document_id: $vendorBill->id,
             amount_applied: $paymentAmount
-        )
+        ),
     ];
 
     $paymentDto = new CreatePaymentDTO(
