@@ -1,17 +1,16 @@
 <?php
 
 use App\Models\User;
-use Modules\Product\Models\Product;
-use Modules\Sales\Actions\CreateInvoiceAction;
-use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
-use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-use Modules\Foundation\Models\Partner;
-use Tests\Builders\CompanyBuilder;
-use Filament\Facades\Filament;
-use Illuminate\Validation\ValidationException;
-use Modules\Accounting\Models\Account;
 use Brick\Money\Money;
-use Modules\Sales\Services\InvoiceService;
+use Filament\Facades\Filament;
+use Kezi\Accounting\Models\Account;
+use Kezi\Foundation\Models\Partner;
+use Kezi\Product\Models\Product;
+use Kezi\Sales\Actions\CreateInvoiceAction;
+use Kezi\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
+use Kezi\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
+use Kezi\Sales\Services\InvoiceService;
+use Tests\Builders\CompanyBuilder;
 
 uses(Tests\Traits\WithConfiguredCompany::class);
 
@@ -65,7 +64,7 @@ it('isolates product visibility between companies in database', function () {
 it('prevents user from accessing another companies resources via URL', function () {
     // User B trying to access Company A's product list
     $response = $this->actingAs($this->userB)
-        ->get("/jmeryar/{$this->companyA->id}/products");
+        ->get("/kezi/{$this->companyA->id}/products");
 
     expect($response->status())->toBeIn([403, 404]);
 });
@@ -74,11 +73,11 @@ it('prevents cross-company usage in invoice creation', function () {
     // Attempt to create an invoice in Company B using Company A's product
 
     // Create a product in Company A with a valid income account in Company A
-    $incomeAccountA = Account::factory()->for($this->companyA)->create(['type' => \Modules\Accounting\Enums\Accounting\AccountType::Income]);
+    $incomeAccountA = Account::factory()->for($this->companyA)->create(['type' => \Kezi\Accounting\Enums\Accounting\AccountType::Income]);
     $productA = Product::factory()->for($this->companyA)->create([
         'unit_price' => 100,
         'income_account_id' => $incomeAccountA->id,
-        'name' => 'Product A'
+        'name' => 'Product A',
     ]);
 
     // Create a customer in Company B
@@ -104,7 +103,7 @@ it('prevents cross-company usage in invoice creation', function () {
                 income_account_id: $incomeAccountA->id, // Cross-company account!
                 product_id: $productA->id, // Cross-company product!
                 tax_id: null
-            )
+            ),
         ],
         fiscal_position_id: null
     );

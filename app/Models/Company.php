@@ -13,11 +13,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Modules\Accounting\Models\Journal;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Accounting\Models\Tax;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
+use Kezi\Accounting\Models\Journal;
+use Kezi\Accounting\Models\JournalEntry;
+use Kezi\Accounting\Models\Tax;
+use Kezi\Inventory\Models\StockLocation;
+use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
 
 /**
  * Class Company
@@ -29,52 +29,60 @@ use Modules\Purchase\Enums\Purchases\VendorBillStatus;
  * @property int $currency_id
  * @property string $fiscal_country
  * @property int|null $parent_company_id
- * @property \Modules\Accounting\Enums\Consolidation\ConsolidationMethod $consolidation_method
+ * @property int|null $default_salary_payable_account_id
+ * @property int|null $default_salary_expense_account_id
+ * @property int|null $default_payroll_journal_id
+ * @property int|null $default_income_tax_payable_account_id
+ * @property int|null $default_social_security_payable_account_id
+ * @property int|null $default_health_insurance_payable_account_id
+ * @property int|null $default_pension_payable_account_id
+ * @property int|null $default_employee_advance_receivable_account_id
+ * @property \Kezi\Accounting\Enums\Consolidation\ConsolidationMethod $consolidation_method
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read Collection<int, \Modules\Accounting\Models\Account> $accounts
+ * @property-read Collection<int, \Kezi\Accounting\Models\Account> $accounts
  * @property-read int|null $accounts_count
- * @property-read Collection<int, \Modules\Inventory\Models\AdjustmentDocument> $adjustmentDocuments
+ * @property-read Collection<int, \Kezi\Inventory\Models\AdjustmentDocument> $adjustmentDocuments
  * @property-read int|null $adjustment_documents_count
- * @property-read Collection<int, \Modules\Accounting\Models\AnalyticAccount> $analyticAccounts
+ * @property-read Collection<int, \Kezi\Accounting\Models\AnalyticAccount> $analyticAccounts
  * @property-read int|null $analytic_accounts_count
- * @property-read Collection<int, \Modules\Accounting\Models\AnalyticPlan> $analyticPlans
+ * @property-read Collection<int, \Kezi\Accounting\Models\AnalyticPlan> $analyticPlans
  * @property-read int|null $analytic_plans_count
- * @property-read Collection<int, \Modules\Accounting\Models\Asset> $assets
+ * @property-read Collection<int, \Kezi\Accounting\Models\Asset> $assets
  * @property-read int|null $assets_count
- * @property-read Collection<int, \Modules\Foundation\Models\AuditLog> $auditLogs
+ * @property-read Collection<int, \Kezi\Foundation\Models\AuditLog> $auditLogs
  * @property-read int|null $audit_logs_count
- * @property-read Collection<int, \Modules\Accounting\Models\Budget> $budgets
+ * @property-read Collection<int, \Kezi\Accounting\Models\Budget> $budgets
  * @property-read int|null $budgets_count
  * @property-read Collection<int, Company> $childrenCompanies
  * @property-read int|null $children_companies_count
- * @property-read \Modules\Foundation\Models\Currency $currency
- * @property-read \Modules\Accounting\Models\Account|null $defaultAccountsReceivable
- * @property-read \Modules\Accounting\Models\Account|null $defaultSalesDiscountAccount
- * @property-read \Modules\Accounting\Models\Account|null $defaultTaxAccount
+ * @property-read \Kezi\Foundation\Models\Currency $currency
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultAccountsReceivable
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultSalesDiscountAccount
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultTaxAccount
  * @property-read Journal|null $defaultSalesJournal
- * @property-read Collection<int, \Modules\Accounting\Models\FiscalPosition> $fiscalPositions
+ * @property-read Collection<int, \Kezi\Accounting\Models\FiscalPosition> $fiscalPositions
  * @property-read int|null $fiscal_positions_count
- * @property-read Collection<int, \Modules\Sales\Models\Invoice> $invoices
+ * @property-read Collection<int, \Kezi\Sales\Models\Invoice> $invoices
  * @property-read int|null $invoices_count
  * @property-read Collection<int, JournalEntry> $journalEntries
  * @property-read int|null $journal_entries_count
  * @property-read Collection<int, Journal> $journals
  * @property-read int|null $journals_count
- * @property-read Collection<int, \Modules\Accounting\Models\LockDate> $lockDates
+ * @property-read Collection<int, \Kezi\Accounting\Models\LockDate> $lockDates
  * @property-read int|null $lock_dates_count
  * @property-read Company|null $parentCompany
- * @property-read Collection<int, \Modules\Foundation\Models\Partner> $partners
+ * @property-read Collection<int, \Kezi\Foundation\Models\Partner> $partners
  * @property-read int|null $partners_count
- * @property-read Collection<int, \Modules\Payment\Models\Payment> $payments
+ * @property-read Collection<int, \Kezi\Payment\Models\Payment> $payments
  * @property-read int|null $payments_count
- * @property-read Collection<int, \Modules\Product\Models\Product> $products
+ * @property-read Collection<int, \Kezi\Product\Models\Product> $products
  * @property-read int|null $products_count
  * @property-read Collection<int, Tax> $taxes
  * @property-read int|null $taxes_count
  * @property-read Collection<int, User> $users
  * @property-read int|null $users_count
- * @property-read Collection<int, \Modules\Purchase\Models\VendorBill> $vendorBills
+ * @property-read Collection<int, \Kezi\Purchase\Models\VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
  *
  * @method static CompanyFactory factory($count = null, $state = [])
@@ -154,10 +162,12 @@ class Company extends Model
         'default_finished_goods_inventory_id',
         'default_raw_materials_inventory_id',
         'default_manufacturing_journal_id',
+        'default_wip_account_id',
         // Cheque Settings
         'default_pdc_receivable_account_id',
         'default_pdc_payable_account_id',
         'default_cheque_expense_account_id',
+        'default_scrap_account_id',
     ];
 
     /**
@@ -171,8 +181,8 @@ class Company extends Model
         'enable_reconciliation' => 'boolean',
         'pdf_settings' => 'json',
         'numbering_settings' => 'json',
-        'inventory_accounting_mode' => \Modules\Inventory\Enums\Inventory\InventoryAccountingMode::class,
-        'consolidation_method' => \Modules\Accounting\Enums\Consolidation\ConsolidationMethod::class,
+        'inventory_accounting_mode' => \Kezi\Inventory\Enums\Inventory\InventoryAccountingMode::class,
+        'consolidation_method' => \Kezi\Accounting\Enums\Consolidation\ConsolidationMethod::class,
     ];
 
     /*
@@ -190,11 +200,11 @@ class Company extends Model
      * A company operates within a specific default currency for its financial records [1, 4].
      */
     /**
-     * @return BelongsTo<\Modules\Foundation\Models\Currency, static>
+     * @return BelongsTo<\Kezi\Foundation\Models\Currency, static>
      */
     public function currency(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Foundation\Models\Currency::class);
+        return $this->belongsTo(\Kezi\Foundation\Models\Currency::class);
     }
 
     /**
@@ -238,11 +248,11 @@ class Company extends Model
      * Comprehensive auditability is a non-negotiable principle for accounting software [1].
      */
     /**
-     * @return HasMany<\Modules\Foundation\Models\AuditLog, static>
+     * @return HasMany<\Kezi\Foundation\Models\AuditLog, static>
      */
     public function auditLogs(): HasMany
     {
-        return $this->hasMany(\Modules\Foundation\Models\AuditLog::class);
+        return $this->hasMany(\Kezi\Foundation\Models\AuditLog::class);
     }
 
     /**
@@ -250,11 +260,11 @@ class Company extends Model
      * Lock dates are crucial for preventing modifications to historical financial periods [1].
      */
     /**
-     * @return HasMany<\Modules\Accounting\Models\LockDate, static>
+     * @return HasMany<\Kezi\Accounting\Models\LockDate, static>
      */
     public function lockDates(): HasMany
     {
-        return $this->hasMany(\Modules\Accounting\Models\LockDate::class);
+        return $this->hasMany(\Kezi\Accounting\Models\LockDate::class);
     }
 
     /**
@@ -262,11 +272,11 @@ class Company extends Model
      * Each company maintains its own unique chart of accounts [1, 5].
      */
     /**
-     * @return HasMany<\Modules\Accounting\Models\Account, static>
+     * @return HasMany<\Kezi\Accounting\Models\Account, static>
      */
     public function accounts(): HasMany
     {
-        return $this->hasMany(\Modules\Accounting\Models\Account::class);
+        return $this->hasMany(\Kezi\Accounting\Models\Account::class);
     }
 
     /**
@@ -297,44 +307,44 @@ class Company extends Model
      * Get the customer invoices issued by this company.
      */
     /**
-     * @return HasMany<\Modules\Sales\Models\Invoice, static>
+     * @return HasMany<\Kezi\Sales\Models\Invoice, static>
      */
     public function invoices(): HasMany
     {
-        return $this->hasMany(\Modules\Sales\Models\Invoice::class);
+        return $this->hasMany(\Kezi\Sales\Models\Invoice::class);
     }
 
     /**
      * Get the vendor bills received by this company.
      */
     /**
-     * @return HasMany<\Modules\Purchase\Models\VendorBill, static>
+     * @return HasMany<\Kezi\Purchase\Models\VendorBill, static>
      */
     public function vendorBills(): HasMany
     {
-        return $this->hasMany(\Modules\Purchase\Models\VendorBill::class);
+        return $this->hasMany(\Kezi\Purchase\Models\VendorBill::class);
     }
 
     /**
      * Get the payments (inbound/outbound) processed by this company.
      */
     /**
-     * @return HasMany<\Modules\Payment\Models\Payment, static>
+     * @return HasMany<\Kezi\Payment\Models\Payment, static>
      */
     public function payments(): HasMany
     {
-        return $this->hasMany(\Modules\Payment\Models\Payment::class);
+        return $this->hasMany(\Kezi\Payment\Models\Payment::class);
     }
 
     /**
      * Get the adjustment documents (e.g., credit/debit notes) created by this company.
      */
     /**
-     * @return HasMany<\Modules\Inventory\Models\AdjustmentDocument, static>
+     * @return HasMany<\Kezi\Inventory\Models\AdjustmentDocument, static>
      */
     public function adjustmentDocuments(): HasMany
     {
-        return $this->hasMany(\Modules\Inventory\Models\AdjustmentDocument::class);
+        return $this->hasMany(\Kezi\Inventory\Models\AdjustmentDocument::class);
     }
 
     /**
@@ -342,11 +352,11 @@ class Company extends Model
      * Partners can be defined per internal company [2].
      */
     /**
-     * @return HasMany<\Modules\Foundation\Models\Partner, static>
+     * @return HasMany<\Kezi\Foundation\Models\Partner, static>
      */
     public function partners(): HasMany
     {
-        return $this->hasMany(\Modules\Foundation\Models\Partner::class);
+        return $this->hasMany(\Kezi\Foundation\Models\Partner::class);
     }
 
     /**
@@ -354,11 +364,11 @@ class Company extends Model
      * Products can be company-specific [2].
      */
     /**
-     * @return HasMany<\Modules\Product\Models\Product, static>
+     * @return HasMany<\Kezi\Product\Models\Product, static>
      */
     public function products(): HasMany
     {
-        return $this->hasMany(\Modules\Product\Models\Product::class);
+        return $this->hasMany(\Kezi\Product\Models\Product::class);
     }
 
     /**
@@ -378,22 +388,22 @@ class Company extends Model
      * Fiscal positions handle tax and account mapping based on partner location/type [2].
      */
     /**
-     * @return HasMany<\Modules\Accounting\Models\FiscalPosition, static>
+     * @return HasMany<\Kezi\Accounting\Models\FiscalPosition, static>
      */
     public function fiscalPositions(): HasMany
     {
-        return $this->hasMany(\Modules\Accounting\Models\FiscalPosition::class);
+        return $this->hasMany(\Kezi\Accounting\Models\FiscalPosition::class);
     }
 
     /**
      * Get the fixed assets owned by this company.
      */
     /**
-     * @return HasMany<\Modules\Accounting\Models\Asset, static>
+     * @return HasMany<\Kezi\Accounting\Models\Asset, static>
      */
     public function assets(): HasMany
     {
-        return $this->hasMany(\Modules\Accounting\Models\Asset::class);
+        return $this->hasMany(\Kezi\Accounting\Models\Asset::class);
     }
 
     /**
@@ -401,11 +411,11 @@ class Company extends Model
      * Used for management/cost accounting, separate from general ledger accounts [2, 9].
      */
     /**
-     * @return HasMany<\Modules\Accounting\Models\AnalyticAccount, static>
+     * @return HasMany<\Kezi\Accounting\Models\AnalyticAccount, static>
      */
     public function analyticAccounts(): HasMany
     {
-        return $this->hasMany(\Modules\Accounting\Models\AnalyticAccount::class);
+        return $this->hasMany(\Kezi\Accounting\Models\AnalyticAccount::class);
     }
 
     /**
@@ -413,38 +423,38 @@ class Company extends Model
      * Used to group analytic accounts or define budget structures [2].
      */
     /**
-     * @return HasMany<\Modules\Accounting\Models\AnalyticPlan, static>
+     * @return HasMany<\Kezi\Accounting\Models\AnalyticPlan, static>
      */
     public function analyticPlans(): HasMany
     {
-        return $this->hasMany(\Modules\Accounting\Models\AnalyticPlan::class);
+        return $this->hasMany(\Kezi\Accounting\Models\AnalyticPlan::class);
     }
 
     /**
      * Get the budgets created for this company.
      */
     /**
-     * @return HasMany<\Modules\Accounting\Models\Budget, static>
+     * @return HasMany<\Kezi\Accounting\Models\Budget, static>
      */
     public function budgets(): HasMany
     {
-        return $this->hasMany(\Modules\Accounting\Models\Budget::class);
+        return $this->hasMany(\Kezi\Accounting\Models\Budget::class);
     }
 
     /**
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function defaultAccountsPayable(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_accounts_payable_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_accounts_payable_id');
     }
 
     /**
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function defaultTaxReceivable(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_tax_receivable_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_tax_receivable_id');
     }
 
     /**
@@ -456,38 +466,38 @@ class Company extends Model
     }
 
     /**
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function defaultAccountsReceivable(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_accounts_receivable_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_accounts_receivable_id');
     }
 
     /**
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function defaultSalesDiscountAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_sales_discount_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_sales_discount_account_id');
     }
 
     /**
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function defaultTaxAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_tax_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_tax_account_id');
     }
 
     /**
      * Get the default Purchase Returns account.
      * This contra-expense account is credited when posting Debit Notes (vendor returns).
      *
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function defaultPurchaseReturnsAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_purchase_returns_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_purchase_returns_account_id');
     }
 
     /**
@@ -515,46 +525,62 @@ class Company extends Model
     }
 
     /**
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function defaultBankAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_bank_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_bank_account_id');
     }
 
     /**
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function defaultOutstandingReceiptsAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_outstanding_receipts_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_outstanding_receipts_account_id');
     }
 
     /**
      * Get the default account for recording gains or losses on asset disposal.
      */
     /**
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function defaultGainLossAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_gain_loss_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_gain_loss_account_id');
     }
 
     /**
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function inventoryAdjustmentAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'inventory_adjustment_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'inventory_adjustment_account_id');
     }
 
     /**
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function defaultStockInputAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_stock_input_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_stock_input_account_id');
+    }
+
+    /**
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
+     */
+    public function defaultWipAccount(): BelongsTo
+    {
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_wip_account_id');
+    }
+
+    /**
+     * @return BelongsTo<Journal, static>
+     */
+    public function defaultManufacturingJournal(): BelongsTo
+    {
+        return $this->belongsTo(Journal::class, 'default_manufacturing_journal_id');
     }
 
     /*
@@ -563,19 +589,19 @@ class Company extends Model
     |--------------------------------------------------------------------------
     */
     /**
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function defaultSalaryPayableAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_salary_payable_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_salary_payable_account_id');
     }
 
     /**
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function defaultSalaryExpenseAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_salary_expense_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_salary_expense_account_id');
     }
 
     /**
@@ -587,43 +613,43 @@ class Company extends Model
     }
 
     /**
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function defaultIncomeTaxPayableAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_income_tax_payable_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_income_tax_payable_account_id');
     }
 
     /**
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function defaultSocialSecurityPayableAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_social_security_payable_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_social_security_payable_account_id');
     }
 
     /**
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function defaultHealthInsurancePayableAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_health_insurance_payable_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_health_insurance_payable_account_id');
     }
 
     /**
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function defaultPensionPayableAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_pension_payable_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_pension_payable_account_id');
     }
 
     /**
-     * @return BelongsTo<\Modules\Accounting\Models\Account, static>
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
      */
     public function defaultEmployeeAdvanceReceivableAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_employee_advance_receivable_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_employee_advance_receivable_account_id');
     }
 
     /*
@@ -638,7 +664,7 @@ class Company extends Model
      */
     public function defaultPdcReceivableAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_pdc_receivable_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_pdc_receivable_account_id');
     }
 
     /**
@@ -647,7 +673,7 @@ class Company extends Model
      */
     public function defaultPdcPayableAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_pdc_payable_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_pdc_payable_account_id');
     }
 
     /**
@@ -655,7 +681,7 @@ class Company extends Model
      */
     public function defaultChequeExpenseAccount(): BelongsTo
     {
-        return $this->belongsTo(\Modules\Accounting\Models\Account::class, 'default_cheque_expense_account_id');
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_cheque_expense_account_id');
     }
 
     /**
@@ -733,12 +759,12 @@ class Company extends Model
     {
         return [
             'invoice' => [
-                'type' => \Modules\Foundation\Enums\Settings\NumberingType::SLASH_YEAR_MONTH->value,
+                'type' => \Kezi\Foundation\Enums\Settings\NumberingType::SLASH_YEAR_MONTH->value,
                 'prefix' => 'INV',
                 'padding' => 7,
             ],
             'vendor_bill' => [
-                'type' => \Modules\Foundation\Enums\Settings\NumberingType::SLASH_YEAR_MONTH->value,
+                'type' => \Kezi\Foundation\Enums\Settings\NumberingType::SLASH_YEAR_MONTH->value,
                 'prefix' => 'BILL',
                 'padding' => 7,
             ],

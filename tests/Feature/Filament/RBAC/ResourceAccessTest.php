@@ -3,11 +3,11 @@
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Enums\Accounting\JournalEntryState;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\ListJournalEntries;
-use Modules\Accounting\Models\JournalEntry;
+use Kezi\Accounting\Enums\Accounting\JournalEntryState;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\CreateJournalEntry;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\EditJournalEntry;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\ListJournalEntries;
+use Kezi\Accounting\Models\JournalEntry;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -17,7 +17,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     app()[PermissionRegistrar::class]->forgetCachedPermissions();
-    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
 
     $this->company = \App\Models\Company::factory()->create();
     $this->user = User::factory()->create();

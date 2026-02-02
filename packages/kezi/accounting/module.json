@@ -1,0 +1,11 @@
+{
+    "name": "Accounting",
+    "alias": "accounting",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Kezi\\Accounting\\Providers\\AccountingServiceProvider"
+    ],
+    "files": []
+}

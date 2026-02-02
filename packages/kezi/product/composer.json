@@ -1,0 +1,32 @@
+{
+    "name": "kezi/product",
+    "description": "Product module for Kezi",
+    "authors": [
+        {
+            "name": "Khoshbin",
+            "email": "xoshbin@gmail.com"
+        }
+    ],
+    "type": "library",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^12.0",
+        "filament/filament": "^4.0",
+        "kezi/foundation": "*",
+        "spatie/laravel-translatable": "^6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kezi\\Product\\": "app/",
+            "Kezi\\Product\\Database\\Factories\\": "database/factories/",
+            "Kezi\\Product\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Kezi\\Product\\Providers\\ProductServiceProvider"
+            ]
+        }
+    }
+}

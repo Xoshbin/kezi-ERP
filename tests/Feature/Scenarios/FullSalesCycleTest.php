@@ -7,35 +7,35 @@ use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
-use Modules\Accounting\Actions\Dunning\ProcessDunningRunAction;
-use Modules\Accounting\Emails\DunningReminderMail;
-use Modules\Accounting\Enums\Accounting\JournalType;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\DunningLevel;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\Partner;
-use Modules\Payment\Actions\Payments\CreatePaymentAction;
-use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
-use Modules\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
-use Modules\Payment\Enums\Payments\PaymentMethod;
-use Modules\Payment\Enums\Payments\PaymentStatus;
-use Modules\Payment\Enums\Payments\PaymentType;
-use Modules\Payment\Services\PaymentService;
-use Modules\Product\Models\Product;
-use Modules\Sales\Actions\Sales\AcceptQuoteAction;
-use Modules\Sales\Actions\Sales\ConfirmSalesOrderAction;
-use Modules\Sales\Actions\Sales\ConvertQuoteToSalesOrderAction;
-use Modules\Sales\Actions\Sales\CreateInvoiceFromSalesOrderAction;
-use Modules\Sales\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
-use Modules\Sales\Enums\Sales\QuoteStatus;
-use Modules\Sales\Enums\Sales\SalesOrderStatus;
-use Modules\Sales\Models\Invoice;
-use Modules\Sales\Models\Quote;
-use Modules\Sales\Models\QuoteLine;
-use Modules\Sales\Models\SalesOrder;
-use Modules\Sales\Services\InvoiceService;
+use Kezi\Accounting\Actions\Dunning\ProcessDunningRunAction;
+use Kezi\Accounting\Emails\DunningReminderMail;
+use Kezi\Accounting\Enums\Accounting\JournalType;
+use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Models\DunningLevel;
+use Kezi\Accounting\Models\Journal;
+use Kezi\Foundation\Models\Currency;
+use Kezi\Foundation\Models\Partner;
+use Kezi\Payment\Actions\Payments\CreatePaymentAction;
+use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
+use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
+use Kezi\Payment\Enums\Payments\PaymentMethod;
+use Kezi\Payment\Enums\Payments\PaymentStatus;
+use Kezi\Payment\Enums\Payments\PaymentType;
+use Kezi\Payment\Services\PaymentService;
+use Kezi\Product\Models\Product;
+use Kezi\Sales\Actions\Sales\AcceptQuoteAction;
+use Kezi\Sales\Actions\Sales\ConfirmSalesOrderAction;
+use Kezi\Sales\Actions\Sales\ConvertQuoteToSalesOrderAction;
+use Kezi\Sales\Actions\Sales\CreateInvoiceFromSalesOrderAction;
+use Kezi\Sales\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
+use Kezi\Sales\Enums\Sales\InvoiceStatus;
+use Kezi\Sales\Enums\Sales\QuoteStatus;
+use Kezi\Sales\Enums\Sales\SalesOrderStatus;
+use Kezi\Sales\Models\Invoice;
+use Kezi\Sales\Models\Quote;
+use Kezi\Sales\Models\QuoteLine;
+use Kezi\Sales\Models\SalesOrder;
+use Kezi\Sales\Services\InvoiceService;
 use Tests\TestCase;
 use Tests\Traits\WithConfiguredCompany;
 
@@ -45,10 +45,15 @@ class FullSalesCycleTest extends TestCase
     use WithConfiguredCompany;
 
     protected User $user;
+
     protected Currency $currency;
+
     protected Partner $customer;
+
     protected Product $product;
+
     protected Account $incomeAccount;
+
     protected Journal $bankJournal;
 
     protected function setUp(): void
@@ -64,7 +69,7 @@ class FullSalesCycleTest extends TestCase
 
         $this->customer = Partner::factory()->create([
             'company_id' => $this->company->id,
-            'type' => \Modules\Foundation\Enums\Partners\PartnerType::Customer,
+            'type' => \Kezi\Foundation\Enums\Partners\PartnerType::Customer,
             'email' => 'customer@example.com',
         ]);
 
@@ -83,7 +88,7 @@ class FullSalesCycleTest extends TestCase
         $this->bankJournal = Journal::factory()->for($this->company)->create([
             'type' => JournalType::Bank,
             'name' => 'Bank',
-            'short_code' => 'BNK1'
+            'short_code' => 'BNK1',
         ]);
 
         // Setup Dunning Levels
@@ -128,7 +133,7 @@ class FullSalesCycleTest extends TestCase
         ]);
 
         // Send Quote (Required before Accepting)
-        app(\Modules\Sales\Actions\Sales\SendQuoteAction::class)->execute($quote);
+        app(\Kezi\Sales\Actions\Sales\SendQuoteAction::class)->execute($quote);
 
         // Accept Quote
         app(AcceptQuoteAction::class)->execute($quote, $this->user);
@@ -207,7 +212,7 @@ class FullSalesCycleTest extends TestCase
                 document_type: 'invoice',
                 document_id: $invoice->id,
                 amount_applied: $paymentAmount
-            )
+            ),
         ];
 
         $paymentDto = new CreatePaymentDTO(

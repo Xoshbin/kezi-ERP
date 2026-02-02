@@ -15,3 +15,5 @@ Commit: <imperative message, ≤72 chars, specific, no punctuation, ref issue if
 Branch: <type>/<short-kebab-description>
 Types: feature, bugfix, hotfix, release
 Branch rules: lowercase, hyphens, ≤6 words
+
+Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask.
