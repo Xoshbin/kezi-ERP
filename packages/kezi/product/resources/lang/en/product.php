@@ -7,6 +7,8 @@ return [
     // Labels
     'label' => 'Product',
     'plural_label' => 'Products',
+    'category' => 'Category',
+    'categories' => 'Categories',
     'create' => 'Create Product',
 
     // Basic Information

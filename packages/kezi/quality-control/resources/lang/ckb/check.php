@@ -2,6 +2,8 @@
 
 return [
     'navigation_label' => 'پشکنینەکانی جۆرایەتی',
+    'label' => 'پشکنینی جۆرایەتی',
+    'plural_label' => 'پشکنینەکانی جۆرایەتی',
     'section_basic' => 'زانیاری بنەڕەتی',
     'number' => 'ژمارە',
     'status' => 'دۆخ',

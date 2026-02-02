@@ -3,6 +3,7 @@
 return [
     'name' => 'بەرهەمهێنان',
     'groups' => [
-        'manufacturing_settings' => 'دروستکردن',
+        'manufacturing_settings' => 'پیشەسازی',
+        'configuration' => 'ڕێکخستنەکان',
     ],
 ];

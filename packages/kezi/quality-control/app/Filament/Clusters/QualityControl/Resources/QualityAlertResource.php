@@ -32,6 +32,16 @@ class QualityAlertResource extends Resource
         return __('qualitycontrol::alert.navigation_label');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('qualitycontrol::alert.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('qualitycontrol::alert.plural_label');
+    }
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::where('status', QualityAlertStatus::New)->count() ?: null;

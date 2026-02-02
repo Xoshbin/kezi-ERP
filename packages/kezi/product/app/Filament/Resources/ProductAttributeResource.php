@@ -29,7 +29,17 @@ class ProductAttributeResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('Configuration');
+        return __('product::navigation.groups.configuration');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('product::product.attribute');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('product::product.attributes');
     }
 
     public static function form(Schema $schema): Schema
