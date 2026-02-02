@@ -6,7 +6,6 @@ use App\Models\Company;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
 use InvalidArgumentException;
-use Mockery;
 use Kezi\Accounting\Services\Accounting\LockDateService;
 use Kezi\Accounting\Services\BudgetControlService;
 use Kezi\Foundation\Services\SequenceService;
@@ -15,6 +14,7 @@ use Kezi\Purchase\Events\PurchaseOrderConfirmed;
 use Kezi\Purchase\Models\PurchaseOrder;
 use Kezi\Purchase\Models\PurchaseOrderLine;
 use Kezi\Purchase\Services\PurchaseOrderService;
+use Mockery;
 
 beforeEach(function () {
     $this->company = Company::factory()->create();

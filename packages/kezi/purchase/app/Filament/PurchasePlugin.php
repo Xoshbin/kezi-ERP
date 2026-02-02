@@ -17,7 +17,7 @@ class PurchasePlugin implements Plugin
         $panel
             ->discoverResources(in: __DIR__, for: 'Kezi\\Purchase\\Filament')
             ->discoverPages(in: __DIR__, for: 'Kezi\\Purchase\\Filament')
-            ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Kezi\\Purchase\\Filament\\Clusters');
+            ->discoverClusters(in: __DIR__.'/Clusters', for: 'Kezi\\Purchase\\Filament\\Clusters');
     }
 
     public function boot(Panel $panel): void

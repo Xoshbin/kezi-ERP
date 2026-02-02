@@ -39,7 +39,7 @@ class WorkCenterResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('manufacturing::navigation.groups.manufacturing_settings');
+        return __('Configuration');
     }
 
     public static function form(Schema $schema): Schema

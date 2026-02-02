@@ -13,13 +13,13 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AnalyticPlans\Pages\CreateAnalyticPlan;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AnalyticPlans\Pages\EditAnalyticPlan;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AnalyticPlans\Pages\ListAnalyticPlans;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AnalyticPlans\RelationManagers\AnalyticAccountsRelationManager;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AnalyticPlans\RelationManagers\BudgetsRelationManager;
 use Kezi\Accounting\Models\AnalyticPlan;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 
 class AnalyticPlanResource extends Resource
 {
@@ -35,7 +35,7 @@ class AnalyticPlanResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::navigation.groups.administration');
+        return __('Configuration');
     }
 
     public static function getModelLabel(): string

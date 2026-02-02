@@ -17,7 +17,7 @@ class ProjectManagementPlugin implements Plugin
         $panel
             ->discoverResources(in: __DIR__, for: 'Kezi\\ProjectManagement\\Filament')
             ->discoverPages(in: __DIR__, for: 'Kezi\\ProjectManagement\\Filament')
-            ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Kezi\\ProjectManagement\\Filament\\Clusters');
+            ->discoverClusters(in: __DIR__.'/Clusters', for: 'Kezi\\ProjectManagement\\Filament\\Clusters');
     }
 
     public function boot(Panel $panel): void

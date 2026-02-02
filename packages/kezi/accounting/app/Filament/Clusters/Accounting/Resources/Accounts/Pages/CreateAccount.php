@@ -5,9 +5,9 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Accounts\Pages;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Accounts\AccountResource;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
-use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Accounts\AccountResource;
 
 class CreateAccount extends CreateRecord
 {

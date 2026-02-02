@@ -3,9 +3,9 @@
 use App\Models\Company;
 use App\Models\User;
 use Filament\Facades\Filament;
-use Livewire\Livewire;
 use Kezi\Accounting\Models\Account;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;
+use Livewire\Livewire;
 
 beforeEach(function () {
     $this->user = User::factory()->create();

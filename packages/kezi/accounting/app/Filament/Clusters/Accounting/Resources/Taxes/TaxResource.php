@@ -17,12 +17,12 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Kezi\Accounting\Enums\Accounting\TaxType;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages\CreateTax;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages\EditTax;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages\ListTaxes;
 use Kezi\Accounting\Models\Tax;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class TaxResource extends Resource
@@ -54,7 +54,7 @@ class TaxResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('accounting::navigation.groups.administration');
+        return __('Configuration');
     }
 
     public static function form(Schema $schema): Schema

@@ -14,11 +14,11 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AccountGroups\Pages\CreateAccountGroup;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AccountGroups\Pages\EditAccountGroup;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AccountGroups\Pages\ListAccountGroups;
 use Kezi\Accounting\Models\AccountGroup;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 
 class AccountGroupResource extends Resource
 {
@@ -44,7 +44,7 @@ class AccountGroupResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('accounting::navigation.groups.administration');
+        return __('Configuration');
     }
 
     public static function form(Schema $schema): Schema

@@ -45,13 +45,13 @@ class PaymentResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 10;
 
     protected static ?string $cluster = AccountingCluster::class;
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::navigation.groups.transactions');
+        return __('Bank & Cash');
     }
 
     public static function getModelLabel(): string

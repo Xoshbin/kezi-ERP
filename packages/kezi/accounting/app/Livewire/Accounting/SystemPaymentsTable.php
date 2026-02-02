@@ -16,12 +16,12 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
-use Livewire\Component;
 use Kezi\Accounting\Models\BankStatement;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Payment\Enums\Payments\PaymentStatus;
 use Kezi\Payment\Enums\Payments\PaymentType;
 use Kezi\Payment\Models\Payment;
+use Livewire\Component;
 
 class SystemPaymentsTable extends Component implements HasActions, HasForms, HasTable
 {

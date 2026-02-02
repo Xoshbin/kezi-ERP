@@ -7,13 +7,13 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\Pages\CreateLeaveType;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\Pages\EditLeaveType;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\Pages\ListLeaveTypes;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\Schemas\LeaveTypeForm;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\Tables\LeaveTypesTable;
 use Kezi\HR\Models\LeaveType;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 
 class LeaveTypeResource extends Resource
 {
@@ -44,7 +44,7 @@ class LeaveTypeResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('hr::navigation.groups.hr_settings');
+        return __('Configuration');
     }
 
     public static function form(Schema $schema): Schema

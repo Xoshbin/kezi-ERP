@@ -5,7 +5,6 @@ namespace Kezi\Purchase\Tests\Feature\Filament;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
-use Livewire\Livewire;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
 use Kezi\Accounting\Models\Account;
 use Kezi\Foundation\Models\Partner;
@@ -14,6 +13,7 @@ use Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus;
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\ViewPurchaseOrder;
 use Kezi\Purchase\Models\PurchaseOrder;
 use Kezi\Purchase\Models\VendorBill;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

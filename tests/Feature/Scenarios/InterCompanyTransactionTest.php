@@ -123,7 +123,7 @@ it('correctly identifies inter-company balances when transactions occur between 
         company_id: $this->companyB->id,
         vendor_id: $partnerA_in_B->id,
         currency_id: $this->companyB->currency_id,
-        bill_reference: 'INV-' . $invoice->invoice_number, // Matching reference
+        bill_reference: 'INV-'.$invoice->invoice_number, // Matching reference
         bill_date: now()->toDateString(),
         accounting_date: now()->toDateString(),
         due_date: now()->addDays(30)->toDateString(),

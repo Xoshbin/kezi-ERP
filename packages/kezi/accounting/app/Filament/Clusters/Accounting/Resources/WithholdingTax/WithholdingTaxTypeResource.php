@@ -17,12 +17,12 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Kezi\Accounting\Enums\Accounting\WithholdingTaxApplicability;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\Pages\CreateWithholdingTaxType;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\Pages\EditWithholdingTaxType;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\Pages\ListWithholdingTaxTypes;
 use Kezi\Accounting\Models\WithholdingTaxType;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class WithholdingTaxTypeResource extends Resource
@@ -54,7 +54,7 @@ class WithholdingTaxTypeResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('accounting::navigation.groups.administration');
+        return __('Configuration');
     }
 
     public static function form(Schema $schema): Schema

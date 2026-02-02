@@ -165,7 +165,7 @@ class PayrollService
                 $rationalMoney = $baseSalary->toRational();
                 $prorationFactor = $daysInPeriod / $daysInMonth;
                 $proratedRational = $rationalMoney->multipliedBy($prorationFactor);
-                
+
                 // Convert back to Money with proper rounding
                 $baseSalary = $proratedRational->to($baseSalary->getContext(), RoundingMode::HALF_UP);
             }

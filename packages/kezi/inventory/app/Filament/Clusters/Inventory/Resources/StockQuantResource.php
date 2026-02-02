@@ -31,6 +31,11 @@ class StockQuantResource extends Resource
 
     protected static ?int $navigationSort = 4;
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Operations');
+    }
+
     public static function getModelLabel(): string
     {
         return __('inventory::stock_quant.label');

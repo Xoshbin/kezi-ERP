@@ -9,7 +9,6 @@ use Exception;
 use Filament\Facades\Filament;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Filament\Clusters\Accounting\Widgets\CashFlowWidget;
 use Kezi\Accounting\Filament\Clusters\Accounting\Widgets\FinancialStatsOverview;
 use Kezi\Accounting\Filament\Clusters\Accounting\Widgets\IncomeVsExpenseChart;
@@ -20,6 +19,7 @@ use Kezi\Sales\Enums\Sales\InvoiceStatus;
 use Kezi\Sales\Models\Invoice;
 use Kezi\Sales\Models\InvoiceLine;
 use Kezi\Sales\Services\InvoiceService;
+use Livewire\Livewire;
 use ReflectionClass;
 use Tests\Traits\WithConfiguredCompany;
 

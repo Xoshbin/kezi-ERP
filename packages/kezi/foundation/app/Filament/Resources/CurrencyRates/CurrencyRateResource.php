@@ -8,13 +8,13 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Kezi\Foundation\Filament\Resources\CurrencyRates\Pages\CreateCurrencyRate;
 use Kezi\Foundation\Filament\Resources\CurrencyRates\Pages\EditCurrencyRate;
 use Kezi\Foundation\Filament\Resources\CurrencyRates\Pages\ListCurrencyRates;
 use Kezi\Foundation\Filament\Resources\CurrencyRates\Schemas\CurrencyRateForm;
 use Kezi\Foundation\Filament\Resources\CurrencyRates\Tables\CurrencyRatesTable;
 use Kezi\Foundation\Models\CurrencyRate;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 
 class CurrencyRateResource extends Resource
 {
@@ -42,7 +42,7 @@ class CurrencyRateResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('foundation::navigation.groups.general_settings');
+        return __('Finance');
     }
 
     public static function form(Schema $schema): Schema

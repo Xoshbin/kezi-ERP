@@ -17,7 +17,7 @@ class QualityControlPlugin implements Plugin
         $panel
             ->discoverResources(in: __DIR__, for: 'Kezi\\QualityControl\\Filament')
             ->discoverPages(in: __DIR__, for: 'Kezi\\QualityControl\\Filament')
-            ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Kezi\\QualityControl\\Filament\\Clusters');
+            ->discoverClusters(in: __DIR__.'/Clusters', for: 'Kezi\\QualityControl\\Filament\\Clusters');
     }
 
     public function boot(Panel $panel): void

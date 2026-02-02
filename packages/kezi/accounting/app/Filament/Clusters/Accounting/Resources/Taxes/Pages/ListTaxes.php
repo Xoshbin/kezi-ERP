@@ -4,9 +4,9 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Taxes\TaxResource;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\ListRecords\Concerns\Translatable;
-use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Taxes\TaxResource;
 
 class ListTaxes extends ListRecords
 {

@@ -40,6 +40,11 @@ class RecurringTemplateResource extends Resource
 
     protected static ?int $navigationSort = 1000;
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Accounting');
+    }
+
     public static function getModelLabel(): string
     {
         return __('accounting::recurring.template');

@@ -4,7 +4,6 @@ namespace Kezi\Inventory\Tests\Feature\Filament;
 
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Inventory\Enums\Inventory\InventoryAccountingMode;
 use Kezi\Inventory\Enums\Inventory\StockMoveStatus;
 use Kezi\Inventory\Enums\Inventory\StockMoveType;
@@ -20,6 +19,7 @@ use Kezi\Product\Models\Product;
 use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
 use Kezi\Purchase\Models\VendorBill;
 use Kezi\Purchase\Models\VendorBillLine;
+use Livewire\Livewire;
 use Tests\TestCase;
 use Tests\Traits\WithConfiguredCompany;
 

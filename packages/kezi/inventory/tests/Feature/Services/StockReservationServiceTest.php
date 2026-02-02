@@ -281,7 +281,7 @@ it('releases reservations without consuming stock', function () {
 });
 
 it('updates available quantity in StockQuantService after reservation', function () {
-     // Setup initial stock: 100 units
+    // Setup initial stock: 100 units
     StockQuant::factory()->create([
         'company_id' => $this->company->id,
         'product_id' => $this->product->id,
@@ -310,5 +310,5 @@ it('updates available quantity in StockQuantService after reservation', function
 
     // Release
     $this->service->releaseForMove($move);
-     expect($this->stockQuantService->available($this->company->id, $this->product->id, $this->sourceLocation->id))->toBe(100.0);
+    expect($this->stockQuantService->available($this->company->id, $this->product->id, $this->sourceLocation->id))->toBe(100.0);
 });

@@ -4,9 +4,9 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\WithholdingTaxTypeResource;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\ListRecords\Concerns\Translatable;
-use Kezi\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\WithholdingTaxTypeResource;
 
 class ListWithholdingTaxTypes extends ListRecords
 {

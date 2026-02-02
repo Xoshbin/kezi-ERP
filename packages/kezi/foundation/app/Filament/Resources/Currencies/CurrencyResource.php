@@ -16,11 +16,11 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Kezi\Foundation\Filament\Resources\Currencies\Pages\CreateCurrency;
 use Kezi\Foundation\Filament\Resources\Currencies\Pages\EditCurrency;
 use Kezi\Foundation\Filament\Resources\Currencies\Pages\ListCurrencies;
 use Kezi\Foundation\Models\Currency;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 
 class CurrencyResource extends Resource
 {
@@ -32,7 +32,7 @@ class CurrencyResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-currency-dollar';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 30;
 
     protected static ?string $cluster = SettingsCluster::class;
 
@@ -48,7 +48,7 @@ class CurrencyResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('foundation::navigation.groups.general_settings');
+        return __('Finance');
     }
 
     public static function form(Schema $schema): Schema

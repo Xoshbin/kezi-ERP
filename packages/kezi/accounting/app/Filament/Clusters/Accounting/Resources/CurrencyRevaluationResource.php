@@ -15,6 +15,11 @@ class CurrencyRevaluationResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = \Filament\Support\Icons\Heroicon::OutlinedCurrencyDollar;
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Accounting');
+    }
+
     public static function getModelLabel(): string
     {
         return __('accounting::currency_revaluation.label');
