@@ -29,9 +29,10 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
     - [x] [How-to: Manage Fixed Assets](v1.0/en/how-to/fixed-assets.md)
     - [x] [Explanation: Understanding Asset Management](v1.0/en/explanation/understanding-asset-management.md)
     - [x] [Reference: Asset Acquisition Methods](v1.0/en/reference/asset-acquisition-methods.md)
-- [ ] **Vendor Bills**
-    - **Missing**: A tutorial focused on the "First Bill" experience.
-    - **How to Update**: Split the current 450-line `vendor-bills.md` into a goal-oriented How-to. Move theory to a new `explanation/understanding-vendor-bills.md`.
+- [x] **Vendor Bills** (Migrated)
+    - [x] [Tutorial: Recording Your First Bill](v1.0/en/tutorials/recording-your-first-vendor-bill.md)
+    - [x] [How-to: Manage Vendor Bills](v1.0/en/how-to/vendor-bills.md)
+    - [x] [Explanation: Understanding Vendor Bills](v1.0/en/explanation/understanding-vendor-bills.md)
 - [ ] **Journal Entries**
     - **Missing**: Reference tables for common GL entry types.
     - **How to Update**: Focus the How-to on manual adjustments. Create an explanation doc for the "Automatic Journal Flow".
