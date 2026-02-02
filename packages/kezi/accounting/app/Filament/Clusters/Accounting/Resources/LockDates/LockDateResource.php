@@ -46,7 +46,7 @@ class LockDateResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('Configuration');
+        return __('accounting::navigation.configuration');
     }
 
     public static function form(Schema $schema): Schema

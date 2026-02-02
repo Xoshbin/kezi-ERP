@@ -52,7 +52,7 @@ class PartnerResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('Contacts');
+        return __('accounting::navigation.groups.contacts');
     }
 
     public static function getModelLabel(): string
