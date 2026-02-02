@@ -1,0 +1,44 @@
+<?php
+
+namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages;
+
+use Exception;
+use Filament\Facades\Filament;
+use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Model;
+use Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\ProductResource;
+use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
+use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
+
+class CreateProduct extends CreateRecord
+{
+    use Translatable;
+
+    protected static string $resource = ProductResource::class;
+
+    public function getTitle(): string
+    {
+        // Ensure Arabic label appears on the page title for localization test
+        return __('product.label');
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            LocaleSwitcher::make(),
+        ];
+    }
+
+    protected function handleRecordCreation(array $data): Model
+    {
+        // Add company_id from tenant context
+        /** @var Company|null $tenant */
+        $tenant = Filament::getTenant();
+        if (! $tenant) {
+            throw new Exception('No tenant set when creating Product');
+        }
+        $data['company_id'] = $tenant->getKey();
+
+        return static::getModel()::create($data);
+    }
+}

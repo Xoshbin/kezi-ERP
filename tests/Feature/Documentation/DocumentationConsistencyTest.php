@@ -2,11 +2,11 @@
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use Modules\Foundation\Filament\Actions\DocsAction;
+use Kezi\Foundation\Filament\Actions\DocsAction;
 
 test('all docs action slugs resolve to existing files', function () {
-    $modulesPath = base_path('Modules');
-    $this->assertDirectoryExists($modulesPath, "Modules directory not found at $modulesPath");
+    $modulesPath = base_path('packages/kezi');
+    $this->assertDirectoryExists($modulesPath, "Packages directory not found at $modulesPath");
 
     $phpFiles = File::allFiles($modulesPath);
     $slugsFound = [];
@@ -40,9 +40,10 @@ test('all docs action slugs resolve to existing files', function () {
 
         $fullSlug = $mappingMethod->invoke(null, $slug);
 
-        $baseDocsPath = base_path('docs');
-        $englishPath = "$baseDocsPath/$fullSlug.md";
-        $kurdishPath = "$baseDocsPath/$fullSlug.ckb.md";
+        $version = \Xoshbin\Pertuk\Services\DocumentationService::getAvailableVersions()[0] ?? 'v1.0';
+        $baseDocsPath = base_path("docs/$version");
+        $englishPath = "$baseDocsPath/en/$fullSlug.md";
+        $kurdishPath = "$baseDocsPath/ckb/$fullSlug.md";
 
         if (! File::exists($englishPath)) {
             $missingFiles[] = "Slug '$slug' maps to '$fullSlug' but ENGLISH file matches not found: $englishPath";
@@ -57,31 +58,26 @@ test('all docs action slugs resolve to existing files', function () {
 });
 
 test('all user guides have translations', function () {
-    $userGuidePath = base_path('docs/User Guide');
-    $this->assertDirectoryExists($userGuidePath);
+    $version = \Xoshbin\Pertuk\Services\DocumentationService::getAvailableVersions()[0] ?? 'v1.0';
+    $enDocsPath = base_path("docs/$version/en");
+    $this->assertDirectoryExists($enDocsPath);
 
-    $files = File::files($userGuidePath);
+    $files = File::allFiles($enDocsPath);
     $missingTranslations = [];
 
     foreach ($files as $file) {
-        $filename = $file->getFilename();
+        $filename = $file->getRelativePathname(); // e.g., explanation/understanding-sales-orders.md
 
         // Skip non-markdown files
         if ($file->getExtension() !== 'md') {
             continue;
         }
 
-        // Skip translation files themselves (.ckb.md, .ar.md)
-        if (Str::endsWith($filename, '.ckb.md') || Str::endsWith($filename, '.ar.md')) {
-            continue;
-        }
-
-        // Construct expected Kurdish filename
-        $kurdishFilename = Str::replaceLast('.md', '.ckb.md', $filename);
-        $kurdishPath = $userGuidePath.'/'.$kurdishFilename;
+        // Construct expected Kurdish path
+        $kurdishPath = base_path("docs/$version/ckb/$filename");
 
         if (! File::exists($kurdishPath)) {
-            $missingTranslations[] = "User Guide '$filename' is missing Kurdish translation: $kurdishFilename";
+            $missingTranslations[] = "English doc '$filename' is missing Kurdish translation at: $kurdishPath";
         }
     }
 
@@ -89,7 +85,7 @@ test('all user guides have translations', function () {
 });
 
 test('every feature and report has a user guide link', function () {
-    $modulesPath = base_path('Modules');
+    $modulesPath = base_path('packages/kezi');
     $this->assertDirectoryExists($modulesPath);
 
     $phpFiles = File::allFiles($modulesPath);

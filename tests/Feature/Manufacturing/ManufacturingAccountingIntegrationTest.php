@@ -2,16 +2,16 @@
 
 use App\Models\Company;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Manufacturing\Actions\Accounting\CreateJournalEntryForManufacturingAction;
-use Modules\Manufacturing\Enums\ManufacturingOrderStatus;
-use Modules\Manufacturing\Models\BillOfMaterial;
-use Modules\Manufacturing\Models\ManufacturingOrder;
-use Modules\Manufacturing\Models\ManufacturingOrderLine;
-use Modules\Product\Models\Product;
+use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Models\Journal;
+use Kezi\Accounting\Models\JournalEntry;
+use Kezi\Inventory\Models\StockLocation;
+use Kezi\Manufacturing\Actions\Accounting\CreateJournalEntryForManufacturingAction;
+use Kezi\Manufacturing\Enums\ManufacturingOrderStatus;
+use Kezi\Manufacturing\Models\BillOfMaterial;
+use Kezi\Manufacturing\Models\ManufacturingOrder;
+use Kezi\Manufacturing\Models\ManufacturingOrderLine;
+use Kezi\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
@@ -34,6 +34,13 @@ beforeEach(function () {
         'type' => 'current_assets',
     ]);
 
+    $this->wipAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'code' => '1530',
+        'name' => 'Work in Progress',
+        'type' => 'current_assets',
+    ]);
+
     $this->manufacturingJournal = Journal::factory()->create([
         'company_id' => $this->company->id,
         'short_code' => 'MFG',
@@ -45,6 +52,7 @@ beforeEach(function () {
     $this->company->update([
         'default_finished_goods_inventory_id' => $this->finishedGoodsAccount->id,
         'default_raw_materials_inventory_id' => $this->rawMaterialsAccount->id,
+        'default_wip_account_id' => $this->wipAccount->id,
         'default_manufacturing_journal_id' => $this->manufacturingJournal->id,
     ]);
 
@@ -132,8 +140,8 @@ describe('Manufacturing Accounting Integration', function () {
         expect($debitLine->debit->getMinorAmount()->toInt())->toBe(100000);
         expect($debitLine->credit->isZero())->toBeTrue();
 
-        // Assert credit to Raw Materials
-        expect($creditLine->account_id)->toBe($this->rawMaterialsAccount->id);
+        // Assert credit to WIP
+        expect($creditLine->account_id)->toBe($this->wipAccount->id);
         expect($creditLine->credit->getMinorAmount()->toInt())->toBe(100000); // 100 IQD
         expect($creditLine->debit->isZero())->toBeTrue();
 
@@ -218,13 +226,13 @@ describe('Manufacturing Accounting Integration', function () {
         $action = app(CreateJournalEntryForManufacturingAction::class);
         $journalEntry = $action->execute($mo, $this->user);
 
-        // Should have 3 lines: 2 credits (components) + 1 debit (finished goods)
-        expect($journalEntry->lines)->toHaveCount(3);
+        // Should have 2 lines: 1 credit (WIP accumulated) + 1 debit (finished goods)
+        expect($journalEntry->lines)->toHaveCount(2);
 
         $creditLines = $journalEntry->lines->filter(fn ($line) => $line->credit->isPositive());
         $debitLines = $journalEntry->lines->filter(fn ($line) => $line->debit->isPositive());
 
-        expect($creditLines)->toHaveCount(2);
+        expect($creditLines)->toHaveCount(1);
         expect($debitLines)->toHaveCount(1);
 
         // Total cost = (10 * $3) + (15 * $2) = $30 + $30 = $60

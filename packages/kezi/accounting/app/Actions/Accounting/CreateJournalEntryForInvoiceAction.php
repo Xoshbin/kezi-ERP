@@ -1,0 +1,167 @@
+<?php
+
+namespace Kezi\Accounting\Actions\Accounting;
+
+use App\Models\User;
+use Brick\Money\Money;
+use Illuminate\Support\Facades\DB;
+use Kezi\Accounting\Contracts\InvoiceJournalEntryCreatorContract;
+use Kezi\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
+use Kezi\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Kezi\Accounting\Models\JournalEntry;
+use Kezi\Sales\Models\Invoice;
+use RuntimeException;
+
+class CreateJournalEntryForInvoiceAction implements InvoiceJournalEntryCreatorContract
+{
+    public function __construct(
+        private readonly CreateJournalEntryAction $createJournalEntryAction,
+    ) {}
+
+    public function execute(Invoice $invoice, User $user): JournalEntry
+    {
+        return DB::transaction(function () use ($invoice, $user) {
+            // 1. Load all necessary related data for efficiency.
+            $invoice->load('company', 'currency', 'invoiceLines.tax', 'invoiceLines.incomeAccount', 'customer');
+
+            $company = $invoice->company;
+            $currency = $invoice->currency;
+
+            // Use customer's individual receivable account if available, otherwise fall back to default
+            $arAccountId = $invoice->customer->receivable_account_id ?? $company->default_accounts_receivable_id;
+            $salesJournalId = $company->default_sales_journal_id;
+
+            if (! $arAccountId || ! $salesJournalId) {
+                throw new RuntimeException('Default Accounts Receivable or Sales Journal is not configured for this company.');
+            }
+
+            // 2. Prepare the lines for the journal entry based on accounting rules.
+            $lineDTOs = [];
+            $totalDebit = Money::of(0, $currency->code);
+
+            // Rule: Each invoice line CREDITS the respective Income Account.
+            foreach ($invoice->invoiceLines as $line) {
+                // Credit the income account
+                $lineDTOs[] = new CreateJournalEntryLineDTO(
+                    account_id: $line->income_account_id,
+                    debit: Money::of(0, $currency->code),
+                    credit: $line->subtotal,
+                    description: $line->description,
+                    partner_id: null,
+                    analytic_account_id: null,
+                );
+
+                $totalDebit = $totalDebit->plus($line->subtotal);
+
+                // Credit the tax account(s) if there's tax
+                if ($line->total_line_tax->isPositive() && $line->tax) {
+                    $tax = $line->tax;
+
+                    if ($tax->is_group) {
+                        // Distribute tax amount to children
+                        // We assume the parent rate is the sum of children rates.
+                        // Split = TotalTax * (ChildRate / ParentRate)
+                        $totalRate = $tax->rate;
+                        $remainingAmount = $line->total_line_tax; // For rounding differences
+
+                        // We sort children to ensure deterministic order, though strict DB order is usually fine.
+                        // Using iterator to handle last item for rounding.
+                        $children = $tax->children;
+                        $i = 0;
+                        $count = $children->count();
+
+                        foreach ($children as $childTax) {
+                            $i++;
+                            if ($totalRate > 0) {
+                                if ($i === $count) {
+                                    $childAmount = $remainingAmount;
+                                } else {
+                                    // Calculate share
+                                    // Use division with high precision then roundup/down?
+                                    // Brick\Money supports allocation!
+                                    // But we need allocation by ratio.
+                                    // Let's use simple allocation if rates are integers or simple floats.
+                                    // For robustness w/ Money: amount * childRate / totalRate.
+
+                                    // Using allocate methods if available or manual calc.
+                                    // Money::allocate() takes ratios!
+                                    // We can just allocate the whole specific Tax Line amount by the children rates once outside the loop?
+                                    // Yes, that's better.
+                                    continue;
+                                }
+                            }
+                        }
+
+                        // Better approach: Use Money::allocate
+                        // Note: allocate() requires integer ratios, so we scale decimal rates (e.g., 0.10)
+                        // to integers by multiplying by 10000 to support rates with up to 4 decimal places
+                        $ratios = $children->map(fn ($t) => (int) ($t->rate * 10000))->toArray();
+                        if (array_sum($ratios) > 0) {
+                            $allocatedAmounts = $line->total_line_tax->allocate(...$ratios);
+
+                            $index = 0;
+                            foreach ($children as $childTax) {
+                                $amount = $allocatedAmounts[$index];
+                                if ($amount->isPositive()) {
+                                    $lineDTOs[] = new CreateJournalEntryLineDTO(
+                                        account_id: $childTax->tax_account_id,
+                                        debit: Money::of(0, $currency->code),
+                                        credit: $amount,
+                                        description: $childTax->name.' (Split) for '.$invoice->invoice_number,
+                                        partner_id: null,
+                                        analytic_account_id: null,
+                                        tax_id: $childTax->id,
+                                    );
+                                    $totalDebit = $totalDebit->plus($amount);
+                                }
+                                $index++;
+                            }
+                        }
+
+                    } else {
+                        // Single Tax
+                        $lineDTOs[] = new CreateJournalEntryLineDTO(
+                            account_id: $tax->tax_account_id,
+                            debit: Money::of(0, $currency->code),
+                            credit: $line->total_line_tax,
+                            description: 'Tax for '.$invoice->invoice_number,
+                            partner_id: null,
+                            analytic_account_id: null,
+                            tax_id: $tax->id,
+                        );
+
+                        $totalDebit = $totalDebit->plus($line->total_line_tax);
+                    }
+                }
+            }
+
+            // Rule: The total invoice amount DEBITS Accounts Receivable.
+            $lineDTOs[] = new CreateJournalEntryLineDTO(
+                account_id: $arAccountId,
+                debit: $totalDebit,
+                credit: Money::of(0, $currency->code),
+                description: 'A/R for '.$invoice->invoice_number,
+                partner_id: $invoice->customer_id,
+                analytic_account_id: null,
+            );
+
+            // 3. Create the parent JournalEntry record.
+            $journalEntryDTO = new CreateJournalEntryDTO(
+                company_id: $company->id,
+                journal_id: $salesJournalId,
+                currency_id: $currency->id,
+                entry_date: $invoice->invoice_date,
+                reference: $invoice->invoice_number,
+                description: 'Invoice '.$invoice->invoice_number,
+                source_type: Invoice::class,
+                source_id: $invoice->id,
+                created_by_user_id: $user->id,
+                is_posted: true,
+                lines: $lineDTOs,
+                exchange_rate: $invoice->exchange_rate_at_creation,
+            );
+
+            return $this->createJournalEntryAction->execute($journalEntryDTO);
+        });
+    }
+}

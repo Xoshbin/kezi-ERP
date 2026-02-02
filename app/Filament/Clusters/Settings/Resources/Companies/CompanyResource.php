@@ -23,7 +23,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Modules\Inventory\Enums\Inventory\InventoryAccountingMode;
+use Kezi\Inventory\Enums\Inventory\InventoryAccountingMode;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class CompanyResource extends Resource
@@ -34,7 +34,12 @@ class CompanyResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 20;
+
+    public static function getNavigationGroup(): string
+    {
+        return __('General');
+    }
 
     protected static ?string $cluster = SettingsCluster::class;
 
@@ -68,7 +73,7 @@ class CompanyResource extends Resource
                         Textarea::make('address')
                             ->label(__('company.address'))
                             ->columnSpanFull(),
-                        TranslatableSelect::forModel('currency_id', \Modules\Foundation\Models\Currency::class)
+                        TranslatableSelect::forModel('currency_id', \Kezi\Foundation\Models\Currency::class)
                             ->label(__('company.currency_id'))
                             ->searchable()
                             ->preload()

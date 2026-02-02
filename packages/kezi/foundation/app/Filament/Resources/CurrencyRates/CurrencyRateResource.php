@@ -1,0 +1,79 @@
+<?php
+
+namespace Kezi\Foundation\Filament\Resources\CurrencyRates;
+
+use App\Filament\Clusters\Settings\SettingsCluster;
+use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+use Kezi\Foundation\Filament\Resources\CurrencyRates\Pages\CreateCurrencyRate;
+use Kezi\Foundation\Filament\Resources\CurrencyRates\Pages\EditCurrencyRate;
+use Kezi\Foundation\Filament\Resources\CurrencyRates\Pages\ListCurrencyRates;
+use Kezi\Foundation\Filament\Resources\CurrencyRates\Schemas\CurrencyRateForm;
+use Kezi\Foundation\Filament\Resources\CurrencyRates\Tables\CurrencyRatesTable;
+use Kezi\Foundation\Models\CurrencyRate;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
+
+class CurrencyRateResource extends Resource
+{
+    use Translatable;
+
+    protected static ?string $model = CurrencyRate::class;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
+
+    protected static ?string $cluster = SettingsCluster::class;
+
+    protected static ?int $navigationSort = 3;
+
+    protected static ?string $recordTitleAttribute = 'rate';
+
+    public static function getLabel(): ?string
+    {
+        return __('foundation::currency.exchange_rates.label');
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __('foundation::currency.exchange_rates.plural_label');
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return __('Finance');
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return CurrencyRateForm::configure($schema);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return CurrencyRatesTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListCurrencyRates::route('/'),
+            'create' => CreateCurrencyRate::route('/create'),
+            'edit' => EditCurrencyRate::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('company_id', \Filament\Facades\Filament::getTenant()?->id);
+    }
+}

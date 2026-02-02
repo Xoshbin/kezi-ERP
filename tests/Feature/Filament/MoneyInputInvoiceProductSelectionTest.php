@@ -20,13 +20,13 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
 
     private User $user;
 
-    private \Modules\Foundation\Models\Currency $currency;
+    private \Kezi\Foundation\Models\Currency $currency;
 
-    private \Modules\Foundation\Models\Partner $customer;
+    private \Kezi\Foundation\Models\Partner $customer;
 
-    private \Modules\Product\Models\Product $product;
+    private \Kezi\Product\Models\Product $product;
 
-    private \Modules\Accounting\Models\Account $incomeAccount;
+    private \Kezi\Accounting\Models\Account $incomeAccount;
 
     protected function setUp(): void
     {
@@ -35,21 +35,21 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
         // Create test data
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
-        $this->currency = \Modules\Foundation\Models\Currency::factory()->create(['code' => 'USD']);
+        $this->currency = \Kezi\Foundation\Models\Currency::factory()->createSafely(['code' => 'USD']);
 
         $this->company->update(['currency_id' => $this->currency->id]);
 
-        $this->customer = \Modules\Foundation\Models\Partner::factory()->customer()->create([
+        $this->customer = \Kezi\Foundation\Models\Partner::factory()->customer()->create([
             'company_id' => $this->company->id,
         ]);
 
-        $this->incomeAccount = \Modules\Accounting\Models\Account::factory()->create([
+        $this->incomeAccount = \Kezi\Accounting\Models\Account::factory()->create([
             'company_id' => $this->company->id,
             'type' => 'income',
         ]);
 
         // Create a product with a specific Money unit price
-        $this->product = \Modules\Product\Models\Product::factory()->create([
+        $this->product = \Kezi\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Test Invoice Product',
             'description' => 'Test product for invoice',
@@ -110,7 +110,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
     public function it_handles_products_with_different_price_formats_in_invoice(): void
     {
         // Test with integer price
-        $integerProduct = \Modules\Product\Models\Product::factory()->create([
+        $integerProduct = \Kezi\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Integer Price Product',
             'description' => 'Product with integer price',
@@ -119,7 +119,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
         ]);
 
         // Test with decimal price
-        $decimalProduct = \Modules\Product\Models\Product::factory()->create([
+        $decimalProduct = \Kezi\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Decimal Price Product',
             'description' => 'Product with decimal price',
@@ -161,7 +161,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
     public function it_handles_products_with_null_unit_price_in_invoice(): void
     {
         // Create a product with null unit price
-        $nullPriceProduct = \Modules\Product\Models\Product::factory()->create([
+        $nullPriceProduct = \Kezi\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'No Price Product',
             'description' => 'Product without price',
@@ -243,7 +243,7 @@ class MoneyInputInvoiceProductSelectionTest extends TestCase
     public function it_populates_description_from_product_description_not_name(): void
     {
         // Verify that the invoice uses product description, not name (unlike vendor bills)
-        $productWithDescription = \Modules\Product\Models\Product::factory()->create([
+        $productWithDescription = \Kezi\Product\Models\Product::factory()->create([
             'company_id' => $this->company->id,
             'name' => 'Product Name',
             'description' => 'Detailed product description',

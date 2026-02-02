@@ -3,14 +3,14 @@
 namespace Tests\Builders;
 
 use App\Models\Company;
-use Modules\Accounting\Enums\Accounting\JournalType;
-use Modules\Accounting\Models\Journal;
-use Modules\Inventory\Enums\Inventory\StockLocationType;
-use Modules\Inventory\Models\StockLocation;
+use Kezi\Accounting\Enums\Accounting\JournalType;
+use Kezi\Accounting\Models\Journal;
+use Kezi\Inventory\Enums\Inventory\StockLocationType;
+use Kezi\Inventory\Models\StockLocation;
 
 class CompanyBuilder
 {
-    protected ?\Modules\Foundation\Models\Currency $currency = null;
+    protected ?\Kezi\Foundation\Models\Currency $currency = null;
 
     protected array $accounts = [];
 
@@ -27,7 +27,7 @@ class CompanyBuilder
 
     public function withCurrency(string $code = 'IQD'): self
     {
-        $this->currency = \Modules\Foundation\Models\Currency::firstOrCreate(
+        $this->currency = \Kezi\Foundation\Models\Currency::firstOrCreate(
             ['code' => $code],
             [
                 'name' => $code === 'IQD' ? 'Iraqi Dinar' : 'US Dollar',
@@ -52,7 +52,10 @@ class CompanyBuilder
             'default_tax_account_id' => ['type' => 'current_liabilities', 'name' => 'Tax Payable'],
             'default_tax_receivable_id' => ['type' => 'current_assets', 'name' => 'Tax Receivable'],
             'default_gain_loss_account_id' => ['type' => 'income', 'name' => 'Gain/Loss on Asset Disposal'],
-
+            // Manufacturing Accounts
+            'default_wip_account_id' => ['type' => 'current_assets', 'name' => 'Work in Progress'],
+            'default_raw_materials_inventory_id' => ['type' => 'current_assets', 'name' => 'Raw Materials'],
+            'default_finished_goods_inventory_id' => ['type' => 'current_assets', 'name' => 'Finished Goods'],
         ];
 
         return $this;
@@ -65,6 +68,7 @@ class CompanyBuilder
             'default_sales_journal_id' => ['type' => JournalType::Sale, 'name' => 'Sales Journal'],
             'default_bank_journal_id' => ['type' => JournalType::Bank, 'name' => 'Bank Journal'],
             'default_depreciation_journal_id' => ['type' => JournalType::Miscellaneous, 'name' => 'Depreciation Journal'],
+            'default_manufacturing_journal_id' => ['type' => JournalType::Miscellaneous, 'name' => 'Manufacturing Operations'],
         ];
 
         return $this;
@@ -101,7 +105,7 @@ class CompanyBuilder
 
         $accountInstances = [];
         foreach ($this->accounts as $key => $details) {
-            $accountInstances[$key] = \Modules\Accounting\Models\Account::factory()->for($company)->create($details);
+            $accountInstances[$key] = \Kezi\Accounting\Models\Account::factory()->for($company)->create($details);
         }
 
         $journalInstances = [];
@@ -137,7 +141,7 @@ class CompanyBuilder
         return $company->fresh();
     }
 
-    private function getDefaultAccountForJournal(string $journalKey, array $accounts): ?\Modules\Accounting\Models\Account
+    private function getDefaultAccountForJournal(string $journalKey, array $accounts): ?\Kezi\Accounting\Models\Account
     {
         $mapping = [
             'default_sales_journal_id' => 'default_accounts_receivable_id',

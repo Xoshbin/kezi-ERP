@@ -2,31 +2,29 @@
 
 use App\Models\User;
 use Brick\Money\Money;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Inventory\Enums\Inventory\StockLocationType;
-use Modules\Inventory\Enums\Inventory\StockMoveStatus;
-use Modules\Inventory\Enums\Inventory\StockMoveType;
-use Modules\Inventory\Models\StockLocation;
-use Modules\Inventory\Models\StockMove;
-use Modules\Manufacturing\Actions\Accounting\CreateJournalEntryForManufacturingAction;
-use Modules\Manufacturing\Actions\ConfirmManufacturingOrderAction;
-use Modules\Manufacturing\Actions\ConsumeComponentsAction;
-use Modules\Manufacturing\Actions\CreateBOMAction;
-use Modules\Manufacturing\Actions\CreateManufacturingOrderAction;
-use Modules\Manufacturing\Actions\ProduceFinishedGoodsAction;
-use Modules\Manufacturing\Actions\StartProductionAction;
-use Modules\Manufacturing\DataTransferObjects\BOMLineDTO;
-use Modules\Manufacturing\DataTransferObjects\CreateBOMDTO;
-use Modules\Manufacturing\DataTransferObjects\CreateManufacturingOrderDTO;
-use Modules\Manufacturing\Enums\BOMType;
-use Modules\Manufacturing\Enums\ManufacturingOrderStatus;
-use Modules\Manufacturing\Models\ManufacturingOrder;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Product\Models\Product;
+use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Models\Journal;
+use Kezi\Inventory\Enums\Inventory\StockLocationType;
+use Kezi\Inventory\Enums\Inventory\StockMoveStatus;
+use Kezi\Inventory\Enums\Inventory\StockMoveType;
+use Kezi\Inventory\Models\StockLocation;
+use Kezi\Inventory\Models\StockMove;
+use Kezi\Manufacturing\Actions\Accounting\CreateJournalEntryForManufacturingAction;
+use Kezi\Manufacturing\Actions\ConfirmManufacturingOrderAction;
+use Kezi\Manufacturing\Actions\ConsumeComponentsAction;
+use Kezi\Manufacturing\Actions\CreateBOMAction;
+use Kezi\Manufacturing\Actions\CreateManufacturingOrderAction;
+use Kezi\Manufacturing\Actions\ProduceFinishedGoodsAction;
+use Kezi\Manufacturing\Actions\StartProductionAction;
+use Kezi\Manufacturing\DataTransferObjects\BOMLineDTO;
+use Kezi\Manufacturing\DataTransferObjects\CreateBOMDTO;
+use Kezi\Manufacturing\DataTransferObjects\CreateManufacturingOrderDTO;
+use Kezi\Manufacturing\Enums\BOMType;
+use Kezi\Manufacturing\Enums\ManufacturingOrderStatus;
+use Kezi\Manufacturing\Models\ManufacturingOrder;
+use Kezi\Product\Enums\Products\ProductType;
+use Kezi\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(WithConfiguredCompany::class);
@@ -42,21 +40,21 @@ beforeEach(function () {
         'company_id' => $this->company->id,
         'code' => '1010',
         'name' => 'Raw Materials',
-        'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets,
+        'type' => \Kezi\Accounting\Enums\Accounting\AccountType::CurrentAssets,
     ]);
 
     $this->fgAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => '1020',
         'name' => 'Finished Goods',
-        'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets,
+        'type' => \Kezi\Accounting\Enums\Accounting\AccountType::CurrentAssets,
     ]);
 
     $this->wipAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => '1030',
         'name' => 'Work in Progress',
-        'type' => \Modules\Accounting\Enums\Accounting\AccountType::CurrentAssets,
+        'type' => \Kezi\Accounting\Enums\Accounting\AccountType::CurrentAssets,
     ]);
 
     // 2. Setup Journals
@@ -64,14 +62,14 @@ beforeEach(function () {
         'company_id' => $this->company->id,
         'name' => 'Stock Journal',
         'short_code' => 'STJ',
-        'type' => \Modules\Accounting\Enums\Accounting\JournalType::Miscellaneous,
+        'type' => \Kezi\Accounting\Enums\Accounting\JournalType::Miscellaneous,
     ]);
 
     $this->manufacturingJournal = Journal::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Manufacturing Operations',
         'short_code' => 'MFG',
-        'type' => \Modules\Accounting\Enums\Accounting\JournalType::Miscellaneous,
+        'type' => \Kezi\Accounting\Enums\Accounting\JournalType::Miscellaneous,
     ]);
 
     // Configure Company Defaults
@@ -79,6 +77,7 @@ beforeEach(function () {
         'default_manufacturing_journal_id' => $this->manufacturingJournal->id,
         'default_raw_materials_inventory_id' => $this->rmAccount->id,
         'default_finished_goods_inventory_id' => $this->fgAccount->id,
+        'default_wip_account_id' => $this->wipAccount->id,
     ]);
 
     // 3. Setup Locations
@@ -263,9 +262,9 @@ it('completes full manufacturing flow to accounting', function () {
 
     $totalCredit = 0.0;
     foreach ($je->lines as $line) {
-        if ($line->account_id === $this->rmAccount->id && $line->credit->isPositive()) {
+        if ($line->account_id === $this->wipAccount->id && $line->credit->isPositive()) {
             $totalCredit += $line->credit->getAmount()->toFloat();
         }
     }
-    expect($totalCredit)->toBe($expectedAmount, 'Total Credit to Raw Materials mismatch');
+    expect($totalCredit)->toBe($expectedAmount, 'Total Credit to WIP mismatch');
 });

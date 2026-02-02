@@ -11,26 +11,26 @@
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
         </testsuite>
-        <testsuite name="Modules">
-            <directory>Modules/*/tests/Feature</directory>
-            <directory>Modules/*/tests/Unit</directory>
+        <testsuite name="Packages">
+            <directory>packages/kezi/*/tests/Feature</directory>
+            <directory>packages/kezi/*/tests/Unit</directory>
         </testsuite>
         <testsuite name="Browser">
             <directory>tests/Browser</directory>
-            <directory>Modules/*/tests/Browser</directory>
+            <directory>packages/kezi/*/tests/Browser</directory>
         </testsuite>
     </testsuites>
     <source>
         <include>
             <directory>app</directory>
-            <directory>Modules</directory>
+            <directory>packages/kezi</directory>
         </include>
         <exclude>
-            <directory>Modules/*/config</directory>
-            <directory>Modules/*/database</directory>
-            <directory>Modules/*/resources</directory>
-            <directory>Modules/*/routes</directory>
-            <directory>Modules/*/tests</directory>
+            <directory>packages/kezi/*/config</directory>
+            <directory>packages/kezi/*/database</directory>
+            <directory>packages/kezi/*/resources</directory>
+            <directory>packages/kezi/*/routes</directory>
+            <directory>packages/kezi/*/tests</directory>
         </exclude>
     </source>
     <php>
@@ -47,5 +47,6 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <ini name="memory_limit" value="-1"/>
     </php>
 </phpunit>

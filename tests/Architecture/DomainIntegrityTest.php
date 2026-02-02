@@ -11,7 +11,7 @@ test('models do not use the DB facade directly')
 test('only actions can change the state of a journal entry')
     ->expect(JournalEntry::class)
     ->toOnlyBeChangedBy([
-        \Modules\Accounting\Actions\Accounting\CreateJournalEntryAction::class,
+        \Kezi\Accounting\Actions\Accounting\CreateJournalEntryAction::class,
         UpdateJournalEntryAction::class,
         ReverseJournalEntryAction::class,
     ]);
