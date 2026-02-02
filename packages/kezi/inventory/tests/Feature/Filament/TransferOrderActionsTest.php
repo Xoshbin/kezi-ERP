@@ -2,7 +2,6 @@
 
 use App\Models\Company;
 use App\Models\User;
-use Livewire\Livewire;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Inventory\Enums\Inventory\StockLocationType;
 use Kezi\Inventory\Enums\Inventory\StockMoveStatus;
@@ -12,6 +11,7 @@ use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pa
 use Kezi\Inventory\Models\StockLocation;
 use Kezi\Inventory\Models\StockPicking;
 use Kezi\Product\Models\Product;
+use Livewire\Livewire;
 
 beforeEach(function () {
     $this->user = User::factory()->create();

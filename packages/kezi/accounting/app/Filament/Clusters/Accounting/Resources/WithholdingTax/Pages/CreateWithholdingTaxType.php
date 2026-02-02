@@ -3,9 +3,9 @@
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\WithholdingTaxTypeResource;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
-use Kezi\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\WithholdingTaxTypeResource;
 
 class CreateWithholdingTaxType extends CreateRecord
 {

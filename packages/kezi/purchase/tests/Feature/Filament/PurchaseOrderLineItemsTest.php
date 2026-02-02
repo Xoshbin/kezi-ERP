@@ -3,7 +3,6 @@
 use Brick\Money\Money;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Models\Partner;
 use Kezi\Product\Models\Product;
@@ -11,6 +10,7 @@ use Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus;
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\CreatePurchaseOrder;
 use Kezi\Purchase\Models\PurchaseOrder;
 use Kezi\Purchase\Services\PurchaseOrderService;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

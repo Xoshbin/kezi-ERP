@@ -4,10 +4,10 @@ namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
-use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\ProductResource;
 use Kezi\Product\Models\Product;
+use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
+use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
 
 class EditProduct extends EditRecord
 {

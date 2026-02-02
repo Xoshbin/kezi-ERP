@@ -3,9 +3,9 @@
 namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
+use Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\LeaveTypeResource;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
-use Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\LeaveTypeResource;
 
 class CreateLeaveType extends CreateRecord
 {

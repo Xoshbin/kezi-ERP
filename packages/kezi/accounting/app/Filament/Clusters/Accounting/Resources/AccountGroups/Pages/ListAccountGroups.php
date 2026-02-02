@@ -4,10 +4,10 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\AccountGroups\P
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
-use LaraZeus\SpatieTranslatable\Resources\Pages\ListRecords\Concerns\Translatable;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AccountGroups\AccountGroupResource;
 use Kezi\Foundation\Filament\Actions\DocsAction;
+use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
+use LaraZeus\SpatieTranslatable\Resources\Pages\ListRecords\Concerns\Translatable;
 
 class ListAccountGroups extends ListRecords
 {

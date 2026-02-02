@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Inventory\Models\StockLocation;
 use Kezi\Manufacturing\Enums\ManufacturingOrderStatus;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\ManufacturingOrderResource;
@@ -11,6 +10,7 @@ use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\ManufacturingOr
 use Kezi\Manufacturing\Models\BillOfMaterial;
 use Kezi\Manufacturing\Models\ManufacturingOrder;
 use Kezi\Product\Models\Product;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

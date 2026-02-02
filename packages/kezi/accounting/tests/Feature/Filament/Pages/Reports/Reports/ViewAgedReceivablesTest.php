@@ -5,11 +5,11 @@ namespace Kezi\Accounting\Tests\Feature\Filament\Pages\Reports;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Filament\Clusters\Accounting\Pages\Reports\ViewAgedReceivables;
 use Kezi\Foundation\Models\Partner;
 use Kezi\Sales\Enums\Sales\InvoiceStatus;
 use Kezi\Sales\Models\Invoice;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

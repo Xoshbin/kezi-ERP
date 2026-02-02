@@ -3,11 +3,11 @@
 namespace Kezi\Accounting\Tests\Feature\Filament;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\FiscalPosition;
 use Kezi\Purchase\Models\VendorBill;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

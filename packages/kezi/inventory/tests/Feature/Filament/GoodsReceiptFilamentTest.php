@@ -4,7 +4,6 @@ namespace Kezi\Inventory\tests\Feature\Filament;
 
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Foundation\Models\Partner;
 use Kezi\Inventory\Enums\Inventory\StockPickingState;
 use Kezi\Inventory\Enums\Inventory\StockPickingType;
@@ -18,6 +17,7 @@ use Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus;
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pages\EditPurchaseOrder;
 use Kezi\Purchase\Models\PurchaseOrder;
 use Kezi\Purchase\Models\PurchaseOrderLine;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

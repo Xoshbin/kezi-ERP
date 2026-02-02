@@ -16,6 +16,11 @@ class InventoryOverview extends Page
 
     protected string $view = 'inventory::filament.clusters.inventory.pages.inventory-overview';
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Reporting');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('inventory::inventory_dashboard.navigation_label');

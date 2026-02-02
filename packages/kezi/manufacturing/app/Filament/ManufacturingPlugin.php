@@ -17,7 +17,7 @@ class ManufacturingPlugin implements Plugin
         $panel
             ->discoverResources(in: __DIR__, for: 'Kezi\\Manufacturing\\Filament')
             ->discoverPages(in: __DIR__, for: 'Kezi\\Manufacturing\\Filament')
-            ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Kezi\\Manufacturing\\Filament\\Clusters');
+            ->discoverClusters(in: __DIR__.'/Clusters', for: 'Kezi\\Manufacturing\\Filament\\Clusters');
     }
 
     public function boot(Panel $panel): void

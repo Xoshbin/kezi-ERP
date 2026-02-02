@@ -3,10 +3,10 @@
 use App\Models\Company;
 use App\Models\User;
 use Filament\Facades\Filament;
-use Livewire\Livewire;
 use Kezi\Foundation\Filament\Resources\PdfSettings\Pages\EditPdfSettings;
 use Kezi\Foundation\Filament\Resources\PdfSettings\Pages\ListPdfSettings;
 use Kezi\Foundation\Filament\Resources\PdfSettings\PdfSettingsResource;
+use Livewire\Livewire;
 
 beforeEach(function () {
     $this->user = User::factory()->create();

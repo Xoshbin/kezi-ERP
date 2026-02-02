@@ -3,7 +3,6 @@
 namespace Kezi\QualityControl\Tests\Unit\Services;
 
 use App\Models\User;
-use Mockery;
 use Kezi\QualityControl\Actions\CreateQualityCheckAction;
 use Kezi\QualityControl\Actions\RecordQualityCheckResultAction;
 use Kezi\QualityControl\DataTransferObjects\CreateQualityCheckDTO;
@@ -11,6 +10,7 @@ use Kezi\QualityControl\DataTransferObjects\RecordQualityCheckResultDTO;
 use Kezi\QualityControl\Models\QualityCheck;
 use Kezi\QualityControl\Models\QualityControlPoint;
 use Kezi\QualityControl\Services\QualityCheckService;
+use Mockery;
 
 beforeEach(function () {
     $this->createAction = Mockery::mock(CreateQualityCheckAction::class);

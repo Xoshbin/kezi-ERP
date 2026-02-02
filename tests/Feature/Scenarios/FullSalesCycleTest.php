@@ -45,10 +45,15 @@ class FullSalesCycleTest extends TestCase
     use WithConfiguredCompany;
 
     protected User $user;
+
     protected Currency $currency;
+
     protected Partner $customer;
+
     protected Product $product;
+
     protected Account $incomeAccount;
+
     protected Journal $bankJournal;
 
     protected function setUp(): void
@@ -83,7 +88,7 @@ class FullSalesCycleTest extends TestCase
         $this->bankJournal = Journal::factory()->for($this->company)->create([
             'type' => JournalType::Bank,
             'name' => 'Bank',
-            'short_code' => 'BNK1'
+            'short_code' => 'BNK1',
         ]);
 
         // Setup Dunning Levels
@@ -207,7 +212,7 @@ class FullSalesCycleTest extends TestCase
                 document_type: 'invoice',
                 document_id: $invoice->id,
                 amount_applied: $paymentAmount
-            )
+            ),
         ];
 
         $paymentDto = new CreatePaymentDTO(

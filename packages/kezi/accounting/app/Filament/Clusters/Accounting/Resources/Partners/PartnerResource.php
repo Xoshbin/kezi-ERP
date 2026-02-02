@@ -46,13 +46,13 @@ class PartnerResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
 
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 10;
 
     protected static ?string $cluster = AccountingCluster::class;
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::navigation.groups.transactions');
+        return __('Contacts');
     }
 
     public static function getModelLabel(): string

@@ -84,6 +84,12 @@ class KeziPanelProvider extends PanelProvider
                         }
 
                         $groupLabel = $resource::getNavigationGroup() ?? null;
+
+                        if ($resource === 'BezhanSalleh\FilamentShield\Resources\Roles\RoleResource' ||
+                            $resource === 'Xoshbin\CustomFields\Filament\Resources\CustomFieldDefinitionResource') {
+                            $groupLabel = __('System');
+                        }
+
                         $item = \Filament\Navigation\NavigationItem::make($resource::getNavigationLabel())
                             ->icon($resource::getNavigationIcon() ?? 'heroicon-o-document-text')
                             ->url($resource::getUrl())

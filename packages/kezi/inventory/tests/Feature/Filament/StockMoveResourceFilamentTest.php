@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Inventory\Enums\Inventory\StockMoveStatus;
 use Kezi\Inventory\Enums\Inventory\StockMoveType;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages\ListStockMoves;
@@ -12,6 +11,7 @@ use Kezi\Inventory\Models\StockMoveProductLine;
 use Kezi\Product\Models\Product;
 use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
 use Kezi\Purchase\Models\VendorBill;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

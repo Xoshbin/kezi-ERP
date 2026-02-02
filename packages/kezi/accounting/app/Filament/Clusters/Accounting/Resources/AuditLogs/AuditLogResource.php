@@ -31,7 +31,7 @@ class AuditLogResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::navigation.groups.administration');
+        return __('Configuration');
     }
 
     public static function getModelLabel(): string

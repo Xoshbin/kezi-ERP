@@ -15,13 +15,13 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages\CreateFiscalPosition;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages\EditFiscalPosition;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages\ListFiscalPositions;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\FiscalPositions\RelationManagers\AccountMappingsRelationManager;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\FiscalPositions\RelationManagers\TaxMappingsRelationManager;
 use Kezi\Accounting\Models\FiscalPosition;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 
 class FiscalPositionResource extends Resource
 {
@@ -37,7 +37,7 @@ class FiscalPositionResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::navigation.groups.administration');
+        return __('Configuration');
     }
 
     public static function getModelLabel(): string

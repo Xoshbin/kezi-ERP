@@ -7,13 +7,13 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Departments\Pages\CreateDepartment;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Departments\Pages\EditDepartment;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Departments\Pages\ListDepartments;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Departments\Schemas\DepartmentForm;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Departments\Tables\DepartmentsTable;
 use Kezi\HR\Models\Department;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 
 class DepartmentResource extends Resource
 {
@@ -44,7 +44,7 @@ class DepartmentResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('hr::navigation.groups.hr_settings');
+        return __('Configuration');
     }
 
     public static function form(Schema $schema): Schema

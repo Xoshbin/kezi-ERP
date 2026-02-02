@@ -6,7 +6,6 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Kezi\HR\Filament\Clusters\HumanResources\HumanResourcesCluster;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveRequests\Pages\CreateLeaveRequest;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveRequests\Pages\EditLeaveRequest;
@@ -14,6 +13,7 @@ use Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveRequests\Pages\ListL
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveRequests\Schemas\LeaveRequestForm;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveRequests\Tables\LeaveRequestsTable;
 use Kezi\HR\Models\LeaveRequest;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 
 class LeaveRequestResource extends Resource
 {

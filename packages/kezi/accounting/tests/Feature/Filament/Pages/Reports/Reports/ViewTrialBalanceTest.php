@@ -4,12 +4,12 @@ namespace Kezi\Accounting\Tests\Feature\Filament\Pages\Reports;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Filament\Clusters\Accounting\Pages\Reports\ViewTrialBalance;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\Journal;
 use Kezi\Accounting\Models\JournalEntry;
 use Kezi\Accounting\Models\JournalEntryLine;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

@@ -19,7 +19,7 @@ beforeEach(function () {
     $this->setupWithConfiguredCompany();
     Filament::setCurrentPanel('kezi');
     Filament::setTenant($this->company);
-    
+
     $this->user->update(['current_company_id' => $this->company->id]);
     $this->user->refresh();
     $this->actingAs($this->user);

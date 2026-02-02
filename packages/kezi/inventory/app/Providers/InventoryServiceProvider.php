@@ -23,7 +23,7 @@ class InventoryServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
     }
 
     /**
@@ -70,7 +70,7 @@ class InventoryServiceProvider extends ServiceProvider
             $this->mergeGlobalTranslations($langPath);
         } else {
             // Load translations from the module's resources/lang directory (Laravel Modules v12 best practice)
-            $moduleLang = __DIR__ . '/../../resources/lang';
+            $moduleLang = __DIR__.'/../../resources/lang';
             $this->loadTranslationsFrom($moduleLang, $this->nameLower);
             $this->loadJsonTranslationsFrom($moduleLang);
             $this->mergeGlobalTranslations($moduleLang);
@@ -136,7 +136,7 @@ class InventoryServiceProvider extends ServiceProvider
      */
     protected function registerConfig(): void
     {
-        $configPath = __DIR__ . '/../../config';
+        $configPath = __DIR__.'/../../config';
 
         if (is_dir($configPath)) {
             $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($configPath));
@@ -181,7 +181,7 @@ class InventoryServiceProvider extends ServiceProvider
     public function registerViews(): void
     {
         $viewPath = resource_path('views/modules/'.$this->nameLower);
-        $sourcePath = __DIR__ . '/../../resources/views';
+        $sourcePath = __DIR__.'/../../resources/views';
 
         $this->publishes([$sourcePath => $viewPath], ['views', $this->nameLower.'-module-views']);
 

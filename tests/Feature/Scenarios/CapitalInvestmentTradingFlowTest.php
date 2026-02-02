@@ -3,7 +3,6 @@
 use App\Models\User;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
-use Livewire\Livewire;
 use Kezi\Accounting\Enums\Accounting\AccountType;
 use Kezi\Accounting\Enums\Accounting\JournalType;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
@@ -32,6 +31,7 @@ use Kezi\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\CreateSalesOr
 use Kezi\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages\EditSalesOrder;
 use Kezi\Sales\Models\Invoice;
 use Kezi\Sales\Models\SalesOrder;
+use Livewire\Livewire;
 use Tests\Builders\CompanyBuilder;
 
 // Phase 1 Setup

@@ -30,6 +30,11 @@ class LoanAgreementResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Accounting');
+    }
+
     public static function getModelLabel(): string
     {
         return __('accounting::loan.label');

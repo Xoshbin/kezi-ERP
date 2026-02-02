@@ -4,7 +4,6 @@ namespace Kezi\Accounting\Tests\Feature\Filament;
 
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\EditVendorBill;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\AssetCategory;
@@ -12,6 +11,7 @@ use Kezi\Foundation\Models\Partner;
 use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
 use Kezi\Purchase\Models\VendorBill;
 use Kezi\Purchase\Models\VendorBillLine;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

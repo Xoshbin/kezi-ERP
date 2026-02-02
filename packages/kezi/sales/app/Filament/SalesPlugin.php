@@ -17,7 +17,7 @@ class SalesPlugin implements Plugin
         $panel
             ->discoverResources(in: __DIR__, for: 'Kezi\\Sales\\Filament')
             ->discoverPages(in: __DIR__, for: 'Kezi\\Sales\\Filament')
-            ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Kezi\\Sales\\Filament\\Clusters');
+            ->discoverClusters(in: __DIR__.'/Clusters', for: 'Kezi\\Sales\\Filament\\Clusters');
     }
 
     public function boot(Panel $panel): void

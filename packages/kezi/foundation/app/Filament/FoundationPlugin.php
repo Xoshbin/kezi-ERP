@@ -17,7 +17,7 @@ class FoundationPlugin implements Plugin
         $panel
             ->discoverResources(in: __DIR__, for: 'Kezi\\Foundation\\Filament')
             ->discoverPages(in: __DIR__, for: 'Kezi\\Foundation\\Filament')
-            ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Kezi\\Foundation\\Filament\\Clusters');
+            ->discoverClusters(in: __DIR__.'/Clusters', for: 'Kezi\\Foundation\\Filament\\Clusters');
     }
 
     public function boot(Panel $panel): void

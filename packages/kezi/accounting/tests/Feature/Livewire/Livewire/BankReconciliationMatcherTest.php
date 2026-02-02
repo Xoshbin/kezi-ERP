@@ -5,7 +5,6 @@ use Brick\Money\Money;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Livewire\Accounting\BankTransactionsTable;
 use Kezi\Accounting\Livewire\Accounting\SystemPaymentsTable;
 use Kezi\Accounting\Models\Account;
@@ -18,6 +17,7 @@ use Kezi\Foundation\Models\Partner;
 use Kezi\Payment\Enums\Payments\PaymentStatus;
 use Kezi\Payment\Enums\Payments\PaymentType;
 use Kezi\Payment\Models\Payment;
+use Livewire\Livewire;
 use Tests\Builders\CompanyBuilder;
 
 uses(RefreshDatabase::class);

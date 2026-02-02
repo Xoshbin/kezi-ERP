@@ -2,7 +2,6 @@
 
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Models\Account;
 use Kezi\HR\Enums\CashAdvanceStatus;
 use Kezi\HR\Enums\ExpenseReportStatus;
@@ -11,6 +10,7 @@ use Kezi\HR\Filament\Clusters\HumanResources\Resources\ExpenseReports\Pages\List
 use Kezi\HR\Models\CashAdvance;
 use Kezi\HR\Models\Employee;
 use Kezi\HR\Models\ExpenseReport;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

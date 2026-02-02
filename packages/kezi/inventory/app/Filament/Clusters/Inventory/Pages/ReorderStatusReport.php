@@ -34,6 +34,11 @@ class ReorderStatusReport extends Page implements HasForms
 
     protected static ?int $navigationSort = 24;
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Reporting');
+    }
+
     public ?array $data = [];
 
     public ?array $reportData = null;

@@ -12,7 +12,6 @@ use Kezi\Inventory\Enums\Inventory\StockLocationType;
 use Kezi\Inventory\Models\InventoryCostLayer;
 use Kezi\Inventory\Models\StockLocation;
 use Kezi\Product\Actions\GenerateProductVariantsAction;
-use Spatie\Permission\Models\Permission;
 use Kezi\Product\DataTransferObjects\GenerateProductVariantsDTO;
 use Kezi\Product\Models\Product;
 use Kezi\Product\Models\ProductAttribute;
@@ -22,6 +21,7 @@ use Kezi\Purchase\DataTransferObjects\Purchases\CreateVendorBillLineDTO;
 use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
 use Kezi\Purchase\Models\VendorBill;
 use Kezi\Purchase\Services\VendorBillService;
+use Spatie\Permission\Models\Permission;
 
 beforeEach(function () {
     $this->company = Company::factory()->create();

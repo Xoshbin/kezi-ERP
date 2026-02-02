@@ -3,9 +3,9 @@
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Taxes\TaxResource;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
-use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Taxes\TaxResource;
 
 class CreateTax extends CreateRecord
 {

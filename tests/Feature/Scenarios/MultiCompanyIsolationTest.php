@@ -1,17 +1,16 @@
 <?php
 
 use App\Models\User;
+use Brick\Money\Money;
+use Filament\Facades\Filament;
+use Kezi\Accounting\Models\Account;
+use Kezi\Foundation\Models\Partner;
 use Kezi\Product\Models\Product;
 use Kezi\Sales\Actions\CreateInvoiceAction;
 use Kezi\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
 use Kezi\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
-use Kezi\Foundation\Models\Partner;
-use Tests\Builders\CompanyBuilder;
-use Filament\Facades\Filament;
-use Illuminate\Validation\ValidationException;
-use Kezi\Accounting\Models\Account;
-use Brick\Money\Money;
 use Kezi\Sales\Services\InvoiceService;
+use Tests\Builders\CompanyBuilder;
 
 uses(Tests\Traits\WithConfiguredCompany::class);
 
@@ -78,7 +77,7 @@ it('prevents cross-company usage in invoice creation', function () {
     $productA = Product::factory()->for($this->companyA)->create([
         'unit_price' => 100,
         'income_account_id' => $incomeAccountA->id,
-        'name' => 'Product A'
+        'name' => 'Product A',
     ]);
 
     // Create a customer in Company B
@@ -104,7 +103,7 @@ it('prevents cross-company usage in invoice creation', function () {
                 income_account_id: $incomeAccountA->id, // Cross-company account!
                 product_id: $productA->id, // Cross-company product!
                 tax_id: null
-            )
+            ),
         ],
         fiscal_position_id: null
     );

@@ -88,7 +88,7 @@ test('can create account duplicate code different company', function () {
 
 test('can update account with valid data', function () {
     $account = Account::factory()->create([
-            'type' => AccountType::CurrentAssets,
+        'type' => AccountType::CurrentAssets,
     ]);
     $newData = [
         'code' => '1002',

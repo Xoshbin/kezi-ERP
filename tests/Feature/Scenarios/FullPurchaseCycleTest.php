@@ -187,7 +187,7 @@ test('full purchase cycle: rfq -> po -> receipt -> bill -> payment', function ()
         new ReceiveGoodsLineDTO(
             purchaseOrderLineId: $poLine->id,
             quantityToReceive: 50
-        )
+        ),
     ];
 
     $validateDto = new ValidateGoodsReceiptDTO(
@@ -253,7 +253,7 @@ test('full purchase cycle: rfq -> po -> receipt -> bill -> payment', function ()
             document_type: 'vendor_bill',
             document_id: $vendorBill->id,
             amount_applied: $paymentAmount
-        )
+        ),
     ];
 
     $paymentDto = new CreatePaymentDTO(

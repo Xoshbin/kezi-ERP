@@ -4,12 +4,12 @@ use App\Models\User;
 use Brick\Money\Money;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Livewire\Accounting\BankTransactionsTable;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\BankStatement;
 use Kezi\Accounting\Models\BankStatementLine;
 use Kezi\Accounting\Models\Journal;
+use Livewire\Livewire;
 use Tests\Builders\CompanyBuilder;
 
 uses(RefreshDatabase::class);

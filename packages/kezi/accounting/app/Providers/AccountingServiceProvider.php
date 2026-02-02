@@ -25,7 +25,7 @@ class AccountingServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->registerLivewireComponents();
-        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
     }
 
     /**
@@ -97,8 +97,8 @@ class AccountingServiceProvider extends ServiceProvider
             $this->loadTranslationsFrom($langPath, $this->nameLower);
             $this->loadJsonTranslationsFrom($langPath);
         } else {
-            $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', $this->nameLower);
-            $this->loadJsonTranslationsFrom(__DIR__ . '/../../resources/lang');
+            $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', $this->nameLower);
+            $this->loadJsonTranslationsFrom(__DIR__.'/../../resources/lang');
         }
     }
 
@@ -107,7 +107,7 @@ class AccountingServiceProvider extends ServiceProvider
      */
     protected function registerConfig(): void
     {
-        $configPath = __DIR__ . '/../../config';
+        $configPath = __DIR__.'/../../config';
 
         if (is_dir($configPath)) {
             $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($configPath));
@@ -152,7 +152,7 @@ class AccountingServiceProvider extends ServiceProvider
     public function registerViews(): void
     {
         $viewPath = resource_path('views/modules/'.$this->nameLower);
-        $sourcePath = __DIR__ . '/../../resources/views';
+        $sourcePath = __DIR__.'/../../resources/views';
 
         $this->publishes([$sourcePath => $viewPath], ['views', $this->nameLower.'-module-views']);
 

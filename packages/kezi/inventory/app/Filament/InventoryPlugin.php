@@ -17,7 +17,7 @@ class InventoryPlugin implements Plugin
         $panel
             ->discoverResources(in: __DIR__, for: 'Kezi\\Inventory\\Filament')
             ->discoverPages(in: __DIR__, for: 'Kezi\\Inventory\\Filament')
-            ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Kezi\\Inventory\\Filament\\Clusters');
+            ->discoverClusters(in: __DIR__.'/Clusters', for: 'Kezi\\Inventory\\Filament\\Clusters');
     }
 
     public function boot(Panel $panel): void
