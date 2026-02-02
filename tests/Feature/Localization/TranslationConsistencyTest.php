@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 
 /**
  * Tests for translation key consistency across modules.
@@ -10,7 +9,7 @@ use Illuminate\Support\Str;
  * in all supported locales (en, ckb).
  */
 test('all module translation keys used in filament code exist in locale files', function () {
-    $modulesPath = base_path('Modules');
+    $modulesPath = base_path('packages/kezi');
     $this->assertDirectoryExists($modulesPath);
 
     // Supported locales
@@ -56,8 +55,12 @@ test('all module translation keys used in filament code exist in locale files', 
         $fileName = $usage['file'];
         $keyPath = $usage['key'];
 
-        // Convert module name to proper case (e.g., 'projectmanagement' -> 'ProjectManagement')
-        $moduleDir = Str::studly($moduleName);
+        // Map module name to its directory name
+        $moduleMap = [
+            'qualitycontrol' => 'quality-control',
+            'projectmanagement' => 'project-management',
+        ];
+        $moduleDir = $moduleMap[$moduleName] ?? $moduleName;
 
         foreach ($locales as $locale) {
             $translationFile = "$modulesPath/$moduleDir/resources/lang/$locale/$fileName.php";
@@ -101,7 +104,7 @@ test('all module translation keys used in filament code exist in locale files', 
 });
 
 test('english and kurdish translation files have matching keys', function () {
-    $modulesPath = base_path('Modules');
+    $modulesPath = base_path('packages/kezi');
     $this->assertDirectoryExists($modulesPath);
 
     $modules = File::directories($modulesPath);

@@ -1,0 +1,79 @@
+<?php
+
+namespace Kezi\Product\Tests\Feature;
+
+use Kezi\Inventory\Enums\Inventory\TrackingType;
+use Kezi\Inventory\Models\StockLocation;
+use Kezi\Inventory\Models\StockMove;
+use Kezi\Product\Models\Product;
+use Tests\TestCase;
+
+// uses(TestCase::class); // Removed redundant line
+
+beforeEach(function () {
+    $this->company = \App\Models\Company::factory()->create();
+    $this->user = \App\Models\User::factory()->create();
+    $this->user->companies()->attach($this->company);
+    $this->actingAs($this->user);
+});
+
+it('allows setting tracking type on new product', function () {
+    $product = Product::factory()->for($this->company)->create([
+        'tracking_type' => TrackingType::Serial,
+    ]);
+
+    expect($product->tracking_type)->toBe(TrackingType::Serial);
+});
+
+it('allows changing tracking type before stock moves', function () {
+    $product = Product::factory()->for($this->company)->create([
+        'tracking_type' => TrackingType::None,
+    ]);
+
+    $product->update(['tracking_type' => TrackingType::Serial]);
+
+    expect($product->fresh()->tracking_type)->toBe(TrackingType::Serial);
+});
+
+it('prevents changing tracking type after stock moves exist', function () {
+    $product = Product::factory()->for($this->company)->create([
+        'tracking_type' => TrackingType::Serial,
+    ]);
+
+    // Create a stock move
+    $sourceLocation = StockLocation::factory()->for($this->company)->create();
+    $destLocation = StockLocation::factory()->for($this->company)->create();
+
+    StockMove::factory()->for($this->company)->create([
+        'product_id' => $product->id,
+        'from_location_id' => $sourceLocation->id,
+        'to_location_id' => $destLocation->id,
+        'quantity' => 1,
+    ]);
+
+    expect($product->hasStockMoves())->toBeTrue();
+});
+
+it('correctly identifies products with no stock moves', function () {
+    $product = Product::factory()->for($this->company)->create([
+        'tracking_type' => TrackingType::None,
+    ]);
+
+    expect($product->hasStockMoves())->toBeFalse();
+});
+
+it('defaults to None tracking type if not specified', function () {
+    $product = Product::factory()->for($this->company)->create();
+
+    expect($product->tracking_type)->toBe(TrackingType::None);
+});
+
+it('maintains tracking type through product updates', function () {
+    $product = Product::factory()->for($this->company)->create([
+        'tracking_type' => TrackingType::Lot,
+    ]);
+
+    $product->update(['name' => 'Updated Product Name']);
+
+    expect($product->fresh()->tracking_type)->toBe(TrackingType::Lot);
+});

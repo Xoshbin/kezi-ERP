@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0222accad89842b73992a25757fd7121",
+    "content-hash": "842990e4c25c8d1e107d56305bd7a973",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -816,83 +816,6 @@
                 }
             ],
             "time": "2024-07-16T11:13:48+00:00"
-        },
-        {
-            "name": "coolsam/modules",
-            "version": "v5.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/savannabits/filament-modules.git",
-                "reference": "4bc32eac6524f5e712311dd2f7f1cce3baded980"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/savannabits/filament-modules/zipball/4bc32eac6524f5e712311dd2f7f1cce3baded980",
-                "reference": "4bc32eac6524f5e712311dd2f7f1cce3baded980",
-                "shasum": ""
-            },
-            "require": {
-                "filament/filament": "^4.0|^5.0",
-                "nwidart/laravel-modules": "^11.0|^12.0",
-                "php": "^8.3",
-                "spatie/laravel-package-tools": "^1.15.0"
-            },
-            "require-dev": {
-                "barryvdh/laravel-ide-helper": "^3.5",
-                "laravel/pint": "^1.0",
-                "nunomaduro/larastan": "^3.1.0",
-                "orchestra/testbench": "^9.12",
-                "pestphp/pest-plugin-laravel": "^3.1",
-                "pestphp/pest-plugin-livewire": "^3.0",
-                "phpstan/extension-installer": "^1.4.3",
-                "spatie/laravel-ray": "^1.39"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "aliases": {
-                        "FilamentModules": "FilamentModules"
-                    },
-                    "providers": [
-                        "Coolsam\\Modules\\ModulesServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Coolsam\\Modules\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sam Maosa",
-                    "email": "maosa.sam@gmail.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Organize your Filament Code into modules using nwidart/laravel-modules",
-            "homepage": "https://github.com/savannabits/filament-modules",
-            "keywords": [
-                "FilamentModules",
-                "coolsam",
-                "filament",
-                "laravel"
-            ],
-            "support": {
-                "issues": "https://github.com/savannabits/filament-modules/issues",
-                "source": "https://github.com/savannabits/filament-modules"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/coolsam",
-                    "type": "github"
-                }
-            ],
-            "time": "2026-01-26T08:52:19+00:00"
         },
         {
             "name": "craft-forge/filament-language-switcher",
@@ -2685,6 +2608,475 @@
                 }
             ],
             "time": "2025-08-22T14:27:06+00:00"
+        },
+        {
+            "name": "kezi/accounting",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "packages/kezi/accounting",
+                "reference": "790db2eb5619c8e68b260e5870d8a920530f87fc"
+            },
+            "require": {
+                "brick/money": "^0.10.1",
+                "filament/filament": "^4.0",
+                "kezi/foundation": "*",
+                "kezi/product": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2",
+                "spatie/laravel-translatable": "^6.0",
+                "xoshbin/filament-translatable-select": "dev-main"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Kezi\\Accounting\\Providers\\AccountingServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Kezi\\Accounting\\": "app/",
+                    "Kezi\\Accounting\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\Accounting\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Accounting module for Kezi",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "kezi/foundation",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "packages/kezi/foundation",
+                "reference": "fe99e736bc4dd79f8ae244bc3e7620d8aef9ad3f"
+            },
+            "require": {
+                "bezhansalleh/filament-shield": "^4.0",
+                "brick/money": "^0.10.1",
+                "filament/filament": "^4.0",
+                "laravel/framework": "^12.0",
+                "php": "^8.2",
+                "spatie/laravel-permission": "^6.0",
+                "spatie/laravel-translatable": "^6.0",
+                "xoshbin/filament-custom-fields": "^0.0.2@beta"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Kezi\\Foundation\\Providers\\FoundationServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Kezi\\Foundation\\": "app/",
+                    "Kezi\\Foundation\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\Foundation\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Foundation module for Kezi",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "kezi/hr",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "packages/kezi/hr",
+                "reference": "d6c8dbd0b46d5199cd8bdab4714530b7fa77b42d"
+            },
+            "require": {
+                "brick/money": "^0.10.1",
+                "filament/filament": "^4.0",
+                "kezi/foundation": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2",
+                "spatie/laravel-translatable": "^6.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Kezi\\HR\\Providers\\HRServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Kezi\\HR\\": "app/",
+                    "Kezi\\HR\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\HR\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "HR module for Kezi",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "kezi/inventory",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "packages/kezi/inventory",
+                "reference": "10295663ce536f69580b8d9b7dc699a2c6f3e724"
+            },
+            "require": {
+                "brick/money": "^0.10.1",
+                "filament/filament": "^4.0",
+                "kezi/accounting": "*",
+                "kezi/foundation": "*",
+                "kezi/product": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Kezi\\Inventory\\Providers\\InventoryServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Kezi\\Inventory\\": "app/",
+                    "Kezi\\Inventory\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\Inventory\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Inventory module for Kezi",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "kezi/manufacturing",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "packages/kezi/manufacturing",
+                "reference": "b06c74df5e1c48ce29061f9d698342a5d59cabbc"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "kezi/accounting": "*",
+                "kezi/foundation": "*",
+                "kezi/inventory": "*",
+                "kezi/product": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2",
+                "spatie/laravel-translatable": "^6.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Kezi\\Manufacturing\\Providers\\ManufacturingServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Kezi\\Manufacturing\\": "app/",
+                    "Kezi\\Manufacturing\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\Manufacturing\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Manufacturing module for Kezi",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "kezi/payment",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "packages/kezi/payment",
+                "reference": "4e603014468104e805592782f694577573256ca5"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "kezi/accounting": "*",
+                "kezi/foundation": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Kezi\\Payment\\Providers\\PaymentServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Kezi\\Payment\\": "app/",
+                    "Kezi\\Payment\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\Payment\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Payment module for Kezi",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "kezi/product",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "packages/kezi/product",
+                "reference": "229cbfb89fbf8b2aa0a6bbe9dc261e86fbda4258"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "kezi/foundation": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2",
+                "spatie/laravel-translatable": "^6.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Kezi\\Product\\Providers\\ProductServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Kezi\\Product\\": "app/",
+                    "Kezi\\Product\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\Product\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Product module for Kezi",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "kezi/project-management",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "packages/kezi/project-management",
+                "reference": "8e2590903ce2f403e7d09d5838dbebe3c75a8983"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "kezi/foundation": "*",
+                "kezi/hr": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Kezi\\ProjectManagement\\Providers\\ProjectManagementServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Kezi\\ProjectManagement\\": "app/",
+                    "Kezi\\ProjectManagement\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\ProjectManagement\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Project Management module for Kezi",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "kezi/purchase",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "packages/kezi/purchase",
+                "reference": "65df4059009f71fdba7aaa5dcf9544e943167f98"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "kezi/accounting": "*",
+                "kezi/foundation": "*",
+                "kezi/inventory": "*",
+                "kezi/product": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Kezi\\Purchase\\Providers\\PurchaseServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Kezi\\Purchase\\": "app/",
+                    "Kezi\\Purchase\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\Purchase\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Purchase module for Kezi",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "kezi/quality-control",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "packages/kezi/quality-control",
+                "reference": "61c625d1112dc7535334a2721c7b81f9598db4f9"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "kezi/foundation": "*",
+                "kezi/inventory": "*",
+                "kezi/manufacturing": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Kezi\\QualityControl\\Providers\\QualityControlServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Kezi\\QualityControl\\": "app/",
+                    "Kezi\\QualityControl\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\QualityControl\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Quality Control module for Kezi",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "kezi/sales",
+            "version": "dev-feature/packages",
+            "dist": {
+                "type": "path",
+                "url": "packages/kezi/sales",
+                "reference": "faeacf2104782f53217785bfd815727316e3b4b7"
+            },
+            "require": {
+                "barryvdh/laravel-dompdf": "^3.1",
+                "filament/filament": "^4.0",
+                "kezi/accounting": "*",
+                "kezi/foundation": "*",
+                "kezi/inventory": "*",
+                "kezi/product": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Kezi\\Sales\\Providers\\SalesServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Kezi\\Sales\\": "app/",
+                    "Kezi\\Sales\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\Sales\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Sales module for Kezi",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "kirschbaum-development/eloquent-power-joins",
@@ -4672,95 +5064,6 @@
             "time": "2025-11-20T02:34:59+00:00"
         },
         {
-            "name": "nwidart/laravel-modules",
-            "version": "v11.1.10",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/nWidart/laravel-modules.git",
-                "reference": "6a987af3103bcf2dc31ebd18a68373bc8c7a99f7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/nWidart/laravel-modules/zipball/6a987af3103bcf2dc31ebd18a68373bc8c7a99f7",
-                "reference": "6a987af3103bcf2dc31ebd18a68373bc8c7a99f7",
-                "shasum": ""
-            },
-            "require": {
-                "ext-dom": "*",
-                "ext-json": "*",
-                "ext-simplexml": "*",
-                "php": ">=8.2",
-                "wikimedia/composer-merge-plugin": "^2.1"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^v3.52",
-                "laravel/framework": "^v11.33",
-                "laravel/pint": "^1.16",
-                "mockery/mockery": "^1.6",
-                "orchestra/testbench": "^v9.0",
-                "phpstan/phpstan": "^1.4",
-                "phpunit/phpunit": "^11.0",
-                "spatie/phpunit-snapshot-assertions": "^5.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "aliases": {
-                        "Module": "Nwidart\\Modules\\Facades\\Module"
-                    },
-                    "providers": [
-                        "Nwidart\\Modules\\LaravelModulesServiceProvider"
-                    ]
-                },
-                "branch-alias": {
-                    "dev-master": "11.0-dev"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "src/helpers.php"
-                ],
-                "psr-4": {
-                    "Nwidart\\Modules\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Widart",
-                    "email": "n.widart@gmail.com",
-                    "homepage": "https://nicolaswidart.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Laravel Module management",
-            "keywords": [
-                "laravel",
-                "module",
-                "modules",
-                "nwidart",
-                "rad"
-            ],
-            "support": {
-                "issues": "https://github.com/nWidart/laravel-modules/issues",
-                "source": "https://github.com/nWidart/laravel-modules/tree/v11.1.10"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/dcblogdev",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/nwidart",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-02-18T09:58:04+00:00"
-        },
-        {
             "name": "openspout/openspout",
             "version": "v4.32.0",
             "source": {
@@ -6445,22 +6748,22 @@
         },
         {
             "name": "spatie/shiki-php",
-            "version": "2.3.2",
+            "version": "2.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/shiki-php.git",
-                "reference": "a2e78a9ff8a1290b25d550be8fbf8285c13175c5"
+                "reference": "9d50ff4d9825d87d3283a6695c65ae9c3c3caa6b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/shiki-php/zipball/a2e78a9ff8a1290b25d550be8fbf8285c13175c5",
-                "reference": "a2e78a9ff8a1290b25d550be8fbf8285c13175c5",
+                "url": "https://api.github.com/repos/spatie/shiki-php/zipball/9d50ff4d9825d87d3283a6695c65ae9c3c3caa6b",
+                "reference": "9d50ff4d9825d87d3283a6695c65ae9c3c3caa6b",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "php": "^8.0",
-                "symfony/process": "^5.4|^6.4|^7.1"
+                "symfony/process": "^5.4|^6.4|^7.1|^8.0"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^v3.0",
@@ -6498,7 +6801,7 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/shiki-php/tree/2.3.2"
+                "source": "https://github.com/spatie/shiki-php/tree/2.3.3"
             },
             "funding": [
                 {
@@ -6506,7 +6809,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-21T14:16:57+00:00"
+            "time": "2026-02-01T09:30:04+00:00"
         },
         {
             "name": "spatie/yaml-front-matter",
@@ -9688,62 +9991,6 @@
             "time": "2024-11-21T01:49:47+00:00"
         },
         {
-            "name": "wikimedia/composer-merge-plugin",
-            "version": "v2.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/wikimedia/composer-merge-plugin.git",
-                "reference": "a03d426c8e9fb2c9c569d9deeb31a083292788bc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/composer-merge-plugin/zipball/a03d426c8e9fb2c9c569d9deeb31a083292788bc",
-                "reference": "a03d426c8e9fb2c9c569d9deeb31a083292788bc",
-                "shasum": ""
-            },
-            "require": {
-                "composer-plugin-api": "^1.1||^2.0",
-                "php": ">=7.2.0"
-            },
-            "require-dev": {
-                "composer/composer": "^1.1||^2.0",
-                "ext-json": "*",
-                "mediawiki/mediawiki-phan-config": "0.11.1",
-                "php-parallel-lint/php-parallel-lint": "~1.3.1",
-                "phpspec/prophecy": "~1.15.0",
-                "phpunit/phpunit": "^8.5||^9.0",
-                "squizlabs/php_codesniffer": "~3.7.1"
-            },
-            "type": "composer-plugin",
-            "extra": {
-                "class": "Wikimedia\\Composer\\Merge\\V2\\MergePlugin",
-                "branch-alias": {
-                    "dev-master": "2.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Wikimedia\\Composer\\Merge\\V2\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bryan Davis",
-                    "email": "bd808@wikimedia.org"
-                }
-            ],
-            "description": "Composer plugin to merge multiple composer.json files",
-            "support": {
-                "issues": "https://github.com/wikimedia/composer-merge-plugin/issues",
-                "source": "https://github.com/wikimedia/composer-merge-plugin/tree/v2.1.0"
-            },
-            "time": "2023-04-15T19:07:00+00:00"
-        },
-        {
             "name": "xoshbin/filament-custom-fields",
             "version": "v0.0.2-beta",
             "source": {
@@ -12215,16 +12462,16 @@
         },
         {
             "name": "laravel/boost",
-            "version": "v2.0.4",
+            "version": "v2.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/boost.git",
-                "reference": "6f7a9f70c1b2cc5fcef1585e8aa04b8546f150e9"
+                "reference": "00eede2041a9bac83eabbd3b3f16bd4aa91277c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/boost/zipball/6f7a9f70c1b2cc5fcef1585e8aa04b8546f150e9",
-                "reference": "6f7a9f70c1b2cc5fcef1585e8aa04b8546f150e9",
+                "url": "https://api.github.com/repos/laravel/boost/zipball/00eede2041a9bac83eabbd3b3f16bd4aa91277c9",
+                "reference": "00eede2041a9bac83eabbd3b3f16bd4aa91277c9",
                 "shasum": ""
             },
             "require": {
@@ -12277,7 +12524,7 @@
                 "issues": "https://github.com/laravel/boost/issues",
                 "source": "https://github.com/laravel/boost"
             },
-            "time": "2026-01-28T13:53:50+00:00"
+            "time": "2026-02-01T09:52:44+00:00"
         },
         {
             "name": "laravel/mcp",

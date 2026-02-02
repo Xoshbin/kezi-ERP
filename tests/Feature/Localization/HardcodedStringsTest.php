@@ -108,7 +108,7 @@ function getExcludedPaths(): array
 }
 
 test('filament resources and pages do not contain hardcoded user-facing strings', function () {
-    $modulesPath = base_path('Modules');
+    $modulesPath = base_path('packages/kezi');
     $appPath = base_path('app');
     $this->assertDirectoryExists($modulesPath);
 
@@ -206,7 +206,7 @@ test('filament resources and pages do not contain hardcoded user-facing strings'
 });
 
 test('blade templates in modules do not contain hardcoded user-facing text', function () {
-    $modulesPath = base_path('Modules');
+    $modulesPath = base_path('packages/kezi');
     $this->assertDirectoryExists($modulesPath);
 
     $hardcodedStrings = [];

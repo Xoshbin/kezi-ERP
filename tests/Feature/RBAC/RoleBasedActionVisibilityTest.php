@@ -3,9 +3,9 @@
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ListInvoices;
-use Modules\Sales\Models\Invoice;
-use Modules\Sales\Enums\Sales\InvoiceStatus;
+use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ListInvoices;
+use Kezi\Sales\Enums\Sales\InvoiceStatus;
+use Kezi\Sales\Models\Invoice;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
@@ -19,7 +19,7 @@ beforeEach(function () {
     app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
     // Seed roles and permissions
-    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
 
     // Create company
     $this->company = \App\Models\Company::factory()->create();
@@ -52,7 +52,7 @@ beforeEach(function () {
 
     // Set Filament context
     Filament::setTenant($this->company);
-    Filament::setCurrentPanel(Filament::getPanel('jmeryar'));
+    Filament::setCurrentPanel(Filament::getPanel('kezi'));
 });
 
 test('viewer cannot see create invoice action', function () {

@@ -5,28 +5,26 @@ namespace Tests\Feature\Scenarios;
 use App\Models\Company;
 use App\Models\User;
 use Carbon\Carbon;
-use Modules\Accounting\Enums\Accounting\AccountType;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\Journal;
-use Modules\Foundation\Models\Currency;
-use Modules\HR\Actions\HumanResources\CreateEmployeeAction;
-use Modules\HR\Actions\HumanResources\CreateEmploymentContractAction;
-use Modules\HR\Actions\HumanResources\CreatePaymentFromPayrollAction;
-use Modules\HR\Actions\HumanResources\ProcessPayrollAction;
-use Modules\HR\DataTransferObjects\HumanResources\CreateEmployeeDTO;
-use Modules\HR\DataTransferObjects\HumanResources\CreateEmploymentContractDTO;
-use Modules\HR\DataTransferObjects\HumanResources\ProcessPayrollDTO;
-use Modules\HR\Enums\ContractType;
-use Modules\HR\Enums\PayFrequency;
-use Modules\HR\Models\Employee;
-use Modules\HR\Models\EmploymentContract;
-use Modules\HR\Models\Payroll;
-use Modules\Payment\Models\Payment;
+use Kezi\Accounting\Enums\Accounting\AccountType;
+use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Models\Journal;
+use Kezi\Foundation\Models\Currency;
+use Kezi\HR\Actions\HumanResources\CreateEmployeeAction;
+use Kezi\HR\Actions\HumanResources\CreateEmploymentContractAction;
+use Kezi\HR\Actions\HumanResources\CreatePaymentFromPayrollAction;
+use Kezi\HR\Actions\HumanResources\ProcessPayrollAction;
+use Kezi\HR\DataTransferObjects\HumanResources\CreateEmployeeDTO;
+use Kezi\HR\DataTransferObjects\HumanResources\CreateEmploymentContractDTO;
+use Kezi\HR\DataTransferObjects\HumanResources\ProcessPayrollDTO;
+use Kezi\HR\Models\Employee;
+use Kezi\HR\Models\EmploymentContract;
+use Kezi\HR\Models\Payroll;
+use Kezi\Payment\Models\Payment;
 
 test('full HR cycle: employee -> contract -> payroll -> payment', function () {
     // --- Setup ---
     $company = Company::factory()->create();
-    $currency = Currency::factory()->create(['code' => 'USD', 'symbol' => '$']);
+    $currency = Currency::factory()->createSafely(['code' => 'USD', 'symbol' => '$']);
 
     // Create necessary accounts
     $bankAccount = Account::factory()->create([

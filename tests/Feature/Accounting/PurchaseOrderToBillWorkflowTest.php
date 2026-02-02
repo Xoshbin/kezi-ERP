@@ -7,24 +7,24 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
-use Modules\Accounting\Enums\Accounting\AccountType;
-use Modules\Accounting\Models\Account;
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Foundation\Models\Currency;
-use Modules\Foundation\Models\Partner;
-use Modules\Product\Enums\Products\ProductType;
-use Modules\Product\Models\Product;
-use Modules\Purchase\Actions\Purchases\CreatePurchaseOrderAction;
-use Modules\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
-use Modules\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
-use Modules\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
-use Modules\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
-use Modules\Purchase\Enums\Purchases\PurchaseOrderStatus;
-use Modules\Purchase\Enums\Purchases\VendorBillStatus;
-use Modules\Purchase\Models\PurchaseOrder;
-use Modules\Purchase\Models\VendorBill;
-use Modules\Purchase\Services\PurchaseOrderService;
-use Modules\Purchase\Services\VendorBillService;
+use Kezi\Accounting\Enums\Accounting\AccountType;
+use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Models\JournalEntry;
+use Kezi\Foundation\Models\Currency;
+use Kezi\Foundation\Models\Partner;
+use Kezi\Product\Enums\Products\ProductType;
+use Kezi\Product\Models\Product;
+use Kezi\Purchase\Actions\Purchases\CreatePurchaseOrderAction;
+use Kezi\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction;
+use Kezi\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
+use Kezi\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderLineDTO;
+use Kezi\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrderDTO;
+use Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus;
+use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
+use Kezi\Purchase\Models\PurchaseOrder;
+use Kezi\Purchase\Models\VendorBill;
+use Kezi\Purchase\Services\PurchaseOrderService;
+use Kezi\Purchase\Services\VendorBillService;
 
 uses(RefreshDatabase::class);
 
@@ -38,7 +38,7 @@ test('Purchase Order to Vendor Bill Workflow (Double Entry Verification)', funct
 
     // Assign Permissions
     app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
-    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+    $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
     setPermissionsTeamId($company->id);
     $user->assignRole('super_admin');
 
@@ -78,7 +78,7 @@ test('Purchase Order to Vendor Bill Workflow (Double Entry Verification)', funct
     $vendor = Partner::create([
         'company_id' => $company->id,
         'name' => 'Test Vendor',
-        'type' => \Modules\Foundation\Enums\Partners\PartnerType::Vendor,
+        'type' => \Kezi\Foundation\Enums\Partners\PartnerType::Vendor,
         'is_active' => true,
     ]);
 
