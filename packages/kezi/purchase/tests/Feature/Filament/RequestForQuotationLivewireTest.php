@@ -2,11 +2,11 @@
 
 namespace Kezi\Purchase\Tests\Feature\Filament;
 
-use Livewire\Livewire;
 use Kezi\Purchase\Enums\Purchases\RequestForQuotationStatus;
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\Pages\CreateRequestForQuotation;
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\Pages\ViewRequestForQuotation;
 use Kezi\Purchase\Models\RequestForQuotation;
+use Livewire\Livewire;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class, \Tests\Traits\WithConfiguredCompany::class);
 

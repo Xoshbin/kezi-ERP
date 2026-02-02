@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Manufacturing\Enums\BOMType;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\BillOfMaterialResource;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\BillOfMaterialResource\Pages\CreateBillOfMaterial;
@@ -10,6 +9,7 @@ use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\BillOfMaterialR
 use Kezi\Manufacturing\Models\BillOfMaterial;
 use Kezi\Product\Enums\Products\ProductType;
 use Kezi\Product\Models\Product;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

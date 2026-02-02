@@ -3,11 +3,11 @@
 namespace Kezi\Accounting\Tests\Feature\Filament;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\DunningLevelResource\Pages\CreateDunningLevel;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\DunningLevelResource\Pages\EditDunningLevel;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\DunningLevelResource\Pages\ListDunningLevels;
 use Kezi\Accounting\Models\DunningLevel;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

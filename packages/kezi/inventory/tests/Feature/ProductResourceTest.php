@@ -3,10 +3,10 @@
 namespace Kezi\Inventory\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Product\Models\Product;
 use Kezi\Product\Models\ProductAttribute;
 use Kezi\Product\Models\ProductAttributeValue;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class ProductResourceTest extends TestCase

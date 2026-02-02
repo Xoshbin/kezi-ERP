@@ -6,7 +6,6 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Kezi\HR\Filament\Clusters\HumanResources\HumanResourcesCluster;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Pages\CreatePayroll;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Pages\EditPayroll;
@@ -16,6 +15,7 @@ use Kezi\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Schemas\PayrollF
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Schemas\PayrollInfolist;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Tables\PayrollsTable;
 use Kezi\HR\Models\Payroll;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 
 class PayrollResource extends Resource
 {

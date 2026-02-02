@@ -6,9 +6,9 @@ use Exception;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
+use Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\ProductResource;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
-use Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\ProductResource;
 
 class CreateProduct extends CreateRecord
 {

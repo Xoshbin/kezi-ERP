@@ -1,12 +1,12 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\WorkCenterResource;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\WorkCenterResource\Pages\CreateWorkCenter;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\WorkCenterResource\Pages\EditWorkCenter;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\WorkCenterResource\Pages\ListWorkCenters;
 use Kezi\Manufacturing\Models\WorkCenter;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

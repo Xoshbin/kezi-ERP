@@ -34,6 +34,11 @@ class SerialNumberResource extends Resource
 
     protected static ?int $navigationSort = 5;
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Products');
+    }
+
     public static function getModelLabel(): string
     {
         return __('inventory.serial_number');

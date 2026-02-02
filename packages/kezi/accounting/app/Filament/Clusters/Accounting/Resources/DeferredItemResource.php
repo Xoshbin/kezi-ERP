@@ -17,6 +17,11 @@ class DeferredItemResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clock';
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Accounting');
+    }
+
     protected static ?string $cluster = AccountingCluster::class;
 
     public static function getModelLabel(): string

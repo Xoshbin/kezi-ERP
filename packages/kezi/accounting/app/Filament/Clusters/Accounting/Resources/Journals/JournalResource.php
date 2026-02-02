@@ -16,7 +16,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Kezi\Accounting\Enums\Accounting\JournalType;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Journals\Pages\CreateJournal;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Journals\Pages\EditJournal;
@@ -25,6 +24,7 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Journals\RelationMana
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\Journal;
 use Kezi\Foundation\Models\Currency;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class JournalResource extends Resource
@@ -41,7 +41,7 @@ class JournalResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('accounting::navigation.groups.administration');
+        return __('Configuration');
     }
 
     public static function getModelLabel(): string

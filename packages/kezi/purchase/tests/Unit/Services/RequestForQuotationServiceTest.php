@@ -2,7 +2,6 @@
 
 namespace Kezi\Purchase\Tests\Unit\Services;
 
-use Mockery;
 use Kezi\Purchase\Actions\Purchases\CancelRequestForQuotationAction;
 use Kezi\Purchase\Actions\Purchases\ConvertRFQToPurchaseOrderAction;
 use Kezi\Purchase\Actions\Purchases\CreateRequestForQuotationAction;
@@ -14,6 +13,7 @@ use Kezi\Purchase\DataTransferObjects\Purchases\UpdateRFQDTO;
 use Kezi\Purchase\Models\PurchaseOrder;
 use Kezi\Purchase\Models\RequestForQuotation;
 use Kezi\Purchase\Services\RequestForQuotationService;
+use Mockery;
 
 beforeEach(function () {
     $this->createAction = Mockery::mock(CreateRequestForQuotationAction::class);

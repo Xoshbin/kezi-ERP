@@ -7,7 +7,6 @@ use App\Models\User;
 use Brick\Money\Money;
 use Exception;
 use Illuminate\Support\Facades\Gate;
-use Mockery;
 use Kezi\Accounting\Actions\Accounting\BuildVendorBillPostingPreviewAction;
 use Kezi\Accounting\Contracts\VendorBillJournalEntryCreatorContract;
 use Kezi\Accounting\Models\JournalEntry;
@@ -21,6 +20,7 @@ use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
 use Kezi\Purchase\Models\VendorBill;
 use Kezi\Purchase\Services\ShippingCostAllocationService;
 use Kezi\Purchase\Services\VendorBillService;
+use Mockery;
 use RuntimeException;
 
 beforeEach(function () {

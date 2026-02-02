@@ -8,7 +8,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Kezi\HR\Filament\Clusters\HumanResources\HumanResourcesCluster;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Employees\Pages\CreateEmployee;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Employees\Pages\EditEmployee;
@@ -16,6 +15,7 @@ use Kezi\HR\Filament\Clusters\HumanResources\Resources\Employees\Pages\ListEmplo
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Employees\Schemas\EmployeeForm;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Employees\Tables\EmployeesTable;
 use Kezi\HR\Models\Employee;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 
 class EmployeeResource extends Resource
 {

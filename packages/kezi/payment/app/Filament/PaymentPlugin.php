@@ -17,7 +17,7 @@ class PaymentPlugin implements Plugin
         $panel
             ->discoverResources(in: __DIR__, for: 'Kezi\\Payment\\Filament')
             ->discoverPages(in: __DIR__, for: 'Kezi\\Payment\\Filament')
-            ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Kezi\\Payment\\Filament\\Clusters');
+            ->discoverClusters(in: __DIR__.'/Clusters', for: 'Kezi\\Payment\\Filament\\Clusters');
     }
 
     public function boot(Panel $panel): void

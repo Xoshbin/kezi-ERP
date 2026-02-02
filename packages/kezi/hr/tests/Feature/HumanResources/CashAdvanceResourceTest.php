@@ -2,13 +2,13 @@
 
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Accounting\Models\Account;
 use Kezi\HR\Enums\CashAdvanceStatus;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\CashAdvances\Pages\CreateCashAdvance;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\CashAdvances\Pages\ListCashAdvances;
 use Kezi\HR\Models\CashAdvance;
 use Kezi\HR\Models\Employee;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

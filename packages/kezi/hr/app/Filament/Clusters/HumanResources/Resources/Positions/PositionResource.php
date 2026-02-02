@@ -7,13 +7,13 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Positions\Pages\CreatePosition;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Positions\Pages\EditPosition;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Positions\Pages\ListPositions;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Positions\Schemas\PositionForm;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Positions\Tables\PositionsTable;
 use Kezi\HR\Models\Position;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 
 class PositionResource extends Resource
 {
@@ -44,7 +44,7 @@ class PositionResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('hr::navigation.groups.hr_settings');
+        return __('Configuration');
     }
 
     public static function form(Schema $schema): Schema

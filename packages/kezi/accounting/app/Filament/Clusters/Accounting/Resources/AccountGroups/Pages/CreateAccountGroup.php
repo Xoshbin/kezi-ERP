@@ -3,8 +3,8 @@
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\AccountGroups\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AccountGroups\AccountGroupResource;
+use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
 
 class CreateAccountGroup extends CreateRecord
 {

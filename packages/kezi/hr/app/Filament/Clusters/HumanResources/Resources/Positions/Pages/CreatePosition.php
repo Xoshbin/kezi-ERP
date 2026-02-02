@@ -7,9 +7,9 @@ use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use Kezi\HR\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
-use Kezi\HR\Filament\Clusters\HumanResources\Resources\Positions\PositionResource;
 
 class CreatePosition extends CreateRecord
 {

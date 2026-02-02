@@ -5,7 +5,6 @@ namespace Kezi\Inventory\Tests\Feature\Filament;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use Kezi\Inventory\Enums\Inventory\ValuationMethod;
 use Kezi\Inventory\Filament\Clusters\Inventory\Pages\InventoryAgingReport;
 use Kezi\Inventory\Filament\Clusters\Inventory\Pages\InventoryOverview;
@@ -22,6 +21,7 @@ use Kezi\Inventory\Filament\Clusters\Inventory\Widgets\InventoryValueChartWidget
 use Kezi\Inventory\Models\Lot;
 use Kezi\Inventory\Models\StockQuant;
 use Kezi\Product\Models\Product;
+use Livewire\Livewire;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);

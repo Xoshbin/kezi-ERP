@@ -29,6 +29,11 @@ class ViewAnalyticReport extends Page
         return __('accounting::navigation.groups.reports');
     }
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     public ?string $startDate = null;
 
     public ?string $endDate = null;

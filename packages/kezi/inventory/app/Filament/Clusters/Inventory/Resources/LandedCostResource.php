@@ -31,7 +31,7 @@ class LandedCostResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('inventory::landed_cost.navigation_group');
+        return __('Operations');
     }
 
     public static function getModelLabel(): string

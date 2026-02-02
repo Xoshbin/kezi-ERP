@@ -20,11 +20,11 @@ use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\BankStatement;
 use Kezi\Accounting\Models\BankStatementLine;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
+use Livewire\Component;
 
 class BankTransactionsTable extends Component implements HasActions, HasForms, HasTable
 {

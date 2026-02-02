@@ -2,10 +2,10 @@
 
 use App\Models\Company;
 use App\Models\User;
-use Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder;
 use Filament\Facades\Filament;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
 use Kezi\Accounting\Models\Account;
+use Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\Partner;
 use Kezi\Sales\Enums\Sales\InvoiceStatus;

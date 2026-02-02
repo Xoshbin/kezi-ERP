@@ -17,12 +17,12 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Accounts\Pages\CreateAccount;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Accounts\Pages\EditAccount;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Accounts\Pages\ListAccounts;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Accounts\RelationManagers\JournalEntryLinesRelationManager;
 use Kezi\Accounting\Models\Account;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 
 class AccountResource extends Resource
 {
@@ -34,7 +34,7 @@ class AccountResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-list-bullet';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 20;
 
     public static function getPluralModelLabel(): string
     {
@@ -48,7 +48,7 @@ class AccountResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('accounting::navigation.groups.administration');
+        return __('Configuration');
     }
 
     public static function form(Schema $schema): Schema

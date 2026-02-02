@@ -17,7 +17,7 @@ class ProductPlugin implements Plugin
         $panel
             ->discoverResources(in: __DIR__, for: 'Kezi\\Product\\Filament')
             ->discoverPages(in: __DIR__, for: 'Kezi\\Product\\Filament')
-            ->discoverClusters(in: __DIR__ . '/Clusters', for: 'Kezi\\Product\\Filament\\Clusters');
+            ->discoverClusters(in: __DIR__.'/Clusters', for: 'Kezi\\Product\\Filament\\Clusters');
     }
 
     public function boot(Panel $panel): void

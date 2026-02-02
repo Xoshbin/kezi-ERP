@@ -31,7 +31,7 @@ class PdfSettingsResource extends Resource
 
     protected static ?string $cluster = SettingsCluster::class;
 
-    protected static ?int $navigationSort = 50;
+    protected static ?int $navigationSort = 40;
 
     public static function getNavigationLabel(): string
     {
@@ -50,7 +50,7 @@ class PdfSettingsResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('foundation::navigation.groups.general_settings');
+        return __('System');
     }
 
     public static function form(Schema $schema): Schema

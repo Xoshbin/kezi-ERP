@@ -30,7 +30,7 @@ class QualityInspectionTemplateResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('qualitycontrol::navigation.groups.qc_settings');
+        return __('Configuration');
     }
 
     public static function form(Schema $schema): Schema
