@@ -1,69 +1,69 @@
-# Guide: Recording Your Initial Capital Injection
+# ڕێنمایی: تۆمارکردنی سەرمایەی سەرەتایی
 
-## Overview
-This guide explains how to record the initial money you invest into your company to start operations. In accounting terms, this establishes your **Opening Balance** and records your **Owner's Equity**.
+## پوختە
+ئەم ڕێنماییە ڕوونی دەکاتەوە کە چۆن پارەی سەرەتایی تۆمار دەکەیت کە وەبەرهێنانی تێدا دەکەیت لە کۆمپانیاکەتدا بۆ دەستپێکردنی کارەکان. لە زاراوەی ژمێریاریدا، ئەمە **باڵانسی سەرەتایی (Opening Balance)** دادمەزرێنێت و **مافی خاوەندارێتی (Owner's Equity)** تۆمار دەکات.
 
-**Scenario:** You have deposited **50,000,000 IQD** into your corporate bank account as starting capital.
-
----
-
-## Prerequisites
-Before you begin, ensure the following are set up:
-
-1.  **Company**: Your company details are verified in **Settings > Companies**.
-2.  **Chart of Accounts**:
-    *   **Equity Account**: Ensure you have an account for `Share Capital` (e.g., `310101`) or `Owner's Equity`.
-    *   **Bank Account**: Ensure you have an account for your Bank (e.g., `110102 Bank Account (IQD)`).
+**سیناریۆ:** تۆ بڕی **50,000,000 دیناری عێراقی**ت خستووەتە ناو هەژماری بانکی کۆمپانیاکەتەوە وەک سەرمایەی دەستپێک.
 
 ---
 
-## Step 1: Create a Journal Entry
-Since this is a capital injection and not a sale or purchase, you will use a manual Journal Entry.
+## پێداویستییەکان
+پێش دەستپێکردن، دڵنیابە لەوەی ئەمانەی خوارەوە جێبەجێ کراون:
 
-1.  Navigate to **Accounting > Journal Entries** in the sidebar.
-2.  Click the **+ Create** button.
-
----
-
-## Step 2: Fill in the Header Information
-Complete the general information for this transaction:
-
-*   **Journal**: Select **"Opening Balance"**. (If unavailable, use "Miscellaneous Operations").
-*   **Currency**: Select the currency of the deposit (e.g., **Iraqi Dinar (IQD)**).
-*   **Entry Date**: Select the date the money was deposited.
-*   **Reference**: Enter a clear description, e.g., `Initial Capital - Hazhin Designs`.
+1.  **کۆمپانیا**: وردەکارییەکانی کۆمپانیاکەت پشتڕاست کراونەتەوە لە **ڕێکخستنەکان > کۆمپانیاکان**.
+2.  **لیستی هەژمارەکان (Chart of Accounts)**:
+    *   **هەژماری مافی خاوەندارێتی**: دڵنیابە لەوەی هەژمارێکت هەیە بۆ `Share Capital` (بۆ نموونە، `310101`) یان `Owner's Equity`.
+    *   **هەژماری بانک**: دڵنیابە لەوەی هەژمارێکت هەیە بۆ بانکەکەت (بۆ نموونە، `110102 Bank Account (IQD)`).
 
 ---
 
-## Step 3: Add the Transaction Lines
-You need to record two lines to balance the transaction: one for the money coming in, and one for who owns it (you).
+## هەنگاوی 1: دروستکردنی قەیدی ڕۆژنامە
+لەبەر ئەوەی ئەمە زیادکردنی سەرمایەیە و فرۆشتن یان کڕین نییە، تۆ قەیدی ڕۆژنامەی دەستی بەکاردەهێنیت.
 
-### Line 1: The Deposit (Debit)
-This records the money entering your bank account.
-*   **Account**: Select your Bank Account (e.g., `110102 Bank Account (IQD)`).
-*   **Debit**: Enter the amount (e.g., `50,000,000`).
-*   **Credit**: Leave as `0`.
-*   **Description**: "Initial Bank Deposit".
-
-### Line 2: The Equity (Credit)
-This records your claim on the company's assets.
-*   **Account**: Select your Equity Account (e.g., `310101 Share Capital`).
-*   **Debit**: Leave as `0`.
-*   **Credit**: Enter the same amount (e.g., `50,000,000`).
-*   **Description**: "Owner Share Allocation".
-
-**Verification:** Check the totals at the bottom. **Total Debit** must equal **Total Credit**.
-
-Click **Create** to save and post the entry.
+1.  بچۆ بۆ **ژمێریاری > قەیدەکانی ڕۆژنامە (Journal Entries)** لە لیستی لاوەکی.
+2.  کلیک لە دوگمەی **+ Create** (دروستکردن) بکە.
 
 ---
 
-## Step 4: Verify the Result
-To ensure the transaction was recorded correctly:
+## هەنگاوی 2: پڕکردنەوەی زانیارییەکانی سەرپەڕە
+زانیاری گشتی بۆ ئەم مامەڵەیە تەواو بکە:
 
-1.  Go to your **Dashboard**. The corresponding Bank card should now reflect the deposited balance.
-2.  Navigate to **Accounting > Reporting > Balance Sheet**.
-    *   Verify that **Assets** shows your bank balance.
-    *   Verify that **Equity** shows your Share Capital.
+*   **ڕۆژنامە (Journal)**: **"Opening Balance"** (باڵانسی سەرەتایی) دیاریبکە. (ئەگەر بەردەست نەبوو، "Miscellaneous Operations" بەکاربهێنە).
+*   **دراو**: دراوی پارە دانراوەکە دیاریبکە (بۆ نموونە، **دیناری عێراقی (IQD)**).
+*   **بەرواری قەید**: ئەو بەروارە دیاریبکە کە پارەکەی تێدا دانراوە.
+*   **سەرچاوە (Reference)**: پێناسەیەکی ڕوون بنووسە، بۆ نموونە، `سەرمایەی سەرەتایی - هەژین دیزاین`.
 
-Your company is now funded!
+---
+
+## هەنگاوی 3: زیادکردنی هێڵەکانی مامەڵە
+پێویستە دوو هێڵ تۆمار بکەیت بۆ هاوسەنگکردنی مامەڵەکە: یەکێکیان بۆ پارەی هاتوو، و یەکێکیان بۆ خاوەنەکەی (تۆ).
+
+### هێڵی 1: دانانی پارە (Debit/مەدين)
+ئەمە پارەی هاتوو بۆ ناو هەژماری بانکەکەت تۆمار دەکات.
+*   **هەژمار**: هەژماری بانکەکەت دیاریبکە (بۆ نموونە، `110102 Bank Account (IQD)`).
+*   **Debit (مەدين)**: بڕەکە بنووسە (بۆ نموونە، `50,000,000`).
+*   **Credit (دائين)**: بە `0` بەجێی بهێڵە.
+*   **پێناسە**: "دانانی پارەی سەرەتایی بانک".
+
+### هێڵی 2: مافی خاوەندارێتی (Credit/دائين)
+ئەمە مافی تۆ لەسەر سامانەکانی کۆمپانیا تۆمار دەکات.
+*   **هەژمار**: هەژماری مافی خاوەندارێتیت دیاریبکە (بۆ نموونە، `310101 Share Capital`).
+*   **Debit (مەدين)**: بە `0` بەجێی بهێڵە.
+*   **Credit (دائين)**: هەمان بڕ بنووسە (بۆ نموونە، `50,000,000`).
+*   **پێناسە**: "تەرخانکردنی پشکی خاوەن".
+
+**پشکنین:** کۆی گشتی لە خوارەوە بپشکنە. **Total Debit** دەبێت یەکسان بێت بە **Total Credit**.
+
+کلیک لە **Create** (دروستکردن) بکە بۆ پاشەکەوتکردن و بڵاوکردنەوەی قەیدەکە.
+
+---
+
+## هەنگاوی 4: دڵنیابوونەوە لە ئەنجام
+بۆ دڵنیابوون لەوەی مامەڵەکە بە دروستی تۆمار کراوە:
+
+1.  بچۆ بۆ **Dashboard** (داشبۆرد). کارتی بانکی پەیوەندیدار دەبێت ئێستا باڵانسی دانراو پیشان بدات.
+2.  بچۆ بۆ **ژمێریاری > ڕاپۆرتەکان > میزانییە (Balance Sheet)**.
+    *   دڵنیابەرەوە کە **سامانەکان (Assets)** باڵانسی بانکەکەت پیشان دەدات.
+    *   دڵنیابەرەوە کە **مافی خاوەندارێتی (Equity)** سەرمایەی پشکەکەت (Share Capital) پیشان دەدات.
+
+کۆمپانیاکەت ئێستا پارەدار کراوە!
