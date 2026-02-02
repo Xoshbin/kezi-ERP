@@ -37,12 +37,12 @@ class WithholdingTaxTypeResource extends Resource
 
     protected static ?int $navigationSort = 4;
 
-    public static function getLabel(): string
+    public static function getModelLabel(): string
     {
         return __('accounting::withholding_tax.type_label');
     }
 
-    public static function getPluralLabel(): string
+    public static function getPluralModelLabel(): string
     {
         return __('accounting::withholding_tax.types_label');
     }

@@ -41,6 +41,11 @@ class AccountResource extends Resource
         return __('accounting::account.plural_label');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('accounting::account.label');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('accounting::account.plural_label');
