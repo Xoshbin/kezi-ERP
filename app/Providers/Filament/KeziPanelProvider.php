@@ -50,6 +50,7 @@ class KeziPanelProvider extends PanelProvider
             ->id('kezi')
             ->path('kezi')
             ->login()
+            ->registration()
             ->colors([
                 'primary' => Color::Amber,
                 'gray' => Color::Slate, // Slate provides a modern, cleaner gray scale
@@ -202,6 +203,7 @@ class KeziPanelProvider extends PanelProvider
             ])
             ->tenantMiddleware([
                 \App\Http\Middleware\SetPermissionsTeamId::class,
+                \App\Http\Middleware\EnsureOnboardingComplete::class,
             ], isPersistent: true)
             ->brandName('')
             ->globalSearch(false)

@@ -44,6 +44,28 @@ return [
         'defaults' => 'ڕێکخستنە بنەڕەتییەکانی کۆمپانیا',
     ],
 
-    'enable_reconciliation' => 'Enable Reconciliation',
-    'enable_reconciliation_help' => 'Enable reconciliation functionality for this company. When disabled, all reconciliation features will be hidden.',
+    'enable_reconciliation' => 'چالاککردنی هاوتاکردن',
+    'enable_reconciliation_help' => 'چالاککردنی تایبەتمەندی هاوتاکردن بۆ ئەم کۆمپانیایە. ئەگەر ناچالاک بێت، هەموو تایبەتمەندییەکانی هاوتاکردن دەشاردرێنەوە.',
+
+    'industry_type' => 'جۆری پیشەسازی',
+    'inventory_accounting_mode' => 'شێوازی ژمێریاری کۆگا',
+    'industries' => [
+        'generic' => 'کار و باری گشتی',
+        'retail' => 'فرۆشتنی تاک / POS',
+        'manufacturing' => 'بەرهەمهێنان / MRP',
+        'services' => 'خزمەتگوزارییە پیشەییەکان',
+    ],
+
+    'wizard' => [
+        'identity' => 'ناسنامە',
+        'identity_desc' => 'زانیارییە سەرەکییەکانی کۆمپانیاکەت پێمان بڵێ.',
+        'foundation' => 'بناغە',
+        'foundation_desc' => 'پارەی سەرەکی و بنکەی دارایی دیاری بکە.',
+        'profile' => 'پڕۆفایلی کار',
+        'profile_desc' => 'چ جۆرە کارێک بەڕێوە دەبەیت؟',
+        'customization' => 'تایبەتمەندکردن',
+        'customization_desc' => 'خەریکە تەواو دەبین! دوایین بژاردەکان.',
+        'seed_sample_data' => 'دانانی زانیاری نموونەیی',
+        'seed_sample_data_help' => 'ئەمە هەڵبژێرە بۆ پڕکردنەوەی کۆمپانیاکەت بە کڕیار، فرۆشیار و کاڵای نموونەیی بۆ تاقیکردنەوە.',
+    ],
 ];
