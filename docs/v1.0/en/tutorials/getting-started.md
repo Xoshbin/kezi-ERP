@@ -27,11 +27,6 @@ This is a modern, web-based accounting application that provides comprehensive f
 
 ## System Requirements
 
-### Prerequisites
-1. **Web Browser**: Modern browser (Chrome, Firefox, Safari, Edge)
-2. **Internet Connection**: Stable connection for real-time updates
-3. **User Account**: Valid login credentials provided by your administrator
-
 ### User Permissions
 - **Basic User**: Create and edit transactions, view reports
 - **Accountant**: Full access to accounting features and reconciliation
