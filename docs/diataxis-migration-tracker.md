@@ -13,7 +13,7 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
 | Module | Status | Total Docs | Completed |
 | :--- | :--- | :---: | :---: |
 | Accounting | 🟢 Completed | 15 | 15 |
-| Inventory | 🟡 In Progress | 10 | 0 |
+| Inventory | 🟢 Completed | 10 | 10 |
 | HR & Payroll | 🔴 Pending | 5 | 0 |
 | Manufacturing | 🔴 Pending | 4 | 0 |
 | Projects | 🔴 Pending | 4 | 0 |
@@ -58,14 +58,19 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
 - [ ] **Inventory Management** (In Progress)
     - [x] [Tutorial: Your first warehouse setup](v1.0/en/tutorials/your-first-warehouse-setup.md)
     - [x] [How-to: Managing Stock](v1.0/en/how-to/managing-stock.md)
+    - [x] [How-to: Stock Picking](v1.0/en/how-to/stock-picking.md)
+    - [x] [How-to: Stock Movements](v1.0/en/how-to/stock-movements.md)
+    - [x] [How-to: Warehouse Transfers](v1.0/en/how-to/inter-warehouse-transfers.md)
+    - [x] [How-to: Landed Costs](v1.0/en/how-to/landed-costs.md)
     - [x] [Explanation: Inventory Concepts](v1.0/en/explanation/inventory-concepts.md)
     - [x] [Explanation: Inventory Architecture](v1.0/en/explanation/inventory-architecture.md)
+    - [x] [Explanation: Warehouse Transfers](v1.0/en/explanation/warehouse-transfers.md)
+    - [x] [Explanation: Landed Costs](v1.0/en/explanation/landed-costs.md)
     - [x] [Reference: Inventory Fields](v1.0/en/reference/inventory-fields.md)
-    - [x] Note: Refactored `inventory-management` and `inventory-movements-guide`.
-    - **How to Update**: Separate Stock Picking from general inventory concepts.
-- [ ] **Stock Movements**
-- [ ] **Warehouse Transfers**
-- [ ] **Landed Costs**
+    - [x] [Reference: Warehouse Transfers](v1.0/en/reference/warehouse-transfers.md)
+    - [x] [Reference: Landed Costs](v1.0/en/reference/landed-costs.md)
+    - [x] [Reference: Stock Movements](v1.0/en/reference/stock-movements.md)
+    - [x] Note: Refactored `inventory-management`, `landed-costs`, `inter-warehouse-transfers`, and `stock-movements`.
 
 ### 👥 Human Resources
 - [ ] **Employee Management**
