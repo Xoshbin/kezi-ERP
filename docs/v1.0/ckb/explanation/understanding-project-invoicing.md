@@ -1,45 +1,45 @@
 ---
-title: تێگەیشتن لە پسووڵەی پرۆژە
+title: Understanding Project Invoicing
 icon: heroicon-o-currency-dollar
 order: 5
 ---
 
-# پسووڵەی پرۆژە: وەرگرتنی پارە بۆ کارەکەت
+# Project Invoicing: Getting Paid for Your Work
 
-ئەم ڕێبەرە ڕوونی دەکاتەوە کە چۆن کاری پرۆژەکەت بگۆڕیت بۆ پسووڵە. جا بەپێی کاتژمێر کار بکەیت، بەپێی قۆناغ، یان بە نرخێکی جێگیر، ئێمە هاوکاریت دەکەین.
-
----
-
-## پسووڵەی پرۆژە چییە؟
-
-پسووڵەی پرۆژە وەک پردێک وایە لە نێوان ئەو کارەی تیمەکەت دەیکات و ئەو پارەیەی کۆمپانیاکەت دەستی دەکەوێت. کاتێک کات بەسەر دەبەیت لە پرۆژەیەک یان قۆناغێک تەواو دەکەیت، پێویستە بە کڕیارکەت بڵێیت: "هێی، ئەم کارە تەواو بوو، تکایە پارەکەمان بدەرێ".
-
-**بۆچی ئەمە گرنگە؟**
-1. **داهات**: ئەمە ڕێگایەکە بۆ وەرگرتنی پارەی خزمەتگوزارییەکانت.
-2. **وردبینی**: دڵنیایی دەدات کە کڕیاران بە وردی بۆ ئەو کات/کارەی ڕێککەوتوون پارە دەدەن.
-3. **بەدواداچوون**: پێشکەوتنی پرۆژەکەت ڕاستەوخۆ بە تۆمارە داراییەکانتەوە دەبەستێتەوە.
+This guide explains how to turn your project work into invoices. Whether you bill by the hour, by milestone, or a fixed price, we've got you covered.
 
 ---
 
-## مۆدێلەکانی پسووڵە
+## What is Project Invoicing?
 
-دوو ڕێگای سەرەکی هەیە بۆ دروستکردنی پسووڵە بۆ پرۆژەکان:
+Think of Project Invoicing as the bridge between the work your team does and the money your company earns. When you spend time on a project or complete a milestone, you need to tell your customer, "Hey, this is done, please pay us."
 
-### 1. ⏱️ کات و کەرەستە (کاتژمێری شایستەی پارەدان)
-تۆ بەپێی ئەو کاتەی بەسەرت بردووە پارە لە کڕیار وەردەگریت.
-* **باشترینە بۆ**: ڕاوێژکاری، پشتیوانی، یان پرۆژە گۆڕاوەکان.
-* **چۆن کار دەکات**: تیمەکەت کات تۆمار دەکەن لەسەر ئەرکەکان ("من 4 کاتژمێرم بەسەر برد لە کۆد نووسین"). تۆ پسووڵەیەک دروست دەکەیت کە هەموو ئەو کاتژمێرانە کۆدەکاتەوە.
-
-### 2. 🎯 نرخی جێگیر / قۆناغەکان
-تۆ لەسەر نرخێکی دیاریکراو ڕێکدەکەویت بۆ هەموو پرۆژەکە یان بەشێکی دیاریکراو.
-* **باشترینە بۆ**: ئەنجامە دیاریکراوەکان یان پرۆژە خاوەن بودجەی جێگیر.
-* **چۆن کار دەکات**: تۆ پسووڵە دەکەیت کاتێک قۆناغێک دەگەیتە ئەنجام (بۆ نموونە، "تەواوبوونی قۆناغی دیزاین - $5,000"). کاتی بەسەرچوو نرخەکە ناگۆڕێت.
+**Why does this matter?**
+1.  **Revenue**: It's how you get paid for your services.
+2.  **Accuracy**: Ensures customers are billed exactly for the time/work agreed upon.
+3.  **Tracking**: Connects your project progress directly to your financial books.
 
 ---
 
-## ڕەوتی کار
+## Billing Models
 
-لێرەدا چۆنیەتی ڕۆیشتنی پرۆسەکە دەخەینەڕوو:
+There are two main ways to bill for projects:
+
+### 1. ⏱️ Time & Material (Billable Hours)
+You charge the customer based on how much time you spend.
+*   **Best for**: Consulting, support, or flexible projects.
+*   **How it works**: Your team logs time on tasks ("I spent 4 hours coding"). You create an invoice that pulls in all those unbilled hours.
+
+### 2. 🎯 Fixed Price / Milestones
+You agree on a set price for the whole project or specific parts of it.
+*   **Best for**: distinct deliverables or fixed-budget projects.
+*   **How it works**: You bill when a milestone is reached (e.g., "Design Phase Complete - $5,000"). Time spent doesn't change the price.
+
+---
+
+## The Workflow
+
+Here is how the process usually flows:
 
 ```
     Work Done         Review            Invoice            Cash
@@ -47,50 +47,50 @@ order: 5
        🔨                👀               📄               💰
 ```
 
-1. **کاری ئەنجامدراو**: ئەندامانی تیم کاتەکانیان تۆمار دەکەن یان قۆناغەکان تەواو دەکەن.
-2. **پێداچوونەوە**: بەڕێوەبەران پشکنین دەکەن ئەگەر کارەکە ئامادە بێت بۆ پسووڵەکردن.
-3. **پسووڵە**: تۆ پسووڵەی پرۆژە دروست دەکەیت.
-4. **پارە**: کڕیارەکە پارەی پسووڵەکە دەدات.
+1.  **Work Done**: Team members log time sheets or complete milestones.
+2.  **Review**: Managers check if the work is ready to be billed.
+3.  **Invoice**: You generate a Project Invoice.
+4.  **Cash**: The customer pays the invoice.
 
 ---
 
-## چۆنیەتی دروستکردنی پسووڵەی پرۆژە
+## How to Create a Project Invoice
 
-### هەنگاوی 1: بڕۆ بۆ پسووڵەکانی پرۆژە
-بڕۆ بۆ: **Project Management → Project Invoices → Create Invoice**
+### Step 1: Go to Project Invoices
+Navigate to: **Project Management → Project Invoices → Create Invoice**
 
-### هەنگاوی 2: مەوداکەت هەڵبژێرە
-پێویستە بڕیار بدەیت کە پارە بۆ چی وەردەگریت.
+### Step 2: Choose Your Scope
+You'll need to decide what you are billing for.
 
-| خانە | وەسف |
+| Field | Description |
 |-------|-------------|
-| **Project** | ئەو پرۆژەیە هەڵبژێرە کە دەتەوێت پسووڵەی بۆ بکەیت. |
-| **Type** | **Timesheets** (بۆ کاتژمێرەکان) یان **Fixed Amount/Milestone**. |
-| **Date Range** | ئەگەر بەپێی کات بێت، کام ڕێکەوتانە؟ (بۆ نموونە، "مانگی ڕابردوو"). |
-| **Customer** | بەزۆری خۆکارانە پڕ دەکرێتەوە لە پرۆژەکەوە. |
+| **Project** | Select the project you are billing. |
+| **Type** | **Timesheets** (for hours) or **Fixed Amount/Milestone**. |
+| **Date Range** | If billing time, which dates? (e.g., "Last Month"). |
+| **Customer** | Automatically filled from the project usually. |
 
-### هەنگاوی 3: دروستکردن
-کرتە لە **Create** بکە. سیستەمەکە دەگەڕێت بۆ هەموو ئەو بڕگانەی "شایستەی پارەدان" کە "پسووڵە نەکراون" و لەگەڵ پێوەرەکانت دەگونجێن و ڕەشنووسی پسووڵەیەک دروست دەکات.
+### Step 3: Generate
+Click **Create**. The system will look for all "Billable" but "Unbilled" items that match your criteria and create a draft invoice.
 
 > [!TIP]
-> **شایستەی پارەدان بەرامبەر شایستە نەبوونی پارەدان**: هەموو کارێک پێویست نییە پارەی بۆ بدرێت. لەسەر ئەرکەکان، دەتوانیت بڕگەکان دیاری بکەیت وەک شایستە نەبوونی پارەدان ئەگەر کاری ناوخۆیی بن یان چاککردنەوەی بەخۆڕایی بن.
+> **Billable vs. Non-Billable**: Not all work needs to be paid for. On tasks, you can mark items as non-billable if they are internal work or courtesy fixes.
 
 ---
 
-## چارەسەرکردنی کێشەکان
+## Troubleshooting
 
-### پرسیار: بۆچی پسووڵەکەم بەتاڵە (بڕی 0)؟
-وەڵام: ئەمە بەزۆری ڕوودەدات چونکە:
-* **کاتی شایستەی پارەدان نییە**: تیمەکەت کاتیان تۆمار کردووە، بەڵام ڕەنگە ئەرکەکان وەک "شایستەی پارەدان" دیاری نەکرابن.
-* **پێشتر پسووڵە کراوە**: ڕەنگە ئەم کاتژمێرانە پێشتر لە پسووڵەیەکی پێشوودا هەژمار کرابن.
-* **مەودای ڕێکەوتی هەڵە**: ئایا ئەو ماوەیەت هەڵبژاردووە کە کارەکە تێیدا ئەنجامدراوە؟
+### Q: Why is my invoice empty (0 amount)?
+A: This usually happens because:
+*   **No Billable Time**: Your team logged time, but maybe the tasks are not marked as "Billable".
+*   **Already Invoiced**: Maybe these hours were already included on a previous invoice.
+*   **Wrong Date Range**: Did you select the period where the work actually happened?
 
-### پرسیار: چۆن پسووڵە بۆ قۆناغێک بکەم؟
-وەڵام: کاتێک پسووڵە دروست دەکەیت، **Fixed Amount** یان **Milestone** وەک جۆر هەڵبژێرە. پاشان دەتوانیت دەستکاری بڕەکە بکەیت یان قۆناغە دیاریکراوەکە لە پلانی پرۆژەکەوە هەڵبژێریت.
+### Q: How do I invoice a Milestone?
+A: When creating the invoice, select **Fixed Amount** or **Milestone** as the type. You can then specify manually the amount or select the defined milestone from the project plan.
 
 ---
 
-## باشترین پراکتیزەکان
-* **پەسەندکردنی کات هەفتانە**: مەهێڵە تۆمارەکانی کات کەڵەکە بن. هەفتانە پێداچوونەوەیان بۆ بکە تا پسووڵەکردن لە کۆتایی مانگدا ئاسان بێت.
-* **وەسفی ڕوون**: کاتێک کات تۆمار دەکەیت، وردەکاری بنووسە کە کڕیارەکەت لێی تێبگات (بۆ نموونە، "چاککردنی کێشەی چوونَژوورەوە" لە جیاتی "کۆد نووسین").
-* **پشکنینی نرخەکان**: دڵنیابە لەوەی "نرخ بۆ هەر کاتژمێرێک" بە دروستی دانراوە لە ڕێکخستنەکانی پرۆژە پێش دروستکردنی پسووڵە.
+## Best Practices
+*   **Approve Time Weekly**: Don't let timesheets pile up. Review them weekly so billing is smooth at month-end.
+*   **Clear Descriptions**: When logging time, write details your customer will understand (e.g., "Fixed login bug" instead of "coding").
+*   **Check Rates**: Make sure your "Price per Hour" is set correctly in the Project settings before invoicing.
