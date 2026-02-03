@@ -14,7 +14,7 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
 | :--- | :--- | :---: | :---: |
 | Accounting | 🟢 Completed | 15 | 15 |
 | Inventory | 🟢 Completed | 10 | 10 |
-| HR & Payroll | 🔴 Pending | 5 | 0 |
+| HR & Payroll | 🟢 Completed | 12 | 12 |
 | Manufacturing | 🔴 Pending | 4 | 0 |
 | Projects | 🔴 Pending | 4 | 0 |
 | Core / System | 🔴 Pending | 5 | 0 |
@@ -73,9 +73,21 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
     - [x] Note: Refactored `inventory-management`, `landed-costs`, `inter-warehouse-transfers`, and `stock-movements`.
 
 ### 👥 Human Resources
-- [ ] **Employee Management**
-- [ ] **Payroll Processing**
-- [ ] **Leave & Attendance**
+- [x] **Employee Management** (Migrated)
+    - [x] [Tutorial: Onboarding Your First Employee](v1.0/en/tutorials/onboarding-your-first-employee.md)
+    - [x] [How-to: Manage Employees](v1.0/en/how-to/manage-employees.md)
+    - [x] [Explanation: Employee Records](v1.0/en/explanation/employee-records.md)
+    - [x] [Reference: Employee Fields](v1.0/en/reference/employee-fields-and-statuses.md)
+- [x] **Payroll Processing** (Migrated)
+    - [x] [Tutorial: Processing Your First Payroll](v1.0/en/tutorials/processing-your-first-payroll.md)
+    - [x] [How-to: Process Payroll](v1.0/en/how-to/process-payroll.md)
+    - [x] [Explanation: Payroll Workflows](v1.0/en/explanation/payroll-workflows.md)
+    - [x] [Reference: Payroll Statuses and Accounting](v1.0/en/reference/payroll-statuses-and-accounting.md)
+- [x] **Leave & Attendance** (Migrated)
+    - [x] [How-to: Manage Leave](v1.0/en/how-to/manage-leave.md)
+    - [x] [How-to: Track Attendance](v1.0/en/how-to/track-attendance.md)
+    - [x] [Explanation: Leave and Attendance Concepts](v1.0/en/explanation/leave-and-attendance-concepts.md)
+    - [x] [Reference: Leave Types and Statuses](v1.0/en/reference/leave-types-and-statuses.md)
 
 ### 🏭 Manufacturing (MRP)
 - [ ] **Bill of Materials (BoM)**
