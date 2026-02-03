@@ -17,7 +17,7 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
 | HR & Payroll | 🟢 Completed | 12 | 12 |
 | Manufacturing | 🟢 Completed | 10 | 10 |
 | Projects | 🟢 Completed | 9 | 9 |
-| Core / System | 🔴 Pending | 5 | 0 |
+| Core / System | 🟢 Completed | 6 | 6 |
 
 ---
 
@@ -113,6 +113,15 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
     - [x] [Explanation: Understanding Project Tasks](v1.0/en/explanation/understanding-project-tasks.md)
     - [x] [Explanation: Understanding Project Invoicing](v1.0/en/explanation/understanding-project-invoicing.md)
     - [x] [Reference: Project Fields & Statuses](v1.0/en/reference/project-fields-and-statuses.md)
+
+### ⚙️ Core / System
+- [x] **System Configuration** (Migrated)
+    - [x] [Tutorial: Setting Up Your Company](v1.0/en/tutorials/setting-up-your-company.md)
+    - [x] [How-to: Manage Users](v1.0/en/how-to/manage-users.md)
+    - [x] [How-to: Configure Currencies](v1.0/en/how-to/configure-currencies.md)
+    - [x] [Explanation: Understanding Multi-Tenancy](v1.0/en/explanation/understanding-multi-tenancy.md)
+    - [x] [Explanation: Understanding User Roles](v1.0/en/explanation/understanding-user-roles.md)
+    - [x] [Reference: System Settings Reference](v1.0/en/reference/system-settings-reference.md)
 
 ---
 

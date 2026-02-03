@@ -96,7 +96,7 @@ class DocsAction
             'landed-costs' => 'how-to/landed-costs',
             'bill-of-materials' => 'how-to/bill-of-materials',
             'manufacturing-orders' => 'how-to/manufacturing-orders',
-'project-management' => 'how-to/manage-projects',
+            'project-management' => 'how-to/manage-projects',
             'manage-projects' => 'how-to/manage-projects',
             'project-budgeting' => 'how-to/manage-project-budgets',
             'manage-project-budgets' => 'how-to/manage-project-budgets',
@@ -156,6 +156,12 @@ class DocsAction
             'setting-up-manufacturing-line' => 'tutorials/setting-up-manufacturing-line',
             'manufacturing-fields' => 'reference/manufacturing-fields',
             'manufacturing-concepts' => 'explanation/manufacturing-concepts',
+            'system-settings-reference' => 'reference/system-settings-reference',
+            'understanding-user-roles' => 'explanation/understanding-user-roles',
+            'understanding-multi-tenancy' => 'explanation/understanding-multi-tenancy',
+            'configure-currencies' => 'how-to/configure-currencies',
+            'manage-users' => 'how-to/manage-users',
+            'setting-up-your-company' => 'tutorials/setting-up-your-company',
         ];
 
         return $mapping[$slug] ?? $slug;
