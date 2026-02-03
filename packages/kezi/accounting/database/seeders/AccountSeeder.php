@@ -12,12 +12,14 @@ class AccountSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
+    public function run(?Company $company = null): void
     {
-        $company = Company::where('name', 'Kezi Solutions')->first();
+        if (! $company) {
+            $company = Company::where('name', 'Kezi Solutions')->first();
+        }
 
         if (! $company) {
-            throw new Exception('Company "Kezi Solutions" not found. Please run the CompanySeeder first.');
+            throw new Exception('No company provided or "Kezi Solutions" not found.');
         }
 
         $accounts = [
