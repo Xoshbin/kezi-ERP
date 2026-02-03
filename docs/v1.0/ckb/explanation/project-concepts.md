@@ -6,7 +6,7 @@ order: 10
 
 # Project Management Concepts
 
-**Project Management** in JMeryar ERP connects your daily work to your accounting system, ensuring you always know if a project is profitable. It involves planning, executing, and monitoring work to achieve specific goals within time and budget constraints.
+**Project Management** in Kezi ERP connects your daily work to your accounting system, ensuring you always know if a project is profitable. It involves planning, executing, and monitoring work to achieve specific goals within time and budget constraints.
 
 ---
 

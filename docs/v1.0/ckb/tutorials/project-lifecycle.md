@@ -6,7 +6,7 @@ order: 10
 
 # Tutorial: Project Lifecycle
 
-In this tutorial, you will learn how to manage a complete project lifecycle in JMeryar ERP—from creation and time tracking to budget monitoring and final invoicing. We will follow a real-life scenario of a design agency project.
+In this tutorial, you will learn how to manage a complete project lifecycle in Kezi ERP—from creation and time tracking to budget monitoring and final invoicing. We will follow a real-life scenario of a design agency project.
 
 **Scenario**: You are a project manager at a design agency. You need to create a "Brand Identity Package" project for a client, track hours, and bill them.
 

@@ -3,7 +3,7 @@ name: kezi-architecture
 description: Technical architecture, patterns (Service-Action-DTO), and domain-specific workflows. Use when designing or implementing features.
 ---
 
-# JMeryar ERP Architecture
+# Kezi ERP Architecture
 
 ## Project Structure
 

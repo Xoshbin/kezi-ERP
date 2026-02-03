@@ -9,4 +9,4 @@ Explanation documentation discusses the background and context. It is understand
 
 ## Examples
 - "Why we use the Repository Pattern"
-- "Double-Entry Accounting Principles in JMeryar"
+- "Double-Entry Accounting Principles in Kezi"

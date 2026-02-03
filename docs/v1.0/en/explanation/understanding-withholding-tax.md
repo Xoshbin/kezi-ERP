@@ -27,7 +27,7 @@ It prevents tax evasion. By collecting tax *at the moment of payment*, the gover
 
 ---
 
-## How It Works in JMeryar ERP
+## How It Works in Kezi ERP
 
 Our system automates this entire process so you don't have to use a calculator every time you pay a bill.
 
