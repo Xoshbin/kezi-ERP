@@ -5,7 +5,7 @@ description: High-level project overview, core design philosophy, and accounting
 
 ### 🧠 **Purpose**
 
-JMeryar is an **ERP accounting system** built on Laravel 12 and Filament 4. It implements strict double-entry bookkeeping principles inspired by Odoo, adapted for a market without widespread digital banking.
+Kezi is an **ERP accounting system** built on Laravel 12 and Filament 4. It implements strict double-entry bookkeeping principles inspired by Odoo, adapted for a market without widespread digital banking.
 
 ### 🧱 **Core Design Philosophy**
 

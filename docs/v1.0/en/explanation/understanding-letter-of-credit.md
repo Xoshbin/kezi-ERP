@@ -6,7 +6,7 @@ order: 11
 
 # Understanding Letter of Credit (LC) Management
 
-This guide explains **Letters of Credit (LC)**—what they are, how they protect your business in international trade, and how to manage them efficiently in JMeryar ERP. Whether you're importing raw materials or exporting finished goods, this module ensures your financial commitments are tracked, utilized, and accounted for with precision.
+This guide explains **Letters of Credit (LC)**—what they are, how they protect your business in international trade, and how to manage them efficiently in Kezi ERP. Whether you're importing raw materials or exporting finished goods, this module ensures your financial commitments are tracked, utilized, and accounted for with precision.
 
 ---
 
@@ -26,7 +26,7 @@ The bank stands in the middle. They say to the seller: *"If you ship the goods a
 
 ---
 
-## How it Works in JMeryar ERP
+## How it Works in Kezi ERP
 
 Our system tracks the entire lifecycle of an LC, from the initial application to the final payment and closure.
 
@@ -124,7 +124,7 @@ If the bank increases the LC amount or extends the date, use the **Amend** actio
 ## Security & Controls
 
 ### Immutable Audit Trail
-Like everything in JMeryar ERP, LC records are auditable.
+Like everything in Kezi ERP, LC records are auditable.
 - **Posted Charges** cannot be edited—they must be reversed.
 - **Utilizations** are locked once the linked Vendor Bill is posted.
 - Every status change is logged with the user and timestamp.

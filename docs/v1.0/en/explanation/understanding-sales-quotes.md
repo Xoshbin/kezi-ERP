@@ -26,7 +26,7 @@ Think of a **Sales Quote** like a specialized "menu" you create for a specific c
 
 ---
 
-## How It Works in JMeryar ERP
+## How It Works in Kezi ERP
 
 ### 1. Quote Statuses
 

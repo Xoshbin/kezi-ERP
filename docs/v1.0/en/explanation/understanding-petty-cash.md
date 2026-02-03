@@ -29,7 +29,7 @@ Because cash is easy to lose track of! The system ensures every cent is accounte
 
 ---
 
-## How It Works in JMeryar ERP
+## How It Works in Kezi ERP
 
 Our system turns old-school petty cash management into a digital, trackable process—no more shoebox full of receipts!
 
