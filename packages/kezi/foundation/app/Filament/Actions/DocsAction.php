@@ -96,7 +96,12 @@ class DocsAction
             'inter-warehouse-transfers' => 'how-to/inter-warehouse-transfers',
             'stock-movements' => 'how-to/stock-movements',
             'reordering-rules' => 'how-to/reordering-rules',
-            'inventory-management' => 'how-to/inventory-management',
+            'inventory-management' => 'how-to/managing-stock', // Refactored from inventory-management
+            'managing-stock' => 'how-to/managing-stock',
+            'your-first-warehouse-setup' => 'tutorials/your-first-warehouse-setup',
+            'inventory-concepts' => 'explanation/inventory-concepts',
+            'inventory-architecture' => 'explanation/inventory-architecture',
+            'inventory-fields' => 'reference/inventory-fields',
             'understanding-fiscal-years' => 'explanation/understanding-fiscal-years',
             'understanding-cash-advances' => 'explanation/understanding-cash-advances',
             'understanding-petty-cash' => 'explanation/understanding-petty-cash',
