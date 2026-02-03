@@ -55,8 +55,13 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
     - [x] [Reference: Financial Report Terms](v1.0/en/reference/financial-report-terms.md)
 
 ### 📦 Inventory & Warehouse
-- [ ] **Inventory Management**
-    - **Missing**: Tutorial for "Your first warehouse setup".
+- [ ] **Inventory Management** (In Progress)
+    - [x] [Tutorial: Your first warehouse setup](v1.0/en/tutorials/your-first-warehouse-setup.md)
+    - [x] [How-to: Managing Stock](v1.0/en/how-to/managing-stock.md)
+    - [x] [Explanation: Inventory Concepts](v1.0/en/explanation/inventory-concepts.md)
+    - [x] [Explanation: Inventory Architecture](v1.0/en/explanation/inventory-architecture.md)
+    - [x] [Reference: Inventory Fields](v1.0/en/reference/inventory-fields.md)
+    - [x] Note: Refactored `inventory-management` and `inventory-movements-guide`.
     - **How to Update**: Separate Stock Picking from general inventory concepts.
 - [ ] **Stock Movements**
 - [ ] **Warehouse Transfers**
