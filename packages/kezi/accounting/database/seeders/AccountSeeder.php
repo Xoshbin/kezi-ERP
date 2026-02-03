@@ -5,6 +5,7 @@ namespace Kezi\Accounting\Database\Seeders;
 use App\Models\Company;
 use Exception;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Kezi\Accounting\Models\Account;
 
 class AccountSeeder extends Seeder
@@ -14,12 +15,21 @@ class AccountSeeder extends Seeder
      */
     public function run(?Company $company = null): void
     {
-        if (! $company) {
-            $company = Company::where('name', 'Kezi Solutions')->first();
+        $companyId = $company?->id;
+
+        if (! $companyId) {
+            $companyId = DB::table('companies')
+                ->where('name', 'Kezi Solutions')
+                ->value('id');
         }
 
-        if (! $company) {
-            throw new Exception('No company provided or "Kezi Solutions" not found.');
+        if (! $companyId) {
+            $companyId = DB::table('companies')->value('id');
+        }
+
+        if (! $companyId) {
+            $allCount = DB::table('companies')->count();
+            throw new Exception("No valid company found to seed accounts for. Total companies in DB: {$allCount}");
         }
 
         $accounts = [
@@ -56,7 +66,7 @@ class AccountSeeder extends Seeder
             ['code' => '210101', 'name' => ['en' => 'Accounts Payable', 'ckb' => 'حسابە دراوەکان', 'ar' => 'حسابات دائنة'], 'type' => \Kezi\Accounting\Enums\Accounting\AccountType::Payable],
             ['code' => '210102', 'name' => ['en' => 'Accounts Payable (IQD)', 'ckb' => 'حسابە دراوەکان (دینار)', 'ar' => 'حسابات دائنة (دينار عراقي)'], 'type' => \Kezi\Accounting\Enums\Accounting\AccountType::Payable],
             ['code' => '210201', 'name' => ['en' => 'Stock Interim (Received)', 'ckb' => 'کەڵەکەبووی کاتیی (وەرگیراو)', 'ar' => 'مخزون مؤقت (مستلم)'], 'type' => \Kezi\Accounting\Enums\Accounting\AccountType::CurrentLiabilities],
-            ['code' => '210202', 'name' => ['en' => 'Stock Input Account (IQD)', 'ckb' => 'حسابی هاتنی کۆگا (دینار)', 'ar' => 'حساب إدخال المخزون (دينار عراقي)'], 'type' => \Kezi\Accounting\Enums\Accounting\AccountType::CurrentLiabilities],
+            ['code' => '210202', 'name' => ['en' => 'Stock Input Account (IQD)', 'ckb' => 'حسابی هاتنی کۆگا (دینار)', 'ar' => 'حساب إدخل المخزون (دينار عراقي)'], 'type' => \Kezi\Accounting\Enums\Accounting\AccountType::CurrentLiabilities],
             ['code' => '220101', 'name' => ['en' => 'VAT Payable', 'ckb' => 'باجی بەھای زیادکراو', 'ar' => 'ضريبة القيمة المضافة مستحقة الدفع'], 'type' => \Kezi\Accounting\Enums\Accounting\AccountType::CurrentLiabilities],
             ['code' => '220150', 'name' => ['en' => 'Withholding Tax Payable', 'ckb' => 'باجی ڕاگرتن - خەرجکراو', 'ar' => 'ضريبة الاستقطاع مستحقة الدفع'], 'type' => \Kezi\Accounting\Enums\Accounting\AccountType::CurrentLiabilities, 'reconcilable' => false],
             ['code' => '220201', 'name' => ['en' => 'Unearned Revenue', 'ckb' => 'داھاتی نەبردی', 'ar' => 'إيراد غير مكتسب'], 'type' => \Kezi\Accounting\Enums\Accounting\AccountType::CurrentLiabilities],
@@ -106,7 +116,7 @@ class AccountSeeder extends Seeder
         foreach ($accounts as $accountData) {
             Account::updateOrCreate(
                 [
-                    'company_id' => $company->id,
+                    'company_id' => $companyId,
                     'code' => $accountData['code'],
                 ],
                 [
