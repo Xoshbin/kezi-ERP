@@ -1,22 +1,22 @@
 ---
 title: Setting Up Opening Balances
-description: Learn how to transition your financial data from a legacy system to Jmeryar by entering opening balances.
+description: Learn how to transition your financial data from a legacy system to Kezi by entering opening balances.
 ---
 
 # Tutorial: Setting Up Opening Balances
 
-Welcome to Jmeryar! One of the most critical steps in starting with a new accounting system is migrating your existing financial data. This tutorial walks you through the process of setting up your **Opening Balances**—the financial snapshot of your business on the day you switch to Jmeryar.
+Welcome to Kezi! One of the most critical steps in starting with a new accounting system is migrating your existing financial data. This tutorial walks you through the process of setting up your **Opening Balances**—the financial snapshot of your business on the day you switch to Kezi.
 
 ## The Story: Ahmed's Furniture Shop
 
-Ahmed has been running a furniture shop for three years, keeping his records in a spreadsheet. Today, he’s moving to Jmeryar. His spreadsheet shows:
+Ahmed has been running a furniture shop for three years, keeping his records in a spreadsheet. Today, he’s moving to Kezi. His spreadsheet shows:
 - **Cash in Bank**: $15,000
 - **Inventory**: $25,000 (stock of chairs and tables)
 - **Owed by Customers**: $5,000
 - **Owed to Suppliers**: $3,000
 - **Initial Capital**: $42,000
 
-Ahmed wants to ensure his "Day 1" in Jmeryar matches his "Last Day" in Excel.
+Ahmed wants to ensure his "Day 1" in Kezi matches his "Last Day" in Excel.
 
 ---
 
@@ -31,11 +31,11 @@ Before we start, ensure you have:
 
 ## Step 1: Create the Opening Journal Entry
 
-In Jmeryar, we use a **Manual Journal Entry** to record the starting point.
+In Kezi, we use a **Manual Journal Entry** to record the starting point.
 
 1.  Navigate to **Accounting > Journal Entries**.
 2.  Click **Create New**.
-3.  Set the **Date** to the day *before* your official start date in Jmeryar (e.g., Dec 31st if you start on Jan 1st).
+3.  Set the **Date** to the day *before* your official start date in Kezi (e.g., Dec 31st if you start on Jan 1st).
 4.  Set the **Reference** to `Opening Balances 2024`.
 
 ---
@@ -74,7 +74,7 @@ A fundamental rule of double-entry accounting is that **Debits must equal Credit
 | Owner's Capital | | $42,000 |
 | **Total** | **$45,000** | **$45,000** |
 
-Jmeryar will show a green checkmark indicating the entry is balanced. Click **Post**.
+Kezi will show a green checkmark indicating the entry is balanced. Click **Post**.
 
 ---
 
@@ -88,7 +88,7 @@ Now that the entry is posted, let's check the result.
 
 ## Summary
 
-You have successfully migrated your business's "financial health" into Jmeryar! All future transactions—sales, purchases, and expenses—will now build upon this accurate foundation.
+You have successfully migrated your business's "financial health" into Kezi! All future transactions—sales, purchases, and expenses—will now build upon this accurate foundation.
 
 ### What's next?
 - [How-to: Recording Partner Opening Balances](../how-to/recording-opening-balances.md)

@@ -1,6 +1,6 @@
 # Payment Methods & Statuses
 
-This reference guide details the technical definitions for payment methods and the lifecycle of a payment in Jmeryar.
+This reference guide details the technical definitions for payment methods and the lifecycle of a payment in Kezi.
 
 ## Payment Status Lifecycle
 
@@ -22,11 +22,11 @@ Payments move through several states. Understanding these states is crucial for 
 
 ## Payment Methods
 
-Jmeryar supports various methods to categorize how money is moved.
+Kezi supports various methods to categorize how money is moved.
 
 ### Manual
 The standard method for bank transfers, cash payments, or any payment handled outside the system.
-- **Workflow**: Record the payment in Jmeryar -> Perform the action (e.g., mail a check) -> Reconcile when it appears on the bank statement.
+- **Workflow**: Record the payment in Kezi -> Perform the action (e.g., mail a check) -> Reconcile when it appears on the bank statement.
 
 ### Cheque
 Used when a physical cheque is issued or received.

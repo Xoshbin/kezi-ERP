@@ -10,7 +10,7 @@ An Account (also called a ledger account or GL account) is where financial trans
 
 ### Account Types
 
-Jmeryar uses five fundamental account types:
+Kezi uses five fundamental account types:
 
 *   **Asset**: Things your business owns (Cash, Inventory, Equipment)
 *   **Liability**: What your business owes (Loans, Accounts Payable)

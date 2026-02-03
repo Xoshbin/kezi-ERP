@@ -6,7 +6,7 @@ order: 4
 
 # Fiscal Positions: Smart Tax & Account Mapping
 
-This guide explains how **Fiscal Positions** (also known as Tax Mapping) work in Jmeryar. This powerful feature ensures your transactions always use the correct taxes and accounts, whether you're selling locally, to another state, or internationally—without manual effort.
+This guide explains how **Fiscal Positions** (also known as Tax Mapping) work in Kezi. This powerful feature ensures your transactions always use the correct taxes and accounts, whether you're selling locally, to another state, or internationally—without manual effort.
 
 ---
 
@@ -95,7 +95,7 @@ Click **Save** and you're done! 🎉
 3.  Set **Country** to "Turkey" (or a "Foreign" country group).
 4.  **Tax Mapping**: Map "15% Standard VAT" → "0% Export VAT".
 
-**Result**: When you invoice the Turkish customer, Jmeryar sees their address, finds the "Export" rule, and automatically changes 15% VAT to 0%.
+**Result**: When you invoice the Turkish customer, Kezi sees their address, finds the "Export" rule, and automatically changes 15% VAT to 0%.
 
 ### Scenario 2: B2B vs B2C (VAT Numbers)
 

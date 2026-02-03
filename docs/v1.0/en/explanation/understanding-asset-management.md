@@ -1,6 +1,6 @@
 # Understanding Asset Management
 
-This document explains the core principles behind Fixed Asset management in Jmeryar NotebookLM, focusing on the "Why" rather than the "How".
+This document explains the core principles behind Fixed Asset management in Kezi , focusing on the "Why" rather than the "How".
 
 ---
 

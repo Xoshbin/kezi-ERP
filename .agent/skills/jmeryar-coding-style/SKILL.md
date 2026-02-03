@@ -1,5 +1,5 @@
 ---
-name: jmeryar-coding-style
+name: kezi-coding-style
 description: Official coding styles, architectural patterns, and best practices. Use when writing or refactoring code.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: jmeryar-overview
+name: kezi-overview
 description: High-level project overview, core design philosophy, and accounting principles. Use to understand the project context.
 ---
 

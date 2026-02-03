@@ -5,7 +5,7 @@ icon: heroicon-o-arrow-path
 
 # Automatic Journal Flow
 
-In Jmeryar NotebookLM, you rarely need to create manual journal entries. Most financial records are generated automatically as a byproduct of your daily business operations.
+In Kezi , you rarely need to create manual journal entries. Most financial records are generated automatically as a byproduct of your daily business operations.
 
 ---
 

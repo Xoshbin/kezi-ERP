@@ -11,7 +11,7 @@ This reference details the key configuration options available in the System Set
 
 | Field | Description | Example |
 | :--- | :--- | :--- |
-| **Company Name** | The display name of the tenant. | Jmeryar Int. |
+| **Company Name** | The display name of the tenant. | Kezi Int. |
 | **Tax ID** | The tax registration number used on legal documents. | 123-456-789 |
 | **Primary Color** | The main branding color for the UI and PDF headers. | #3b82f6 |
 | **Logo** | The image file used for branding. | `logo.png` |

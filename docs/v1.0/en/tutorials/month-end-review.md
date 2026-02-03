@@ -5,7 +5,7 @@ icon: heroicon-o-calendar-days
 
 # Conducting a Month-End Review
 
-Closing your books at the end of each month is a critical practice to ensure your financial data is accurate and ready for tax reporting or business analysis. This tutorial walks you through a standard month-end review process in Jmeryar.
+Closing your books at the end of each month is a critical practice to ensure your financial data is accurate and ready for tax reporting or business analysis. This tutorial walks you through a standard month-end review process in Kezi.
 
 ## Prerequisites
 Before starting your review, ensure that:

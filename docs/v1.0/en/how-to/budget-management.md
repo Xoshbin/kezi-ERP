@@ -6,7 +6,7 @@ order: 8
 
 # Budget Management: Planning for Success
 
-This guide explains how Budget Management works in Jmeryar. Whether you're a financial planner or a business owner, this tool helps you set targets and track your performance against them.
+This guide explains how Budget Management works in Kezi. Whether you're a financial planner or a business owner, this tool helps you set targets and track your performance against them.
 
 ---
 

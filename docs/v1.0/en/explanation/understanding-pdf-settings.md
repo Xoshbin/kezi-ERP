@@ -1,10 +1,10 @@
 # Understanding PDF Settings
 
-PDF Settings control the appearance and content of printed documents like invoices, bills, quotes, and reports in Jmeryar.
+PDF Settings control the appearance and content of printed documents like invoices, bills, quotes, and reports in Kezi.
 
 ## Overview
 
-When you generate a PDF for any document, Jmeryar uses these settings to create a consistent, professional look that matches your company branding.
+When you generate a PDF for any document, Kezi uses these settings to create a consistent, professional look that matches your company branding.
 
 ## Key Settings
 

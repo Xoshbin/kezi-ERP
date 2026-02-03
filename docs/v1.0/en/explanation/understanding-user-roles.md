@@ -5,7 +5,7 @@ icon: heroicon-o-shield-check
 
 # Understanding User Roles
 
-Jmeryar ERP uses a role-based access control (RBAC) system to manage what users can see and do. This ensures that employees have access only to the information effectively needed for their work.
+Kezi ERP uses a role-based access control (RBAC) system to manage what users can see and do. This ensures that employees have access only to the information effectively needed for their work.
 
 ## What is a Role?
 

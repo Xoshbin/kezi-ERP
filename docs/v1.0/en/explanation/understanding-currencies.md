@@ -1,6 +1,6 @@
 # Understanding Currencies
 
-Jmeryar supports multi-currency operations, allowing you to transact in any currency while maintaining books in your base currency.
+Kezi supports multi-currency operations, allowing you to transact in any currency while maintaining books in your base currency.
 
 ## Overview
 
@@ -21,7 +21,7 @@ Any currency other than your base currency. Foreign currency transactions are re
 
 ### Exchange Rates
 
-The conversion rate between currencies. Jmeryar maintains:
+The conversion rate between currencies. Kezi maintains:
 *   **Spot Rates**: Daily rates for transaction conversion
 *   **Historical Rates**: Rates used for past transactions (immutable)
 

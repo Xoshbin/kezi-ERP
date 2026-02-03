@@ -6,7 +6,7 @@ order: 1
 
 # Tutorial: Your First Warehouse Setup
 
-This tutorial guides you through setting up your first warehouse in Jmeryar ERP. You will learn how to configure the physical structure of your stock locations, set up a product for tracking, and process your initial inventory receipt.
+This tutorial guides you through setting up your first warehouse in Kezi ERP. You will learn how to configure the physical structure of your stock locations, set up a product for tracking, and process your initial inventory receipt.
 
 **Time to complete**: 10 minutes
 **Prerequisites**: Admin access to the Inventory module
