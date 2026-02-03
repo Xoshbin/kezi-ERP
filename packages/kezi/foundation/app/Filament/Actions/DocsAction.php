@@ -146,6 +146,9 @@ class DocsAction
             'number-formatting' => 'reference/number-formatting',
             'tax-reporting-plugins' => 'reference/tax-reporting-plugins',
             'translation-scanner' => 'how-to/translation-scanner',
+            'setting-up-manufacturing-line' => 'tutorials/setting-up-manufacturing-line',
+            'manufacturing-fields' => 'reference/manufacturing-fields',
+            'manufacturing-concepts' => 'explanation/manufacturing-concepts',
         ];
 
         return $mapping[$slug] ?? $slug;

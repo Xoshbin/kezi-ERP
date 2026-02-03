@@ -1,3 +1,9 @@
+---
+title: Manufacturing Orders
+icon: heroicon-o-wrench
+order: 11
+---
+
 # Manufacturing Orders
 
 ## Overview

@@ -1,7 +1,7 @@
 ---
 title: فەرمانەکانی بەرهەمهێنان
-icon: heroicon-o-wrench-screwdriver
-order: 15
+icon: heroicon-o-wrench
+order: 11
 ---
 
 # فەرمانەکانی بەرهەمهێنان (Manufacturing Orders)
@@ -137,5 +137,6 @@ graph LR
 ## بابەتە پەیوەندیدارەکان
 - [لیستی کەرەستەکان](bill-of-materials.md)
 - [بەڕێوەبردنی کۆگا](inventory-management.md)
-- [ناوەندەکانی کار](work-centers.md)
+- [چەمکەکانی بەرهەمهێنان](../explanation/manufacturing-concepts.md)
+- [ناوەندەکانی کار](../explanation/understanding-work-centers.md)
 - [جوڵەکانی کۆگا](stock-movements.md)

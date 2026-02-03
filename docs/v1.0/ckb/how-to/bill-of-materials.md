@@ -1,7 +1,7 @@
 ---
 title: لیستی کەرەستەکان (BOM)
-icon: heroicon-o-document-text
-order: 14
+icon: heroicon-o-list-bullet
+order: 10
 ---
 
 # بەڕێوەبردنی لیستی کەرەستەکان (BOM)
@@ -108,4 +108,5 @@ BOM لیستێکی پێکهاتەدارە کە دیاری دەکات:
 ## بابەتە پەیوەندیدارەکان
 - [فەرمانەکانی بەرهەمهێنان](manufacturing-orders.md)
 - [بەڕێوەبردنی کۆگا](inventory-management.md)
-- [ناوەندەکانی کار](work-centers.md)
+- [چەمکەکانی بەرهەمهێنان](../explanation/manufacturing-concepts.md)
+- [ناوەندەکانی کار](../explanation/understanding-work-centers.md)

@@ -89,5 +89,7 @@ order: 10
 ---
 
 ## بابەتە پەیوەندیدارەکان
-- [پێشەکی بۆ لیستی کەرەستەکان (BOM)](understanding-boms.md)
-- [بەڕێوەبردنی کردارەکان](manufacturing-operations.md)
+
+- [چەمکەکانی بەرهەمهێنان](manufacturing-concepts.md)
+- [تێگەیشتن لە فەرمانەکانی کار (Work Orders)](understanding-work-orders.md)
+- [فەرمانەکانی بەرهەمهێنان](../how-to/manufacturing-orders.md)
