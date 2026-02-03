@@ -5,7 +5,7 @@ description: Step-by-step instructions on recording starting balances for accoun
 
 # How-to: Recording Opening Balances
 
-Recording opening balances is the process of entering your starting financial data when you first begin using Jmeryar.
+Recording opening balances is the process of entering your starting financial data when you first begin using Kezi.
 
 ## Recording General Account Balances
 

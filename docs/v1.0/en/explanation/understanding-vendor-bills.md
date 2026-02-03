@@ -4,7 +4,7 @@ icon: heroicon-o-light-bulb
 order: 10
 ---
 
-A vendor bill is the digital record of a commercial invoice received from a supplier. In the specific context of Jmeryar NotebookLM, it represents more than just a request for payment—it is the central document that triggers expense recognition, inventory cost updates, and asset capitalization.
+A vendor bill is the digital record of a commercial invoice received from a supplier. In the specific context of Kezi , it represents more than just a request for payment—it is the central document that triggers expense recognition, inventory cost updates, and asset capitalization.
 
 This guide explains the conceptual framework of vendor bills, their lifecycle, and their role in the accrual accounting process.
 

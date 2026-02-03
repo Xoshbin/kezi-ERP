@@ -1,6 +1,6 @@
 # Account Groups
 
-Account Groups are the structural backbone of your financial reporting in Jmeryar. They allow you to aggregate individual General Ledger accounts into meaningful categories for reporting purposes, such as the Balance Sheet and Profit & Loss statement.
+Account Groups are the structural backbone of your financial reporting in Kezi. They allow you to aggregate individual General Ledger accounts into meaningful categories for reporting purposes, such as the Balance Sheet and Profit & Loss statement.
 
 ## Overview
 
@@ -16,7 +16,7 @@ Account Groups function in a tree structure.
 This hierarchy determines how totals roll up in your reports. The balance of "Cash and Equivalents" is added to the balance of "Current Assets".
 
 ### Code Prefix
-Jmeryar allows you to define a range of account codes for each group (e.g., 1000 - 1099). When you create a new General Ledger account and assign a code within this range, the system can automatically suggest the correct Account Group, helping keep your chart of accounts organized.
+Kezi allows you to define a range of account codes for each group (e.g., 1000 - 1099). When you create a new General Ledger account and assign a code within this range, the system can automatically suggest the correct Account Group, helping keep your chart of accounts organized.
 
 ### Account Types
 Each group is associated with a specific Account Type, which dictates where it appears:

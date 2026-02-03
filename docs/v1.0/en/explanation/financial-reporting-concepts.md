@@ -5,7 +5,7 @@ icon: heroicon-o-academic-cap
 
 # Financial Reporting Concepts
 
-Understanding how Jmeryar calculates and structures financial reports is essential for maintaining accurate books and making informed business decisions.
+Understanding how Kezi calculates and structures financial reports is essential for maintaining accurate books and making informed business decisions.
 
 ## The Trial Balance vs. The Balance Sheet
 
@@ -27,7 +27,7 @@ The **Balance Sheet** is an external-facing financial statement.
 
 ## How Net Profit Flows to the Balance Sheet
 
-One of the most important concepts in Jmeryar is the link between the **Profit and Loss (P&L)** and the **Balance Sheet**.
+One of the most important concepts in Kezi is the link between the **Profit and Loss (P&L)** and the **Balance Sheet**.
 
 1.  The **Profit and Loss** report calculates your **Net Profit** (Revenue - Expenses) for a specific period.
 2.  In the **Balance Sheet**, this Net Profit is displayed under the Equity section as **Current Year Earnings**.
@@ -38,9 +38,9 @@ One of the most important concepts in Jmeryar is the link between the **Profit a
 
 ---
 
-## The Accounting Equation in Jmeryar
+## The Accounting Equation in Kezi
 
-Jmeryar strictly enforces the double-entry system. Every transaction must be balanced.
+Kezi strictly enforces the double-entry system. Every transaction must be balanced.
 - **Assets**: What the business owns (Cash, Inventory, Equipment).
 - **Liabilities**: What the business owes (Vendor Bills, Loans).
 - **Equity**: The owner's residual interest in the assets after deducting liabilities.
@@ -51,7 +51,7 @@ The system ensures that `Total Assets` always equals `Total Liabilities + Total 
 
 ## Cash vs. Accrual Reporting
 
-Jmeryar primarily operates on an **Accrual Basis**. This means:
+Kezi primarily operates on an **Accrual Basis**. This means:
 - **Revenue** is recognized when an Invoice is validated, not necessarily when the cash is received.
 - **Expenses** are recognized when a Vendor Bill is recorded, not necessarily when the bill is paid.
 

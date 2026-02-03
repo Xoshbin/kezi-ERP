@@ -1,6 +1,6 @@
 # Tutorial: Paying Your First Vendor Bill
 
-In [Story Two](story-two.md), we recorded a Vendor Bill for our new high-end laptop. Now, it's time to actually pay the vendor and see how Jmeryar handles the cash movement and accounting entries.
+In [Story Two](story-two.md), we recorded a Vendor Bill for our new high-end laptop. Now, it's time to actually pay the vendor and see how Kezi handles the cash movement and accounting entries.
 
 ## Objective
 By the end of this tutorial, you will have:

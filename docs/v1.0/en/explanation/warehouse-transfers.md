@@ -6,7 +6,7 @@ order: 13
 
 # Understanding Warehouse Transfers
 
-Warehouse transfers are specialized stock movements that track goods moving between different warehouse locations. In Jmeryar, these transfers follow a specialized two-step workflow to ensure complete control and accountability.
+Warehouse transfers are specialized stock movements that track goods moving between different warehouse locations. In Kezi, these transfers follow a specialized two-step workflow to ensure complete control and accountability.
 
 ---
 

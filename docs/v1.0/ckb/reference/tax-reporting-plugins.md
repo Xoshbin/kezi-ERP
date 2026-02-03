@@ -7,7 +7,7 @@ author: System
 
 # Tax Reporting Plugin Architecture
 
-The Jmeryar ERP system uses a modular "plugin" architecture for generating tax reports. This allows developers to add support for new country-specific tax returns (e.g., Saudi VAT, UK VAT) without modifying the core reporting logic.
+The Kezi ERP system uses a modular "plugin" architecture for generating tax reports. This allows developers to add support for new country-specific tax returns (e.g., Saudi VAT, UK VAT) without modifying the core reporting logic.
 
 ## Overview
 

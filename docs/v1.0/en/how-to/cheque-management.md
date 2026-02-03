@@ -6,7 +6,7 @@ order: 10
 
 # Cheque Management: Handling Inbound & Outbound Cheques
 
-This guide covers the complete lifecycle of cheques in Jmeryar, from receiving a customer cheque to banking it, clearing it, or handling rejections.
+This guide covers the complete lifecycle of cheques in Kezi, from receiving a customer cheque to banking it, clearing it, or handling rejections.
 
 ---
 

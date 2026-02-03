@@ -6,7 +6,7 @@ order: 10
 
 # Tutorial: Setting Up Your First Manufacturing Line
 
-This tutorial will guide you through the process of setting up your first manufacturing line in Jmeryar ERP. By the end of this guide, you will have configured a work center, created a Bill of Materials, and completed your first manufacturing order.
+This tutorial will guide you through the process of setting up your first manufacturing line in Kezi ERP. By the end of this guide, you will have configured a work center, created a Bill of Materials, and completed your first manufacturing order.
 
 ---
 

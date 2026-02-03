@@ -5,7 +5,7 @@ icon: heroicon-o-currency-dollar
 
 # Configuring Currencies
 
-If your business operates in multiple currencies, Jmeryar ERP allows you to manage exchange rates and transact in any currency.
+If your business operates in multiple currencies, Kezi ERP allows you to manage exchange rates and transact in any currency.
 
 ## Enabling Multi-Currency
 

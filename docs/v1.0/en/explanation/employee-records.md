@@ -5,7 +5,7 @@ icon: heroicon-o-information-circle
 
 # Understanding Employee Records
 
-In Jmeryar, the **Employee** module serves as the central hub for your company's human capital. It is more than just a list of names; it is a dynamic database that connects people to their roles, contracts, payroll, and performance.
+In Kezi, the **Employee** module serves as the central hub for your company's human capital. It is more than just a list of names; it is a dynamic database that connects people to their roles, contracts, payroll, and performance.
 
 ### The Role of an Employee Record
 
@@ -27,7 +27,7 @@ By keeping personal info, job history, and bank details in one place, you avoid 
 Employee records allow you to define **Managers**. This creates a reporting structure that the system uses for approval workflows. For example, when an employee requests leave, the system automatically knows to notify their assigned manager.
 
 #### Privacy and Data Sensitivity
-Employee records contain sensitive personal data (National IDs, salaries, home addresses). Jmeryar implements strict access controls. Only users with HR Manager roles can typically view full details, while regular managers might only see contact and job-related info for their team.
+Employee records contain sensitive personal data (National IDs, salaries, home addresses). Kezi implements strict access controls. Only users with HR Manager roles can typically view full details, while regular managers might only see contact and job-related info for their team.
 
 ---
 

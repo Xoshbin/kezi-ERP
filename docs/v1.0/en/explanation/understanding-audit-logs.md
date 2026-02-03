@@ -4,7 +4,7 @@ Audit Logs provide a complete trail of all actions taken in your accounting syst
 
 ## Overview
 
-Every action in Jmeryar is recorded with details about who did what, when, and from where. This immutable record ensures accountability and supports regulatory compliance.
+Every action in Kezi is recorded with details about who did what, when, and from where. This immutable record ensures accountability and supports regulatory compliance.
 
 ## Key Information Captured
 
@@ -44,7 +44,7 @@ Review actions to identify training opportunities.
 
 ## Data Integrity
 
-Audit logs in Jmeryar:
+Audit logs in Kezi:
 *   **Cannot be edited**: Once recorded, entries are permanent
 *   **Cannot be deleted**: System maintains complete history
 *   **Include hash verification**: Tamper detection is built in

@@ -10,7 +10,7 @@ Understanding the core concepts of the Manufacturing (MRP) module is essential f
 
 ## The Manufacturing Ecosystem
 
-The manufacturing module in Jmeryar ERP is designed to track the transformation of raw materials into finished goods. It connects inventory, planning, and accounting in a seamless flow.
+The manufacturing module in Kezi ERP is designed to track the transformation of raw materials into finished goods. It connects inventory, planning, and accounting in a seamless flow.
 
 ### 1. The Bill of Materials (BoM)
 The **BoM** is the foundation. It’s not just a list of materials; it defines the structure of your product.
@@ -43,7 +43,7 @@ You cannot finish the MO until all required WOs are completed.
 
 ## Accounting & Costing
 
-Jmeryar ERP uses **BOM Costing** to value your finished products.
+Kezi ERP uses **BOM Costing** to value your finished products.
 - **Material Cost**: The weighted average cost (AVCO) or FIFO cost of all consumed components.
 - **Labor & Overhead**: Calculated based on the hourly rate of the Work Centers and the actual time spent on Work Orders.
 

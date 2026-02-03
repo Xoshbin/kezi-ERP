@@ -1,6 +1,6 @@
 # Understanding Reconciliation
 
-Reconciliation is the process of ensuring that two sets of records (usually the balances of two accounts) are in agreement. In Jmeryar, this primarily refers to **Bank Reconciliation**: matching your internal accounting records against your actual bank statements.
+Reconciliation is the process of ensuring that two sets of records (usually the balances of two accounts) are in agreement. In Kezi, this primarily refers to **Bank Reconciliation**: matching your internal accounting records against your actual bank statements.
 
 ## Why Reconcile?
 
@@ -12,7 +12,7 @@ Reconciliation is a critical internal control that ensures your records are accu
 
 ## The Reconciliation Flow
 
-Jmeryar uses a two-step "Outstanding" flow to maintain high-integrity double-entry accounting. This ensures that the debt is cleared when the check is written, but the cash is only reduced when the bank actually clears it.
+Kezi uses a two-step "Outstanding" flow to maintain high-integrity double-entry accounting. This ensures that the debt is cleared when the check is written, but the cash is only reduced when the bank actually clears it.
 
 ### 1. Recording the Internal Payment
 When you pay a vendor or receive money from a customer, you record a **Payment**.

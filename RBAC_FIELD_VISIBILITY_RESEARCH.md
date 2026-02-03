@@ -1,11 +1,11 @@
 # Research Report: Scalable RBAC Field Visibility
 
 ## 1. Executive Summary
-The current Jmeryar ERP relies on standard Model-based Authorization (Role -> Permission -> Model Action). It lacks a standardized **Field Level Security (FLS)** layer.
+The current Kezi ERP relies on standard Model-based Authorization (Role -> Permission -> Model Action). It lacks a standardized **Field Level Security (FLS)** layer.
 
 Implementing ad-hoc checks (e.g., `->visible(fn() => user()->can('update_product'))`) directly in Filament resources is **not scalable**. It leads to scattered logic, harder maintenance, and inconsistent behavior across the application.
 
-This report analyzes how enterprise ERPs (Odoo, SAP) handle this, evaluates our current ecosystem, and proposes **three architectural strategies** to implement a robust, dynamic Field Visibility layer in Jmeryar.
+This report analyzes how enterprise ERPs (Odoo, SAP) handle this, evaluates our current ecosystem, and proposes **three architectural strategies** to implement a robust, dynamic Field Visibility layer in Kezi.
 
 ---
 
@@ -44,7 +44,7 @@ SAP uses **Authorization Objects**:
 
 ---
 
-## 4. Proposed Solutions for Jmeryar
+## 4. Proposed Solutions for Kezi
 
 We propose moving from *Imperative* (code logic) to *Declarative* (configuration) field security.
 
