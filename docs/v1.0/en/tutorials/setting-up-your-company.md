@@ -5,7 +5,7 @@ icon: heroicon-o-building-office
 
 # Setting Up Your Company
 
-Welcome to Jmeryar ERP! The first step to managing your business is setting up your company profile. This tutorial guides you through configuring your basic company information, localization settings, and branding.
+Welcome to Kezi ERP! The first step to managing your business is setting up your company profile. This tutorial guides you through configuring your basic company information, localization settings, and branding.
 
 ## Prerequisites
 

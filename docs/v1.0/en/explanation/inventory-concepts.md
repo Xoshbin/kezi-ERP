@@ -6,7 +6,7 @@ order: 1
 
 # Explanation: Inventory Concepts
 
-This guide provides a deep dive into the core concepts that power the Jmeryar ERP inventory system, explaining "why" things work the way they do.
+This guide provides a deep dive into the core concepts that power the Kezi ERP inventory system, explaining "why" things work the way they do.
 
 ---
 
@@ -40,7 +40,7 @@ Just like double-entry accounting, modern inventory systems use a double-entry m
 
 ## Valuation Methods Explained
 
-How do you calculate the cost of the goods you sold? Jmeryar supports standard accounting methods:
+How do you calculate the cost of the goods you sold? Kezi supports standard accounting methods:
 
 ### 1. FIFO (First In, First Out)
 *   **Concept**: The first items purchased are the first ones sold.

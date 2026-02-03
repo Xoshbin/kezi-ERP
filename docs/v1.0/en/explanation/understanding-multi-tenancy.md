@@ -5,11 +5,11 @@ icon: heroicon-o-building-library
 
 # Understanding Multi-Tenancy
 
-Jmeryar ERP is built with a multi-tenant architecture, allowing you to manage multiple distinct companies or business units within a single installation.
+Kezi ERP is built with a multi-tenant architecture, allowing you to manage multiple distinct companies or business units within a single installation.
 
 ## What is a Tenant?
 
-In Jmeryar, a **Tenant** usually represents a legal entity or a Company. Each tenant has its own isolated data, inclusive of:
+In Kezi, a **Tenant** usually represents a legal entity or a Company. Each tenant has its own isolated data, inclusive of:
 
 -   Chart of Accounts
 -   Customers and Vendors

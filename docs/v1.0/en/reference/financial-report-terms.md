@@ -5,7 +5,7 @@ icon: heroicon-o-list-bullet
 
 # Financial Report Terms
 
-This reference defines common accounting categories and terms used throughout Jmeryar's financial reporting suite.
+This reference defines common accounting categories and terms used throughout Kezi's financial reporting suite.
 
 ## Balance Sheet Terms
 

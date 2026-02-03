@@ -1,10 +1,10 @@
 # Understanding Numbering Settings
 
-Numbering Settings control how Jmeryar automatically generates reference numbers for invoices, bills, payments, and other documents.
+Numbering Settings control how Kezi automatically generates reference numbers for invoices, bills, payments, and other documents.
 
 ## Overview
 
-Every financial document in Jmeryar needs a unique reference number. Numbering Settings let you define the format and sequence for each document type, ensuring consistent and professional document identification.
+Every financial document in Kezi needs a unique reference number. Numbering Settings let you define the format and sequence for each document type, ensuring consistent and professional document identification.
 
 ## Key Concepts
 

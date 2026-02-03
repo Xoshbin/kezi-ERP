@@ -6,13 +6,13 @@ order: 3
 
 # Organizing Your Workforce: Departments & Positions
 
-This guide explains how to structure your organization in Jmeryar by setting up Departments and Job Positions. Think of this as building the "skeleton" of your company before adding "flesh" (employees) and "muscles" (contracts).
+This guide explains how to structure your organization in Kezi by setting up Departments and Job Positions. Think of this as building the "skeleton" of your company before adding "flesh" (employees) and "muscles" (contracts).
 
 ---
 
 ## 1. Understanding the Hierarchy
 
-In Jmeryar, organizational structure follows a simple flow:
+In Kezi, organizational structure follows a simple flow:
 
 ```mermaid
 graph TD

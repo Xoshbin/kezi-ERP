@@ -5,7 +5,7 @@ icon: heroicon-o-information-circle
 
 # Understanding Leave and Attendance
 
-Effective time-off and presence tracking are critical for maintaining team productivity and ensuring accurate payroll. In Jmeryar, the Leave and Attendance modules work together to provide a complete picture of staff availability.
+Effective time-off and presence tracking are critical for maintaining team productivity and ensuring accurate payroll. In Kezi, the Leave and Attendance modules work together to provide a complete picture of staff availability.
 
 ### Leave Management Philosophy
 

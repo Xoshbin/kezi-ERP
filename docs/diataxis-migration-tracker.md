@@ -1,6 +1,6 @@
 # Diátaxis Documentation Migration Tracker
 
-This report tracks the migration of Jmeryar NotebookLM documentation to the **Diátaxis framework**. The goal is to provide a world-class documentation experience by separating content into four distinct categories:
+This report tracks the migration of Kezi  documentation to the **Diátaxis framework**. The goal is to provide a world-class documentation experience by separating content into four distinct categories:
 - **Tutorials**: Learning-oriented (The "Story" series).
 - **How-to Guides**: Task-oriented (How to achieve a specific goal).
 - **Explanations**: Understanding-oriented (Deeper concepts/theory).

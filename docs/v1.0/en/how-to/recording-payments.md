@@ -6,7 +6,7 @@ order: 10
 
 # How to Record Payments
 
-Recording payments is the process of documenting cash inflows or outflows in Jmeryar. This guide covers how to record a payment and link it to existing documents (Vendor Bills or Customer Invoices).
+Recording payments is the process of documenting cash inflows or outflows in Kezi. This guide covers how to record a payment and link it to existing documents (Vendor Bills or Customer Invoices).
 
 ## Recording a Payment from a Bill/Invoice
 

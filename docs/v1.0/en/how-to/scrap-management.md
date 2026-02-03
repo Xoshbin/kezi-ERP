@@ -6,7 +6,7 @@ order: 15
 
 # Scrap & Disposal Management
 
-This guide explains how to manage inventory scrap, spoilage, and disposal in Jmeryar ERP. Proper management of scrapped items ensures accurate inventory counts and correct financial reporting of losses.
+This guide explains how to manage inventory scrap, spoilage, and disposal in Kezi ERP. Proper management of scrapped items ensures accurate inventory counts and correct financial reporting of losses.
 
 ## Overview
 
@@ -16,7 +16,7 @@ This guide explains how to manage inventory scrap, spoilage, and disposal in Jme
 - **Obsolescence** (outdated technology or styles)
 - **Theft/Loss** (inventory shrinkage)
 
-In Jmeryar ERP, scrapping is handled through **Stock Moves** or **Inventory Adjustments**, moving items from a physical stock location to a virtual "loss" location.
+In Kezi ERP, scrapping is handled through **Stock Moves** or **Inventory Adjustments**, moving items from a physical stock location to a virtual "loss" location.
 
 ## Key Concepts
 

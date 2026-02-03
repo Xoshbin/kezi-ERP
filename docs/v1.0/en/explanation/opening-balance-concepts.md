@@ -5,7 +5,7 @@ description: Deep dive into the accounting principles of opening balances and th
 
 # Explanation: Opening Balance Concepts
 
-When moving your accounting to Jmeryar, you aren't just starting from zero; you are picking up where your previous system left off. To do this accurately, you must understand how Jmeryar maintains the "Balance" in your Balance Sheet during migration.
+When moving your accounting to Kezi, you aren't just starting from zero; you are picking up where your previous system left off. To do this accurately, you must understand how Kezi maintains the "Balance" in your Balance Sheet during migration.
 
 ## The Principle of Double-Entry
 
@@ -36,7 +36,7 @@ Since you aren't entering everything at once, your entries won't balance. This i
 
 ## Why use a Counterpart for Invoices?
 
-When you record an old unpaid invoice from last year, Jmeryar standard behavior would be to credit "Sales Revenue". However, that sale happened last year and was already taxed/recorded in your old system.
+When you record an old unpaid invoice from last year, Kezi standard behavior would be to credit "Sales Revenue". However, that sale happened last year and was already taxed/recorded in your old system.
 
 By using the **Opening Balance Counterpart** account instead of a Revenue account, you:
 1.  Correct your **Accounts Receivable** (the customer owes you).

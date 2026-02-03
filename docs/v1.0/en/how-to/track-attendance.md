@@ -34,7 +34,7 @@ While viewing the attendance list, you can see if entries are regular or marked 
 ### Importing Attendance
 
 For companies using external biometric machines:
-1. Format your data according to the Jmeryar import template.
+1. Format your data according to the Kezi import template.
 2. Use the **Import** feature on the Attendance list page to upload a CSV/Excel file of all daily clock-ins.
 
 ---

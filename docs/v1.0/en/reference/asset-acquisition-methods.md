@@ -1,6 +1,6 @@
 # Reference: Asset Acquisition Methods
 
-This reference provides a technical comparison of the different ways to record assets in Jmeryar NotebookLM.
+This reference provides a technical comparison of the different ways to record assets in Kezi .
 
 ---
 

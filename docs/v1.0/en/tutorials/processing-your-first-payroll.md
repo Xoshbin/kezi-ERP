@@ -42,7 +42,7 @@ Azad was absent for 2 days without pay. We need to deduct this from his salary.
 
 1. Click **Approve**. 
 2. The status changes to **Processed**. 
-3. Behind the scenes, Jmeryar has created a journal entry:
+3. Behind the scenes, Kezi has created a journal entry:
    - **Debit**: Salary Expense ($1,000.00)
    - **Credit**: Accrued Salaries ($1,000.00)
    *(Note: The deduction is reflected in the final net amount when the liability is cleared).*

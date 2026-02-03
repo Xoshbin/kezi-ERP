@@ -5,7 +5,7 @@ description: Technical specifications and field descriptions for importing openi
 
 # Reference: Opening Balance Import Templates
 
-If you have thousands of records to migrate, manual entry is not feasible. Use this reference to prepare your CSV files for importing opening balances into Jmeryar.
+If you have thousands of records to migrate, manual entry is not feasible. Use this reference to prepare your CSV files for importing opening balances into Kezi.
 
 ## General Ledger (Chart of Accounts)
 

@@ -6,7 +6,7 @@ order: 10
 
 # Generating Financial Reports
 
-Jmeryar provides a powerful suite of financial reports to help you track your business performance and maintain accounting accuracy. This guide explains how to access, filter, and export these reports.
+Kezi provides a powerful suite of financial reports to help you track your business performance and maintain accounting accuracy. This guide explains how to access, filter, and export these reports.
 
 ## Accessing Reports
 
