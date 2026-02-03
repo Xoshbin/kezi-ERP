@@ -47,4 +47,26 @@ return [
         'details' => 'Company Details',
         'defaults' => 'Company Defaults',
     ],
+
+    'industry_type' => 'Industry Type',
+    'inventory_accounting_mode' => 'Inventory Accounting Mode',
+    'industries' => [
+        'generic' => 'Generic Business',
+        'retail' => 'Retail / POS',
+        'manufacturing' => 'Manufacturing / MRP',
+        'services' => 'Professional Services',
+    ],
+
+    'wizard' => [
+        'identity' => 'Identity',
+        'identity_desc' => 'Tell us about your company basics.',
+        'foundation' => 'Foundation',
+        'foundation_desc' => 'Set your reporting currency and fiscal home.',
+        'profile' => 'Business Profile',
+        'profile_desc' => 'What kind of business are you running?',
+        'customization' => 'Customization',
+        'customization_desc' => 'Almost ready! Final options.',
+        'seed_sample_data' => 'Seed Sample Data',
+        'seed_sample_data_help' => 'Check this to populate your company with sample customers, vendors, and products to explore.',
+    ],
 ];
