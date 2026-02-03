@@ -1,120 +1,121 @@
 ---
-title: تێگەیشتن لە ئەرکەکانی پڕۆژە
+title: Understanding Project Tasks
 icon: heroicon-o-clipboard-document-check
 order: 10
 ---
 
-# تێگەیشتن لە ئەرکەکانی پڕۆژە
+# Understanding Project Tasks
 
-ئەم ڕێبەرە ڕوونی دەکاتەوە چۆن **ئەرکەکانی پڕۆژە (Project Tasks)** بەکاربهێنیت بۆ ڕێکخستنی کار، چاودێریکردنی پێشکەوتن، و دڵنیابوون لەوەی تیمەکەت دەزانێت بە تەواوی چی دەبێت بکرێت. جا بەڕێوەبەری پڕۆژە بیت یان ئەندامی تیم، ئەم ڕێبەرە یارمەیت دەدات کارە ڕۆژانەکانت بە کاریگەری بەڕێوەببەیت.
-
----
-
-## ئەرکەکانی پڕۆژە چین؟
-
-وەک ئەوە سەیری **ئەرکی پڕۆژە** بکە کە یەکەیەکی تاکە لە کار کە دەبێت تەواو بکرێت. وەڵامی پرسیارەکەیە: *"دەبێت ئەمڕۆ چی بکەم؟"*
-
-پڕۆژەیەک لە چەندین ئەرک پێکهاتووە. بۆ نموونە، ئەگەر **پڕۆژەکە** بریتی بێت لە "نۆژەنکردنەوەی ئۆفیس"، **ئەرکەکان** ڕەنگە ئەمانە بن:
-1.  بۆیەکردنی دیوارەکان
-2.  دانانی مێزی نوێ
-3.  ڕێکخستنی ئینتەرنێت
-
-**بۆچی ئەرکەکان بەکاربهێنین؟**
-1.  **ڕوونی**: هەمووان بە وردی دەزانن بەرپرسیارن لە چی.
-2.  **چاودێریکردن**: دەتوانیت ببینیت چی "بۆ کردنە"، "لەکا کارکردنە"، و "تەواو بووە".
-3.  **بەڕێوەبردنی کات**: دەتوانیت چاودێری بکەیت چەند کات لەسەر هەر کارێکی دیاریکراو خەرج کراوە.
-
-> **💡 لێکچوون**: ئەگەر **پڕۆژە** شوێنی گەیشتن بێت، **ئەرکەکان** ئەو هەنگاوانەن کە دەینێیت بۆ گەیشتن بەوێ.
+This guide explains how to use **Project Tasks** to organize work, track progress, and ensure your team knows exactly what needs to be done. Whether you are a project manager or a team member, this guide will help you manage your daily work effectively.
 
 ---
 
-## سوڕی ژیانی ئەرک
+## What are Project Tasks?
 
-هەر ئەرکێک بە سوڕێکی ژیاندا تێدەپەڕێت لە دروستکردنەوە تا تەواو بوون. لە JMeryar ERP، ئەمە هاوتایە لەگەڵ **قۆناغەکانی کانبان (Kanban)**.
+Think of a **Project Task** as a single unit of work that needs to be completed. It’s the answer to the question: *"What do I need to do today?"*
 
-### ١. بۆ کردن (Creating/New) 📝
-ئەرکەکە دروستکراوە بەڵام کارکردن تێیدا دەستی پێ نەکردووە. لە لیستی چاوەڕوانیدایە.
-*   **کردار**: بیدە بە ئەندامێکی تیم و وادەی کۆتایی (deadline) بۆ دابنێ.
+A project is made up of many tasks. For example, if the **Project** is "Renovate the Office", the **Tasks** might be:
+1.  Paint the walls
+2.  Install new desks
+3.  Set up the internet
 
-### ٢. لە کارکردن (In Progress) 🏗️
-کارکردن دەستی پێکردووە. کەسی ڕاسپێردراو بە چالاکی کار لەسەر ئەم ئەرکە دەکات.
-*   **کردار**: کات تۆمار بکە لە تایم-شیت بۆ چاودێریکردنی هەوڵ.
+**Why use Tasks?**
+1.  **Clarity**: Everyone knows exactly what they are responsible for.
+2.  **Tracking**: You can see what is "To Do", "In Progress", and "Done".
+3.  **Time Management**: You can track how much time is spent on each specific job.
 
-### ٣. پێداچوونەوە / تاقیکردنەوە (Review) 🔍
-کارەکە تەواو بووە بەڵام دەبێت بپشکنرێت (نموونە: پێداچوونەوەی کۆد، پشکنینی جۆرایەتی).
-*   **کردار**: بەڕێوەبەر یان هاوکارێک کارەکە دەپشکنێت.
-
-### ٤. تەواو (Done) ✅
-ئەرکەکە بە تەواوی تەواو بووە و پەسەند کراوە.
-*   **کردار**: بیگوازەرەوە بۆ قۆناغی "تەواو". دەستخۆش! ✋
+> **💡 Analogy**: If a **Project** is the destination, **Tasks** are the steps you take to get there.
 
 ---
 
-## چۆن ئەرکەکان بەڕێوەببەیت
+## The Task Lifecycle
 
-### دروستکردنی ئەرکێکی نوێ
+Every task goes through a lifecycle from creation to completion. In JMeryar ERP, this corresponds to the **Kanban Stages**.
 
-بڕۆ بۆ: **بەڕێوەبردنی پڕۆژە ← ئەرکەکانی پڕۆژە ← دروستکردنی ئەرک**
+### 1. To Do (New) 📝
+The task has been created but work hasn't started yet. It is waiting in the backlog.
+*   **Action**: Assign it to a team member and set a deadline.
 
-وردەکارییە سەرەکییەکان پڕ بکەرەوە:
-*   **ناونیشان**: ناوێکی ڕوون و کرداری (نموونە: "نووسینی ڕاپۆرتی مانگانە").
-*   **پڕۆژە**: سەر بە کام پڕۆژەیە؟
-*   **ڕاسپێردراو**: کێ کارەکە دەکات؟
-*   **وادەی کۆتایی**: کەی دەبێت تەواو بێت؟
-*   **وەسف**: ڕێنمایی ورد، لیستی پشکنین، یان بەستەرەکان.
+### 2. In Progress (Doing) 🏗️
+Work has begun. The assignee is actively working on this task.
+*   **Action**: Log time in the timesheet to track effort.
 
-### ڕاسپاردن و خشتەکاری
+### 3. Review / Testing 🔍
+The work is done but needs to be checked (e.g., code review, quality check).
+*   **Action**: Manager or peer reviews the work.
 
-مەهێڵە ئەرکەکان بە هەڵواسراوی بمێننەوە!
-1.  **کەسێک دیاری بکە**: ئەرک بەبێ خاوەن بە دەگمەن تەواو دەبێت.
-2.  **وادەی کۆتایی دابنێ**: کاتێکی بۆ دیاری بکە.
-3.  **تاگ زیاد بکە**: تاگ بەکاربهێنە (نموونە: "بەپەلە"، "بگ"، "تایبەتمەندی") بۆ پۆلێنکردن.
-
-### تۆماری کات ⏱️
-
-ئەگەر پڕۆژەکەت بە کاتژمێر پارەی لێ وەردەگیبرێت، تۆماری کات زۆر گرنگە.
-1.  ئەرکەکە بکەرەوە.
-2.  بڕۆ بۆ تابی **تایم-شیت**.
-3.  دێڕێک زیاد بکە: **بەروار**، **وەسف** (چیت کرد)، و **کاتی بەسەرچوو** (نموونە: ٢ کاتژمێر).
-
-> **تێبینی**: ئەم داتایە دەچێتە ناو ڕاپۆرتی قازانجی پڕۆژە!
+### 4. Done (Completed) ✅
+The task is fully complete and approved.
+*   **Action**: Move to the "Done" stage. High five! ✋
 
 ---
 
-## کارکردن بە ئەرکە لاوەکییەکان (Subtasks)
+## How to Manage Tasks
 
-هەندێک جار ئەرکێک زۆر گەورەیە (نموونە: "دروستکردنی وێبسایت"). دەتوانیت دابەشی بکەیت بۆ **ئەرکی لاوەکی**:
-*   *دیزاینی پەڕەی سەرەکی*
-*   *نووسینی ناوەڕۆک*
-*   *کۆدکردنی بەکێند*
+### Creating a New Task
 
-لیستی پشکنینی **Subtasks** لە ناو ئەرکە سەرەکییەکە بەکاربهێنە بۆ چاودێریکردنی ئەم هەنگاوە بچووکانە بەبێ قەرەباڵغکردنی بۆردی پڕۆژەکەت.
+Navigate to: **Project Management → Project Tasks → Create Task**
 
----
+Fill in the key details:
+*   **Title**: A clear, action-oriented name (e.g., "Draft Monthly Report").
+*   **Project**: Which project does this belong to?
+*   **Assignee**: Who is doing the work?
+*   **Deadline**: When must it be finished?
+*   **Description**: Detailed instructions, checklists, or links.
 
-## چارەسەرکردنی کێشەکان
+### Assigning & Scheduling
 
-### بۆچی ئەو ئەرکە نابینم کە پێم سپێردراوە؟
-**و:** فیلتەرەکانت بپشکنە. بە دیفاڵت، ڕەنگە تەنها ئەرکە "کراوەکان" ببینیت. فیلتەرەکان پاک بکەرەوە بۆ بینینی "هەموو" یان بزانە لە پڕۆژەی ڕاستدا دەگەڕێیت.
+Don't let tasks float in the void!
+1.  **Assign a Person**: A task without an owner rarely gets done.
+2.  **Set a Due Date**: Give it a timeline.
+3.  **Add Tags**: Use tags (e.g., "Urgent", "Bug", "Feature") to categorize.
 
-### چۆن ئەرکێک دەگوازیتەوە بۆ قۆناغێکی تر؟
-**و:** دەتوانیت بە سادەیی **ڕایبکێشیت و بەریبەیت (drag and drop)** کارتی ئەرکەکە لە ستوونێکەوە بۆ ستوونێکی تر لە بۆردی کانبان، یان دۆخەکەی بگۆڕیت لە ناو فۆرمی ئەرکەکە.
+### Tracking Time ⏱️
 
-### ئەرکەکەم تەواو کرد، بەڵام پڕۆژەکە ١٠٠٪ تەواو نییە؟
-**و:** پڕۆژەیەک تەنها کاتێک تەواوە کە *هەموو* ئەرکەکانی تەواو بن. بپشکنە بزانە هیچ ئەرکێکی هەتیو ماوەتەوە لە ستوونی "بۆ کردن".
+If your project is billed by the hour, tracking time is critical.
+1.  Open the Task.
+2.  Go to the **Timesheets** tab.
+3.  Add a line: **Date**, **Description** (what you did), and **Time Spent** (e.g., 2 hours).
 
----
-
-## باشترین پراکتیزەکان
-
-*   **دیاریکراو بە**: "چاککردنی بگ" خراپە. "چاککردنی هەڵەی چوونەژوورەوە لە مۆبایل" باشە.
-*   **ڕۆژانە نوێی بکەرەوە**: ئەرکەکان ببە بۆ "تەواو" هەر کاتێک تەواوت کرد. چاوەڕێی هەینی مەکە.
-*   **کۆمێنت بەکاربهێنە**: گفتوگۆی کارەکە *لەسەر ئەرکەکە* خۆی بکە، نەک لە ئیمەیڵ. ئەمە مێژووەکە لە یەک شوێن دەپارێزێت.
-*   **بە بچووکی بیهێڵەرەوە**: ئەگەر ئەرکێک لە ٣ ڕۆژ زیاتری ویست، دابەشی بکە بۆ ئەرکی بچووکتر.
+> **Note**: This data feeds into the Project Profitability report!
 
 ---
 
-## بابەتە پەیوەندیدارەکان
-- [تێڕوانینی گشتی بەڕێوەبردنی پڕۆژە](project-management.md)
-- [تۆماری کات](timesheet-tracking.md)
-- [بودجەی پڕۆژە](project-budgeting.md)
+## Working with Subtasks
+
+Sometimes a task is too big (e.g., "Build Website"). You can break it down into **Subtasks**:
+*   *Design Homepage*
+*   *Write Content*
+*   *Code Backend*
+
+Use the **Subtasks** checklist within the main task to track these smaller steps without cluttering your main project board.
+
+---
+
+## Troubleshooting
+
+### Q: Why can't I see a task assigned to me?
+**A:** Check your filters. By default, you might only see "Open" tasks. Clear the filters to see "All" or check if you are looking at the correct Project.
+
+### Q: How do I move a task to a different stage?
+**A:** You can simply **drag and drop** the task card from one column to another on the Kanban board (Board View), or change the **Stage** dropdown inside the task form.
+
+### Q: I finished the task, but the project isn't 100% complete?
+**A:** A project is only complete when *all* its tasks are done. Check if there are any orphaned tasks left in the "To Do" column.
+
+---
+
+## Best Practices
+
+*   **Be Specific**: "Fix bugs" is bad. "Fix login error on mobile" is good.
+*   **Update Daily**: Move tasks to "Done" as soon as you finish. Don't wait until Friday.
+*   **Use Comments**: Discuss the work *on the task* itself, not in email. This keeps the history in one place.
+*   **Keep it Small**: If a task takes more than 3 days, break it into smaller tasks.
+
+---
+
+## Related Documentation
+
+- [Project Management Overview](project-management.md) - The big picture
+- [Timesheet Tracking](timesheet-tracking.md) - How to log hours
+- [Project Budgeting](project-budgeting.md) - Managing costs
