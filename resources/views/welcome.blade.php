@@ -31,12 +31,15 @@
                         <a href="/" class="text-2xl font-bold text-gray-800 dark:text-white">Kezi</a>
                     </div>
                     <nav class="hidden md:flex items-center space-x-6">
-                        @if (Route::has('login'))
-                            @auth
-                                <a href="{{ url('/dashboard') }}"
-                                    class="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400">Dashboard</a>
-                            @endauth
-                        @endif
+                        @auth
+                            <a href="{{ url('/kezi') }}"
+                                class="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition duration-200">Dashboard</a>
+                        @else
+                            <a href="{{ route('filament.kezi.auth.login') }}"
+                                class="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition duration-200">Login</a>
+                            <a href="{{ route('filament.kezi.auth.register') }}"
+                                class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-medium transition duration-200 shadow-sm">Register</a>
+                        @endauth
                     </nav>
                     <div class="md:hidden">
                         <button class="text-gray-800 dark:text-white focus:outline-hidden">
@@ -60,8 +63,8 @@
                     </h1>
                     <p class="text-lg md:text-xl mb-8">A powerful, intuitive, and scalable solution for managing your
                         enterprise resources.</p>
-                    <a href="{{ url('/dashboard') }}"
-                        class="bg-white text-indigo-600 font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition duration-300">Get
+                    <a href="{{ url('/kezi') }}"
+                        class="bg-white text-indigo-600 font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition duration-300 shadow-lg">Get
                         Started</a>
                 </div>
             </section>

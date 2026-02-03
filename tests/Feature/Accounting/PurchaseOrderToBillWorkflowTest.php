@@ -29,20 +29,26 @@ use Kezi\Purchase\Services\VendorBillService;
 uses(RefreshDatabase::class);
 
 test('Purchase Order to Vendor Bill Workflow (Double Entry Verification)', function () {
-    // 1. Setup: Create Company, User, Currency
-    $this->seed(\Database\Seeders\DatabaseSeeder::class);
+    // 1. Setup: Seed currencies first (essential for company creation)
+    $this->seed(\Kezi\Foundation\Database\Seeders\CurrencySeeder::class);
 
-    $company = Company::firstOrFail();
+    $currency = Currency::where('code', 'USD')->firstOrFail();
+
+    // Create Company BEFORE seeding roles (RolesAndPermissionsSeeder requires a company)
+    $company = Company::factory()->create([
+        'currency_id' => $currency->id,
+    ]);
+
+    // Now seed roles - the seeder will find the company and create roles for it
+    $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
+
     $user = User::factory()->create();
     $user->companies()->attach($company);
 
     // Assign Permissions
-    app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
-    $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
     setPermissionsTeamId($company->id);
+    app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
     $user->assignRole('super_admin');
-
-    $currency = Currency::where('code', $company->currency->code)->firstOrFail();
 
     // 2. Setup: Accounts (Asset, Payable, Expense)
     // We need to ensure specific accounts exist for our product mapping
@@ -69,9 +75,17 @@ test('Purchase Order to Vendor Bill Workflow (Double Entry Verification)', funct
     }
 
     // Ensure company defaults are set
+    $purchaseJournal = \Kezi\Accounting\Models\Journal::create([
+        'company_id' => $company->id,
+        'name' => ['en' => 'Purchases'],
+        'type' => 'purchase',
+        'short_code' => 'BILL',
+    ]);
+
     $company->update([
         'default_accounts_payable_id' => $payableAccount->id,
         'default_expense_account_id' => $expenseAccount->id,
+        'default_purchase_journal_id' => $purchaseJournal->id,
     ]);
 
     // 3. Setup: Vendor and Product

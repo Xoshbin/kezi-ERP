@@ -70,6 +70,27 @@ The application includes a wide range of accounting and ERP features:
     -   Provides a flexible layer for management accounting by allowing journal entry lines to be tagged with **Analytic Accounts**.
     -   Enables cost and revenue tracking by project, department, or any other defined dimension.
 
+-   **User Onboarding Wizard**:
+    -   A streamlined multi-step process for new users to register their company, choose their industry, and automatically generate a complete, standardized Chart of Accounts.
+
+## Getting Started
+
+### Installation
+
+For a fresh installation, run the following commands to set up the database and essential global data (Roles, Currencies, etc.) required for the Onboarding Wizard:
+
+```bash
+php artisan migrate:fresh && php artisan db:seed --class="Database\Seeders\OnboardingWizardSeeder"
+```
+
+### Development & Demo
+
+To populate the application with a full demo environment (including the "Kezi Solutions" company, chart of accounts, and sample data), use the default seeder:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
 ## Technology Stack
 
 -   **Backend**: Laravel 11

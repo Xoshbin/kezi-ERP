@@ -4,6 +4,7 @@ namespace Kezi\Accounting\Database\Seeders;
 
 use App\Models\Company;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Kezi\Accounting\Models\AccountGroup;
 
 class AccountGroupSeeder extends Seeder
@@ -13,10 +14,16 @@ class AccountGroupSeeder extends Seeder
      */
     public function run(): void
     {
-        $company = Company::where('name', 'Kezi Solutions')->first();
+        $companyId = DB::table('companies')
+            ->where('name', 'Kezi Solutions')
+            ->value('id');
 
-        if (! $company) {
-            return;
+        if (! $companyId) {
+            $companyId = DB::table('companies')->value('id');
+        }
+
+        if (! $companyId) {
+            return; // Silently fail if no company exists yet
         }
 
         $groups = [
@@ -206,7 +213,7 @@ class AccountGroupSeeder extends Seeder
         foreach ($groups as $group) {
             AccountGroup::updateOrCreate(
                 [
-                    'company_id' => $company->id,
+                    'company_id' => $companyId,
                     'code_prefix_start' => $group['code_prefix_start'],
                 ],
                 [
