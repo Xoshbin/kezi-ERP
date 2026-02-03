@@ -1,3 +1,9 @@
+---
+title: Scrap Management
+icon: heroicon-o-trash
+order: 15
+---
+
 # Scrap & Disposal Management
 
 This guide explains how to manage inventory scrap, spoilage, and disposal in Jmeryar ERP. Proper management of scrapped items ensures accurate inventory counts and correct financial reporting of losses.

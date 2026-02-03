@@ -127,7 +127,8 @@ A: You are overbooked!
 
 ## Related Documentation
 
-- [Manufacturing Orders](manufacturing-orders.md)
-- [Bill of Materials](bill-of-materials.md)
+- [Manufacturing Concepts](manufacturing-concepts.md)
+- [Manufacturing Orders](../how-to/manufacturing-orders.md)
+- [Bill of Materials](../how-to/bill-of-materials.md)
 - [Understanding Work Centers](understanding-work-centers.md)
-- [Work Orders](understanding-work-orders.md)
+- [Understanding Work Orders](understanding-work-orders.md)

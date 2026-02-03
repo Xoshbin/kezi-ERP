@@ -1,3 +1,9 @@
+---
+title: Recording Payments
+icon: heroicon-o-banknotes
+order: 10
+---
+
 # How to Record Payments
 
 Recording payments is the process of documenting cash inflows or outflows in Jmeryar. This guide covers how to record a payment and link it to existing documents (Vendor Bills or Customer Invoices).

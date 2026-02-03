@@ -127,7 +127,8 @@ MRP ئەو بزوێنەرەیە کە هەموو شتێک بەیەکەوە دەب
 
 ## بەڵگەنامە پەیوەندیدارەکان
 
-- [فەرمانەکانی بەرهەمهێنان](manufacturing-orders.md)
-- [لیستی پێکهاتەکان](bill-of-materials.md)
-- [تێگەیشتن لە ناوەندەکانی کار](understanding-work-centers.ckb.md)
-- [فەرمانەکانی کار](understanding-work-orders.ckb.md)
+- [چەمکەکانی بەرهەمهێنان](manufacturing-concepts.md)
+- [فەرمانەکانی بەرهەمهێنان](../how-to/manufacturing-orders.md)
+- [لیستی کەرەستەکان](../how-to/bill-of-materials.md)
+- [تێگەیشتن لە ناوەندەکانی کار (Work Centers)](understanding-work-centers.md)
+- [تێگەیشتن لە فەرمانەکانی کار (Work Orders)](understanding-work-orders.md)
