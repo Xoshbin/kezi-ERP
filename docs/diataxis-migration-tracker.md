@@ -116,6 +116,7 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
 
 ### ⚙️ Core / System
 - [x] **System Configuration** (Migrated)
+    - [x] [Tutorial: Getting Started](v1.0/en/tutorials/getting-started.md)
     - [x] [Tutorial: Setting Up Your Company](v1.0/en/tutorials/setting-up-your-company.md)
     - [x] [How-to: Manage Users](v1.0/en/how-to/manage-users.md)
     - [x] [How-to: Configure Currencies](v1.0/en/how-to/configure-currencies.md)
