@@ -1,3 +1,9 @@
+---
+title: Employment Contracts
+icon: heroicon-o-document-check
+order: 10
+---
+
 # Employment Contract Management
 
 Employment contracts are the legal foundation of the relationship between your company and its employees. They define the terms of employment, compensation, and working conditions.

@@ -15,7 +15,7 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
 | Accounting | 🟢 Completed | 15 | 15 |
 | Inventory | 🟢 Completed | 10 | 10 |
 | HR & Payroll | 🟢 Completed | 12 | 12 |
-| Manufacturing | 🔴 Pending | 4 | 0 |
+| Manufacturing | 🟢 Completed | 10 | 10 |
 | Projects | 🔴 Pending | 4 | 0 |
 | Core / System | 🔴 Pending | 5 | 0 |
 
@@ -55,7 +55,7 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
     - [x] [Reference: Financial Report Terms](v1.0/en/reference/financial-report-terms.md)
 
 ### 📦 Inventory & Warehouse
-- [ ] **Inventory Management** (In Progress)
+- [x] **Inventory Management** (Migrated)
     - [x] [Tutorial: Your first warehouse setup](v1.0/en/tutorials/your-first-warehouse-setup.md)
     - [x] [How-to: Managing Stock](v1.0/en/how-to/managing-stock.md)
     - [x] [How-to: Stock Picking](v1.0/en/how-to/stock-picking.md)
@@ -90,9 +90,17 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
     - [x] [Reference: Leave Types and Statuses](v1.0/en/reference/leave-types-and-statuses.md)
 
 ### 🏭 Manufacturing (MRP)
-- [ ] **Bill of Materials (BoM)**
-- [ ] **Manufacturing Orders**
-- [ ] **Work Centers**
+- [x] **Manufacturing Module** (Migrated)
+    - [x] [Tutorial: Setting up a Manufacturing Line](v1.0/en/tutorials/setting-up-manufacturing-line.md)
+    - [x] [How-to: Bill of Materials](v1.0/en/how-to/bill-of-materials.md)
+    - [x] [How-to: Manufacturing Orders](v1.0/en/how-to/manufacturing-orders.md)
+    - [x] [How-to: Scrap Management](v1.0/en/how-to/scrap-management.md)
+    - [x] [How-to: Reordering Rules](v1.0/en/how-to/reordering-rules.md)
+    - [x] [Explanation: Manufacturing Concepts](v1.0/en/explanation/manufacturing-concepts.md)
+    - [x] [Explanation: Understanding Work Centers](v1.0/en/explanation/understanding-work-centers.md)
+    - [x] [Explanation: Understanding Work Orders](v1.0/en/explanation/understanding-work-orders.md)
+    - [x] [Explanation: Understanding Production Planning](v1.0/en/explanation/understanding-production-planning.md)
+    - [x] [Reference: Manufacturing Fields](v1.0/en/reference/manufacturing-fields.md)
 
 ---
 

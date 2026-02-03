@@ -132,5 +132,7 @@ Pending ──▶ Ready ──▶ In Progress ──▶ Done
 ---
 
 ## بابەتە پەیوەندیدارەکان
-- [تێگەیشتن لە فەرمانەکانی بەرهەمهێنان](understanding-manufacturing-orders.md)
-- [تێگەیشتن لە ناوەندەکانی کار](understanding-work-centers.md)
+
+- [چەمکەکانی بەرهەمهێنان](manufacturing-concepts.md)
+- [تێگەیشتن لە ناوەندەکانی کار (Work Centers)](understanding-work-centers.md)
+- [فەرمانەکانی بەرهەمهێنان](../how-to/manufacturing-orders.md)

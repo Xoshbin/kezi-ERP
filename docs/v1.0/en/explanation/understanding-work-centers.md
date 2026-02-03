@@ -90,5 +90,6 @@ If your Work Center shows a red "Overloaded" status, check:
 
 ## Related Documentation
 
-- [Introduction to Bills of Materials](understanding-boms.md)
-- [Managing Operations](manufacturing-operations.md)
+- [Manufacturing Concepts](manufacturing-concepts.md)
+- [Understanding Work Orders](understanding-work-orders.md)
+- [Manufacturing Orders](../how-to/manufacturing-orders.md)

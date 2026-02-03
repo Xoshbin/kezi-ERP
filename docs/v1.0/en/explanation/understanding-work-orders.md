@@ -145,5 +145,6 @@ Ensure you record consumption accurately to keep your inventory levels correct.
 ---
 
 ## Related Documentation
-- [Understanding Manufacturing Orders](understanding-manufacturing-orders.md)
+- [Manufacturing Concepts](manufacturing-concepts.md)
 - [Understanding Work Centers](understanding-work-centers.md)
+- [Manufacturing Orders](../how-to/manufacturing-orders.md)

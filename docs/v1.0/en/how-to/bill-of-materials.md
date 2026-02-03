@@ -1,3 +1,9 @@
+---
+title: Bill of Materials
+icon: heroicon-o-list-bullet
+order: 10
+---
+
 # Bill of Materials (BOM) Management
 
 ## Overview
