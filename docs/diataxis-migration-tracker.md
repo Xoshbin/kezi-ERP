@@ -12,8 +12,8 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
 
 | Module | Status | Total Docs | Completed |
 | :--- | :--- | :---: | :---: |
-| Accounting | 🟡 In Progress | 15 | 11 |
-| Inventory | 🔴 Pending | 10 | 0 |
+| Accounting | 🟢 Completed | 15 | 15 |
+| Inventory | 🟡 In Progress | 10 | 0 |
 | HR & Payroll | 🔴 Pending | 5 | 0 |
 | Manufacturing | 🔴 Pending | 4 | 0 |
 | Projects | 🔴 Pending | 4 | 0 |
@@ -48,7 +48,11 @@ This report tracks the migration of Jmeryar NotebookLM documentation to the **Di
     - [x] [How-to: Recording Opening Balances](v1.0/en/how-to/recording-opening-balances.md)
     - [x] [Explanation: Opening Balance Concepts](v1.0/en/explanation/opening-balance-concepts.md)
     - [x] [Reference: Import Templates](v1.0/en/reference/opening-balance-import-template.md)
-- [ ] **Financial Reports** (General Ledger, P&L, Balance Sheet)
+- [x] **Financial Reports** (Migrated)
+    - [x] [Tutorial: Month-End Review](v1.0/en/tutorials/month-end-review.md)
+    - [x] [How-to: Generating Financial Reports](v1.0/en/how-to/generating-financial-reports.md)
+    - [x] [Explanation: Financial Reporting Concepts](v1.0/en/explanation/financial-reporting-concepts.md)
+    - [x] [Reference: Financial Report Terms](v1.0/en/reference/financial-report-terms.md)
 
 ### 📦 Inventory & Warehouse
 - [ ] **Inventory Management**
