@@ -70,7 +70,7 @@ docs/
 
 ---
 
-## 4. General Writing specific to JMeryar
+## 4. General Writing specific to Kezi
 
 While the structure changes, our friendly tone remains (especially for Tutorials and How-to guides).
 

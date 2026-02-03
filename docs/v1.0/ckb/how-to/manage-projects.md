@@ -6,7 +6,7 @@ order: 10
 
 # How to Manage Projects
 
-This guide covers the practical steps for creating, updating, and closing projects in JMeryar ERP.
+This guide covers the practical steps for creating, updating, and closing projects in Kezi ERP.
 
 ---
 

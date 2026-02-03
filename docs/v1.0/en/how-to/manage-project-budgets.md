@@ -6,7 +6,7 @@ order: 27
 
 # How to Manage Project Budgets
 
-This guide covers creating project budgets, tracking actual costs, and monitoring variances in JMeryar ERP.
+This guide covers creating project budgets, tracking actual costs, and monitoring variances in Kezi ERP.
 
 ---
 

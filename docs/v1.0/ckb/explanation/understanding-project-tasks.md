@@ -30,7 +30,7 @@ A project is made up of many tasks. For example, if the **Project** is "Renovate
 
 ## The Task Lifecycle
 
-Every task goes through a lifecycle from creation to completion. In JMeryar ERP, this corresponds to the **Kanban Stages**.
+Every task goes through a lifecycle from creation to completion. In Kezi ERP, this corresponds to the **Kanban Stages**.
 
 ### 1. To Do (New) 📝
 The task has been created but work hasn't started yet. It is waiting in the backlog.

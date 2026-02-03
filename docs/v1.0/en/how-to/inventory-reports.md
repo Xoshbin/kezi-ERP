@@ -6,7 +6,7 @@ order: 16
 
 # Inventory Reports & Analysis
 
-Data is power. JMeryar ERP provides a suite of advanced reports to help you understand your stock value, identify slow-moving items, and ensure you never run out of critical inventory. This guide explains how to read and use each report.
+Data is power. Kezi ERP provides a suite of advanced reports to help you understand your stock value, identify slow-moving items, and ensure you never run out of critical inventory. This guide explains how to read and use each report.
 
 ---
 
@@ -59,7 +59,7 @@ Data is power. JMeryar ERP provides a suite of advanced reports to help you unde
 ## How to use the Reports
 
 ### Exporting Data
-Every report page in JMeryar ERP includes an **Export** button. You can download the data in Excel or PDF format for:
+Every report page in Kezi ERP includes an **Export** button. You can download the data in Excel or PDF format for:
 - Sharing with management
 - Further analysis in spreadsheets
 - Printing for warehouse staff

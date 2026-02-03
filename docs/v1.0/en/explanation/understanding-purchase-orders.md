@@ -25,7 +25,7 @@ Think of a **Purchase Order (PO)** as a formal contract between you and your sup
 
 ## The Procurement Workflow
 
-In JMeryar ERP, buying things follows a logical path to keep everything organized.
+In Kezi ERP, buying things follows a logical path to keep everything organized.
 
 ### 1. Request for Quotation (RFQ) 📝
 Before you buy, you might want to compare prices. You create an **RFQ** and send it to one or more vendors to ask: *"How much for 100 laptops?"*
