@@ -37,15 +37,8 @@ test('new user can register and is redirected to company onboarding', function (
 });
 
 test('onboarding wizard can be completed and seeds data', function () {
-    // 1. Setup foundation data (Currencies, etc. if needed)
-    \Kezi\Foundation\Models\Currency::create([
-        'code' => 'IQD',
-        'name' => 'Iraqi Dinar',
-        'symbol' => 'ع.د',
-        'exchange_rate' => 1.0,
-        'is_active' => true,
-        'decimal_places' => 3,
-    ]);
+    // 1. Setup foundation data (Currencies, Roles, etc.)
+    $this->seed(\Database\Seeders\OnboardingWizardSeeder::class);
 
     $user = User::factory()->create();
     $this->actingAs($user);
@@ -78,7 +71,7 @@ test('onboarding wizard can be completed and seeds data', function () {
     expect($company->industry_type)->toBe('retail');
 
     // Verify seeding
-    $this->assertDatabaseHas('accounts', ['company_id' => $company->id, 'code' => '1010']);
+    $this->assertDatabaseHas('accounts', ['company_id' => $company->id, 'code' => '110101']);
     $this->assertDatabaseHas('journals', ['company_id' => $company->id, 'short_code' => 'BNK']);
     $this->assertDatabaseHas('partners', ['company_id' => $company->id, 'name' => 'Sample Customer']);
 });

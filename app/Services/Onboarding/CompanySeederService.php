@@ -3,7 +3,6 @@
 namespace App\Services\Onboarding;
 
 use App\Models\Company;
-use Kezi\Accounting\Enums\Accounting\AccountType;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\Journal;
 use Kezi\Foundation\Enums\Partners\PartnerType;
@@ -37,20 +36,15 @@ class CompanySeederService
 
     public function seedByIndustryTemplate(Company $company, string $industryType): void
     {
-        switch ($industryType) {
-            case 'retail':
-                $this->seedRetailTemplate($company);
-                break;
-            case 'manufacturing':
-                $this->seedManufacturingTemplate($company);
-                break;
-            case 'services':
-                $this->seedServicesTemplate($company);
-                break;
-            default:
-                $this->seedGenericTemplate($company);
-                break;
-        }
+        // We provide the full ERP system with a comprehensive Chart of Accounts
+        // regardless of industry selection to ensure all features are available.
+        $seeder = new \Kezi\Accounting\Database\Seeders\AccountSeeder;
+        $seeder->run($company);
+
+        // After seeding accounts, we can still set some defaults if needed,
+        // though the seeder might have its own logic for 'Kezi Solutions'.
+        // Let's ensure the company defaults are refreshed or set.
+        $this->refreshCompanyDefaults($company);
     }
 
     public function seedSampleData(Company $company): void
@@ -111,78 +105,22 @@ class CompanySeederService
         }
     }
 
-    protected function seedRetailTemplate(Company $company): void
+    protected function refreshCompanyDefaults(Company $company): void
     {
-        $accounts = [
-            ['code' => '1010', 'name' => 'Main Bank Account', 'type' => AccountType::BankAndCash],
-            ['code' => '1200', 'name' => 'Accounts Receivable', 'type' => AccountType::Receivable],
-            ['code' => '1300', 'name' => 'Inventory', 'type' => AccountType::CurrentAssets],
-            ['code' => '2100', 'name' => 'Accounts Payable', 'type' => AccountType::Payable],
-            ['code' => '4000', 'name' => 'Sales Revenue', 'type' => AccountType::Income],
-            ['code' => '5000', 'name' => 'Cost of Goods Sold', 'type' => AccountType::CostOfRevenue],
+        // Map common account codes from AccountSeeder to company defaults
+        $mappings = [
+            '120101' => 'default_accounts_receivable_id',
+            '210101' => 'default_accounts_payable_id',
+            '110101' => 'default_bank_account_id',
+            '130101' => 'default_inventory_account_id',
+            '510101' => 'default_expense_account_id', // COGS
+            '410101' => 'default_income_account_id',   // Product Sales
         ];
 
-        $this->createAccounts($company, $accounts);
-    }
-
-    protected function seedManufacturingTemplate(Company $company): void
-    {
-        $accounts = [
-            ['code' => '1010', 'name' => 'Main Bank Account', 'type' => AccountType::BankAndCash],
-            ['code' => '1310', 'name' => 'Raw Materials', 'type' => AccountType::CurrentAssets],
-            ['code' => '1320', 'name' => 'Work in Progress', 'type' => AccountType::CurrentAssets],
-            ['code' => '1330', 'name' => 'Finished Goods', 'type' => AccountType::CurrentAssets],
-            ['code' => '4000', 'name' => 'Manufacturing Sales', 'type' => AccountType::Income],
-        ];
-
-        $this->createAccounts($company, $accounts);
-    }
-
-    protected function seedServicesTemplate(Company $company): void
-    {
-        $accounts = [
-            ['code' => '1010', 'name' => 'Main Bank Account', 'type' => AccountType::BankAndCash],
-            ['code' => '1200', 'name' => 'Accounts Receivable', 'type' => AccountType::Receivable],
-            ['code' => '4000', 'name' => 'Service Revenue', 'type' => AccountType::Income],
-            ['code' => '6000', 'name' => 'Labor Expense', 'type' => AccountType::Expense],
-        ];
-
-        $this->createAccounts($company, $accounts);
-    }
-
-    protected function seedGenericTemplate(Company $company): void
-    {
-        $accounts = [
-            ['code' => '1010', 'name' => 'Bank', 'type' => AccountType::BankAndCash],
-            ['code' => '1200', 'name' => 'Accounts Receivable', 'type' => AccountType::Receivable],
-            ['code' => '2100', 'name' => 'Accounts Payable', 'type' => AccountType::Payable],
-            ['code' => '4000', 'name' => 'Income', 'type' => AccountType::Income],
-            ['code' => '6000', 'name' => 'Expenses', 'type' => AccountType::Expense],
-        ];
-
-        $this->createAccounts($company, $accounts);
-    }
-
-    protected function createAccounts(Company $company, array $accounts): void
-    {
-        foreach ($accounts as $acc) {
-            $account = Account::firstOrCreate(
-                ['company_id' => $company->id, 'code' => $acc['code']],
-                [
-                    'name' => ['en' => $acc['name']],
-                    'type' => $acc['type'],
-                ]
-            );
-
-            // Set default accounts on company if code matches common patterns
-            if ($acc['code'] === '1010') {
-                $company->update(['default_bank_account_id' => $account->id]);
-            }
-            if ($acc['code'] === '1200') {
-                $company->update(['default_accounts_receivable_id' => $account->id]);
-            }
-            if ($acc['code'] === '2100') {
-                $company->update(['default_accounts_payable_id' => $account->id]);
+        foreach ($mappings as $code => $field) {
+            $account = Account::where('company_id', $company->id)->where('code', $code)->first();
+            if ($account) {
+                $company->update([$field => $account->id]);
             }
         }
     }
