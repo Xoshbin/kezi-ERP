@@ -4,7 +4,7 @@ namespace Kezi\Inventory\Filament\Clusters\Inventory\Pages;
 
 use BackedEnum;
 use Exception;
-use Filament\Actions\Action;
+use \Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;

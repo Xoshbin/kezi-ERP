@@ -7,6 +7,9 @@ use Kezi\HR\Filament\Clusters\HumanResources\Resources\Departments\DepartmentRes
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
 
+/**
+ * @extends CreateRecord<\Kezi\HR\Models\Department>
+ */
 class CreateDepartment extends CreateRecord
 {
     use Translatable;

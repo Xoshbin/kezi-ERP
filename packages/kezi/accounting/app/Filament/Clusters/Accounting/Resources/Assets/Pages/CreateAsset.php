@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\DB;
 use Kezi\Accounting\Enums\Assets\DepreciationMethod;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Assets\AssetResource;
 
+/**
+ * @extends CreateRecord<\Kezi\Accounting\Models\Asset>
+ */
 class CreateAsset extends CreateRecord
 {
     protected static string $resource = AssetResource::class;

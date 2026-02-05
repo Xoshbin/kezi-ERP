@@ -16,6 +16,9 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\BankStatements\BankSt
 use Kezi\Foundation\Filament\Actions\DocsAction;
 use Kezi\Foundation\Models\Currency;
 
+/**
+ * @extends CreateRecord<\Kezi\Accounting\Models\BankStatement>
+ */
 class CreateBankStatement extends CreateRecord
 {
     protected static string $resource = BankStatementResource::class;

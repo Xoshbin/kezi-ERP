@@ -2,7 +2,7 @@
 
 namespace Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\RelationManagers;
 
-use Filament\Actions\CreateAction;
+use \Filament\Actions\CreateAction;
 use Filament\Facades\Filament;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
@@ -12,6 +12,9 @@ use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
 use Kezi\Purchase\Models\VendorBill;
 
+/**
+ * @extends RelationManager<\Kezi\Purchase\Models\PurchaseOrder>
+ */
 class VendorBillsRelationManager extends RelationManager
 {
     protected static string $relationship = 'vendorBills';

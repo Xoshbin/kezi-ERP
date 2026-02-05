@@ -7,6 +7,9 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\PettyCash\PettyCashFu
 use Kezi\Payment\Actions\PettyCash\CreatePettyCashFundAction;
 use Kezi\Payment\DataTransferObjects\PettyCash\CreatePettyCashFundDTO;
 
+/**
+ * @extends CreateRecord<\Kezi\Payment\Models\PettyCash\PettyCashFund>
+ */
 class CreatePettyCashFund extends CreateRecord
 {
     protected static string $resource = PettyCashFundResource::class;

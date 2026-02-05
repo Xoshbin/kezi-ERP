@@ -23,6 +23,9 @@ use Kezi\Accounting\Models\Journal;
 use Kezi\Accounting\Models\LoanAgreement;
 use Kezi\Foundation\Filament\Actions\DocsAction;
 
+/**
+ * @extends ViewRecord<\Kezi\Accounting\Models\LoanAgreement>
+ */
 class ViewLoanAgreement extends ViewRecord
 {
     protected static string $resource = LoanAgreementResource::class;

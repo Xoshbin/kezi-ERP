@@ -8,6 +8,9 @@ use Kezi\Purchase\DataTransferObjects\Purchases\CreateRFQLineDTO;
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\RequestForQuotationResource;
 use Kezi\Purchase\Services\RequestForQuotationService;
 
+/**
+ * @extends CreateRecord<\Kezi\Purchase\Models\RequestForQuotation>
+ */
 class CreateRequestForQuotation extends CreateRecord
 {
     protected static string $resource = RequestForQuotationResource::class;

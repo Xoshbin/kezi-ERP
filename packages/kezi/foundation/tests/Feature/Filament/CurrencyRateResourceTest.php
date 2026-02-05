@@ -1,7 +1,7 @@
 <?php
 
 use App\Filament\Clusters\Settings\SettingsCluster;
-use Filament\Actions\DeleteAction;
+use \Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Kezi\Foundation\Filament\Resources\CurrencyRates\CurrencyRateResource;
 use Kezi\Foundation\Filament\Resources\CurrencyRates\Pages\CreateCurrencyRate;

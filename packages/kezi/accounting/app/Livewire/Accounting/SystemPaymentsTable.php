@@ -4,8 +4,8 @@ namespace Kezi\Accounting\Livewire\Accounting;
 
 use Brick\Money\Money;
 use Exception;
-use Filament\Actions\Concerns\InteractsWithActions;
-use Filament\Actions\Contracts\HasActions;
+use \Filament\Actions\Concerns\InteractsWithActions;
+use \Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Support\Contracts\TranslatableContentDriver;

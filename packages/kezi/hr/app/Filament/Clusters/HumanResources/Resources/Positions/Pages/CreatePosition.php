@@ -2,6 +2,7 @@
 
 namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\Positions\Pages;
 
+use App\Models\Company;
 use Exception;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
@@ -11,6 +12,9 @@ use Kezi\HR\Filament\Clusters\HumanResources\Resources\Positions\PositionResourc
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
 
+/**
+ * @extends CreateRecord<\Kezi\HR\Models\Position>
+ */
 class CreatePosition extends CreateRecord
 {
     use Translatable;

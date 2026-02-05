@@ -5,8 +5,8 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages;
 use App\Models\Company;
 use Brick\Money\Money;
 use Exception;
-use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
+use \Filament\Actions\Action;
+use \Filament\Actions\ActionGroup;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -29,6 +29,9 @@ use Kezi\Payment\Services\PaymentService;
 use Kezi\Sales\Enums\Sales\InvoiceStatus;
 use Kezi\Sales\Models\Invoice;
 
+/**
+ * @extends ViewRecord<\Kezi\Sales\Models\Invoice>
+ */
 class ViewInvoice extends ViewRecord
 {
     protected static string $resource = InvoiceResource::class;

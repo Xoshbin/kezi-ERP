@@ -6,8 +6,8 @@ use App\Models\Company;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Brick\Money\Money;
 use Exception;
-use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
+use \Filament\Actions\Action;
+use \Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -42,6 +42,9 @@ use Kezi\Purchase\Models\VendorBillAttachment;
 use Kezi\Purchase\Services\VendorBillService;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
+/**
+ * @extends EditRecord<\Kezi\Purchase\Models\VendorBill>
+ */
 class EditVendorBill extends EditRecord
 {
     protected static string $resource = VendorBillResource::class;

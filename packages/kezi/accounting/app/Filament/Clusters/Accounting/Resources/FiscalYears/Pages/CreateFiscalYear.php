@@ -7,6 +7,9 @@ use Kezi\Accounting\Actions\Accounting\CreateFiscalYearAction;
 use Kezi\Accounting\DataTransferObjects\Accounting\CreateFiscalYearDTO;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\FiscalYears\FiscalYearResource;
 
+/**
+ * @extends CreateRecord<\Kezi\Accounting\Models\FiscalYear>
+ */
 class CreateFiscalYear extends CreateRecord
 {
     protected static string $resource = FiscalYearResource::class;

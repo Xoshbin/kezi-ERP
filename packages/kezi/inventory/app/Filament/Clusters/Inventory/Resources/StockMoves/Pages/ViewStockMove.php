@@ -2,14 +2,17 @@
 
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages;
 
-use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
+use \Filament\Actions\DeleteAction;
+use \Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use Kezi\Inventory\Enums\Inventory\StockMoveStatus;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Actions\ConfirmStockMoveAction;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
 use Kezi\Inventory\Models\StockMove;
 
+/**
+ * @extends ViewRecord<\Kezi\Inventory\Models\StockMove>
+ */
 class ViewStockMove extends ViewRecord
 {
     protected static string $resource = StockMoveResource::class;

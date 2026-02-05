@@ -6,6 +6,9 @@ use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Cheques\ChequeResource;
 
+/**
+ * @extends EditRecord<\Kezi\Payment\Models\Cheque>
+ */
 class EditCheque extends EditRecord
 {
     protected static string $resource = ChequeResource::class;

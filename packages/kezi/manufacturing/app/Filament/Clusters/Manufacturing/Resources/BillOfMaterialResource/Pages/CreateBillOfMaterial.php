@@ -6,6 +6,9 @@ use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\BillOfMaterialResource;
 
+/**
+ * @extends CreateRecord<\Kezi\Manufacturing\Models\BillOfMaterial>
+ */
 class CreateBillOfMaterial extends CreateRecord
 {
     protected static string $resource = BillOfMaterialResource::class;

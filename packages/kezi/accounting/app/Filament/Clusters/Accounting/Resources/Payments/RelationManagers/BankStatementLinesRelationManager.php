@@ -19,6 +19,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 
+/**
+ * @extends RelationManager<\Kezi\Payment\Models\Payment>
+ */
 class BankStatementLinesRelationManager extends RelationManager
 {
     protected static string $relationship = 'bankStatementLines';

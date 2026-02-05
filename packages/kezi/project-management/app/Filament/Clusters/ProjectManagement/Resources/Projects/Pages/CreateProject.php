@@ -10,6 +10,9 @@ use Kezi\ProjectManagement\DataTransferObjects\CreateProjectDTO;
 use Kezi\ProjectManagement\Enums\BillingType;
 use Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\Projects\ProjectResource;
 
+/**
+ * @extends CreateRecord<\Kezi\ProjectManagement\Models\Project>
+ */
 class CreateProject extends CreateRecord
 {
     protected static string $resource = ProjectResource::class;

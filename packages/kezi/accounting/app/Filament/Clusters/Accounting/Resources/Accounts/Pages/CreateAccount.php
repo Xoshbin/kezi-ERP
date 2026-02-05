@@ -9,6 +9,9 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Accounts\AccountResou
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
 
+/**
+ * @extends CreateRecord<\Kezi\Accounting\Models\Account>
+ */
 class CreateAccount extends CreateRecord
 {
     use Translatable;

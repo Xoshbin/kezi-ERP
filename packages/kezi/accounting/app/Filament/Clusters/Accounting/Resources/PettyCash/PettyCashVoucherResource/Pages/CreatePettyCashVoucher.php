@@ -7,6 +7,9 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\PettyCash\PettyCashVo
 use Kezi\Payment\Actions\PettyCash\CreatePettyCashVoucherAction;
 use Kezi\Payment\DataTransferObjects\PettyCash\CreatePettyCashVoucherDTO;
 
+/**
+ * @extends CreateRecord<\Kezi\Payment\Models\PettyCash\PettyCashVoucher>
+ */
 class CreatePettyCashVoucher extends CreateRecord
 {
     protected static string $resource = PettyCashVoucherResource::class;

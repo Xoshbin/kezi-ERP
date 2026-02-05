@@ -9,6 +9,9 @@ use Kezi\Inventory\Actions\LandedCost\PostLandedCostAction;
 use Kezi\Inventory\Enums\Inventory\LandedCostStatus;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\LandedCostResource;
 
+/**
+ * @extends EditRecord<\Kezi\Inventory\Models\LandedCost>
+ */
 class EditLandedCost extends EditRecord
 {
     protected static string $resource = LandedCostResource::class;

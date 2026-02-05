@@ -4,7 +4,7 @@ namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages;
 
 use App\Models\Company;
 use Carbon\Carbon;
-use Filament\Actions\Action;
+use \Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
@@ -18,6 +18,9 @@ use Kezi\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
 use RuntimeException;
 
+/**
+ * @extends CreateRecord<\Kezi\Inventory\Models\StockMove>
+ */
 class CreateStockMove extends CreateRecord
 {
     protected static string $resource = StockMoveResource::class;

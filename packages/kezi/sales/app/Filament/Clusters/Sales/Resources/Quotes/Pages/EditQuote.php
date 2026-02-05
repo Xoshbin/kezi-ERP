@@ -11,6 +11,9 @@ use Kezi\Sales\DataTransferObjects\Sales\UpdateQuoteLineDTO;
 use Kezi\Sales\Filament\Clusters\Sales\Resources\Quotes\QuoteResource;
 use Kezi\Sales\Services\QuoteService;
 
+/**
+ * @extends EditRecord<\Kezi\Sales\Models\Quote>
+ */
 class EditQuote extends EditRecord
 {
     protected static string $resource = QuoteResource::class;

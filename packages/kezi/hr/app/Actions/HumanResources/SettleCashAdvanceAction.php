@@ -55,6 +55,8 @@ class SettleCashAdvanceAction
                 ->whereIn('type', ['miscellaneous', 'general'])
                 ->first();
 
+            // Get default cash journal
+            $journalId = null; // default_cash_journal_id is not present on Company model
             if (! $journal) {
                 // Fallback to any journal
                 $journal = \Kezi\Accounting\Models\Journal::where('company_id', $company->id)->first();
@@ -80,7 +82,9 @@ class SettleCashAdvanceAction
             $jeLines = [];
 
             // 1. Create Lines for Expenses (Debit)
+            /** @var \Kezi\HR\Models\ExpenseReport $report */
             foreach ($expenseReports as $report) {
+                /** @var \Kezi\HR\Models\ExpenseReportLine $line */
                 foreach ($report->lines as $line) {
                     $totalExpenses = $totalExpenses->plus($line->amount);
 
@@ -206,7 +210,7 @@ class SettleCashAdvanceAction
 
                 $dto = new CreateJournalEntryDTO(
                     company_id: $cashAdvance->company_id,
-                    journal_id: $company->default_cash_journal_id ?? $journalId, // Use cash journal for money movement
+                    journal_id: $journalId, // Use the operations journal
                     currency_id: $cashAdvance->currency_id,
                     entry_date: Carbon::now(),
                     reference: "Return {$cashAdvance->advance_number}",
@@ -257,7 +261,7 @@ class SettleCashAdvanceAction
 
                 $dto = new CreateJournalEntryDTO(
                     company_id: $cashAdvance->company_id,
-                    journal_id: $company->default_cash_journal_id ?? $journalId,
+                    journal_id: $journalId,
                     currency_id: $cashAdvance->currency_id,
                     entry_date: Carbon::now(),
                     reference: "Reimbursement {$cashAdvance->advance_number}",

@@ -4,8 +4,8 @@ namespace Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pag
 
 use Carbon\Carbon;
 use Exception;
-use Filament\Actions\Action;
-use Filament\Actions\EditAction;
+use \Filament\Actions\Action;
+use \Filament\Actions\EditAction;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
@@ -16,6 +16,9 @@ use Kezi\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrde
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\PurchaseOrderResource;
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Schemas\PurchaseOrderInfolist;
 
+/**
+ * @extends ViewRecord<\Kezi\Purchase\Models\PurchaseOrder>
+ */
 class ViewPurchaseOrder extends ViewRecord
 {
     protected static string $resource = PurchaseOrderResource::class;

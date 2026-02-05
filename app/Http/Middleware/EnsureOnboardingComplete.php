@@ -18,7 +18,7 @@ class EnsureOnboardingComplete
     {
         $tenant = Filament::getTenant();
 
-        if ($tenant && ! $tenant->onboarding_completed_at) {
+        if ($tenant instanceof \App\Models\Company && ! $tenant->onboarding_completed_at) {
             // Check if we are already on a page that should be accessible during onboarding
             // For now, let's assume if they have a tenant but not onboarded, we redirect to a specific onboarding page
             // Or if we want to reuse RegisterCompany, it might be tricky because it's for CREATING a tenant.
