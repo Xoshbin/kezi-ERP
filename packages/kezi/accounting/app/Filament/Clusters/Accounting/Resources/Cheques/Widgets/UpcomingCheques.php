@@ -2,7 +2,7 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Cheques\Widgets;
 
-use Filament\Actions\Action;
+use \Filament\Actions\Action;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;

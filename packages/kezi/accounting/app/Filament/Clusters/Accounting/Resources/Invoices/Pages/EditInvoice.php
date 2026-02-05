@@ -6,9 +6,9 @@ use App\Models\Company;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Brick\Money\Money;
 use Exception;
-use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
-use Filament\Actions\DeleteAction;
+use \Filament\Actions\Action;
+use \Filament\Actions\ActionGroup;
+use \Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -43,6 +43,9 @@ use Kezi\Sales\Services\InvoiceService;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
+/**
+ * @extends EditRecord<\Kezi\Sales\Models\Invoice>
+ */
 class EditInvoice extends EditRecord
 {
     protected static string $resource = InvoiceResource::class;

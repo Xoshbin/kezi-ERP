@@ -6,6 +6,9 @@ use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\WorkCenterResource;
 
+/**
+ * @extends CreateRecord<\Kezi\Manufacturing\Models\WorkCenter>
+ */
 class CreateWorkCenter extends CreateRecord
 {
     protected static string $resource = WorkCenterResource::class;

@@ -5,6 +5,9 @@ namespace Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\BillOfMat
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\BillOfMaterialResource;
 
+/**
+ * @extends EditRecord<\Kezi\Manufacturing\Models\BillOfMaterial>
+ */
 class EditBillOfMaterial extends EditRecord
 {
     protected static string $resource = BillOfMaterialResource::class;

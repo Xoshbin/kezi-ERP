@@ -2,12 +2,12 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
-use Filament\Actions\DetachAction;
-use Filament\Actions\DetachBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
+use \Filament\Actions\BulkActionGroup;
+use \Filament\Actions\CreateAction;
+use \Filament\Actions\DetachAction;
+use \Filament\Actions\DetachBulkAction;
+use \Filament\Actions\EditAction;
+use \Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -27,6 +27,9 @@ use Kezi\Payment\Enums\Payments\PaymentType;
 use Kezi\Payment\Models\Payment;
 use Kezi\Sales\Models\Invoice;
 
+/**
+ * @extends RelationManager<\Kezi\Sales\Models\Invoice>
+ */
 class PaymentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'payments';

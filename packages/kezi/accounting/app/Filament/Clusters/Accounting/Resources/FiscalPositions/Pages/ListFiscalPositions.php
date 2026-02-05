@@ -2,7 +2,7 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\FiscalPositions\Pages;
 
-use Filament\Actions\CreateAction;
+use \Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\FiscalPositions\FiscalPositionResource;
 use Kezi\Foundation\Filament\Actions\DocsAction;

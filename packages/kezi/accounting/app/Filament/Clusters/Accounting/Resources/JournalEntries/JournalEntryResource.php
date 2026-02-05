@@ -4,11 +4,11 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries;
 
 use App\Models\Company;
 use BackedEnum;
-use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use \Filament\Actions\Action;
+use \Filament\Actions\ActionGroup;
+use \Filament\Actions\BulkActionGroup;
+use \Filament\Actions\DeleteBulkAction;
+use \Filament\Actions\EditAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;

@@ -2,7 +2,7 @@
 
 namespace Kezi\Product\Filament\Clusters\Product\Resources\ProductCategoryResource\Pages;
 
-use Filament\Actions\CreateAction;
+use \Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Kezi\Product\Filament\Clusters\Product\Resources\ProductCategoryResource;
 

@@ -5,6 +5,9 @@ namespace Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\P
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\ProjectBudgets\ProjectBudgetResource;
 
+/**
+ * @extends CreateRecord<\Kezi\ProjectManagement\Models\ProjectBudget>
+ */
 class CreateProjectBudget extends CreateRecord
 {
     protected static string $resource = ProjectBudgetResource::class;

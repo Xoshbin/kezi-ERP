@@ -2,10 +2,10 @@
 
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use \Filament\Actions\BulkActionGroup;
+use \Filament\Actions\DeleteAction;
+use \Filament\Actions\DeleteBulkAction;
+use \Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -13,6 +13,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 
+/**
+ * @extends RelationManager<\Kezi\Product\Models\Product>
+ */
 class VariantsRelationManager extends RelationManager
 {
     protected static string $relationship = 'variants';

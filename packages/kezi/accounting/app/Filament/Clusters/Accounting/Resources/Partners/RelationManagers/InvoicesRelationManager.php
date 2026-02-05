@@ -2,10 +2,10 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Partners\RelationManagers;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use \Filament\Actions\BulkActionGroup;
+use \Filament\Actions\DeleteAction;
+use \Filament\Actions\DeleteBulkAction;
+use \Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -15,6 +15,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Kezi\Sales\Enums\Sales\InvoiceStatus;
 
+/**
+ * @extends RelationManager<\Kezi\Foundation\Models\Partner>
+ */
 class InvoicesRelationManager extends RelationManager
 {
     protected static string $relationship = 'invoices';

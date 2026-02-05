@@ -160,7 +160,7 @@ class PostLandedCostAction
                         debit: $amount,
                         credit: $zero,
                         description: 'Landed Cost Allocation: '.substr($descStr, 0, 200),
-                        partner_id: $landedCost->vendorBill?->partner_id,
+                        partner_id: $landedCost->vendorBill?->vendor_id,
                         analytic_account_id: null,
                     );
                 }
@@ -179,7 +179,7 @@ class PostLandedCostAction
                 debit: $zero,
                 credit: $landedCost->amount_total,
                 description: "Landed Cost Expense: {$landedCost->description}",
-                partner_id: $landedCost->vendorBill?->partner_id,
+                partner_id: $landedCost->vendorBill?->vendor_id,
                 analytic_account_id: null,
             );
 

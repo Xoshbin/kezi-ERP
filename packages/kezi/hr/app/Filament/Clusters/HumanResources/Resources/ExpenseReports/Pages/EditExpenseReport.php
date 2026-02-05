@@ -2,11 +2,14 @@
 
 namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\ExpenseReports\Pages;
 
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
+use \Filament\Actions\DeleteAction;
+use \Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\ExpenseReports\ExpenseReportResource;
 
+/**
+ * @extends EditRecord<\Kezi\HR\Models\ExpenseReport>
+ */
 class EditExpenseReport extends EditRecord
 {
     protected static string $resource = ExpenseReportResource::class;

@@ -5,8 +5,8 @@ namespace Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Pag
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Exception;
-use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
+use \Filament\Actions\Action;
+use \Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -22,6 +22,9 @@ use Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\PurchaseO
 use Kezi\Purchase\Models\PurchaseOrder;
 use Kezi\Purchase\Services\PurchaseOrderService;
 
+/**
+ * @extends EditRecord<\Kezi\Purchase\Models\PurchaseOrder>
+ */
 class EditPurchaseOrder extends EditRecord
 {
     protected static string $resource = PurchaseOrderResource::class;

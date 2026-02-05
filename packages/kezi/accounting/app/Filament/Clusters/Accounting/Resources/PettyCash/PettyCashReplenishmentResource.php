@@ -2,7 +2,7 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\PettyCash;
 
-use Filament\Actions\EditAction;
+use \Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;

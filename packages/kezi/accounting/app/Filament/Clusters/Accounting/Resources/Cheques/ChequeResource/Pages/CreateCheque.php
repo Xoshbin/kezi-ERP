@@ -11,6 +11,9 @@ use Kezi\Payment\DataTransferObjects\Cheques\CreateChequeDTO;
 use Kezi\Payment\Enums\Cheques\ChequeType;
 use Kezi\Payment\Services\Cheques\ChequeService;
 
+/**
+ * @extends CreateRecord<\Kezi\Payment\Models\Cheque>
+ */
 class CreateCheque extends CreateRecord
 {
     protected static string $resource = ChequeResource::class;
@@ -26,7 +29,7 @@ class CreateCheque extends CreateRecord
         $moneyAmount = Money::of($data['amount'], $currency->code);
 
         $dto = new CreateChequeDTO(
-            company_id: $user->company_current_id, // Get from user or context
+            company_id: \Filament\Facades\Filament::getTenant()->id, // Get from user or context
             journal_id: $data['journal_id'],
             partner_id: $data['partner_id'],
             currency_id: $data['currency_id'],
@@ -48,7 +51,7 @@ class CreateCheque extends CreateRecord
         if ($partner) {
             // Re-instantiate DTO with correct name since property is readonly
             $dto = new CreateChequeDTO(
-                company_id: $user->company_current_id,
+                company_id: \Filament\Facades\Filament::getTenant()->id,
                 journal_id: $data['journal_id'],
                 partner_id: $data['partner_id'],
                 currency_id: $data['currency_id'],

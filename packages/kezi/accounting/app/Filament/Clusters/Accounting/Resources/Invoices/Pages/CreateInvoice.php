@@ -16,6 +16,9 @@ use Kezi\Foundation\Models\Currency;
 use Kezi\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
 use Kezi\Sales\DataTransferObjects\Sales\CreateInvoiceLineDTO;
 
+/**
+ * @extends CreateRecord<\Kezi\Sales\Models\Invoice>
+ */
 class CreateInvoice extends CreateRecord
 {
     protected static string $resource = InvoiceResource::class;

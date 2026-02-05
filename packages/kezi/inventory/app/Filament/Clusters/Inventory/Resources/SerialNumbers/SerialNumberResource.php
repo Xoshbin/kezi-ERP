@@ -3,9 +3,9 @@
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\SerialNumbers;
 
 use BackedEnum;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
+use \Filament\Actions\DeleteAction;
+use \Filament\Actions\EditAction;
+use \Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;

@@ -3,10 +3,10 @@
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources;
 
 use BackedEnum;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
+use \Filament\Actions\BulkActionGroup;
+use \Filament\Actions\DeleteBulkAction;
+use \Filament\Actions\EditAction;
+use \Filament\Actions\ViewAction;
 use Filament\Forms;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;

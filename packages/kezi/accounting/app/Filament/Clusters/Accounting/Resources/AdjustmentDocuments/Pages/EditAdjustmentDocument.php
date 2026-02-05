@@ -5,8 +5,8 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocum
 use Barryvdh\DomPDF\Facade\Pdf;
 use Brick\Money\Money;
 use Exception;
-use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
+use \Filament\Actions\Action;
+use \Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Collection;
@@ -27,6 +27,9 @@ use Kezi\Inventory\Services\AdjustmentDocumentService;
 use Kezi\Purchase\Models\VendorBill;
 use Kezi\Sales\Models\Invoice;
 
+/**
+ * @extends EditRecord<\Kezi\Inventory\Models\AdjustmentDocument>
+ */
 class EditAdjustmentDocument extends EditRecord
 {
     protected static string $resource = AdjustmentDocumentResource::class;

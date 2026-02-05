@@ -43,7 +43,7 @@ class DisburseCashAdvanceAction
             }
 
             // Get default cash journal
-            $journalId = $company->default_cash_journal_id;
+            $journalId = null;
             if (! $journalId) {
                 $cashJournal = \Kezi\Accounting\Models\Journal::where('company_id', $company->id)
                     ->whereIn('type', [

@@ -2,7 +2,7 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\Pages;
 
-use Filament\Actions\CreateAction;
+use \Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\AnalyticAccountResource;
 use Kezi\Foundation\Filament\Actions\DocsAction;

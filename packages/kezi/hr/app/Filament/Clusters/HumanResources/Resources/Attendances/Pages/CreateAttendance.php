@@ -8,6 +8,9 @@ use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Attendances\AttendanceResource;
 
+/**
+ * @extends CreateRecord<\Kezi\HR\Models\Attendance>
+ */
 class CreateAttendance extends CreateRecord
 {
     protected static string $resource = AttendanceResource::class;

@@ -2,11 +2,11 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Journals\RelationManagers;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use \Filament\Actions\BulkActionGroup;
+use \Filament\Actions\CreateAction;
+use \Filament\Actions\DeleteAction;
+use \Filament\Actions\DeleteBulkAction;
+use \Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -18,6 +18,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @extends RelationManager<\Kezi\Accounting\Models\Journal>
+ */
 class JournalEntriesRelationManager extends RelationManager
 {
     protected static ?string $title = null;

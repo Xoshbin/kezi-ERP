@@ -5,7 +5,7 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pag
 use App\Models\Company;
 use Brick\Money\Money;
 use Exception;
-use Filament\Actions\Action;
+use \Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -28,6 +28,9 @@ use Kezi\Payment\Services\PaymentService;
 use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
 use Kezi\Purchase\Models\VendorBill;
 
+/**
+ * @extends ViewRecord<\Kezi\Purchase\Models\VendorBill>
+ */
 class ViewVendorBill extends ViewRecord
 {
     protected static string $resource = VendorBillResource::class;

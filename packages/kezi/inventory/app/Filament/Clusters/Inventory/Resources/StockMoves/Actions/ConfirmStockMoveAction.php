@@ -3,7 +3,7 @@
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Actions;
 
 use Exception;
-use Filament\Actions\Action;
+use \Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;

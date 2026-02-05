@@ -10,6 +10,9 @@ use Filament\Tables\Columns\ProgressColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
+/**
+ * @extends RelationManager<\Kezi\ProjectManagement\Models\Project>
+ */
 class BudgetsRelationManager extends RelationManager
 {
     protected static string $relationship = 'budgets';

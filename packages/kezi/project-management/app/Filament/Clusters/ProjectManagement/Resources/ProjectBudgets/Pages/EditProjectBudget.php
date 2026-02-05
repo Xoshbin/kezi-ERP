@@ -2,10 +2,13 @@
 
 namespace Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\ProjectBudgets\Pages;
 
-use Filament\Actions\DeleteAction;
+use \Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\ProjectBudgets\ProjectBudgetResource;
 
+/**
+ * @extends EditRecord<\Kezi\ProjectManagement\Models\ProjectBudget>
+ */
 class EditProjectBudget extends EditRecord
 {
     protected static string $resource = ProjectBudgetResource::class;

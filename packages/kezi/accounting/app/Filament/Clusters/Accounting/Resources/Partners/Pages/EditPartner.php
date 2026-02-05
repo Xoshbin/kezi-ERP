@@ -2,12 +2,15 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages;
 
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
+use \Filament\Actions\DeleteAction;
+use \Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Partners\PartnerResource;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Partners\Widgets\VendorFinancialWidget;
 
+/**
+ * @extends EditRecord<\Kezi\Foundation\Models\Partner>
+ */
 class EditPartner extends EditRecord
 {
     protected static string $resource = PartnerResource::class;

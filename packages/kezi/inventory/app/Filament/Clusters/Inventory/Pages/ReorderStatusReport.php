@@ -6,7 +6,7 @@ use BackedEnum;
 use Brick\Money\Currency;
 use Brick\Money\Money;
 use Exception;
-use Filament\Actions\Action;
+use \Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;

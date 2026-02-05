@@ -15,6 +15,9 @@ use Kezi\Sales\Enums\Sales\SalesOrderStatus;
 use Kezi\Sales\Filament\Clusters\Sales\Resources\SalesOrders\SalesOrderResource;
 use Kezi\Sales\Models\SalesOrder;
 
+/**
+ * @extends EditRecord<\Kezi\Sales\Models\SalesOrder>
+ */
 class EditSalesOrder extends EditRecord
 {
     protected static string $resource = SalesOrderResource::class;

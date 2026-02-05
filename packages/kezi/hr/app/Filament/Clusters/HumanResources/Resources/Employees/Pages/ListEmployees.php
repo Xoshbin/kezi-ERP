@@ -2,7 +2,7 @@
 
 namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\Employees\Pages;
 
-use Filament\Actions\CreateAction;
+use \Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Employees\EmployeeResource;
 

@@ -5,6 +5,9 @@ namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResourc
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource;
 
+/**
+ * @extends CreateRecord<\Kezi\Inventory\Models\StockQuant>
+ */
 class CreateStockQuant extends CreateRecord
 {
     protected static string $resource = StockQuantResource::class;

@@ -4,8 +4,8 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Partners\Relati
 
 use App\Models\Company;
 use Exception;
-use Filament\Actions\Action;
-use Filament\Actions\BulkAction;
+use \Filament\Actions\Action;
+use \Filament\Actions\BulkAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -23,6 +23,9 @@ use Kezi\Accounting\Enums\Reconciliation\ReconciliationType;
 use Kezi\Accounting\Exceptions\Reconciliation\ReconciliationException;
 use Kezi\Accounting\Models\JournalEntryLine;
 
+/**
+ * @extends RelationManager<\Kezi\Foundation\Models\Partner>
+ */
 class UnreconciledEntriesRelationManager extends RelationManager
 {
     protected static string $relationship = 'journalEntryLines';
