@@ -82,10 +82,10 @@ class CurrencyRevaluationResource extends Resource
                     ])
                     ->multiple(),
             ])
-            ->recordActions([
+            ->actions([
                 \Filament\Actions\ViewAction::make()->label(__('accounting::currency_revaluation.actions.view')),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 \Filament\Actions\BulkActionGroup::make([
                     \Filament\Actions\DeleteBulkAction::make()->label(__('accounting::currency_revaluation.actions.delete_bulk')),
                 ]),

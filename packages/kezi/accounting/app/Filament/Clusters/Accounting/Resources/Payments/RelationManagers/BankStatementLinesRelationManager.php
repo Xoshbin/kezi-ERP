@@ -165,7 +165,7 @@ class BankStatementLinesRelationManager extends RelationManager
                             );
                     }),
             ])
-            ->recordActions([
+            ->actions([
                 // View action removed for now - can be added when proper routes are configured
             ])
             ->defaultSort('date', 'desc')

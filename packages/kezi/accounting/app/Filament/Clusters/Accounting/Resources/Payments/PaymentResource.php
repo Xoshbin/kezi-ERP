@@ -284,7 +284,7 @@ class PaymentResource extends Resource
             ->filters([
                 //
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 DeleteAction::make()
                     ->action(function (Payment $record) {
@@ -292,7 +292,7 @@ class PaymentResource extends Resource
                     })
                     ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->action(function ($records) {

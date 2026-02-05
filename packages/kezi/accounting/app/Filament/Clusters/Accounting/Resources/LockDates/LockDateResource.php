@@ -96,13 +96,13 @@ class LockDateResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->label(__('accounting::lock_date.updated_at')),
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make()
                     ->disabled(fn (LockDate $record) => $record->lock_type === LockDateType::HardLock),
                 DeleteAction::make()
                     ->disabled(fn (LockDate $record) => $record->lock_type === LockDateType::HardLock),
             ])
-            ->toolbarActions([]);
+            ->bulkActions([]);
     }
 
     public static function getPages(): array

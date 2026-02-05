@@ -78,11 +78,11 @@ class VendorBillsRelationManager extends RelationManager
             ->headerActions([
                 // Create action removed - vendor bills should be created from VendorBill resource
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

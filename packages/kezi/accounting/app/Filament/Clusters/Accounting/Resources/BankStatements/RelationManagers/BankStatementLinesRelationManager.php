@@ -85,7 +85,7 @@ class BankStatementLinesRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make(),
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
                 Action::make('reverse')
@@ -136,7 +136,7 @@ class BankStatementLinesRelationManager extends RelationManager
                         }
                     }),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

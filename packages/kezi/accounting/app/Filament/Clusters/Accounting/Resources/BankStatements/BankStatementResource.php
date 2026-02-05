@@ -331,7 +331,7 @@ class BankStatementResource extends Resource
             ->filters([
                 //
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 Action::make('reconcile')
                     ->label(__('accounting::bank_statement.reconcile'))
@@ -340,7 +340,7 @@ class BankStatementResource extends Resource
                     ->url(fn (BankStatement $record): string => static::getUrl('reconcile', ['record' => $record]))
                     ->visible(fn (): bool => Filament::getTenant()->enable_reconciliation ?? false),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
