@@ -128,7 +128,7 @@ class UnreconciledEntriesRelationManager extends RelationManager
                     })
                     ->disabled(fn () => ! $this->hasSelectedRecords()),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkAction::make('reconcile')
                     ->label(__('accounting::partner.unreconciled_entries_relation_manager.reconcile'))
                     ->icon('heroicon-o-check-circle')

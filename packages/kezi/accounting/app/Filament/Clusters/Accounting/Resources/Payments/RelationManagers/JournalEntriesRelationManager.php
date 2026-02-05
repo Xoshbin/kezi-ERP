@@ -160,7 +160,7 @@ class JournalEntriesRelationManager extends RelationManager
                         'Kezi\Accounting\Models\VendorBill' => __('payment.journal_entries_relation_manager.source_vendor_bill'),
                     ]),
             ])
-            ->recordActions([
+            ->actions([
                 // View action removed for now - can be added when proper routes are configured
             ])
             ->defaultSort('entry_date', 'desc')

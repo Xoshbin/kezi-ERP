@@ -544,12 +544,12 @@ class PartnerResource extends Resource
                 TernaryFilter::make('is_active')
                     ->label(__('accounting::partner.is_active')),
             ])
-            ->recordActions([
+            ->actions([
                 ViewAction::make(),
                 EditAction::make(),
                 \Filament\Actions\DeleteAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

@@ -66,11 +66,11 @@ class InvoiceLinesRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make()->label(__('accounting::invoice.add_invoice_line')),
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

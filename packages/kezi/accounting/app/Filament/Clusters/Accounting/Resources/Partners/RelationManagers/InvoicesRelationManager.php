@@ -75,11 +75,11 @@ class InvoicesRelationManager extends RelationManager
             ->headerActions([
                 // Create action removed - invoices should be created from Invoice resource
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
