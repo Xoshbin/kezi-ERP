@@ -1,10 +1,10 @@
-# Headless Accounting ERP System
+# Kezi: Immutable Accounting & ERP System
 
 ## Overview
 
-This project is a robust, headless accounting and ERP system built on the Laravel framework. It is designed from the ground up with the core principles of **immutability**, **auditability**, and strict adherence to **double-entry bookkeeping standards**. Inspired by the reliability of enterprise-grade systems like Odoo, it is tailored for environments that demand strong manual controls, data integrity, and a transparent, unalterable audit trail.
+This project is a robust, integrated accounting and ERP system built on the Laravel framework. It is designed from the ground up with the core principles of **immutability**, **auditability**, and strict adherence to **double-entry bookkeeping standards**. Inspired by the reliability of enterprise-grade systems like Odoo, it is tailored for environments that demand strong manual controls, data integrity, and a transparent, unalterable audit trail.
 
-The system features a comprehensive suite of accounting modules managed through a clean, service-oriented architecture. All business logic is encapsulated within dedicated service classes, ensuring that financial rules are consistently enforced across the application, whether actions are initiated via an API, the administrative panel, or console commands. The administrative interface is powered by **Filament**.
+The system features a comprehensive suite of accounting modules managed through a clean, service-oriented architecture and a premium administrative interface powered by **Filament**. All business logic is encapsulated within dedicated service classes, ensuring that financial rules are consistently enforced across the application.
 
 ## Core Principles
 
@@ -93,9 +93,33 @@ php artisan migrate:fresh --seed
 
 ## Technology Stack
 
--   **Backend**: Laravel 11
--   **Admin Panel**: Filament 4
--   **Testing**: Pest
+- **Backend:** Laravel 12
+- **Admin Panel:** Filament 4
+- **Real-time UI:** Livewire 3
+- **Primary Database:** PostgreSQL
+- **Asset Pipeline:** Vite with Bun / NPM
+- **Quality Assurance:**
+  - **Testing:** Pest 4 (Modular TDD focus)
+  - **Static Analysis:** PHPStan (Targeting Level 8)
+  - **Formatting:** Laravel Pint (Consistent style)
+
+## Modular Package Architecture
+
+The system is built as a **Modular Monolith**. Instead of a single massive `app/` directory, the core business logic is split into standalone local PHP packages within the `packages/kezi/` directory. These are managed via Composer path repositories, ensuring strict separation of concerns and future-proof scalability.
+
+| Module | Core Responsibility | Namespace |
+| :--- | :--- | :--- |
+| **Foundation** | Shared core classes, partner management, and settings infrastructure. | `Kezi\Foundation\` |
+| **Accounting** | Double-entry ledger, Chart of Accounts, Journal Entries, and Taxes. | `Kezi\Accounting\` |
+| **Sales** | Customer management, Quotations, and Invoicing workflows. | `Kezi\Sales\` |
+| **Purchase** | Vendor management, Purchase Orders, and Bill processing. | `Kezi\Purchase\` |
+| **Inventory** | Stock moves, Warehouse management, and valuation. | `Kezi\Inventory\` |
+| **HR** | Employees, Payroll, Attendance, and Leaves. | `Kezi\HR\` |
+| **Payment** | Payment processing, Allocation, and Reconciliation. | `Kezi\Payment\` |
+| **Product** | Catalog, Variants, and Units of Measure. | `Kezi\Product\` |
+| **ProjectManagement** | Projects, Tasks, Timesheets, and Budgets. | `Kezi\ProjectManagement\` |
+| **Manufacturing** | BOMs, Manufacturing Orders, and Work Centers. | `Kezi\Manufacturing\` |
+| **QualityControl** | Quality checks, Alerts, and Control Points. | `Kezi\QualityControl\` |
 
 ## Architectural Highlights
 
