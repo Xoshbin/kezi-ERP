@@ -107,7 +107,7 @@ class CreateJournalEntryForInvoiceAction implements InvoiceJournalEntryCreatorCo
                                         account_id: $childTax->tax_account_id,
                                         debit: Money::of(0, $currency->code),
                                         credit: $amount,
-                                        description: $childTax->name.' (Split) for '.$invoice->invoice_number,
+                                        description: $childTax->getTranslation('name', app()->getLocale()).' (Split) for '.$invoice->invoice_number,
                                         partner_id: null,
                                         analytic_account_id: null,
                                         tax_id: $childTax->id,

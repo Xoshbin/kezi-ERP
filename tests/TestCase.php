@@ -24,6 +24,18 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
  * @property \Kezi\Inventory\Models\StockLocation $adjustmentLocation
  * @property \Kezi\Inventory\Models\StockLocation $customerLocation
  * @property \Kezi\Foundation\Models\Partner $vendor
+ * @property \Kezi\Sales\Actions\Sales\CreateQuoteAction&\Mockery\MockInterface $createAction
+ * @property \Kezi\Sales\Actions\Sales\UpdateQuoteAction&\Mockery\MockInterface $updateAction
+ * @property \Kezi\Sales\Actions\Sales\SendQuoteAction&\Mockery\MockInterface $sendAction
+ * @property \Kezi\Sales\Actions\Sales\AcceptQuoteAction&\Mockery\MockInterface $acceptAction
+ * @property \Kezi\Sales\Actions\Sales\RejectQuoteAction&\Mockery\MockInterface $rejectAction
+ * @property \Kezi\Sales\Actions\Sales\CancelQuoteAction&\Mockery\MockInterface $cancelAction
+ * @property \Kezi\Sales\Actions\Sales\ConvertQuoteToSalesOrderAction&\Mockery\MockInterface $convertToOrderAction
+ * @property \Kezi\Sales\Actions\Sales\ConvertQuoteToInvoiceAction&\Mockery\MockInterface $convertToInvoiceAction
+ * @property \Kezi\Sales\Actions\Sales\CreateQuoteRevisionAction&\Mockery\MockInterface $revisionAction
+ * @property \Kezi\Sales\Services\QuoteService $service
+ * @property \Kezi\Accounting\Models\Account $incomeAccount
+ * @property \Kezi\Sales\Actions\Sales\CreateInvoiceLineAction&\Mockery\MockInterface $createInvoiceLineAction
  *
  * @method void setupWithConfiguredCompany()
  * @method void setupInventoryTestEnvironment()

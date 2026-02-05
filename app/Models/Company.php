@@ -37,6 +37,40 @@ use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
  * @property int|null $default_health_insurance_payable_account_id
  * @property int|null $default_pension_payable_account_id
  * @property int|null $default_employee_advance_receivable_account_id
+ * @property int|null $default_accounts_payable_id
+ * @property int|null $default_accounts_receivable_id
+ * @property int|null $default_sales_discount_account_id
+ * @property int|null $default_purchase_returns_account_id
+ * @property int|null $default_tax_account_id
+ * @property int|null $default_tax_receivable_id
+ * @property int|null $default_sales_journal_id
+ * @property int|null $default_purchase_journal_id
+ * @property int|null $default_depreciation_journal_id
+ * @property int|null $default_bank_account_id
+ * @property int|null $default_outstanding_receipts_account_id
+ * @property int|null $default_bank_journal_id
+ * @property int|null $default_gain_loss_account_id
+ * @property int|null $inventory_adjustment_account_id
+ * @property int|null $default_stock_input_account_id
+ * @property int|null $default_stock_location_id
+ * @property int|null $default_vendor_location_id
+ * @property int|null $default_adjustment_location_id
+ * @property int|null $default_finished_goods_inventory_id
+ * @property int|null $default_raw_materials_inventory_id
+ * @property int|null $default_manufacturing_journal_id
+ * @property int|null $default_wip_account_id
+ * @property int|null $default_pdc_receivable_account_id
+ * @property int|null $default_pdc_payable_account_id
+ * @property int|null $default_cheque_expense_account_id
+ * @property int|null $default_scrap_account_id
+ * @property bool $enable_reconciliation
+ * @property string|null $pdf_template
+ * @property string|null $pdf_logo_path
+ * @property array<string, mixed>|null $pdf_settings
+ * @property array<string, array<string, mixed>>|null $numbering_settings
+ * @property \Kezi\Inventory\Enums\Inventory\InventoryAccountingMode|null $inventory_accounting_mode
+ * @property string|null $industry_type
+ * @property \Illuminate\Support\Carbon|null $onboarding_completed_at
  * @property \Kezi\Accounting\Enums\Consolidation\ConsolidationMethod $consolidation_method
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
