@@ -40,6 +40,7 @@ use Kezi\Sales\Enums\Sales\InvoiceStatus;
  * @property int|null $fiscal_position_id
  * @property string|null $invoice_number
  * @property Carbon $invoice_date
+ * @property float|null $exchange_rate_at_creation
  * @property Carbon $due_date
  * @property InvoiceStatus $status
  * @property Incoterm|null $incoterm
@@ -88,7 +89,10 @@ use Kezi\Sales\Enums\Sales\InvoiceStatus;
 class Invoice extends Model
 {
     use HasDocumentAttachments;
+
+    /** @use HasFactory<\Database\Factories\Sales\InvoiceFactory> */
     use HasFactory;
+
     use \Kezi\Foundation\Traits\HasPaymentState;
 
     /**
@@ -277,7 +281,10 @@ class Invoice extends Model
     /**
      * Scope a query to only include invoices that are overdue.
      */
-    public function scopeOverdue($query)
+    /**
+     * @param  Builder<static>  $query
+     */
+    public function scopeOverdue(Builder $query): Builder
     {
         return $query->where('status', InvoiceStatus::Posted)
             ->where('due_date', '<', Carbon::today());
@@ -347,10 +354,10 @@ class Invoice extends Model
     /**
      * Scope a query to only include posted invoices.
      *
-     * @param  Builder  $query
-     * @return Builder
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
-    public function scopePosted($query)
+    public function scopePosted(Builder $query): Builder
     {
         return $query->whereIn('status', [InvoiceStatus::Posted, InvoiceStatus::Paid]);
     }
@@ -358,10 +365,10 @@ class Invoice extends Model
     /**
      * Scope a query to only include draft invoices.
      *
-     * @param  Builder  $query
-     * @return Builder
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
-    public function scopeDraft($query)
+    public function scopeDraft(Builder $query): Builder
     {
         return $query->where('status', InvoiceStatus::Draft);
     }

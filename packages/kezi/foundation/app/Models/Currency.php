@@ -29,6 +29,7 @@ use Spatie\Translatable\HasTranslations;
  * @property string|array<string, string> $name
  * @property string $symbol
  * @property float $exchange_rate
+ * @property int $decimal_places
  * @property bool $is_active
  * @property Carbon|null $last_updated_at
  * @property Carbon|null $created_at
@@ -65,7 +66,9 @@ use Spatie\Translatable\HasTranslations;
 #[ObservedBy([\Kezi\Foundation\Observers\CurrencyObserver::class])]
 class Currency extends Model
 {
+    /** @use HasFactory<\Database\Factories\Foundation\CurrencyFactory> */
     use HasFactory;
+
     use HasTranslations;
 
     protected static function newFactory(): CurrencyFactory

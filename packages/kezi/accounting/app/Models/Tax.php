@@ -6,6 +6,7 @@ use App\Models\Company;
 use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -38,6 +39,7 @@ use Spatie\Translatable\HasTranslations;
  * @property Carbon|null $updated_at
  * @property-read Company $company
  * @property-read float $rate_percentage
+ * @property-read Collection<int, Tax> $children
  * @property-read Account $taxAccount
  *
  * @method static Builder<static>|Tax active()
@@ -61,7 +63,9 @@ use Spatie\Translatable\HasTranslations;
 
 class Tax extends Model
 {
+    /** @use HasFactory<\Database\Factories\Accounting\TaxFactory> */
     use HasFactory;
+
     use HasTranslations;
 
     protected static function newFactory(): \Kezi\Accounting\Database\Factories\TaxFactory
