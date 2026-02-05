@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\Accounting\Models\FiscalPositionTaxMapping;
 
 /**
- * @extends Factory<FiscalPositionTaxMapping>
+ * @extends Factory<\Kezi\Accounting\Models\FiscalPositionTaxMapping>
  */
 class FiscalPositionTaxMappingFactory extends Factory
 {

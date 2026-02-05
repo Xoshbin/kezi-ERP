@@ -58,6 +58,40 @@ use Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus;
  * @property-read int|null $lines_count
  * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
+ * @property string|null $incoterm_location
+ * @property-read Collection<int, \Kezi\Foundation\Models\DocumentAttachment> $attachments
+ * @property-read int|null $attachments_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereCancelledAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereConfirmedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereCreatedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereDeliveryLocationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereExchangeRateAtCreation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereExpectedDeliveryDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereIncoterm($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereIncotermLocation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder wherePoDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder wherePoNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereTermsAndConditions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereTotalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereTotalAmountCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereTotalTax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereTotalTaxCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereVendorId($value)
+ * @method static \Kezi\Purchase\Database\Factories\PurchaseOrderFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([\Kezi\Foundation\Observers\AuditLogObserver::class])]
 class PurchaseOrder extends Model

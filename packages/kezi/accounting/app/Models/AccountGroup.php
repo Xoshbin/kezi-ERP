@@ -32,6 +32,27 @@ use Spatie\Translatable\HasTranslations;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Account> $accounts
  * @property-read int|null $accounts_count
  * @property-read RootAccountType $root_type
+ * @property-read mixed $translations
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountGroup newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountGroup newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountGroup query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountGroup whereCodePrefixEnd($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountGroup whereCodePrefixStart($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountGroup whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountGroup whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountGroup whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountGroup whereJsonContainsLocale(string $column, string $locale, ?mixed $value, string $operand = '=')
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountGroup whereJsonContainsLocales(string $column, array $locales, ?mixed $value, string $operand = '=')
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountGroup whereLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountGroup whereLocale(string $column, string $locale)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountGroup whereLocales(string $column, array $locales)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountGroup whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountGroup whereParentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AccountGroup whereUpdatedAt($value)
+ * @method static \Kezi\Accounting\Database\Factories\AccountGroupFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 class AccountGroup extends Model
 {

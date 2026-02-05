@@ -33,6 +33,30 @@ use Kezi\Purchase\Models\VendorBill;
  * @property-read JournalEntry|null $journalEntry
  * @property-read User|null $createdByUser
  * @property-read \Illuminate\Database\Eloquent\Collection<int, LandedCostLine> $lines
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read int|null $lines_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Inventory\Models\StockPicking> $stockPickings
+ * @property-read int|null $stock_pickings_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCost newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCost newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCost query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCost whereAllocationMethod($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCost whereAmountTotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCost whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCost whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCost whereCreatedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCost whereDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCost whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCost whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCost whereJournalEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCost whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCost whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCost whereVendorBillId($value)
+ * @method static \Kezi\Inventory\Database\Factories\LandedCostFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class LandedCost extends Model

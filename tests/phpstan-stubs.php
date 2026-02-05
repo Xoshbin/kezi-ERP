@@ -40,5 +40,10 @@ namespace PHPUnit\Framework;
  * @method void assertNotEquals($expected, $actual, string $message = '')
  * @method void assertSame($expected, $actual, string $message = '')
  * @method void assertInstanceOf(string $expected, $actual, string $message = '')
+ * @method void setupWithConfiguredCompany()
+ * @method void travelTo(\DateTimeInterface|string $date, callable $callback = null)
+ * @method void fail(string $message = '')
+ * @method void expectException(string $exception)
+ * @method void expectExceptionMessage(string $message)
  */
 abstract class TestCase {}

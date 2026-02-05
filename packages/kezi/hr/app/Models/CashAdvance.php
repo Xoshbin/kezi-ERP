@@ -48,6 +48,37 @@ use Kezi\Payment\Models\Payment;
  * @property-read JournalEntry|null $settlementJournalEntry
  * @property-read Payment|null $payment
  * @property-read \Illuminate\Database\Eloquent\Collection<int, ExpenseReport> $expenseReports
+ * @property-read int|null $expense_reports_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereAdvanceNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereApprovedAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereApprovedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereApprovedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereDisbursedAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereDisbursedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereDisbursedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereDisbursementJournalEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereExpectedReturnDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance wherePaymentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance wherePurpose($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereRequestedAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereRequestedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereSettledAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereSettlementJournalEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CashAdvance whereUpdatedAt($value)
+ * @method static \Kezi\HR\Database\Factories\CashAdvanceFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class CashAdvance extends Model

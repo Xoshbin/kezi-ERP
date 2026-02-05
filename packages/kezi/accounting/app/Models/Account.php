@@ -50,7 +50,6 @@ use Spatie\Translatable\HasTranslations;
  * @property-read Collection<int, Tax> $taxes
  * @property-read int|null $taxes_count
  *
- * @method static \Kezi\Accounting\Database\Factories\AccountFactory factory($count = null, $state = [])
  * @method static Builder<static>|Account newModelQuery()
  * @method static Builder<static>|Account newQuery()
  * @method static Builder<static>|Account query()
@@ -62,6 +61,25 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|Account whereName($value)
  * @method static Builder<static>|Account whereType($value)
  * @method static Builder<static>|Account whereUpdatedAt($value)
+ *
+ * @property int|null $account_group_id
+ * @property int $can_create_assets
+ * @property int|null $currency_id
+ * @property bool $allow_reconciliation Whether this account can be used in reconciliation processes (A/R, A/P, Bank)
+ * @property-read \Kezi\Accounting\Models\AccountGroup|null $accountGroup
+ * @property-read Currency|null $currency
+ * @property-read \Kezi\Accounting\Enums\Accounting\RootAccountType $root_type
+ * @property-read mixed $translations
+ *
+ * @method static Builder<static>|Account whereAccountGroupId($value)
+ * @method static Builder<static>|Account whereAllowReconciliation($value)
+ * @method static Builder<static>|Account whereCanCreateAssets($value)
+ * @method static Builder<static>|Account whereCurrencyId($value)
+ * @method static Builder<static>|Account whereJsonContainsLocale(string $column, string $locale, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|Account whereJsonContainsLocales(string $column, array $locales, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|Account whereLocale(string $column, string $locale)
+ * @method static Builder<static>|Account whereLocales(string $column, array $locales)
+ * @method static \Kezi\Accounting\Database\Factories\AccountFactory factory($count = null, $state = [])
  *
  * @mixin Eloquent
  */

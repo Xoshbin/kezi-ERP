@@ -4,10 +4,9 @@ namespace Kezi\Accounting\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\Accounting\Models\Budget;
-use Kezi\Accounting\Models\BudgetLine;
 
 /**
- * @extends Factory<BudgetLine>
+ * @extends Factory<\Kezi\Accounting\Models\BudgetLine>
  */
 class BudgetLineFactory extends Factory
 {

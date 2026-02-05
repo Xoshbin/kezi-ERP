@@ -36,7 +36,6 @@ use Spatie\Translatable\HasTranslations;
  * @property-read Collection<int, JournalEntry> $journalEntries
  * @property-read int|null $journal_entries_count
  *
- * @method static JournalFactory factory($count = null, $state = [])
  * @method static Builder<static>|Journal newModelQuery()
  * @method static Builder<static>|Journal newQuery()
  * @method static Builder<static>|Journal query()
@@ -49,6 +48,24 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|Journal whereShortCode($value)
  * @method static Builder<static>|Journal whereType($value)
  * @method static Builder<static>|Journal whereUpdatedAt($value)
+ *
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultCreditAccount
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultDebitAccount
+ * @property-read Journal|null $exchangeDifferenceJournal
+ * @property-read \Kezi\Accounting\Models\Account|null $exchangeGainAccount
+ * @property-read \Kezi\Accounting\Models\Account|null $exchangeLossAccount
+ * @property-read mixed $translations
+ *
+ * @method static Builder<static>|Journal whereDefaultCreditAccountId($value)
+ * @method static Builder<static>|Journal whereDefaultDebitAccountId($value)
+ * @method static Builder<static>|Journal whereExchangeDifferenceJournalId($value)
+ * @method static Builder<static>|Journal whereExchangeGainAccountId($value)
+ * @method static Builder<static>|Journal whereExchangeLossAccountId($value)
+ * @method static Builder<static>|Journal whereJsonContainsLocale(string $column, string $locale, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|Journal whereJsonContainsLocales(string $column, array $locales, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|Journal whereLocale(string $column, string $locale)
+ * @method static Builder<static>|Journal whereLocales(string $column, array $locales)
+ * @method static \Kezi\Accounting\Database\Factories\JournalFactory factory($count = null, $state = [])
  *
  * @mixin Eloquent
  */

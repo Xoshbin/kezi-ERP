@@ -7,7 +7,7 @@ use Kezi\Sales\Enums\Sales\QuoteStatus;
 use Kezi\Sales\Models\Quote;
 
 /**
- * @extends Factory<Quote>
+ * @extends Factory<\Kezi\Sales\Models\Quote>
  */
 class QuoteFactory extends Factory
 {

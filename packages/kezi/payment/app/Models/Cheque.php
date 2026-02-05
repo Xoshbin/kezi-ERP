@@ -41,6 +41,44 @@ use Kezi\Payment\Enums\Cheques\ChequeType;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read Company $company
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Payment\Models\ChequeBouncedLog> $bouncedLogs
+ * @property-read int|null $bounced_logs_count
+ * @property-read \Kezi\Payment\Models\Chequebook|null $chequebook
+ * @property-read Currency $currency
+ * @property-read Journal $journal
+ * @property-read JournalEntry|null $journalEntry
+ * @property-read Partner $partner
+ * @property-read \Kezi\Payment\Models\Payment|null $payment
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereAmountCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereBankName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereBouncedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereChequeNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereChequebookId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereClearedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereDepositedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereDueDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereIssueDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereJournalEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereJournalId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereMemo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque wherePartnerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque wherePayeeName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque wherePaymentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Cheque whereUpdatedAt($value)
+ * @method static \Kezi\Payment\Database\Factories\ChequeFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class Cheque extends Model

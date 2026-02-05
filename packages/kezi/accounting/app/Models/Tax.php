@@ -43,7 +43,6 @@ use Spatie\Translatable\HasTranslations;
  * @property-read Account $taxAccount
  *
  * @method static Builder<static>|Tax active()
- * @method static TaxFactory factory($count = null, $state = [])
  * @method static Builder<static>|Tax newModelQuery()
  * @method static Builder<static>|Tax newQuery()
  * @method static Builder<static>|Tax query()
@@ -56,6 +55,29 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|Tax whereTaxAccountId($value)
  * @method static Builder<static>|Tax whereType($value)
  * @method static Builder<static>|Tax whereUpdatedAt($value)
+ *
+ * @property string $computation
+ * @property-read int|null $children_count
+ * @property-read float $rate_fraction
+ * @property-read Collection<int, InvoiceLine> $invoiceLines
+ * @property-read int|null $invoice_lines_count
+ * @property-read Collection<int, Tax> $parents
+ * @property-read int|null $parents_count
+ * @property-read mixed $translations
+ * @property-read Collection<int, VendorBillLine> $vendorBillLines
+ * @property-read int|null $vendor_bill_lines_count
+ *
+ * @method static Builder<static>|Tax whereComputation($value)
+ * @method static Builder<static>|Tax whereCountry($value)
+ * @method static Builder<static>|Tax whereIsGroup($value)
+ * @method static Builder<static>|Tax whereIsRecoverable($value)
+ * @method static Builder<static>|Tax whereJsonContainsLocale(string $column, string $locale, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|Tax whereJsonContainsLocales(string $column, array $locales, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|Tax whereLabelOnInvoices($value)
+ * @method static Builder<static>|Tax whereLocale(string $column, string $locale)
+ * @method static Builder<static>|Tax whereLocales(string $column, array $locales)
+ * @method static Builder<static>|Tax whereReportTag($value)
+ * @method static \Kezi\Accounting\Database\Factories\TaxFactory factory($count = null, $state = [])
  *
  * @mixin Eloquent
  */

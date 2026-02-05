@@ -10,10 +10,12 @@ use Kezi\Accounting\Models\Journal;
 use Kezi\Foundation\Models\Currency;
 use Tests\Traits\WithConfiguredCompany;
 
-uses(\Tests\TestCase::class, WithConfiguredCompany::class);
+uses(WithConfiguredCompany::class);
 
 describe('Bank Statement Foreign Currency Transactions', function () {
     beforeEach(function () {
+        $this->setupWithConfiguredCompany();
+
         // Create USD currency for foreign currency tests
         $this->usdCurrency = Currency::firstOrCreate(
             ['code' => 'USD'],

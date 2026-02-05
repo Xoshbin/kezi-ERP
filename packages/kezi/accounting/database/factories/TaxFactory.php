@@ -6,10 +6,9 @@ use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\Accounting\Enums\Accounting\TaxType;
 use Kezi\Accounting\Models\Account;
-use Kezi\Accounting\Models\Tax;
 
 /**
- * @extends Factory<Tax>
+ * @extends Factory<\Kezi\Accounting\Models\Tax>
  */
 class TaxFactory extends Factory
 {

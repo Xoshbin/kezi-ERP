@@ -9,7 +9,7 @@ use Kezi\Foundation\Models\DocumentAttachment;
 use Kezi\Sales\Models\Invoice;
 
 /**
- * @extends Factory<DocumentAttachment>
+ * @extends Factory<\Kezi\Foundation\Models\DocumentAttachment>
  */
 class DocumentAttachmentFactory extends Factory
 {

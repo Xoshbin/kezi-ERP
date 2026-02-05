@@ -10,7 +10,7 @@ use Kezi\HR\Models\Employee;
 use Kezi\HR\Models\EmploymentContract;
 
 /**
- * @extends Factory<EmploymentContract>
+ * @extends Factory<\Kezi\Hr\Models\EmploymentContract>
  */
 class EmploymentContractFactory extends Factory
 {

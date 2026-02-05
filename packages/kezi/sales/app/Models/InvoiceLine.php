@@ -16,7 +16,6 @@ use Kezi\Accounting\Models\AnalyticAccount;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Casts\DocumentCurrencyMoneyCast;
 use Kezi\Product\Models\Product;
-use Kezi\Sales\Database\Factories\InvoiceLineFactory;
 use Kezi\Sales\Observers\InvoiceLineObserver;
 
 /**
@@ -38,7 +37,6 @@ use Kezi\Sales\Observers\InvoiceLineObserver;
  * @property-read Product|null $product
  * @property-read Tax|null $tax
  *
- * @method static InvoiceLineFactory factory($count = null, $state = [])
  * @method static Builder<static>|InvoiceLine newModelQuery()
  * @method static Builder<static>|InvoiceLine newQuery()
  * @method static Builder<static>|InvoiceLine query()
@@ -55,13 +53,29 @@ use Kezi\Sales\Observers\InvoiceLineObserver;
  * @method static Builder<static>|InvoiceLine whereUnitPrice($value)
  * @method static Builder<static>|InvoiceLine whereUpdatedAt($value)
  *
+ * @property int $company_id
+ * @property Carbon|null $deferred_start_date
+ * @property Carbon|null $deferred_end_date
+ * @property \Brick\Money\Money|null $unit_price_company_currency
+ * @property \Brick\Money\Money|null $subtotal_company_currency
+ * @property \Brick\Money\Money|null $total_line_tax_company_currency
+ * @property-read Company $company
+ *
+ * @method static Builder<static>|InvoiceLine whereCompanyId($value)
+ * @method static Builder<static>|InvoiceLine whereDeferredEndDate($value)
+ * @method static Builder<static>|InvoiceLine whereDeferredStartDate($value)
+ * @method static Builder<static>|InvoiceLine whereSubtotalCompanyCurrency($value)
+ * @method static Builder<static>|InvoiceLine whereTotalLineTaxCompanyCurrency($value)
+ * @method static Builder<static>|InvoiceLine whereUnitPriceCompanyCurrency($value)
+ * @method static \Kezi\Sales\Database\Factories\InvoiceLineFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 #[ObservedBy([InvoiceLineObserver::class])]
 class InvoiceLine extends Model
 {
     // Leveraging Laravel's HasFactory trait for simplified model factory creation in testing/seeding [5, 6].
-    /** @use HasFactory<InvoiceLineFactory> */
+    /** @use HasFactory<\Kezi\Sales\Database\Factories\InvoiceLineFactory> */
     use HasFactory;
 
     protected static function newFactory(): \Kezi\Sales\Database\Factories\InvoiceLineFactory

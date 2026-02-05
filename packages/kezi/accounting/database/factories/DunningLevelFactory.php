@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\Accounting\Models\DunningLevel;
 
 /**
- * @extends Factory<DunningLevel>
+ * @extends Factory<\Kezi\Accounting\Models\DunningLevel>
  */
 class DunningLevelFactory extends Factory
 {

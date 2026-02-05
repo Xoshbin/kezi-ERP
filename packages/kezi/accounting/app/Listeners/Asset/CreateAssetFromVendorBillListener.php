@@ -21,7 +21,7 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
     public function handle(\Kezi\Purchase\Events\VendorBillConfirmed $event): void
     {
         $vendorBill = $event->vendorBill;
-        /** @var \Kezi\Foundation\Models\Company $company */
+        /** @var \App\Models\Company $company */
         $company = $vendorBill->company;
 
         // Eager load relationships for efficiency

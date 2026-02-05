@@ -61,7 +61,6 @@ use Kezi\Sales\Enums\Sales\InvoiceStatus;
  * @property-read JournalEntry|null $journalEntry
  *
  * @method static Builder<static>|Invoice draft()
- * @method static \Kezi\Sales\Database\Factories\InvoiceFactory factory($count = null, $state = [])
  * @method static Builder<static>|Invoice newModelQuery()
  * @method static Builder<static>|Invoice newQuery()
  * @method static Builder<static>|Invoice posted()
@@ -82,6 +81,49 @@ use Kezi\Sales\Enums\Sales\InvoiceStatus;
  * @method static Builder<static>|Invoice whereTotalAmount($value)
  * @method static Builder<static>|Invoice whereTotalTax($value)
  * @method static Builder<static>|Invoice whereUpdatedAt($value)
+ *
+ * @property int|null $source_invoice_id
+ * @property int|null $dunning_level_id
+ * @property Carbon|null $last_dunning_date
+ * @property Carbon|null $next_dunning_date
+ * @property \Brick\Money\Money|null $total_amount_company_currency
+ * @property \Brick\Money\Money|null $total_tax_company_currency
+ * @property int|null $payment_term_id
+ * @property string|null $incoterm_location
+ * @property string|null $inter_company_source_type
+ * @property int|null $inter_company_source_id
+ * @property-read Collection<int, AdjustmentDocument> $adjustmentDocuments
+ * @property-read int|null $adjustment_documents_count
+ * @property-read Collection<int, \Kezi\Foundation\Models\DocumentAttachment> $attachments
+ * @property-read int|null $attachments_count
+ * @property-read \Kezi\Accounting\Models\DunningLevel|null $dunningLevel
+ * @property-read Collection<int, Invoice> $generatedDebitNotes
+ * @property-read int|null $generated_debit_notes_count
+ * @property-read \Kezi\Foundation\Enums\Shared\PaymentState $payment_state
+ * @property-read Collection<int, PaymentDocumentLink> $paymentDocumentLinks
+ * @property-read int|null $payment_document_links_count
+ * @property-read Collection<int, PaymentInstallment> $paymentInstallments
+ * @property-read int|null $payment_installments_count
+ * @property-read PaymentTerm|null $paymentTerm
+ * @property-read Collection<int, Payment> $payments
+ * @property-read int|null $payments_count
+ * @property-read Invoice|null $sourceInvoice
+ *
+ * @method static Builder<static>|Invoice overdue()
+ * @method static Builder<static>|Invoice whereDunningLevelId($value)
+ * @method static Builder<static>|Invoice whereExchangeRateAtCreation($value)
+ * @method static Builder<static>|Invoice whereIncoterm($value)
+ * @method static Builder<static>|Invoice whereIncotermLocation($value)
+ * @method static Builder<static>|Invoice whereInterCompanySourceId($value)
+ * @method static Builder<static>|Invoice whereInterCompanySourceType($value)
+ * @method static Builder<static>|Invoice whereLastDunningDate($value)
+ * @method static Builder<static>|Invoice whereNextDunningDate($value)
+ * @method static Builder<static>|Invoice wherePaymentTermId($value)
+ * @method static Builder<static>|Invoice whereSalesOrderId($value)
+ * @method static Builder<static>|Invoice whereSourceInvoiceId($value)
+ * @method static Builder<static>|Invoice whereTotalAmountCompanyCurrency($value)
+ * @method static Builder<static>|Invoice whereTotalTaxCompanyCurrency($value)
+ * @method static \Kezi\Sales\Database\Factories\InvoiceFactory factory($count = null, $state = [])
  *
  * @mixin Eloquent
  */

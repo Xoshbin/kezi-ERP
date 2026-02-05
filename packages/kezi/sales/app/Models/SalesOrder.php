@@ -57,6 +57,38 @@ use Kezi\Sales\Enums\Sales\SalesOrderStatus;
  * @property-read int|null $lines_count
  * @property-read Collection<int, Invoice> $invoices
  * @property-read int|null $invoices_count
+ * @property string|null $incoterm_location
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereCancelledAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereConfirmedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereCreatedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereCustomerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereDeliveryLocationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereExchangeRateAtCreation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereExpectedDeliveryDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereIncoterm($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereIncotermLocation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereSoDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereSoNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereTermsAndConditions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereTotalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereTotalAmountCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereTotalTax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereTotalTaxCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrder whereUpdatedAt($value)
+ * @method static \Kezi\Sales\Database\Factories\SalesOrderFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([\Kezi\Foundation\Observers\AuditLogObserver::class])]
 class SalesOrder extends Model

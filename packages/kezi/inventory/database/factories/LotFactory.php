@@ -8,7 +8,7 @@ use Kezi\Inventory\Models\Lot;
 use Kezi\Product\Models\Product;
 
 /**
- * @extends Factory<Lot>
+ * @extends Factory<\Kezi\Inventory\Models\Lot>
  */
 class LotFactory extends Factory
 {

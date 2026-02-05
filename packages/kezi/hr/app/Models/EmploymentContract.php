@@ -54,11 +54,50 @@ use Kezi\HR\Observers\EmploymentContractObserver;
  * @property-read Employee $employee
  * @property-read Currency $currency
  * @property-read User|null $approvedBy
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereAnnualLeaveDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereApprovedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereApprovedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereBaseSalary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereContractNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereContractType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereHourlyRate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereHousingAllowance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereJobDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereMaternityLeaveDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereMealAllowance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereNoticePeriodDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereOtherAllowances($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract wherePaternityLeaveDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract wherePayFrequency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereProbationEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereProbationPeriodMonths($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereSickLeaveDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereSignedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereTermsAndConditions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereTransportAllowance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereWorkingDaysPerWeek($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EmploymentContract whereWorkingHoursPerWeek($value)
+ * @method static \Kezi\HR\Database\Factories\EmploymentContractFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([\Kezi\Foundation\Observers\AuditLogObserver::class, EmploymentContractObserver::class])]
 class EmploymentContract extends Model
 {
-    /** @use HasFactory<EmploymentContractFactory> */
+    /** @use HasFactory<\Kezi\Hr\Database\Factories\EmploymentContractFactory> */
     use HasFactory;
 
     protected static function newFactory(): EmploymentContractFactory
