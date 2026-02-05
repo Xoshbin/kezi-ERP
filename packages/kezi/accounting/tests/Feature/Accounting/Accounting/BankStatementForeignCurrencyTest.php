@@ -10,7 +10,7 @@ use Kezi\Accounting\Models\Journal;
 use Kezi\Foundation\Models\Currency;
 use Tests\Traits\WithConfiguredCompany;
 
-uses(WithConfiguredCompany::class);
+uses(\Tests\TestCase::class, WithConfiguredCompany::class);
 
 describe('Bank Statement Foreign Currency Transactions', function () {
     beforeEach(function () {

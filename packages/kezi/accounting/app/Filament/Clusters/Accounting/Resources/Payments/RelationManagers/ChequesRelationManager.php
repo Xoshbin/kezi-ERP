@@ -2,6 +2,7 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Payments\RelationManagers;
 
+use Filament\Actions\EditAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -34,7 +35,7 @@ class ChequesRelationManager extends RelationManager
                 // it implies viewing cheques associated with a payment (like a batch payment).
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->url(fn ($record) => \Kezi\Accounting\Filament\Clusters\Accounting\Resources\Cheques\ChequeResource::getUrl('edit', ['record' => $record])),
             ])
             ->bulkActions([

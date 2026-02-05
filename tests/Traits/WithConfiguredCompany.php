@@ -19,6 +19,11 @@ use Tests\Builders\CompanyBuilder;
  * @property \Kezi\Inventory\Models\StockLocation $adjustmentLocation
  * @property \Kezi\Inventory\Models\StockLocation $customerLocation
  * @property \Kezi\Foundation\Models\Partner $vendor
+ * @property \Kezi\Foundation\Models\Currency $usdCurrency
+ * @property \Kezi\Foundation\Models\Currency $eurCurrency
+ * @property \Kezi\Accounting\Models\Journal $usdBankJournal
+ *
+ * @mixin \Tests\TestCase
  */
 trait WithConfiguredCompany
 {

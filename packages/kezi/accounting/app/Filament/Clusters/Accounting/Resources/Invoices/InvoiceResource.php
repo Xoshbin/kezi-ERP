@@ -631,7 +631,7 @@ class InvoiceResource extends Resource
             ->filters([
                 //
             ])
-            ->recordActions([
+            ->actions([
                 ActionGroup::make([
                     \Filament\Actions\ViewAction::make(),
                     EditAction::make(),
@@ -797,7 +797,7 @@ class InvoiceResource extends Resource
                 //     ->requiresConfirmation()
                 //     ->visible(fn(Invoice $record) => $record->status === InvoiceStatus::Posted),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     // Tables\Actions\DeleteBulkAction::make(),
                 ]),
