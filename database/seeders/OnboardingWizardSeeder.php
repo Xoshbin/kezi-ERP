@@ -18,8 +18,8 @@ class OnboardingWizardSeeder extends Seeder
                 // Currencies for the wizard's currency dropdown
                 \Kezi\Foundation\Database\Seeders\CurrencySeeder::class,
 
-                // Roles and permissions for the first registered user
-                \Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class,
+                // Permissions for RBAC (roles are created per-company during onboarding)
+                \Kezi\Foundation\Database\Seeders\PermissionSeeder::class,
 
                 // Generic payment terms used by all companies
                 \Kezi\Foundation\Database\Seeders\PaymentTermsSeeder::class,

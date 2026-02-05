@@ -127,7 +127,7 @@ class RolesAndPermissionsSeeder extends Seeder
             // We assign the Super Admin role to the user within the company context.
             // Note: company_id is part of the primary key in model_has_roles, so it cannot be null.
 
-            $user = \App\Models\User::where('email', 'admin@kezi.com')->first();
+            $user = \App\Models\User::first();
 
             if ($user) {
                 // Manually checking db to avoid 'User does not belong to team' errors

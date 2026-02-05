@@ -134,6 +134,10 @@ class RegisterCompany extends RegisterTenant
 
         $company->users()->attach(auth()->user());
 
+        // Set up company-specific roles and assign super_admin to the registering user
+        app(\Kezi\Foundation\Actions\SetupCompanyRolesAction::class)
+            ->execute($company, auth()->user());
+
         // Use the seeder service to set up the company
         $seeder = app(CompanySeederService::class);
         $seeder->seedMinimumRequired($company);
