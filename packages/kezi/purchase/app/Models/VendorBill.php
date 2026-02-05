@@ -50,6 +50,7 @@ use Kezi\Purchase\Observers\VendorBillObserver;
  * @property string $bill_reference
  * @property Carbon $bill_date
  * @property Carbon $accounting_date
+ * @property float|null $exchange_rate_at_creation
  * @property Carbon|null $due_date
  * @property VendorBillStatus $status
  * @property Incoterm|null $incoterm
@@ -95,7 +96,9 @@ use Kezi\Purchase\Observers\VendorBillObserver;
 #[ObservedBy([\Kezi\Foundation\Observers\AuditLogObserver::class, VendorBillObserver::class])]
 class VendorBill extends Model
 {
+    /** @use HasFactory<\Database\Factories\Purchase\VendorBillFactory> */
     use HasFactory;
+
     use \Kezi\Foundation\Traits\HasPaymentState;
 
     protected static function newFactory(): VendorBillFactory

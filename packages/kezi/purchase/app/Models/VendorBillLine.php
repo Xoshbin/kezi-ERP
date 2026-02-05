@@ -33,6 +33,14 @@ use Kezi\Purchase\Observers\VendorBillLineObserver;
  * @property int|null $tax_id
  * @property int $expense_account_id
  * @property int|null $analytic_account_id
+ * @property int|null $asset_category_id
+ * @property int $company_id
+ * @property \Kezi\Foundation\Enums\ShippingCostType|null $shipping_cost_type
+ * @property Money|null $unit_price_company_currency
+ * @property Money|null $subtotal_company_currency
+ * @property Money|null $total_line_tax_company_currency
+ * @property \Illuminate\Support\Carbon|null $deferred_start_date
+ * @property \Illuminate\Support\Carbon|null $deferred_end_date
  * @property string $description
  * @property numeric $quantity
  * @property Money $unit_price

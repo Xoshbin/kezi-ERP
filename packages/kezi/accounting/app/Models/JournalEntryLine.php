@@ -25,11 +25,14 @@ use RuntimeException;
  * Class JournalEntryLine
  *
  * @property int $id
+ * @property int $company_id
  * @property int $journal_entry_id
  * @property int $account_id
  * @property int|null $partner_id
  * @property int|null $currency_id
  * @property int|null $analytic_account_id
+ * @property int|null $tax_id
+ * @property int|null $original_currency_id
  * @property Money $debit
  * @property Money $credit
  * @property Money $original_currency_amount

@@ -60,6 +60,12 @@ class KeziPanelProvider extends PanelProvider
             ->maxContentWidth('full')
             ->navigation(function (\Filament\Navigation\NavigationBuilder $builder): \Filament\Navigation\NavigationBuilder {
                 $panel = \Filament\Facades\Filament::getCurrentPanel();
+
+                // Early return if panel is null
+                if ($panel === null) {
+                    return $builder;
+                }
+
                 $currentUrl = request()->url();
 
                 // Identify the active cluster
@@ -172,11 +178,9 @@ class KeziPanelProvider extends PanelProvider
                 }
 
                 foreach ($groups as $label => $items) {
-                    if (empty($items)) {
-                        continue;
-                    }
+                    /** @var array<\Filament\Navigation\NavigationItem> $items */
                     usort($items, fn ($a, $b) => ($a->getSort() ?? 0) <=> ($b->getSort() ?? 0));
-                    $navGroups[] = \Filament\Navigation\NavigationGroup::make($label)->items($items);
+                    $navGroups[] = \Filament\Navigation\NavigationGroup::make((string) $label)->items($items);
                 }
 
                 return $builder->groups($navGroups);

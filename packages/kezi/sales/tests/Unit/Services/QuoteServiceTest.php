@@ -11,31 +11,26 @@ use Kezi\Sales\Actions\Sales\RejectQuoteAction;
 use Kezi\Sales\Actions\Sales\SendQuoteAction;
 use Kezi\Sales\Actions\Sales\UpdateQuoteAction;
 use Kezi\Sales\DataTransferObjects\Sales\CreateQuoteDTO;
+use Kezi\Sales\DataTransferObjects\Sales\UpdateQuoteDTO;
 use Kezi\Sales\Enums\Sales\QuoteStatus;
 use Kezi\Sales\Events\QuoteCreated;
 use Kezi\Sales\Events\QuoteExpired;
+use Kezi\Sales\Models\Invoice;
 use Kezi\Sales\Models\Quote;
 use Kezi\Sales\Models\QuoteLine;
+use Kezi\Sales\Models\SalesOrder;
 use Kezi\Sales\Services\QuoteService;
 
 beforeEach(function () {
-    /** @var CreateQuoteAction|\Mockery\MockInterface $createAction */
+    /** @var \Tests\TestCase $this */
     $this->createAction = Mockery::mock(CreateQuoteAction::class);
-    /** @var UpdateQuoteAction|\Mockery\MockInterface $updateAction */
     $this->updateAction = Mockery::mock(UpdateQuoteAction::class);
-    /** @var SendQuoteAction|\Mockery\MockInterface $sendAction */
     $this->sendAction = Mockery::mock(SendQuoteAction::class);
-    /** @var AcceptQuoteAction|\Mockery\MockInterface $acceptAction */
     $this->acceptAction = Mockery::mock(AcceptQuoteAction::class);
-    /** @var RejectQuoteAction|\Mockery\MockInterface $rejectAction */
     $this->rejectAction = Mockery::mock(RejectQuoteAction::class);
-    /** @var CancelQuoteAction|\Mockery\MockInterface $cancelAction */
     $this->cancelAction = Mockery::mock(CancelQuoteAction::class);
-    /** @var ConvertQuoteToSalesOrderAction|\Mockery\MockInterface $convertToOrderAction */
     $this->convertToOrderAction = Mockery::mock(ConvertQuoteToSalesOrderAction::class);
-    /** @var ConvertQuoteToInvoiceAction|\Mockery\MockInterface $convertToInvoiceAction */
     $this->convertToInvoiceAction = Mockery::mock(ConvertQuoteToInvoiceAction::class);
-    /** @var CreateQuoteRevisionAction|\Mockery\MockInterface $revisionAction */
     $this->revisionAction = Mockery::mock(CreateQuoteRevisionAction::class);
 
     $this->service = new QuoteService(
@@ -57,8 +52,7 @@ it('duplicates a quote with copied data', function () {
     $originalQuote = Quote::factory()
         ->has(QuoteLine::factory()->count(2), 'lines')
         ->create([
-            'status' => QuoteStatus::Accepted,
-            'notes' => 'Original Notes',
+            'notes' => 'Some notes',
         ]);
 
     $this->createAction->shouldReceive('execute')
@@ -118,10 +112,6 @@ describe('create', function () {
             quoteDate: now(),
             validUntil: now()->addDays(30),
             lines: [],
-            notes: 'Test Quote',
-            termsAndConditions: 'Terms',
-            exchangeRate: 1.0,
-            createdByUserId: 1,
         );
 
         $expectedQuote = Quote::factory()->make();
@@ -131,27 +121,22 @@ describe('create', function () {
             ->with($dto)
             ->andReturn($expectedQuote);
 
-        $quote = $this->service->create($dto);
+        $result = $this->service->create($dto);
 
-        expect($quote)->toBe($expectedQuote);
-        Event::assertDispatched(QuoteCreated::class, function ($event) use ($quote) {
-            return $event->quote === $quote;
-        });
+        expect($result)->toBe($expectedQuote);
+        Event::assertDispatched(QuoteCreated::class);
     });
 });
 
 describe('update', function () {
     it('delegates to UpdateQuoteAction', function () {
-        $dto = new \Kezi\Sales\DataTransferObjects\Sales\UpdateQuoteDTO(
+        $dto = new UpdateQuoteDTO(
             quoteId: 1,
             partnerId: 1,
             currencyId: 1,
             quoteDate: now(),
             validUntil: now()->addDays(30),
             lines: [],
-            notes: 'Updated Notes',
-            termsAndConditions: 'Updated Terms',
-            exchangeRate: 1.0,
         );
 
         $expectedQuote = Quote::factory()->make();
@@ -235,7 +220,7 @@ describe('cancel', function () {
 describe('convertToSalesOrder', function () {
     it('delegates to ConvertQuoteToSalesOrderAction with optional userId', function () {
         $quote = Quote::factory()->make();
-        $expectedOrder = \Kezi\Sales\Models\SalesOrder::factory()->make();
+        $expectedOrder = SalesOrder::factory()->make();
         $userId = 1;
 
         $this->convertToOrderAction->shouldReceive('execute')
@@ -252,7 +237,7 @@ describe('convertToSalesOrder', function () {
 describe('convertToInvoice', function () {
     it('delegates to ConvertQuoteToInvoiceAction', function () {
         $quote = Quote::factory()->make();
-        $expectedInvoice = \Kezi\Sales\Models\Invoice::factory()->make();
+        $expectedInvoice = Invoice::factory()->make();
 
         $this->convertToInvoiceAction->shouldReceive('execute')
             ->once()

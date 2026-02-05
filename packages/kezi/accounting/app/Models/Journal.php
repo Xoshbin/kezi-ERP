@@ -24,6 +24,11 @@ use Spatie\Translatable\HasTranslations;
  * @property string $type
  * @property string $short_code
  * @property int|null $currency_id
+ * @property int|null $default_debit_account_id
+ * @property int|null $default_credit_account_id
+ * @property int|null $exchange_gain_account_id
+ * @property int|null $exchange_loss_account_id
+ * @property int|null $exchange_difference_journal_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Company $company
@@ -51,7 +56,9 @@ use Spatie\Translatable\HasTranslations;
 
 class Journal extends Model
 {
+    /** @use HasFactory<\Database\Factories\Accounting\JournalFactory> */
     use HasFactory;
+
     use HasTranslations;
 
     protected static function newFactory(): \Kezi\Accounting\Database\Factories\JournalFactory
@@ -206,6 +213,9 @@ class Journal extends Model
      * This is crucial to prevent duplicate short codes for journals within the same company [3].
      * Although this is typically enforced at the database migration level,
      * adding a method here can be useful for specific query needs if required later.
+     */
+    /**
+     * @param  Builder<static>  $query
      */
     public function scopeUniqueShortCode(
         Builder $query,
