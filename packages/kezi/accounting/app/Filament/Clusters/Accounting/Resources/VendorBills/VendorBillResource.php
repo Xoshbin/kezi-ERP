@@ -755,7 +755,7 @@ class VendorBillResource extends Resource
             ->filters([
                 //
             ])
-            ->recordActions([
+            ->actions([
                 ActionGroup::make([
                     \Filament\Actions\ViewAction::make(),
                     EditAction::make(),
@@ -863,7 +863,7 @@ class VendorBillResource extends Resource
                         ! $record->getRemainingAmount()->isZero()
                     ),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     // Tables\Actions\DeleteBulkAction::make(),
                 ]),

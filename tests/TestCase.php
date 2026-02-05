@@ -36,10 +36,27 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
  * @property \Kezi\Sales\Services\QuoteService $service
  * @property \Kezi\Accounting\Models\Account $incomeAccount
  * @property \Kezi\Sales\Actions\Sales\CreateInvoiceLineAction&\Mockery\MockInterface $createInvoiceLineAction
+ * @property \Kezi\Foundation\Models\Currency $usdCurrency
+ * @property \Kezi\Foundation\Models\Currency $eurCurrency
+ * @property \Kezi\Accounting\Models\Journal $usdBankJournal
  *
  * @method void setupWithConfiguredCompany()
  * @method void setupInventoryTestEnvironment()
  * @method \Mockery\MockInterface mock(string $abstract, \Closure $mock = null)
+ * @method void assertDatabaseHas(string $table, array $data, string $connection = null)
+ * @method void assertDatabaseMissing(string $table, array $data, string $connection = null)
+ * @method void assertDatabaseCount(string $table, int $count, string $connection = null)
+ * @method void assertModelExists(\Illuminate\Database\Eloquent\Model $model)
+ * @method void assertModelMissing(\Illuminate\Database\Eloquent\Model $model)
+ * @method void assertCount(int|\Countable $expectedCount, $actual, string $message = '')
+ * @method void assertNotNull($actual, string $message = '')
+ * @method void assertNull($actual, string $message = '')
+ * @method void assertTrue($condition, string $message = '')
+ * @method void assertFalse($condition, string $message = '')
+ * @method void assertEquals($expected, $actual, string $message = '')
+ * @method void assertNotEquals($expected, $actual, string $message = '')
+ * @method void assertSame($expected, $actual, string $message = '')
+ * @method void assertInstanceOf(string $expected, $actual, string $message = '')
  */
 abstract class TestCase extends BaseTestCase
 {
@@ -69,4 +86,70 @@ abstract class TestCase extends BaseTestCase
     {
         return $this->app->make(\Faker\Generator::class);
     }
+
+    /** @var \App\Models\Company|null */
+    public $company;
+
+    /** @var \App\Models\User|null */
+    public $user;
+
+    /** @var \Kezi\Foundation\Models\Partner|null */
+    public $partner;
+
+    /** @var \Kezi\Foundation\Models\Currency|null */
+    public $currency;
+
+    /** @var \Kezi\Product\Models\Product|null */
+    public $product;
+
+    /** @var \Kezi\Accounting\Models\Account|null */
+    public $account;
+
+    /** @var \Kezi\Accounting\Models\Account|null */
+    public $inventoryAccount;
+
+    /** @var \Kezi\Accounting\Models\Account|null */
+    public $stockInputAccount;
+
+    /** @var \Kezi\Accounting\Models\Account|null */
+    public $cogsAccount;
+
+    /** @var \Kezi\Inventory\Models\StockLocation|null */
+    public $vendorLocation;
+
+    /** @var \Kezi\Inventory\Models\StockLocation|null */
+    public $stockLocation;
+
+    /** @var \Kezi\Inventory\Models\StockLocation|null */
+    public $adjustmentLocation;
+
+    /** @var \Kezi\Inventory\Models\StockLocation|null */
+    public $customerLocation;
+
+    /** @var \Kezi\Foundation\Models\Partner|null */
+    public $vendor;
+
+    /** @var \Kezi\Foundation\Models\Currency|null */
+    public $usdCurrency;
+
+    /** @var \Kezi\Foundation\Models\Currency|null */
+    public $eurCurrency;
+
+    /** @var \Kezi\Accounting\Models\Journal|null */
+    public $usdBankJournal;
+
+    /** @var \Kezi\Accounting\Models\Journal|null */
+    public $miscJournal;
+
+    /** @var \Kezi\Accounting\Models\Account|null */
+    public $assetAccount;
+
+    /** @var \Kezi\Accounting\Models\Account|null */
+    public $liabilityAccount;
+
+    /** @var \Kezi\Accounting\Models\Account|null */
+    public $incomeAccount;
+
+    /** @var \Kezi\Accounting\Models\Account|null */
+    public $retainedEarningsAccount;
 }
