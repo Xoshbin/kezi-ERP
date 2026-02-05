@@ -37,6 +37,35 @@ use Illuminate\Support\Carbon;
  * @property-read Employee|null $delegateEmployee
  * @property-read User|null $approvedByUser
  * @property-read User $requestedByUser
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereApprovalNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereApprovedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereApprovedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereAttachments($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereDaysRequested($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereDelegateEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereDelegationNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereLeaveTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereRejectionReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereRequestNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereRequestedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereSubmittedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveRequest whereUpdatedAt($value)
+ * @method static \Kezi\HR\Database\Factories\LeaveRequestFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 class LeaveRequest extends Model
 {

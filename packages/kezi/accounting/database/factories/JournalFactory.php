@@ -8,7 +8,7 @@ use Kezi\Accounting\Enums\Accounting\JournalType;
 use Kezi\Accounting\Models\Account;
 
 /**
- * @extends Factory<Journal>
+ * @extends Factory<\Kezi\Accounting\Models\Journal>
  */
 class JournalFactory extends Factory
 {

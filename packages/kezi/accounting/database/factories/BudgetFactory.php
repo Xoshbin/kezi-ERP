@@ -8,7 +8,7 @@ use Kezi\Accounting\Enums\Budgets\BudgetStatus;
 use Kezi\Accounting\Enums\Budgets\BudgetType;
 
 /**
- * @extends Factory<Budget>
+ * @extends Factory<\Kezi\Accounting\Models\Budget>
  */
 class BudgetFactory extends Factory
 {

@@ -34,10 +34,30 @@ use Spatie\Translatable\HasTranslations;
  * @property-read float $rate_percentage
  *
  * @method static Builder<static>|WithholdingTaxType active()
- * @method static WithholdingTaxTypeFactory factory($count = null, $state = [])
  * @method static Builder<static>|WithholdingTaxType newModelQuery()
  * @method static Builder<static>|WithholdingTaxType newQuery()
  * @method static Builder<static>|WithholdingTaxType query()
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Accounting\Models\WithholdingTaxEntry> $entries
+ * @property-read int|null $entries_count
+ * @property-read float $rate_fraction
+ * @property-read mixed $translations
+ *
+ * @method static Builder<static>|WithholdingTaxType whereApplicableTo($value)
+ * @method static Builder<static>|WithholdingTaxType whereCompanyId($value)
+ * @method static Builder<static>|WithholdingTaxType whereCreatedAt($value)
+ * @method static Builder<static>|WithholdingTaxType whereId($value)
+ * @method static Builder<static>|WithholdingTaxType whereIsActive($value)
+ * @method static Builder<static>|WithholdingTaxType whereJsonContainsLocale(string $column, string $locale, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|WithholdingTaxType whereJsonContainsLocales(string $column, array $locales, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|WithholdingTaxType whereLocale(string $column, string $locale)
+ * @method static Builder<static>|WithholdingTaxType whereLocales(string $column, array $locales)
+ * @method static Builder<static>|WithholdingTaxType whereName($value)
+ * @method static Builder<static>|WithholdingTaxType whereRate($value)
+ * @method static Builder<static>|WithholdingTaxType whereThresholdAmount($value)
+ * @method static Builder<static>|WithholdingTaxType whereUpdatedAt($value)
+ * @method static Builder<static>|WithholdingTaxType whereWithholdingAccountId($value)
+ * @method static \Kezi\Accounting\Database\Factories\WithholdingTaxTypeFactory factory($count = null, $state = [])
  *
  * @mixin Eloquent
  */

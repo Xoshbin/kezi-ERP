@@ -10,7 +10,7 @@ use Kezi\Accounting\Models\CurrencyRevaluationLine;
 use Kezi\Foundation\Models\Currency;
 
 /**
- * @extends Factory<CurrencyRevaluationLine>
+ * @extends Factory<\Kezi\Accounting\Models\CurrencyRevaluationLine>
  */
 class CurrencyRevaluationLineFactory extends Factory
 {

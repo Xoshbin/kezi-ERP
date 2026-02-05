@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\Foundation\Models\Currency;
 
 /**
- * @extends Factory<Currency>
+ * @extends Factory<\Kezi\Foundation\Models\Currency>
  */
 class CurrencyFactory extends Factory
 {

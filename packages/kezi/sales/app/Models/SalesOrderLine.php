@@ -40,6 +40,33 @@ use Kezi\Product\Models\Product;
  * @property-read SalesOrder $salesOrder
  * @property-read Product $product
  * @property-read Tax|null $tax
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereExpectedDeliveryDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereQuantityDelivered($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereQuantityInvoiced($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereSalesOrderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereSubtotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereSubtotalCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereTaxId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereTotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereTotalCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereTotalLineTax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereTotalLineTaxCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereUnitPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereUnitPriceCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SalesOrderLine whereUpdatedAt($value)
+ * @method static \Kezi\Sales\Database\Factories\SalesOrderLineFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([\Kezi\Foundation\Observers\AuditLogObserver::class])]
 class SalesOrderLine extends Model

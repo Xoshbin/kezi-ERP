@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Kezi\Accounting\Emails\DunningReminderMail;
+use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\DunningLevel;
 use Kezi\Sales\Models\Invoice;
 
@@ -42,6 +43,7 @@ class ProcessDunningRunAction
             ->with(['customer', 'dunningLevel', 'currency'])
             ->get();
 
+        /** @var Invoice $invoice */
         foreach ($invoices as $invoice) {
             $this->processInvoice($invoice, $levels);
         }
@@ -135,10 +137,16 @@ class ProcessDunningRunAction
 
         // Prepare DTOs
         $product = $level->feeProduct;
-        $incomeAccount = $product->incomeAccount ?? $product->company->defaultIncomeAccount; // Fallback?
+        /** @var Account|null $incomeAccount */
+        $incomeAccount = $product->incomeAccount ?? null;
 
         if (! $incomeAccount && $product->income_account_id) {
-            $incomeAccount = \Kezi\Accounting\Models\Account::find($product->income_account_id);
+            $incomeAccount = Account::find($product->income_account_id);
+        }
+
+        // Final fallback: Company's default sales journal credit account
+        if (! $incomeAccount) {
+            $incomeAccount = $product->company->defaultSalesJournal?->defaultCreditAccount;
         }
 
         if (! $incomeAccount) {

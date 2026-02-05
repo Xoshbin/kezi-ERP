@@ -32,6 +32,28 @@ use Kezi\HR\Enums\ExpenseReportStatus;
  * @property-read Employee $employee
  * @property-read User|null $approvedBy
  * @property-read \Illuminate\Database\Eloquent\Collection<int, ExpenseReportLine> $lines
+ * @property-read int|null $lines_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReport newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReport newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReport query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReport whereApprovedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReport whereApprovedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReport whereCashAdvanceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReport whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReport whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReport whereEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReport whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReport whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReport whereReportDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReport whereReportNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReport whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReport whereSubmittedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReport whereTotalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReport whereUpdatedAt($value)
+ * @method static \Kezi\HR\Database\Factories\ExpenseReportFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class ExpenseReport extends Model

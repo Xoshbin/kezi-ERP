@@ -8,11 +8,10 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\Accounting\Enums\Loans\LoanStatus;
 use Kezi\Accounting\Enums\Loans\LoanType;
 use Kezi\Accounting\Enums\Loans\ScheduleMethod;
-use Kezi\Accounting\Models\LoanAgreement;
 use Kezi\Foundation\Models\Currency;
 
 /**
- * @extends Factory<LoanAgreement>
+ * @extends Factory<\Kezi\Accounting\Models\LoanAgreement>
  */
 class LoanAgreementFactory extends Factory
 {

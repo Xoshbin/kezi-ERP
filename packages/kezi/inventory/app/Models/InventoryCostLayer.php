@@ -11,6 +11,36 @@ use Kezi\Product\Models\Product;
 /**
  * @property float $remaining_quantity
  * @property \Brick\Money\Money|null $cost_per_unit
+ * @property int $id
+ * @property int $company_id
+ * @property int $product_id
+ * @property float $quantity
+ * @property \Illuminate\Support\Carbon $purchase_date
+ * @property string $source_type
+ * @property int $source_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
+ * @property-read Product $product
+ * @property-read \Illuminate\Database\Eloquent\Model $source
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryCostLayer newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryCostLayer newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryCostLayer query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryCostLayer whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryCostLayer whereCostPerUnit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryCostLayer whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryCostLayer whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryCostLayer whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryCostLayer wherePurchaseDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryCostLayer whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryCostLayer whereRemainingQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryCostLayer whereSourceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryCostLayer whereSourceType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryCostLayer whereUpdatedAt($value)
+ * @method static \Kezi\Inventory\Database\Factories\InventoryCostLayerFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 class InventoryCostLayer extends Model
 {

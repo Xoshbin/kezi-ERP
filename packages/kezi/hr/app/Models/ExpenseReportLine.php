@@ -25,6 +25,26 @@ use Kezi\Foundation\Observers\AuditLogObserver;
  * @property-read ExpenseReport $expenseReport
  * @property-read Account $expenseAccount
  * @property-read Partner|null $partner
+ * @property int $company_id
+ * @property-read Company $company
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReportLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReportLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReportLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReportLine whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReportLine whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReportLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReportLine whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReportLine whereExpenseAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReportLine whereExpenseDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReportLine whereExpenseReportId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReportLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReportLine wherePartnerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReportLine whereReceiptReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExpenseReportLine whereUpdatedAt($value)
+ * @method static \Kezi\HR\Database\Factories\ExpenseReportLineFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class ExpenseReportLine extends Model

@@ -55,7 +55,6 @@ use RuntimeException;
  * @property-read int|null $lines_count
  * @property-read Model|Eloquent|null $source
  *
- * @method static JournalEntryFactory factory($count = null, $state = [])
  * @method static Builder<static>|JournalEntry newModelQuery()
  * @method static Builder<static>|JournalEntry newQuery()
  * @method static Builder<static>|JournalEntry query()
@@ -77,6 +76,18 @@ use RuntimeException;
  * @method static Builder<static>|JournalEntry whereTotalDebit($value)
  * @method static Builder<static>|JournalEntry whereUpdatedAt($value)
  *
+ * @property JournalEntryState $state
+ * @property int|null $reversed_entry_id
+ * @property string|null $entry_number
+ * @property-read Collection<int, \Kezi\Foundation\Models\DocumentAttachment> $attachments
+ * @property-read int|null $attachments_count
+ * @property-read JournalEntry|null $reversingEntry
+ *
+ * @method static Builder<static>|JournalEntry whereEntryNumber($value)
+ * @method static Builder<static>|JournalEntry whereReversedEntryId($value)
+ * @method static Builder<static>|JournalEntry whereState($value)
+ * @method static \Kezi\Accounting\Database\Factories\JournalEntryFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 #[ObservedBy([JournalEntryObserver::class])]
@@ -84,7 +95,7 @@ class JournalEntry extends Model
 {
     use HasDocumentAttachments;
 
-    /** @use HasFactory<JournalEntryFactory> */
+    /** @use HasFactory<\Kezi\Accounting\Database\Factories\JournalEntryFactory> */
     use HasFactory;
 
     protected static function newFactory(): Factory

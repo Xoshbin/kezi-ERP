@@ -34,6 +34,26 @@ use Kezi\Foundation\Models\Partner;
  * @property-read Account $account
  * @property-read Currency $currency
  * @property-read Partner|null $partner
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluationLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluationLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluationLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluationLine whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluationLine whereAdjustmentAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluationLine whereBookValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluationLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluationLine whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluationLine whereCurrencyRevaluationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluationLine whereCurrentRate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluationLine whereForeignCurrencyBalance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluationLine whereHistoricalRate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluationLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluationLine wherePartnerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluationLine whereRevaluedAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluationLine whereUpdatedAt($value)
+ * @method static \Kezi\Accounting\Database\Factories\CurrencyRevaluationLineFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 class CurrencyRevaluationLine extends Model
 {

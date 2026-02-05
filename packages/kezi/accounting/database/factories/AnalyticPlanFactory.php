@@ -3,10 +3,9 @@
 namespace Kezi\Accounting\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Kezi\Accounting\Models\AnalyticPlan;
 
 /**
- * @extends Factory<AnalyticPlan>
+ * @extends Factory<\Kezi\Accounting\Models\AnalyticPlan>
  */
 class AnalyticPlanFactory extends Factory
 {

@@ -9,6 +9,48 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Kezi\Product\Models\Product;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $product_id
+ * @property string $lot_code
+ * @property \Illuminate\Support\Carbon|null $expiration_date
+ * @property bool $active
+ * @property int $is_rejected
+ * @property string|null $rejection_reason
+ * @property int|null $quarantine_location_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read Product $product
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\QualityControl\Models\QualityCheck> $qualityChecks
+ * @property-read int|null $quality_checks_count
+ * @property-read \Kezi\Inventory\Models\StockLocation|null $quarantineLocation
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Inventory\Models\StockMoveLine> $stockMoveLines
+ * @property-read int|null $stock_move_lines_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Inventory\Models\StockQuant> $stockQuants
+ * @property-read int|null $stock_quants_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lot newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lot newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lot notExpired()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lot orderByExpiration()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lot query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lot whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lot whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lot whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lot whereExpirationDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lot whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lot whereIsRejected($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lot whereLotCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lot whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lot whereQuarantineLocationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lot whereRejectionReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Lot whereUpdatedAt($value)
+ * @method static \Kezi\Inventory\Database\Factories\LotFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
+ */
 class Lot extends Model
 {
     use HasFactory;

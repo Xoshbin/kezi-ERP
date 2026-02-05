@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\Sales\Models\SalesOrder;
 
 /**
- * @extends Factory<SalesOrder>
+ * @extends Factory<\Kezi\Sales\Models\SalesOrder>
  */
 class SalesOrderFactory extends Factory
 {

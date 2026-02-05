@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\QualityControl\Models\QualityInspectionTemplate;
 
 /**
- * @extends Factory<QualityInspectionTemplate>
+ * @extends Factory<\Kezi\QualityControl\Models\QualityInspectionTemplate>
  */
 class QualityInspectionTemplateFactory extends Factory
 {

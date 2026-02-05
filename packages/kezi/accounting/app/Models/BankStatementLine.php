@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
-use Kezi\Accounting\Database\Factories\BankStatementLineFactory;
 use Kezi\Accounting\Observers\BankStatementLineObserver;
 use Kezi\Foundation\Casts\DocumentCurrencyMoneyCast;
 use Kezi\Foundation\Casts\OriginalCurrencyMoneyCast;
@@ -34,7 +33,6 @@ use Kezi\Payment\Models\Payment;
  * @property-read BankStatement $bankStatement
  * @property-read Payment|null $payment
  *
- * @method static BankStatementLineFactory factory($count = null, $state = [])
  * @method static Builder<static>|BankStatementLine newModelQuery()
  * @method static Builder<static>|BankStatementLine newQuery()
  * @method static Builder<static>|BankStatementLine query()
@@ -49,12 +47,27 @@ use Kezi\Payment\Models\Payment;
  * @method static Builder<static>|BankStatementLine wherePaymentId($value)
  * @method static Builder<static>|BankStatementLine whereUpdatedAt($value)
  *
+ * @property int|null $partner_id
+ * @property int $company_id
+ * @property int|null $foreign_currency_id
+ * @property \Brick\Money\Money|null $amount_in_foreign_currency The original transaction amount in the foreign currency (minor units)
+ * @property-read Company $company
+ * @property-read Currency|null $foreignCurrency
+ * @property-read \Kezi\Accounting\Models\JournalEntry|null $journalEntry
+ * @property-read Partner|null $partner
+ *
+ * @method static Builder<static>|BankStatementLine whereAmountInForeignCurrency($value)
+ * @method static Builder<static>|BankStatementLine whereCompanyId($value)
+ * @method static Builder<static>|BankStatementLine whereForeignCurrencyId($value)
+ * @method static Builder<static>|BankStatementLine wherePartnerId($value)
+ * @method static \Kezi\Accounting\Database\Factories\BankStatementLineFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 #[ObservedBy([BankStatementLineObserver::class])]
 class BankStatementLine extends Model
 {
-    /** @use HasFactory<BankStatementLineFactory> */
+    /** @use HasFactory<\Kezi\Accounting\Database\Factories\BankStatementLineFactory> */
     use HasFactory;
 
     protected static function newFactory(): \Kezi\Accounting\Database\Factories\BankStatementLineFactory

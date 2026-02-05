@@ -5,7 +5,7 @@ namespace Kezi\Purchase\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Kezi\Purchase\Models\RequestForQuotationLine>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Kezi\Purchase\Models\RequestForQuotationLine>
  */
 class RequestForQuotationLineFactory extends Factory
 {

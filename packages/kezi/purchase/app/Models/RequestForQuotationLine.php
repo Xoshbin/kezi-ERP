@@ -34,6 +34,26 @@ use Kezi\Product\Models\Product;
  * @property-read RequestForQuotation $rfq
  * @property-read Product|null $product
  * @property-read Tax|null $tax
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotationLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotationLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotationLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotationLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotationLine whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotationLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotationLine whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotationLine whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotationLine whereRfqId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotationLine whereSubtotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotationLine whereTaxAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotationLine whereTaxId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotationLine whereTotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotationLine whereUnit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotationLine whereUnitPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotationLine whereUpdatedAt($value)
+ * @method static \Kezi\Purchase\Database\Factories\RequestForQuotationLineFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class RequestForQuotationLine extends Model

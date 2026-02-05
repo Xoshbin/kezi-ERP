@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
-use Kezi\Accounting\Database\Factories\DepreciationEntryFactory;
 use Kezi\Accounting\Enums\Assets\DepreciationEntryStatus;
 use Kezi\Accounting\Observers\DepreciationEntryObserver;
 use Kezi\Foundation\Casts\BaseCurrencyMoneyCast;
@@ -30,7 +29,6 @@ use Kezi\Foundation\Casts\BaseCurrencyMoneyCast;
  * @property-read Asset $asset
  * @property-read JournalEntry|null $journalEntry
  *
- * @method static DepreciationEntryFactory factory($count = null, $state = [])
  * @method static Builder<static>|DepreciationEntry newModelQuery()
  * @method static Builder<static>|DepreciationEntry newQuery()
  * @method static Builder<static>|DepreciationEntry query()
@@ -43,12 +41,18 @@ use Kezi\Foundation\Casts\BaseCurrencyMoneyCast;
  * @method static Builder<static>|DepreciationEntry whereStatus($value)
  * @method static Builder<static>|DepreciationEntry whereUpdatedAt($value)
  *
+ * @property int $company_id
+ * @property-read Company $company
+ *
+ * @method static Builder<static>|DepreciationEntry whereCompanyId($value)
+ * @method static \Kezi\Accounting\Database\Factories\DepreciationEntryFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 #[ObservedBy([DepreciationEntryObserver::class])]
 class DepreciationEntry extends Model
 {
-    /** @use HasFactory<DepreciationEntryFactory> */
+    /** @use HasFactory<\Kezi\Accounting\Database\Factories\DepreciationEntryFactory> */
     use HasFactory;
 
     protected static function newFactory(): \Kezi\Accounting\Database\Factories\DepreciationEntryFactory
