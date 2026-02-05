@@ -56,10 +56,10 @@ class AnalyticAccountsRelationManager extends RelationManager
                             ->default(Filament::getTenant()?->id),
                     ]),
             ])
-            ->recordActions([
+            ->actions([
                 DetachAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DetachBulkAction::make(),
                 ]),

@@ -201,14 +201,14 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                         return $data;
                     }),
             ])
-            ->recordActions([
+            ->actions([
                 ViewAction::make(),
                 EditAction::make()
                     ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
                 DeleteAction::make()
                     ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->visible(fn (): bool => true), // Add custom logic if needed

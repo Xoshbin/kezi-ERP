@@ -243,14 +243,14 @@ class PaymentsRelationManager extends RelationManager
                         return $data;
                     }),
             ])
-            ->recordActions([
+            ->actions([
                 ViewAction::make(),
                 EditAction::make(),
                 DetachAction::make()
                     ->label(__('accounting::invoice.payments_relation_manager.detach'))
                     ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DetachBulkAction::make()
                         ->label(__('accounting::invoice.payments_relation_manager.detach_selected')),
