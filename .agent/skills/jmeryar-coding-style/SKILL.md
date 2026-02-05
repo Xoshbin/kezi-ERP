@@ -3,149 +3,33 @@ name: kezi-coding-style
 description: Official coding styles, architectural patterns, and best practices. Use when writing or refactoring code.
 ---
 
-This document outlines the official coding styles, architectural patterns, and best practices for this application. Adherence to these standards is mandatory to ensure consistency, maintainability, and robustness.
+### 💎 **Core Coding Principles**
 
-## 1. Core Principles
+<principles>
+- **Immutability:** Posted records are NEVER edited. Reversals only. (No `DELETE` or `UPDATE` on posted financial documents).
+- **Service-Action-DTO:** Business logic in Actions, Orchestration in Services. Input via DTOs.
+- **Money Objects:** `Brick\Money` for 100% precision. Never use floats for financial data.
+- **TDD:** Pest for all business logic (services, calculations, state changes) and UI workflows.
+- **PHP 8.1+ Enums:** Backed enums for all states. Cases: PascalCase, Values: snake_case.
+- **Manual Control:** System relies on manual input; no hidden automatic payment processor logic.
+</principles>
 
-- **Immutability is Law:** Posted financial records (invoices, bills, journal entries) can NEVER be edited or deleted. Corrections are made only through new, reversing transactions.
-- **Manual Data Entry First:** The system relies on manual input. No third-party payment integrations.
-- **Business Logic-Focused TDD:** All tests must focus on the core business logic (services, calculations, state changes) using Pest.
-- **No Temporary Hacks:** All development must strictly adhere to the established architectural patterns (Actions, DTOs, Services), prioritize code reusability, and align with the overall system design.
-- **Single Responsibility Principle (SRP):** Each class, method, or function should have only one reason to change.
-- **Definitive Solution Pattern:** Business logic for pre-save calculations resides exclusively within a dedicated Action that accepts a DTO. Observers are reserved for side effects.
-- **Explicit Context Pattern:** The responsibility for providing context to a new model instance must be shifted from the model itself to the calling code (the Action or Service).
-- **Lowercase Enum & Option Values:** All enum values stored in the database **MUST** be lowercase, `snake_case`.
-- **Architectural Consistency:** Analyze the codebase carefully and follow existing patterns.
-- **Targeted Changes:** Modify only the code that needs to be changed.
-- **Respect Accounting Principles:** Do not violate core accounting principles.
-- **Preserve Comments:** Do not remove comments unless they are no longer relevant.
+### 🏗️ **Layered Architecture Rules**
 
-## 2. The Journal Entry as the Single Source of Truth
+<layers>
+#### Actions (`app/Actions/`)
+- Atomic operations wrapped in `DB::transaction()`.
+- Input via DTOs.
+- Clear `execute()` method.
 
-- **Financial Impact via Journal Entry:** Any model with financial impact (e.g., `Invoice`, `VendorBill`, `Payment`) **MUST** have a polymorphic relationship to the `JournalEntry` model.
-- **Decoupled Creation and Posting:** Creation of a `JournalEntry` (in a `draft` state) **SHALL** be decoupled from its posting.
-- **Source of Truth for Reports:** All financial reports (Trial Balance, P&L, Balance Sheet) **MUST** be generated exclusively from the `journal_entry_lines` table.
-- **Data Consistency:** The `JournalEntry` **MUST** store key redundant data at the time of posting.
+#### DTOs (`app/DataTransferObjects/`)
+- `readonly` classes with typed properties.
+- No business logic.
 
-## 3. State Management: PHP 8.1+ Backed Enums
-
-**Rule:** All state management **MUST** be implemented using PHP 8.1+ Backed Enums. Enum cases **MUST** be `PascalCase`, while their corresponding string values **MUST** be `snake_case`.
-
-```php
-// Modules/Accounting/app/Enums/InvoiceStatus.php
-namespace Modules\Accounting\Enums;
-
-enum InvoiceStatus: string
-{
-    case Draft = 'draft';
-    case Posted = 'posted';
-    case Cancelled = 'cancelled';
-}
-```
-
-## 4. Layered Architecture
-
-The application follows a strict layered architecture within each module.
-
-### 4.1. Actions Layer
-
-**Location:** `Modules/{Module}/app/Actions/`
-
-**Purpose:** Encapsulate a single, specific business operation (Command Pattern).
-
-**Rules:**
-- Each Action **MUST** have a single public `execute()` method.
-- The `execute()` method **MUST** be wrapped in a `DB::transaction()`.
-- Actions **SHOULD** accept a DTO for input.
-- Actions are organized by domain subdirectory.
-
-```php
-// Modules/Accounting/app/Actions/Accounting/CreateJournalEntryAction.php
-namespace Modules\Accounting\Actions\Accounting;
-
-class CreateJournalEntryAction {
-    public function execute(CreateJournalEntryDTO $dto): JournalEntry {
-        return DB::transaction(function () use ($dto) {
-            // Business logic here
-        });
-    }
-}
-```
-
-### 4.2. Data Transfer Objects
-
-**Location:** `Modules/{Module}/app/DataTransferObjects/`
-
-**Purpose:** Provide type-safe, immutable data contracts for transferring data between layers.
-
-**Rules:**
-- All DTOs **MUST** be `readonly` classes.
-- All properties **MUST** be `public readonly` with strict type hints.
-- DTOs contain **NO** business logic.
-
-```php
-// Modules/Accounting/app/DataTransferObjects/DunningLevelDTO.php
-namespace Modules\Accounting\DataTransferObjects;
-
-readonly class DunningLevelDTO
-{
-    public function __construct(
-        public string $name,
-        public int $daysOverdue,
-        public float $feePercentage,
-    ) {}
-}
-```
-
-### 4.3. Service Layer
-
-**Location:** `Modules/{Module}/app/Services/`
-
-**Purpose:** Orchestrate complex business workflows that may involve multiple Actions.
-
-**Rules:**
-- Services contain high-level business process logic.
-- Services call Actions to perform data modifications.
-- Services are responsible for dispatching domain events.
-- Services do **NOT** directly modify data.
-
-### 4.4. Observers
-
-**Location:** `Modules/{Module}/app/Observers/`
-
-**Purpose:** React to Eloquent model lifecycle events for system-level data integrity.
-
-**Rules:**
-- Used for **System Reactions**, NOT business rule authorization.
-- Register using the `#[ObservedBy]` attribute on the model.
-
-### 4.5. Policies
-
-**Location:** `Modules/{Module}/app/Policies/`
-
-**Purpose:** Handle all user Authorization via Filament Shield.
-
-**Rules:**
-- All authorization checks **MUST** be handled by a Policy.
-- Do **NOT** place authorization logic in Observers, Services, or Actions.
-
-## 5. Module Placement Guide
-
-When adding new features, use this guide:
-
-| Feature Type | Module |
-|-------------|--------|
-| Journal entries, fiscal periods, taxes | Accounting |
-| Partners, companies, currencies, settings | Foundation |
-| Customer invoices, quotes | Sales |
-| Vendor bills, purchase orders | Purchase |
-| Stock operations, valuation | Inventory |
-| Employees, payroll, leaves | HR |
-| Payment allocation | Payment |
-| Product catalog | Product |
-| Projects, timesheets | ProjectManagement |
-| BOMs, manufacturing orders | Manufacturing |
-| Quality checks | QualityControl |
+#### Services (`app/Services/`)
+- High-level orchestration.
+- Dispatch domain events.
+</layers>
 
 ## 6. Financial Calculations
 
@@ -167,24 +51,24 @@ foreach ($lines as $line) {
 
 ## 7. Namespace Conventions
 
-All module code uses the `Modules\{ModuleName}` namespace:
+All package code uses the `Kezi\{ModuleName}` namespace:
 
 ```php
 // Models
-use Modules\Accounting\Models\JournalEntry;
-use Modules\Foundation\Models\Partner;
+use Kezi\Accounting\Models\JournalEntry;
+use Kezi\Foundation\Models\Partner;
 
 // Actions
-use Modules\Accounting\Actions\Accounting\CreateJournalEntryAction;
+use Kezi\Accounting\Actions\Accounting\CreateJournalEntryAction;
 
 // Services
-use Modules\Accounting\Services\JournalEntryService;
+use Kezi\Accounting\Services\JournalEntryService;
 
 // DTOs
-use Modules\Accounting\DataTransferObjects\CreateJournalEntryDTO;
+use Kezi\Accounting\DataTransferObjects\CreateJournalEntryDTO;
 
 // Enums
-use Modules\Accounting\Enums\InvoiceStatus;
+use Kezi\Accounting\Enums\InvoiceStatus;
 ```
 
 ## 8. Internationalization and Localization
@@ -204,7 +88,7 @@ use Modules\Accounting\Enums\InvoiceStatus;
     - `label()`, `placeholder()`, `helperText()`
     - `Action::make('name')->label(__('module::file.key'))`
 - **Enum Translations:** Translate enum values in the UI using the `module::file.enum_case` pattern or by implementing a `getLabel()` method on the enum that returns `__('module::file.status.' . $this->value)`.
-- **Naming Convention:** Translation files within `Modules/{Module}/resources/lang/{locale}/` should be named after the feature or entity they describe (e.g., `cash_advance.php` for HR cash advances).
+- **Naming Convention:** Translation files within `packages/kezi/{package}/resources/lang/{locale}/` should be named after the feature or entity they describe (e.g., `cash_advance.php` for HR cash advances).
 
 ## 9. Filament Cluster Navigation
 
@@ -216,7 +100,7 @@ Configuration resources (e.g., `FiscalYearResource`, `TaxResource`, `DepartmentR
 
 ```php
 // In your resource file
-use App\Filament\Clusters\Settings\SettingsCluster;
+use Kezi\Foundation\Filament\Clusters\Settings\SettingsCluster;
 
 class FiscalYearResource extends Resource
 {
@@ -234,7 +118,7 @@ class FiscalYearResource extends Resource
 Add navigation group translations to `Modules/{Module}/resources/lang/{locale}/navigation.php`:
 
 ```php
-// Modules/Accounting/resources/lang/en/navigation.php
+// packages/kezi/accounting/resources/lang/en/navigation.php
 return [
     'groups' => [
         'accounting_settings' => 'Accounting',
@@ -263,7 +147,7 @@ public static function getNavigationLabel(): string
 Ensure `clusters` key exists in the module's `navigation.php`:
 
 ```php
-// Modules/Foundation/resources/lang/en/navigation.php
+// packages/kezi/foundation/resources/lang/en/navigation.php
 return [
     'groups' => [
         'general_settings' => 'General',
@@ -327,7 +211,7 @@ return [
 **Implementation:**
 
 ```php
-use Modules\Foundation\Filament\Actions\DocsAction;
+use Kezi\Foundation\Filament\Actions\DocsAction;
 
 class ListPayments extends ListRecords
 {
@@ -344,7 +228,7 @@ class ListPayments extends ListRecords
 **Conventions:**
 - Add `DocsAction` to the `getHeaderActions()` method on List pages
 - The parameter matches the slug key defined in `DocsAction::mapSlugToDocumentationPath()`
-- **IMPORTANT**: You **MUST** add a mapping entry in `Modules/Foundation/app/Filament/Actions/DocsAction.php` pointing your slug to the correct file path (e.g., `'my-slug' => 'User Guide/my-file'`).
+- **IMPORTANT**: You **MUST** add a mapping entry in `Kezi\Foundation\Filament\Actions\DocsAction.php` pointing your slug to the correct file path (e.g., `'my-slug' => 'User Guide/my-file'`).
 - Users can click the Help/Docs button in the header to open the guide
 
 ### 10.5. Reference
@@ -368,13 +252,16 @@ See [docs/DOCUMENTATION_STANDARD.md](../../docs/DOCUMENTATION_STANDARD.md) for t
 **Rules:**
 - **Zero Regression:** Never introduce new PHPStan errors into a module that has been cleared.
 - **Incremental Cleanup:** When working on a module (e.g., HR, Sales, Accounting), allocate time to resolve existing PHPStan errors in that module's code and tests.
+- **Forced Baseline Maintenance:** As errors are resolved, the baseline MUST be cleared to prevent "outdated error" reports.
+  1. Fix the bug/error.
+  2. Run `./vendor/bin/phpstan analyse --generate-baseline` to overwrite and shrink the baseline.
+  3. The goal is to reach a zero-baseline state for all modules.
 - **Explicit Type Hints:** Use PHPDoc (`/** @var ... */`) and class-level docblocks in `TestCase` to resolve "undefined property" errors without breaking runtime inheritance.
-- **Baseline Maintenance:** As errors are fixed, update the `phpstan-baseline.neon` by removing the solved patterns.
 - **Goal:** Our objective is to eventually eliminate all PHPStan errors and maintain a "No errors" state for all modules.
 
 ## 12. Testing Strategy
 
-**Strategy:** We adopt a "Pyramid" testing strategy that prioritizes speed and reliability.
+**Strategy:** We adopt a "Pyramid" testing strategy that prioritizes speed and reliability. **You MUST run `php artisan test --parallel` before finishing any task.**
 
 ### 12.1. Pyramid Layers
 
@@ -396,7 +283,7 @@ See [docs/DOCUMENTATION_STANDARD.md](../../docs/DOCUMENTATION_STANDARD.md) for t
 ### 12.2. Filament Test Example
 
 ```php
-// Modules/Sales/tests/Feature/Filament/CreateInvoiceTest.php
+// packages/kezi/sales/tests/Feature/Filament/CreateInvoiceTest.php
 use function Pest\Livewire\livewire;
 
 it('can create an invoice', function () {
