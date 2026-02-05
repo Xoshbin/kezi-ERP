@@ -3,19 +3,20 @@ name: browser-testing
 description: Instructions for browser testing and URLs.
 ---
 
-## Browser Testing URL
+### 🌐 **Testing Environment**
 
-When testing in the browser use this base URL: `http://kezi.test/kezi/1`
+<environment>
+- **Base URL:** `http://kezi.test/kezi/1`
+- **Authentication:** Use `filament-developer-logins` for development access.
+</environment>
 
-## Common Routes
+### 🛣️ **Common Routes**
 
+<routes>
 - **Dashboard:** `/kezi/1`
-- **Accounting Resources:** `/kezi/1/accounting/*`
-- **Sales Resources:** `/kezi/1/sales/*`  
-- **Purchase Resources:** `/kezi/1/purchase/*`
-- **Inventory Resources:** `/kezi/1/inventory/*`
-- **HR Resources:** `/kezi/1/hr/*`
-
-## Authentication
-
-The application uses Filament for authentication. Developer logins are available via `filament-developer-logins` package in development.
+- **Accounting:** `/kezi/1/accounting/*`
+- **Sales:** `/kezi/1/sales/*`  
+- **Purchase:** `/kezi/1/purchase/*`
+- **Inventory:** `/kezi/1/inventory/*`
+- **HR:** `/kezi/1/hr/*`
+</routes>
