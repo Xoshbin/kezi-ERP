@@ -3,7 +3,7 @@
 namespace Kezi\Accounting\Filament\Pages;
 
 use App\Models\Company;
-use Filament\Actions\Action;
+use \Filament\Actions\Action;
 use Filament\Pages\Page;
 use Kezi\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Kezi\Accounting\Services\Reports\TaxReportService;

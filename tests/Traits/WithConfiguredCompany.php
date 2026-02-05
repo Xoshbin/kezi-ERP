@@ -94,26 +94,47 @@ trait WithConfiguredCompany
     protected function setupInventoryTestEnvironment(): void
     {
         // 1. Create inventory-specific GL accounts
-        $this->inventoryAccount = \Kezi\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Valuation', 'type' => 'current_assets']);
-        $this->stockInputAccount = \Kezi\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Input', 'type' => 'current_liabilities']);
-        $this->cogsAccount = \Kezi\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Cost of Goods Sold', 'type' => 'expense']);
+        /** @var Account $inventoryAccount */
+        $inventoryAccount = \Kezi\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Valuation', 'type' => 'current_assets']);
+        $this->inventoryAccount = $inventoryAccount;
+
+        /** @var Account $stockInputAccount */
+        $stockInputAccount = \Kezi\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Stock Input', 'type' => 'current_liabilities']);
+        $this->stockInputAccount = $stockInputAccount;
+
+        /** @var Account $cogsAccount */
+        $cogsAccount = \Kezi\Accounting\Models\Account::factory()->for($this->company)->create(['name' => 'Cost of Goods Sold', 'type' => 'expense']);
+        $this->cogsAccount = $cogsAccount;
 
         // 2. Create the necessary physical locations
-        $this->vendorLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::Vendor]);
-        $this->stockLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::Internal]);
-        $this->adjustmentLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::InventoryAdjustment]);
-        $this->customerLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::Customer]);
+        /** @var StockLocation $vendorLocation */
+        $vendorLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::Vendor]);
+        $this->vendorLocation = $vendorLocation;
+
+        /** @var StockLocation $stockLocation */
+        $stockLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::Internal]);
+        $this->stockLocation = $stockLocation;
+
+        /** @var StockLocation $adjustmentLocation */
+        $adjustmentLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::InventoryAdjustment]);
+        $this->adjustmentLocation = $adjustmentLocation;
+
+        /** @var StockLocation $customerLocation */
+        $customerLocation = StockLocation::factory()->for($this->company)->create(['type' => StockLocationType::Customer]);
+        $this->customerLocation = $customerLocation;
 
         // 3. Associate accounts and locations with company defaults
         $this->company->update([
-            'default_inventory_account_id' => $this->inventoryAccount->id,
-            'default_stock_input_account_id' => $this->stockInputAccount->id,
-            'default_vendor_location_id' => $this->vendorLocation->id,
-            'default_stock_location_id' => $this->stockLocation->id,
-            'default_adjustment_location_id' => $this->adjustmentLocation->id,
+            'inventory_adjustment_account_id' => $inventoryAccount->id,
+            'default_stock_input_account_id' => $stockInputAccount->id,
+            'default_vendor_location_id' => $vendorLocation->id,
+            'default_stock_location_id' => $stockLocation->id,
+            'default_adjustment_location_id' => $adjustmentLocation->id,
         ]);
 
         // 4. Create a default vendor for the tests
-        $this->vendor = \Kezi\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Kezi\Foundation\Enums\Partners\PartnerType::Vendor]);
+        /** @var Partner $vendor */
+        $vendor = \Kezi\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Kezi\Foundation\Enums\Partners\PartnerType::Vendor]);
+        $this->vendor = $vendor;
     }
 }

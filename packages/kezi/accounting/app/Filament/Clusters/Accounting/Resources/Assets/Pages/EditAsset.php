@@ -4,8 +4,8 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages;
 
 use Carbon\Carbon;
 use Exception;
-use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
+use \Filament\Actions\Action;
+use \Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -15,6 +15,9 @@ use Kezi\Accounting\Enums\Assets\DepreciationMethod;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Assets\AssetResource;
 use Kezi\Accounting\Models\Asset;
 
+/**
+ * @extends EditRecord<\Kezi\Accounting\Models\Asset>
+ */
 class EditAsset extends EditRecord
 {
     protected static string $resource = AssetResource::class;

@@ -6,6 +6,9 @@ use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\RequestForQuotationResource;
 
+/**
+ * @extends EditRecord<\Kezi\Purchase\Models\RequestForQuotation>
+ */
 class EditRequestForQuotation extends EditRecord
 {
     protected static string $resource = RequestForQuotationResource::class;

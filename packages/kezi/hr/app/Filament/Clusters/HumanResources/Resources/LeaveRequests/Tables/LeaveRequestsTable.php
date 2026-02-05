@@ -2,10 +2,10 @@
 
 namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveRequests\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use \Filament\Actions\BulkActionGroup;
+use \Filament\Actions\DeleteAction;
+use \Filament\Actions\DeleteBulkAction;
+use \Filament\Actions\EditAction;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;

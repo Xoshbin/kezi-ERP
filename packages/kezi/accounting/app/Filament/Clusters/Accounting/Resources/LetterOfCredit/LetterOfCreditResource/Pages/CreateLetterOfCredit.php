@@ -7,6 +7,9 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\LetterOfCredit\Letter
 use Kezi\Payment\DataTransferObjects\LetterOfCredit\CreateLetterOfCreditDTO;
 use Kezi\Payment\Services\LetterOfCredit\LetterOfCreditService;
 
+/**
+ * @extends CreateRecord<\Kezi\Payment\Models\LetterOfCredit>
+ */
 class CreateLetterOfCredit extends CreateRecord
 {
     protected static string $resource = LetterOfCreditResource::class;

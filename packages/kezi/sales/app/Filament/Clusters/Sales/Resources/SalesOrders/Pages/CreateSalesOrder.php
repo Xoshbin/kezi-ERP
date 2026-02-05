@@ -14,6 +14,9 @@ use Kezi\Sales\DataTransferObjects\Sales\CreateSalesOrderDTO;
 use Kezi\Sales\DataTransferObjects\Sales\CreateSalesOrderLineDTO;
 use Kezi\Sales\Filament\Clusters\Sales\Resources\SalesOrders\SalesOrderResource;
 
+/**
+ * @extends CreateRecord<\Kezi\Sales\Models\SalesOrder>
+ */
 class CreateSalesOrder extends CreateRecord
 {
     protected static string $resource = SalesOrderResource::class;

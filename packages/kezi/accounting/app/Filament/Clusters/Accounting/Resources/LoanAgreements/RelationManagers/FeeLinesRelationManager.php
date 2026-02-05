@@ -16,6 +16,9 @@ use Kezi\Accounting\Models\LoanAgreement;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 
+/**
+ * @extends RelationManager<\Kezi\Accounting\Models\LoanAgreement>
+ */
 class FeeLinesRelationManager extends RelationManager
 {
     protected static string $relationship = 'feeLines';

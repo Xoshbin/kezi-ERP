@@ -7,6 +7,9 @@ use Kezi\Foundation\Filament\Resources\Currencies\CurrencyResource;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
 
+/**
+ * @extends CreateRecord<\Kezi\Foundation\Models\Currency>
+ */
 class CreateCurrency extends CreateRecord
 {
     use Translatable;

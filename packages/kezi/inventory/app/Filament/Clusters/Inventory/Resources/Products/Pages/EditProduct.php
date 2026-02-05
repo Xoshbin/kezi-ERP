@@ -2,13 +2,16 @@
 
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages;
 
-use Filament\Actions\DeleteAction;
+use \Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\ProductResource;
 use Kezi\Product\Models\Product;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
 
+/**
+ * @extends EditRecord<\Kezi\Product\Models\Product>
+ */
 class EditProduct extends EditRecord
 {
     use Translatable;

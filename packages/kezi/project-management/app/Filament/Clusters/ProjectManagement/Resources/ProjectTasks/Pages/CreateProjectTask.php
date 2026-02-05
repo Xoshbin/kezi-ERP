@@ -5,6 +5,9 @@ namespace Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\P
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\ProjectTasks\ProjectTaskResource;
 
+/**
+ * @extends CreateRecord<\Kezi\ProjectManagement\Models\ProjectTask>
+ */
 class CreateProjectTask extends CreateRecord
 {
     protected static string $resource = ProjectTaskResource::class;

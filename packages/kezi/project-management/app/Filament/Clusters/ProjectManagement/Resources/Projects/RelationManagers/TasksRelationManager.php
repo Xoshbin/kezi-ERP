@@ -12,6 +12,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Kezi\ProjectManagement\Enums\TaskStatus;
 
+/**
+ * @extends RelationManager<\Kezi\ProjectManagement\Models\Project>
+ */
 class TasksRelationManager extends RelationManager
 {
     protected static string $relationship = 'tasks';

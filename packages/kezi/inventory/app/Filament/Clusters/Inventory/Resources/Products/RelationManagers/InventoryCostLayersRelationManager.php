@@ -2,7 +2,7 @@
 
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers;
 
-use Filament\Actions\ViewAction;
+use \Filament\Actions\ViewAction;
 use Filament\Forms\Components\Placeholder;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Model;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Inventory\Models\InventoryCostLayer;
 
+/**
+ * @extends RelationManager<\Kezi\Product\Models\Product>
+ */
 class InventoryCostLayersRelationManager extends RelationManager
 {
     protected static string $relationship = 'inventoryCostLayers';

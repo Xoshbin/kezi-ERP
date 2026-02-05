@@ -4,8 +4,8 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\
 
 use Brick\Money\Money;
 use Exception;
-use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
+use \Filament\Actions\Action;
+use \Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -22,6 +22,9 @@ use Kezi\Foundation\Models\Currency;
 
 /**
  * @property JournalEntry $record
+ */
+/**
+ * @extends EditRecord<\Kezi\Accounting\Models\JournalEntry>
  */
 class EditJournalEntry extends EditRecord
 {

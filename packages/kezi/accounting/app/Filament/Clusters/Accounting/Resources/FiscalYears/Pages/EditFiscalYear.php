@@ -2,7 +2,7 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\FiscalYears\Pages;
 
-use Filament\Actions\Action;
+use \Filament\Actions\Action;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -20,6 +20,9 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\FiscalYears\FiscalYea
 use Kezi\Accounting\Models\FiscalYear;
 use Kezi\Accounting\Services\FiscalYearService;
 
+/**
+ * @extends EditRecord<\Kezi\Accounting\Models\FiscalYear>
+ */
 class EditFiscalYear extends EditRecord
 {
     protected static string $resource = FiscalYearResource::class;

@@ -6,10 +6,10 @@ use App\Models\Company;
 use BackedEnum;
 use Brick\Money\Money;
 use Exception;
-use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\EditAction;
+use \Filament\Actions\Action;
+use \Filament\Actions\ActionGroup;
+use \Filament\Actions\BulkActionGroup;
+use \Filament\Actions\EditAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -865,7 +865,7 @@ class VendorBillResource extends Resource
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    // Tables\Actions\DeleteBulkAction::make(),
+                    // \Filament\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

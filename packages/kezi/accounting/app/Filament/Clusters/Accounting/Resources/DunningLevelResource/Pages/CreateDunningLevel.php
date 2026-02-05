@@ -8,6 +8,9 @@ use Kezi\Accounting\Actions\Dunning\CreateDunningLevelAction;
 use Kezi\Accounting\DataTransferObjects\DunningLevelDTO;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\DunningLevelResource;
 
+/**
+ * @extends CreateRecord<\Kezi\Accounting\Models\DunningLevel>
+ */
 class CreateDunningLevel extends CreateRecord
 {
     protected static string $resource = DunningLevelResource::class;

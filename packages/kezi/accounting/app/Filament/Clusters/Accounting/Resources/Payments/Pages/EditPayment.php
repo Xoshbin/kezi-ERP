@@ -4,8 +4,8 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages;
 
 use Brick\Money\Money;
 use Exception;
-use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
+use \Filament\Actions\Action;
+use \Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Collection;
@@ -23,6 +23,9 @@ use Kezi\Payment\Enums\Payments\PaymentType;
 use Kezi\Payment\Models\Payment;
 use Kezi\Payment\Services\PaymentService;
 
+/**
+ * @extends EditRecord<\Kezi\Payment\Models\Payment>
+ */
 class EditPayment extends EditRecord
 {
     protected static string $resource = PaymentResource::class;

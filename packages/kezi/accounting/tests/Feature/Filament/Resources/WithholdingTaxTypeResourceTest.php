@@ -1,6 +1,6 @@
 <?php
 
-use Filament\Actions\DeleteAction;
+use \Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Kezi\Accounting\Enums\Accounting\WithholdingTaxApplicability;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\Pages\CreateWithholdingTaxType;

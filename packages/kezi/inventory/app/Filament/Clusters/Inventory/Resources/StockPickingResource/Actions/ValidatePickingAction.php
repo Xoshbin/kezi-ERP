@@ -2,7 +2,7 @@
 
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions;
 
-use Filament\Actions\Action;
+use \Filament\Actions\Action;
 use Kezi\Inventory\Models\StockPicking;
 
 class ValidatePickingAction extends Action

@@ -2,11 +2,14 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Payments\RelationManagers;
 
-use Filament\Actions\EditAction;
+use \Filament\Actions\EditAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+/**
+ * @extends RelationManager<\Kezi\Payment\Models\Payment>
+ */
 class ChequesRelationManager extends RelationManager
 {
     protected static string $relationship = 'cheques';

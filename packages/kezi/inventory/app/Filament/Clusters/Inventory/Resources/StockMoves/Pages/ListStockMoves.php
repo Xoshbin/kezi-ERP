@@ -2,7 +2,7 @@
 
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages;
 
-use Filament\Actions\CreateAction;
+use \Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Kezi\Foundation\Filament\Actions\DocsAction;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;

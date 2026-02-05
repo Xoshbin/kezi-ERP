@@ -20,7 +20,7 @@ class CashAdvanceForm
                             ->required(),
                         \Filament\Forms\Components\Select::make('currency_id')
                             ->relationship('currency', 'code')
-                            ->default(fn () => \App\Models\Company::first()?->base_currency_id)
+                            ->default(fn () => \App\Models\Company::first()?->currency_id)
                             ->required(),
                         \Kezi\Foundation\Filament\Forms\Components\MoneyInput::make('requested_amount')
                             ->currencyField('currency_id')

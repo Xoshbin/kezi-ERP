@@ -2,7 +2,7 @@
 
 namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\Pages;
 
-use Filament\Actions\CreateAction;
+use \Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Kezi\Foundation\Filament\Actions\DocsAction;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\LeaveTypeResource;

@@ -2,11 +2,14 @@
 
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\Pages;
 
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
+use \Filament\Actions\DeleteAction;
+use \Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\StockLocationResource;
 
+/**
+ * @extends EditRecord<\Kezi\Inventory\Models\StockLocation>
+ */
 class EditStockLocation extends EditRecord
 {
     protected static string $resource = StockLocationResource::class;

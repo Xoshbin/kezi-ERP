@@ -4,9 +4,9 @@ namespace Kezi\Accounting\Livewire\Accounting;
 
 use Brick\Money\Money;
 use Exception;
-use Filament\Actions\Action;
-use Filament\Actions\Concerns\InteractsWithActions;
-use Filament\Actions\Contracts\HasActions;
+use \Filament\Actions\Action;
+use \Filament\Actions\Concerns\InteractsWithActions;
+use \Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Concerns\InteractsWithForms;

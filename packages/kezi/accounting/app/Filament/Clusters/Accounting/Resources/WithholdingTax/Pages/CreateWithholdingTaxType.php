@@ -7,6 +7,9 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\Withho
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
 
+/**
+ * @extends CreateRecord<\Kezi\Accounting\Models\WithholdingTaxType>
+ */
 class CreateWithholdingTaxType extends CreateRecord
 {
     use Translatable;

@@ -2,12 +2,12 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
+use \Filament\Actions\BulkActionGroup;
+use \Filament\Actions\CreateAction;
+use \Filament\Actions\DeleteAction;
+use \Filament\Actions\DeleteBulkAction;
+use \Filament\Actions\EditAction;
+use \Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -25,6 +25,9 @@ use Kezi\Inventory\Enums\Adjustments\AdjustmentDocumentType;
 use Kezi\Inventory\Models\AdjustmentDocument;
 use Kezi\Purchase\Models\VendorBill;
 
+/**
+ * @extends RelationManager<\Kezi\Purchase\Models\VendorBill>
+ */
 class AdjustmentDocumentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'adjustmentDocuments';

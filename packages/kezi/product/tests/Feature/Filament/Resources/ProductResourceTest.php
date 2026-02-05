@@ -1,6 +1,6 @@
 <?php
 
-use Filament\Actions\DeleteAction;
+use \Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Kezi\Accounting\Models\Account;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages\CreateProduct;

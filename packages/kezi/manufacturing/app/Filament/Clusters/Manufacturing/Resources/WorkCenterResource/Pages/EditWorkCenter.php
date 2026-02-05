@@ -5,6 +5,9 @@ namespace Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\WorkCente
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\WorkCenterResource;
 
+/**
+ * @extends EditRecord<\Kezi\Manufacturing\Models\WorkCenter>
+ */
 class EditWorkCenter extends EditRecord
 {
     protected static string $resource = WorkCenterResource::class;

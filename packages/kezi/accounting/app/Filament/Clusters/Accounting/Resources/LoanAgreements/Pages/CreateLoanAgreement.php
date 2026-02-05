@@ -7,6 +7,9 @@ use Filament\Resources\Pages\CreateRecord;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
 use Kezi\Foundation\Filament\Actions\DocsAction;
 
+/**
+ * @extends CreateRecord<\Kezi\Accounting\Models\LoanAgreement>
+ */
 class CreateLoanAgreement extends CreateRecord
 {
     protected static string $resource = LoanAgreementResource::class;

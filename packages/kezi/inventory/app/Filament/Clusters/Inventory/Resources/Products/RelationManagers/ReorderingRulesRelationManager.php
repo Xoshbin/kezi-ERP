@@ -2,10 +2,10 @@
 
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers;
 
-use Filament\Actions\CreateAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
+use \Filament\Actions\CreateAction;
+use \Filament\Actions\DeleteAction;
+use \Filament\Actions\EditAction;
+use \Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -19,6 +19,9 @@ use Illuminate\Database\Eloquent\Model;
 use Kezi\Inventory\Enums\Inventory\ReorderingRoute;
 use Kezi\Product\Models\Product;
 
+/**
+ * @extends RelationManager<\Kezi\Product\Models\Product>
+ */
 class ReorderingRulesRelationManager extends RelationManager
 {
     protected static string $relationship = 'reorderingRules';

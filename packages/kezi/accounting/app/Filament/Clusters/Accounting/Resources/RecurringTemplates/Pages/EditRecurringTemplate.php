@@ -6,6 +6,9 @@ use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\RecurringTemplates\RecurringTemplateResource;
 
+/**
+ * @extends EditRecord<\Kezi\Accounting\Models\RecurringTemplate>
+ */
 class EditRecurringTemplate extends EditRecord
 {
     protected static string $resource = RecurringTemplateResource::class;

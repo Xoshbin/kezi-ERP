@@ -3,7 +3,7 @@
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Accounts\Pages;
 
 use Exception;
-use Filament\Actions\DeleteAction;
+use \Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +12,9 @@ use Kezi\Accounting\Models\Account;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
 
+/**
+ * @extends EditRecord<\Kezi\Accounting\Models\Account>
+ */
 class EditAccount extends EditRecord
 {
     use Translatable;

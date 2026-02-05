@@ -7,6 +7,9 @@ namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\Attendances\Pages;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Attendances\AttendanceResource;
 
+/**
+ * @extends EditRecord<\Kezi\HR\Models\Attendance>
+ */
 class EditAttendance extends EditRecord
 {
     protected static string $resource = AttendanceResource::class;

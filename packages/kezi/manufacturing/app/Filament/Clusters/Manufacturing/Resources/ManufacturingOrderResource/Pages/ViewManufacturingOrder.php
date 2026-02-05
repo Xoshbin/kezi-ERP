@@ -2,15 +2,18 @@
 
 namespace Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\ManufacturingOrderResource\Pages;
 
-use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
+use \Filament\Actions\Action;
+use \Filament\Actions\DeleteAction;
+use \Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Kezi\Manufacturing\Enums\ManufacturingOrderStatus;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\ManufacturingOrderResource;
 use Kezi\Manufacturing\Services\ManufacturingOrderService;
 
+/**
+ * @extends ViewRecord<\Kezi\Manufacturing\Models\ManufacturingOrder>
+ */
 class ViewManufacturingOrder extends ViewRecord
 {
     protected static string $resource = ManufacturingOrderResource::class;

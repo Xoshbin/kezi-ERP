@@ -19,6 +19,9 @@ use Kezi\Accounting\Models\JournalEntry;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Payment\Models\Payment;
 
+/**
+ * @extends RelationManager<\Kezi\Payment\Models\Payment>
+ */
 class JournalEntriesRelationManager extends RelationManager
 {
     protected static string $relationship = 'journalEntries';

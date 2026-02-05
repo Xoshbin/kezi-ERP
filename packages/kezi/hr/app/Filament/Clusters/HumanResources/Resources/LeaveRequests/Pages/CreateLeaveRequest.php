@@ -5,6 +5,9 @@ namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveRequests\Pages
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveRequests\LeaveRequestResource;
 
+/**
+ * @extends CreateRecord<\Kezi\HR\Models\LeaveRequest>
+ */
 class CreateLeaveRequest extends CreateRecord
 {
     protected static string $resource = LeaveRequestResource::class;

@@ -3,7 +3,7 @@
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions;
 
 use App\Models\User;
-use Filament\Actions\Action;
+use \Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Kezi\Inventory\DataTransferObjects\Inventory\ShipTransferDTO;
 use Kezi\Inventory\Models\StockPicking;

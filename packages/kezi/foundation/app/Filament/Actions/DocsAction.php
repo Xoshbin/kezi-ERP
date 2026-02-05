@@ -2,7 +2,7 @@
 
 namespace Kezi\Foundation\Filament\Actions;
 
-use Filament\Actions\Action;
+use \Filament\Actions\Action;
 use Illuminate\Support\Str;
 
 class DocsAction

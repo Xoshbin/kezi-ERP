@@ -3,7 +3,7 @@
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Assets\RelationManagers;
 
 use Exception;
-use Filament\Actions\Action;
+use \Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -13,6 +13,9 @@ use Illuminate\Database\Eloquent\Model;
 use Kezi\Accounting\Enums\Assets\DepreciationEntryStatus;
 use Kezi\Accounting\Models\DepreciationEntry;
 
+/**
+ * @extends RelationManager<\Kezi\Accounting\Models\Asset>
+ */
 class DepreciationEntryRelationManager extends RelationManager
 {
     protected static string $relationship = 'depreciationEntries';

@@ -2,14 +2,17 @@
 
 namespace Kezi\Sales\Filament\Clusters\Sales\Resources\Quotes\Pages;
 
-use Filament\Actions\Action;
-use Filament\Actions\EditAction;
+use \Filament\Actions\Action;
+use \Filament\Actions\EditAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Kezi\Sales\Filament\Clusters\Sales\Resources\Quotes\QuoteResource;
 use Kezi\Sales\Services\QuoteService;
 
+/**
+ * @extends ViewRecord<\Kezi\Sales\Models\Quote>
+ */
 class ViewQuote extends ViewRecord
 {
     protected static string $resource = QuoteResource::class;

@@ -12,6 +12,9 @@ use Kezi\Sales\DataTransferObjects\Sales\CreateQuoteLineDTO;
 use Kezi\Sales\Filament\Clusters\Sales\Resources\Quotes\QuoteResource;
 use Kezi\Sales\Services\QuoteService;
 
+/**
+ * @extends CreateRecord<\Kezi\Sales\Models\Quote>
+ */
 class CreateQuote extends CreateRecord
 {
     protected static string $resource = QuoteResource::class;

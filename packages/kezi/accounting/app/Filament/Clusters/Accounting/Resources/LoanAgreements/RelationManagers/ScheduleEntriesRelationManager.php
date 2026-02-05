@@ -8,6 +8,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 
+/**
+ * @extends RelationManager<\Kezi\Accounting\Models\LoanAgreement>
+ */
 class ScheduleEntriesRelationManager extends RelationManager
 {
     protected static string $relationship = 'scheduleEntries';
