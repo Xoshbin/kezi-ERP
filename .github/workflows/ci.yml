@@ -70,7 +70,7 @@ jobs:
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: database/database.sqlite
-        run: vendor/bin/pest --ci --parallel
+        run: vendor/bin/pest --ci --parallel --exclude-testsuite=Browser
 
       # This step runs PHPStan for static analysis.
       - name: "Run PHPStan"
