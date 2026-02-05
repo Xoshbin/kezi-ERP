@@ -23,6 +23,30 @@ use Kezi\Accounting\Enums\Assets\DepreciationMethod;
  * @property bool $is_active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Kezi\Accounting\Models\Account $accumulatedDepreciationAccount
+ * @property-read \Kezi\Accounting\Models\Account $assetAccount
+ * @property-read Company $company
+ * @property-read \Kezi\Accounting\Models\Account $depreciationExpenseAccount
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AssetCategory newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AssetCategory newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AssetCategory query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AssetCategory whereAccumulatedDepreciationAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AssetCategory whereAssetAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AssetCategory whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AssetCategory whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AssetCategory whereDecliningFactor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AssetCategory whereDepreciationExpenseAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AssetCategory whereDepreciationMethod($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AssetCategory whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AssetCategory whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AssetCategory whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AssetCategory whereProrataTemporis($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AssetCategory whereSalvageValueDefault($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AssetCategory whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AssetCategory whereUsefulLifeYears($value)
+ *
+ * @mixin \Eloquent
  */
 class AssetCategory extends Model
 {

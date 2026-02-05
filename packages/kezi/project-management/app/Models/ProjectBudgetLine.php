@@ -26,6 +26,22 @@ use Kezi\Accounting\Models\Account;
  * @property-read Company $company
  * @property-read ProjectBudget $projectBudget
  * @property-read Account $account
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudgetLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudgetLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudgetLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudgetLine whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudgetLine whereActualAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudgetLine whereBudgetedAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudgetLine whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudgetLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudgetLine whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudgetLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudgetLine whereProjectBudgetId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudgetLine whereUpdatedAt($value)
+ * @method static \Kezi\ProjectManagement\Database\Factories\ProjectBudgetLineFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([\Kezi\Foundation\Observers\AuditLogObserver::class, \Kezi\ProjectManagement\Observers\ProjectBudgetLineObserver::class])]
 class ProjectBudgetLine extends Model

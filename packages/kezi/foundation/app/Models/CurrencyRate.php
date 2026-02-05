@@ -9,11 +9,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
-use Kezi\Foundation\Database\Factories\CurrencyRateFactory;
 
 /**
  * Class CurrencyRate
- *
  *
  * @property int $id
  * @property int $currency_id
@@ -24,7 +22,6 @@ use Kezi\Foundation\Database\Factories\CurrencyRateFactory;
  * @property Carbon|null $updated_at
  * @property-read Currency $currency
  *
- * @method static \Kezi\Foundation\Database\Factories\CurrencyRateFactory factory($count = null, $state = [])
  * @method static Builder<static>|CurrencyRate newModelQuery()
  * @method static Builder<static>|CurrencyRate newQuery()
  * @method static Builder<static>|CurrencyRate query()
@@ -35,11 +32,20 @@ use Kezi\Foundation\Database\Factories\CurrencyRateFactory;
  * @method static Builder<static>|CurrencyRate whereCreatedAt($value)
  * @method static Builder<static>|CurrencyRate whereUpdatedAt($value)
  *
+ * @property int $company_id
+ * @property-read Company $company
+ *
+ * @method static Builder<static>|CurrencyRate forCurrency(int $currencyId)
+ * @method static Builder<static>|CurrencyRate latestRateForDate(int $currencyId, $date, int $companyId)
+ * @method static Builder<static>|CurrencyRate whereCompanyId($value)
+ * @method static Builder<static>|CurrencyRate whereId($value)
+ * @method static \Kezi\Foundation\Database\Factories\CurrencyRateFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 class CurrencyRate extends Model
 {
-    /** @use HasFactory<CurrencyRateFactory> */
+    /** @use HasFactory<\Kezi\Foundation\Database\Factories\CurrencyRateFactory> */
     use HasFactory;
 
     protected static function newFactory(): \Kezi\Foundation\Database\Factories\CurrencyRateFactory

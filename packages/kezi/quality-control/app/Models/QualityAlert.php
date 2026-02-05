@@ -33,6 +33,42 @@ use Kezi\QualityControl\Enums\QualityAlertStatus;
  * @property int $reported_by_user_id
  * @property Carbon|null $resolved_at
  * @property Carbon|null $closed_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read User|null $assignedToUser
+ * @property-read Company $company
+ * @property-read \Kezi\QualityControl\Models\DefectType|null $defectType
+ * @property-read Lot|null $lot
+ * @property-read Product $product
+ * @property-read \Kezi\QualityControl\Models\QualityCheck|null $qualityCheck
+ * @property-read User $reportedByUser
+ * @property-read SerialNumber|null $serialNumber
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereAssignedToUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereClosedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereCorrectiveAction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereDefectTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereLotId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert wherePreventiveAction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereQualityCheckId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereReportedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereResolvedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereRootCause($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereSerialNumberId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityAlert whereUpdatedAt($value)
+ * @method static \Kezi\QualityControl\Database\Factories\QualityAlertFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class, \Kezi\QualityControl\Observers\QualityAlertObserver::class])]
 class QualityAlert extends Model

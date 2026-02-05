@@ -9,7 +9,7 @@ use Kezi\Accounting\Enums\Reconciliation\ReconciliationType;
 use Kezi\Accounting\Models\Reconciliation;
 
 /**
- * @extends Factory<Reconciliation>
+ * @extends Factory<\Kezi\Accounting\Models\Reconciliation>
  */
 class ReconciliationFactory extends Factory
 {

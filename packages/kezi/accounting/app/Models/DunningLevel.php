@@ -19,6 +19,32 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Company $company
+ * @property bool $charge_fee
+ * @property \Brick\Money\Money $fee_amount
+ * @property numeric $fee_percentage
+ * @property int|null $fee_product_id
+ * @property-read \Kezi\Product\Models\Product|null $feeProduct
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DunningLevel newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DunningLevel newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DunningLevel query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DunningLevel whereChargeFee($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DunningLevel whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DunningLevel whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DunningLevel whereDaysOverdue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DunningLevel whereEmailBody($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DunningLevel whereEmailSubject($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DunningLevel whereFeeAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DunningLevel whereFeePercentage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DunningLevel whereFeeProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DunningLevel whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DunningLevel whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DunningLevel wherePrintLetter($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DunningLevel whereSendEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DunningLevel whereUpdatedAt($value)
+ * @method static \Kezi\Accounting\Database\Factories\DunningLevelFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 class DunningLevel extends Model
 {

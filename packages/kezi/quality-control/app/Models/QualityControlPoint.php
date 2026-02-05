@@ -23,6 +23,30 @@ use Kezi\QualityControl\Enums\QualityTriggerOperation;
  * @property int|null $quantity_threshold
  * @property bool $is_blocking
  * @property bool $active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read \Kezi\QualityControl\Models\QualityInspectionTemplate $inspectionTemplate
+ * @property-read Product|null $product
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityControlPoint newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityControlPoint newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityControlPoint query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityControlPoint whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityControlPoint whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityControlPoint whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityControlPoint whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityControlPoint whereInspectionTemplateId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityControlPoint whereIsBlocking($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityControlPoint whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityControlPoint whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityControlPoint whereQuantityThreshold($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityControlPoint whereTriggerFrequency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityControlPoint whereTriggerOperation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityControlPoint whereUpdatedAt($value)
+ * @method static \Kezi\QualityControl\Database\Factories\QualityControlPointFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class QualityControlPoint extends Model

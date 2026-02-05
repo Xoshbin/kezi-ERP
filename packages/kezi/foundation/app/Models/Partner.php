@@ -60,7 +60,6 @@ use Xoshbin\CustomFields\Traits\HasCustomFields;
  * @property-read \Kezi\Accounting\Models\FiscalPosition|null $fiscalPosition
  * @property-read \Kezi\Accounting\Models\Tax|null $defaultTax
  *
- * @method static \Kezi\Foundation\Database\Factories\PartnerFactory factory($count = null, $state = [])
  * @method static Builder<static>|Partner newModelQuery()
  * @method static Builder<static>|Partner newQuery()
  * @method static Builder<static>|Partner onlyTrashed()
@@ -85,6 +84,33 @@ use Xoshbin\CustomFields\Traits\HasCustomFields;
  * @method static Builder<static>|Partner whereZipCode($value)
  * @method static Builder<static>|Partner withTrashed(bool $withTrashed = true)
  * @method static Builder<static>|Partner withoutTrashed()
+ *
+ * @property int|null $receivable_account_id
+ * @property int|null $customer_payment_term_id
+ * @property int|null $vendor_payment_term_id
+ * @property int|null $withholding_tax_type_id
+ * @property int|null $payable_account_id
+ * @property int|null $fiscal_position_id
+ * @property-read Collection<int, \Xoshbin\CustomFields\Models\CustomFieldValue> $customFieldValues
+ * @property-read int|null $custom_field_values_count
+ * @property-read \Kezi\Foundation\Models\PaymentTerm|null $customerPaymentTerm
+ * @property-read array<string, mixed> $custom_fields
+ * @property-read Company|null $linkedCompany
+ * @property-read Account|null $payableAccount
+ * @property-read Account|null $receivableAccount
+ * @property-read \Kezi\Foundation\Models\PaymentTerm|null $vendorPaymentTerm
+ * @property-read \Kezi\Accounting\Models\WithholdingTaxType|null $withholdingTaxType
+ *
+ * @method static Builder<static>|Partner whereCustomerPaymentTermId($value)
+ * @method static Builder<static>|Partner whereDefaultTaxId($value)
+ * @method static Builder<static>|Partner whereFiscalPositionId($value)
+ * @method static Builder<static>|Partner whereLinkedCompanyId($value)
+ * @method static Builder<static>|Partner wherePayableAccountId($value)
+ * @method static Builder<static>|Partner whereReceivableAccountId($value)
+ * @method static Builder<static>|Partner whereVendorPaymentTermId($value)
+ * @method static Builder<static>|Partner whereWithholdingTaxTypeId($value)
+ * @method static Builder<static>|Partner withCustomFields()
+ * @method static \Kezi\Foundation\Database\Factories\PartnerFactory factory($count = null, $state = [])
  *
  * @mixin Eloquent
  */

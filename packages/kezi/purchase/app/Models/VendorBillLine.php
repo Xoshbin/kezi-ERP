@@ -54,7 +54,6 @@ use Kezi\Purchase\Observers\VendorBillLineObserver;
  * @property-read Tax|null $tax
  * @property-read VendorBill $vendorBill
  *
- * @method static VendorBillLineFactory factory($count = null, $state = [])
  * @method static Builder<static>|VendorBillLine newModelQuery()
  * @method static Builder<static>|VendorBillLine newQuery()
  * @method static Builder<static>|VendorBillLine query()
@@ -72,12 +71,24 @@ use Kezi\Purchase\Observers\VendorBillLineObserver;
  * @method static Builder<static>|VendorBillLine whereUpdatedAt($value)
  * @method static Builder<static>|VendorBillLine whereVendorBillId($value)
  *
+ * @property-read Company $company
+ *
+ * @method static Builder<static>|VendorBillLine whereAssetCategoryId($value)
+ * @method static Builder<static>|VendorBillLine whereCompanyId($value)
+ * @method static Builder<static>|VendorBillLine whereDeferredEndDate($value)
+ * @method static Builder<static>|VendorBillLine whereDeferredStartDate($value)
+ * @method static Builder<static>|VendorBillLine whereShippingCostType($value)
+ * @method static Builder<static>|VendorBillLine whereSubtotalCompanyCurrency($value)
+ * @method static Builder<static>|VendorBillLine whereTotalLineTaxCompanyCurrency($value)
+ * @method static Builder<static>|VendorBillLine whereUnitPriceCompanyCurrency($value)
+ * @method static \Kezi\Purchase\Database\Factories\VendorBillLineFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 #[ObservedBy([VendorBillLineObserver::class])]
 class VendorBillLine extends Model
 {
-    /** @use HasFactory<VendorBillLineFactory> */
+    /** @use HasFactory<\Kezi\Purchase\Database\Factories\VendorBillLineFactory> */
     use HasFactory;
 
     protected static function newFactory(): VendorBillLineFactory

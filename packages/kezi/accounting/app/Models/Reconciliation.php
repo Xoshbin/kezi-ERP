@@ -6,7 +6,6 @@ use App\Models\Company;
 use App\Models\User;
 use Brick\Money\Money;
 use Carbon\Carbon;
-use Database\Factories\ReconciliationFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +17,6 @@ use RuntimeException;
 
 /**
  * Class Reconciliation
- *
  *
  * @property int $id
  * @property int $company_id
@@ -32,10 +30,27 @@ use RuntimeException;
  * @property-read Company $company
  * @property-read User $reconciledBy
  * @property-read Collection<int, JournalEntryLine> $journalEntryLines
+ * @property-read int $line_count
+ * @property-read int|null $journal_entry_lines_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reconciliation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reconciliation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reconciliation query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reconciliation whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reconciliation whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reconciliation whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reconciliation whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reconciliation whereReconciledAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reconciliation whereReconciledByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reconciliation whereReconciliationType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reconciliation whereReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reconciliation whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 class Reconciliation extends Model
 {
-    /** @use HasFactory<ReconciliationFactory> */
+    /** @use HasFactory<\Kezi\Accounting\Database\Factories\ReconciliationFactory> */
     use HasFactory;
 
     /**

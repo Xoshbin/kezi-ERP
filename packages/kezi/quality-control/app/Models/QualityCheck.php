@@ -31,6 +31,43 @@ use Kezi\QualityControl\Enums\QualityCheckStatus;
  * @property int|null $inspected_by_user_id
  * @property Carbon|null $inspected_at
  * @property string|null $notes
+ * @property bool $is_blocking
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read User|null $inspectedByUser
+ * @property-read \Kezi\QualityControl\Models\QualityInspectionTemplate|null $inspectionTemplate
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\QualityControl\Models\QualityCheckLine> $lines
+ * @property-read int|null $lines_count
+ * @property-read Lot|null $lot
+ * @property-read Product $product
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\QualityControl\Models\QualityAlert> $qualityAlerts
+ * @property-read int|null $quality_alerts_count
+ * @property-read SerialNumber|null $serialNumber
+ * @property-read Model|\Eloquent $source
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck whereInspectedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck whereInspectedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck whereInspectionTemplateId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck whereIsBlocking($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck whereLotId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck whereNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck whereSerialNumberId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck whereSourceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck whereSourceType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheck whereUpdatedAt($value)
+ * @method static \Kezi\QualityControl\Database\Factories\QualityCheckFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class, \Kezi\QualityControl\Observers\QualityCheckObserver::class])]
 class QualityCheck extends Model

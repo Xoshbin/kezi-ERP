@@ -10,7 +10,7 @@ use Kezi\Payment\Models\PaymentInstallment;
 use Kezi\Sales\Models\Invoice;
 
 /**
- * @extends Factory<PaymentInstallment>
+ * @extends Factory<\Kezi\Payment\Models\PaymentInstallment>
  */
 class PaymentInstallmentFactory extends Factory
 {

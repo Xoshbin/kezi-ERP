@@ -4,7 +4,6 @@ namespace Kezi\Accounting\Models;
 
 use App\Models\Company;
 use Brick\Money\Money;
-use Database\Factories\BudgetLineFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -30,7 +29,6 @@ use Illuminate\Support\Carbon;
  * @property-read Budget $budget
  * @property-read Company $company
  *
- * @method static BudgetLineFactory factory($count = null, $state = [])
  * @method static Builder<static>|BudgetLine newModelQuery()
  * @method static Builder<static>|BudgetLine newQuery()
  * @method static Builder<static>|BudgetLine query()
@@ -43,12 +41,14 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|BudgetLine whereCreatedAt($value)
  * @method static Builder<static>|BudgetLine whereId($value)
  * @method static Builder<static>|BudgetLine whereUpdatedAt($value)
+ * @method static Builder<static>|BudgetLine whereCompanyId($value)
+ * @method static \Kezi\Accounting\Database\Factories\BudgetLineFactory factory($count = null, $state = [])
  *
  * @mixin Eloquent
  */
 class BudgetLine extends Model
 {
-    /** @use HasFactory<BudgetLineFactory> */
+    /** @use HasFactory<\Kezi\Accounting\Database\Factories\BudgetLineFactory> */
     use HasFactory;
 
     /**

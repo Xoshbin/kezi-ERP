@@ -12,7 +12,7 @@ use Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus;
 use Kezi\Purchase\Models\PurchaseOrder;
 
 /**
- * @extends Factory<PurchaseOrder>
+ * @extends Factory<\Kezi\Purchase\Models\PurchaseOrder>
  */
 class PurchaseOrderFactory extends Factory
 {

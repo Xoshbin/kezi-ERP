@@ -10,7 +10,7 @@ use Kezi\Inventory\Models\StockQuant;
 use Kezi\Product\Models\Product;
 
 /**
- * @extends Factory<StockQuant>
+ * @extends Factory<\Kezi\Inventory\Models\StockQuant>
  */
 class StockQuantFactory extends Factory
 {

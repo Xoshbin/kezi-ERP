@@ -16,6 +16,20 @@ use Illuminate\Validation\ValidationException;
  * @property Carbon|null $updated_at
  * @property-read ProductCategory|null $parent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, ProductCategory> $children
+ * @property-read int|null $children_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ProductCategory> $descendants
+ * @property-read int|null $descendants_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductCategory newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductCategory newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductCategory query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductCategory whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductCategory whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductCategory whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductCategory whereParentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductCategory whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 class ProductCategory extends Model
 {

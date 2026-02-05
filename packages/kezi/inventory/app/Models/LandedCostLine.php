@@ -17,6 +17,21 @@ use Kezi\Foundation\Casts\BaseCurrencyMoneyCast;
  * @property-read Company $company
  * @property-read LandedCost $landedCost
  * @property-read StockMove $stockMove
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCostLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCostLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCostLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCostLine whereAdditionalCost($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCostLine whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCostLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCostLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCostLine whereLandedCostId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCostLine whereStockMoveId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LandedCostLine whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 class LandedCostLine extends Model
 {

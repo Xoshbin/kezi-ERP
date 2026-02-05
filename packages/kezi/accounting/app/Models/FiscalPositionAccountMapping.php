@@ -3,7 +3,6 @@
 namespace Kezi\Accounting\Models;
 
 use App\Models\Company;
-use Database\Factories\FiscalPositionAccountMappingFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,7 +22,6 @@ use Illuminate\Support\Carbon;
  * @property-read Account $mappedAccount
  * @property-read Account $originalAccount
  *
- * @method static FiscalPositionAccountMappingFactory factory($count = null, $state = [])
  * @method static Builder<static>|FiscalPositionAccountMapping newModelQuery()
  * @method static Builder<static>|FiscalPositionAccountMapping newQuery()
  * @method static Builder<static>|FiscalPositionAccountMapping query()
@@ -32,6 +30,12 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|FiscalPositionAccountMapping whereMappedAccountId($value)
  * @method static Builder<static>|FiscalPositionAccountMapping whereOriginalAccountId($value)
  * @method static Builder<static>|FiscalPositionAccountMapping whereUpdatedAt($value)
+ *
+ * @property int $company_id
+ * @property-read Company $company
+ *
+ * @method static Builder<static>|FiscalPositionAccountMapping whereCompanyId($value)
+ * @method static \Kezi\Accounting\Database\Factories\FiscalPositionAccountMappingFactory factory($count = null, $state = [])
  *
  * @mixin Eloquent
  */

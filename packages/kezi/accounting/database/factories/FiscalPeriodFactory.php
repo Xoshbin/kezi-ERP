@@ -8,7 +8,7 @@ use Kezi\Accounting\Models\FiscalPeriod;
 use Kezi\Accounting\Models\FiscalYear;
 
 /**
- * @extends Factory<FiscalPeriod>
+ * @extends Factory<\Kezi\Accounting\Models\FiscalPeriod>
  */
 class FiscalPeriodFactory extends Factory
 {

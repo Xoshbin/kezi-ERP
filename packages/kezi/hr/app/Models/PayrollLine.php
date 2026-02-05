@@ -35,6 +35,33 @@ use Kezi\HR\Casts\PayrollCurrencyMoneyCast;
  * @property-read \Kezi\HR\Models\Payroll $payroll
  * @property-read \Kezi\Accounting\Models\Account $account
  * @property-read \Kezi\Accounting\Models\AnalyticAccount|null $analyticAccount
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereAmountCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereAnalyticAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereDebitCredit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereIsStatutory($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereIsTaxable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereLineType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine wherePayrollId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereRate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereTaxRate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereUnit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PayrollLine whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 class PayrollLine extends Model
 {

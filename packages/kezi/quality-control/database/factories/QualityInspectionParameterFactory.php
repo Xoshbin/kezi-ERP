@@ -7,7 +7,7 @@ use Kezi\QualityControl\Enums\QualityCheckType;
 use Kezi\QualityControl\Models\QualityInspectionParameter;
 
 /**
- * @extends Factory<QualityInspectionParameter>
+ * @extends Factory<\Kezi\QualityControl\Models\QualityInspectionParameter>
  */
 class QualityInspectionParameterFactory extends Factory
 {

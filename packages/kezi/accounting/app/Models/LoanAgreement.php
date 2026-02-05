@@ -14,6 +14,62 @@ use Kezi\Accounting\Enums\Loans\ScheduleMethod;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\Partner;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int|null $partner_id
+ * @property string|null $name
+ * @property \Illuminate\Support\Carbon $loan_date
+ * @property \Illuminate\Support\Carbon $start_date
+ * @property \Illuminate\Support\Carbon|null $maturity_date
+ * @property int $duration_months
+ * @property int $currency_id
+ * @property \Brick\Money\Money $principal_amount
+ * @property \Brick\Money\Money $outstanding_principal
+ * @property LoanType $loan_type
+ * @property LoanStatus $status
+ * @property ScheduleMethod $schedule_method
+ * @property float $interest_rate
+ * @property int $eir_enabled
+ * @property float|null $eir_rate
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read Currency $currency
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Accounting\Models\LoanFeeLine> $feeLines
+ * @property-read int|null $fee_lines_count
+ * @property-read Partner|null $partner
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Accounting\Models\LoanRateChange> $rateChanges
+ * @property-read int|null $rate_changes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Accounting\Models\LoanScheduleEntry> $scheduleEntries
+ * @property-read int|null $schedule_entries_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement whereDurationMonths($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement whereEirEnabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement whereEirRate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement whereInterestRate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement whereLoanDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement whereLoanType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement whereMaturityDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement whereOutstandingPrincipal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement wherePartnerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement wherePrincipalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement whereScheduleMethod($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement whereStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LoanAgreement whereUpdatedAt($value)
+ * @method static \Kezi\Accounting\Database\Factories\LoanAgreementFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
+ */
 class LoanAgreement extends Model
 {
     use HasFactory;

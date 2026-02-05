@@ -11,6 +11,34 @@ use Kezi\Foundation\Casts\BaseCurrencyMoneyCast;
 /**
  * Class DeferredLine
  * Represents a scheduled recognition entry (monthly installment).
+ *
+ * @property int $id
+ * @property int $company_id
+ * @property int $deferred_item_id
+ * @property \Illuminate\Support\Carbon $date
+ * @property \Brick\Money\Money $amount
+ * @property int|null $journal_entry_id
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Company|null $company
+ * @property-read \Kezi\Accounting\Models\DeferredItem $deferredItem
+ * @property-read \Kezi\Accounting\Models\JournalEntry|null $journalEntry
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DeferredLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DeferredLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DeferredLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DeferredLine whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DeferredLine whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DeferredLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DeferredLine whereDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DeferredLine whereDeferredItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DeferredLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DeferredLine whereJournalEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DeferredLine whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DeferredLine whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 class DeferredLine extends Model
 {

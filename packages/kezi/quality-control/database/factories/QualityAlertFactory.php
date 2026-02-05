@@ -7,7 +7,7 @@ use Kezi\QualityControl\Enums\QualityAlertStatus;
 use Kezi\QualityControl\Models\QualityAlert;
 
 /**
- * @extends Factory<QualityAlert>
+ * @extends Factory<\Kezi\QualityControl\Models\QualityAlert>
  */
 class QualityAlertFactory extends Factory
 {

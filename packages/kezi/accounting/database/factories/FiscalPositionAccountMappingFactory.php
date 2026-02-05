@@ -3,10 +3,9 @@
 namespace Kezi\Accounting\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Kezi\Accounting\Models\FiscalPositionAccountMapping;
 
 /**
- * @extends Factory<FiscalPositionAccountMapping>
+ * @extends Factory<\Kezi\Accounting\Models\FiscalPositionAccountMapping>
  */
 class FiscalPositionAccountMappingFactory extends Factory
 {

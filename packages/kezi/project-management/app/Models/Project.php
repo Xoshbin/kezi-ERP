@@ -50,6 +50,35 @@ use Kezi\ProjectManagement\Enums\ProjectStatus;
  * @property-read int|null $budgets_count
  * @property-read Collection<int, ProjectInvoice> $invoices
  * @property-read int|null $invoices_count
+ * @property numeric|null $hourly_rate
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereAnalyticAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereBillingType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereBudgetAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereCustomerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereHourlyRate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereIsBillable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereManagerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Project withoutTrashed()
+ * @method static \Kezi\ProjectManagement\Database\Factories\ProjectFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([\Kezi\Foundation\Observers\AuditLogObserver::class])]
 class Project extends Model
@@ -211,7 +240,7 @@ class Project extends Model
         $activeBudget = $this->getActiveBudget();
 
         if (! $activeBudget) {
-            return Money::ofMinor($this->budget_amount, $this->company->currency->code);
+            return Money::of($this->budget_amount, $this->company->currency->code);
         }
 
         return $activeBudget->total_budget;

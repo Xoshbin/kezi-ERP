@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\Accounting\Models\FiscalPosition;
 
 /**
- * @extends Factory<FiscalPosition>
+ * @extends Factory<\Kezi\Accounting\Models\FiscalPosition>
  */
 class FiscalPositionFactory extends Factory
 {

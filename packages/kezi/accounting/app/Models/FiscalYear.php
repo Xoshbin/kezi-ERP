@@ -40,7 +40,21 @@ use Kezi\Accounting\Enums\Accounting\FiscalYearState;
  * @method static Builder<static>|FiscalYear forCompany(Company $company)
  * @method static Builder<static>|FiscalYear open()
  * @method static Builder<static>|FiscalYear containingDate(Carbon $date)
- * @method static FiscalYearFactory factory($count = null, $state = [])
+ *
+ * @property-read int|null $periods_count
+ *
+ * @method static Builder<static>|FiscalYear whereClosedAt($value)
+ * @method static Builder<static>|FiscalYear whereClosedByUserId($value)
+ * @method static Builder<static>|FiscalYear whereClosingJournalEntryId($value)
+ * @method static Builder<static>|FiscalYear whereCompanyId($value)
+ * @method static Builder<static>|FiscalYear whereCreatedAt($value)
+ * @method static Builder<static>|FiscalYear whereEndDate($value)
+ * @method static Builder<static>|FiscalYear whereId($value)
+ * @method static Builder<static>|FiscalYear whereName($value)
+ * @method static Builder<static>|FiscalYear whereStartDate($value)
+ * @method static Builder<static>|FiscalYear whereState($value)
+ * @method static Builder<static>|FiscalYear whereUpdatedAt($value)
+ * @method static \Kezi\Accounting\Database\Factories\FiscalYearFactory factory($count = null, $state = [])
  *
  * @mixin Eloquent
  */

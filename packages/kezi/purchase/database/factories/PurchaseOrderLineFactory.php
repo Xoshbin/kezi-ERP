@@ -9,7 +9,7 @@ use Kezi\Purchase\Models\PurchaseOrder;
 use Kezi\Purchase\Models\PurchaseOrderLine;
 
 /**
- * @extends Factory<PurchaseOrderLine>
+ * @extends Factory<\Kezi\Purchase\Models\PurchaseOrderLine>
  */
 class PurchaseOrderLineFactory extends Factory
 {

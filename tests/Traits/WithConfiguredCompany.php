@@ -2,26 +2,31 @@
 
 namespace Tests\Traits;
 
+use App\Models\Company;
 use App\Models\User;
 use Filament\Facades\Filament;
+use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Models\Journal;
+use Kezi\Foundation\Models\Currency;
+use Kezi\Foundation\Models\Partner;
 use Kezi\Inventory\Enums\Inventory\StockLocationType;
 use Kezi\Inventory\Models\StockLocation;
 use Tests\Builders\CompanyBuilder;
 
 /**
- * @property \App\Models\Company $company
- * @property \App\Models\User $user
- * @property \Kezi\Accounting\Models\Account $inventoryAccount
- * @property \Kezi\Accounting\Models\Account $stockInputAccount
- * @property \Kezi\Accounting\Models\Account $cogsAccount
- * @property \Kezi\Inventory\Models\StockLocation $vendorLocation
- * @property \Kezi\Inventory\Models\StockLocation $stockLocation
- * @property \Kezi\Inventory\Models\StockLocation $adjustmentLocation
- * @property \Kezi\Inventory\Models\StockLocation $customerLocation
- * @property \Kezi\Foundation\Models\Partner $vendor
- * @property \Kezi\Foundation\Models\Currency $usdCurrency
- * @property \Kezi\Foundation\Models\Currency $eurCurrency
- * @property \Kezi\Accounting\Models\Journal $usdBankJournal
+ * @property Company $company
+ * @property User $user
+ * @property Account $inventoryAccount
+ * @property Account $stockInputAccount
+ * @property Account $cogsAccount
+ * @property StockLocation $vendorLocation
+ * @property StockLocation $stockLocation
+ * @property StockLocation $adjustmentLocation
+ * @property StockLocation $customerLocation
+ * @property Partner $vendor
+ * @property Currency $usdCurrency
+ * @property Currency $eurCurrency
+ * @property Journal $usdBankJournal
  *
  * @mixin \Tests\TestCase
  */

@@ -29,6 +29,11 @@ use Kezi\Accounting\Observers\AnalyticAccountPlanPivotObserver;
  * @method static Builder<static>|AnalyticAccountPlanPivot whereCreatedAt($value)
  * @method static Builder<static>|AnalyticAccountPlanPivot whereUpdatedAt($value)
  *
+ * @property int $company_id
+ * @property-read Company $company
+ *
+ * @method static Builder<static>|AnalyticAccountPlanPivot whereCompanyId($value)
+ *
  * @mixin Eloquent
  */
 #[ObservedBy([AnalyticAccountPlanPivotObserver::class])]

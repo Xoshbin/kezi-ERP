@@ -41,6 +41,22 @@ use Kezi\Payment\Models\Payment;
  * @method static Builder<static>|WithholdingTaxEntry query()
  * @method static Builder<static>|WithholdingTaxEntry uncertified()
  *
+ * @property-read float $rate_percentage
+ *
+ * @method static Builder<static>|WithholdingTaxEntry whereBaseAmount($value)
+ * @method static Builder<static>|WithholdingTaxEntry whereCompanyId($value)
+ * @method static Builder<static>|WithholdingTaxEntry whereCreatedAt($value)
+ * @method static Builder<static>|WithholdingTaxEntry whereCurrencyId($value)
+ * @method static Builder<static>|WithholdingTaxEntry whereId($value)
+ * @method static Builder<static>|WithholdingTaxEntry wherePaymentId($value)
+ * @method static Builder<static>|WithholdingTaxEntry whereRateApplied($value)
+ * @method static Builder<static>|WithholdingTaxEntry whereUpdatedAt($value)
+ * @method static Builder<static>|WithholdingTaxEntry whereVendorId($value)
+ * @method static Builder<static>|WithholdingTaxEntry whereWithheldAmount($value)
+ * @method static Builder<static>|WithholdingTaxEntry whereWithholdingTaxCertificateId($value)
+ * @method static Builder<static>|WithholdingTaxEntry whereWithholdingTaxTypeId($value)
+ * @method static \Kezi\Accounting\Database\Factories\WithholdingTaxEntryFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 class WithholdingTaxEntry extends Model
