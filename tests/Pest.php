@@ -1,5 +1,6 @@
 <?php
 
+/** @var \Tests\TestCase $this */
 $root = dirname(__DIR__);
 
 uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class)
