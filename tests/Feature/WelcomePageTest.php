@@ -14,4 +14,9 @@ test('welcome page returns a successful response and contains premium CTAs', fun
     $response->assertSee('Iraq');
     $response->assertSee('UAS');
     $response->assertSee('Native Dual-Currency');
+
+    // Abstract Dashboard Assertions
+    $response->assertSee('Monthly Revenue');
+    $response->assertSee('System Status');
+    $response->assertSee('Active Operations');
 });
