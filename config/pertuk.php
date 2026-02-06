@@ -48,8 +48,5 @@ return [
     // GitHub Repo & Branch for "Edit on GitHub" links
     'github_repo' => env('PERTUK_GITHUB_REPO', 'username/repo'), // @phpstan-ignore-line
     'github_branch' => env('PERTUK_GITHUB_BRANCH', 'main'), // @phpstan-ignore-line
-
-    // Path prefix within the GitHub repo (e.g. 'docs' or '')
-    // If null, it defaults to the relative path of the docs folder in your project
-    'github_root' => env('PERTUK_GITHUB_ROOT'),
+    'github_path' => '', // Docs are at root of kezi-docs repo
 ];
