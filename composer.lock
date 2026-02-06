@@ -10183,12 +10183,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Xoshbin/pertuk.git",
-                "reference": "ee62cb0abcfc8744c5ac8f6040aecd70fcb3ca39"
+                "reference": "004531f6a50700eea5b217439dd4f14a08a3ff95"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Xoshbin/pertuk/zipball/ee62cb0abcfc8744c5ac8f6040aecd70fcb3ca39",
-                "reference": "ee62cb0abcfc8744c5ac8f6040aecd70fcb3ca39",
+                "url": "https://api.github.com/repos/Xoshbin/pertuk/zipball/004531f6a50700eea5b217439dd4f14a08a3ff95",
+                "reference": "004531f6a50700eea5b217439dd4f14a08a3ff95",
                 "shasum": ""
             },
             "require": {
@@ -10258,7 +10258,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-02-06T22:33:25+00:00"
+            "time": "2026-02-06T23:38:58+00:00"
         }
     ],
     "packages-dev": [
