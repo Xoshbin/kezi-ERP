@@ -25,6 +25,8 @@ jobs:
       # This step checks out your repository's code so the job can access it.
       - name: "Checkout"
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       # This step sets up the specified PHP version and any required extensions.
       - name: "Setup PHP"
@@ -98,6 +100,8 @@ jobs:
       # Checks out the code, which now includes the automatic style fixes.
       - name: "Checkout"
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       # This step triggers the deployment webhook provided by Ploi.
       - name: "Trigger Ploi deploy"
