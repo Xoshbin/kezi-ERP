@@ -3,9 +3,9 @@
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages;
 
 use Carbon\Carbon;
-use \Filament\Actions\Action;
-use \Filament\Actions\DeleteAction;
-use \Filament\Actions\ViewAction;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;

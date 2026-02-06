@@ -4,7 +4,7 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Pages\Reports;
 
 use BackedEnum;
 use Carbon\Carbon;
-use \Filament\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Page;

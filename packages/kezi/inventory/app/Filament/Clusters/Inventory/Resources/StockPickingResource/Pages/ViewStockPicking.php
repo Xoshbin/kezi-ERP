@@ -2,7 +2,7 @@
 
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Pages;
 
-use \Filament\Actions\EditAction;
+use Filament\Actions\EditAction;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Grid;

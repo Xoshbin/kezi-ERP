@@ -2,7 +2,7 @@
 
 namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\Departments\Pages;
 
-use \Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Departments\DepartmentResource;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;

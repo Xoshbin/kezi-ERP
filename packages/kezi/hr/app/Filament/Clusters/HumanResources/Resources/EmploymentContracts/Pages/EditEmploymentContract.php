@@ -2,7 +2,7 @@
 
 namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\EmploymentContracts\Pages;
 
-use \Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\EmploymentContracts\EmploymentContractResource;
 

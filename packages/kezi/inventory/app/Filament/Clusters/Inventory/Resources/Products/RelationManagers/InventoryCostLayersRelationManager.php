@@ -2,7 +2,7 @@
 
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers;
 
-use \Filament\Actions\ViewAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Placeholder;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;

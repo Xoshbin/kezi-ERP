@@ -2,7 +2,7 @@
 
 namespace Kezi\Foundation\Filament\Resources\Currencies\Pages;
 
-use \Filament\Actions\CreateAction;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Kezi\Foundation\Filament\Actions\DocsAction;
 use Kezi\Foundation\Filament\Resources\Currencies\CurrencyResource;

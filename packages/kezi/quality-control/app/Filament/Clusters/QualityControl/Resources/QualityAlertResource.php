@@ -2,10 +2,10 @@
 
 namespace Kezi\QualityControl\Filament\Clusters\QualityControl\Resources;
 
-use \Filament\Actions\Action;
-use \Filament\Actions\BulkActionGroup;
-use \Filament\Actions\DeleteBulkAction;
-use \Filament\Actions\EditAction;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;

@@ -2,7 +2,7 @@
 
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages;
 
-use \Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\ProductResource;
 use Kezi\Product\Models\Product;

@@ -2,7 +2,7 @@
 
 namespace Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\Projects\Pages;
 
-use \Filament\Actions\CreateAction;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\Projects\ProjectResource;
 

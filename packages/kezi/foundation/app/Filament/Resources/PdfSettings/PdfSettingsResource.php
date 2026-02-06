@@ -5,7 +5,7 @@ namespace Kezi\Foundation\Filament\Resources\PdfSettings;
 use App\Filament\Clusters\Settings\SettingsCluster;
 use App\Models\Company;
 use BackedEnum;
-use \Filament\Actions\EditAction;
+use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\KeyValue;

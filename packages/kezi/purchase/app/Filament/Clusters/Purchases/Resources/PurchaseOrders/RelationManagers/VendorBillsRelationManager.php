@@ -2,7 +2,7 @@
 
 namespace Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\RelationManagers;
 
-use \Filament\Actions\CreateAction;
+use Filament\Actions\CreateAction;
 use Filament\Facades\Filament;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;

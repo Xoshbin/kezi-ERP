@@ -2,7 +2,7 @@
 
 namespace Kezi\Foundation\Filament\Resources\Currencies\Pages;
 
-use \Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Foundation\Filament\Resources\Currencies\CurrencyResource;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;

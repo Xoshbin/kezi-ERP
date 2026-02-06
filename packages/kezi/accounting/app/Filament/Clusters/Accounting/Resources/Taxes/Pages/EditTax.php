@@ -2,7 +2,7 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages;
 
-use \Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Taxes\TaxResource;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;

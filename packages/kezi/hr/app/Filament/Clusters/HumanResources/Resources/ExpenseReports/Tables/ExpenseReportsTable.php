@@ -2,8 +2,8 @@
 
 namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\ExpenseReports\Tables;
 
-use \Filament\Actions\BulkActionGroup;
-use \Filament\Actions\DeleteBulkAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Table;
 
 class ExpenseReportsTable

@@ -2,10 +2,10 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\RelationManagers;
 
-use \Filament\Actions\AttachAction;
-use \Filament\Actions\BulkActionGroup;
-use \Filament\Actions\DetachAction;
-use \Filament\Actions\DetachBulkAction;
+use Filament\Actions\AttachAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DetachAction;
+use Filament\Actions\DetachBulkAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;

@@ -2,9 +2,9 @@
 
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources;
 
-use \Filament\Actions\BulkActionGroup;
-use \Filament\Actions\DeleteBulkAction;
-use \Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;

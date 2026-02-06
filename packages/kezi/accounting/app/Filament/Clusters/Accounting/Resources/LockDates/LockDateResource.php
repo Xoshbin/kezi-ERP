@@ -4,8 +4,8 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\LockDates;
 
 use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
-use \Filament\Actions\DeleteAction;
-use \Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
