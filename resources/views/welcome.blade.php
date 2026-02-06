@@ -152,11 +152,118 @@
             </div>
         </div>
 
-        <!-- Hero Screenshot -->
+        <!-- Live Activity Section (Abstract Dashboard) -->
         <div id="dashboard" class="max-w-6xl mx-auto mt-24 px-4">
-            <div class="screenshot-frame group relative">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent z-20 pointer-events-none transition-opacity group-hover:opacity-0"></div>
-                <img src="/images/screenshots/dashboard_1770399216637.png" alt="{{ __('Kezi Financial Dashboard') }}" class="w-full opacity-90 group-hover:opacity-100 transition-opacity duration-700">
+            <div class="relative glass rounded-3xl p-1 md:p-4 border-amber-500/20 overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-b from-amber-500/5 to-transparent pointer-events-none"></div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                    <!-- Card 1: Revenue Momentum -->
+                    <div class="bg-slate-950/50 rounded-2xl p-6 border border-white/5 relative overflow-hidden group hover:border-amber-500/30 transition-all">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <div class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Monthly Revenue') }}</div>
+                                <div class="text-3xl font-display font-bold text-white group-hover:text-amber-500 transition-colors">$124,500</div>
+                            </div>
+                            <div class="flex items-center gap-1 text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-lg text-xs font-bold">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                                <span>+12.5%</span>
+                            </div>
+                        </div>
+                        <div class="h-16 flex items-end gap-1">
+                            <div class="w-1/6 bg-amber-500/20 h-[40%] rounded-t-sm"></div>
+                            <div class="w-1/6 bg-amber-500/30 h-[60%] rounded-t-sm"></div>
+                            <div class="w-1/6 bg-amber-500/40 h-[50%] rounded-t-sm"></div>
+                            <div class="w-1/6 bg-amber-500/60 h-[70%] rounded-t-sm"></div>
+                            <div class="w-1/6 bg-amber-500/80 h-[85%] rounded-t-sm"></div>
+                            <div class="w-1/6 bg-amber-500 h-[100%] rounded-t-sm animate-pulse"></div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Active Operations -->
+                    <div class="bg-slate-950/50 rounded-2xl p-6 border border-white/5 relative overflow-hidden group hover:border-sky-500/30 transition-all">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <div class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Active Operations') }}</div>
+                                <div class="text-3xl font-display font-bold text-white group-hover:text-sky-500 transition-colors">1,842</div>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-sky-500/10 flex items-center justify-center">
+                                <span class="relative flex h-3 w-3">
+                                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                                  <span class="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-slate-400">{{ __('Processing Invoices') }}</span>
+                                <span class="text-white font-mono">85%</span>
+                            </div>
+                            <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                                <div class="h-full bg-sky-500 w-[85%]"></div>
+                            </div>
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-slate-400">{{ __('Syncing Bank Feeds') }}</span>
+                                <span class="text-white font-mono">98%</span>
+                            </div>
+                            <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                                <div class="h-full bg-emerald-500 w-[98%]"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: System Health -->
+                    <div class="bg-slate-950/50 rounded-2xl p-6 border border-white/5 relative overflow-hidden group hover:border-purple-500/30 transition-all">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <div class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('System Status') }}</div>
+                                <div class="text-xl font-display font-bold text-emerald-400">{{ __('Operational') }}</div>
+                            </div>
+                            <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mt-6">
+                            <div class="bg-slate-900/50 p-3 rounded-lg border border-white/5">
+                                <div class="text-[10px] text-slate-500 uppercase">{{ __('Uptime') }}</div>
+                                <div class="text-lg font-mono text-white">99.99%</div>
+                            </div>
+                            <div class="bg-slate-900/50 p-3 rounded-lg border border-white/5">
+                                <div class="text-[10px] text-slate-500 uppercase">{{ __('Security') }}</div>
+                                <div class="text-lg font-mono text-white">{{ __('Shield') }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Abstract Data Table / List -->
+                <div class="mt-4 md:mt-6 bg-slate-950/80 rounded-2xl border border-white/5 p-4 overflow-hidden">
+                    <div class="flex items-center justify-between mb-4 px-2">
+                        <span class="text-xs font-bold text-slate-500 uppercase">{{ __('Recent Transactions') }}</span>
+                        <div class="flex gap-2">
+                            <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                            <div class="w-2 h-2 rounded-full bg-amber-500"></div>
+                            <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        @foreach(range(1, 3) as $i)
+                        <div class="flex items-center justify-between py-2 px-3 hover:bg-white/5 rounded-lg transition-colors cursor-default border-b border-white/5 last:border-0">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-slate-200">{{ __('Invoice') }} #INV-202{{ $i }}</div>
+                                    <div class="text-xs text-slate-500">{{ now()->subMinutes($i * 12)->diffForHumans() }}</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm font-mono text-white">${{ number_format(rand(1000, 5000), 2) }}</div>
+                                <div class="text-[10px] text-emerald-400">{{ __('Completed') }}</div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </div>
     </header>
