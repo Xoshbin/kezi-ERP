@@ -27,5 +27,5 @@ composer.local.json
 /packages/xoshbin/pertuk
 /packages/xoshbin/jmeryar-theme
 /packages/xoshbin/filament-create-on-search-select
-jmeryar-notebooklm.code-workspace
+kezi.code-workspace
 tests/Browser/Screenshots

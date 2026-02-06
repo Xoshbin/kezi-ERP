@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Kezi\Accounting\Models\JournalEntry;
 use Kezi\Foundation\Models\Currency;
-use Kezi\Inventory\Database\Factories\AdjustmentDocumentFactory;
 use Kezi\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
 use Kezi\Inventory\Enums\Adjustments\AdjustmentDocumentType;
 use Kezi\Purchase\Models\VendorBill;
@@ -43,7 +42,6 @@ use Kezi\Sales\Models\Invoice;
  * @property-read Invoice|null $originalInvoice
  * @property-read VendorBill|null $originalVendorBill
  *
- * @method static \Kezi\Inventory\Database\Factories\AdjustmentDocumentFactory factory($count = null, $state = [])
  * @method static Builder<static>|AdjustmentDocument newModelQuery()
  * @method static Builder<static>|AdjustmentDocument newQuery()
  * @method static Builder<static>|AdjustmentDocument query()
@@ -63,11 +61,27 @@ use Kezi\Sales\Models\Invoice;
  * @method static Builder<static>|AdjustmentDocument whereType($value)
  * @method static Builder<static>|AdjustmentDocument whereUpdatedAt($value)
  *
+ * @property int $currency_id
+ * @property numeric|null $exchange_rate_at_creation
+ * @property \Brick\Money\Money|null $subtotal_company_currency
+ * @property \Brick\Money\Money|null $total_amount_company_currency
+ * @property \Brick\Money\Money|null $total_tax_company_currency
+ * @property-read Collection<int, \Kezi\Inventory\Models\AdjustmentDocumentLine> $lines
+ * @property-read int|null $lines_count
+ *
+ * @method static Builder<static>|AdjustmentDocument whereCurrencyId($value)
+ * @method static Builder<static>|AdjustmentDocument whereExchangeRateAtCreation($value)
+ * @method static Builder<static>|AdjustmentDocument whereSubtotal($value)
+ * @method static Builder<static>|AdjustmentDocument whereSubtotalCompanyCurrency($value)
+ * @method static Builder<static>|AdjustmentDocument whereTotalAmountCompanyCurrency($value)
+ * @method static Builder<static>|AdjustmentDocument whereTotalTaxCompanyCurrency($value)
+ * @method static \Kezi\Inventory\Database\Factories\AdjustmentDocumentFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 class AdjustmentDocument extends Model
 {
-    /** @use HasFactory<AdjustmentDocumentFactory> */
+    /** @use HasFactory<\Kezi\Inventory\Database\Factories\AdjustmentDocumentFactory> */
     use HasFactory;
 
     protected static function newFactory(): \Kezi\Inventory\Database\Factories\AdjustmentDocumentFactory

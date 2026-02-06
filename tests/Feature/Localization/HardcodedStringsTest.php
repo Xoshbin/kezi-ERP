@@ -232,6 +232,7 @@ test('blade templates in modules do not contain hardcoded user-facing text', fun
         '/Example/i',
         '/DocType/i',
         '/HTML/i',
+        '/Company/i',
     ];
 
     $bladeFiles = File::allFiles($modulesPath);
@@ -295,5 +296,84 @@ test('blade templates in modules do not contain hardcoded user-facing text', fun
     $this->assertEmpty(
         $hardcodedStrings,
         "Found potential hardcoded strings in Blade templates that should use {{ __() }} translation:\n".implode("\n", $hardcodedStrings)
+    );
+});
+
+test('filament resources have properly translated metadata labels', function () {
+    $modulesPath = base_path('packages/kezi');
+    $appPath = base_path('app');
+
+    $phpFiles = File::allFiles($modulesPath);
+    if (File::isDirectory($appPath)) {
+        $phpFiles = array_merge($phpFiles, File::allFiles($appPath));
+    }
+
+    $failedTranslations = [];
+
+    foreach ($phpFiles as $file) {
+        if ($file->getExtension() !== 'php' || ! str_contains($file->getFilename(), 'Resource.php')) {
+            continue;
+        }
+
+        $fullPath = $file->getRealPath();
+        if (! str_contains($fullPath, 'Filament')) {
+            continue;
+        }
+
+        // Determine namespace by reading the file content
+        $content = file_get_contents($fullPath);
+        if (! preg_match('/namespace\s+([^;]+);/', $content, $namespaceMatch)) {
+            continue;
+        }
+
+        $namespace = $namespaceMatch[1];
+        $className = $file->getBasename('.php');
+        $fullClass = "\\{$namespace}\\{$className}";
+
+        if (! class_exists($fullClass)) {
+            continue;
+        }
+
+        $methodsToCheck = [
+            'getNavigationGroup' => 'Navigation Group',
+            'getNavigationLabel' => 'Navigation Label',
+            'getModelLabel' => 'Model Label',
+            'getPluralModelLabel' => 'Plural Model Label',
+        ];
+
+        foreach ($methodsToCheck as $method => $labelType) {
+            if (! method_exists($fullClass, $method)) {
+                continue;
+            }
+
+            // check English
+            App::setLocale('en');
+            $enValue = $fullClass::$method();
+
+            // check Kurdish
+            App::setLocale('ckb');
+            $ckbValue = $fullClass::$method();
+
+            if ($enValue === null) {
+                continue;
+            }
+
+            // Check for missing translation strings (key returned as value)
+            if (Str::contains((string) $enValue, '::')) {
+                $failedTranslations[] = "Resource {$fullClass} has missing properties in English for {$labelType}: '{$enValue}'";
+
+                continue;
+            }
+
+            // Check if values are identical (indicates hardcoded string or missing translation)
+            if ($enValue === $ckbValue) {
+                $failedTranslations[] = "Resource {$fullClass} seems to have untranslated {$labelType} (EN: '{$enValue}', CKB: '{$ckbValue}'). It might be hardcoded or missing ckb translation.";
+            }
+        }
+    }
+
+    $this->assertEmpty(
+        $failedTranslations,
+        "Found untranslated resource metadata labels:\n".implode("\n", $failedTranslations)
     );
 });

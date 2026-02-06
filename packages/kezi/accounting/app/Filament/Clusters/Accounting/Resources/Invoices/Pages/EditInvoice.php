@@ -43,6 +43,9 @@ use Kezi\Sales\Services\InvoiceService;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
+/**
+ * @extends EditRecord<\Kezi\Sales\Models\Invoice>
+ */
 class EditInvoice extends EditRecord
 {
     protected static string $resource = InvoiceResource::class;

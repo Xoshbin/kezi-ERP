@@ -18,6 +18,26 @@ use Kezi\QualityControl\Enums\QualityCheckType;
  * @property string|null $result_text
  * @property string|null $result_image_path
  * @property bool|null $is_within_tolerance
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Kezi\QualityControl\Models\QualityInspectionParameter $parameter
+ * @property-read \Kezi\QualityControl\Models\QualityCheck $qualityCheck
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheckLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheckLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheckLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheckLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheckLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheckLine whereIsWithinTolerance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheckLine whereParameterId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheckLine whereQualityCheckId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheckLine whereResultImagePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheckLine whereResultNumeric($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheckLine whereResultPassFail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheckLine whereResultText($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityCheckLine whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class QualityCheckLine extends Model

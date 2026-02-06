@@ -193,9 +193,9 @@ it('is in the settings cluster', function () {
 });
 
 it('uses translations for labels', function () {
-    expect(CurrencyRateResource::getLabel())
+    expect(CurrencyRateResource::getModelLabel())
         ->toBe(__('foundation::currency.exchange_rates.label'));
 
-    expect(CurrencyRateResource::getPluralLabel())
+    expect(CurrencyRateResource::getPluralModelLabel())
         ->toBe(__('foundation::currency.exchange_rates.plural_label'));
 });

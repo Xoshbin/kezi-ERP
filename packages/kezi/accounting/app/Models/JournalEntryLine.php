@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
-use Kezi\Accounting\Database\Factories\JournalEntryLineFactory;
 use Kezi\Accounting\Observers\JournalEntryLineObserver;
 use Kezi\Foundation\Casts\BaseCurrencyMoneyCast;
 use Kezi\Foundation\Models\Currency;
@@ -25,11 +24,14 @@ use RuntimeException;
  * Class JournalEntryLine
  *
  * @property int $id
+ * @property int $company_id
  * @property int $journal_entry_id
  * @property int $account_id
  * @property int|null $partner_id
  * @property int|null $currency_id
  * @property int|null $analytic_account_id
+ * @property int|null $tax_id
+ * @property int|null $original_currency_id
  * @property Money $debit
  * @property Money $credit
  * @property Money $original_currency_amount
@@ -59,12 +61,24 @@ use RuntimeException;
  * @method static Builder<static>|JournalEntryLine wherePartnerId($value)
  * @method static Builder<static>|JournalEntryLine whereUpdatedAt($value)
  *
+ * @property-read Company $company
+ * @property-read Currency|null $currency
+ * @property-read Currency|null $originalCurrency
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Accounting\Models\Reconciliation> $reconciliations
+ * @property-read int|null $reconciliations_count
+ * @property-read \Kezi\Accounting\Models\Tax|null $tax
+ *
+ * @method static Builder<static>|JournalEntryLine whereCompanyId($value)
+ * @method static Builder<static>|JournalEntryLine whereOriginalCurrencyId($value)
+ * @method static Builder<static>|JournalEntryLine whereTaxId($value)
+ * @method static \Kezi\Accounting\Database\Factories\JournalEntryLineFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 #[ObservedBy([JournalEntryLineObserver::class])]
 class JournalEntryLine extends Model
 {
-    /** @use HasFactory<JournalEntryLineFactory> */
+    /** @use HasFactory<\Kezi\Accounting\Database\Factories\JournalEntryLineFactory> */
     use HasFactory;
 
     protected static function newFactory(): \Kezi\Accounting\Database\Factories\JournalEntryLineFactory

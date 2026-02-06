@@ -14,6 +14,8 @@ uses(WithConfiguredCompany::class);
 
 describe('Bank Statement Foreign Currency Transactions', function () {
     beforeEach(function () {
+        $this->setupWithConfiguredCompany();
+
         // Create USD currency for foreign currency tests
         $this->usdCurrency = Currency::firstOrCreate(
             ['code' => 'USD'],

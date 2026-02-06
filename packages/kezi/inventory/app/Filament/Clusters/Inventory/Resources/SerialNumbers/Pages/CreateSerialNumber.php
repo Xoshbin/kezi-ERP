@@ -5,6 +5,9 @@ namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\SerialNumbers\Pag
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\SerialNumbers\SerialNumberResource;
 
+/**
+ * @extends CreateRecord<\Kezi\Inventory\Models\SerialNumber>
+ */
 class CreateSerialNumber extends CreateRecord
 {
     protected static string $resource = SerialNumberResource::class;

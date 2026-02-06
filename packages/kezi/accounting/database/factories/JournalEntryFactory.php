@@ -7,10 +7,9 @@ use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\Accounting\Models\Journal;
-use Kezi\Accounting\Models\JournalEntry;
 
 /**
- * @extends Factory<JournalEntry>
+ * @extends Factory<\Kezi\Accounting\Models\JournalEntry>
  */
 class JournalEntryFactory extends Factory
 {

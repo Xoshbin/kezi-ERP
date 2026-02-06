@@ -5,6 +5,9 @@ namespace Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\T
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\Timesheets\TimesheetResource;
 
+/**
+ * @extends CreateRecord<\Kezi\ProjectManagement\Models\Timesheet>
+ */
 class CreateTimesheet extends CreateRecord
 {
     protected static string $resource = TimesheetResource::class;

@@ -6,6 +6,9 @@ use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\Foundation\Filament\Resources\CurrencyRates\CurrencyRateResource;
 
+/**
+ * @extends CreateRecord<\Kezi\Foundation\Models\CurrencyRate>
+ */
 class CreateCurrencyRate extends CreateRecord
 {
     protected static string $resource = CurrencyRateResource::class;

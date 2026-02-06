@@ -8,6 +8,9 @@ use Kezi\Foundation\Filament\Resources\Currencies\CurrencyResource;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
 
+/**
+ * @extends EditRecord<\Kezi\Foundation\Models\Currency>
+ */
 class EditCurrency extends EditRecord
 {
     use Translatable;

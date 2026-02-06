@@ -8,6 +8,9 @@ use Kezi\Manufacturing\DataTransferObjects\CreateManufacturingOrderDTO;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\ManufacturingOrderResource;
 use Kezi\Manufacturing\Services\ManufacturingOrderService;
 
+/**
+ * @extends CreateRecord<\Kezi\Manufacturing\Models\ManufacturingOrder>
+ */
 class CreateManufacturingOrder extends CreateRecord
 {
     protected static string $resource = ManufacturingOrderResource::class;

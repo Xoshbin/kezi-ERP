@@ -12,7 +12,7 @@ use Kezi\Inventory\Enums\Adjustments\AdjustmentDocumentType;
 use Kezi\Inventory\Models\AdjustmentDocumentLine;
 
 /**
- * @extends Factory<AdjustmentDocument>
+ * @extends Factory<\Kezi\Inventory\Models\AdjustmentDocument>
  */
 class AdjustmentDocumentFactory extends Factory
 {

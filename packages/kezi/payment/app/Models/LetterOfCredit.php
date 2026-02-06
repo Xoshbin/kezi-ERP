@@ -58,6 +58,39 @@ use Kezi\Purchase\Models\VendorBill;
  * @property-read Collection<int, LCCharge> $charges
  * @property-read Collection<int, LCUtilization> $utilizations
  * @property-read Collection<int, VendorBill> $vendorBills
+ * @property-read int|null $charges_count
+ * @property-read int|null $utilizations_count
+ * @property-read int|null $vendor_bills_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereAmountCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereBalance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereBankReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereCreatedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereExpiryDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereIncoterm($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereIssueDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereIssuingBankPartnerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereLcNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit wherePurchaseOrderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereShipmentDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereTermsAndConditions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereUtilizedAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LetterOfCredit whereVendorId($value)
+ * @method static \Kezi\Payment\Database\Factories\LetterOfCreditFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class LetterOfCredit extends Model

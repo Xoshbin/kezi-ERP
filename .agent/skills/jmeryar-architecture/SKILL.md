@@ -1,39 +1,39 @@
 ---
-name: jmeryar-architecture
+name: kezi-architecture
 description: Technical architecture, patterns (Service-Action-DTO), and domain-specific workflows. Use when designing or implementing features.
 ---
 
-# JMeryar ERP Architecture
+# Kezi ERP Architecture
 
 ## Project Structure
 
 This is an **ERP accounting system** built on Laravel 12 with Filament 4, organized into domain-specific modules.
 
-### Modular Architecture
+### Modular Package Architecture
 
-Code is organized using `nwidart/laravel-modules`:
-
-```
-Modules/
-├── Accounting/          # Core accounting engine
-├── Foundation/          # Shared infrastructure (Partners, Companies, Currencies)
-├── Sales/               # Customer invoices, quotes
-├── Purchase/            # Vendor bills, purchase orders
-├── Inventory/           # Stock management, valuation
-├── HR/                  # Employees, payroll, attendance
-├── Payment/             # Payment processing
-├── Product/             # Product catalog
-├── ProjectManagement/   # Projects, timesheets
-├── Manufacturing/       # BOMs, manufacturing orders
-└── QualityControl/      # Quality checks
-```
-
-### Module Structure
-
-Each module follows this structure:
+The system is built as a **Modular Monolith** using local PHP packages managed by Composer path repositories:
 
 ```
-Modules/{ModuleName}/
+packages/kezi/
+├── accounting/          # Core accounting engine
+├── foundation/          # Shared infrastructure (Partners, Companies, Currencies)
+├── sales/               # Customer invoices, quotes
+├── purchase/            # Vendor bills, purchase orders
+├── inventory/           # Stock management, valuation
+├── hr/                  # Employees, payroll, attendance
+├── payment/             # Payment processing
+├── product/             # Product catalog
+├── project-management/  # Projects, timesheets
+├── manufacturing/       # BOMs, manufacturing orders
+└── quality-control/     # Quality checks
+```
+
+### Module/Package Structure
+
+Each package follows this structure:
+
+```
+packages/kezi/{package-name}/
 ├── app/
 │   ├── Actions/              # Business operations (Command Pattern)
 │   ├── DataTransferObjects/  # Immutable data contracts
@@ -54,148 +54,41 @@ Modules/{ModuleName}/
 └── resources/
 ```
 
-## Architecture Patterns
+### 🏗️ **Architectural Patterns**
 
-### Service-Action-DTO Pattern
+<patterns>
+#### Service-Action-DTO Pattern
+- **Actions** (`app/Actions/`) - Atomic business operations (Command Pattern).
+- **DTOs** (`app/DataTransferObjects/`) - Immutable, type-safe data contracts.
+- **Services** (`app/Services/`) - Business orchestration and domain logic.
 
-- **Actions** (`Modules/{Module}/app/Actions/`) - Atomic business operations
-- **DTOs** (`Modules/{Module}/app/DataTransferObjects/`) - Immutable data contracts
-- **Services** (`Modules/{Module}/app/Services/`) - Business orchestration
+#### Money Handling (Critical)
+- Use `Brick\Money\Money` objects throughout - **never floats**.
+- Custom `MoneyCast` for database storage.
+- Compare Money objects with `isEqualTo()`, never `==`.
+</patterns>
 
-```php
-// Example: Modules/Accounting/app/Actions/Accounting/CreateJournalEntryAction.php
-namespace Modules\Accounting\Actions\Accounting;
+### 🛠️ **Module Organization**
 
-class CreateJournalEntryAction {
-    public function execute(CreateJournalEntryDTO $dto): JournalEntry {
-        return DB::transaction(function () use ($dto) {
-            // 1. Validate business rules
-            // 2. Create entities
-            // 3. Return result
-        });
-    }
-}
-```
+<structure>
+Each module follows this structure to ensure consistency:
+1. **Actions/**: Domain-specific business logic.
+2. **DTOs/**: Type-safe data containers.
+3. **Services/**: Application-level orchestration.
+4. **Models/**: Domain entities.
+5. **Filament/**: Admin panel resources and clusters.
+</structure>
 
-### Money Handling (Critical)
+### 🔐 **Domain-Specific Workflows**
 
-- Use `Brick\Money\Money` objects throughout - **never floats for financial data**
-- Custom `MoneyCast` for database storage
-- Compare Money objects with `isEqualTo()`, never `==`
+<workflows>
+#### Journal Entry Creation
+All financial transactions MUST create journal entries through `CreateJournalEntryAction`. This ensures:
+- Period lock validation via `LockDateService`.
+- Debit/Credit balancing.
+- Cryptographic hash chaining.
+- Multi-currency revaluation if applicable.
 
-```php
-$total = Money::zero($currencyCode);
-$total = $total->plus($lineAmount);
-if (!$debitTotal->isEqualTo($creditTotal)) { /* unbalanced */ }
-```
-
-### Immutability Enforcement
-
-- Posted documents (`is_posted = true`) cannot be modified
-- Use `JournalEntryObserver` to prevent updates to posted entries
-- Create reversing entries for corrections via dedicated services
-
-## Key Development Workflows
-
-### Testing
-
-- **Framework:** Pest (not PHPUnit syntax)
-- **Commands:**
-  - `php artisan test --parallel` - Run all tests
-  - `./vendor/bin/phpstan analyse` - Static analysis
-- **Test Locations:**
-  - Root: `tests/Feature/`, `tests/Unit/`
-  - Module: `Modules/{Module}/tests/Feature/`, `Modules/{Module}/tests/Unit/`
-- **Patterns:** Use Builders pattern for complex test data (`tests/Builders/`)
-
-### Code Quality
-
-- **Static Analysis:** Larastan (`./vendor/bin/phpstan analyse`)
-- **Code Style:** Laravel Pint (`./vendor/bin/pint`)
-
-## Domain-Specific Conventions
-
-### Journal Entry Creation
-
-All financial transactions create journal entries through `CreateJournalEntryAction`:
-
-- Validates period lock dates via `LockDateService`
-- Enforces debit/credit balance before posting
-- Creates cryptographic hash chain for audit trail
-- Links to source documents (`source_type`/`source_id`)
-
-### Filament Integration
-
-- Resources delegate ALL business logic to Services/Actions
-- Form data → DTOs → Actions (never direct model manipulation)
-- Use `RelationManagers` for line items
-- Use the **Progressive Disclosure** pattern (Slide-Over actions) for complex repeaters to avoid horizontal overflow.
-- Authorization through Policies + Filament Shield for RBAC
-
-### Settings Cluster Injection
-
-Module "configuration" resources (e.g., `FiscalYearResource`, `TaxResource`, `DepartmentResource`) should be registered into the central `SettingsCluster` while remaining in their original module directories.
-
-**Pattern:**
-
-1. **Update `$cluster` property** to point to `SettingsCluster::class`:
-   ```php
-   use App\Filament\Clusters\Settings\SettingsCluster;
-
-   class FiscalYearResource extends Resource
-   {
-       protected static ?string $cluster = SettingsCluster::class;
-   }
-   ```
-
-2. **Add `getNavigationGroup()`** to group resources by module within the Settings area:
-   ```php
-   public static function getNavigationGroup(): string
-   {
-       return __('accounting::navigation.groups.accounting_settings');
-   }
-   ```
-
-3. **Add translations** for the navigation group in `Modules/{Module}/resources/lang/{locale}/navigation.php`:
-   ```php
-   return [
-       'groups' => [
-           'accounting_settings' => 'Accounting',
-       ],
-   ];
-   ```
-
-**Important:** Cluster classes (e.g., `SettingsCluster`, `InventoryCluster`) must use module-scoped translation keys (e.g., `foundation::navigation.clusters.settings`) for their labels.
-
-### Cross-Module Dependencies
-
-Modules communicate through:
-- **Models:** Import models from other modules as needed
-- **Events:** Dispatch events that other modules can listen to
-- **Services:** Inject services from Foundation or other base modules
-
-```php
-// Example: Importing from Foundation module
-use Modules\Foundation\Models\Partner;
-use Modules\Foundation\Services\CurrencyConverterService;
-```
-
-## Core Accounting Services
-
-Key services in `Modules/Accounting/app/Services/`:
-
-- `JournalEntryService` - Double-entry bookkeeping engine  
-- `BankReconciliationService` - Bank statement matching
-- `AssetService` - Asset management and depreciation
-- `FiscalYearService` - Fiscal period management
-- `LockDateService` - Period lock enforcement
-- `ExchangeGainLossService` - Multi-currency gain/loss
-- `Reports/` - Financial reporting (P&L, Balance Sheet, Trial Balance, etc.)
-
-## Important Constraints
-
-- Never modify posted financial documents directly
-- Always use Service layer for business operations
-- Validate monetary calculations with Money objects
-- Test financial workflows with real accounting scenarios
-- Place new features in the appropriate module
+#### Filament Settings Clusters
+Module configuration resources MUST be registered into the central `SettingsCluster` for a unified user experience.
+</workflows>

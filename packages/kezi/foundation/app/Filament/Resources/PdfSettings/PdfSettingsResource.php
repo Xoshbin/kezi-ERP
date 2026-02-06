@@ -50,7 +50,7 @@ class PdfSettingsResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('System');
+        return __('foundation::navigation.groups.system');
     }
 
     public static function form(Schema $schema): Schema

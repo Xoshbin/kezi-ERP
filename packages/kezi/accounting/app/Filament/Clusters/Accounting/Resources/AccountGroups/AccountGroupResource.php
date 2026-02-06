@@ -37,6 +37,11 @@ class AccountGroupResource extends Resource
         return __('accounting::account_group.plural_label');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('accounting::account_group.label');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('accounting::account_group.plural_label');
@@ -44,7 +49,7 @@ class AccountGroupResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('Configuration');
+        return __('accounting::navigation.configuration');
     }
 
     public static function form(Schema $schema): Schema
@@ -118,10 +123,10 @@ class AccountGroupResource extends Resource
             ->filters([
                 //
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

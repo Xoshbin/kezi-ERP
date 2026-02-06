@@ -5,10 +5,9 @@ namespace Kezi\Foundation\Database\Factories;
 use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\Foundation\Enums\Partners\PartnerType;
-use Kezi\Foundation\Models\Partner;
 
 /**
- * @extends Factory<Partner>
+ * @extends Factory<\Kezi\Foundation\Models\Partner>
  */
 class PartnerFactory extends Factory
 {

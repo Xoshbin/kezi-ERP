@@ -5,6 +5,9 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\DeferredItemRes
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\DeferredItemResource;
 
+/**
+ * @extends CreateRecord<\Kezi\Accounting\Models\DeferredItem>
+ */
 class CreateDeferredItem extends CreateRecord
 {
     protected static string $resource = DeferredItemResource::class;

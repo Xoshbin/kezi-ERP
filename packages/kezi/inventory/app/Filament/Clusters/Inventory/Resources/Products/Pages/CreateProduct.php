@@ -10,6 +10,9 @@ use Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\ProductResourc
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
 
+/**
+ * @extends CreateRecord<\Kezi\Product\Models\Product>
+ */
 class CreateProduct extends CreateRecord
 {
     use Translatable;

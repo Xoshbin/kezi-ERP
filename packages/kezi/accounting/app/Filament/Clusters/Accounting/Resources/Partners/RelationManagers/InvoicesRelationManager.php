@@ -15,6 +15,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Kezi\Sales\Enums\Sales\InvoiceStatus;
 
+/**
+ * @extends RelationManager<\Kezi\Foundation\Models\Partner>
+ */
 class InvoicesRelationManager extends RelationManager
 {
     protected static string $relationship = 'invoices';
@@ -75,11 +78,11 @@ class InvoicesRelationManager extends RelationManager
             ->headerActions([
                 // Create action removed - invoices should be created from Invoice resource
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

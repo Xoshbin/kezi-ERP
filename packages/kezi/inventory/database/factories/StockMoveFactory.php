@@ -12,7 +12,7 @@ use Kezi\Inventory\Models\StockLocation;
 use Kezi\Inventory\Models\StockMove;
 
 /**
- * @extends Factory<StockMove>
+ * @extends Factory<\Kezi\Inventory\Models\StockMove>
  */
 class StockMoveFactory extends Factory
 {

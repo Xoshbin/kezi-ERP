@@ -12,6 +12,9 @@ use Kezi\Accounting\Models\Account;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
 
+/**
+ * @extends EditRecord<\Kezi\Accounting\Models\Account>
+ */
 class EditAccount extends EditRecord
 {
     use Translatable;

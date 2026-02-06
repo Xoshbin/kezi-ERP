@@ -15,6 +15,9 @@ use Kezi\Accounting\Enums\Assets\DepreciationMethod;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Assets\AssetResource;
 use Kezi\Accounting\Models\Asset;
 
+/**
+ * @extends EditRecord<\Kezi\Accounting\Models\Asset>
+ */
 class EditAsset extends EditRecord
 {
     protected static string $resource = AssetResource::class;

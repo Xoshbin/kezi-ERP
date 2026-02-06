@@ -29,6 +29,9 @@ use Kezi\Payment\Services\PaymentService;
 use Kezi\Sales\Enums\Sales\InvoiceStatus;
 use Kezi\Sales\Models\Invoice;
 
+/**
+ * @extends ViewRecord<\Kezi\Sales\Models\Invoice>
+ */
 class ViewInvoice extends ViewRecord
 {
     protected static string $resource = InvoiceResource::class;

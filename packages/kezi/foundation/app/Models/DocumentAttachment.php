@@ -27,10 +27,31 @@ use Kezi\Foundation\Database\Factories\DocumentAttachmentFactory;
  * @property-read Model $attachable
  * @property-read Company $company
  * @property-read User $uploadedBy
+ * @property-read string $formatted_file_size
+ * @property-write mixed $attachment
+ * @property-write mixed $attachments
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DocumentAttachment newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DocumentAttachment newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DocumentAttachment query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DocumentAttachment whereAttachableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DocumentAttachment whereAttachableType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DocumentAttachment whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DocumentAttachment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DocumentAttachment whereFileName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DocumentAttachment whereFilePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DocumentAttachment whereFileSize($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DocumentAttachment whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DocumentAttachment whereMimeType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DocumentAttachment whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DocumentAttachment whereUploadedByUserId($value)
+ * @method static \Kezi\Foundation\Database\Factories\DocumentAttachmentFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 class DocumentAttachment extends Model
 {
-    /** @use HasFactory<DocumentAttachmentFactory> */
+    /** @use HasFactory<\Kezi\Foundation\Database\Factories\DocumentAttachmentFactory> */
     use HasFactory;
 
     /**

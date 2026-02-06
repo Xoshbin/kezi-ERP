@@ -32,7 +32,7 @@ class LoanAgreementResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('Accounting');
+        return __('accounting::navigation.groups.accounting_settings');
     }
 
     public static function getModelLabel(): string

@@ -11,7 +11,7 @@ use Kezi\Foundation\Models\Partner;
 use Kezi\Payment\Models\Payment;
 
 /**
- * @extends Factory<WithholdingTaxEntry>
+ * @extends Factory<\Kezi\Accounting\Models\WithholdingTaxEntry>
  */
 class WithholdingTaxEntryFactory extends Factory
 {

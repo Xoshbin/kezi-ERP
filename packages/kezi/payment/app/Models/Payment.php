@@ -59,7 +59,6 @@ use Kezi\Sales\Models\Invoice;
  * @property-read Collection<int, WithholdingTaxEntry> $withholdingTaxEntries
  * @property-read \Brick\Money\Money|null $total_withheld
  *
- * @method static \Kezi\Payment\Database\Factories\PaymentFactory factory($count = null, $state = [])
  * @method static Builder<static>|Payment newModelQuery()
  * @method static Builder<static>|Payment newQuery()
  * @method static Builder<static>|Payment query()
@@ -77,12 +76,28 @@ use Kezi\Sales\Models\Invoice;
  * @method static Builder<static>|Payment whereStatus($value)
  * @method static Builder<static>|Payment whereUpdatedAt($value)
  *
+ * @property numeric|null $exchange_rate_at_payment
+ * @property \Brick\Money\Money|null $amount_company_currency
+ * @property PaymentMethod $payment_method The method used for this payment (manual, check, bank_transfer, etc.)
+ * @property-read Collection<int, BankStatementLine> $bankStatementLines
+ * @property-read int|null $bank_statement_lines_count
+ * @property-read Collection<int, \Kezi\Payment\Models\Cheque> $cheques
+ * @property-read int|null $cheques_count
+ * @property-read Collection<int, JournalEntry> $journalEntries
+ * @property-read int|null $journal_entries_count
+ * @property-read int|null $withholding_tax_entries_count
+ *
+ * @method static Builder<static>|Payment whereAmountCompanyCurrency($value)
+ * @method static Builder<static>|Payment whereExchangeRateAtPayment($value)
+ * @method static Builder<static>|Payment wherePaymentMethod($value)
+ * @method static \Kezi\Payment\Database\Factories\PaymentFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 #[ObservedBy([\Kezi\Foundation\Observers\AuditLogObserver::class, PaymentObserver::class])]
 class Payment extends Model
 {
-    /** @use HasFactory<PaymentFactory> */
+    /** @use HasFactory<\Kezi\Payment\Database\Factories\PaymentFactory> */
     use HasFactory;
 
     /**

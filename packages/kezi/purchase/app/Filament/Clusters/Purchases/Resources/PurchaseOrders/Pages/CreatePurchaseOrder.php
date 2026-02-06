@@ -8,6 +8,9 @@ use Kezi\Purchase\Actions\Purchases\CreatePurchaseOrderAction;
 use Kezi\Purchase\DataTransferObjects\Purchases\CreatePurchaseOrderDTO;
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\PurchaseOrderResource;
 
+/**
+ * @extends CreateRecord<\Kezi\Purchase\Models\PurchaseOrder>
+ */
 class CreatePurchaseOrder extends CreateRecord
 {
     protected static string $resource = PurchaseOrderResource::class;

@@ -48,6 +48,39 @@ use Kezi\Purchase\Enums\Purchases\RequestForQuotationStatus;
  * @property-read User|null $createdBy
  * @property-read PurchaseOrder|null $convertedToPurchaseOrder
  * @property-read \Illuminate\Database\Eloquent\Collection<int, RequestForQuotationLine> $lines
+ * @property-read int|null $lines_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation bidReceived()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation draft()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation sent()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereConvertedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereConvertedToPurchaseOrderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereCreatedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereExchangeRate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereRfqDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereRfqNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereSubtotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereTaxTotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereTotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereValidUntil($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation whereVendorId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RequestForQuotation withoutTrashed()
+ * @method static \Kezi\Purchase\Database\Factories\RequestForQuotationFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class RequestForQuotation extends Model

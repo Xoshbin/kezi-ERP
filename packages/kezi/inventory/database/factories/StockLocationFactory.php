@@ -8,7 +8,7 @@ use Kezi\Inventory\Enums\Inventory\StockLocationType;
 use Kezi\Inventory\Models\StockLocation;
 
 /**
- * @extends Factory<StockLocation>
+ * @extends Factory<\Kezi\Inventory\Models\StockLocation>
  */
 class StockLocationFactory extends Factory
 {

@@ -28,6 +28,9 @@ use Kezi\Payment\Services\PaymentService;
 use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
 use Kezi\Purchase\Models\VendorBill;
 
+/**
+ * @extends ViewRecord<\Kezi\Purchase\Models\VendorBill>
+ */
 class ViewVendorBill extends ViewRecord
 {
     protected static string $resource = VendorBillResource::class;

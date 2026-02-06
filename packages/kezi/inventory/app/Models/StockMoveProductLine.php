@@ -27,6 +27,29 @@ use Kezi\Product\Models\Product;
  * @property-read StockLocation $fromLocation
  * @property-read StockLocation $toLocation
  * @property-read \Illuminate\Database\Eloquent\Collection<int, StockMoveLine> $stockMoveLines
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Model|null $source
+ * @property-read int|null $stock_move_lines_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveProductLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveProductLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveProductLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveProductLine whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveProductLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveProductLine whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveProductLine whereFromLocationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveProductLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveProductLine whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveProductLine whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveProductLine whereSourceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveProductLine whereSourceType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveProductLine whereStockMoveId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveProductLine whereToLocationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveProductLine whereUpdatedAt($value)
+ * @method static \Kezi\Inventory\Database\Factories\StockMoveProductLineFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 class StockMoveProductLine extends Model
 {

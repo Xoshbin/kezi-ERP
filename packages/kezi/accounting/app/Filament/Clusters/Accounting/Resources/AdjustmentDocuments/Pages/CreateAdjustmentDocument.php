@@ -18,6 +18,9 @@ use Kezi\Inventory\Enums\Adjustments\AdjustmentDocumentType;
 use Kezi\Purchase\Models\VendorBill;
 use Kezi\Sales\Models\Invoice;
 
+/**
+ * @extends CreateRecord<\Kezi\Inventory\Models\AdjustmentDocument>
+ */
 class CreateAdjustmentDocument extends CreateRecord
 {
     protected static string $resource = AdjustmentDocumentResource::class;

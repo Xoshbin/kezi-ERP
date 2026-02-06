@@ -9,6 +9,9 @@ use Kezi\Product\Models\Product;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
 
+/**
+ * @extends EditRecord<\Kezi\Product\Models\Product>
+ */
 class EditProduct extends EditRecord
 {
     use Translatable;

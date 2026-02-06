@@ -50,6 +50,7 @@ use Kezi\Purchase\Observers\VendorBillObserver;
  * @property string $bill_reference
  * @property Carbon $bill_date
  * @property Carbon $accounting_date
+ * @property float|null $exchange_rate_at_creation
  * @property Carbon|null $due_date
  * @property VendorBillStatus $status
  * @property Incoterm|null $incoterm
@@ -68,7 +69,6 @@ use Kezi\Purchase\Observers\VendorBillObserver;
  * @property-read StockPicking|null $stockPicking
  * @property-read Partner $vendor
  *
- * @method static \Kezi\Purchase\Database\Factories\VendorBillFactory factory($count = null, $state = [])
  * @method static Builder<static>|VendorBill newModelQuery()
  * @method static Builder<static>|VendorBill newQuery()
  * @method static Builder<static>|VendorBill posted()
@@ -90,12 +90,52 @@ use Kezi\Purchase\Observers\VendorBillObserver;
  * @method static Builder<static>|VendorBill whereUpdatedAt($value)
  * @method static Builder<static>|VendorBill whereVendorId($value)
  *
+ * @property string $payment_status
+ * @property \Brick\Money\Money|null $total_amount_company_currency
+ * @property \Brick\Money\Money|null $total_tax_company_currency
+ * @property int|null $payment_term_id
+ * @property string|null $incoterm_location
+ * @property string|null $inter_company_source_type
+ * @property int|null $inter_company_source_id
+ * @property int|null $user_id
+ * @property-read Collection<int, AdjustmentDocument> $adjustmentDocuments
+ * @property-read int|null $adjustment_documents_count
+ * @property-read Collection<int, \Kezi\Purchase\Models\VendorBillAttachment> $attachments
+ * @property-read int|null $attachments_count
+ * @property-read \Kezi\Accounting\Models\FiscalPosition|null $fiscalPosition
+ * @property-read \Kezi\Foundation\Enums\Shared\PaymentState $payment_state
+ * @property-read Collection<int, PaymentDocumentLink> $paymentDocumentLinks
+ * @property-read int|null $payment_document_links_count
+ * @property-read Collection<int, PaymentInstallment> $paymentInstallments
+ * @property-read int|null $payment_installments_count
+ * @property-read PaymentTerm|null $paymentTerm
+ * @property-read Collection<int, Payment> $payments
+ * @property-read int|null $payments_count
+ *
+ * @method static Builder<static>|VendorBill whereExchangeRateAtCreation($value)
+ * @method static Builder<static>|VendorBill whereFiscalPositionId($value)
+ * @method static Builder<static>|VendorBill whereIncoterm($value)
+ * @method static Builder<static>|VendorBill whereIncotermLocation($value)
+ * @method static Builder<static>|VendorBill whereInterCompanySourceId($value)
+ * @method static Builder<static>|VendorBill whereInterCompanySourceType($value)
+ * @method static Builder<static>|VendorBill wherePaymentStatus($value)
+ * @method static Builder<static>|VendorBill wherePaymentTermId($value)
+ * @method static Builder<static>|VendorBill wherePurchaseOrderId($value)
+ * @method static Builder<static>|VendorBill whereStockPickingId($value)
+ * @method static Builder<static>|VendorBill whereThreeWayMatchStatus($value)
+ * @method static Builder<static>|VendorBill whereTotalAmountCompanyCurrency($value)
+ * @method static Builder<static>|VendorBill whereTotalTaxCompanyCurrency($value)
+ * @method static Builder<static>|VendorBill whereUserId($value)
+ * @method static \Kezi\Purchase\Database\Factories\VendorBillFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 #[ObservedBy([\Kezi\Foundation\Observers\AuditLogObserver::class, VendorBillObserver::class])]
 class VendorBill extends Model
 {
+    /** @use HasFactory<\Database\Factories\Purchase\VendorBillFactory> */
     use HasFactory;
+
     use \Kezi\Foundation\Traits\HasPaymentState;
 
     protected static function newFactory(): VendorBillFactory

@@ -5,6 +5,9 @@ namespace Kezi\QualityControl\Filament\Clusters\QualityControl\Resources\DefectT
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\QualityControl\Filament\Clusters\QualityControl\Resources\DefectTypeResource;
 
+/**
+ * @extends CreateRecord<\Kezi\QualityControl\Models\DefectType>
+ */
 class CreateDefectType extends CreateRecord
 {
     protected static string $resource = DefectTypeResource::class;

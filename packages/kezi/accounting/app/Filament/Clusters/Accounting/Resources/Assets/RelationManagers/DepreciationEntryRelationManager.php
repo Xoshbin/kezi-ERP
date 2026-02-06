@@ -13,6 +13,9 @@ use Illuminate\Database\Eloquent\Model;
 use Kezi\Accounting\Enums\Assets\DepreciationEntryStatus;
 use Kezi\Accounting\Models\DepreciationEntry;
 
+/**
+ * @extends RelationManager<\Kezi\Accounting\Models\Asset>
+ */
 class DepreciationEntryRelationManager extends RelationManager
 {
     protected static string $relationship = 'depreciationEntries';
@@ -49,14 +52,14 @@ class DepreciationEntryRelationManager extends RelationManager
             ->headerActions([
                 // No header actions needed
             ])
-            ->recordActions([
+            ->actions([
                 Action::make('post')
                     ->label(__('accounting::asset.post'))
                     ->action(fn (DepreciationEntry $record) => $this->postDepreciation($record))
                     ->requiresConfirmation()
                     ->visible(fn (DepreciationEntry $record): bool => $record->status === DepreciationEntryStatus::Draft),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 // No bulk actions needed
             ]);
     }

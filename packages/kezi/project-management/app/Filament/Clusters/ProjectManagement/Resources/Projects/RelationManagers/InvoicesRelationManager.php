@@ -2,14 +2,17 @@
 
 namespace Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\Projects\RelationManagers;
 
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
+/**
+ * @extends RelationManager<\Kezi\ProjectManagement\Models\Project>
+ */
 class InvoicesRelationManager extends RelationManager
 {
     protected static string $relationship = 'invoices';

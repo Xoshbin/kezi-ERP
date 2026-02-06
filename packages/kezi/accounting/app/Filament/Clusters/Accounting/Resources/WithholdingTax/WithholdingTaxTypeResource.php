@@ -37,12 +37,12 @@ class WithholdingTaxTypeResource extends Resource
 
     protected static ?int $navigationSort = 4;
 
-    public static function getLabel(): string
+    public static function getModelLabel(): string
     {
         return __('accounting::withholding_tax.type_label');
     }
 
-    public static function getPluralLabel(): string
+    public static function getPluralModelLabel(): string
     {
         return __('accounting::withholding_tax.types_label');
     }
@@ -54,7 +54,7 @@ class WithholdingTaxTypeResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('Configuration');
+        return __('accounting::navigation.configuration');
     }
 
     public static function form(Schema $schema): Schema
@@ -143,10 +143,10 @@ class WithholdingTaxTypeResource extends Resource
             ->filters([
                 //
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

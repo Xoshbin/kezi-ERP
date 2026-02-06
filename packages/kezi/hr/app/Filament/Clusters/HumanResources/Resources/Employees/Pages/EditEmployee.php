@@ -8,6 +8,9 @@ use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Employees\EmployeeResource;
 
+/**
+ * @extends EditRecord<\Kezi\HR\Models\Employee>
+ */
 class EditEmployee extends EditRecord
 {
     protected static string $resource = EmployeeResource::class;

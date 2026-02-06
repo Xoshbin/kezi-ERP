@@ -8,6 +8,9 @@ use Kezi\Accounting\Actions\Dunning\UpdateDunningLevelAction;
 use Kezi\Accounting\DataTransferObjects\DunningLevelDTO;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\DunningLevelResource;
 
+/**
+ * @extends EditRecord<\Kezi\Accounting\Models\DunningLevel>
+ */
 class EditDunningLevel extends EditRecord
 {
     protected static string $resource = DunningLevelResource::class;

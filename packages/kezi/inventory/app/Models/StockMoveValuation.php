@@ -13,6 +13,52 @@ use Kezi\Inventory\Enums\Inventory\CostSource;
 use Kezi\Inventory\Enums\Inventory\ValuationMethod;
 use Kezi\Product\Models\Product;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $product_id
+ * @property int $stock_move_id
+ * @property numeric $quantity
+ * @property \Brick\Money\Money $cost_impact
+ * @property ValuationMethod $valuation_method
+ * @property string $move_type
+ * @property int|null $journal_entry_id
+ * @property string $source_type
+ * @property int $source_id
+ * @property CostSource|null $cost_source Source of cost determination: vendor_bill, average_cost, cost_layer, unit_price, manual, company_default
+ * @property string|null $cost_source_reference Additional context about cost source (e.g., VendorBill:123, CostLayer:456)
+ * @property array<array-key, mixed>|null $cost_warnings Warnings generated during cost determination
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read JournalEntry|null $journalEntry
+ * @property-read Product $product
+ * @property-read \Illuminate\Database\Eloquent\Model $source
+ * @property-read \Kezi\Inventory\Models\StockMove $stockMove
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation whereCostImpact($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation whereCostSource($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation whereCostSourceReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation whereCostWarnings($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation whereJournalEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation whereMoveType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation whereSourceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation whereSourceType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation whereStockMoveId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveValuation whereValuationMethod($value)
+ * @method static \Kezi\Inventory\Database\Factories\StockMoveValuationFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
+ */
 class StockMoveValuation extends Model
 {
     use HasFactory;

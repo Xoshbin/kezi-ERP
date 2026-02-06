@@ -5,6 +5,9 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\RecurringTempla
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\RecurringTemplates\RecurringTemplateResource;
 
+/**
+ * @extends CreateRecord<\Kezi\Accounting\Models\RecurringTemplate>
+ */
 class CreateRecurringTemplate extends CreateRecord
 {
     protected static string $resource = RecurringTemplateResource::class;

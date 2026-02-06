@@ -7,6 +7,7 @@ return [
         'accounting' => 'ژمێریاری',
     ],
     'groups' => [
+        'contacts' => 'پەیوەندیەکان',
         'accounting_settings' => 'ژمێریاری',
         'transactions' => 'مامەڵەکان',
         'banking_cash' => 'بانک و کاش',

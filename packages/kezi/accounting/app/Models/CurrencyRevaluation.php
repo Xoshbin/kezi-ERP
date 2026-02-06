@@ -39,6 +39,28 @@ use Kezi\Foundation\Observers\AuditLogObserver;
  * @property-read User $createdBy
  * @property-read JournalEntry|null $journalEntry
  * @property-read \Illuminate\Database\Eloquent\Collection<int, CurrencyRevaluationLine> $lines
+ * @property-read int|null $lines_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluation query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluation whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluation whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluation whereCreatedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluation whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluation whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluation whereJournalEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluation whereNetAdjustment($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluation wherePostedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluation whereReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluation whereRevaluationDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluation whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluation whereTotalGain($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluation whereTotalLoss($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CurrencyRevaluation whereUpdatedAt($value)
+ * @method static \Kezi\Accounting\Database\Factories\CurrencyRevaluationFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class CurrencyRevaluation extends Model

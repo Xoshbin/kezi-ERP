@@ -9,7 +9,7 @@ use Kezi\Accounting\Enums\Assets\AssetStatus;
 use Kezi\Accounting\Models\Account;
 
 /**
- * @extends Factory<Asset>
+ * @extends Factory<\Kezi\Accounting\Models\Asset>
  */
 class AssetFactory extends Factory
 {

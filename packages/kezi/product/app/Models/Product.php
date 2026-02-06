@@ -65,7 +65,6 @@ use Spatie\Translatable\HasTranslations;
  *
  * @method static Builder<static>|Product active()
  * @method static Builder<static>|Product bySku($sku, $companyId)
- * @method static \Kezi\Product\Database\Factories\ProductFactory factory($count = null, $state = [])
  * @method static Builder<static>|Product newModelQuery()
  * @method static Builder<static>|Product newQuery()
  * @method static Builder<static>|Product onlyTrashed()
@@ -85,6 +84,63 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|Product whereUpdatedAt($value)
  * @method static Builder<static>|Product withTrashed(bool $withTrashed = true)
  * @method static Builder<static>|Product withoutTrashed()
+ *
+ * @property int|null $deferred_revenue_account_id
+ * @property int|null $deferred_expense_account_id
+ * @property int|null $default_price_difference_account_id
+ * @property float $quantity_on_hand
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Manufacturing\Models\BillOfMaterial> $billsOfMaterials
+ * @property-read int|null $bills_of_materials_count
+ * @property-read Account|null $defaultPriceDifferenceAccount
+ * @property-read Account|null $deferredExpenseAccount
+ * @property-read Account|null $deferredRevenueAccount
+ * @property-read float $available_quantity
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, InventoryCostLayer> $inventoryCostLayers
+ * @property-read int|null $inventory_cost_layers_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, InvoiceLine> $invoiceLines
+ * @property-read int|null $invoice_lines_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Manufacturing\Models\ManufacturingOrder> $manufacturingOrders
+ * @property-read int|null $manufacturing_orders_count
+ * @property-read Product|null $parent
+ * @property-read int|null $purchase_taxes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ReorderingRule> $reorderingRules
+ * @property-read int|null $reordering_rules_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, StockMoveProductLine> $stockMoveProductLines
+ * @property-read int|null $stock_move_product_lines_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, StockMove> $stockMoves
+ * @property-read int|null $stock_moves_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, StockQuant> $stockQuants
+ * @property-read int|null $stock_quants_count
+ * @property-read mixed $translations
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Product\Models\ProductVariantAttribute> $variantAttributes
+ * @property-read int|null $variant_attributes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Product> $variants
+ * @property-read int|null $variants_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, VendorBillLine> $vendorBillLines
+ * @property-read int|null $vendor_bill_lines_count
+ *
+ * @method static Builder<static>|Product whereAverageCost($value)
+ * @method static Builder<static>|Product whereDefaultCogsAccountId($value)
+ * @method static Builder<static>|Product whereDefaultInventoryAccountId($value)
+ * @method static Builder<static>|Product whereDefaultPriceDifferenceAccountId($value)
+ * @method static Builder<static>|Product whereDefaultStockInputAccountId($value)
+ * @method static Builder<static>|Product whereDeferredExpenseAccountId($value)
+ * @method static Builder<static>|Product whereDeferredRevenueAccountId($value)
+ * @method static Builder<static>|Product whereHasPriceOverride($value)
+ * @method static Builder<static>|Product whereInventoryValuationMethod($value)
+ * @method static Builder<static>|Product whereIsTemplate($value)
+ * @method static Builder<static>|Product whereJsonContainsLocale(string $column, string $locale, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|Product whereJsonContainsLocales(string $column, array $locales, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|Product whereLocale(string $column, string $locale)
+ * @method static Builder<static>|Product whereLocales(string $column, array $locales)
+ * @method static Builder<static>|Product whereParentProductId($value)
+ * @method static Builder<static>|Product whereProductAttributes($value)
+ * @method static Builder<static>|Product whereQuantityOnHand($value)
+ * @method static Builder<static>|Product whereTrackingType($value)
+ * @method static Builder<static>|Product whereVariantSkuSuffix($value)
+ * @method static Builder<static>|Product whereVolume($value)
+ * @method static Builder<static>|Product whereWeight($value)
+ * @method static \Kezi\Product\Database\Factories\ProductFactory factory($count = null, $state = [])
  *
  * @mixin Eloquent
  */

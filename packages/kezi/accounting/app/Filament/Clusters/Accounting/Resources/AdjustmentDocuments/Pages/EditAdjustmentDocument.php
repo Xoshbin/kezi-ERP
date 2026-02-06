@@ -27,6 +27,9 @@ use Kezi\Inventory\Services\AdjustmentDocumentService;
 use Kezi\Purchase\Models\VendorBill;
 use Kezi\Sales\Models\Invoice;
 
+/**
+ * @extends EditRecord<\Kezi\Inventory\Models\AdjustmentDocument>
+ */
 class EditAdjustmentDocument extends EditRecord
 {
     protected static string $resource = AdjustmentDocumentResource::class;

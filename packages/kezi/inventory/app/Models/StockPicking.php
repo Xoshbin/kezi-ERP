@@ -56,6 +56,42 @@ use Kezi\Purchase\Models\PurchaseOrder;
  * @property-read User|null $shippedByUser
  * @property-read User|null $receivedByUser
  * @property-read \Illuminate\Database\Eloquent\Collection<int, StockMove> $stockMoves
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Inventory\Models\StockMove> $moves
+ * @property-read int|null $moves_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\QualityControl\Models\QualityCheck> $qualityChecks
+ * @property-read int|null $quality_checks_count
+ * @property-read int|null $stock_moves_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereCompletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereCreatedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereDestinationLocationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereGrnNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereOrigin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking wherePartnerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking wherePurchaseOrderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereReceivedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereReceivedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereScheduledDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereShippedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereShippedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereTransitLocationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereValidatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockPicking whereValidatedByUserId($value)
+ * @method static \Kezi\Inventory\Database\Factories\StockPickingFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class StockPicking extends Model

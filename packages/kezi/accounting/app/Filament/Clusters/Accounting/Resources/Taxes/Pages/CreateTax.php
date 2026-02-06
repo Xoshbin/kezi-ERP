@@ -7,6 +7,9 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Taxes\TaxResource;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
 
+/**
+ * @extends CreateRecord<\Kezi\Accounting\Models\Tax>
+ */
 class CreateTax extends CreateRecord
 {
     use Translatable;

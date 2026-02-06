@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Model;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Inventory\Models\InventoryCostLayer;
 
+/**
+ * @extends RelationManager<\Kezi\Product\Models\Product>
+ */
 class InventoryCostLayersRelationManager extends RelationManager
 {
     protected static string $relationship = 'inventoryCostLayers';

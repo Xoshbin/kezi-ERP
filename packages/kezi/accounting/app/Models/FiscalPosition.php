@@ -3,7 +3,6 @@
 namespace Kezi\Accounting\Models;
 
 use App\Models\Company;
-use Database\Factories\FiscalPositionFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -33,7 +32,6 @@ use Spatie\Translatable\HasTranslations;
  * @property-read Collection<int, FiscalPositionTaxMapping> $taxMappings
  * @property-read int|null $tax_mappings_count
  *
- * @method static FiscalPositionFactory factory($count = null, $state = [])
  * @method static Builder<static>|FiscalPosition newModelQuery()
  * @method static Builder<static>|FiscalPosition newQuery()
  * @method static Builder<static>|FiscalPosition query()
@@ -47,6 +45,15 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|FiscalPosition whereVatRequired($value)
  * @method static Builder<static>|FiscalPosition whereZipFrom($value)
  * @method static Builder<static>|FiscalPosition whereZipTo($value)
+ *
+ * @property-read mixed $translations
+ *
+ * @method static Builder<static>|FiscalPosition autoApply()
+ * @method static Builder<static>|FiscalPosition whereJsonContainsLocale(string $column, string $locale, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|FiscalPosition whereJsonContainsLocales(string $column, array $locales, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|FiscalPosition whereLocale(string $column, string $locale)
+ * @method static Builder<static>|FiscalPosition whereLocales(string $column, array $locales)
+ * @method static \Kezi\Accounting\Database\Factories\FiscalPositionFactory factory($count = null, $state = [])
  *
  * @mixin Eloquent
  */

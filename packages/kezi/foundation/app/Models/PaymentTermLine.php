@@ -28,7 +28,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read PaymentTerm $paymentTerm
  *
- * @method static \Kezi\Foundation\Database\Factories\PaymentTermLineFactory factory($count = null, $state = [])
  * @method static Builder<static>|PaymentTermLine newModelQuery()
  * @method static Builder<static>|PaymentTermLine newQuery()
  * @method static Builder<static>|PaymentTermLine query()
@@ -43,6 +42,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|PaymentTermLine whereSequence($value)
  * @method static Builder<static>|PaymentTermLine whereType($value)
  * @method static Builder<static>|PaymentTermLine whereUpdatedAt($value)
+ * @method static \Kezi\Foundation\Database\Factories\PaymentTermLineFactory factory($count = null, $state = [])
  *
  * @mixin Eloquent
  */

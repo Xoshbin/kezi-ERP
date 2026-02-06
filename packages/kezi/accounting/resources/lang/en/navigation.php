@@ -7,6 +7,7 @@ return [
         'accounting' => 'Accounting',
     ],
     'groups' => [
+        'contacts' => 'Contacts',
         'accounting_settings' => 'Accounting',
         'transactions' => 'Transactions',
         'banking_cash' => 'Banking & Cash',

@@ -18,6 +18,9 @@ use Kezi\Foundation\Filament\Actions\DocsAction;
 use Kezi\Foundation\Models\Currency;
 use PDOException;
 
+/**
+ * @extends CreateRecord<\Kezi\Accounting\Models\JournalEntry>
+ */
 class CreateJournalEntry extends CreateRecord
 {
     protected static string $resource = JournalEntryResource::class;

@@ -44,7 +44,7 @@ class AssetResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('Accounting');
+        return __('accounting::navigation.groups.accounting_settings');
     }
 
     public static function getModelLabel(): string
@@ -375,10 +375,10 @@ class AssetResource extends Resource
             ->filters([
                 //
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

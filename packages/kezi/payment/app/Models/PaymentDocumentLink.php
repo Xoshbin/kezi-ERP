@@ -29,7 +29,6 @@ use Kezi\Sales\Models\Invoice;
  * @property-read Payment $payment
  * @property-read VendorBill|null $vendorBill
  *
- * @method static PaymentDocumentLinkFactory factory($count = null, $state = [])
  * @method static Builder<static>|PaymentDocumentLink newModelQuery()
  * @method static Builder<static>|PaymentDocumentLink newQuery()
  * @method static Builder<static>|PaymentDocumentLink query()
@@ -41,11 +40,18 @@ use Kezi\Sales\Models\Invoice;
  * @method static Builder<static>|PaymentDocumentLink whereUpdatedAt($value)
  * @method static Builder<static>|PaymentDocumentLink whereVendorBillId($value)
  *
+ * @property int $company_id
+ * @property-read Company $company
+ * @property-read Currency|null $currency
+ *
+ * @method static Builder<static>|PaymentDocumentLink whereCompanyId($value)
+ * @method static \Kezi\Payment\Database\Factories\PaymentDocumentLinkFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 class PaymentDocumentLink extends Model
 {
-    /** @use HasFactory<PaymentDocumentLinkFactory> */
+    /** @use HasFactory<\Kezi\Payment\Database\Factories\PaymentDocumentLinkFactory> */
     use HasFactory;
 
     /**

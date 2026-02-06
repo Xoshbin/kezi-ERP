@@ -25,6 +25,9 @@ use Kezi\Inventory\Enums\Adjustments\AdjustmentDocumentType;
 use Kezi\Inventory\Models\AdjustmentDocument;
 use Kezi\Purchase\Models\VendorBill;
 
+/**
+ * @extends RelationManager<\Kezi\Purchase\Models\VendorBill>
+ */
 class AdjustmentDocumentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'adjustmentDocuments';
@@ -235,14 +238,14 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                         return app(\Kezi\Inventory\Actions\Adjustments\CreateAdjustmentDocumentAction::class)->execute($dto);
                     }),
             ])
-            ->recordActions([
+            ->actions([
                 ViewAction::make(),
                 EditAction::make()
                     ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
                 DeleteAction::make()
                     ->visible(fn (AdjustmentDocument $record): bool => $record->status === AdjustmentDocumentStatus::Draft),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->visible(fn (): bool => true), // Add custom logic if needed

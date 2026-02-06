@@ -798,6 +798,20 @@ categories:
       cancelled:
         en: "Cancelled"
         ar: "ملغي"
+        ckb: "هەڵوەشێنراوە"
+        notes: "Transaction cancelled"
+
+  brand:
+    name:
+      en: "Brand"
+      ar: "العلامة التجارية"
+      ckb: "براند"
+    terms:
+      kezi:
+        en: "Kezi"
+        ar: "كيزي"
+        ckb: "کەزی"
+        notes: "Application name"
         ckb: "هەڵوەشێنراوەتەوە"
         notes: "Voided entry"
       paid:

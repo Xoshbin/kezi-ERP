@@ -10,7 +10,7 @@ use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\Partner;
 
 /**
- * @extends Factory<WithholdingTaxCertificate>
+ * @extends Factory<\Kezi\Accounting\Models\WithholdingTaxCertificate>
  */
 class WithholdingTaxCertificateFactory extends Factory
 {

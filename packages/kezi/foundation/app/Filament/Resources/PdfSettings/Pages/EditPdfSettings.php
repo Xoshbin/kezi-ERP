@@ -8,6 +8,9 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Foundation\Filament\Resources\PdfSettings\PdfSettingsResource;
 
+/**
+ * @extends EditRecord<\App\Models\Company>
+ */
 class EditPdfSettings extends EditRecord
 {
     protected static string $resource = PdfSettingsResource::class;

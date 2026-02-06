@@ -1,0 +1,6 @@
+[submodule "kezi-docs"]
+	path = kezi-docs
+	url = https://github.com/Xoshbin/kezi-docs.git
+[submodule "docs"]
+	path = docs
+	url = https://github.com/Xoshbin/kezi-docs.git

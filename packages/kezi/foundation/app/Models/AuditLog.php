@@ -28,7 +28,6 @@ use Kezi\Foundation\Database\Factories\AuditLogFactory;
  * @property-read Model|Eloquent $auditable
  * @property-read User $user
  *
- * @method static \Kezi\Foundation\Database\Factories\AuditLogFactory factory($count = null, $state = [])
  * @method static Builder<static>|AuditLog newModelQuery()
  * @method static Builder<static>|AuditLog newQuery()
  * @method static Builder<static>|AuditLog query()
@@ -44,11 +43,17 @@ use Kezi\Foundation\Database\Factories\AuditLogFactory;
  * @method static Builder<static>|AuditLog whereUserAgent($value)
  * @method static Builder<static>|AuditLog whereUserId($value)
  *
+ * @property int|null $company_id
+ * @property-read Company|null $company
+ *
+ * @method static Builder<static>|AuditLog whereCompanyId($value)
+ * @method static \Kezi\Foundation\Database\Factories\AuditLogFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 class AuditLog extends Model
 {
-    /** @use HasFactory<AuditLogFactory> */
+    /** @use HasFactory<\Kezi\Foundation\Database\Factories\AuditLogFactory> */
     use HasFactory;
 
     protected static function newFactory(): AuditLogFactory

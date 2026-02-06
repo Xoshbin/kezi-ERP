@@ -10,6 +10,9 @@ use Filament\Resources\Pages\ViewRecord;
 use Kezi\Sales\Filament\Clusters\Sales\Resources\Quotes\QuoteResource;
 use Kezi\Sales\Services\QuoteService;
 
+/**
+ * @extends ViewRecord<\Kezi\Sales\Models\Quote>
+ */
 class ViewQuote extends ViewRecord
 {
     protected static string $resource = QuoteResource::class;

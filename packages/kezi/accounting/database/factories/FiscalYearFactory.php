@@ -8,7 +8,7 @@ use Kezi\Accounting\Enums\Accounting\FiscalYearState;
 use Kezi\Accounting\Models\FiscalYear;
 
 /**
- * @extends Factory<FiscalYear>
+ * @extends Factory<\Kezi\Accounting\Models\FiscalYear>
  */
 class FiscalYearFactory extends Factory
 {

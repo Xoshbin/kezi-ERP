@@ -44,6 +44,24 @@ use Kezi\Foundation\Models\Partner;
  * @method static Builder<static>|WithholdingTaxCertificate query()
  * @method static Builder<static>|WithholdingTaxCertificate issued()
  *
+ * @property-read int|null $entries_count
+ *
+ * @method static Builder<static>|WithholdingTaxCertificate whereCertificateDate($value)
+ * @method static Builder<static>|WithholdingTaxCertificate whereCertificateNumber($value)
+ * @method static Builder<static>|WithholdingTaxCertificate whereCompanyId($value)
+ * @method static Builder<static>|WithholdingTaxCertificate whereCreatedAt($value)
+ * @method static Builder<static>|WithholdingTaxCertificate whereCurrencyId($value)
+ * @method static Builder<static>|WithholdingTaxCertificate whereId($value)
+ * @method static Builder<static>|WithholdingTaxCertificate whereNotes($value)
+ * @method static Builder<static>|WithholdingTaxCertificate wherePeriodEnd($value)
+ * @method static Builder<static>|WithholdingTaxCertificate wherePeriodStart($value)
+ * @method static Builder<static>|WithholdingTaxCertificate whereStatus($value)
+ * @method static Builder<static>|WithholdingTaxCertificate whereTotalBaseAmount($value)
+ * @method static Builder<static>|WithholdingTaxCertificate whereTotalWithheldAmount($value)
+ * @method static Builder<static>|WithholdingTaxCertificate whereUpdatedAt($value)
+ * @method static Builder<static>|WithholdingTaxCertificate whereVendorId($value)
+ * @method static \Kezi\Accounting\Database\Factories\WithholdingTaxCertificateFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 class WithholdingTaxCertificate extends Model

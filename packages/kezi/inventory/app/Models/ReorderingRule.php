@@ -10,6 +10,47 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Kezi\Inventory\Enums\Inventory\ReorderingRoute;
 use Kezi\Product\Models\Product;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $product_id
+ * @property int $location_id
+ * @property float $min_qty
+ * @property float $max_qty
+ * @property float $safety_stock
+ * @property float $multiple
+ * @property ReorderingRoute $route
+ * @property int $lead_time_days
+ * @property bool $active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read \Kezi\Inventory\Models\StockLocation $location
+ * @property-read Product $product
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Inventory\Models\ReplenishmentSuggestion> $replenishmentSuggestions
+ * @property-read int|null $replenishment_suggestions_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReorderingRule active()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReorderingRule newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReorderingRule newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReorderingRule query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReorderingRule whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReorderingRule whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReorderingRule whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReorderingRule whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReorderingRule whereLeadTimeDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReorderingRule whereLocationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReorderingRule whereMaxQty($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReorderingRule whereMinQty($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReorderingRule whereMultiple($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReorderingRule whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReorderingRule whereRoute($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReorderingRule whereSafetyStock($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReorderingRule whereUpdatedAt($value)
+ * @method static \Kezi\Inventory\Database\Factories\ReorderingRuleFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
+ */
 class ReorderingRule extends Model
 {
     use HasFactory;

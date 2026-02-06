@@ -7,7 +7,7 @@ use Kezi\QualityControl\Enums\QualityCheckStatus;
 use Kezi\QualityControl\Models\QualityCheck;
 
 /**
- * @extends Factory<QualityCheck>
+ * @extends Factory<\Kezi\QualityControl\Models\QualityCheck>
  */
 class QualityCheckFactory extends Factory
 {

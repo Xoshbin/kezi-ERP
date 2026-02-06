@@ -12,6 +12,9 @@ use Kezi\ProjectManagement\Enums\BillingType;
 use Kezi\ProjectManagement\Enums\ProjectStatus;
 use Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\Projects\ProjectResource;
 
+/**
+ * @extends EditRecord<\Kezi\ProjectManagement\Models\Project>
+ */
 class EditProject extends EditRecord
 {
     protected static string $resource = ProjectResource::class;
