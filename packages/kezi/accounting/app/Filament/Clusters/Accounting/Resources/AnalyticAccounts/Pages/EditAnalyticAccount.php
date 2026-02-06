@@ -6,6 +6,9 @@ use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\AnalyticAccountResource;
 
+/**
+ * @extends EditRecord<\Kezi\Accounting\Models\AnalyticAccount>
+ */
 class EditAnalyticAccount extends EditRecord
 {
     protected static string $resource = AnalyticAccountResource::class;

@@ -20,6 +20,9 @@ use Kezi\Sales\DataTransferObjects\Sales\CreateDeliveryFromSalesOrderDTO;
 use Kezi\Sales\DataTransferObjects\Sales\CreateInvoiceFromSalesOrderDTO;
 use Kezi\Sales\Filament\Clusters\Sales\Resources\SalesOrders\SalesOrderResource;
 
+/**
+ * @extends ViewRecord<\Kezi\Sales\Models\SalesOrder>
+ */
 class ViewSalesOrder extends ViewRecord
 {
     protected static string $resource = SalesOrderResource::class;

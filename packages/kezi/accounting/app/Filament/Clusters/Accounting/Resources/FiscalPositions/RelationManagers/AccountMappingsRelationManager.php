@@ -14,6 +14,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @extends RelationManager<\Kezi\Accounting\Models\FiscalPosition>
+ */
 class AccountMappingsRelationManager extends RelationManager
 {
     protected static string $relationship = 'accountMappings';
@@ -56,11 +59,11 @@ class AccountMappingsRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make(),
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

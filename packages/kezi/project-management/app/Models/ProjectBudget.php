@@ -29,6 +29,25 @@ use Illuminate\Support\Carbon;
  * @property-read Project $project
  * @property-read Collection<int, ProjectBudgetLine> $lines
  * @property-read int|null $lines_count
+ * @property \Brick\Money\Money $total_actual
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudget newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudget newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudget query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudget whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudget whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudget whereEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudget whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudget whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudget whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudget whereProjectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudget whereStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudget whereTotalActual($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudget whereTotalBudget($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectBudget whereUpdatedAt($value)
+ * @method static \Kezi\ProjectManagement\Database\Factories\ProjectBudgetFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([\Kezi\Foundation\Observers\AuditLogObserver::class])]
 class ProjectBudget extends Model

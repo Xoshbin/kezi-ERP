@@ -42,6 +42,33 @@ use Kezi\ProjectManagement\Enums\TaskStatus;
  * @property-read Employee|null $assignedEmployee
  * @property-read Collection<int, TimesheetLine> $timesheetLines
  * @property-read int|null $timesheet_lines_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask whereActualHours($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask whereAssignedTo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask whereDueDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask whereEstimatedHours($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask whereParentTaskId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask whereProgressPercentage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask whereProjectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask whereSequence($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask whereStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectTask withoutTrashed()
+ * @method static \Kezi\ProjectManagement\Database\Factories\ProjectTaskFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([\Kezi\Foundation\Observers\AuditLogObserver::class])]
 class ProjectTask extends Model

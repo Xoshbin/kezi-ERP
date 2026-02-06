@@ -5,6 +5,9 @@ namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\Employees\Pages;
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Employees\EmployeeResource;
 
+/**
+ * @extends CreateRecord<\Kezi\HR\Models\Employee>
+ */
 class CreateEmployee extends CreateRecord
 {
     protected static string $resource = EmployeeResource::class;

@@ -33,6 +33,27 @@ use Kezi\Payment\Enums\PettyCash\PettyCashVoucherStatus;
  * @property-read Account $expenseAccount
  * @property-read Partner|null $partner
  * @property-read JournalEntry|null $journalEntry
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashVoucher newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashVoucher newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashVoucher query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashVoucher whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashVoucher whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashVoucher whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashVoucher whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashVoucher whereExpenseAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashVoucher whereFundId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashVoucher whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashVoucher whereJournalEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashVoucher wherePartnerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashVoucher whereReceiptReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashVoucher whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashVoucher whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashVoucher whereVoucherDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashVoucher whereVoucherNumber($value)
+ * @method static \Kezi\Payment\Database\Factories\PettyCash\PettyCashVoucherFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class PettyCashVoucher extends Model

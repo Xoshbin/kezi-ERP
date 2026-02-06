@@ -28,6 +28,16 @@ class AttendanceResource extends Resource
         return __('hr::attendance.navigation_label');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('hr::attendance.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('hr::attendance.plural_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return AttendanceForm::configure($schema);

@@ -2,9 +2,6 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Partners\RelationManagers;
 
-use App\Actions\Reconciliation\MatchJournalItemsAction;
-use App\Enums\Reconciliation\ReconciliationType;
-use App\Exceptions\Reconciliation\ReconciliationException;
 use App\Models\Company;
 use Exception;
 use Filament\Actions\Action;
@@ -21,8 +18,14 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Kezi\Accounting\Actions\Reconciliation\MatchJournalItemsAction;
+use Kezi\Accounting\Enums\Reconciliation\ReconciliationType;
+use Kezi\Accounting\Exceptions\Reconciliation\ReconciliationException;
 use Kezi\Accounting\Models\JournalEntryLine;
 
+/**
+ * @extends RelationManager<\Kezi\Foundation\Models\Partner>
+ */
 class UnreconciledEntriesRelationManager extends RelationManager
 {
     protected static string $relationship = 'journalEntryLines';
@@ -128,7 +131,7 @@ class UnreconciledEntriesRelationManager extends RelationManager
                     })
                     ->disabled(fn () => ! $this->hasSelectedRecords()),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkAction::make('reconcile')
                     ->label(__('accounting::partner.unreconciled_entries_relation_manager.reconcile'))
                     ->icon('heroicon-o-check-circle')

@@ -66,6 +66,50 @@ use Kezi\Sales\Observers\QuoteObserver;
  * @property-read Invoice|null $convertedToInvoice
  * @property-read Collection<int, QuoteLine> $lines
  * @property-read int|null $lines_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote accepted()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote active()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote draft()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote expired()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote sent()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereConvertedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereConvertedToInvoiceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereConvertedToSalesOrderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereCreatedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereDiscountTotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereDiscountTotalCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereExchangeRate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote wherePartnerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote wherePreviousVersionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereQuoteDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereQuoteNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereRejectionReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereSubtotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereSubtotalCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereTaxTotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereTaxTotalCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereTermsAndConditions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereTotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereTotalCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereValidUntil($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote whereVersion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Quote withoutTrashed()
+ * @method static \Kezi\Sales\Database\Factories\QuoteFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([QuoteObserver::class, AuditLogObserver::class])]
 class Quote extends Model

@@ -78,18 +78,18 @@ class LinesRelationManager extends RelationManager
                     ->sortable(),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                \Filament\Actions\CreateAction::make()
                     ->visible(fn () => $this->getOwnerRecord()->status->value === 'draft'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                \Filament\Actions\EditAction::make()
                     ->visible(fn () => $this->getOwnerRecord()->status->value === 'draft'),
-                Tables\Actions\DeleteAction::make()
+                \Filament\Actions\DeleteAction::make()
                     ->visible(fn () => $this->getOwnerRecord()->status->value === 'draft'),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+                \Filament\Actions\BulkActionGroup::make([
+                    \Filament\Actions\DeleteBulkAction::make()
                         ->visible(fn () => $this->getOwnerRecord()->status->value === 'draft'),
                 ]),
             ]);

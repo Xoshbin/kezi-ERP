@@ -9,7 +9,7 @@ use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\WithholdingTaxType;
 
 /**
- * @extends Factory<WithholdingTaxType>
+ * @extends Factory<\Kezi\Accounting\Models\WithholdingTaxType>
  */
 class WithholdingTaxTypeFactory extends Factory
 {

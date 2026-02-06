@@ -10,7 +10,7 @@ use Kezi\Purchase\Models\VendorBill;
 use Kezi\Sales\Models\Invoice;
 
 /**
- * @extends Factory<PaymentDocumentLink>
+ * @extends Factory<\Kezi\Payment\Models\PaymentDocumentLink>
  */
 class PaymentDocumentLinkFactory extends Factory
 {

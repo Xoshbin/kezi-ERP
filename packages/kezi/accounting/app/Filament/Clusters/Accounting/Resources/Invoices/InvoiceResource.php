@@ -71,7 +71,7 @@ class InvoiceResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('Transactions');
+        return __('accounting::navigation.groups.transactions');
     }
 
     public static function getModelLabel(): string
@@ -631,7 +631,7 @@ class InvoiceResource extends Resource
             ->filters([
                 //
             ])
-            ->recordActions([
+            ->actions([
                 ActionGroup::make([
                     \Filament\Actions\ViewAction::make(),
                     EditAction::make(),
@@ -797,9 +797,9 @@ class InvoiceResource extends Resource
                 //     ->requiresConfirmation()
                 //     ->visible(fn(Invoice $record) => $record->status === InvoiceStatus::Posted),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
-                    // Tables\Actions\DeleteBulkAction::make(),
+                    // \Filament\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

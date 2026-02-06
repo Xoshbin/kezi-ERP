@@ -12,7 +12,7 @@ use Kezi\Product\Models\Product;
 use Kezi\Purchase\Models\VendorBill;
 
 /**
- * @extends Factory<VendorBillLine>
+ * @extends Factory<\Kezi\Purchase\Models\VendorBillLine>
  */
 class VendorBillLineFactory extends Factory
 {

@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Kezi\Foundation\Models\Currency;
-use Kezi\Foundation\Models\ExchangeRate;
+use Kezi\Foundation\Models\CurrencyRate;
 
 class FetchExchangeRates extends Command
 {
@@ -103,7 +103,7 @@ class FetchExchangeRates extends Command
                 }
 
                 // Check if rate already exists for this date
-                $existingRate = ExchangeRate::where('currency_id', $currency->id)
+                $existingRate = CurrencyRate::where('currency_id', $currency->id)
                     ->where('company_id', $company->id)
                     ->whereDate('effective_date', $date)
                     ->first();
@@ -112,7 +112,7 @@ class FetchExchangeRates extends Command
                     $this->line("  Rate for {$currency->code} on {$date->toDateString()} already exists, updating");
                     $existingRate->update(['rate' => $rate]);
                 } else {
-                    ExchangeRate::create([
+                    CurrencyRate::create([
                         'currency_id' => $currency->id,
                         'company_id' => $company->id,
                         'rate' => $rate,

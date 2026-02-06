@@ -16,6 +16,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @extends RelationManager<\Kezi\Sales\Models\Invoice>
+ */
 class InvoiceLinesRelationManager extends RelationManager
 {
     protected static string $relationship = 'invoiceLines';
@@ -66,11 +69,11 @@ class InvoiceLinesRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make()->label(__('accounting::invoice.add_invoice_line')),
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

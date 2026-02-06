@@ -2,6 +2,8 @@
 
 return [
     'navigation_label' => 'Quality Alerts',
+    'label' => 'Quality Alert',
+    'plural_label' => 'Quality Alerts',
     'section_basic' => 'Basic Information',
     'section_capa' => 'Corrective & Preventive Actions',
     'number' => 'Number',

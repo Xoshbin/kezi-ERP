@@ -34,6 +34,35 @@ use Spatie\Translatable\HasTranslations;
  * @property-read Company $company
  * @property-read Collection<int, LeaveRequest> $leaveRequests
  * @property-read int|null $leave_requests_count
+ * @property-read mixed $translations
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereCarriesForward($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereColor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereDefaultDaysPerYear($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereIsPaid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereJsonContainsLocale(string $column, string $locale, ?mixed $value, string $operand = '=')
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereJsonContainsLocales(string $column, array $locales, ?mixed $value, string $operand = '=')
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereLocale(string $column, string $locale)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereLocales(string $column, array $locales)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereMaxCarryForwardDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereMaxConsecutiveDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereMinNoticeDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereRequiresApproval($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereRequiresDocumentation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LeaveType whereUpdatedAt($value)
+ * @method static \Kezi\HR\Database\Factories\LeaveTypeFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 class LeaveType extends Model
 {

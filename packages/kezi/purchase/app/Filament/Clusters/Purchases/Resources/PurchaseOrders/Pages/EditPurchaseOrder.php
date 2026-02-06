@@ -22,6 +22,9 @@ use Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\PurchaseO
 use Kezi\Purchase\Models\PurchaseOrder;
 use Kezi\Purchase\Services\PurchaseOrderService;
 
+/**
+ * @extends EditRecord<\Kezi\Purchase\Models\PurchaseOrder>
+ */
 class EditPurchaseOrder extends EditRecord
 {
     protected static string $resource = PurchaseOrderResource::class;

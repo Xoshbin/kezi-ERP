@@ -11,6 +11,43 @@ use Kezi\Inventory\Observers\StockQuantObserver;
 use Kezi\Product\Models\Product;
 
 #[ObservedBy(StockQuantObserver::class)]
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $product_id
+ * @property int $location_id
+ * @property int|null $lot_id
+ * @property int|null $serial_number_id
+ * @property float $quantity
+ * @property float $reserved_quantity
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read float $available_quantity
+ * @property-read \Kezi\Inventory\Models\StockLocation $location
+ * @property-read \Kezi\Inventory\Models\Lot|null $lot
+ * @property-read Product $product
+ * @property-read \Kezi\Inventory\Models\SerialNumber|null $serialNumber
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockQuant forLot(?int $lotId)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockQuant newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockQuant newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockQuant query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockQuant whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockQuant whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockQuant whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockQuant whereLocationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockQuant whereLotId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockQuant whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockQuant whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockQuant whereReservedQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockQuant whereSerialNumberId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockQuant whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockQuant withAvailableQuantity()
+ * @method static \Kezi\Inventory\Database\Factories\StockQuantFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
+ */
 class StockQuant extends Model
 {
     use HasFactory;

@@ -17,6 +17,9 @@ use Filament\Tables\Table;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
 
+/**
+ * @extends RelationManager<\Kezi\Payment\Models\Payment>
+ */
 class VendorBillsRelationManager extends RelationManager
 {
     protected static string $relationship = 'vendorBills';
@@ -98,11 +101,11 @@ class VendorBillsRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make(),
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

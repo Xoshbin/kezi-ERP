@@ -15,6 +15,26 @@ use Kezi\Product\Models\Product;
  * @property int|null $lot_id
  * @property int|null $serial_number_id
  * @property float $quantity
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read \Kezi\Inventory\Models\Lot|null $lot
+ * @property-read \Kezi\Inventory\Models\SerialNumber|null $serialNumber
+ * @property-read \Kezi\Inventory\Models\StockMoveProductLine $stockMoveProductLine
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveLine whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveLine whereLotId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveLine whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveLine whereSerialNumberId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveLine whereStockMoveProductLineId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMoveLine whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 class StockMoveLine extends Model
 {

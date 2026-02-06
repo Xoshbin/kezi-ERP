@@ -5,6 +5,9 @@ namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\LandedCostResourc
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\LandedCostResource;
 
+/**
+ * @extends CreateRecord<\Kezi\Inventory\Models\LandedCost>
+ */
 class CreateLandedCost extends CreateRecord
 {
     protected static string $resource = LandedCostResource::class;

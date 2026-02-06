@@ -16,6 +16,9 @@ use Kezi\Purchase\DataTransferObjects\Purchases\CreateVendorBillFromPurchaseOrde
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\PurchaseOrderResource;
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Schemas\PurchaseOrderInfolist;
 
+/**
+ * @extends ViewRecord<\Kezi\Purchase\Models\PurchaseOrder>
+ */
 class ViewPurchaseOrder extends ViewRecord
 {
     protected static string $resource = PurchaseOrderResource::class;

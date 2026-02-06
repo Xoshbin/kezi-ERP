@@ -28,6 +28,46 @@ use Kezi\Product\Models\Product;
  * @property \Carbon\Carbon|null $actual_end_date
  * @property-read \Illuminate\Database\Eloquent\Collection|\Kezi\Manufacturing\Models\ManufacturingOrderLine[] $lines
  * @property-read \Illuminate\Database\Eloquent\Collection|\Kezi\Manufacturing\Models\WorkOrder[] $workOrders
+ * @property int $bom_id
+ * @property int|null $journal_entry_id
+ * @property string|null $notes
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Kezi\Manufacturing\Models\BillOfMaterial $billOfMaterial
+ * @property-read Company $company
+ * @property-read StockLocation $destinationLocation
+ * @property-read JournalEntry|null $journalEntry
+ * @property-read int|null $lines_count
+ * @property-read Product $product
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\QualityControl\Models\QualityCheck> $qualityChecks
+ * @property-read int|null $quality_checks_count
+ * @property-read StockLocation $sourceLocation
+ * @property-read int|null $work_orders_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder whereActualEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder whereActualStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder whereBomId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder whereDestinationLocationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder whereJournalEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder whereNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder wherePlannedEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder wherePlannedStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder whereQuantityProduced($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder whereQuantityToProduce($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder whereSourceLocationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrder whereUpdatedAt($value)
+ * @method static \Kezi\Manufacturing\Database\Factories\ManufacturingOrderFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 class ManufacturingOrder extends Model
 {

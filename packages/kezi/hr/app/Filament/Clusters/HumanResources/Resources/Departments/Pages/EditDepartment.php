@@ -8,6 +8,9 @@ use Kezi\HR\Filament\Clusters\HumanResources\Resources\Departments\DepartmentRes
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
 
+/**
+ * @extends EditRecord<\Kezi\HR\Models\Department>
+ */
 class EditDepartment extends EditRecord
 {
     use Translatable;

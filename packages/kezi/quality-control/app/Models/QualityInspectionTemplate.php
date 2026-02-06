@@ -16,6 +16,29 @@ use Kezi\Foundation\Observers\AuditLogObserver;
  * @property string $name
  * @property string|null $description
  * @property bool $active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\QualityControl\Models\QualityControlPoint> $controlPoints
+ * @property-read int|null $control_points_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\QualityControl\Models\QualityInspectionParameter> $parameters
+ * @property-read int|null $parameters_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\QualityControl\Models\QualityCheck> $qualityChecks
+ * @property-read int|null $quality_checks_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionTemplate newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionTemplate newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionTemplate query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionTemplate whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionTemplate whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionTemplate whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionTemplate whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionTemplate whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionTemplate whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionTemplate whereUpdatedAt($value)
+ * @method static \Kezi\QualityControl\Database\Factories\QualityInspectionTemplateFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class QualityInspectionTemplate extends Model

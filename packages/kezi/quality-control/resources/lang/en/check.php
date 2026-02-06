@@ -2,6 +2,8 @@
 
 return [
     'navigation_label' => 'Quality Checks',
+    'label' => 'Quality Check',
+    'plural_label' => 'Quality Checks',
     'section_basic' => 'Basic Information',
     'number' => 'Number',
     'status' => 'Status',

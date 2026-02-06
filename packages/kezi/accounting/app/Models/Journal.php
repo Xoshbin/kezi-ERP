@@ -24,6 +24,11 @@ use Spatie\Translatable\HasTranslations;
  * @property string $type
  * @property string $short_code
  * @property int|null $currency_id
+ * @property int|null $default_debit_account_id
+ * @property int|null $default_credit_account_id
+ * @property int|null $exchange_gain_account_id
+ * @property int|null $exchange_loss_account_id
+ * @property int|null $exchange_difference_journal_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Company $company
@@ -31,7 +36,6 @@ use Spatie\Translatable\HasTranslations;
  * @property-read Collection<int, JournalEntry> $journalEntries
  * @property-read int|null $journal_entries_count
  *
- * @method static JournalFactory factory($count = null, $state = [])
  * @method static Builder<static>|Journal newModelQuery()
  * @method static Builder<static>|Journal newQuery()
  * @method static Builder<static>|Journal query()
@@ -45,13 +49,33 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|Journal whereType($value)
  * @method static Builder<static>|Journal whereUpdatedAt($value)
  *
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultCreditAccount
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultDebitAccount
+ * @property-read Journal|null $exchangeDifferenceJournal
+ * @property-read \Kezi\Accounting\Models\Account|null $exchangeGainAccount
+ * @property-read \Kezi\Accounting\Models\Account|null $exchangeLossAccount
+ * @property-read mixed $translations
+ *
+ * @method static Builder<static>|Journal whereDefaultCreditAccountId($value)
+ * @method static Builder<static>|Journal whereDefaultDebitAccountId($value)
+ * @method static Builder<static>|Journal whereExchangeDifferenceJournalId($value)
+ * @method static Builder<static>|Journal whereExchangeGainAccountId($value)
+ * @method static Builder<static>|Journal whereExchangeLossAccountId($value)
+ * @method static Builder<static>|Journal whereJsonContainsLocale(string $column, string $locale, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|Journal whereJsonContainsLocales(string $column, array $locales, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|Journal whereLocale(string $column, string $locale)
+ * @method static Builder<static>|Journal whereLocales(string $column, array $locales)
+ * @method static \Kezi\Accounting\Database\Factories\JournalFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 #[ObservedBy([JournalObserver::class])]
 
 class Journal extends Model
 {
+    /** @use HasFactory<\Database\Factories\Accounting\JournalFactory> */
     use HasFactory;
+
     use HasTranslations;
 
     protected static function newFactory(): \Kezi\Accounting\Database\Factories\JournalFactory
@@ -206,6 +230,9 @@ class Journal extends Model
      * This is crucial to prevent duplicate short codes for journals within the same company [3].
      * Although this is typically enforced at the database migration level,
      * adding a method here can be useful for specific query needs if required later.
+     */
+    /**
+     * @param  Builder<static>  $query
      */
     public function scopeUniqueShortCode(
         Builder $query,

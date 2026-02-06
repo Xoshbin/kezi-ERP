@@ -11,6 +11,9 @@ use Kezi\Manufacturing\Enums\ManufacturingOrderStatus;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\ManufacturingOrderResource;
 use Kezi\Manufacturing\Services\ManufacturingOrderService;
 
+/**
+ * @extends ViewRecord<\Kezi\Manufacturing\Models\ManufacturingOrder>
+ */
 class ViewManufacturingOrder extends ViewRecord
 {
     protected static string $resource = ManufacturingOrderResource::class;

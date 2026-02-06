@@ -27,6 +27,9 @@ use Kezi\Payment\Enums\Payments\PaymentType;
 use Kezi\Payment\Models\Payment;
 use Kezi\Sales\Models\Invoice;
 
+/**
+ * @extends RelationManager<\Kezi\Sales\Models\Invoice>
+ */
 class PaymentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'payments';
@@ -243,14 +246,14 @@ class PaymentsRelationManager extends RelationManager
                         return $data;
                     }),
             ])
-            ->recordActions([
+            ->actions([
                 ViewAction::make(),
                 EditAction::make(),
                 DetachAction::make()
                     ->label(__('accounting::invoice.payments_relation_manager.detach'))
                     ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DetachBulkAction::make()
                         ->label(__('accounting::invoice.payments_relation_manager.detach_selected')),

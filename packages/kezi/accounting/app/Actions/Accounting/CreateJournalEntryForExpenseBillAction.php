@@ -2,6 +2,7 @@
 
 namespace Kezi\Accounting\Actions\Accounting;
 
+use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -9,7 +10,6 @@ use Kezi\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Kezi\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Kezi\Accounting\Models\AssetCategory;
 use Kezi\Accounting\Models\JournalEntry;
-use Kezi\Accounting\Models\User;
 use Kezi\Purchase\Models\VendorBill;
 use RuntimeException;
 

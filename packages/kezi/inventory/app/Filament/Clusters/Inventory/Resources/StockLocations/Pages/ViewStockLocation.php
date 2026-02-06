@@ -7,6 +7,9 @@ use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\StockLocationResource;
 
+/**
+ * @extends ViewRecord<\Kezi\Inventory\Models\StockLocation>
+ */
 class ViewStockLocation extends ViewRecord
 {
     protected static string $resource = StockLocationResource::class;

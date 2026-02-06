@@ -23,6 +23,32 @@ use Kezi\Manufacturing\Enums\WorkOrderStatus;
  * @property \Illuminate\Support\Carbon|null $started_at
  * @property \Illuminate\Support\Carbon|null $completed_at
  * @property-read ManufacturingOrder $manufacturingOrder
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read \Kezi\Manufacturing\Models\WorkCenter $workCenter
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder whereActualDuration($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder whereCompletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder whereManufacturingOrderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder wherePlannedDuration($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder wherePlannedFinishedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder wherePlannedStartAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder whereSequence($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder whereStartedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|WorkOrder whereWorkCenterId($value)
+ * @method static \Kezi\Manufacturing\Database\Factories\WorkOrderFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 class WorkOrder extends Model
 {

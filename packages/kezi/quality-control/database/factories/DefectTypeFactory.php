@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\QualityControl\Models\DefectType;
 
 /**
- * @extends Factory<DefectType>
+ * @extends Factory<\Kezi\QualityControl\Models\DefectType>
  */
 class DefectTypeFactory extends Factory
 {

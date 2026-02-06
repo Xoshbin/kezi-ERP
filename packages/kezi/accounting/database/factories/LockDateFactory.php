@@ -4,10 +4,9 @@ namespace Kezi\Accounting\Database\Factories;
 
 use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Kezi\Accounting\Models\LockDate;
 
 /**
- * @extends Factory<LockDate>
+ * @extends Factory<\Kezi\Accounting\Models\LockDate>
  */
 class LockDateFactory extends Factory
 {

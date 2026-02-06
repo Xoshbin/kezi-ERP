@@ -39,7 +39,6 @@ use Kezi\Payment\Enums\PaymentInstallments\InstallmentStatus;
  * @property-read Collection<int, Payment> $payments
  * @property-read int|null $payments_count
  *
- * @method static PaymentInstallmentFactory factory($count = null, $state = [])
  * @method static Builder<static>|PaymentInstallment newModelQuery()
  * @method static Builder<static>|PaymentInstallment newQuery()
  * @method static Builder<static>|PaymentInstallment query()
@@ -59,13 +58,14 @@ use Kezi\Payment\Enums\PaymentInstallments\InstallmentStatus;
  * @method static Builder<static>|PaymentInstallment overdue()
  * @method static Builder<static>|PaymentInstallment dueSoon(int $days = 7)
  * @method static Builder<static>|PaymentInstallment unpaid()
+ * @method static \Kezi\Payment\Database\Factories\PaymentInstallmentFactory factory($count = null, $state = [])
  *
  * @mixin Eloquent
  */
 #[ObservedBy([\Kezi\Foundation\Observers\AuditLogObserver::class])]
 class PaymentInstallment extends Model
 {
-    /** @use HasFactory<PaymentInstallmentFactory> */
+    /** @use HasFactory<\Kezi\Payment\Database\Factories\PaymentInstallmentFactory> */
     use HasFactory;
 
     /**

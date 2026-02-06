@@ -37,12 +37,12 @@ class TaxResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
-    public static function getLabel(): string
+    public static function getModelLabel(): string
     {
         return __('accounting::tax.label');
     }
 
-    public static function getPluralLabel(): string
+    public static function getPluralModelLabel(): string
     {
         return __('accounting::tax.plural_label');
     }
@@ -54,7 +54,7 @@ class TaxResource extends Resource
 
     public static function getNavigationGroup(): string
     {
-        return __('Configuration');
+        return __('accounting::navigation.configuration');
     }
 
     public static function form(Schema $schema): Schema
@@ -185,10 +185,10 @@ class TaxResource extends Resource
             ->filters([
                 //
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

@@ -14,6 +14,9 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
+/**
+ * @extends RelationManager<\Kezi\Accounting\Models\Asset>
+ */
 class DepreciationEntriesRelationManager extends RelationManager
 {
     protected static string $relationship = 'depreciationEntries';
@@ -56,11 +59,11 @@ class DepreciationEntriesRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make(),
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

@@ -27,6 +27,9 @@ use Kezi\Accounting\Enums\Accounting\JournalEntryState;
 use Kezi\Accounting\Models\BankStatementLine;
 use Kezi\Accounting\Models\JournalEntry;
 
+/**
+ * @extends RelationManager<\Kezi\Accounting\Models\BankStatement>
+ */
 class BankStatementLinesRelationManager extends RelationManager
 {
     protected static string $relationship = 'bankStatementLines';
@@ -85,7 +88,7 @@ class BankStatementLinesRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make(),
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
                 Action::make('reverse')
@@ -136,7 +139,7 @@ class BankStatementLinesRelationManager extends RelationManager
                         }
                     }),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

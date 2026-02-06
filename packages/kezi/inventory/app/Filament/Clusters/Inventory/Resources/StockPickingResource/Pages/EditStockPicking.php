@@ -7,6 +7,9 @@ use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource;
 
+/**
+ * @extends EditRecord<\Kezi\Inventory\Models\StockPicking>
+ */
 class EditStockPicking extends EditRecord
 {
     protected static string $resource = StockPickingResource::class;

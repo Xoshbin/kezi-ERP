@@ -10,6 +10,36 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Kezi\Inventory\Enums\Inventory\StockLocationType;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property string $name
+ * @property StockLocationType $type
+ * @property bool $is_active
+ * @property int|null $parent_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, StockLocation> $children
+ * @property-read int|null $children_count
+ * @property-read Company $company
+ * @property-read StockLocation|null $parent
+ *
+ * @method static Builder<static>|StockLocation newModelQuery()
+ * @method static Builder<static>|StockLocation newQuery()
+ * @method static Builder<static>|StockLocation ofType(\Kezi\Inventory\Enums\Inventory\StockLocationType $type)
+ * @method static Builder<static>|StockLocation query()
+ * @method static Builder<static>|StockLocation whereCompanyId($value)
+ * @method static Builder<static>|StockLocation whereCreatedAt($value)
+ * @method static Builder<static>|StockLocation whereId($value)
+ * @method static Builder<static>|StockLocation whereIsActive($value)
+ * @method static Builder<static>|StockLocation whereName($value)
+ * @method static Builder<static>|StockLocation whereParentId($value)
+ * @method static Builder<static>|StockLocation whereType($value)
+ * @method static Builder<static>|StockLocation whereUpdatedAt($value)
+ * @method static \Kezi\Inventory\Database\Factories\StockLocationFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
+ */
 class StockLocation extends Model
 {
     use HasFactory;

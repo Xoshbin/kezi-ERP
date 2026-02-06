@@ -37,7 +37,7 @@ class FiscalPositionResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('Configuration');
+        return __('accounting::navigation.configuration');
     }
 
     public static function getModelLabel(): string
@@ -120,10 +120,10 @@ class FiscalPositionResource extends Resource
             ->filters([
                 //
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

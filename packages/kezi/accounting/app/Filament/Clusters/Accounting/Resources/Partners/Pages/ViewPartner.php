@@ -9,6 +9,9 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Partners\PartnerResou
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Partners\Widgets\CustomerFinancialWidget;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Partners\Widgets\VendorFinancialWidget;
 
+/**
+ * @extends ViewRecord<\Kezi\Foundation\Models\Partner>
+ */
 class ViewPartner extends ViewRecord
 {
     protected static string $resource = PartnerResource::class;

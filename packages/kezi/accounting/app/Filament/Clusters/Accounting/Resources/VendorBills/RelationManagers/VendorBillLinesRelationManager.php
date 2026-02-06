@@ -14,6 +14,9 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
+/**
+ * @extends RelationManager<\Kezi\Purchase\Models\VendorBill>
+ */
 class VendorBillLinesRelationManager extends RelationManager
 {
     protected static string $relationship = 'lines';
@@ -60,11 +63,11 @@ class VendorBillLinesRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make(),
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

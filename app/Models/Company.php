@@ -37,6 +37,40 @@ use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
  * @property int|null $default_health_insurance_payable_account_id
  * @property int|null $default_pension_payable_account_id
  * @property int|null $default_employee_advance_receivable_account_id
+ * @property int|null $default_accounts_payable_id
+ * @property int|null $default_accounts_receivable_id
+ * @property int|null $default_sales_discount_account_id
+ * @property int|null $default_purchase_returns_account_id
+ * @property int|null $default_tax_account_id
+ * @property int|null $default_tax_receivable_id
+ * @property int|null $default_sales_journal_id
+ * @property int|null $default_purchase_journal_id
+ * @property int|null $default_depreciation_journal_id
+ * @property int|null $default_bank_account_id
+ * @property int|null $default_outstanding_receipts_account_id
+ * @property int|null $default_bank_journal_id
+ * @property int|null $default_gain_loss_account_id
+ * @property int|null $inventory_adjustment_account_id
+ * @property int|null $default_stock_input_account_id
+ * @property int|null $default_stock_location_id
+ * @property int|null $default_vendor_location_id
+ * @property int|null $default_adjustment_location_id
+ * @property int|null $default_finished_goods_inventory_id
+ * @property int|null $default_raw_materials_inventory_id
+ * @property int|null $default_manufacturing_journal_id
+ * @property int|null $default_wip_account_id
+ * @property int|null $default_pdc_receivable_account_id
+ * @property int|null $default_pdc_payable_account_id
+ * @property int|null $default_cheque_expense_account_id
+ * @property int|null $default_scrap_account_id
+ * @property bool $enable_reconciliation
+ * @property string|null $pdf_template
+ * @property string|null $pdf_logo_path
+ * @property array<string, mixed>|null $pdf_settings
+ * @property array<string, array<string, mixed>>|null $numbering_settings
+ * @property \Kezi\Inventory\Enums\Inventory\InventoryAccountingMode|null $inventory_accounting_mode
+ * @property string|null $industry_type
+ * @property \Illuminate\Support\Carbon|null $onboarding_completed_at
  * @property \Kezi\Accounting\Enums\Consolidation\ConsolidationMethod $consolidation_method
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -98,6 +132,78 @@ use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
  * @method static Builder<static>|Company whereParentCompanyId($value)
  * @method static Builder<static>|Company whereTaxId($value)
  * @method static Builder<static>|Company whereUpdatedAt($value)
+ *
+ * @property-read StockLocation|null $adjustmentLocation
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultAccountsPayable
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultBankAccount
+ * @property-read Journal|null $defaultBankJournal
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultChequeExpenseAccount
+ * @property-read Journal|null $defaultDepreciationJournal
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultEmployeeAdvanceReceivableAccount
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultGainLossAccount
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultHealthInsurancePayableAccount
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultIncomeTaxPayableAccount
+ * @property-read Journal|null $defaultManufacturingJournal
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultOutstandingReceiptsAccount
+ * @property-read Journal|null $defaultPayrollJournal
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultPdcPayableAccount
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultPdcReceivableAccount
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultPensionPayableAccount
+ * @property-read Journal|null $defaultPurchaseJournal
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultPurchaseReturnsAccount
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultSalaryExpenseAccount
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultSalaryPayableAccount
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultSocialSecurityPayableAccount
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultStockInputAccount
+ * @property-read StockLocation|null $defaultStockLocation
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultTaxReceivable
+ * @property-read \Kezi\Accounting\Models\Account|null $defaultWipAccount
+ * @property-read \Kezi\Accounting\Models\Account|null $inventoryAdjustmentAccount
+ * @property-read StockLocation|null $vendorLocation
+ *
+ * @method static Builder<static>|Company whereConsolidationMethod($value)
+ * @method static Builder<static>|Company whereDefaultAccountsPayableId($value)
+ * @method static Builder<static>|Company whereDefaultAccountsReceivableId($value)
+ * @method static Builder<static>|Company whereDefaultAdjustmentLocationId($value)
+ * @method static Builder<static>|Company whereDefaultBankAccountId($value)
+ * @method static Builder<static>|Company whereDefaultBankJournalId($value)
+ * @method static Builder<static>|Company whereDefaultChequeExpenseAccountId($value)
+ * @method static Builder<static>|Company whereDefaultDepreciationJournalId($value)
+ * @method static Builder<static>|Company whereDefaultEmployeeAdvanceReceivableAccountId($value)
+ * @method static Builder<static>|Company whereDefaultFinishedGoodsInventoryId($value)
+ * @method static Builder<static>|Company whereDefaultGainLossAccountId($value)
+ * @method static Builder<static>|Company whereDefaultHealthInsurancePayableAccountId($value)
+ * @method static Builder<static>|Company whereDefaultIncomeTaxPayableAccountId($value)
+ * @method static Builder<static>|Company whereDefaultManufacturingJournalId($value)
+ * @method static Builder<static>|Company whereDefaultOutstandingReceiptsAccountId($value)
+ * @method static Builder<static>|Company whereDefaultPayrollJournalId($value)
+ * @method static Builder<static>|Company whereDefaultPdcPayableAccountId($value)
+ * @method static Builder<static>|Company whereDefaultPdcReceivableAccountId($value)
+ * @method static Builder<static>|Company whereDefaultPensionPayableAccountId($value)
+ * @method static Builder<static>|Company whereDefaultPurchaseJournalId($value)
+ * @method static Builder<static>|Company whereDefaultPurchaseReturnsAccountId($value)
+ * @method static Builder<static>|Company whereDefaultRawMaterialsInventoryId($value)
+ * @method static Builder<static>|Company whereDefaultSalaryExpenseAccountId($value)
+ * @method static Builder<static>|Company whereDefaultSalaryPayableAccountId($value)
+ * @method static Builder<static>|Company whereDefaultSalesDiscountAccountId($value)
+ * @method static Builder<static>|Company whereDefaultSalesJournalId($value)
+ * @method static Builder<static>|Company whereDefaultScrapAccountId($value)
+ * @method static Builder<static>|Company whereDefaultSocialSecurityPayableAccountId($value)
+ * @method static Builder<static>|Company whereDefaultStockInputAccountId($value)
+ * @method static Builder<static>|Company whereDefaultStockLocationId($value)
+ * @method static Builder<static>|Company whereDefaultTaxAccountId($value)
+ * @method static Builder<static>|Company whereDefaultTaxReceivableId($value)
+ * @method static Builder<static>|Company whereDefaultVendorLocationId($value)
+ * @method static Builder<static>|Company whereDefaultWipAccountId($value)
+ * @method static Builder<static>|Company whereEnableReconciliation($value)
+ * @method static Builder<static>|Company whereIndustryType($value)
+ * @method static Builder<static>|Company whereInventoryAccountingMode($value)
+ * @method static Builder<static>|Company whereInventoryAdjustmentAccountId($value)
+ * @method static Builder<static>|Company whereNumberingSettings($value)
+ * @method static Builder<static>|Company whereOnboardingCompletedAt($value)
+ * @method static Builder<static>|Company wherePdfLogoPath($value)
+ * @method static Builder<static>|Company wherePdfSettings($value)
+ * @method static Builder<static>|Company wherePdfTemplate($value)
  *
  * @mixin \Eloquent
  */
@@ -168,6 +274,8 @@ class Company extends Model
         'default_pdc_payable_account_id',
         'default_cheque_expense_account_id',
         'default_scrap_account_id',
+        'industry_type',
+        'onboarding_completed_at',
     ];
 
     /**

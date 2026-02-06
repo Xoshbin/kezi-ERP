@@ -8,6 +8,9 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Journals\JournalResou
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
 
+/**
+ * @extends EditRecord<\Kezi\Accounting\Models\Journal>
+ */
 class EditJournal extends EditRecord
 {
     use Translatable;

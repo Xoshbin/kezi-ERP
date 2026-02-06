@@ -6,6 +6,9 @@ use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Budgets\BudgetResource;
 
+/**
+ * @extends EditRecord<\Kezi\Accounting\Models\Budget>
+ */
 class EditBudget extends EditRecord
 {
     protected static string $resource = BudgetResource::class;

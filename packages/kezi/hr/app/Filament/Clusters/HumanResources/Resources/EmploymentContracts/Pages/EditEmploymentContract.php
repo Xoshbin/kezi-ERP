@@ -6,6 +6,9 @@ use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\EmploymentContracts\EmploymentContractResource;
 
+/**
+ * @extends EditRecord<\Kezi\HR\Models\EmploymentContract>
+ */
 class EditEmploymentContract extends EditRecord
 {
     protected static string $resource = EmploymentContractResource::class;

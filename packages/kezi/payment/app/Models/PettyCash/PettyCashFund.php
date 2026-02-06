@@ -32,6 +32,29 @@ use Kezi\Payment\Enums\PettyCash\PettyCashFundStatus;
  * @property-read Account $account
  * @property-read Account $bankAccount
  * @property-read Currency $currency
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Payment\Models\PettyCash\PettyCashReplenishment> $replenishments
+ * @property-read int|null $replenishments_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Payment\Models\PettyCash\PettyCashVoucher> $vouchers
+ * @property-read int|null $vouchers_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashFund newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashFund newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashFund query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashFund whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashFund whereBankAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashFund whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashFund whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashFund whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashFund whereCurrentBalance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashFund whereCustodianId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashFund whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashFund whereImprestAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashFund whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashFund whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashFund whereUpdatedAt($value)
+ * @method static \Kezi\Payment\Database\Factories\PettyCash\PettyCashFundFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class PettyCashFund extends Model

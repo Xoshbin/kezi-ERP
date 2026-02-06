@@ -8,6 +8,9 @@ use Filament\Resources\Pages\EditRecord;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
 use Kezi\Foundation\Filament\Actions\DocsAction;
 
+/**
+ * @extends EditRecord<\Kezi\Accounting\Models\LoanAgreement>
+ */
 class EditLoanAgreement extends EditRecord
 {
     protected static string $resource = LoanAgreementResource::class;

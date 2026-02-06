@@ -2,10 +2,14 @@
 
 namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Pages;
 
+use App\Models\Company;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Payrolls\PayrollResource;
 
+/**
+ * @extends CreateRecord<\Kezi\HR\Models\Payroll>
+ */
 class CreatePayroll extends CreateRecord
 {
     protected static string $resource = PayrollResource::class;

@@ -20,6 +20,29 @@ use Kezi\QualityControl\Enums\QualityCheckType;
  * @property string|null $unit_of_measure
  * @property string|null $instructions
  * @property int $sequence
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\QualityControl\Models\QualityCheckLine> $checkLines
+ * @property-read int|null $check_lines_count
+ * @property-read \Kezi\QualityControl\Models\QualityInspectionTemplate $template
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionParameter newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionParameter newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionParameter query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionParameter whereCheckType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionParameter whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionParameter whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionParameter whereInstructions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionParameter whereMaxValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionParameter whereMinValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionParameter whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionParameter whereSequence($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionParameter whereTemplateId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionParameter whereUnitOfMeasure($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QualityInspectionParameter whereUpdatedAt($value)
+ * @method static \Kezi\QualityControl\Database\Factories\QualityInspectionParameterFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class QualityInspectionParameter extends Model

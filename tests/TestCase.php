@@ -24,10 +24,39 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
  * @property \Kezi\Inventory\Models\StockLocation $adjustmentLocation
  * @property \Kezi\Inventory\Models\StockLocation $customerLocation
  * @property \Kezi\Foundation\Models\Partner $vendor
+ * @property \Kezi\Sales\Actions\Sales\CreateQuoteAction&\Mockery\MockInterface $createAction
+ * @property \Kezi\Sales\Actions\Sales\UpdateQuoteAction&\Mockery\MockInterface $updateAction
+ * @property \Kezi\Sales\Actions\Sales\SendQuoteAction&\Mockery\MockInterface $sendAction
+ * @property \Kezi\Sales\Actions\Sales\AcceptQuoteAction&\Mockery\MockInterface $acceptAction
+ * @property \Kezi\Sales\Actions\Sales\RejectQuoteAction&\Mockery\MockInterface $rejectAction
+ * @property \Kezi\Sales\Actions\Sales\CancelQuoteAction&\Mockery\MockInterface $cancelAction
+ * @property \Kezi\Sales\Actions\Sales\ConvertQuoteToSalesOrderAction&\Mockery\MockInterface $convertToOrderAction
+ * @property \Kezi\Sales\Actions\Sales\ConvertQuoteToInvoiceAction&\Mockery\MockInterface $convertToInvoiceAction
+ * @property \Kezi\Sales\Actions\Sales\CreateQuoteRevisionAction&\Mockery\MockInterface $revisionAction
+ * @property \Kezi\Sales\Services\QuoteService $service
+ * @property \Kezi\Accounting\Models\Account $incomeAccount
+ * @property \Kezi\Sales\Actions\Sales\CreateInvoiceLineAction&\Mockery\MockInterface $createInvoiceLineAction
+ * @property \Kezi\Foundation\Models\Currency $usdCurrency
+ * @property \Kezi\Foundation\Models\Currency $eurCurrency
+ * @property \Kezi\Accounting\Models\Journal $usdBankJournal
  *
  * @method void setupWithConfiguredCompany()
  * @method void setupInventoryTestEnvironment()
  * @method \Mockery\MockInterface mock(string $abstract, \Closure $mock = null)
+ * @method void assertDatabaseHas(string $table, array $data, string $connection = null)
+ * @method void assertDatabaseMissing(string $table, array $data, string $connection = null)
+ * @method void assertDatabaseCount(string $table, int $count, string $connection = null)
+ * @method void assertModelExists(\Illuminate\Database\Eloquent\Model $model)
+ * @method void assertModelMissing(\Illuminate\Database\Eloquent\Model $model)
+ * @method void assertCount(int|\Countable $expectedCount, $actual, string $message = '')
+ * @method void assertNotNull($actual, string $message = '')
+ * @method void assertNull($actual, string $message = '')
+ * @method void assertTrue($condition, string $message = '')
+ * @method void assertFalse($condition, string $message = '')
+ * @method void assertEquals($expected, $actual, string $message = '')
+ * @method void assertNotEquals($expected, $actual, string $message = '')
+ * @method void assertSame($expected, $actual, string $message = '')
+ * @method void assertInstanceOf(string $expected, $actual, string $message = '')
  */
 abstract class TestCase extends BaseTestCase
 {

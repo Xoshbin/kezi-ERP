@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\Accounting\Models\AccountGroup;
 
 /**
- * @extends Factory<AccountGroup>
+ * @extends Factory<\Kezi\Accounting\Models\AccountGroup>
  */
 class AccountGroupFactory extends Factory
 {

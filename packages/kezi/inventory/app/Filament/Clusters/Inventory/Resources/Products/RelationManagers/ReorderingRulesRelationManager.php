@@ -19,6 +19,9 @@ use Illuminate\Database\Eloquent\Model;
 use Kezi\Inventory\Enums\Inventory\ReorderingRoute;
 use Kezi\Product\Models\Product;
 
+/**
+ * @extends RelationManager<\Kezi\Product\Models\Product>
+ */
 class ReorderingRulesRelationManager extends RelationManager
 {
     protected static string $relationship = 'reorderingRules';

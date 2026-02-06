@@ -4,11 +4,10 @@ namespace Kezi\Accounting\Database\Factories;
 
 use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Kezi\Accounting\Models\AnalyticAccount;
 use Kezi\Foundation\Models\Currency;
 
 /**
- * @extends Factory<AnalyticAccount>
+ * @extends Factory<\Kezi\Accounting\Models\AnalyticAccount>
  */
 class AnalyticAccountFactory extends Factory
 {

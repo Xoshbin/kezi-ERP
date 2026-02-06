@@ -27,7 +27,6 @@ use Kezi\Foundation\Models\Currency;
  * @property-read Journal $journal
  * @property-read Currency $currency
  *
- * @method static BankStatementFactory factory($count = null, $state = [])
  * @method static Builder<static>|BankStatement newModelQuery()
  * @method static Builder<static>|BankStatement newQuery()
  * @method static Builder<static>|BankStatement query()
@@ -41,11 +40,18 @@ use Kezi\Foundation\Models\Currency;
  * @method static Builder<static>|BankStatement whereStartingBalance($value)
  * @method static Builder<static>|BankStatement whereUpdatedAt($value)
  *
+ * @property int $currency_id
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Accounting\Models\BankStatementLine> $bankStatementLines
+ * @property-read int|null $bank_statement_lines_count
+ *
+ * @method static Builder<static>|BankStatement whereCurrencyId($value)
+ * @method static \Kezi\Accounting\Database\Factories\BankStatementFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 class BankStatement extends Model
 {
-    /** @use HasFactory<BankStatementFactory> */
+    /** @use HasFactory<\Kezi\Accounting\Database\Factories\BankStatementFactory> */
     use HasFactory;
 
     protected $fillable = [

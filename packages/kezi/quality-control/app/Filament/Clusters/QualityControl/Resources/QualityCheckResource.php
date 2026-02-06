@@ -29,6 +29,16 @@ class QualityCheckResource extends Resource
         return __('qualitycontrol::check.navigation_label');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('qualitycontrol::check.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('qualitycontrol::check.plural_label');
+    }
+
     public static function infolist(Schema $schema): Schema
     {
         return $schema

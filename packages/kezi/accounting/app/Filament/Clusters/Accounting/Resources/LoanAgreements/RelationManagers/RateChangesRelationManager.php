@@ -9,6 +9,9 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
+/**
+ * @extends RelationManager<\Kezi\Accounting\Models\LoanAgreement>
+ */
 class RateChangesRelationManager extends RelationManager
 {
     protected static string $relationship = 'rateChanges';

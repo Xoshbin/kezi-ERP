@@ -8,7 +8,7 @@ use Kezi\Sales\Models\Quote;
 use Kezi\Sales\Models\QuoteLine;
 
 /**
- * @extends Factory<QuoteLine>
+ * @extends Factory<\Kezi\Sales\Models\QuoteLine>
  */
 class QuoteLineFactory extends Factory
 {

@@ -10,7 +10,7 @@ use Kezi\Inventory\Models\StockLocation;
 use Kezi\Product\Models\Product;
 
 /**
- * @extends Factory<ReorderingRule>
+ * @extends Factory<\Kezi\Inventory\Models\ReorderingRule>
  */
 class ReorderingRuleFactory extends Factory
 {

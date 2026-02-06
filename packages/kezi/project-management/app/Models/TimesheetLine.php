@@ -27,6 +27,24 @@ use Illuminate\Support\Carbon;
  * @property-read Timesheet $timesheet
  * @property-read Project|null $project
  * @property-read ProjectTask|null $projectTask
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TimesheetLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TimesheetLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TimesheetLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TimesheetLine whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TimesheetLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TimesheetLine whereDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TimesheetLine whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TimesheetLine whereHours($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TimesheetLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TimesheetLine whereIsBillable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TimesheetLine whereProjectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TimesheetLine whereProjectTaskId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TimesheetLine whereTimesheetId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TimesheetLine whereUpdatedAt($value)
+ * @method static \Kezi\ProjectManagement\Database\Factories\TimesheetLineFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([
     \Kezi\Foundation\Observers\AuditLogObserver::class,

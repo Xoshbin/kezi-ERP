@@ -5,10 +5,9 @@ namespace Kezi\Accounting\Database\Factories;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\Accounting\Models\BankStatement;
-use Kezi\Accounting\Models\BankStatementLine;
 
 /**
- * @extends Factory<BankStatementLine>
+ * @extends Factory<\Kezi\Accounting\Models\BankStatementLine>
  */
 class BankStatementLineFactory extends Factory
 {

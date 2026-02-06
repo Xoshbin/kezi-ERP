@@ -14,6 +14,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @extends RelationManager<\Kezi\Accounting\Models\AnalyticAccount>
+ */
 class AnalyticPlansRelationManager extends RelationManager
 {
     protected static string $relationship = 'analyticPlans';
@@ -56,10 +59,10 @@ class AnalyticPlansRelationManager extends RelationManager
                             ->default(Filament::getTenant()->id),
                     ]),
             ])
-            ->recordActions([
+            ->actions([
                 DetachAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DetachBulkAction::make(),
                 ]),

@@ -64,6 +64,65 @@ use Kezi\Payment\Models\Payment;
  * @property-read User|null $processedByUser
  * @property-read User|null $approvedByUser
  * @property-read Collection<int, PayrollLine> $payrollLines
+ * @property int $loan_deduction
+ * @property numeric|null $exchange_rate_at_processing
+ * @property int|null $gross_salary_company_currency
+ * @property int|null $net_salary_company_currency
+ * @property numeric $regular_hours
+ * @property numeric $overtime_hours
+ * @property numeric $total_hours
+ * @property-read string $employee_full_name
+ * @property-read int|null $payroll_lines_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereAdjustments($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereApprovedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereApprovedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereBaseSalary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereCommission($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereExchangeRateAtProcessing($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereGrossSalary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereGrossSalaryCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereHealthInsurance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereHousingAllowance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereIncomeTax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereJournalEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereLoanDeduction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereMealAllowance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereNetSalary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereNetSalaryCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereOtherAllowances($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereOtherDeductions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereOvertimeAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereOvertimeHours($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll wherePayDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll wherePayFrequency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll wherePaymentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll wherePayrollNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll wherePensionContribution($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll wherePeriodEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll wherePeriodStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereProcessedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereProcessedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereRegularHours($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereSocialSecurity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereTotalDeductions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereTotalHours($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereTransportAllowance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Payroll whereUpdatedAt($value)
+ * @method static \Kezi\HR\Database\Factories\PayrollFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([\Kezi\Foundation\Observers\AuditLogObserver::class, PayrollObserver::class])]
 class Payroll extends Model

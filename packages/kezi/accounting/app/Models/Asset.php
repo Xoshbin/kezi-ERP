@@ -52,7 +52,6 @@ use Kezi\Foundation\Models\Currency;
  * @property int|null $currency_id
  * @property-read Currency|null $currency
  *
- * @method static AssetFactory factory($count = null, $state = [])
  * @method static Builder<static>|Asset newModelQuery()
  * @method static Builder<static>|Asset newQuery()
  * @method static Builder<static>|Asset query()
@@ -71,6 +70,21 @@ use Kezi\Foundation\Models\Currency;
  * @method static Builder<static>|Asset whereUpdatedAt($value)
  * @method static Builder<static>|Asset whereUsefulLifeYears($value)
  *
+ * @property string|null $source_type
+ * @property int|null $source_id
+ * @property-read Collection<int, \Kezi\Foundation\Models\DocumentAttachment> $attachments
+ * @property-read int|null $attachments_count
+ * @property-read Collection<int, \Kezi\Accounting\Models\JournalEntry> $journalEntries
+ * @property-read int|null $journal_entries_count
+ * @property-read \Illuminate\Database\Eloquent\Model|null $source
+ *
+ * @method static Builder<static>|Asset whereCurrencyId($value)
+ * @method static Builder<static>|Asset whereDecliningFactor($value)
+ * @method static Builder<static>|Asset whereProrataTemporis($value)
+ * @method static Builder<static>|Asset whereSourceId($value)
+ * @method static Builder<static>|Asset whereSourceType($value)
+ * @method static \Kezi\Accounting\Database\Factories\AssetFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 #[ObservedBy([AssetObserver::class])]
@@ -78,7 +92,7 @@ class Asset extends Model
 {
     use HasDocumentAttachments;
 
-    /** @use HasFactory<AssetFactory> */
+    /** @use HasFactory<\Kezi\Accounting\Database\Factories\AssetFactory> */
     use HasFactory;
 
     protected static function newFactory(): Factory

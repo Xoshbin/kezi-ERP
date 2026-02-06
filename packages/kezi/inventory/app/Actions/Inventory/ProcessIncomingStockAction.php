@@ -109,7 +109,7 @@ class ProcessIncomingStockAction
                     ->where('product_id', $productLine->product_id)
                     ->first();
 
-                if ($poLine) {
+                if ($poLine instanceof \Kezi\Purchase\Models\PurchaseOrderLine) {
                     // Increment the received quantity
                     $poLine->quantity_received += $productLine->quantity;
                     $poLine->save();

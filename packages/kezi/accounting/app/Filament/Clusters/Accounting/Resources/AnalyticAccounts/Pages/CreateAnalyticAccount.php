@@ -5,6 +5,9 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccount
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AnalyticAccounts\AnalyticAccountResource;
 
+/**
+ * @extends CreateRecord<\Kezi\Accounting\Models\AnalyticAccount>
+ */
 class CreateAnalyticAccount extends CreateRecord
 {
     protected static string $resource = AnalyticAccountResource::class;

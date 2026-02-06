@@ -10,6 +10,9 @@ use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Actions\Conf
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
 use Kezi\Inventory\Models\StockMove;
 
+/**
+ * @extends ViewRecord<\Kezi\Inventory\Models\StockMove>
+ */
 class ViewStockMove extends ViewRecord
 {
     protected static string $resource = StockMoveResource::class;

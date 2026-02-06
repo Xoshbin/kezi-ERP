@@ -9,7 +9,7 @@ use Kezi\HR\Models\Employee;
 use Kezi\HR\Models\Position;
 
 /**
- * @extends Factory<Employee>
+ * @extends Factory<\Kezi\Hr\Models\Employee>
  */
 class EmployeeFactory extends Factory
 {

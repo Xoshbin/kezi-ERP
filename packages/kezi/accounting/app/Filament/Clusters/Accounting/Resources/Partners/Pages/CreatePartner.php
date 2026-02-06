@@ -7,6 +7,9 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Partners\PartnerResource;
 
+/**
+ * @extends CreateRecord<\Kezi\Foundation\Models\Partner>
+ */
 class CreatePartner extends CreateRecord
 {
     protected static string $resource = PartnerResource::class;

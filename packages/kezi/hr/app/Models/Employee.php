@@ -73,6 +73,57 @@ use Kezi\HR\Observers\EmployeeObserver;
  * @property-read int|null $payrolls_count
  * @property-read Collection<int, CashAdvance> $cashAdvances
  * @property-read int|null $cash_advances_count
+ * @property-read int|null $age
+ * @property-read string $display_name
+ * @property-read string $full_name
+ * @property-read int $years_of_service
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereAddressLine1($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereAddressLine2($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereBankAccountNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereBankName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereBankRoutingNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereCountry($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereDateOfBirth($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereDepartmentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereEmergencyContactName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereEmergencyContactPhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereEmergencyContactRelationship($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereEmployeeNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereEmployeeType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereEmploymentStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereFirstName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereGender($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereHireDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereLastName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereManagerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereMaritalStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereNationalId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereNationality($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee wherePassportNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee wherePositionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereTerminationDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereZipCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee withoutTrashed()
+ * @method static \Kezi\HR\Database\Factories\EmployeeFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([\Kezi\Foundation\Observers\AuditLogObserver::class, EmployeeObserver::class])]
 class Employee extends Model

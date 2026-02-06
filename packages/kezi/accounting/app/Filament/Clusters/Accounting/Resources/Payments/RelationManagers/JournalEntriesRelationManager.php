@@ -19,6 +19,9 @@ use Kezi\Accounting\Models\JournalEntry;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Payment\Models\Payment;
 
+/**
+ * @extends RelationManager<\Kezi\Payment\Models\Payment>
+ */
 class JournalEntriesRelationManager extends RelationManager
 {
     protected static string $relationship = 'journalEntries';
@@ -160,7 +163,7 @@ class JournalEntriesRelationManager extends RelationManager
                         'Kezi\Accounting\Models\VendorBill' => __('payment.journal_entries_relation_manager.source_vendor_bill'),
                     ]),
             ])
-            ->recordActions([
+            ->actions([
                 // View action removed for now - can be added when proper routes are configured
             ])
             ->defaultSort('entry_date', 'desc')

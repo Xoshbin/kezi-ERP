@@ -8,6 +8,9 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AnalyticPlans\Analyti
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
 
+/**
+ * @extends EditRecord<\Kezi\Accounting\Models\AnalyticPlan>
+ */
 class EditAnalyticPlan extends EditRecord
 {
     use Translatable;

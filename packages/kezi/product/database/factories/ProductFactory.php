@@ -9,7 +9,7 @@ use Kezi\Accounting\Models\Account;
 use Kezi\Inventory\Enums\Inventory\ValuationMethod;
 
 /**
- * @extends Factory<Product>
+ * @extends Factory<\Kezi\Product\Models\Product>
  */
 class ProductFactory extends Factory
 {

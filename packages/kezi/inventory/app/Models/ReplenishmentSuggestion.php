@@ -9,6 +9,52 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Kezi\Inventory\Enums\Inventory\ReorderingRoute;
 use Kezi\Product\Models\Product;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $product_id
+ * @property int $location_id
+ * @property int $reordering_rule_id
+ * @property float $suggested_qty
+ * @property string $priority
+ * @property ReorderingRoute $route
+ * @property string $reason
+ * @property string|null $origin_reference
+ * @property \Illuminate\Support\Carbon $suggested_order_date
+ * @property \Illuminate\Support\Carbon $expected_delivery_date
+ * @property bool $processed
+ * @property \Illuminate\Support\Carbon|null $processed_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read \Kezi\Inventory\Models\StockLocation $location
+ * @property-read Product $product
+ * @property-read \Kezi\Inventory\Models\ReorderingRule $reorderingRule
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion byPriority(string $priority)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion unprocessed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion whereExpectedDeliveryDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion whereLocationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion whereOriginReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion wherePriority($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion whereProcessed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion whereProcessedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion whereReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion whereReorderingRuleId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion whereRoute($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion whereSuggestedOrderDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion whereSuggestedQty($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReplenishmentSuggestion whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
+ */
 class ReplenishmentSuggestion extends Model
 {
     use HasFactory;

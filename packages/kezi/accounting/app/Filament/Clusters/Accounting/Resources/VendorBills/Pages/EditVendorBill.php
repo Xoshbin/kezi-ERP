@@ -42,6 +42,9 @@ use Kezi\Purchase\Models\VendorBillAttachment;
 use Kezi\Purchase\Services\VendorBillService;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
+/**
+ * @extends EditRecord<\Kezi\Purchase\Models\VendorBill>
+ */
 class EditVendorBill extends EditRecord
 {
     protected static string $resource = VendorBillResource::class;

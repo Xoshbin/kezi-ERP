@@ -8,6 +8,9 @@ use Filament\Tables\Table;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\EmploymentContracts\Schemas\EmploymentContractForm;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\EmploymentContracts\Tables\EmploymentContractsTable;
 
+/**
+ * @extends RelationManager<\Kezi\HR\Models\Employee>
+ */
 class EmploymentContractsRelationManager extends RelationManager
 {
     protected static string $relationship = 'employmentContracts';

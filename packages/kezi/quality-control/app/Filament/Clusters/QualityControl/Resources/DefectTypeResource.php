@@ -31,9 +31,19 @@ class DefectTypeResource extends Resource
         return __('qualitycontrol::defect_type.navigation_label');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('qualitycontrol::defect_type.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('qualitycontrol::defect_type.plural_label');
+    }
+
     public static function getNavigationGroup(): string
     {
-        return __('Configuration');
+        return __('qualitycontrol::navigation.groups.configuration');
     }
 
     public static function form(Schema $schema): Schema

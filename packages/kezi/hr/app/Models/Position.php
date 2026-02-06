@@ -40,6 +40,34 @@ use Spatie\Translatable\HasTranslations;
  * @property-read int|null $employees_count
  * @property-read Collection<int, EmploymentContract> $employmentContracts
  * @property-read int|null $employment_contracts_count
+ * @property-read string|null $salary_range
+ * @property-read mixed $translations
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereDepartmentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereEmploymentType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereJsonContainsLocale(string $column, string $locale, ?mixed $value, string $operand = '=')
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereJsonContainsLocales(string $column, array $locales, ?mixed $value, string $operand = '=')
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereLocale(string $column, string $locale)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereLocales(string $column, array $locales)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereMaxSalary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereMinSalary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereRequirements($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereResponsibilities($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Position whereUpdatedAt($value)
+ * @method static \Kezi\HR\Database\Factories\PositionFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 class Position extends Model
 {
