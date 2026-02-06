@@ -4,7 +4,7 @@ namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages;
 
 use App\Models\Company;
 use Carbon\Carbon;
-use \Filament\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;

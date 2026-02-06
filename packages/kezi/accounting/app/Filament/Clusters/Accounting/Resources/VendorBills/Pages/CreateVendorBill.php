@@ -5,7 +5,7 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pag
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Exception;
-use \Filament\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\CreateRecord;

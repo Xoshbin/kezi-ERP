@@ -2,12 +2,12 @@
 
 namespace Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\ProjectInvoices\Tables;
 
-use \Filament\Actions\Action;
-use \Filament\Actions\ActionGroup;
-use \Filament\Actions\BulkActionGroup;
-use \Filament\Actions\DeleteBulkAction;
-use \Filament\Actions\EditAction;
-use \Filament\Actions\ViewAction;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Support\Colors\Color;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;

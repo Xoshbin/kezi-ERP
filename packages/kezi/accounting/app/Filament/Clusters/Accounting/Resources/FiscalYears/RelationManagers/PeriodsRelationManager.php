@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\FiscalYears\RelationManagers;
 
-use \Filament\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;

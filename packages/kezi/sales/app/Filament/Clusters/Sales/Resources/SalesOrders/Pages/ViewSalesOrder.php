@@ -5,7 +5,7 @@ namespace Kezi\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Pages;
 use Carbon\Carbon;
 use Exception;
 use Filament\Actions;
-use \Filament\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;

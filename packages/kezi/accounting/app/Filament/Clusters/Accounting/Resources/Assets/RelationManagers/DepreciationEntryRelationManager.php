@@ -3,7 +3,7 @@
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Assets\RelationManagers;
 
 use Exception;
-use \Filament\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;

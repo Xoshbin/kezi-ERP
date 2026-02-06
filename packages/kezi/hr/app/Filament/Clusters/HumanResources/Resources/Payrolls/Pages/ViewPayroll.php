@@ -2,7 +2,7 @@
 
 namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Pages;
 
-use \Filament\Actions\EditAction;
+use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Payrolls\PayrollResource;
 

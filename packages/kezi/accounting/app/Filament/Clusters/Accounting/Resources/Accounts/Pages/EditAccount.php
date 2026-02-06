@@ -3,7 +3,7 @@
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Accounts\Pages;
 
 use Exception;
-use \Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;

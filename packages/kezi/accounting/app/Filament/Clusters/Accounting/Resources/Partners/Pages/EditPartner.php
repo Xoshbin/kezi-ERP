@@ -2,8 +2,8 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Partners\Pages;
 
-use \Filament\Actions\DeleteAction;
-use \Filament\Actions\ViewAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Partners\PartnerResource;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Partners\Widgets\VendorFinancialWidget;

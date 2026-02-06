@@ -2,9 +2,9 @@
 
 namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\Employees\Pages;
 
-use \Filament\Actions\DeleteAction;
-use \Filament\Actions\ForceDeleteAction;
-use \Filament\Actions\RestoreAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Employees\EmployeeResource;
 

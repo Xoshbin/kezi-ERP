@@ -2,7 +2,7 @@
 
 namespace Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\ProjectTasks\Pages;
 
-use \Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\ProjectTasks\ProjectTaskResource;
 

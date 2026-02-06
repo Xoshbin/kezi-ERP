@@ -3,7 +3,7 @@
 namespace Kezi\Foundation\Filament\Resources\PdfSettings\Pages;
 
 use App\Models\Company;
-use \Filament\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Foundation\Filament\Resources\PdfSettings\PdfSettingsResource;

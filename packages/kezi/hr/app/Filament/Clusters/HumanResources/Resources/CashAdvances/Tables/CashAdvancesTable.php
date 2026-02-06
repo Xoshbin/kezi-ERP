@@ -2,10 +2,10 @@
 
 namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\CashAdvances\Tables;
 
-use \Filament\Actions\BulkActionGroup;
-use \Filament\Actions\DeleteBulkAction;
-use \Filament\Actions\EditAction;
-use \Filament\Actions\ViewAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Table;
 
 class CashAdvancesTable

@@ -2,7 +2,7 @@
 
 namespace Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\Timesheets\Pages;
 
-use \Filament\Actions\CreateAction;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\Timesheets\TimesheetResource;
 
