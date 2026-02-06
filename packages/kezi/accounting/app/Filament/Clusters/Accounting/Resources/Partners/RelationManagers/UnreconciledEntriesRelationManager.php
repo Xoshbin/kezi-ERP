@@ -4,8 +4,8 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Partners\Relati
 
 use App\Models\Company;
 use Exception;
-use \Filament\Actions\Action;
-use \Filament\Actions\BulkAction;
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;

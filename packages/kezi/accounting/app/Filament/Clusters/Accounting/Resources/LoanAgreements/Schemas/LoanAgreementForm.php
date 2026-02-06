@@ -3,7 +3,7 @@
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\Schemas;
 
 use App\Models\Company;
-use \Filament\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;

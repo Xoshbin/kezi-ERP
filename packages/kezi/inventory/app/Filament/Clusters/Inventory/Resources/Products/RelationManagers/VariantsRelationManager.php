@@ -2,10 +2,10 @@
 
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers;
 
-use \Filament\Actions\BulkActionGroup;
-use \Filament\Actions\DeleteAction;
-use \Filament\Actions\DeleteBulkAction;
-use \Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;

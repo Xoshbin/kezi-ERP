@@ -2,7 +2,7 @@
 
 namespace Kezi\Foundation\Filament\Resources\CurrencyRates\Pages;
 
-use \Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\Foundation\Filament\Resources\CurrencyRates\CurrencyRateResource;
 

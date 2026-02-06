@@ -2,8 +2,8 @@
 
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Pages;
 
-use \Filament\Actions\DeleteAction;
-use \Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use Kezi\Inventory\Enums\Inventory\StockMoveStatus;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\Actions\ConfirmStockMoveAction;

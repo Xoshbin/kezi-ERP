@@ -2,7 +2,7 @@
 
 namespace Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\Projects\RelationManagers;
 
-use \Filament\Actions\ViewAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;

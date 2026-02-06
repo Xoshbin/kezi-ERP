@@ -2,7 +2,7 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages;
 
-use \Filament\Actions\CreateAction;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
 use Kezi\Foundation\Filament\Actions\DocsAction;

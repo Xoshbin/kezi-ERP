@@ -4,7 +4,7 @@ namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResou
 
 use DB;
 use Exception;
-use \Filament\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
 use Kezi\Inventory\Enums\Inventory\StockMoveStatus;

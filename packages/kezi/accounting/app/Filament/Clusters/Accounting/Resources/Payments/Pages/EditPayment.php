@@ -4,8 +4,8 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Payments\Pages;
 
 use Brick\Money\Money;
 use Exception;
-use \Filament\Actions\Action;
-use \Filament\Actions\DeleteAction;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Collection;

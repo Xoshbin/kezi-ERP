@@ -2,7 +2,7 @@
 
 namespace Kezi\Accounting\Tests\Feature\Filament\Resources;
 
-use \Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Cheques\ChequebookResource\Pages\CreateChequebook;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Cheques\ChequebookResource\Pages\EditChequebook;

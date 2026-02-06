@@ -2,10 +2,10 @@
 
 namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\Payrolls\Pages;
 
-use \Filament\Actions\DeleteAction;
-use \Filament\Actions\ForceDeleteAction;
-use \Filament\Actions\RestoreAction;
-use \Filament\Actions\ViewAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 use Kezi\HR\Filament\Clusters\HumanResources\Resources\Payrolls\PayrollResource;
 
