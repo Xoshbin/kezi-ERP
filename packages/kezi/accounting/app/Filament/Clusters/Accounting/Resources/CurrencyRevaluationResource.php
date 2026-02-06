@@ -17,7 +17,7 @@ class CurrencyRevaluationResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('Accounting');
+        return __('accounting::navigation.groups.accounting_settings');
     }
 
     public static function getModelLabel(): string
@@ -82,10 +82,10 @@ class CurrencyRevaluationResource extends Resource
                     ])
                     ->multiple(),
             ])
-            ->recordActions([
+            ->actions([
                 \Filament\Actions\ViewAction::make()->label(__('accounting::currency_revaluation.actions.view')),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 \Filament\Actions\BulkActionGroup::make([
                     \Filament\Actions\DeleteBulkAction::make()->label(__('accounting::currency_revaluation.actions.delete_bulk')),
                 ]),

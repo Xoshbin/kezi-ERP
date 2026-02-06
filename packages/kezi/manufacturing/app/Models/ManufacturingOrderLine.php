@@ -14,6 +14,35 @@ use Kezi\Product\Models\Product;
  * @property string $currency_code
  * @property float $unit_cost
  * @property float $quantity_consumed
+ * @property int $company_id
+ * @property int $manufacturing_order_id
+ * @property int $product_id
+ * @property numeric $quantity_required
+ * @property int|null $stock_move_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read \Kezi\Manufacturing\Models\ManufacturingOrder $manufacturingOrder
+ * @property-read Product $product
+ * @property-read StockMove|null $stockMove
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrderLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrderLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrderLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrderLine whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrderLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrderLine whereCurrencyCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrderLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrderLine whereManufacturingOrderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrderLine whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrderLine whereQuantityConsumed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrderLine whereQuantityRequired($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrderLine whereStockMoveId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrderLine whereUnitCost($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ManufacturingOrderLine whereUpdatedAt($value)
+ * @method static \Kezi\Manufacturing\Database\Factories\ManufacturingOrderLineFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 class ManufacturingOrderLine extends Model
 {

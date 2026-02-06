@@ -23,6 +23,20 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Company $company
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sequence newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sequence newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sequence query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sequence whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sequence whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sequence whereCurrentNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sequence whereDocumentType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sequence whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sequence wherePadding($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sequence wherePrefix($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sequence whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 class Sequence extends Model
 {

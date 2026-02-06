@@ -26,6 +26,9 @@ use Kezi\Purchase\Models\PurchaseOrder;
 use Kezi\Purchase\Models\VendorBill;
 use Kezi\Purchase\Models\VendorBillAttachment;
 
+/**
+ * @extends CreateRecord<\Kezi\Purchase\Models\VendorBill>
+ */
 class CreateVendorBill extends CreateRecord
 {
     protected static string $resource = VendorBillResource::class;

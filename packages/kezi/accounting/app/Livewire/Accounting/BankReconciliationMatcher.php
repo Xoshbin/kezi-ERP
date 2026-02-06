@@ -2,6 +2,7 @@
 
 namespace Kezi\Accounting\Livewire\Accounting;
 
+use App\Models\Company;
 use Brick\Money\Money;
 use Exception;
 use Filament\Facades\Filament;
@@ -9,7 +10,6 @@ use Filament\Notifications\Notification;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Kezi\Accounting\Models\BankStatement;
-use Kezi\Accounting\Models\Company;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;

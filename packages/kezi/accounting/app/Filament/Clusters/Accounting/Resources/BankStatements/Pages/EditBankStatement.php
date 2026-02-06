@@ -17,6 +17,9 @@ use Kezi\Accounting\Models\BankStatementLine;
 use Kezi\Foundation\Filament\Actions\DocsAction;
 use Kezi\Foundation\Models\Currency;
 
+/**
+ * @extends EditRecord<\Kezi\Accounting\Models\BankStatement>
+ */
 class EditBankStatement extends EditRecord
 {
     protected static string $resource = BankStatementResource::class;

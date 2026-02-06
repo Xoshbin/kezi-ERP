@@ -20,6 +20,26 @@ use Kezi\Product\Models\Product;
  * @property-read \App\Models\Company $company
  * @property-read \Kezi\Manufacturing\Models\BillOfMaterial $billOfMaterial
  * @property-read \Kezi\Product\Models\Product|null $product
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Kezi\Manufacturing\Models\WorkCenter|null $workCenter
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BOMLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BOMLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BOMLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BOMLine whereBomId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BOMLine whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BOMLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BOMLine whereCurrencyCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BOMLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BOMLine whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BOMLine whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BOMLine whereUnitCost($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BOMLine whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|BOMLine whereWorkCenterId($value)
+ * @method static \Kezi\Manufacturing\Database\Factories\BOMLineFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 class BOMLine extends Model
 {

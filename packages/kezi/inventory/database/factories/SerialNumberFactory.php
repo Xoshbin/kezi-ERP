@@ -7,7 +7,7 @@ use Kezi\Inventory\Enums\Inventory\SerialNumberStatus;
 use Kezi\Inventory\Models\SerialNumber;
 
 /**
- * @extends Factory<SerialNumber>
+ * @extends Factory<\Kezi\Inventory\Models\SerialNumber>
  */
 class SerialNumberFactory extends Factory
 {

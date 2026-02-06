@@ -11,7 +11,7 @@ use Kezi\Inventory\Enums\Inventory\StockPickingType;
 use Kezi\Inventory\Models\StockPicking;
 
 /**
- * @extends Factory<StockPicking>
+ * @extends Factory<\Kezi\Inventory\Models\StockPicking>
  */
 class StockPickingFactory extends Factory
 {

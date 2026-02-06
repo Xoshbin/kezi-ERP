@@ -11,6 +11,53 @@ use Kezi\Foundation\Models\Partner;
 use Kezi\Inventory\Enums\Inventory\SerialNumberStatus;
 use Kezi\Product\Models\Product;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $product_id
+ * @property string $serial_code
+ * @property SerialNumberStatus $status
+ * @property int|null $current_location_id
+ * @property \Illuminate\Support\Carbon|null $warranty_start
+ * @property \Illuminate\Support\Carbon|null $warranty_end
+ * @property string|null $notes
+ * @property int|null $sold_to_partner_id
+ * @property \Illuminate\Support\Carbon|null $sold_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read \Kezi\Inventory\Models\StockLocation|null $currentLocation
+ * @property-read Product $product
+ * @property-read Partner|null $soldToPartner
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Inventory\Models\StockMoveLine> $stockMoveLines
+ * @property-read int|null $stock_move_lines_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Inventory\Models\StockQuant> $stockQuants
+ * @property-read int|null $stock_quants_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber atLocation(int $locationId)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber available()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber forProduct(int $productId)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber warrantyExpiringWithin(int $days)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber whereCurrentLocationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber whereSerialCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber whereSoldAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber whereSoldToPartnerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber whereWarrantyEnd($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SerialNumber whereWarrantyStart($value)
+ * @method static \Kezi\Inventory\Database\Factories\SerialNumberFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
+ */
 class SerialNumber extends Model
 {
     use HasFactory;

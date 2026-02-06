@@ -53,7 +53,7 @@ class JournalEntryResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('Accounting');
+        return __('accounting::navigation.groups.transactions');
     }
 
     public static function getModelLabel(): string
@@ -319,13 +319,13 @@ class JournalEntryResource extends Resource
             ->filters([
                 //
             ])
-            ->recordActions([
+            ->actions([
                 ActionGroup::make([
                     \Filament\Actions\ViewAction::make(),
                     EditAction::make(),
                 ]),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

@@ -18,6 +18,9 @@ use Kezi\Inventory\Exceptions\Inventory\InsufficientCostInformationException;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockMoves\StockMoveResource;
 use RuntimeException;
 
+/**
+ * @extends CreateRecord<\Kezi\Inventory\Models\StockMove>
+ */
 class CreateStockMove extends CreateRecord
 {
     protected static string $resource = StockMoveResource::class;

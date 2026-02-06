@@ -10,7 +10,7 @@ use Kezi\HR\Models\Department;
 use Kezi\HR\Models\Position;
 
 /**
- * @extends Factory<Position>
+ * @extends Factory<\Kezi\Hr\Models\Position>
  */
 class PositionFactory extends Factory
 {

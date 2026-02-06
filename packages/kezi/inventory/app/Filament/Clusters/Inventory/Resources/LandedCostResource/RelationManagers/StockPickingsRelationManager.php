@@ -2,13 +2,13 @@
 
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\LandedCostResource\RelationManagers;
 
+use Filament\Actions\AttachAction;
+use Filament\Actions\DetachAction;
+use Filament\Actions\DetachBulkAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\DatePicker;
 use Filament\Schemas\Components\TextInput;
 use Filament\Schemas\Schema;
-use Filament\Tables\Actions\AttachAction;
-use Filament\Tables\Actions\DetachAction;
-use Filament\Tables\Actions\DetachBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Kezi\Inventory\Enums\Inventory\StockPickingState;

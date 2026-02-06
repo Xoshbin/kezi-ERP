@@ -28,7 +28,15 @@ use Kezi\Accounting\Enums\Accounting\FiscalPeriodState;
  * @method static Builder<static>|FiscalPeriod newQuery()
  * @method static Builder<static>|FiscalPeriod query()
  * @method static Builder<static>|FiscalPeriod open()
- * @method static FiscalPeriodFactory factory($count = null, $state = [])
+ * @method static Builder<static>|FiscalPeriod whereCreatedAt($value)
+ * @method static Builder<static>|FiscalPeriod whereEndDate($value)
+ * @method static Builder<static>|FiscalPeriod whereFiscalYearId($value)
+ * @method static Builder<static>|FiscalPeriod whereId($value)
+ * @method static Builder<static>|FiscalPeriod whereName($value)
+ * @method static Builder<static>|FiscalPeriod whereStartDate($value)
+ * @method static Builder<static>|FiscalPeriod whereState($value)
+ * @method static Builder<static>|FiscalPeriod whereUpdatedAt($value)
+ * @method static \Kezi\Accounting\Database\Factories\FiscalPeriodFactory factory($count = null, $state = [])
  *
  * @mixin Eloquent
  */

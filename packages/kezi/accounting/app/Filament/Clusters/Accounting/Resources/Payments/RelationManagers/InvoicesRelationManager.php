@@ -17,6 +17,9 @@ use Filament\Tables\Table;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Sales\Enums\Sales\InvoiceStatus;
 
+/**
+ * @extends RelationManager<\Kezi\Payment\Models\Payment>
+ */
 class InvoicesRelationManager extends RelationManager
 {
     protected static string $relationship = 'invoices';
@@ -96,11 +99,11 @@ class InvoicesRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make(),
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

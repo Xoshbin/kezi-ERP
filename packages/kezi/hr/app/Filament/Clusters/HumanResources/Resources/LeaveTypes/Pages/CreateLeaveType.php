@@ -7,6 +7,9 @@ use Kezi\HR\Filament\Clusters\HumanResources\Resources\LeaveTypes\LeaveTypeResou
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
 
+/**
+ * @extends CreateRecord<\Kezi\HR\Models\LeaveType>
+ */
 class CreateLeaveType extends CreateRecord
 {
     use Translatable;

@@ -3,7 +3,6 @@
 namespace Kezi\Accounting\Models;
 
 use App\Models\Company;
-use Database\Factories\AnalyticPlanFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -33,7 +32,6 @@ use Spatie\Translatable\HasTranslations;
  * @property-read Company $company
  * @property-read AnalyticPlan|null $parent
  *
- * @method static AnalyticPlanFactory factory($count = null, $state = [])
  * @method static Builder<static>|AnalyticPlan newModelQuery()
  * @method static Builder<static>|AnalyticPlan newQuery()
  * @method static Builder<static>|AnalyticPlan query()
@@ -43,11 +41,25 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|AnalyticPlan whereName($value)
  * @method static Builder<static>|AnalyticPlan whereUpdatedAt($value)
  *
+ * @property int|null $parent_id
+ * @property string|null $color
+ * @property string $default_applicability
+ * @property-read mixed $translations
+ *
+ * @method static Builder<static>|AnalyticPlan whereColor($value)
+ * @method static Builder<static>|AnalyticPlan whereDefaultApplicability($value)
+ * @method static Builder<static>|AnalyticPlan whereJsonContainsLocale(string $column, string $locale, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|AnalyticPlan whereJsonContainsLocales(string $column, array $locales, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|AnalyticPlan whereLocale(string $column, string $locale)
+ * @method static Builder<static>|AnalyticPlan whereLocales(string $column, array $locales)
+ * @method static Builder<static>|AnalyticPlan whereParentId($value)
+ * @method static \Kezi\Accounting\Database\Factories\AnalyticPlanFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 class AnalyticPlan extends Model
 {
-    /** @use HasFactory<AnalyticPlanFactory> */
+    /** @use HasFactory<\Kezi\Accounting\Database\Factories\AnalyticPlanFactory> */
     use HasFactory;
 
     protected static function newFactory(): \Kezi\Accounting\Database\Factories\AnalyticPlanFactory

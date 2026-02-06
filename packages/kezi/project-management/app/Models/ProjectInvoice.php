@@ -30,6 +30,26 @@ use Kezi\Sales\Models\Invoice;
  * @property-read Company $company
  * @property-read Project $project
  * @property-read Invoice|null $invoice
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectInvoice newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectInvoice newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectInvoice query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectInvoice whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectInvoice whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectInvoice whereExpenseAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectInvoice whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectInvoice whereInvoiceDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectInvoice whereInvoiceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectInvoice whereLaborAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectInvoice wherePeriodEnd($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectInvoice wherePeriodStart($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectInvoice whereProjectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectInvoice whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectInvoice whereTotalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectInvoice whereUpdatedAt($value)
+ * @method static \Kezi\ProjectManagement\Database\Factories\ProjectInvoiceFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([\Kezi\Foundation\Observers\AuditLogObserver::class])]
 class ProjectInvoice extends Model

@@ -4,6 +4,9 @@ namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\ExpenseReports\Page
 
 use Filament\Resources\Pages\CreateRecord;
 
+/**
+ * @extends CreateRecord<\Kezi\HR\Models\ExpenseReport>
+ */
 class CreateExpenseReport extends CreateRecord
 {
     protected static string $resource = \Kezi\HR\Filament\Clusters\HumanResources\Resources\ExpenseReports\ExpenseReportResource::class;

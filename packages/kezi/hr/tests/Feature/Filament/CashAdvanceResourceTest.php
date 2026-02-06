@@ -67,6 +67,7 @@ describe('CashAdvanceResource', function () {
         livewire(CreateCashAdvance::class, ['tenant' => $this->company->id])
             ->fillForm([
                 'employee_id' => null,
+                'currency_id' => null,
             ])
             ->call('create')
             ->assertHasFormErrors([

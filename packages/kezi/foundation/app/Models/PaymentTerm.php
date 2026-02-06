@@ -40,7 +40,6 @@ use Spatie\Translatable\HasTranslations;
  * @property-read Collection<int, Partner> $vendors
  * @property-read int|null $vendors_count
  *
- * @method static \Kezi\Foundation\Database\Factories\PaymentTermFactory factory($count = null, $state = [])
  * @method static Builder<static>|PaymentTerm newModelQuery()
  * @method static Builder<static>|PaymentTerm newQuery()
  * @method static Builder<static>|PaymentTerm query()
@@ -52,6 +51,14 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|PaymentTerm whereIsActive($value)
  * @method static Builder<static>|PaymentTerm whereName($value)
  * @method static Builder<static>|PaymentTerm whereUpdatedAt($value)
+ *
+ * @property-read mixed $translations
+ *
+ * @method static Builder<static>|PaymentTerm whereJsonContainsLocale(string $column, string $locale, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|PaymentTerm whereJsonContainsLocales(string $column, array $locales, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|PaymentTerm whereLocale(string $column, string $locale)
+ * @method static Builder<static>|PaymentTerm whereLocales(string $column, array $locales)
+ * @method static \Kezi\Foundation\Database\Factories\PaymentTermFactory factory($count = null, $state = [])
  *
  * @mixin Eloquent
  */

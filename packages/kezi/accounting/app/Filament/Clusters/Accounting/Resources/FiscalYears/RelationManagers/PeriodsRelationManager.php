@@ -23,7 +23,10 @@ use Kezi\Accounting\Models\FiscalPeriod;
  * Provides a table view of periods with actions to close and reopen
  * individual periods, automatically updating lock dates.
  */
-final class PeriodsRelationManager extends RelationManager
+final /**
+ * @extends RelationManager<\Kezi\Accounting\Models\FiscalYear>
+ */
+class PeriodsRelationManager extends RelationManager
 {
     protected static string $relationship = 'periods';
 

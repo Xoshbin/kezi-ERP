@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\Foundation\Models\AuditLog;
 
 /**
- * @extends Factory<AuditLog>
+ * @extends Factory<\Kezi\Foundation\Models\AuditLog>
  */
 class AuditLogFactory extends Factory
 {

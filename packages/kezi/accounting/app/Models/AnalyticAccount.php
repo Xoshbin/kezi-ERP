@@ -30,7 +30,6 @@ use Kezi\Foundation\Models\Currency;
  * @property-read Collection<int, JournalEntryLine> $journalEntryLines
  * @property-read int|null $journal_entry_lines_count
  *
- * @method static AnalyticAccountFactory factory($count = null, $state = [])
  * @method static Builder<static>|AnalyticAccount newModelQuery()
  * @method static Builder<static>|AnalyticAccount newQuery()
  * @method static Builder<static>|AnalyticAccount query()
@@ -42,6 +41,10 @@ use Kezi\Foundation\Models\Currency;
  * @method static Builder<static>|AnalyticAccount whereName($value)
  * @method static Builder<static>|AnalyticAccount whereReference($value)
  * @method static Builder<static>|AnalyticAccount whereUpdatedAt($value)
+ *
+ * @property-read \Kezi\Accounting\Models\AnalyticAccountPlanPivot|null $pivot
+ *
+ * @method static \Kezi\Accounting\Database\Factories\AnalyticAccountFactory factory($count = null, $state = [])
  *
  * @mixin Eloquent
  */

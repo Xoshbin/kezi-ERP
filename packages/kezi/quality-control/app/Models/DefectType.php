@@ -11,6 +11,34 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Kezi\Foundation\Observers\AuditLogObserver;
 
 #[ObservedBy([AuditLogObserver::class])]
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property string $code
+ * @property string $name
+ * @property string|null $description
+ * @property bool $active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\QualityControl\Models\QualityAlert> $qualityAlerts
+ * @property-read int|null $quality_alerts_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DefectType newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DefectType newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DefectType query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DefectType whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DefectType whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DefectType whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DefectType whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DefectType whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DefectType whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DefectType whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DefectType whereUpdatedAt($value)
+ * @method static \Kezi\QualityControl\Database\Factories\DefectTypeFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
+ */
 class DefectType extends Model
 {
     use HasFactory;

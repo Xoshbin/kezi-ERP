@@ -7,11 +7,10 @@ use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\Accounting\Models\JournalEntry;
 use Kezi\Foundation\Models\Partner;
-use Kezi\Purchase\Models\VendorBill;
 use Kezi\Purchase\Models\VendorBillLine;
 
 /**
- * @extends Factory<VendorBill>
+ * @extends Factory<\Kezi\Purchase\Models\VendorBill>
  */
 class VendorBillFactory extends Factory
 {

@@ -8,6 +8,9 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AccountGroups\Account
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
 
+/**
+ * @extends EditRecord<\Kezi\Accounting\Models\AccountGroup>
+ */
 class EditAccountGroup extends EditRecord
 {
     use Translatable;

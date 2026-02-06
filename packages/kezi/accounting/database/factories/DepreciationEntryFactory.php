@@ -6,10 +6,9 @@ use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\Accounting\Enums\Assets\DepreciationEntryStatus;
 use Kezi\Accounting\Models\Asset;
-use Kezi\Accounting\Models\DepreciationEntry;
 
 /**
- * @extends Factory<DepreciationEntry>
+ * @extends Factory<\Kezi\Accounting\Models\DepreciationEntry>
  */
 class DepreciationEntryFactory extends Factory
 {

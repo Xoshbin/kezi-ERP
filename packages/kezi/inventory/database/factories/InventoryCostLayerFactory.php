@@ -8,7 +8,7 @@ use Kezi\Inventory\Models\InventoryCostLayer;
 use Kezi\Product\Models\Product;
 
 /**
- * @extends Factory<InventoryCostLayer>
+ * @extends Factory<\Kezi\Inventory\Models\InventoryCostLayer>
  */
 class InventoryCostLayerFactory extends Factory
 {

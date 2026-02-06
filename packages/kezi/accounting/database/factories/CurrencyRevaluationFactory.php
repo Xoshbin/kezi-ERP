@@ -9,7 +9,7 @@ use Kezi\Accounting\Enums\Currency\RevaluationStatus;
 use Kezi\Accounting\Models\CurrencyRevaluation;
 
 /**
- * @extends Factory<CurrencyRevaluation>
+ * @extends Factory<\Kezi\Accounting\Models\CurrencyRevaluation>
  */
 class CurrencyRevaluationFactory extends Factory
 {

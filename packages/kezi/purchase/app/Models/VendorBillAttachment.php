@@ -4,7 +4,6 @@ namespace Kezi\Purchase\Models;
 
 use App\Models\Company;
 use App\Models\User;
-use Database\Factories\VendorBillAttachmentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,10 +22,29 @@ use Illuminate\Support\Facades\Storage;
  * @property Carbon|null $updated_at
  * @property-read VendorBill $vendorBill
  * @property-read User $uploadedBy
+ * @property int $company_id
+ * @property-read Company $company
+ * @property-read string $formatted_file_size
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillAttachment newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillAttachment newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillAttachment query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillAttachment whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillAttachment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillAttachment whereFileName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillAttachment whereFilePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillAttachment whereFileSize($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillAttachment whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillAttachment whereMimeType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillAttachment whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillAttachment whereUploadedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|VendorBillAttachment whereVendorBillId($value)
+ *
+ * @mixin \Eloquent
  */
 class VendorBillAttachment extends Model
 {
-    /** @use HasFactory<VendorBillAttachmentFactory> */
+    /** @use HasFactory<\Kezi\Purchase\Database\Factories\VendorBillAttachmentFactory> */
     use HasFactory;
 
     /**

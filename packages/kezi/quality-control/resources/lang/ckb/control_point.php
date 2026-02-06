@@ -2,6 +2,8 @@
 
 return [
     'navigation_label' => 'خاڵەکانی کۆنترۆڵ',
+    'label' => 'خاڵی کۆنترۆڵ',
+    'plural_label' => 'خاڵەکانی کۆنترۆڵ',
     'section_basic' => 'زانیاری بنەڕەتی',
     'name' => 'ناو',
     'trigger_operation' => 'کرداری کارپێکردن',

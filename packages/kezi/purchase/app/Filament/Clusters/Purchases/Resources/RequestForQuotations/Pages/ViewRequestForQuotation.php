@@ -6,6 +6,9 @@ use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\RequestForQuotationResource;
 
+/**
+ * @extends ViewRecord<\Kezi\Purchase\Models\RequestForQuotation>
+ */
 class ViewRequestForQuotation extends ViewRecord
 {
     protected static string $resource = RequestForQuotationResource::class;

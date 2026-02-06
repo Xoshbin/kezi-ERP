@@ -7,7 +7,7 @@ use Kezi\Purchase\Models\VendorBill;
 use Kezi\Purchase\Models\VendorBillAttachment;
 
 /**
- * @extends Factory<VendorBillAttachment>
+ * @extends Factory<\Kezi\Purchase\Models\VendorBillAttachment>
  */
 class VendorBillAttachmentFactory extends Factory
 {

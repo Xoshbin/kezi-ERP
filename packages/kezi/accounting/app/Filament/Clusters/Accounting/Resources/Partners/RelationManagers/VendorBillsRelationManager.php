@@ -15,6 +15,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
 
+/**
+ * @extends RelationManager<\Kezi\Foundation\Models\Partner>
+ */
 class VendorBillsRelationManager extends RelationManager
 {
     protected static string $relationship = 'vendorBills';
@@ -78,11 +81,11 @@ class VendorBillsRelationManager extends RelationManager
             ->headerActions([
                 // Create action removed - vendor bills should be created from VendorBill resource
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

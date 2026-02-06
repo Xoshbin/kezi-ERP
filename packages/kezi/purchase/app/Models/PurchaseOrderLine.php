@@ -42,6 +42,36 @@ use Kezi\Product\Models\Product;
  * @property-read PurchaseOrder $purchaseOrder
  * @property-read Product $product
  * @property-read Tax|null $tax
+ * @property int|null $company_id
+ * @property ShippingCostType|null $shipping_cost_type
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereExpectedDeliveryDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine wherePurchaseOrderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereQuantityReceived($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereShippingCostType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereSubtotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereSubtotalCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereTaxId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereTotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereTotalCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereTotalLineTax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereTotalLineTaxCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereUnitPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereUnitPriceCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderLine whereUpdatedAt($value)
+ * @method static \Kezi\Purchase\Database\Factories\PurchaseOrderLineFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([\Kezi\Foundation\Observers\AuditLogObserver::class])]
 class PurchaseOrderLine extends Model

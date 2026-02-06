@@ -18,6 +18,9 @@ use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
 use Kezi\Payment\Enums\Payments\PaymentMethod;
 use Kezi\Payment\Enums\Payments\PaymentType;
 
+/**
+ * @extends CreateRecord<\Kezi\Payment\Models\Payment>
+ */
 class CreatePayment extends CreateRecord
 {
     protected static string $resource = PaymentResource::class;

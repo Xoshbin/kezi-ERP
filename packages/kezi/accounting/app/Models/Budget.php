@@ -33,7 +33,6 @@ use Kezi\Foundation\Models\Currency;
  * @property-read Company $company
  * @property-read Currency $currency
  *
- * @method static BudgetFactory factory($count = null, $state = [])
  * @method static Builder<static>|Budget newModelQuery()
  * @method static Builder<static>|Budget newQuery()
  * @method static Builder<static>|Budget query()
@@ -47,11 +46,16 @@ use Kezi\Foundation\Models\Currency;
  * @method static Builder<static>|Budget whereStatus($value)
  * @method static Builder<static>|Budget whereUpdatedAt($value)
  *
+ * @property int $currency_id
+ *
+ * @method static Builder<static>|Budget whereCurrencyId($value)
+ * @method static \Kezi\Accounting\Database\Factories\BudgetFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 class Budget extends Model
 {
-    /** @use HasFactory<BudgetFactory> */
+    /** @use HasFactory<\Kezi\Accounting\Database\Factories\BudgetFactory> */
     use HasFactory;
 
     /**

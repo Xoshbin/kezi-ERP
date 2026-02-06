@@ -23,6 +23,9 @@ use Kezi\Foundation\Models\Currency;
 /**
  * @property JournalEntry $record
  */
+/**
+ * @extends EditRecord<\Kezi\Accounting\Models\JournalEntry>
+ */
 class EditJournalEntry extends EditRecord
 {
     protected static string $resource = JournalEntryResource::class;

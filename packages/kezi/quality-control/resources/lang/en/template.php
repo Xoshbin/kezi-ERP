@@ -2,6 +2,8 @@
 
 return [
     'navigation_label' => 'Inspection Templates',
+    'label' => 'Inspection Template',
+    'plural_label' => 'Inspection Templates',
     'section_basic' => 'Basic Information',
     'section_parameters' => 'Inspection Parameters',
     'name' => 'Name',

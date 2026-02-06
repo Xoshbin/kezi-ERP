@@ -458,13 +458,13 @@ class AdjustmentDocumentResource extends Resource
                     )
                     ->multiple(),
             ])
-            ->recordActions([
+            ->actions([
                 ViewAction::make()
                     ->icon('heroicon-o-eye'),
                 EditAction::make()
                     ->icon('heroicon-o-pencil-square'),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->requiresConfirmation(),

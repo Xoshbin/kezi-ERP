@@ -40,8 +40,8 @@ test('all docs action slugs resolve to existing files', function () {
 
         $fullSlug = $mappingMethod->invoke(null, $slug);
 
-        $version = \Xoshbin\Pertuk\Services\DocumentationService::getAvailableVersions()[0] ?? 'v1.0';
-        $baseDocsPath = base_path("docs/$version");
+        $version = \Xoshbin\Pertuk\Services\DocumentationService::getAvailableVersions()[0] ?? null;
+        $baseDocsPath = $version ? base_path("docs/$version") : base_path('docs');
         $englishPath = "$baseDocsPath/en/$fullSlug.md";
         $kurdishPath = "$baseDocsPath/ckb/$fullSlug.md";
 
@@ -58,8 +58,8 @@ test('all docs action slugs resolve to existing files', function () {
 });
 
 test('all user guides have translations', function () {
-    $version = \Xoshbin\Pertuk\Services\DocumentationService::getAvailableVersions()[0] ?? 'v1.0';
-    $enDocsPath = base_path("docs/$version/en");
+    $version = \Xoshbin\Pertuk\Services\DocumentationService::getAvailableVersions()[0] ?? null;
+    $enDocsPath = $version ? base_path("docs/$version/en") : base_path('docs/en');
     $this->assertDirectoryExists($enDocsPath);
 
     $files = File::allFiles($enDocsPath);
@@ -74,7 +74,7 @@ test('all user guides have translations', function () {
         }
 
         // Construct expected Kurdish path
-        $kurdishPath = base_path("docs/$version/ckb/$filename");
+        $kurdishPath = $version ? base_path("docs/$version/ckb/$filename") : base_path("docs/ckb/$filename");
 
         if (! File::exists($kurdishPath)) {
             $missingTranslations[] = "English doc '$filename' is missing Kurdish translation at: $kurdishPath";

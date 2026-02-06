@@ -12,6 +12,9 @@ use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
 use Kezi\Purchase\Models\VendorBill;
 
+/**
+ * @extends RelationManager<\Kezi\Purchase\Models\PurchaseOrder>
+ */
 class VendorBillsRelationManager extends RelationManager
 {
     protected static string $relationship = 'vendorBills';

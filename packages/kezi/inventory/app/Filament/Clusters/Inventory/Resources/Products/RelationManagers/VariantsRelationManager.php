@@ -13,6 +13,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 
+/**
+ * @extends RelationManager<\Kezi\Product\Models\Product>
+ */
 class VariantsRelationManager extends RelationManager
 {
     protected static string $relationship = 'variants';

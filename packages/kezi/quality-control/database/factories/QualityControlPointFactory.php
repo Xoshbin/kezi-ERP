@@ -8,7 +8,7 @@ use Kezi\QualityControl\Enums\QualityTriggerOperation;
 use Kezi\QualityControl\Models\QualityControlPoint;
 
 /**
- * @extends Factory<QualityControlPoint>
+ * @extends Factory<\Kezi\QualityControl\Models\QualityControlPoint>
  */
 class QualityControlPointFactory extends Factory
 {

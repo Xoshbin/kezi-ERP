@@ -18,6 +18,9 @@ use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Ac
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockPickingResource\Actions\ValidatePickingAction;
 use Kezi\Inventory\Models\StockPicking;
 
+/**
+ * @extends ViewRecord<\Kezi\Inventory\Models\StockPicking>
+ */
 class ViewStockPicking extends ViewRecord
 {
     protected static string $resource = StockPickingResource::class;

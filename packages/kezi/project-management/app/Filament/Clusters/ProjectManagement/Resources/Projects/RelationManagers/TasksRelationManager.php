@@ -12,6 +12,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Kezi\ProjectManagement\Enums\TaskStatus;
 
+/**
+ * @extends RelationManager<\Kezi\ProjectManagement\Models\Project>
+ */
 class TasksRelationManager extends RelationManager
 {
     protected static string $relationship = 'tasks';
@@ -71,15 +74,15 @@ class TasksRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                \Filament\Tables\Actions\CreateAction::make(),
+                \Filament\Actions\CreateAction::make(),
             ])
             ->actions([
-                \Filament\Tables\Actions\EditAction::make(),
-                \Filament\Tables\Actions\DeleteAction::make(),
+                \Filament\Actions\EditAction::make(),
+                \Filament\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                \Filament\Tables\Actions\BulkActionGroup::make([
-                    \Filament\Tables\Actions\DeleteBulkAction::make(),
+                \Filament\Actions\BulkActionGroup::make([
+                    \Filament\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

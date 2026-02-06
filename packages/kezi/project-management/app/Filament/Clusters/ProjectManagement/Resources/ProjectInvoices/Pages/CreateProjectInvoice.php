@@ -8,6 +8,9 @@ use Kezi\ProjectManagement\Actions\CreateProjectInvoiceAction;
 use Kezi\ProjectManagement\DataTransferObjects\CreateProjectInvoiceDTO;
 use Kezi\ProjectManagement\Filament\Clusters\ProjectManagement\Resources\ProjectInvoices\ProjectInvoiceResource;
 
+/**
+ * @extends CreateRecord<\Kezi\ProjectManagement\Models\ProjectInvoice>
+ */
 class CreateProjectInvoice extends CreateRecord
 {
     protected static string $resource = ProjectInvoiceResource::class;

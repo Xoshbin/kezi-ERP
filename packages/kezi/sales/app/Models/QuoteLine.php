@@ -47,6 +47,35 @@ use Kezi\Sales\Observers\QuoteLineObserver;
  * @property-read Product|null $product
  * @property-read Tax|null $tax
  * @property-read Account|null $incomeAccount
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereDiscountAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereDiscountAmountCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereDiscountPercentage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereIncomeAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereLineOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereQuoteId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereSubtotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereSubtotalCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereTaxAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereTaxAmountCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereTaxId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereTotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereTotalCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereUnit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereUnitPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereUnitPriceCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|QuoteLine whereUpdatedAt($value)
+ * @method static \Kezi\Sales\Database\Factories\QuoteLineFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([QuoteLineObserver::class, AuditLogObserver::class])]
 class QuoteLine extends Model

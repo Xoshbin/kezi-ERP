@@ -6,10 +6,9 @@ use App\Models\Company;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\Foundation\Models\Currency;
-use Kezi\Foundation\Models\CurrencyRate;
 
 /**
- * @extends Factory<CurrencyRate>
+ * @extends Factory<\Kezi\Foundation\Models\CurrencyRate>
  */
 class CurrencyRateFactory extends Factory
 {

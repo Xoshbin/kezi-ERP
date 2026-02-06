@@ -34,6 +34,25 @@ use Kezi\ProjectManagement\Enums\TimesheetStatus;
  * @property-read User|null $approver
  * @property-read Collection<int, TimesheetLine> $lines
  * @property-read int|null $lines_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Timesheet newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Timesheet newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Timesheet query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Timesheet whereApprovedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Timesheet whereApprovedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Timesheet whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Timesheet whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Timesheet whereEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Timesheet whereEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Timesheet whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Timesheet whereRejectionReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Timesheet whereStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Timesheet whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Timesheet whereTotalHours($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Timesheet whereUpdatedAt($value)
+ * @method static \Kezi\ProjectManagement\Database\Factories\TimesheetFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([
     \Kezi\Foundation\Observers\AuditLogObserver::class,

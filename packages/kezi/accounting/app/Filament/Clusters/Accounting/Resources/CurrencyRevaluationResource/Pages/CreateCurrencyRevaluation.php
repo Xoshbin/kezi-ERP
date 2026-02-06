@@ -5,6 +5,9 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\CurrencyRevalua
 use Filament\Resources\Pages\CreateRecord;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\CurrencyRevaluationResource;
 
+/**
+ * @extends CreateRecord<\Kezi\Accounting\Models\CurrencyRevaluation>
+ */
 class CreateCurrencyRevaluation extends CreateRecord
 {
     protected static string $resource = CurrencyRevaluationResource::class;

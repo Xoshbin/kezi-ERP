@@ -16,6 +16,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @extends RelationManager<\Kezi\Accounting\Models\Account>
+ */
 class JournalEntryLinesRelationManager extends RelationManager
 {
     protected static string $relationship = 'journalEntryLines';
@@ -66,11 +69,11 @@ class JournalEntryLinesRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make(),
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

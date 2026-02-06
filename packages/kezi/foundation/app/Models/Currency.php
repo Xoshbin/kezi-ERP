@@ -29,6 +29,7 @@ use Spatie\Translatable\HasTranslations;
  * @property string|array<string, string> $name
  * @property string $symbol
  * @property float $exchange_rate
+ * @property int $decimal_places
  * @property bool $is_active
  * @property Carbon|null $last_updated_at
  * @property Carbon|null $created_at
@@ -46,7 +47,6 @@ use Spatie\Translatable\HasTranslations;
  * @property-read Collection<int, VendorBill> $vendorBills
  * @property-read int|null $vendor_bills_count
  *
- * @method static \Kezi\Foundation\Database\Factories\CurrencyFactory factory($count = null, $state = [])
  * @method static Builder<static>|Currency newModelQuery()
  * @method static Builder<static>|Currency newQuery()
  * @method static Builder<static>|Currency query()
@@ -60,12 +60,28 @@ use Spatie\Translatable\HasTranslations;
  * @method static Builder<static>|Currency whereSymbol($value)
  * @method static Builder<static>|Currency whereUpdatedAt($value)
  *
+ * @property-read Collection<int, JournalEntry> $journalEntries
+ * @property-read int|null $journal_entries_count
+ * @property-read \Kezi\Foundation\Models\CurrencyRate|null $latestRate
+ * @property-read Collection<int, \Kezi\Foundation\Models\CurrencyRate> $rates
+ * @property-read int|null $rates_count
+ * @property-read mixed $translations
+ *
+ * @method static Builder<static>|Currency whereDecimalPlaces($value)
+ * @method static Builder<static>|Currency whereJsonContainsLocale(string $column, string $locale, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|Currency whereJsonContainsLocales(string $column, array $locales, ?mixed $value, string $operand = '=')
+ * @method static Builder<static>|Currency whereLocale(string $column, string $locale)
+ * @method static Builder<static>|Currency whereLocales(string $column, array $locales)
+ * @method static \Kezi\Foundation\Database\Factories\CurrencyFactory factory($count = null, $state = [])
+ *
  * @mixin Eloquent
  */
 #[ObservedBy([\Kezi\Foundation\Observers\CurrencyObserver::class])]
 class Currency extends Model
 {
+    /** @use HasFactory<\Database\Factories\Foundation\CurrencyFactory> */
     use HasFactory;
+
     use HasTranslations;
 
     protected static function newFactory(): CurrencyFactory

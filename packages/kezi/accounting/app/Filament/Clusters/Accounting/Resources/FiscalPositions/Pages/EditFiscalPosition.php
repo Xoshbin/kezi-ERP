@@ -8,6 +8,9 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\FiscalPositions\Fisca
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
 
+/**
+ * @extends EditRecord<\Kezi\Accounting\Models\FiscalPosition>
+ */
 class EditFiscalPosition extends EditRecord
 {
     use Translatable;

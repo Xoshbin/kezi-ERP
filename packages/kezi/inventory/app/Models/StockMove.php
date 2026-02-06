@@ -35,6 +35,30 @@ use Kezi\Inventory\Observers\StockMoveObserver;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, StockMoveProductLine> $productLines
  * @property-read \Illuminate\Database\Eloquent\Collection<int, StockMoveLine> $stockMoveLines
  * @property-read \Illuminate\Database\Eloquent\Collection<int, StockMoveValuation> $stockMoveValuations
+ * @property-read int|null $product_lines_count
+ * @property-read \Illuminate\Database\Eloquent\Model|null $source
+ * @property-read int|null $stock_move_lines_count
+ * @property-read int|null $stock_move_valuations_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMove newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMove newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMove query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMove whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMove whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMove whereCreatedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMove whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMove whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMove whereMoveDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMove whereMoveType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMove wherePickingId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMove whereReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMove whereSourceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMove whereSourceType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMove whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|StockMove whereUpdatedAt($value)
+ * @method static \Kezi\Inventory\Database\Factories\StockMoveFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([StockMoveObserver::class])]
 class StockMove extends Model

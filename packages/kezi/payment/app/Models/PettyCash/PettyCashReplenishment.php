@@ -25,6 +25,24 @@ use Kezi\Foundation\Observers\AuditLogObserver;
  * @property-read Company $company
  * @property-read PettyCashFund $fund
  * @property-read JournalEntry|null $journalEntry
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashReplenishment newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashReplenishment newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashReplenishment query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashReplenishment whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashReplenishment whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashReplenishment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashReplenishment whereFundId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashReplenishment whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashReplenishment whereJournalEntryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashReplenishment wherePaymentMethod($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashReplenishment whereReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashReplenishment whereReplenishmentDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashReplenishment whereReplenishmentNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PettyCashReplenishment whereUpdatedAt($value)
+ * @method static \Kezi\Payment\Database\Factories\PettyCash\PettyCashReplenishmentFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AuditLogObserver::class])]
 class PettyCashReplenishment extends Model

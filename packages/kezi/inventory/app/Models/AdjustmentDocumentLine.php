@@ -20,11 +20,58 @@ use Kezi\Product\Models\Product;
 
 /**
  * @property-read AdjustmentDocument $adjustmentDocument
+ * @property int $id
+ * @property int $company_id
+ * @property int $adjustment_document_id
+ * @property int|null $product_id
+ * @property int|null $tax_id
+ * @property int $account_id
+ * @property int|null $currency_id
+ * @property \Brick\Money\Money|null $unit_price_company_currency
+ * @property \Brick\Money\Money|null $subtotal_company_currency
+ * @property \Brick\Money\Money|null $total_line_tax_company_currency
+ * @property string $description
+ * @property numeric $quantity
+ * @property \Brick\Money\Money $unit_price
+ * @property \Brick\Money\Money $subtotal
+ * @property \Brick\Money\Money $total_line_tax
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read Company $company
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, AdjustmentDocumentLine> $lines
+ * @property-read int|null $lines_count
+ * @property-read Product|null $product
+ * @property-read Tax|null $tax
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine whereAdjustmentDocumentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine whereSubtotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine whereSubtotalCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine whereTaxId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine whereTotalLineTax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine whereTotalLineTaxCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine whereUnitPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine whereUnitPriceCompanyCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AdjustmentDocumentLine whereUpdatedAt($value)
+ * @method static \Kezi\Inventory\Database\Factories\AdjustmentDocumentLineFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 #[ObservedBy([AdjustmentDocumentLineObserver::class])]
 class AdjustmentDocumentLine extends Model
 {
-    /** @use HasFactory<AdjustmentDocumentLineFactory> */
+    /** @use HasFactory<\Kezi\Inventory\Database\Factories\AdjustmentDocumentLineFactory> */
     use HasFactory;
 
     protected $table = 'adjustment_document_lines';
