@@ -16,8 +16,8 @@ uses(RefreshDatabase::class);
 test('homepage has login and register buttons', function () {
     $this->get('/')
         ->assertStatus(200)
-        ->assertSee('Login')
-        ->assertSee('Register');
+        ->assertSee(__('Sign in'))
+        ->assertSee(__('Start Free Trial'));
 });
 
 test('new user can register and is redirected to company onboarding', function () {
