@@ -46,8 +46,8 @@
     "Detailed guides and user manuals to help you master every feature of the platform.": "ڕێنمایی بەکارهێنانی ورد و تەواو بۆ یارمەتیدانت لە شارەزابوون لە هەموو تایبەتمەندییەکان.",
     "Explore Documentation": "گەڕان لە بەڵگەنامەکان",
     "Ready to Scale?": "ئامادەی بۆ گەشەکردن؟",
-    "Join the businesses that chose intelligence over complexity.": "پەیوەندی بکە بەو کارانەی کە زیرەکییان هەڵبژارد بەسەر ئاڵۆزیدا.",
-    "Start your transformation today.": "گۆڕانکارییەکەت ئەمڕۆ دەستپێبکە.",
+    "Join the businesses that chose intelligence over complexity.": "پەیوەندی بکە و مامەڵە ئاڵۆزەکانت بە زیرەکی ڕاپەڕێنە.",
+    "Start your transformation today.": "کارەکانت ئاسان بکە.",
     "Start Your Free Trial": "دەستپێکردنی تاقیکردنەوەی بێ بەرامبەر",
     "Talk to an Expert": "گفتوگۆ لەگەڵ شارەزا بکە",
     "Kezi Enterprise": "کەزی ئینتەرپرایس",
@@ -55,5 +55,16 @@
     "Privacy": "تایبەتمەندی",
     "Terms": "مەرجەکان",
     "All rights reserved. Precise business intelligence.": "هەموو مافەکان پارێزراون. زیرەکی بازرگانی ورد.",
-    "Kezi": "کەزی"
+    "Kezi": "کەزی",
+    "Monthly Revenue": "داهاتی مانگانە",
+    "Active Operations": "کارەکانی چالاک",
+    "Processing Invoices": "پرۆسێس کردنی پسوڵەکان",
+    "Syncing Bank Feeds": "هاوکاتکردنی هەژماری بانکی",
+    "System Status": "دۆخی سیستم",
+    "Operational": "کار دەکات",
+    "Uptime": "کاتی کارکردن",
+    "Shield": "پارێزراو",
+    "Recent Transactions": "مامەڵەکانی ئەم دواییە",
+    "Invoice": "پسوڵە",
+    "Completed": "تەواوکراو"
 }
