@@ -1,11 +1,31 @@
 <x-filament-panels::page>
-    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+    <style>
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 1.5rem;
+        }
+        @media (min-width: 768px) {
+            .reports-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (min-width: 1280px) {
+            .reports-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+        .reports-grid > * {
+            min-width: 0;
+        }
+    </style>
+    <div class="reports-grid">
         @foreach($this->getReportCategories() as $categoryKey => $category)
             @foreach($category['reports'] as $report)
                 <x-filament::section
                     :heading="$report['name']"
                     :description="$report['description']"
-                    class="hover:shadow-md transition-shadow duration-200"
+                    class="hover:shadow-lg transition-shadow duration-200"
                 >
                     <x-slot name="headerEnd">
                         @if($report['icon'])
