@@ -3,6 +3,7 @@
 @source '../../../../app/Filament';
 @source '../../../../resources/views/filament';
 @source '../../../../Modules';
+@source '../../../../packages'; /*this is required for the package styles to work */
 
 /* Premium High-Density ERP Theme - Refined Premium+ Aesthetic (Stable Build) */
 
