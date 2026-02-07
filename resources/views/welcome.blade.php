@@ -234,56 +234,53 @@
                             </div>
                         </div>
 
-                        <!-- Card 2: Active Operations -->
+                        <!-- Card 2: Inventory Status -->
                         <div class="bg-slate-950/50 rounded-2xl p-6 border border-white/5 relative overflow-hidden group hover:border-sky-500/30 transition-all">
                             <div class="flex justify-between items-start mb-6">
                                 <div>
-                                    <div class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Active Operations') }}</div>
-                                    <div class="text-3xl font-display font-bold text-white group-hover:text-sky-500 transition-colors">1,842</div>
+                                    <div class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Inventory Status') }}</div>
+                                    <div class="text-3xl font-display font-bold text-white group-hover:text-sky-500 transition-colors">$842,200</div>
                                 </div>
                                 <div class="w-8 h-8 rounded-full bg-sky-500/10 flex items-center justify-center">
-                                    <span class="relative flex h-3 w-3">
-                                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
-                                      <span class="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
-                                    </span>
+                                    <svg class="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                                 </div>
                             </div>
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between text-xs">
-                                    <span class="text-slate-400">{{ __('Processing Invoices') }}</span>
-                                    <span class="text-white font-mono">85%</span>
+                                    <span class="text-slate-400">{{ __('Stock On Hand') }}</span>
+                                    <span class="text-white font-mono">12,450 Units</span>
                                 </div>
                                 <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                                    <div class="h-full bg-sky-500 w-[85%]"></div>
+                                    <div class="h-full bg-sky-500 w-[75%]"></div>
                                 </div>
                                 <div class="flex items-center justify-between text-xs">
-                                    <span class="text-slate-400">{{ __('Syncing Bank Feeds') }}</span>
-                                    <span class="text-white font-mono">98%</span>
+                                    <span class="text-amber-500">{{ __('Low Stock Alerts') }}</span>
+                                    <span class="text-amber-500 font-bold">5 Items</span>
                                 </div>
                                 <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                                    <div class="h-full bg-emerald-500 w-[98%]"></div>
+                                    <div class="h-full bg-amber-500 w-[15%]"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Card 3: System Health -->
-                        <div class="bg-slate-950/50 rounded-2xl p-6 border border-white/5 relative overflow-hidden group hover:border-purple-500/30 transition-all">
+                        <!-- Card 3: Net Profit -->
+                        <div class="bg-slate-950/50 rounded-2xl p-6 border border-white/5 relative overflow-hidden group hover:border-emerald-500/30 transition-all">
                             <div class="flex justify-between items-start mb-4">
                                 <div>
-                                    <div class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('System Status') }}</div>
-                                    <div class="text-xl font-display font-bold text-emerald-400">{{ __('Operational') }}</div>
+                                    <div class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">{{ __('Net Profit') }}</div>
+                                    <div class="text-3xl font-display font-bold text-emerald-400">$38,900</div>
                                 </div>
-                                <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div class="flex items-center gap-1 text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-lg text-xs font-bold">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                                    <span>24%</span>
+                                </div>
                             </div>
-                            <div class="grid grid-cols-2 gap-4 mt-6">
-                                <div class="bg-slate-900/50 p-3 rounded-lg border border-white/5">
-                                    <div class="text-[10px] text-slate-500 uppercase">{{ __('Uptime') }}</div>
-                                    <div class="text-lg font-mono text-white">99.99%</div>
-                                </div>
-                                <div class="bg-slate-900/50 p-3 rounded-lg border border-white/5">
-                                    <div class="text-[10px] text-slate-500 uppercase">{{ __('Security') }}</div>
-                                    <div class="text-lg font-mono text-white">{{ __('Shield') }}</div>
-                                </div>
+                            <div class="relative h-24 mt-4 w-full">
+                                <!-- Abstract Chart Line -->
+                                <svg class="absolute inset-0 w-full h-full text-emerald-500/20" preserveAspectRatio="none" viewBox="0 0 100 100">
+                                    <path d="M0 100 L0 60 L20 70 L40 40 L60 50 L80 20 L100 10 L100 100 Z" fill="currentColor"></path>
+                                    <path d="M0 60 L20 70 L40 40 L60 50 L80 20 L100 10" fill="none" stroke="#10b981" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+                                </svg>
                             </div>
                         </div>
                     </div>
@@ -291,7 +288,7 @@
                     <!-- Abstract Data Table / List -->
                     <div class="mt-4 md:mt-6 bg-slate-950/80 rounded-2xl border border-white/5 p-4 overflow-hidden">
                         <div class="flex items-center justify-between mb-4 px-2">
-                            <span class="text-xs font-bold text-slate-500 uppercase">{{ __('Recent Transactions') }}</span>
+                            <span class="text-xs font-bold text-slate-500 uppercase">{{ __('Recent Activity') }}</span>
                             <div class="flex gap-2">
                                 <div class="w-2 h-2 rounded-full bg-red-500"></div>
                                 <div class="w-2 h-2 rounded-full bg-amber-500"></div>
@@ -299,23 +296,51 @@
                             </div>
                         </div>
                         <div class="space-y-3">
-                            @foreach(range(1, 3) as $i)
+                            <!-- Item 1 -->
                             <div class="flex items-center justify-between py-2 px-3 hover:bg-white/5 rounded-lg transition-colors cursor-default border-b border-white/5 last:border-0">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                                    <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                     </div>
                                     <div>
-                                        <div class="text-sm font-medium text-slate-200">{{ __('Invoice') }} #INV-202{{ $i }}</div>
-                                        <div class="text-xs text-slate-500">{{ now()->subMinutes($i * 12)->diffForHumans() }}</div>
+                                        <div class="text-sm font-medium text-slate-200">{{ __('Inv #2024 Paid') }}</div>
+                                        <div class="text-xs text-slate-500">{{ __('2 mins ago') }}</div>
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <div class="text-sm font-mono text-white">${{ number_format(rand(1000, 5000), 2) }}</div>
-                                    <div class="text-[10px] text-emerald-400">{{ __('Completed') }}</div>
+                                    <div class="text-sm font-mono text-emerald-400">+$2,450.00</div>
                                 </div>
                             </div>
-                            @endforeach
+                            <!-- Item 2 -->
+                            <div class="flex items-center justify-between py-2 px-3 hover:bg-white/5 rounded-lg transition-colors cursor-default border-b border-white/5 last:border-0">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-slate-200">{{ __('Low Stock: MacBook Pro') }}</div>
+                                        <div class="text-xs text-slate-500">{{ __('15 mins ago') }}</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-mono text-slate-200">5 {{ __('Units') }}</div>
+                                </div>
+                            </div>
+                            <!-- Item 3 -->
+                            <div class="flex items-center justify-between py-2 px-3 hover:bg-white/5 rounded-lg transition-colors cursor-default border-b border-white/5 last:border-0">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center text-sky-500">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-slate-200">{{ __('Stock Move #WH/IN/004') }}</div>
+                                        <div class="text-xs text-slate-500">{{ __('1 hour ago') }}</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-mono text-slate-200">+150 {{ __('Units') }}</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -585,7 +610,7 @@
                         <span class="text-xl font-display font-bold text-white tracking-tight">{{ __('Kezi') }}</span>
                     </div>
                     <p class="text-sm text-slate-500 leading-relaxed">
-                        {{ __('The ultimate enterprise command center. Built on Laravel, designed for Iraqi and global businesses.') }}
+                        {{ __('The ultimate enterprise command center. Designed for Iraqi and global businesses.') }}
                     </p>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-12">
