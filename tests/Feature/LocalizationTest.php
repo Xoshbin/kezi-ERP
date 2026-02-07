@@ -24,3 +24,12 @@ test('homepage loads in kurdish when session is set', function () {
     $response->assertSee('کارایی بێ سنوور.');
     $response->assertSee('dir="rtl"', false);
 });
+
+test('homepage loads in arabic when session is set', function () {
+    $response = $this->withSession(['locale' => 'ar'])->get('/');
+
+    $response->assertStatus(200);
+    $response->assertSee('منصة واحدة.');
+    $response->assertSee('كفاءة بلا حدود.');
+    $response->assertSee('dir="rtl"', false);
+});
