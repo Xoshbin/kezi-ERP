@@ -12,7 +12,7 @@ Route::get('/', function () {
 });
 
 Route::get('/lang/{locale}', function ($locale) {
-    if (in_array($locale, ['en', 'ckb'])) {
+    if (in_array($locale, ['en', 'ckb', 'ar'])) {
         session(['locale' => $locale]);
     }
 

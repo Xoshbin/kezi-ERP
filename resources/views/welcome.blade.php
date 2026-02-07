@@ -110,6 +110,7 @@
                         <div class="glass rounded-xl overflow-hidden">
                             <a href="/lang/en" class="block px-4 py-2 text-sm text-slate-300 hover:bg-white/10 hover:text-white">English</a>
                             <a href="/lang/ckb" class="block px-4 py-2 text-sm text-slate-300 hover:bg-white/10 hover:text-white">کوردی</a>
+                            <a href="/lang/ar" class="block px-4 py-2 text-sm text-slate-300 hover:bg-white/10 hover:text-white">العربية</a>
                         </div>
                     </div>
                 </div>
