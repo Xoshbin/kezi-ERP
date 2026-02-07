@@ -207,7 +207,7 @@
 
             <!-- Hero Image Visualization -->
             <!-- CSS-Only Abstract Dashboard -->
-            <div id="dashboard" class="max-w-6xl mx-auto mt-24 px-4 text-left animate-float delay-300">
+            <div id="dashboard" class="max-w-6xl mx-auto mt-24 px-4 text-left delay-300">
                 <div class="relative glass rounded-3xl p-1 md:p-4 border-amber-500/20 overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-b from-amber-500/5 to-transparent pointer-events-none"></div>
                     
