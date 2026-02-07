@@ -19,7 +19,6 @@ Route::get('/lang/{locale}', function ($locale) {
     return redirect()->back();
 });
 
-
 // PDF Generation Routes (Protected by authentication)
 Route::middleware(['auth'])->group(function () {
     // Invoice PDF routes
