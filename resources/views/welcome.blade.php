@@ -581,6 +581,126 @@
         </div>
     </section>
 
+    <!-- Tailored Section -->
+    <section id="customization" class="py-24 px-6 relative">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-16 items-center scroll-trigger">
+                <!-- Left Content -->
+                <div>
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-bold uppercase tracking-widest mb-6">
+                        <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                        {{ __('Tailored to Your Vision') }}
+                    </div>
+                    <h2 class="text-4xl md:text-5xl font-display font-bold mb-6 text-white leading-tight">
+                        {{ __('Your Business,') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">{{ __('Your Rules') }}</span>
+                    </h2>
+                    <p class="text-slate-400 text-lg leading-relaxed mb-8">
+                        {{ __('Kezi adapts to your specific needs. Whether it\'s custom workflows, specialized reporting, or unique integration requirements, our platform is built to be molded around your business model.') }}
+                    </p>
+                    
+                    <div class="space-y-6 mb-10">
+                        <!-- Feature 1 -->
+                        <div class="flex gap-4 group">
+                            <div class="w-12 h-12 rounded-2xl bg-slate-900 border border-white/10 flex items-center justify-center flex-shrink-0 group-hover:border-purple-500/50 transition-colors">
+                                <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold text-lg mb-1 group-hover:text-purple-400 transition-colors">{{ __('Custom Workflows') }}</h4>
+                                <p class="text-slate-500 text-sm">{{ __('Define your own approval processes and logic.') }}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Feature 2 -->
+                        <div class="flex gap-4 group">
+                            <div class="w-12 h-12 rounded-2xl bg-slate-900 border border-white/10 flex items-center justify-center flex-shrink-0 group-hover:border-pink-500/50 transition-colors">
+                                <svg class="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold text-lg mb-1 group-hover:text-pink-400 transition-colors">{{ __('Specialized Reporting') }}</h4>
+                                <p class="text-slate-500 text-sm">{{ __('Get the insights that matter most to you.') }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Feature 3 -->
+                        <div class="flex gap-4 group">
+                            <div class="w-12 h-12 rounded-2xl bg-slate-900 border border-white/10 flex items-center justify-center flex-shrink-0 group-hover:border-amber-500/50 transition-colors">
+                                <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold text-lg mb-1 group-hover:text-amber-400 transition-colors">{{ __('Seamless Integration') }}</h4>
+                                <p class="text-slate-500 text-sm">{{ __('Connect with your existing tools and services.') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 bg-slate-900/50 rounded-2xl border border-purple-500/20 relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="relative z-10">
+                            <h4 class="text-white font-bold mb-2">{{ __('Need a Specific Feature?') }}</h4>
+                            <p class="text-slate-400 text-sm mb-6">{{ __('Our engineering team is ready to build custom modules tailored exactly to your requirements.') }}</p>
+                            <a href="mailto:features@kezi.com?subject=Feature%20Request" class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transform hover:-translate-y-1 w-full sm:w-auto">
+                                {{ __('Request a Feature') }}
+                                <svg class="w-5 h-5 ml-2 rtl:rotate-180 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Visual -->
+                <div class="relative">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-purple-500/20 to-pink-500/20 rounded-[3rem] blur-3xl -z-10"></div>
+                     <div class="glass rounded-[2rem] p-8 border border-white/10 relative overflow-hidden h-full min-h-[500px] flex items-center justify-center">
+                        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+                        
+                        <!-- Visual Stack -->
+                        <div class="relative w-full max-w-sm">
+                            <!-- Background Card -->
+                            <div class="absolute top-0 left-0 right-0 h-64 bg-slate-800 rounded-2xl border border-white/5 transform -rotate-6 scale-90 opacity-50"></div>
+                            <div class="absolute top-4 left-2 right-2 h-64 bg-slate-800 rounded-2xl border border-white/5 transform -rotate-3 scale-95 opacity-70"></div>
+                            
+                            <!-- Main "Feature Request" Card -->
+                            <div class="relative bg-slate-900 rounded-2xl border border-purple-500/30 p-6 shadow-2xl shadow-purple-900/20">
+                                <div class="flex items-center justify-between mb-6">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                                        </div>
+                                        <div>
+                                            <div class="text-white font-bold">{{ __('New Feature Request') }}</div>
+                                            <div class="text-xs text-purple-400 font-mono">#REQ-2024-892</div>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-1 bg-purple-500/20 text-purple-400 text-[10px] font-bold uppercase rounded-lg border border-purple-500/20">{{ __('In Progress') }}</span>
+                                </div>
+                                
+                                <div class="space-y-3 mb-6">
+                                    <div class="h-2 bg-slate-800 rounded-full w-3/4"></div>
+                                    <div class="h-2 bg-slate-800 rounded-full w-full"></div>
+                                    <div class="h-2 bg-slate-800 rounded-full w-5/6"></div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between pt-4 border-t border-white/5">
+                                    <div class="flex -space-x-2">
+                                        <div class="w-8 h-8 rounded-full bg-slate-700 border-2 border-slate-900"></div>
+                                        <div class="w-8 h-8 rounded-full bg-slate-600 border-2 border-slate-900"></div>
+                                        <div class="w-8 h-8 rounded-full bg-purple-600 border-2 border-slate-900 flex items-center justify-center text-[10px] text-white font-bold">+3</div>
+                                    </div>
+                                    <div class="text-xs text-slate-500">{{ __('Est. Delivery: 2 Days') }}</div>
+                                </div>
+                            </div>
+
+                            <!-- "Approved" Badge -->
+                            <div class="absolute -bottom-4 -right-4 bg-emerald-500 text-white px-4 py-2 rounded-lg shadow-lg font-bold text-sm flex items-center gap-2 animate-bounce">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                {{ __('Approved') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Final CTA -->
     <section class="py-32 px-6 relative overflow-hidden">
         <div class="absolute inset-0 bg-amber-500/5 pointer-events-none"></div>
