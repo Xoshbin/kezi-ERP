@@ -52,4 +52,8 @@ return [
     'github_repo' => env('PERTUK_GITHUB_REPO', 'username/repo'), // @phpstan-ignore-line
     'github_branch' => env('PERTUK_GITHUB_BRANCH', 'main'), // @phpstan-ignore-line
     'github_path' => '', // Docs are at root of kezi-docs repo
+
+    // External Links
+    'github_url' => env('PERTUK_GITHUB_URL', 'https://github.com/Xoshbin/kezi'),
+    'discord_url' => env('PERTUK_DISCORD_URL', 'https://discord.gg/your-discord'),
 ];
