@@ -19,13 +19,6 @@ Route::get('/lang/{locale}', function ($locale) {
     return redirect()->back();
 });
 
-// Temp fix for Pertuk docs route bug
-Route::get('/docs', function () {
-    return redirect()->route('pertuk.docs.show', [
-        'locale' => config('pertuk.default_locale', 'en'),
-        'slug' => 'index',
-    ]);
-});
 
 // PDF Generation Routes (Protected by authentication)
 Route::middleware(['auth'])->group(function () {
