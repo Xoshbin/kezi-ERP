@@ -32,6 +32,9 @@ return [
     // Route prefix for documentation
     'route_prefix' => 'docs',
 
+    // Route name prefix
+    'route_name_prefix' => 'pertuk.docs.',
+
     // Route middleware
     'middleware' => ['web'],
 

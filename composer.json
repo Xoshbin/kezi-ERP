@@ -33,7 +33,7 @@
         "pxlrbt/filament-environment-indicator": "^3.2",
         "xoshbin/filament-custom-fields": "^0.0.2@beta",
         "xoshbin/filament-translatable-select": "dev-main",
-        "xoshbin/pertuk": "^0.1"
+        "xoshbin/pertuk": "dev-main"
     },
     "repositories": [
         {
