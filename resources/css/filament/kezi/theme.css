@@ -35,12 +35,6 @@ body {
     padding: 0.5rem 1rem !important;
 }
 
-/* Statistics & Widgets */
-.fi-wi-stats-overview-stat {
-    padding: 0.75rem !important;
-    border: 1px solid rgba(203, 213, 225, 0.6) !important;
-    box-shadow: none !important;
-}
 
 .fi-wi-stats-overview-stat-label {
     font-size: 10px !important;
@@ -157,4 +151,45 @@ input[id*="unit_price"] {
     font-weight: 600 !important;
     border-radius: 0.375rem !important;
     letter-spacing: 0.01em !important;
+}
+
+
+
+/* --- High-Priority Dashboard Cleanup (Brute Force) --- */
+
+/* 1. Make the wrappers and containers transparent BUT ONLY on the Dashboard or non-resource pages */
+/* We exclude pages that have .fi-resource-create-record-page or .fi-resource-edit-record-page on .fi-page */
+.fi-panel-kezi .fi-main .fi-page:not(.fi-resource-create-record-page):not(.fi-resource-edit-record-page):not(.fi-resource-view-record-page) .fi-wi-stats-overview,
+.fi-panel-kezi .fi-main .fi-page:not(.fi-resource-create-record-page):not(.fi-resource-edit-record-page):not(.fi-resource-view-record-page) .fi-section.fi-section-not-contained,
+.fi-panel-kezi .fi-main .fi-page:not(.fi-resource-create-record-page):not(.fi-resource-edit-record-page):not(.fi-resource-view-record-page) .fi-section-has-header,
+.fi-panel-kezi .fi-main .fi-page:not(.fi-resource-create-record-page):not(.fi-resource-edit-record-page):not(.fi-resource-view-record-page) .fi-section-content-ctn,
+.fi-panel-kezi .fi-main .fi-page:not(.fi-resource-create-record-page):not(.fi-resource-edit-record-page):not(.fi-resource-view-record-page) .fi-sc {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-top: none !important;
+}
+
+/* 2. SPECIFICALLY restore the white card style for individual stats AND charts AND report cards */
+.fi-panel-kezi .fi-main .fi-wi-stats-overview-stat,
+.fi-panel-kezi .fi-main .fi-wi-chart .fi-section,
+.fi-panel-kezi .fi-main .fi-wi-chart .fi-section-has-header,
+.fi-panel-kezi .fi-main .reports-grid .fi-section {
+    background-color: white !important;
+    border: 1px solid rgba(203, 213, 225, 0.6) !important;
+    border-radius: 0.5rem !important;
+    padding: 1rem !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 3. Also ensure no headers in these sections have borders or backgrounds (scoped to non-resource pages) */
+.fi-panel-kezi .fi-main .fi-page:not(.fi-resource-create-record-page):not(.fi-resource-edit-record-page):not(.fi-resource-view-record-page) .fi-section-header {
+    background-color: transparent !important;
+    border-bottom: none !important;
+}
+
+/* 4. Restore headers for report cards which might need it */
+.fi-panel-kezi .fi-main .reports-grid .fi-section .fi-section-header {
+    background-color: transparent !important; /* Keep header transparent, let the card white bg show */
+    border-bottom: 1px solid rgba(203, 213, 225, 0.6) !important; /* Maybe add a separator? Or just keep it clean */
 }

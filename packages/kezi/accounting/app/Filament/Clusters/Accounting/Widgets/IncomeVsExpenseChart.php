@@ -14,6 +14,8 @@ class IncomeVsExpenseChart extends ChartWidget
 
     protected int|string|array $columnSpan = 'full';
 
+    protected ?string $maxHeight = '300px';
+
     protected static ?int $sort = 2;
 
     public function getHeading(): string
