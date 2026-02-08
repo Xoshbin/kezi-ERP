@@ -18,6 +18,21 @@
         .reports-grid > * {
             min-width: 0;
         }
+
+        /* Force restore card styling for this page, overriding global transparency with MAXIMUM specificity */
+        /* We use repeated classes to beat the 7-class specificity of the global theme rule */
+        html body.fi-panel-kezi .fi-main .fi-page .reports-grid.reports-grid .fi-section.fi-section-has-header {
+            background-color: white !important;
+            border: 1px solid rgba(203, 213, 225, 0.6) !important;
+            border-radius: 0.5rem !important;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+        }
+        
+        /* Ensure headers have a separator but no background */
+        html body.fi-panel-kezi .fi-main .fi-page .reports-grid.reports-grid .fi-section-header {
+            background-color: transparent !important;
+            border-bottom: 1px solid rgba(203, 213, 225, 0.6) !important;
+        }
     </style>
     <div class="reports-grid">
         @foreach($this->getReportCategories() as $categoryKey => $category)
