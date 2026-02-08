@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Kezi — {{ __('Intelligence for Your Business') }}</title>
+    <title>Kezi ERP — {{ __('Intelligence for Your Business') }}</title>
 
     <!-- SEO -->
     <meta name="description" content="{{ __('Kezi is the ultimate enterprise command center. Immutable, secure, and built for scale.') }}">
@@ -142,7 +142,7 @@
         <div class="max-w-7xl mx-auto flex items-center justify-between glass rounded-2xl px-6 py-3">
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center font-display font-bold text-slate-950">K</div>
-                <span class="text-xl font-display font-bold tracking-tight text-white">{{ __('Kezi') }}</span>
+                <span class="text-xl font-display font-bold tracking-tight text-white">{{ __('Kezi ERP') }}</span>
             </div>
             
             <div class="hidden lg:flex items-center gap-8 text-sm font-medium text-slate-400">
@@ -727,7 +727,7 @@
                 <div class="max-w-xs">
                     <div class="flex items-center gap-2 mb-6">
                         <div class="w-8 h-8 bg-amber-500 rounded flex items-center justify-center font-display font-bold text-slate-950">K</div>
-                        <span class="text-xl font-display font-bold text-white tracking-tight">{{ __('Kezi') }}</span>
+                        <span class="text-xl font-display font-bold text-white tracking-tight">{{ __('Kezi ERP') }}</span>
                     </div>
                     <p class="text-sm text-slate-500 leading-relaxed">
                         {{ __('The ultimate enterprise command center. Designed for Iraqi and global businesses.') }}
@@ -755,7 +755,7 @@
             
             <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
                 <div class="text-xs text-slate-600 font-medium">
-                    © {{ date('Y') }} Kezi. {{ __('All rights reserved. Intelligence for Your Business.') }}
+                    © {{ date('Y') }} Kezi ERP. {{ __('All rights reserved. Intelligence for Your Business.') }}
                 </div>
                 <div class="flex gap-8 text-xs font-medium text-slate-600 uppercase tracking-widest">
                     <a href="#" class="hover:text-amber-500 transition-colors">{{ __('Security') }}</a>
