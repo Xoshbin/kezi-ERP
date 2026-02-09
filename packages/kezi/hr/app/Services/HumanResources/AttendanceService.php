@@ -40,7 +40,7 @@ class AttendanceService
             break_start_time: null,
             break_end_time: null,
             status: 'present',
-            attendance_type: $this->determineAttendanceType($today),
+            attendance_type: $this->determineAttendanceType($today, $employee),
             clock_in_location: $location,
             clock_out_location: null,
             clock_in_device: $device,
@@ -248,7 +248,7 @@ class AttendanceService
     /**
      * Determine attendance type based on date.
      */
-    private function determineAttendanceType(string $date): string
+    private function determineAttendanceType(string $date, Employee $employee): string
     {
         $carbonDate = Carbon::parse($date);
 
@@ -256,11 +256,29 @@ class AttendanceService
             return 'weekend';
         }
 
-        // TODO: Check for holidays
-        // if ($this->isHoliday($carbonDate)) {
-        //     return 'holiday';
-        // }
+        // Check for holidays
+        if ($this->isHoliday($carbonDate, $employee->company_id)) {
+            return 'holiday';
+        }
 
         return 'regular';
+    }
+
+    /**
+     * Check if a date is a holiday.
+     */
+    private function isHoliday(Carbon $date, int $companyId): bool
+    {
+        return \Kezi\HR\Models\Holiday::query()
+            ->where('company_id', $companyId)
+            ->where(function ($query) use ($date) {
+                $query->whereDate('date', $date)
+                    ->orWhere(function ($query) use ($date) {
+                        $query->where('is_recurring', true)
+                            ->whereMonth('date', $date->month)
+                            ->whereDay('date', $date->day);
+                    });
+            })
+            ->exists();
     }
 }
