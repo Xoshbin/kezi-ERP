@@ -357,8 +357,6 @@ class JournalEntryResource extends Resource
     public static function getPages(): array
     {
         return [
-            // TODO:: in the list page of the journal entries
-            // below each journal entry add a dropdown to show the associated lines
             'index' => ListJournalEntries::route('/'),
             'create' => CreateJournalEntry::route('/create'),
             'edit' => EditJournalEntry::route('/{record}/edit'),
