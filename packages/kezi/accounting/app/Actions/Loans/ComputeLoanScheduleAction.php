@@ -53,8 +53,10 @@ class ComputeLoanScheduleAction
                     $currentAnnualRate = $rateByMonth[$i];
                 }
 
-                // Monthly simple rate
-                $periodRate = ($currentAnnualRate / 100) / 12;
+                // Monthly simple rate (BigDecimal for precision)
+                $periodRate = \Brick\Math\BigDecimal::of($currentAnnualRate)
+                    ->dividedBy(100, 10, RoundingMode::HALF_UP)
+                    ->dividedBy(12, 10, RoundingMode::HALF_UP);
 
                 $interest = $balance->multipliedBy($periodRate, RoundingMode::HALF_UP);
 

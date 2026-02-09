@@ -67,14 +67,14 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900 dark:text-white">
-                                        @if($line['debitAmount'] > 0)
+                                        @if($line['hasDebit'])
                                             {{ $line['debit'] }}
                                         @else
                                             <span class="text-gray-400">-</span>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900 dark:text-white">
-                                        @if($line['creditAmount'] > 0)
+                                        @if($line['hasCredit'])
                                             {{ $line['credit'] }}
                                         @else
                                             <span class="text-gray-400">-</span>
@@ -121,7 +121,7 @@
                                 <span class="text-green-600 dark:text-green-400 font-medium">{{ __('accounting::reports.balanced') }}</span>
                             @else
                                 <span class="text-red-600 dark:text-red-400 font-medium">
-                                    {{ number_format(abs($reportData['totalDebitAmount'] - $reportData['totalCreditAmount']), 2) }}
+                                    {{ $reportData['difference'] }}
                                 </span>
                             @endif
                         </div>

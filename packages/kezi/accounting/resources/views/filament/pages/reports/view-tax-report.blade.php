@@ -173,10 +173,10 @@
                                 <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">
                                     {{ __('accounting::reports.net_tax_payable') }}
                                 </div>
-                                <div class="text-xl font-bold {{ $reportData['netTaxPayableRaw'] < 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
+                                <div class="text-xl font-bold {{ $reportData['isRefundable'] ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
                                     {{ $reportData['netTaxPayable'] }}
                                 </div>
-                                @if($reportData['netTaxPayableRaw'] < 0)
+                                @if($reportData['isRefundable'])
                                     <div class="text-xs text-green-600 dark:text-green-400 mt-1">
                                         {{ __('accounting::reports.refundable') }}
                                     </div>

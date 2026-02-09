@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Kezi\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Kezi\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
+use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\JournalEntry;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Services\CurrencyConverterService;
@@ -71,8 +72,9 @@ class ExchangeGainLossService
             $payment->company->currency->code
         );
 
-        // Post journal entry if there's a significant difference
-        if (abs($exchangeDifference->getAmount()->toFloat()) >= 0.01) {
+        // Post journal entry if there's a significant difference (more than 0.01 in base currency)
+        $threshold = Money::of('0.01', $payment->company->currency->code);
+        if ($exchangeDifference->abs()->isGreaterThanOrEqualTo($threshold)) {
             return $this->postRealizedGainLossEntry(
                 $payment->company,
                 $exchangeDifference,
@@ -117,7 +119,8 @@ class ExchangeGainLossService
                     $revaluationDate
                 );
 
-                if (abs($unrealizedGainLoss->getAmount()->toFloat()) >= 0.01) {
+                $threshold = Money::of('0.01', $company->currency->code);
+                if ($unrealizedGainLoss->abs()->isGreaterThanOrEqualTo($threshold)) {
                     $journalEntry = $this->postUnrealizedGainLossEntry(
                         $company,
                         $account,
@@ -216,28 +219,28 @@ class ExchangeGainLossService
             // Debit Receivable/Payable, Credit Exchange Gain
             $lines[] = [
                 'account_id' => $balanceAccount,
-                'debit' => abs($exchangeDifference->getAmount()->toFloat()),
-                'credit' => 0,
+                'debit' => $exchangeDifference->abs(),
+                'credit' => Money::zero($exchangeDifference->getCurrency()),
                 'description' => 'Realized exchange gain on payment',
             ];
             $lines[] = [
                 'account_id' => $gainLossAccount,
-                'debit' => 0,
-                'credit' => abs($exchangeDifference->getAmount()->toFloat()),
+                'debit' => Money::zero($exchangeDifference->getCurrency()),
+                'credit' => $exchangeDifference->abs(),
                 'description' => 'Realized exchange gain',
             ];
         } else {
             // Debit Exchange Loss, Credit Receivable/Payable
             $lines[] = [
                 'account_id' => $gainLossAccount,
-                'debit' => abs($exchangeDifference->getAmount()->toFloat()),
-                'credit' => 0,
+                'debit' => $exchangeDifference->abs(),
+                'credit' => Money::zero($exchangeDifference->getCurrency()),
                 'description' => 'Realized exchange loss',
             ];
             $lines[] = [
                 'account_id' => $balanceAccount,
-                'debit' => 0,
-                'credit' => abs($exchangeDifference->getAmount()->toFloat()),
+                'debit' => Money::zero($exchangeDifference->getCurrency()),
+                'credit' => $exchangeDifference->abs(),
                 'description' => 'Realized exchange loss on payment',
             ];
         }
@@ -251,8 +254,8 @@ class ExchangeGainLossService
             }
             $lineDTOs[] = new CreateJournalEntryLineDTO(
                 account_id: $line['account_id'],
-                debit: Money::of($line['debit'], $baseCurrencyCode),
-                credit: Money::of($line['credit'], $baseCurrencyCode),
+                debit: $line['debit'],
+                credit: $line['credit'],
                 description: $line['description'],
                 partner_id: null,
                 analytic_account_id: null,

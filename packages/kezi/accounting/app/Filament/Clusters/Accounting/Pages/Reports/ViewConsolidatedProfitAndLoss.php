@@ -112,20 +112,17 @@ class ViewConsolidatedProfitAndLoss extends Page
         $report = $service->generate($company, Carbon::parse($this->asOfDate));
 
         $formatter = fn ($money) => NumberFormatter::formatMoneyTo($money);
-        $amount = fn ($money) => $money->getAmount()->toFloat();
 
         $this->reportData = [
             'incomeLines' => $report->incomeLines->map(fn ($line) => [
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
                 'balance' => $formatter($line->balance),
-                'balanceAmount' => $amount($line->balance),
             ])->toArray(),
             'expenseLines' => $report->expenseLines->map(fn ($line) => [
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
                 'balance' => $formatter($line->balance),
-                'balanceAmount' => $amount($line->balance),
             ])->toArray(),
             'totalIncome' => $formatter($report->totalIncome),
             'totalExpenses' => $formatter($report->totalExpenses),

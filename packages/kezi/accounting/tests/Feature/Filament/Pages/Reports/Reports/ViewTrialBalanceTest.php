@@ -233,5 +233,6 @@ test('it respects the as of date filter', function () {
 
     // Should only include the first transaction amounts
     $bankLine = collect($reportData['reportLines'])->firstWhere('accountCode', $bankAccount->code);
-    expect($bankLine['debitAmount'])->toBe(1000000.0); // 1M IQD, not 1.5M
+    expect($bankLine['debit'])->toBe(\Kezi\Foundation\Support\NumberFormatter::formatMoneyTo(\Brick\Money\Money::of(1000000, $company->currency->code))); // 1M formatted
+    expect($bankLine['hasDebit'])->toBeTrue();
 });

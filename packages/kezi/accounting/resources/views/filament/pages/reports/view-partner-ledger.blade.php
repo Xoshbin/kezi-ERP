@@ -25,7 +25,7 @@
                         <span class="text-sm font-medium text-blue-800 dark:text-blue-200">
                             {{ __('accounting::reports.opening_balance') }}
                         </span>
-                        <span class="text-sm font-bold text-blue-900 dark:text-blue-100 {{ $reportData['openingBalanceAmount'] < 0 ? 'text-red-600 dark:text-red-400' : '' }}">
+                        <span class="text-sm font-bold text-blue-900 dark:text-blue-100 {{ $reportData['isOpeningNegative'] ? 'text-red-600 dark:text-red-400' : '' }}">
                             {{ $reportData['openingBalance'] }}
                         </span>
                     </div>
@@ -77,20 +77,20 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-mono text-gray-900 dark:text-white">
-                                            @if($line['debitAmount'] > 0)
+                                            @if($line['hasDebit'])
                                                 {{ $line['debit'] }}
                                             @else
                                                 <span class="text-gray-400">-</span>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-mono text-gray-900 dark:text-white">
-                                            @if($line['creditAmount'] > 0)
+                                            @if($line['hasCredit'])
                                                 {{ $line['credit'] }}
                                             @else
                                                 <span class="text-gray-400">-</span>
                                             @endif
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-mono font-medium {{ $line['balanceAmount'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-mono font-medium {{ $line['isBalanceNegative'] ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
                                             {{ $line['balance'] }}
                                         </td>
                                     </tr>
@@ -105,15 +105,15 @@
                             <span class="text-sm font-medium text-green-800 dark:text-green-200">
                                 {{ __('accounting::reports.closing_balance') }}
                             </span>
-                            <span class="text-lg font-bold {{ $reportData['closingBalanceAmount'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-green-900 dark:text-green-100' }}">
+                            <span class="text-lg font-bold {{ $reportData['isClosingNegative'] ? 'text-red-600 dark:text-red-400' : 'text-green-900 dark:text-green-100' }}">
                                 {{ $reportData['closingBalance'] }}
                             </span>
                         </div>
-                        @if($reportData['closingBalanceAmount'] > 0)
+                        @if($reportData['isClosingPositive'])
                             <p class="text-xs text-green-700 dark:text-green-300 mt-1">
                                 {{ __('accounting::reports.customer_owes_us') }}
                             </p>
-                        @elseif($reportData['closingBalanceAmount'] < 0)
+                        @elseif($reportData['isClosingNegative'])
                             <p class="text-xs text-red-700 dark:text-red-300 mt-1">
                                 {{ __('accounting::reports.we_owe_vendor') }}
                             </p>

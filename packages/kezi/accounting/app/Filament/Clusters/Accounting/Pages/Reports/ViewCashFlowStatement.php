@@ -123,11 +123,9 @@ class ViewCashFlowStatement extends Page
                 'accountCode' => $line->accountCode,
                 'description' => $line->description,
                 'amount' => NumberFormatter::formatMoneyTo($line->amount),
-                'amountValue' => $line->amount->getAmount()->toFloat(),
                 'isNegative' => $line->amount->isNegative(),
             ])->toArray(),
             'totalOperating' => NumberFormatter::formatMoneyTo($report->totalOperating),
-            'totalOperatingValue' => $report->totalOperating->getAmount()->toFloat(),
             'isTotalOperatingNegative' => $report->totalOperating->isNegative(),
 
             'investingLines' => $report->investingLines->map(fn ($line) => [
@@ -135,11 +133,9 @@ class ViewCashFlowStatement extends Page
                 'accountCode' => $line->accountCode,
                 'description' => $line->description,
                 'amount' => NumberFormatter::formatMoneyTo($line->amount),
-                'amountValue' => $line->amount->getAmount()->toFloat(),
                 'isNegative' => $line->amount->isNegative(),
             ])->toArray(),
             'totalInvesting' => NumberFormatter::formatMoneyTo($report->totalInvesting),
-            'totalInvestingValue' => $report->totalInvesting->getAmount()->toFloat(),
             'isTotalInvestingNegative' => $report->totalInvesting->isNegative(),
 
             'financingLines' => $report->financingLines->map(fn ($line) => [
@@ -147,15 +143,12 @@ class ViewCashFlowStatement extends Page
                 'accountCode' => $line->accountCode,
                 'description' => $line->description,
                 'amount' => NumberFormatter::formatMoneyTo($line->amount),
-                'amountValue' => $line->amount->getAmount()->toFloat(),
                 'isNegative' => $line->amount->isNegative(),
             ])->toArray(),
             'totalFinancing' => NumberFormatter::formatMoneyTo($report->totalFinancing),
-            'totalFinancingValue' => $report->totalFinancing->getAmount()->toFloat(),
             'isTotalFinancingNegative' => $report->totalFinancing->isNegative(),
 
             'netChangeInCash' => NumberFormatter::formatMoneyTo($report->netChangeInCash),
-            'netChangeInCashValue' => $report->netChangeInCash->getAmount()->toFloat(),
             'isNetChangeNegative' => $report->netChangeInCash->isNegative(),
 
             'beginningCash' => NumberFormatter::formatMoneyTo($report->beginningCash),

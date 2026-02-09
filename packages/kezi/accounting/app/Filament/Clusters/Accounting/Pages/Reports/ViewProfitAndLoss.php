@@ -120,19 +120,16 @@ class ViewProfitAndLoss extends Page
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
                 'balance' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($line->balance),
-                'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
             'expenseLines' => $report->expenseLines->map(fn ($line) => [
                 'accountId' => $line->accountId,
                 'accountCode' => $line->accountCode,
                 'accountName' => $line->accountName,
                 'balance' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($line->balance),
-                'balanceAmount' => $line->balance->getAmount()->toFloat(),
             ])->toArray(),
             'totalRevenue' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalRevenue),
             'totalExpenses' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalExpenses),
             'netIncome' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($report->netIncome),
-            'netIncomeAmount' => $report->netIncome->getAmount()->toFloat(),
             'isNetLoss' => $report->netIncome->isNegative(),
         ];
 
