@@ -23,6 +23,7 @@ class CreateJournalEntryAction implements JournalEntryCreatorContract
     public function __construct(
         private readonly \Kezi\Accounting\Services\Accounting\LockDateService $lockDateService,
         private readonly \Kezi\Foundation\Services\CurrencyConverterService $currencyConverter,
+        private readonly \Kezi\Foundation\Services\ExchangeRateService $exchangeRateService,
     ) {}
 
     public function execute(CreateJournalEntryDTO $dto): JournalEntry
@@ -107,6 +108,20 @@ class CreateJournalEntryAction implements JournalEntryCreatorContract
         }
 
         return DB::transaction(function () use ($dto, $totalDebitBaseCurrency, $totalCreditBaseCurrency, $currency, $company, $resolveExchangeRate) {
+            
+            // Persist the exchange rate to the central table if it's a foreign currency transaction
+            if ($currency->id !== $company->currency_id) {
+                $rate = $resolveExchangeRate();
+                if ($rate) {
+                    $this->exchangeRateService->storeRate(
+                        $currency,
+                        $rate,
+                        Carbon::parse($dto->entry_date),
+                        'transaction',
+                        $company->id
+                    );
+                }
+            }
 
             $journalEntryData = [
                 'company_id' => $dto->company_id,

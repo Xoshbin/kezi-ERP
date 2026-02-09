@@ -226,6 +226,17 @@ class VendorBillService
             'total_amount_company_currency' => $totalAmountCompanyCurrency,
             'total_tax_company_currency' => $totalTaxCompanyCurrency,
         ]);
+
+        // Persist the exchange rate to the central table if it's a foreign currency transaction
+        if ($vendorBill->currency_id !== $vendorBill->company->currency_id && $exchangeRate) {
+            $this->exchangeRateService->storeRate(
+                $vendorBill->currency,
+                $exchangeRate,
+                Carbon::parse($vendorBill->bill_date),
+                'transaction',
+                $vendorBill->company_id
+            );
+        }
     }
 
     /**
