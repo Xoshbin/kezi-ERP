@@ -3,8 +3,8 @@
 namespace Kezi\Foundation\Filament\Forms\Components;
 
 use App\Models\Company;
-use Filament\Facades\Filament;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\TextInput;
 use Kezi\Foundation\Filament\Actions\DocsAction;
 use Kezi\Foundation\Models\Currency;
@@ -43,7 +43,7 @@ class ExchangeRateInput extends TextInput
                         $latestRate = $service->getLatestExchangeRate($currency, $company);
 
                         if ($latestRate) {
-                            return __('accounting::currency.exchange_rates.rate_helper') . ' (' . __('accounting::currency.exchange_rates.rate') . ': ' . $latestRate . ')';
+                            return __('accounting::currency.exchange_rates.rate_helper').' ('.__('accounting::currency.exchange_rates.rate').': '.$latestRate.')';
                         }
                     }
                 }
@@ -53,9 +53,9 @@ class ExchangeRateInput extends TextInput
             ->hintAction(function () {
                 $action = DocsAction::make('understanding-currencies');
 
-                // Convert general Action to Form Component Action if needed, 
+                // Convert general Action to Form Component Action if needed,
                 // but DocsAction::make returns a Filament\Actions\Action.
-                
+
                 return Action::make('understanding_currencies_docs')
                     ->icon('heroicon-o-information-circle')
                     ->color('gray')

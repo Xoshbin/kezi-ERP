@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 class DemoChartDataSeeder extends Seeder
@@ -14,12 +14,13 @@ class DemoChartDataSeeder extends Seeder
         $companyId = DB::table('companies')->value('id');
         $currencyId = DB::table('currencies')->where('code', 'IQD')->value('id');
         // Fallback if IQD not found
-        if (!$currencyId) {
-             $currencyId = DB::table('currencies')->value('id');
+        if (! $currencyId) {
+            $currencyId = DB::table('currencies')->value('id');
         }
 
-        if (!$companyId || !$currencyId) {
-            $this->command->error("No company or currency found. Please run basic seeders first.");
+        if (! $companyId || ! $currencyId) {
+            $this->command->error('No company or currency found. Please run basic seeders first.');
+
             return;
         }
 
@@ -38,29 +39,29 @@ class DemoChartDataSeeder extends Seeder
         $salesJournalId = DB::table('journals')->where('type', 'sale')->value('id');
         $purchaseJournalId = DB::table('journals')->where('type', 'purchase')->value('id');
         $bankJournalId = DB::table('journals')->where('type', 'bank')->value('id');
-        
+
         // Setup Partners
         $customerIds = DB::table('partners')->where('type', 'Customer')->pluck('id')->toArray();
         if (empty($customerIds)) {
-             // Create a dummy customer if none exists
-             $customerIds[] = DB::table('partners')->insertGetId([
+            // Create a dummy customer if none exists
+            $customerIds[] = DB::table('partners')->insertGetId([
                 'company_id' => $companyId,
-                'name' => 'Demo Customer', 
+                'name' => 'Demo Customer',
                 'type' => 'Customer',
-                'is_active' => true, 
-                'created_at' => now(), 'updated_at' => now()
-             ]);
+                'is_active' => true,
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
         }
 
         $vendorIds = DB::table('partners')->where('type', 'Vendor')->pluck('id')->toArray();
         if (empty($vendorIds)) {
-             $vendorIds[] = DB::table('partners')->insertGetId([
+            $vendorIds[] = DB::table('partners')->insertGetId([
                 'company_id' => $companyId,
                 'name' => 'Demo Vendor',
                 'type' => 'Vendor',
                 'is_active' => true,
-                'created_at' => now(), 'updated_at' => now()
-             ]);
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
         }
 
         $startDate = Carbon::now()->subYear()->startOfMonth();
@@ -69,18 +70,18 @@ class DemoChartDataSeeder extends Seeder
         $this->command->info("Generating data from {$startDate->toDateString()} to {$endDate->toDateString()}");
 
         $currentDate = $startDate->copy();
-        
+
         while ($currentDate <= $endDate) {
             $month = $currentDate->format('F Y');
             $this->command->info("Processing $month...");
-            
+
             // Generate Random Invoices (Income)
-            $numInvoices = rand(2, 5); 
+            $numInvoices = rand(2, 5);
             for ($i = 0; $i < $numInvoices; $i++) {
                 $this->createInvoice(
-                    $companyId, $currencyId, $user, 
-                    $customerIds[array_rand($customerIds)], 
-                    $currentDate, 
+                    $companyId, $currencyId, $user,
+                    $customerIds[array_rand($customerIds)],
+                    $currentDate,
                     $salesJournalId, $arAccountId, $incomeAccountId,
                     $bankJournalId, $bankAccountId
                 );
@@ -90,9 +91,9 @@ class DemoChartDataSeeder extends Seeder
             $numBills = rand(1, 4);
             for ($i = 0; $i < $numBills; $i++) {
                 $this->createBill(
-                    $companyId, $currencyId, $user, 
-                    $vendorIds[array_rand($vendorIds)], 
-                    $currentDate, 
+                    $companyId, $currencyId, $user,
+                    $vendorIds[array_rand($vendorIds)],
+                    $currentDate,
                     $purchaseJournalId, $apAccountId, $expenseAccountId,
                     $bankJournalId, $bankAccountId
                 );
@@ -100,11 +101,11 @@ class DemoChartDataSeeder extends Seeder
 
             $currentDate->addMonth();
         }
-        
-        $this->command->info("Done!");
+
+        $this->command->info('Done!');
     }
 
-    private function createInvoice($companyId, $currencyId, $userId, $customerId, $monthDate, $journalId, $arAccountId, $incomeAccountId, $bankJournalId, $bankAccountId) 
+    private function createInvoice($companyId, $currencyId, $userId, $customerId, $monthDate, $journalId, $arAccountId, $incomeAccountId, $bankJournalId, $bankAccountId)
     {
         $date = $monthDate->copy()->addDays(rand(1, 28));
         $amount = rand(500000, 5000000); // Random amount between 500k and 5M IQD
@@ -117,13 +118,13 @@ class DemoChartDataSeeder extends Seeder
             'invoice_date' => $date,
             'due_date' => $date->copy()->addDays(30),
             'status' => 'posted', // Assuming we want them posted for charts
-            'invoice_number' => 'INV-DEMO-' . Str::random(5),
+            'invoice_number' => 'INV-DEMO-'.Str::random(5),
             'total_amount' => $amount,
             'total_tax' => 0,
             'created_at' => $date,
             'updated_at' => $date,
         ]);
-        
+
         DB::table('invoice_lines')->insert([
             'company_id' => $companyId,
             'invoice_id' => $invoiceId,
@@ -144,7 +145,7 @@ class DemoChartDataSeeder extends Seeder
             'journal_id' => $journalId,
             'currency_id' => $currencyId,
             'entry_date' => $date,
-            'entry_number' => 'INV/DEMO/' . Str::random(5),
+            'entry_number' => 'INV/DEMO/'.Str::random(5),
             'reference' => 'Demo Data',
             'description' => 'Demo Invoice',
             'created_by_user_id' => $userId,
@@ -188,15 +189,17 @@ class DemoChartDataSeeder extends Seeder
                 'description' => 'Income',
                 'created_at' => $date,
                 'updated_at' => $date,
-            ]
+            ],
         ]);
-        
+
         DB::table('invoices')->where('id', $invoiceId)->update(['journal_entry_id' => $jeId]);
 
         // 3. Payment (Randomly pay some invoices)
         if (rand(0, 10) > 2) { // 80% chance of payment
             $paymentDate = $date->copy()->addDays(rand(1, 15));
-            if ($paymentDate > Carbon::now()) $paymentDate = Carbon::now();
+            if ($paymentDate > Carbon::now()) {
+                $paymentDate = Carbon::now();
+            }
 
             $paymentId = DB::table('payments')->insertGetId([
                 'company_id' => $companyId,
@@ -212,30 +215,30 @@ class DemoChartDataSeeder extends Seeder
             ]);
 
             DB::table('payment_document_links')->insert([
-                 'company_id' => $companyId,
-                 'payment_id' => $paymentId,
-                 'invoice_id' => $invoiceId, // Linking to invoice (if column exists, or use polymorphic)
-                 // Note: based on ScenarioOneSeeder it seems there is a link table but maybe columns differ.
-                 // ScenarioOneSeeder line 463 uses: payment_id, amount_applied. It doesn't show invoice_id column explicitly in insert but implicit link? 
-                 // Wait, ScenarioOneSeeder 463: 'payment_document_links' -> payment_id, amount_applied. 
-                 // It doesn't allow linking directly to invoice in that table based on that snippet?
-                 // Let's check the schema if possible or just assume standard relation.
-                 // Actually, usually these link tables have 'document_id' and 'document_type' OR specific columns.
-                 // For now let's just create the Payment JE which is what drives the cash charts mostly.
-                 'amount_applied' => $amount, 
-                 'created_at' => $paymentDate,
-                 'updated_at' => $paymentDate,
-             ]);
+                'company_id' => $companyId,
+                'payment_id' => $paymentId,
+                'invoice_id' => $invoiceId, // Linking to invoice (if column exists, or use polymorphic)
+                // Note: based on ScenarioOneSeeder it seems there is a link table but maybe columns differ.
+                // ScenarioOneSeeder line 463 uses: payment_id, amount_applied. It doesn't show invoice_id column explicitly in insert but implicit link?
+                // Wait, ScenarioOneSeeder 463: 'payment_document_links' -> payment_id, amount_applied.
+                // It doesn't allow linking directly to invoice in that table based on that snippet?
+                // Let's check the schema if possible or just assume standard relation.
+                // Actually, usually these link tables have 'document_id' and 'document_type' OR specific columns.
+                // For now let's just create the Payment JE which is what drives the cash charts mostly.
+                'amount_applied' => $amount,
+                'created_at' => $paymentDate,
+                'updated_at' => $paymentDate,
+            ]);
 
-             // Payment JE: Debit Bank, Credit AR
-             $payJeHash = hash('sha256', 'pay_demo_'.Str::random(10));
-             $payJeId = DB::table('journal_entries')->insertGetId([
+            // Payment JE: Debit Bank, Credit AR
+            $payJeHash = hash('sha256', 'pay_demo_'.Str::random(10));
+            $payJeId = DB::table('journal_entries')->insertGetId([
                 'company_id' => $companyId,
                 'journal_id' => $bankJournalId,
                 'currency_id' => $currencyId,
                 'entry_date' => $paymentDate,
-                'entry_number' => 'PAY/DEMO/' . Str::random(5),
-                'reference' => 'Payment for ' . $invoiceId,
+                'entry_number' => 'PAY/DEMO/'.Str::random(5),
+                'reference' => 'Payment for '.$invoiceId,
                 'description' => 'Payment In',
                 'created_by_user_id' => $userId,
                 'is_posted' => true,
@@ -277,9 +280,9 @@ class DemoChartDataSeeder extends Seeder
                     'description' => 'AR Clearing',
                     'created_at' => $paymentDate,
                     'updated_at' => $paymentDate,
-                ]
+                ],
             ]);
-            
+
             DB::table('payments')->where('id', $paymentId)->update(['journal_entry_id' => $payJeId]);
         }
     }
@@ -297,14 +300,14 @@ class DemoChartDataSeeder extends Seeder
             'bill_date' => $date,
             'accounting_date' => $date,
             'due_date' => $date->copy()->addDays(30),
-            'bill_reference' => 'BILL-DEMO-' . Str::random(5),
+            'bill_reference' => 'BILL-DEMO-'.Str::random(5),
             'total_amount' => $amount,
             'total_tax' => 0,
             'status' => 'posted',
             'created_at' => $date,
             'updated_at' => $date,
         ]);
-        
+
         DB::table('vendor_bill_lines')->insert([
             'company_id' => $companyId,
             'vendor_bill_id' => $billId,
@@ -325,7 +328,7 @@ class DemoChartDataSeeder extends Seeder
             'journal_id' => $journalId,
             'currency_id' => $currencyId,
             'entry_date' => $date,
-            'entry_number' => 'BILL/DEMO/' . Str::random(5),
+            'entry_number' => 'BILL/DEMO/'.Str::random(5),
             'reference' => 'Demo Data',
             'description' => 'Demo Bill',
             'created_by_user_id' => $userId,
@@ -369,15 +372,17 @@ class DemoChartDataSeeder extends Seeder
                 'description' => 'AP',
                 'created_at' => $date,
                 'updated_at' => $date,
-            ]
+            ],
         ]);
-        
+
         DB::table('vendor_bills')->where('id', $billId)->update(['journal_entry_id' => $jeId]);
 
         // 3. Payment (Randomly pay some bills)
-        if (rand(0, 10) > 2) { 
+        if (rand(0, 10) > 2) {
             $paymentDate = $date->copy()->addDays(rand(1, 15));
-            if ($paymentDate > Carbon::now()) $paymentDate = Carbon::now();
+            if ($paymentDate > Carbon::now()) {
+                $paymentDate = Carbon::now();
+            }
 
             $paymentId = DB::table('payments')->insertGetId([
                 'company_id' => $companyId,
@@ -391,24 +396,24 @@ class DemoChartDataSeeder extends Seeder
                 'created_at' => $paymentDate,
                 'updated_at' => $paymentDate,
             ]);
-            
-            DB::table('payment_document_links')->insert([
-                 'company_id' => $companyId,
-                 'payment_id' => $paymentId,
-                 'amount_applied' => $amount, 
-                 'created_at' => $paymentDate,
-                 'updated_at' => $paymentDate,
-             ]);
 
-             // Payment JE: Debit AP, Credit Bank
-             $payJeHash = hash('sha256', 'pay_out_demo_'.Str::random(10));
-             $payJeId = DB::table('journal_entries')->insertGetId([
+            DB::table('payment_document_links')->insert([
+                'company_id' => $companyId,
+                'payment_id' => $paymentId,
+                'amount_applied' => $amount,
+                'created_at' => $paymentDate,
+                'updated_at' => $paymentDate,
+            ]);
+
+            // Payment JE: Debit AP, Credit Bank
+            $payJeHash = hash('sha256', 'pay_out_demo_'.Str::random(10));
+            $payJeId = DB::table('journal_entries')->insertGetId([
                 'company_id' => $companyId,
                 'journal_id' => $bankJournalId,
                 'currency_id' => $currencyId,
                 'entry_date' => $paymentDate,
-                'entry_number' => 'PAY/OUT/DEMO/' . Str::random(5),
-                'reference' => 'Payment for ' . $billId,
+                'entry_number' => 'PAY/OUT/DEMO/'.Str::random(5),
+                'reference' => 'Payment for '.$billId,
                 'description' => 'Payment Out',
                 'created_by_user_id' => $userId,
                 'is_posted' => true,
@@ -450,9 +455,9 @@ class DemoChartDataSeeder extends Seeder
                     'description' => 'Bank',
                     'created_at' => $paymentDate,
                     'updated_at' => $paymentDate,
-                ]
+                ],
             ]);
-            
+
             DB::table('payments')->where('id', $paymentId)->update(['journal_entry_id' => $payJeId]);
         }
     }
