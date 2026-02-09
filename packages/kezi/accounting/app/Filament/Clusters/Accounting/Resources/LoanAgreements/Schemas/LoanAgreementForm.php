@@ -20,6 +20,7 @@ use Kezi\Accounting\Enums\Loans\LoanType;
 use Kezi\Accounting\Enums\Loans\ScheduleMethod;
 use Kezi\Accounting\Models\LoanAgreement;
 use Kezi\Accounting\Rules\NotInLockedPeriod;
+use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\CurrencyRate;
@@ -179,6 +180,11 @@ class LoanAgreementForm
                                 ->disabled()
                                 ->dehydrated(false)
                                 ->visible(fn (?LoanAgreement $record) => $record && $record->outstanding_principal)
+                                ->columnSpanFull(),
+
+                            ExchangeRateInput::make('current_exchange_rate')
+                                ->disabled()
+                                ->dehydrated(false)
                                 ->columnSpanFull(),
                         ])
                         ->columns(12)

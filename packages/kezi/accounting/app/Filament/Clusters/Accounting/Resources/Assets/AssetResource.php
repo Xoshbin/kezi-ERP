@@ -28,6 +28,7 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages\ListAsse
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Assets\RelationManagers\DepreciationEntryRelationManager;
 use Kezi\Accounting\Models\Asset;
 use Kezi\Accounting\Rules\NotInLockedPeriod;
+use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\CurrencyRate;
@@ -128,18 +129,9 @@ class AssetResource extends Resource
                         ->createOptionModalHeading(__('accounting::common.modal_title_create_currency'))
                         ->createOptionAction(fn (Action $action) => $action->modalWidth('lg')),
 
-                    TextInput::make('current_exchange_rate')
-                        ->label(__('accounting::asset.current_exchange_rate'))
-                        ->numeric()
+                    ExchangeRateInput::make('current_exchange_rate')
                         ->disabled()
-                        ->dehydrated(false)
-                        ->visible(function (callable $get) {
-                            $currencyId = $get('currency_id');
-                            $company = Filament::getTenant();
-
-                            return $currencyId && $company instanceof Company && $currencyId != $company->currency_id;
-                        })
-                        ->helperText(__('accounting::asset.exchange_rate_helper')),
+                        ->dehydrated(false),
                 ])
                 ->columns(4)
                 ->columnSpanFull(),

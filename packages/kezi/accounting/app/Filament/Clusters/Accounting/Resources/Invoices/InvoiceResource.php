@@ -42,6 +42,7 @@ use Kezi\Accounting\Models\Journal;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Accounting\Rules\NotInLockedPeriod;
 use Kezi\Foundation\Enums\Incoterm;
+use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
@@ -180,59 +181,17 @@ class InvoiceResource extends Resource
                                 ->modalWidth('lg');
                         }),
 
-                    TextInput::make('exchange_rate_at_creation')
-                        ->label(__('accounting::invoice.exchange_rate'))
-                        ->numeric()
-                        ->step(0.000001)
-                        ->minValue(0.000001)
+                    ExchangeRateInput::make('exchange_rate_at_creation')
                         ->columnSpan(1)
-                        ->visible(function (callable $get) {
-                            $currencyId = $get('currency_id');
-                            $company = Filament::getTenant();
-
-                            return $currencyId && $company instanceof Company && $currencyId != $company->currency_id;
-                        })
                         ->disabled(function (?Invoice $record) {
                             return $record && $record->status !== InvoiceStatus::Draft;
                         })
                         ->helperText(function (callable $get, ?Invoice $record) {
-                            // If document is not draft, show locked message
                             if ($record && $record->status !== InvoiceStatus::Draft) {
                                 return __('accounting::invoice.exchange_rate_locked_helper');
                             }
 
-                            // Show current exchange rate as helper text
-                            $currencyId = $get('currency_id');
-                            $company = Filament::getTenant();
-
-                            if ($currencyId && $company instanceof Company && $currencyId != $company->currency_id) {
-                                $currency = Currency::find($currencyId);
-                                if ($currency) {
-                                    $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
-                                    if ($latestRate) {
-                                        return __('accounting::invoice.exchange_rate_helper_with_current', ['rate' => number_format($latestRate, 6)]);
-                                    }
-                                }
-                            }
-
-                            return __('accounting::invoice.exchange_rate_manual_helper');
-                        })
-                        ->placeholder(function (callable $get) {
-                            // Show current rate as placeholder when creating new records
-                            $currencyId = $get('currency_id');
-                            $company = Filament::getTenant();
-
-                            if ($currencyId && $company instanceof Company && $currencyId != $company->currency_id) {
-                                $currency = Currency::find($currencyId);
-                                if ($currency) {
-                                    $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
-                                    if ($latestRate) {
-                                        return number_format($latestRate, 6);
-                                    }
-                                }
-                            }
-
-                            return null;
+                            return null; // Fallback to component default
                         }),
                     Select::make('incoterm')
                         ->label(__('accounting::invoice.incoterm'))

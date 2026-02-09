@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Kezi\Accounting\Enums\Accounting\TaxType;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Enums\Incoterm;
+use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Product\Models\Product;
 use Kezi\Sales\Enums\Sales\SalesOrderStatus;
@@ -214,42 +215,7 @@ class SalesOrderForm
                                         }
                                     }),
 
-                                TextInput::make('exchange_rate_at_creation')
-                                    ->label(__('sales::sales_orders.fields.exchange_rate'))
-                                    ->numeric()
-                                    ->required()
-                                    ->default(1)
-                                    ->live()
-                                    ->visible(function (callable $get) {
-                                        $currencyId = $get('currency_id');
-                                        $company = Filament::getTenant();
-                                        if (! $company) {
-                                            $company = Auth::user()?->company;
-                                        }
-
-                                        return $currencyId && $company instanceof \App\Models\Company && $currencyId != $company->currency_id;
-                                    })
-                                    ->helperText(function (callable $get) {
-                                        $currencyId = $get('currency_id');
-                                        $company = Filament::getTenant();
-                                        if (! $company) {
-                                            $company = Auth::user()?->company;
-                                        }
-
-                                        if ($currencyId && $company instanceof \App\Models\Company && $currencyId !== $company->currency_id) {
-                                            $currency = \Kezi\Foundation\Models\Currency::find($currencyId);
-                                            if ($currency) {
-                                                $service = app(\Kezi\Foundation\Services\CurrencyConverterService::class);
-                                                $latestRate = $service->getExchangeRate($currency, now(), $company) ?? $service->getLatestExchangeRate($currency, $company);
-
-                                                if ($latestRate) {
-                                                    return __('sales::sales_orders.help.exchange_rate').' '.__('sales::sales_orders.help.current_rate', ['rate' => $latestRate]);
-                                                }
-                                            }
-                                        }
-
-                                        return __('sales::sales_orders.help.exchange_rate');
-                                    }),
+                                ExchangeRateInput::make('exchange_rate_at_creation'),
 
                                 Select::make('incoterm')
                                     ->label(__('sales::sales_orders.fields.incoterm'))

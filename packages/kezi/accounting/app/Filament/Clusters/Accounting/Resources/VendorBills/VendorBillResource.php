@@ -43,6 +43,7 @@ use Kezi\Accounting\Models\Journal;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Accounting\Rules\NotInLockedPeriod;
 use Kezi\Foundation\Enums\Incoterm;
+use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Foundation\Models\Currency;
@@ -227,32 +228,9 @@ class VendorBillResource extends Resource
                             return $action
                                 ->modalWidth('lg');
                         }),
-                    TextInput::make('exchange_rate_at_creation')
-                        ->label(__('accounting::bill.exchange_rate_at_creation'))
-                        ->numeric()
+                    ExchangeRateInput::make('exchange_rate_at_creation')
                         ->columnSpan(1)
-                        ->visible(function (callable $get) {
-                            $currencyId = $get('currency_id');
-                            $company = Filament::getTenant();
-
-                            return $currencyId && $company instanceof Company && $currencyId != $company->currency_id;
-                        })
-                        ->disabled(fn (?VendorBill $record) => $record && $record->status !== VendorBillStatus::Draft)
-                        ->helperText(function (callable $get) {
-                            $currencyId = $get('currency_id');
-                            $company = Filament::getTenant();
-                            if ($currencyId && $company instanceof Company && $currencyId !== $company->currency_id) {
-                                $currency = Currency::find($currencyId);
-                                if ($currency) {
-                                    $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
-                                    if ($latestRate) {
-                                        return __('accounting::bill.exchange_rate_helper').' '.__('accounting::bill.current_rate', ['rate' => $latestRate]);
-                                    }
-                                }
-                            }
-
-                            return __('accounting::bill.exchange_rate_helper');
-                        }),
+                        ->disabled(fn (?VendorBill $record) => $record && $record->status !== VendorBillStatus::Draft),
                     Select::make('incoterm')
                         ->label(__('accounting::bill.incoterm'))
                         ->options(Incoterm::class)
