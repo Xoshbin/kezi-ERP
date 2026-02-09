@@ -128,6 +128,61 @@ test('it allows approval of pending request', function () {
 
     expect($attendance)->not->toBeNull()
         ->and($attendance->status)->toBe('on_leave');
+
+    // Assert Audit Log
+    $this->assertDatabaseHas('audit_logs', [
+        'auditable_type' => LeaveRequest::class,
+        'auditable_id' => $leaveRequest->id,
+        'event_type' => 'leave_approved',
+        'company_id' => $this->company->id,
+        'description' => 'Approved',
+    ]);
+});
+
+test('it creates audit log when leave request is rejected', function () {
+    $approver = User::factory()->create();
+    $approver->companies()->attach($this->company);
+
+    $leaveRequest = LeaveRequest::factory()->create([
+        'company_id' => $this->company->id,
+        'status' => 'pending',
+        'employee_id' => $this->employee->id,
+    ]);
+
+    Gate::shouldReceive('forUser')->with($approver)->andReturnSelf();
+    Gate::shouldReceive('authorize')->with('approve', $leaveRequest)->andReturn(true);
+
+    $this->service->rejectLeaveRequest($leaveRequest, $approver, 'Not allowed');
+
+    $this->assertDatabaseHas('audit_logs', [
+        'auditable_type' => LeaveRequest::class,
+        'auditable_id' => $leaveRequest->id,
+        'event_type' => 'leave_rejected',
+        'description' => 'Not allowed',
+    ]);
+});
+
+test('it creates audit log when leave request is cancelled', function () {
+    $approver = User::factory()->create();
+    $approver->companies()->attach($this->company);
+
+    $leaveRequest = LeaveRequest::factory()->create([
+        'company_id' => $this->company->id,
+        'status' => 'pending',
+        'employee_id' => $this->employee->id,
+    ]);
+
+    Gate::shouldReceive('forUser')->with($this->user)->andReturnSelf();
+    Gate::shouldReceive('authorize')->with('cancel', $leaveRequest)->andReturn(true);
+
+    $this->service->cancelLeaveRequest($leaveRequest, $this->user, 'Changed my mind');
+
+    $this->assertDatabaseHas('audit_logs', [
+        'auditable_type' => LeaveRequest::class,
+        'auditable_id' => $leaveRequest->id,
+        'event_type' => 'leave_cancelled',
+        'description' => 'Changed my mind',
+    ]);
 });
 
 test('it prevents creating overlapping leave requests', function () {
