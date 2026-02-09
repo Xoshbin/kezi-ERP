@@ -691,9 +691,7 @@ class InventoryValuationService
 
                 // Convert the company currency amount back to original currency
                 if ($vendorBill->currency_id !== $product->company->currency_id && $exchangeRate > 0) {
-                    $originalAmount = $totalCostInCompanyCurrency->getAmount()->toFloat() / $exchangeRate;
-
-                    return Money::of($originalAmount, $vendorBill->currency->code);
+                    return $totalCostInCompanyCurrency->dividedBy($exchangeRate, RoundingMode::HALF_UP);
                 }
             }
         }

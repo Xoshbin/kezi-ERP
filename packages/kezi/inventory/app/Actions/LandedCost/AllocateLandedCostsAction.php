@@ -2,6 +2,7 @@
 
 namespace Kezi\Inventory\Actions\LandedCost;
 
+use Brick\Money\Money;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Kezi\Inventory\Enums\Inventory\LandedCostAllocationMethod;
@@ -30,16 +31,22 @@ class AllocateLandedCostsAction
             // Calculate total basis
             $totalBasis = $this->calculateTotalBasis($stockMoves, $allocationMethod);
 
-            if ($totalBasis == 0) {
+            if ($totalBasis instanceof Money ? $totalBasis->isZero() : $totalBasis == 0) {
                 // Fallback or error? For now, just return to avoid division by zero.
                 return;
             }
 
             foreach ($stockMoves as $move) {
                 $moveBasis = $this->calculateMoveBasis($move, $allocationMethod);
-                $ratio = $moveBasis / $totalBasis;
 
-                $allocatedAmount = $totalAmount->multipliedBy($ratio); // Money handles multiplication/rounding
+                // Calculate ratio precisely
+                if ($moveBasis instanceof Money && $totalBasis instanceof Money) {
+                    $ratio = (float) $moveBasis->getAmount()->dividedBy($totalBasis->getAmount(), 8, \Brick\Math\RoundingMode::HALF_UP)->toFloat();
+                } else {
+                    $ratio = $moveBasis / $totalBasis;
+                }
+
+                $allocatedAmount = $totalAmount->multipliedBy($ratio, \Brick\Math\RoundingMode::HALF_UP);
 
                 LandedCostLine::create([
                     'company_id' => $landedCost->company_id,
@@ -51,23 +58,48 @@ class AllocateLandedCostsAction
         });
     }
 
-    private function calculateTotalBasis(Collection $stockMoves, LandedCostAllocationMethod $method): float
+    private function calculateTotalBasis(Collection $stockMoves, LandedCostAllocationMethod $method): float|Money
     {
         return match ($method) {
             LandedCostAllocationMethod::ByQuantity => $stockMoves->sum(fn (StockMove $move) => $move->productLines->sum('quantity')),
-            LandedCostAllocationMethod::ByCost => $stockMoves->sum(fn (StockMove $move) => $move->stockMoveValuations->sum(fn ($v) => $v->cost_impact->getAmount()->toFloat())), // Assuming cost_impact is Money
+            LandedCostAllocationMethod::ByCost => $this->sumCostImpact($stockMoves),
             LandedCostAllocationMethod::ByWeight => $stockMoves->sum(fn (StockMove $move) => $move->productLines->sum(fn ($line) => $line->product->weight * $line->quantity)),
             LandedCostAllocationMethod::ByVolume => $stockMoves->sum(fn (StockMove $move) => $move->productLines->sum(fn ($line) => $line->product->volume * $line->quantity)),
         };
     }
 
-    private function calculateMoveBasis(StockMove $move, LandedCostAllocationMethod $method): float
+    private function calculateMoveBasis(StockMove $move, LandedCostAllocationMethod $method): float|Money
     {
         return match ($method) {
             LandedCostAllocationMethod::ByQuantity => $move->productLines->sum('quantity'),
-            LandedCostAllocationMethod::ByCost => $move->stockMoveValuations->sum(fn ($v) => $v->cost_impact->getAmount()->toFloat()),
+            LandedCostAllocationMethod::ByCost => $this->sumMoveCostImpact($move),
             LandedCostAllocationMethod::ByWeight => $move->productLines->sum(fn ($line) => $line->product->weight * $line->quantity),
             LandedCostAllocationMethod::ByVolume => $move->productLines->sum(fn ($line) => $line->product->volume * $line->quantity),
         };
+    }
+
+    private function sumCostImpact(Collection $stockMoves): Money
+    {
+        $firstMove = $stockMoves->first();
+        $currency = $firstMove->company->currency->code;
+        $total = Money::of(0, $currency);
+
+        foreach ($stockMoves as $move) {
+            $total = $total->plus($this->sumMoveCostImpact($move));
+        }
+
+        return $total;
+    }
+
+    private function sumMoveCostImpact(StockMove $move): Money
+    {
+        $currency = $move->company->currency->code;
+        $total = Money::of(0, $currency);
+
+        foreach ($move->stockMoveValuations as $valuation) {
+            $total = $total->plus($valuation->cost_impact);
+        }
+
+        return $total;
     }
 }

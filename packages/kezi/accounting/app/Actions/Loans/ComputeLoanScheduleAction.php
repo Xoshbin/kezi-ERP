@@ -56,7 +56,7 @@ class ComputeLoanScheduleAction
                 // Monthly simple rate
                 $periodRate = ($currentAnnualRate / 100) / 12;
 
-                $interest = Money::of($balance->getAmount()->toFloat() * $periodRate, $currency, null, RoundingMode::HALF_UP);
+                $interest = $balance->multipliedBy($periodRate, RoundingMode::HALF_UP);
 
                 if ($loan->schedule_method === ScheduleMethod::Annuity) {
                     $remaining = $n - $i + 1;

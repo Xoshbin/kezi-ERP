@@ -2,7 +2,6 @@
 
 namespace Kezi\Inventory\Observers;
 
-use Brick\Money\Money;
 use Kezi\Inventory\Models\AdjustmentDocument;
 use Kezi\Inventory\Models\AdjustmentDocumentLine;
 
@@ -56,14 +55,14 @@ class AdjustmentDocumentLineObserver
         $exchangeRate = $adjustmentDocument->exchange_rate_at_creation;
 
         // Convert total amounts using the stored exchange rate
-        $subtotalCompanyCurrency = $adjustmentDocument->subtotal->getAmount()->toFloat() * $exchangeRate;
-        $totalAmountCompanyCurrency = $adjustmentDocument->total_amount->getAmount()->toFloat() * $exchangeRate;
-        $totalTaxCompanyCurrency = $adjustmentDocument->total_tax->getAmount()->toFloat() * $exchangeRate;
+        $subtotalCompanyCurrency = $adjustmentDocument->subtotal->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+        $totalAmountCompanyCurrency = $adjustmentDocument->total_amount->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+        $totalTaxCompanyCurrency = $adjustmentDocument->total_tax->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
 
         $adjustmentDocument->update([
-            'subtotal_company_currency' => Money::of($subtotalCompanyCurrency, $companyCurrency->code),
-            'total_amount_company_currency' => Money::of($totalAmountCompanyCurrency, $companyCurrency->code),
-            'total_tax_company_currency' => Money::of($totalTaxCompanyCurrency, $companyCurrency->code),
+            'subtotal_company_currency' => $subtotalCompanyCurrency,
+            'total_amount_company_currency' => $totalAmountCompanyCurrency,
+            'total_tax_company_currency' => $totalTaxCompanyCurrency,
         ]);
     }
 }

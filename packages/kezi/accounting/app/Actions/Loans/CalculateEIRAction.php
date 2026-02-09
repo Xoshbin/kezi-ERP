@@ -66,7 +66,7 @@ class CalculateEIRAction
             $entries = $loan->scheduleEntries()->orderBy('sequence')->get();
             foreach ($entries as $entry) {
                 /** @var LoanScheduleEntry $entry */
-                $interest = Money::of($carrying->getAmount()->toFloat() * $rate, $currency, null, RoundingMode::HALF_UP);
+                $interest = $carrying->multipliedBy($rate, RoundingMode::HALF_UP);
                 /** @var Money $payment */
                 $payment = $entry->payment_amount;
                 $principalComponent = $payment->minus($interest);

@@ -188,16 +188,18 @@ class ThreeWayMatchingService
             }
 
             // Compare unit prices
-            $billPrice = $billLine->unit_price->getAmount()->toFloat();
-            $poPrice = $poLine->unit_price->getAmount()->toFloat();
+            $poPrice = $poLine->unit_price;
+            $billPrice = $billLine->unit_price;
 
-            if ($poPrice == 0) {
-                continue; // Avoid division by zero
+            if ($poPrice->isZero()) {
+                continue;
             }
 
-            $variance = abs($billPrice - $poPrice) / $poPrice * 100;
+            $toleranceFactor = $tolerancePercent / 100;
+            $maxPrice = $poPrice->multipliedBy(1 + $toleranceFactor, \Brick\Math\RoundingMode::HALF_UP);
+            $minPrice = $poPrice->multipliedBy(1 - $toleranceFactor, \Brick\Math\RoundingMode::HALF_UP);
 
-            if ($variance > $tolerancePercent) {
+            if ($billPrice->isGreaterThan($maxPrice) || $billPrice->isLessThan($minPrice)) {
                 return false;
             }
         }
