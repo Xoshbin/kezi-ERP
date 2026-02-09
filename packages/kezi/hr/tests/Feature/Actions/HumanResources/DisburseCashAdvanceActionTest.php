@@ -58,6 +58,13 @@ describe('DisburseCashAdvanceAction', function () {
             ->status->toBe(CashAdvanceStatus::Disbursed)
             ->disbursed_at->not->toBeNull()
             ->disbursed_by_user_id->toBe($this->disbursementUser->id);
+
+        $this->assertDatabaseHas('audit_logs', [
+            'auditable_type' => CashAdvance::class,
+            'auditable_id' => $cashAdvance->id,
+            'event_type' => 'cash_advance_disbursed',
+            'user_id' => $this->disbursementUser->id,
+        ]);
     });
 
     it('sets the disbursed amount to approved amount', function () {

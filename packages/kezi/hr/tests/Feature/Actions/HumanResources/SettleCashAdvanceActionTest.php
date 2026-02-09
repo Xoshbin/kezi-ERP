@@ -69,6 +69,13 @@ describe('SettleCashAdvanceAction', function () {
             expect($cashAdvance->refresh())
                 ->status->toBe(CashAdvanceStatus::Settled)
                 ->settled_at->not->toBeNull();
+
+            $this->assertDatabaseHas('audit_logs', [
+                'auditable_type' => CashAdvance::class,
+                'auditable_id' => $cashAdvance->id,
+                'event_type' => 'cash_advance_settled',
+                'user_id' => $this->settlementUser->id,
+            ]);
         });
 
         it('cannot settle a draft cash advance', function () {
