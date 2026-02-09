@@ -16,7 +16,7 @@ class LeaveRequestFactory extends Factory
 
     public function definition(): array
     {
-        $startDate = Carbon::instance($this->faker->dateTimeBetween('now', '+1 month'));
+        $startDate = Carbon::instance($this->faker->dateTimeBetween('+1 day', '+1 month'));
         $endDate = $startDate->copy()->addDays($this->faker->numberBetween(1, 5));
         $daysRequested = $startDate->diffInDays($endDate) + 1; // Inclusive
 

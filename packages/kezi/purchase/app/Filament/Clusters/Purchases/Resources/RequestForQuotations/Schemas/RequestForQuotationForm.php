@@ -2,6 +2,8 @@
 
 namespace Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\Schemas;
 
+use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
+
 use Filament\Forms;
 use Filament\Schemas\Schema;
 use Kezi\Accounting\Models\Tax;
@@ -40,11 +42,7 @@ class RequestForQuotationForm
                             ->options(fn () => Currency::all()->pluck('code', 'id'))
                             ->default(fn () => Currency::where('code', 'USD')->first()?->id)
                             ->required(),
-                        Forms\Components\TextInput::make('exchange_rate')
-                            ->label(__('purchase::request_for_quotation.fields.exchange_rate'))
-                            ->numeric()
-                            ->default(1.0)
-                            ->required(),
+                        ExchangeRateInput::make('exchange_rate'),
                         Forms\Components\Select::make('status')
                             ->options(RequestForQuotationStatus::class)
                             ->default(RequestForQuotationStatus::Draft)

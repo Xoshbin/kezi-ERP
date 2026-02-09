@@ -15,6 +15,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Kezi\Accounting\Enums\Accounting\TaxType;
 use Kezi\Accounting\Models\Tax;
+use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Product\Models\Product;
 use Kezi\Sales\Enums\Sales\QuoteStatus;
@@ -90,18 +91,7 @@ class QuoteForm
                                         $set('exchange_rate', 1);
                                     }),
 
-                                TextInput::make('exchange_rate')
-                                    ->label(__('sales::quote.fields.exchange_rate'))
-                                    ->numeric()
-                                    ->required()
-                                    ->default(1)
-                                    ->live()
-                                    ->visible(function (callable $get) {
-                                        $currencyId = $get('currency_id');
-                                        $company = Filament::getTenant();
-
-                                        return $currencyId && $company && $currencyId != $company->currency_id;
-                                    }),
+                                ExchangeRateInput::make('exchange_rate'),
                             ]),
                     ]),
 

@@ -23,6 +23,7 @@ use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Enums\Partners\PartnerType;
+use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
 use Kezi\Foundation\Models\Currency;
@@ -224,42 +225,7 @@ class PurchaseOrderForm
                                         }
                                     }),
 
-                                TextInput::make('exchange_rate_at_creation')
-                                    ->label(__('purchase::purchase_orders.fields.exchange_rate'))
-                                    ->numeric()
-                                    ->required()
-                                    ->default(1)
-                                    ->live()
-                                    ->visible(function (callable $get) {
-                                        $currencyId = $get('currency_id');
-                                        $company = Filament::getTenant();
-                                        if (! $company) {
-                                            $company = Auth::user()?->company;
-                                        }
-
-                                        return $currencyId && $company instanceof \App\Models\Company && $currencyId != $company->currency_id;
-                                    })
-                                    ->helperText(function (callable $get) {
-                                        $currencyId = $get('currency_id');
-                                        $company = Filament::getTenant();
-                                        if (! $company) {
-                                            $company = Auth::user()?->company;
-                                        }
-
-                                        if ($currencyId && $company instanceof \App\Models\Company && $currencyId !== $company->currency_id) {
-                                            $currency = Currency::find($currencyId);
-                                            if ($currency) {
-                                                $service = app(\Kezi\Foundation\Services\CurrencyConverterService::class);
-                                                $latestRate = $service->getExchangeRate($currency, now(), $company) ?? $service->getLatestExchangeRate($currency, $company);
-
-                                                if ($latestRate) {
-                                                    return __('purchase::purchase_orders.help.exchange_rate').' '.__('purchase::purchase_orders.help.current_rate', ['rate' => $latestRate]);
-                                                }
-                                            }
-                                        }
-
-                                        return __('purchase::purchase_orders.help.exchange_rate');
-                                    }),
+                                ExchangeRateInput::make('exchange_rate_at_creation'),
 
                                 Select::make('incoterm')
                                     ->label(__('purchase::purchase_orders.fields.incoterm'))
@@ -547,7 +513,6 @@ class PurchaseOrderForm
                             ->label(__('purchase::purchase_orders.fields.notes'))
                             ->rows(3)
                             ->columnSpanFull(),
-
                         Textarea::make('terms_and_conditions')
                             ->label(__('purchase::purchase_orders.fields.terms_and_conditions'))
                             ->helperText(__('purchase::purchase_orders.help.terms_and_conditions'))
