@@ -72,6 +72,11 @@ test('onboarding wizard can be completed and seeds data', function () {
 
     // Verify seeding
     $this->assertDatabaseHas('accounts', ['company_id' => $company->id, 'code' => '110101']);
+    
+    // Check if account group is assigned
+    $account = \Kezi\Accounting\Models\Account::where('company_id', $company->id)->where('code', '110101')->first();
+    expect($account->account_group_id)->not->toBeNull();
+
     $this->assertDatabaseHas('journals', ['company_id' => $company->id, 'short_code' => 'BNK']);
     $this->assertDatabaseHas('partners', ['company_id' => $company->id, 'name' => 'Sample Customer']);
 });
