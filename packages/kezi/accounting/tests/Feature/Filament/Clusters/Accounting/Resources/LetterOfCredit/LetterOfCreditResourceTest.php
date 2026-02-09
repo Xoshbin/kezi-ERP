@@ -118,3 +118,26 @@ it('can search by LC number', function () {
         ->assertCanSeeTableRecords([$lc1])
         ->assertCanNotSeeTableRecords([$lc2]);
 });
+
+it('uses selected currency for amount', function () {
+    $usd = Currency::factory()->create([
+        'code' => 'USD',
+        'is_active' => true,
+    ]);
+
+    livewire(CreateLetterOfCredit::class)
+        ->fillForm([
+            'vendor_id' => $this->vendor->id,
+            'currency_id' => $usd->id,
+            'amount' => 100,
+            'type' => LCType::Import->value,
+            'issue_date' => now()->format('Y-m-d'),
+            'expiry_date' => now()->addMonths(3)->format('Y-m-d'),
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $lc = LetterOfCredit::latest()->first();
+
+    expect($lc->amount->getCurrency()->getCurrencyCode())->toBe('USD');
+});
