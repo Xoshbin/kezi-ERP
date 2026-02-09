@@ -34,11 +34,11 @@ it('computes annuity schedule for a 12-month loan', function () {
     $first = $loan->scheduleEntries()->orderBy('sequence')->first();
     $code = $this->company->currency->code;
     expect((string) $first->interest_component->getAmount())->toBe((string) Money::of('100', $code)->getAmount());
-    // Allow small rounding tolerance based on currency scale
+    // Allow small rounding tolerance (e.g., 0.01 in minor units)
     $expectedPayment = Money::of('888.49', $code);
-    expect(abs($first->payment_amount->getAmount()->toFloat() - $expectedPayment->getAmount()->toFloat()))->toBeLessThan(0.01);
+    expect($first->payment_amount->minus($expectedPayment)->abs()->isLessThanOrEqualTo(Money::of('0.01', $code)))->toBeTrue();
     $expectedPrincipal = $expectedPayment->minus(Money::of('100', $code));
-    expect(abs($first->principal_component->getAmount()->toFloat() - $expectedPrincipal->getAmount()->toFloat()))->toBeLessThan(0.01);
+    expect($first->principal_component->minus($expectedPrincipal)->abs()->isLessThanOrEqualTo(Money::of('0.01', $code)))->toBeTrue();
 });
 
 it('computes straight-line principal schedule', function () {

@@ -3,6 +3,7 @@
 namespace Kezi\Accounting\Listeners\Asset;
 
 use App\Models\Company;
+use Brick\Money\Money;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
@@ -89,17 +90,15 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                 continue; // Not an asset line
             }
 
-            // Calculate purchase value in company currency
-            $purchaseValueMoney = $this->currencyConverter->convertWithRate(
+            $purchaseValue = $this->currencyConverter->convertWithRate(
                 $line->subtotal,
                 $exchangeRate,
                 $companyCurrency->code,
                 false
             );
-            $purchaseValue = (int) $purchaseValueMoney->getAmount()->toFloat();
 
             // Prevent creation of assets for zero or negative values
-            if ($purchaseValue <= 0) {
+            if ($purchaseValue->isZero() || $purchaseValue->isNegative()) {
                 continue;
             }
 
@@ -118,7 +117,7 @@ class CreateAssetFromVendorBillListener implements ShouldQueue
                     name: $line->product->name ?? $line->description,
                     purchase_date: $vendorBill->bill_date,
                     purchase_value: $purchaseValue,
-                    salvage_value: 0,
+                    salvage_value: Money::zero($purchaseValue->getCurrency()),
                     useful_life_years: $usefulLife,
                     depreciation_method: $depMethod,
                     asset_account_id: $assetAccId,

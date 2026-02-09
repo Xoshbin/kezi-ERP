@@ -74,7 +74,7 @@ describe('ViewBalanceSheet Filament Page', function () {
             ->assertCount('reportData.assetLines', 2) // Bank and AR
             ->assertCount('reportData.liabilityLines', 1) // AP
             ->assertCount('reportData.equityLines', 1) // Equity
-            ->assertSet('reportData.currentYearEarningsAmount', 400000.0) // 500k Revenue - 100k Expense
+            ->assertSet('reportData.currentYearEarnings', \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo(\Brick\Money\Money::of(400000, $this->company->currency->code))) // 400,000 formatted
             ->assertSet('reportData.isCurrentYearLoss', false);
     });
 
@@ -129,7 +129,7 @@ describe('ViewBalanceSheet Filament Page', function () {
             ])
             ->call('generateReport')
             ->assertHasNoFormErrors()
-            ->assertSet('reportData.currentYearEarningsAmount', -400000.0) // 100k Revenue - 500k Expense = -400k Net Loss
+            ->assertSet('reportData.currentYearEarnings', \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo(\Brick\Money\Money::of(-400000, $this->company->currency->code))) // -400,000 formatted
             ->assertSet('reportData.isCurrentYearLoss', true);
     });
 

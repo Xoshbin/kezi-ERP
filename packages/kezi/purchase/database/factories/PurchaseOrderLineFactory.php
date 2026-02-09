@@ -119,23 +119,25 @@ class PurchaseOrderLineFactory extends Factory
     {
         return $this->state(function (array $attributes) use ($price) {
             $quantity = $attributes['quantity'];
-            $subtotal = $quantity * $price;
-            $tax = $subtotal * 0.1; // 10% tax
-            $total = $subtotal + $tax;
+
+            $priceDecimal = \Brick\Math\BigDecimal::of($price);
+            $subtotalDecimal = $priceDecimal->multipliedBy($quantity);
+            $taxDecimal = $subtotalDecimal->multipliedBy(0.1); // 10% tax
+            $totalDecimal = $subtotalDecimal->plus($taxDecimal);
 
             $po = PurchaseOrder::find($attributes['purchase_order_id']);
             $currencyCode = $po ? $po->currency->code : 'USD';
             $companyCurrencyCode = $po ? $po->company->currency->code : 'USD';
 
             return [
-                'unit_price' => Money::of($price, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
-                'subtotal' => Money::of($subtotal, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
-                'total_line_tax' => Money::of($tax, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
-                'total' => Money::of($total, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
-                'unit_price_company_currency' => Money::of($price, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
-                'subtotal_company_currency' => Money::of($subtotal, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
-                'total_line_tax_company_currency' => Money::of($tax, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
-                'total_company_currency' => Money::of($total, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'unit_price' => Money::of($priceDecimal, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'subtotal' => Money::of($subtotalDecimal, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'total_line_tax' => Money::of($taxDecimal, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'total' => Money::of($totalDecimal, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'unit_price_company_currency' => Money::of($priceDecimal, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'subtotal_company_currency' => Money::of($subtotalDecimal, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'total_line_tax_company_currency' => Money::of($taxDecimal, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'total_company_currency' => Money::of($totalDecimal, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
             ];
         });
     }
@@ -152,24 +154,22 @@ class PurchaseOrderLineFactory extends Factory
 
             // unit_price might be a Money object or a string/float
             $unitPrice = $attributes['unit_price'];
-            if ($unitPrice instanceof Money) {
-                $unitPriceValue = $unitPrice->getAmount()->toFloat();
-            } else {
-                $unitPriceValue = (float) $unitPrice;
-            }
+            $unitPriceDecimal = $unitPrice instanceof Money
+                ? $unitPrice->getAmount()
+                : \Brick\Math\BigDecimal::of($unitPrice);
 
-            $subtotal = $quantity * $unitPriceValue;
-            $tax = $subtotal * 0.1; // 10% tax
-            $total = $subtotal + $tax;
+            $subtotalDecimal = $unitPriceDecimal->multipliedBy($quantity);
+            $taxDecimal = $subtotalDecimal->multipliedBy(0.1); // 10% tax
+            $totalDecimal = $subtotalDecimal->plus($taxDecimal);
 
             return [
                 'quantity' => $quantity,
-                'subtotal' => Money::of($subtotal, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
-                'total_line_tax' => Money::of($tax, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
-                'total' => Money::of($total, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
-                'subtotal_company_currency' => Money::of($subtotal, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
-                'total_line_tax_company_currency' => Money::of($tax, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
-                'total_company_currency' => Money::of($total, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'subtotal' => Money::of($subtotalDecimal, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'total_line_tax' => Money::of($taxDecimal, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'total' => Money::of($totalDecimal, $currencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'subtotal_company_currency' => Money::of($subtotalDecimal, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'total_line_tax_company_currency' => Money::of($taxDecimal, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
+                'total_company_currency' => Money::of($totalDecimal, $companyCurrencyCode, null, \Brick\Math\RoundingMode::HALF_UP),
             ];
         });
     }

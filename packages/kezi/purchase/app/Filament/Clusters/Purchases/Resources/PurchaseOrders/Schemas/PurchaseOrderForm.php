@@ -24,7 +24,6 @@ use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Enums\Partners\PartnerType;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
-use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Product\Models\Product;
@@ -307,24 +306,17 @@ class PurchaseOrderForm
                                                 // Product price is in base currency
                                                 $unitPrice = $product->unit_price;
 
-                                                if ($unitPrice instanceof Money) {
-                                                    // Convert Money object to float
-                                                    $amount = $unitPrice->getAmount()->toFloat();
-                                                } else {
-                                                    $amount = (float) $unitPrice;
-                                                }
-
                                                 // Calculate price in foreign currency: Base Price / Exchange Rate
                                                 // Example: 2,500,000 IQD / 1500 Rate = 1666.66 USD
                                                 // If rate is 1 (Base Currency), it stays standard.
 
                                                 // Ensure we don't divide by zero
-                                                if ($exchangeRate != 0) {
-                                                    $convertedPrice = $amount / $exchangeRate;
-                                                    // Format to appropriate decimals? MoneyInput handles it, but let's pass a clean float/string
+                                                if ($exchangeRate > 0) {
+                                                    $amountDecimal = \Brick\Math\BigDecimal::of($unitPrice instanceof Money ? $unitPrice->getAmount() : (filled($unitPrice) ? $unitPrice : 0));
+                                                    $convertedPrice = $amountDecimal->dividedBy($exchangeRate, 6, \Brick\Math\RoundingMode::HALF_UP)->stripTrailingZeros();
                                                     $set('unit_price', (string) $convertedPrice);
                                                 } else {
-                                                    $set('unit_price', 0);
+                                                    $set('unit_price', '0');
                                                 }
 
                                                 // Auto-detect shipping cost type
@@ -550,39 +542,39 @@ class PurchaseOrderForm
             return;
         }
 
-        $totalAmount = 0;
-        $totalTax = 0;
+        $totalAmount = \Brick\Math\BigDecimal::zero();
+        $totalTax = \Brick\Math\BigDecimal::zero();
 
         foreach ($lines as $line) {
-            $quantity = (float) ($line['quantity'] ?? 0);
-            $unitPrice = (float) ($line['unit_price'] ?? 0);
+            $quantity = \Brick\Math\BigDecimal::of(filled($line['quantity'] ?? null) ? $line['quantity'] : 0);
+            $unitPrice = \Brick\Math\BigDecimal::of(filled($line['unit_price'] ?? null) ? $line['unit_price'] : 0);
             $taxId = $line['tax_id'] ?? null;
 
-            if ($quantity <= 0 || $unitPrice <= 0) {
+            if ($quantity->isZero() || $unitPrice->isZero()) {
                 continue;
             }
 
             // Calculate line subtotal
-            $lineSubtotal = $quantity * $unitPrice;
+            $lineSubtotal = $quantity->multipliedBy($unitPrice);
 
             // Calculate line tax
-            $lineTax = 0;
+            $lineTax = \Brick\Math\BigDecimal::zero();
             if ($taxId) {
                 $tax = Tax::find($taxId);
                 if ($tax) {
-                    $lineTax = $lineSubtotal * ($tax->rate / 100);
+                    $lineTax = $lineSubtotal->multipliedBy($tax->rate)->dividedBy(100, 10, \Brick\Math\RoundingMode::HALF_UP);
                 }
             }
 
             // Calculate line total
-            $lineTotal = $lineSubtotal + $lineTax;
+            $lineTotal = $lineSubtotal->plus($lineTax);
 
-            $totalAmount += $lineTotal;
-            $totalTax += $lineTax;
+            $totalAmount = $totalAmount->plus($lineTotal);
+            $totalTax = $totalTax->plus($lineTax);
         }
 
         // Set the totals
-        $set('total_amount', $totalAmount);
-        $set('total_tax', $totalTax);
+        $set('total_amount', (string) $totalAmount);
+        $set('total_tax', (string) $totalTax);
     }
 }

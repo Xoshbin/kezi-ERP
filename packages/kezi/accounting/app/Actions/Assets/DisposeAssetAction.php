@@ -28,7 +28,7 @@ class DisposeAssetAction
 
             // 1. Calculate all necessary financial values from the asset's history
             $purchaseValue = $asset->purchase_value;
-            $disposalPrice = Money::of($dto->disposal_value, $currencyCode);
+            $disposalPrice = $dto->disposal_value;
 
             $accumulatedDepreciation = Money::ofMinor(
                 $asset->depreciationEntries()->where('status', 'posted')->sum('amount'),

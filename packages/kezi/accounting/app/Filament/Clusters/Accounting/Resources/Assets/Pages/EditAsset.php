@@ -71,17 +71,13 @@ class EditAsset extends EditRecord
             $data['depreciation_method'] = DepreciationMethod::from($data['depreciation_method']);
         }
 
-        // Convert Money fields from major units (string) to minor units (int)
+        // Convert Money fields from major units (string)
         if (isset($data['purchase_value'])) {
-            $data['purchase_value'] = \Brick\Money\Money::of($data['purchase_value'], $currency->code, null, \Brick\Math\RoundingMode::HALF_UP)
-                ->getMinorAmount()
-                ->toInt();
+            $data['purchase_value'] = \Brick\Money\Money::of($data['purchase_value'], $currency->code, null, \Brick\Math\RoundingMode::HALF_UP);
         }
 
         if (isset($data['salvage_value'])) {
-            $data['salvage_value'] = \Brick\Money\Money::of($data['salvage_value'], $currency->code, null, \Brick\Math\RoundingMode::HALF_UP)
-                ->getMinorAmount()
-                ->toInt();
+            $data['salvage_value'] = \Brick\Money\Money::of($data['salvage_value'], $currency->code, null, \Brick\Math\RoundingMode::HALF_UP);
         }
 
         // Filter data to only valid DTO properties to avoid "Unknown named parameter" error

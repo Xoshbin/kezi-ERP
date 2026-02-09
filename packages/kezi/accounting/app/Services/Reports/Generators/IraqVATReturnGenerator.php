@@ -3,6 +3,8 @@
 namespace Kezi\Accounting\Services\Reports\Generators;
 
 use App\Models\Company;
+use Brick\Math\BigDecimal;
+use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Kezi\Accounting\Models\JournalEntry;
@@ -60,7 +62,8 @@ class IraqVATReturnGenerator implements TaxReportGeneratorContract
                         // Inferring from rate is safer if we assume the line represents the tax portion.
                         // Net = Tax / Rate
                         if ($line->tax->rate > 0) {
-                            $netAmount = $taxAmount->dividedBy($line->tax->rate / 100, \Brick\Math\RoundingMode::HALF_UP);
+                            $rateDecimal = BigDecimal::of($line->tax->rate)->dividedBy(100, 4, RoundingMode::HALF_UP);
+                            $netAmount = $taxAmount->dividedBy($rateDecimal, RoundingMode::HALF_UP);
                         } else {
                             $netAmount = $zero;
                         }
@@ -72,7 +75,8 @@ class IraqVATReturnGenerator implements TaxReportGeneratorContract
                         $taxAmount = $line->debit->minus($line->credit);
 
                         if ($line->tax->rate > 0) {
-                            $netAmount = $taxAmount->dividedBy($line->tax->rate / 100, \Brick\Math\RoundingMode::HALF_UP);
+                            $rateDecimal = BigDecimal::of($line->tax->rate)->dividedBy(100, 4, RoundingMode::HALF_UP);
+                            $netAmount = $taxAmount->dividedBy($rateDecimal, RoundingMode::HALF_UP);
                         } else {
                             $netAmount = $zero;
                         }
@@ -91,19 +95,20 @@ class IraqVATReturnGenerator implements TaxReportGeneratorContract
             'period' => $startDate->format('Y-m-d').' to '.$endDate->format('Y-m-d'),
             'currency' => $currency,
             'boxes' => [
-                '1' => ['label' => 'Total Sales Subject to VAT', 'value' => $boxes['1']->getAmount()->toFloat()], // Return float for UI/PDF
-                '2' => ['label' => 'VAT on Sales (Output Tax)', 'value' => $boxes['2']->getAmount()->toFloat()],
-                '3' => ['label' => 'Total Purchases Subject to VAT', 'value' => $boxes['3']->getAmount()->toFloat()],
-                '4' => ['label' => 'VAT on Purchases (Input Tax)', 'value' => $boxes['4']->getAmount()->toFloat()],
-                '5' => ['label' => 'Net VAT Payable (Refundable)', 'value' => $netPayable->getAmount()->toFloat()],
+                '1' => ['label' => 'Total Sales Subject to VAT', 'value' => (string) $boxes['1']],
+                '2' => ['label' => 'VAT on Sales (Output Tax)', 'value' => (string) $boxes['2']],
+                '3' => ['label' => 'Total Purchases Subject to VAT', 'value' => (string) $boxes['3']],
+                '4' => ['label' => 'VAT on Purchases (Input Tax)', 'value' => (string) $boxes['4']],
+                '5' => ['label' => 'Net VAT Payable (Refundable)', 'value' => (string) $netPayable],
             ],
             'formatted' => [ // For display
-                '1' => (string) $boxes['1'],
-                '2' => (string) $boxes['2'],
-                '3' => (string) $boxes['3'],
-                '4' => (string) $boxes['4'],
-                '5' => (string) $netPayable,
+                '1' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($boxes['1']),
+                '2' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($boxes['2']),
+                '3' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($boxes['3']),
+                '4' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($boxes['4']),
+                '5' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($netPayable),
             ],
+            'is_refundable' => $netPayable->isNegative(),
         ];
     }
 }

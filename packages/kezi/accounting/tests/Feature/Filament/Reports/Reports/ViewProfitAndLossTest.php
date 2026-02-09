@@ -56,7 +56,7 @@ describe('ViewProfitAndLoss Filament Page', function () {
             ])
             ->call('generateReport')
             ->assertHasNoFormErrors()
-            ->assertSet('reportData.netIncomeAmount', 300000.0) // 300,000 IQD
+            ->assertSet('reportData.netIncome', \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo(\Brick\Money\Money::of(300000, $this->company->currency->code))) // 300,000 formatted
             ->assertSet('reportData.isNetLoss', false)
             ->assertCount('reportData.revenueLines', 1)
             ->assertCount('reportData.expenseLines', 1);
