@@ -296,7 +296,7 @@ class InventoryCSVExportService
     private function formatMoney(Money $money): string
     {
         // Convert to float and format with 2 decimal places, no thousands separator
-        $amount = $money->getAmount()->toFloat() / 1000; // Assuming minor units
+        $amount = $money->getAmount()->toFloat();
 
         return number_format($amount, 2, '.', '');
     }
