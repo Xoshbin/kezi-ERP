@@ -47,7 +47,6 @@ use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Foundation\Models\Currency;
-use Kezi\Foundation\Models\CurrencyRate;
 use Kezi\Payment\Actions\Payments\CreatePaymentAction;
 use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
 use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
