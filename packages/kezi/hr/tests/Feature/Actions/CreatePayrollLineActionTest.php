@@ -20,6 +20,8 @@ it('can create a payroll line with valid data (Happy Path)', function () {
 
     /** @var \Kezi\Foundation\Models\Currency $currency */
     $currency = Currency::factory()->createSafely(['code' => 'USD']);
+    $company->currency_id = $currency->id;
+    $company->save();
 
     /** @var \Kezi\HR\Models\Payroll $payroll */
     $payroll = Payroll::factory()->create([
@@ -86,6 +88,8 @@ it('handles money and currency conversion correctly when passed as strings', fun
 
     /** @var \Kezi\Foundation\Models\Currency $currency */
     $currency = Currency::factory()->createSafely(['code' => 'EUR']);
+    $company->currency_id = $currency->id;
+    $company->save();
 
     /** @var \Kezi\HR\Models\Payroll $payroll */
     $payroll = Payroll::factory()->create([
@@ -145,10 +149,20 @@ it('handles different company currency correctly', function () {
 
     $eur = Currency::factory()->createSafely(['code' => 'EUR']);
 
+    // Create exchange rate: 1 EUR = 1.2 USD
+    // Create exchange rate: 1 EUR = 1.2 USD (Base Currency)
+    \Kezi\Foundation\Models\CurrencyRate::factory()->create([
+        'company_id' => $company->id,
+        'currency_id' => $eur->id, // Foreign currency
+        'rate' => 1.2,
+        'effective_date' => now(),
+    ]);
+
     /** @var \Kezi\HR\Models\Payroll $payroll */
     $payroll = Payroll::factory()->create([
         'company_id' => $company->id,
         'currency_id' => $eur->id,
+        'pay_date' => now(),
     ]);
 
     /** @var \Kezi\Accounting\Models\Account $account */
@@ -182,7 +196,9 @@ it('handles different company currency correctly', function () {
     expect($amountCC)->not->toBeNull();
     expect($amountCC)->toBeInstanceOf(Money::class);
     /** @var Money $amountCC */
-    expect($amountCC->getAmount()->toFloat())->toBe(100.00);
+    // 100 EUR * 1.2 = 120 USD
+    expect($amountCC->getAmount()->toFloat())->toBe(120.00);
+    expect($amountCC->getCurrency()->getCurrencyCode())->toBe('USD');
 });
 
 it('correctly handles nullable fields', function () {
@@ -191,6 +207,8 @@ it('correctly handles nullable fields', function () {
     /** @phpstan-ignore-next-line */
     $company = $this->company;
     $currency = Currency::factory()->createSafely(['code' => 'USD']);
+    $company->currency_id = $currency->id;
+    $company->save();
 
     /** @var \Kezi\HR\Models\Payroll $payroll */
     $payroll = Payroll::factory()->create([
@@ -236,6 +254,8 @@ it('ensures relationship integrity', function () {
     /** @phpstan-ignore-next-line */
     $company = $this->company;
     $currency = Currency::factory()->createSafely();
+    $company->currency_id = $currency->id;
+    $company->save();
 
     /** @var \Kezi\HR\Models\Payroll $payroll */
     $payroll = Payroll::factory()->create(['company_id' => $company->id, 'currency_id' => $currency->id]);
