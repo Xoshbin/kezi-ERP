@@ -34,3 +34,27 @@ it('creates audit log with reason when employee is terminated', function () {
         'company_id' => $this->company->id,
     ]);
 });
+
+it('creates audit log when employee is reactivated', function () {
+    // Arrange
+    $employee = Employee::factory()->create([
+        'company_id' => $this->company->id,
+        'employment_status' => 'terminated',
+        'is_active' => false,
+        'termination_date' => now()->subDays(10)->toDateString(),
+    ]);
+
+    $service = app(EmployeeService::class);
+    $reactivationDate = now()->toDateString();
+
+    // Act
+    $service->reactivateEmployee($employee, $reactivationDate, $this->user);
+
+    // Assert
+    $this->assertDatabaseHas('audit_logs', [
+        'auditable_type' => Employee::class,
+        'auditable_id' => $employee->id,
+        'event_type' => 'employee_reactivated',
+        'company_id' => $this->company->id,
+    ]);
+});
