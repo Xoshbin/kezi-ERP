@@ -7,12 +7,12 @@ test('it can switch languages', function () {
     $response->assertRedirect();
 });
 
-test('homepage loads in english by default', function () {
+test('homepage loads in kurdish by default', function () {
     $response = $this->get('/');
 
     $response->assertStatus(200);
-    $response->assertSee('One Platform.');
-    $response->assertDontSee('یەک پلاتفۆرم.');
+    $response->assertSee('One Core.');
+    $response->assertDontSee('یەک ئامانج.');
     $response->assertSee('dir="ltr"', false);
 });
 
@@ -20,8 +20,8 @@ test('homepage loads in kurdish when session is set', function () {
     $response = $this->withSession(['locale' => 'ckb'])->get('/');
 
     $response->assertStatus(200);
-    $response->assertSee('یەک پلاتفۆرم.');
-    $response->assertSee('کارایی بێ سنوور.');
+    $response->assertSee('یەک ئامانج.');
+    $response->assertSee('توانای بێ سنوور.');
     $response->assertSee('dir="rtl"', false);
 });
 
@@ -29,7 +29,7 @@ test('homepage loads in arabic when session is set', function () {
     $response = $this->withSession(['locale' => 'ar'])->get('/');
 
     $response->assertStatus(200);
-    $response->assertSee('منصة واحدة.');
-    $response->assertSee('كفاءة بلا حدود.');
+    $response->assertSee('نواة واحدة.');
+    $response->assertSee('قدرات غير محدودة.');
     $response->assertSee('dir="rtl"', false);
 });
