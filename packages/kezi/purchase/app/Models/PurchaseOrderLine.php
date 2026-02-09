@@ -240,12 +240,7 @@ class PurchaseOrderLine extends Model
         }
 
         // Convert to company currency
-        $companyCurrency = $purchaseOrder->company->currency;
-
-        return Money::of(
-            $this->unit_price->getAmount()->toFloat() * $exchangeRate,
-            $companyCurrency->code
-        );
+        return $this->unit_price->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
     }
 
     /**

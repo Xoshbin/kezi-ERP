@@ -184,20 +184,29 @@ class ReorderStatusReport extends Page implements HasForms
         };
     }
 
-    public function getTotalSuggestedValue()
+    public function getTotalSuggestedValue(): Money
     {
         if (! $this->reportData || empty($this->reportData['products'])) {
             return Money::zero(Currency::of('USD'));
         }
 
-        $total = 0;
-        foreach ($this->reportData['products'] as $product) {
-            if ($product['reorder_status'] === 'suggested') {
-                $total += $product['suggested_quantity'] * $product['unit_cost']->getAmount()->toFloat();
+        $currency = Currency::of('USD'); // Default
+        if (! empty($this->reportData['products'])) {
+            $firstProduct = reset($this->reportData['products']);
+            if (isset($firstProduct['unit_cost'])) {
+                $currency = $firstProduct['unit_cost']->getCurrency();
             }
         }
 
-        return Money::of($total, 'USD');
+        $total = Money::zero($currency);
+        foreach ($this->reportData['products'] as $product) {
+            if ($product['reorder_status'] === 'suggested') {
+                $lineTotal = $product['unit_cost']->multipliedBy($product['suggested_quantity'], \Brick\Math\RoundingMode::HALF_UP);
+                $total = $total->plus($lineTotal);
+            }
+        }
+
+        return $total;
     }
 
     protected function getHeaderActions(): array

@@ -3,6 +3,7 @@
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Pages;
 
 use BackedEnum;
+use Brick\Money\Money;
 use Carbon\Carbon;
 use Exception;
 use Filament\Actions\Action;
@@ -165,8 +166,8 @@ class InventoryValuationReport extends Page implements HasForms
         $products = [];
         foreach ($this->reportData['by_product'] as $productData) {
             $unitCost = $productData['quantity'] > 0
-                ? $productData['value']->getAmount()->toFloat() / $productData['quantity']
-                : 0;
+                ? $productData['value']->dividedBy($productData['quantity'], \Brick\Math\RoundingMode::HALF_UP)
+                : Money::zero($productData['value']->getCurrency());
 
             $products[] = [
                 'product_name' => $productData['product_name'],
