@@ -142,20 +142,17 @@ class BalanceSheetService
         });
 
         // Calculate total revenue (Income accounts have credit nature, so we negate)
-        $totalRevenue = Money::ofMinor(
-            -$balances->get(\Kezi\Accounting\Enums\Accounting\AccountType::Income->value, 0) - $balances->get(\Kezi\Accounting\Enums\Accounting\AccountType::OtherIncome->value, 0),
-            $company->currency->code
-        );
+        $totalRevenueMinor = -$balances->get(\Kezi\Accounting\Enums\Accounting\AccountType::Income->value, 0) - $balances->get(\Kezi\Accounting\Enums\Accounting\AccountType::OtherIncome->value, 0);
 
         // Calculate total expenses (Expense accounts have debit nature)
-        $totalExpenses = Money::ofMinor(
-            $balances->get(\Kezi\Accounting\Enums\Accounting\AccountType::Expense->value, 0) +
+        $totalExpensesMinor = $balances->get(\Kezi\Accounting\Enums\Accounting\AccountType::Expense->value, 0) +
                 $balances->get(\Kezi\Accounting\Enums\Accounting\AccountType::Depreciation->value, 0) +
-                $balances->get(\Kezi\Accounting\Enums\Accounting\AccountType::CostOfRevenue->value, 0),
+                $balances->get(\Kezi\Accounting\Enums\Accounting\AccountType::CostOfRevenue->value, 0);
+
+        return Money::ofMinor(
+            $totalRevenueMinor - $totalExpensesMinor,
             $company->currency->code
         );
-
-        return $totalRevenue->minus($totalExpenses);
     }
 
     /**
