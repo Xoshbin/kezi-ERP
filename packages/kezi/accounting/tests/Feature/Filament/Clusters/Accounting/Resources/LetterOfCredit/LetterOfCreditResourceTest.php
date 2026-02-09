@@ -125,6 +125,13 @@ it('uses selected currency for amount', function () {
         'is_active' => true,
     ]);
 
+    \Kezi\Foundation\Models\CurrencyRate::factory()->create([
+        'currency_id' => $usd->id,
+        'company_id' => $this->company->id,
+        'rate' => 1310,
+        'effective_date' => now()->subDay(),
+    ]);
+
     livewire(CreateLetterOfCredit::class)
         ->fillForm([
             'vendor_id' => $this->vendor->id,
@@ -140,4 +147,47 @@ it('uses selected currency for amount', function () {
     $lc = LetterOfCredit::latest()->first();
 
     expect($lc->amount->getCurrency()->getCurrencyCode())->toBe('USD');
+});
+
+it('converts amount to company currency', function () {
+    // Company currency is usually IQD in tests from setUp, let's make sure we have a rate for USD
+    $usd = Currency::factory()->create([
+        'code' => 'USD',
+        'is_active' => true,
+        'decimal_places' => 2,
+    ]);
+
+    // Create a rate: 1 USD = 1310 IQD (example)
+    // We need to check how rates are stored. Usually relative to base currency?
+    // Let's assume standard way: 1 Unit of Foreign = X Units of Base (or vice versa).
+    // Looking at CurrencyConverterService:
+    // convertToBaseCurrency uses getExchangeRate.
+    // CurrencyRate::getRateForDate($currency->id, $date, $company->id)
+    // "The rate represents how much of the base currency equals 1 unit of the foreign currency."
+    // So if Base is IQD, Foreign is USD. Rate should be 1310.
+
+    \Kezi\Foundation\Models\CurrencyRate::factory()->create([
+        'currency_id' => $usd->id,
+        'company_id' => $this->company->id,
+        'rate' => 1310, // 1 USD = 1310 IQD
+        'effective_date' => now()->subDay(),
+    ]);
+
+    livewire(CreateLetterOfCredit::class)
+        ->fillForm([
+            'vendor_id' => $this->vendor->id,
+            'currency_id' => $usd->id,
+            'amount' => 100, // 100 USD
+            'type' => LCType::Import->value,
+            'issue_date' => now()->format('Y-m-d'),
+            'expiry_date' => now()->addMonths(3)->format('Y-m-d'),
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $lc = LetterOfCredit::latest()->first();
+
+    // 100 USD * 1310 = 131000 IQD
+    expect($lc->amount_company_currency->getAmount()->toFloat())->toBe(131000.0)
+        ->and($lc->amount_company_currency->getCurrency()->getCurrencyCode())->toBe($this->company->currency->code);
 });
