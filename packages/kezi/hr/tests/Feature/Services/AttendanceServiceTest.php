@@ -107,4 +107,50 @@ describe('AttendanceService', function () {
 
         Carbon::setTestNow();
     });
+    it('marks attendance as holiday if date is a holiday', function () {
+        $service = app(AttendanceService::class);
+        /** @var \App\Models\Company $company */
+        $company = $this->company;
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+
+        // Create a holiday
+        \Kezi\HR\Models\Holiday::create([
+            'company_id' => $company->id,
+            'name' => 'Test Holiday',
+            'date' => '2023-10-10', // A Tuesday
+            'is_recurring' => false,
+        ]);
+
+        Carbon::setTestNow(Carbon::parse('2023-10-10 09:00:00'));
+
+        $attendance = $service->clockIn($employee);
+
+        expect($attendance->attendance_type)->toBe('holiday');
+        expect($attendance->status)->toBe('present'); // Still present if they clocked in
+
+        Carbon::setTestNow();
+    });
+
+    it('marks attendance as holiday if date is a recurring holiday', function () {
+        $service = app(AttendanceService::class);
+        /** @var \App\Models\Company $company */
+        $company = $this->company;
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+
+        // Create a recurring holiday for same day/month different year
+        \Kezi\HR\Models\Holiday::create([
+            'company_id' => $company->id,
+            'name' => 'Recurring Holiday',
+            'date' => '2020-10-10', // A past year
+            'is_recurring' => true,
+        ]);
+
+        Carbon::setTestNow(Carbon::parse('2023-10-10 09:00:00'));
+
+        $attendance = $service->clockIn($employee);
+
+        expect($attendance->attendance_type)->toBe('holiday');
+
+        Carbon::setTestNow();
+    });
 });
