@@ -387,22 +387,10 @@ class Quote extends Model
         }
 
         // Convert to company currency
-        $this->subtotal_company_currency = Money::of(
-            $subtotal->getAmount()->toFloat() * $exchangeRate,
-            $baseCurrencyCode
-        );
-        $this->tax_total_company_currency = Money::of(
-            $taxTotal->getAmount()->toFloat() * $exchangeRate,
-            $baseCurrencyCode
-        );
-        $this->discount_total_company_currency = Money::of(
-            $discountTotal->getAmount()->toFloat() * $exchangeRate,
-            $baseCurrencyCode
-        );
-        $this->total_company_currency = Money::of(
-            $this->total->getAmount()->toFloat() * $exchangeRate,
-            $baseCurrencyCode
-        );
+        $this->subtotal_company_currency = $subtotal->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+        $this->tax_total_company_currency = $taxTotal->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+        $this->discount_total_company_currency = $discountTotal->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+        $this->total_company_currency = $this->total->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
     }
 
     /**

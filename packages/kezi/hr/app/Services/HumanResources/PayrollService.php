@@ -3,6 +3,7 @@
 namespace Kezi\HR\Services\HumanResources;
 
 use App\Models\User;
+use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Carbon\Carbon;
@@ -163,7 +164,7 @@ class PayrollService
             if ($daysInPeriod < $daysInMonth) {
                 // Prorate the salary using RationalMoney to avoid rounding issues during calculation
                 $rationalMoney = $baseSalary->toRational();
-                $prorationFactor = $daysInPeriod / $daysInMonth;
+                $prorationFactor = BigDecimal::of($daysInPeriod)->dividedBy($daysInMonth, 12, RoundingMode::HALF_UP);
                 $proratedRational = $rationalMoney->multipliedBy($prorationFactor);
 
                 // Convert back to Money with proper rounding
@@ -196,11 +197,11 @@ class PayrollService
         }
 
         $overtimeRate = $regularHourlyRate->toRational()
-            ->multipliedBy(1.5)
+            ->multipliedBy('1.5')
             ->to($regularHourlyRate->getContext(), RoundingMode::HALF_UP);
 
         return $overtimeRate->toRational()
-            ->multipliedBy($overtimeHours)
+            ->multipliedBy(BigDecimal::of((string) $overtimeHours))
             ->to($overtimeRate->getContext(), RoundingMode::HALF_UP);
     }
 
