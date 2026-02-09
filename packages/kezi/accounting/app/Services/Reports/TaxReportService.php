@@ -94,7 +94,7 @@ class TaxReportService
             // Calculate net amount using the same logic for consistency
             // Net amount is derived from tax amount / rate
             if ($tax->rate > 0) {
-                $currentData['net_amount'] = $currentData['tax_amount']->dividedBy($tax->rate / 100, RoundingMode::HALF_UP);
+                $currentData['net_amount'] = $currentData['tax_amount']->multipliedBy(100)->dividedBy($tax->rate, RoundingMode::HALF_UP);
             }
 
             $taxData->put($taxKey, $currentData);

@@ -54,7 +54,10 @@ class FinancialStatsOverview extends BaseWidget
             $cashBalance = $this->calculateCashBalance($bsDto);
 
             // 6. Gross Profit Margin (if we have revenue)
-            $grossProfitMargin = $totalRevenue->isZero() ? 0 : ($totalRevenue->minus($plDto->totalExpenses))->getAmount()->toFloat() / $totalRevenue->getAmount()->toFloat() * 100;
+            $grossProfitMargin = $totalRevenue->isZero() ? 0 : (float) $totalRevenue->minus($plDto->totalExpenses)->getAmount()
+                ->dividedBy($totalRevenue->getAmount(), 4, \Brick\Math\RoundingMode::HALF_UP)
+                ->multipliedBy(100)
+                ->toFloat();
         } catch (Exception) {
             // Fallback to zero values if services fail
             return [

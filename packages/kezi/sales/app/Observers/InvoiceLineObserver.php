@@ -86,11 +86,7 @@ class InvoiceLineObserver
                 // Let's assume the user enters 0.15 for 15%.
 
                 $taxRate = $invoiceLine->tax->rate;
-                // If typical usage is 15.00 (%), we need /100.
-                // If typical usage is 0.15 (fraction), no division.
-                // Given "decimal(10,5)", 0.15000 is likely.
-
-                $invoiceLine->total_line_tax = $subtotal->multipliedBy($taxRate);
+                $invoiceLine->total_line_tax = $subtotal->multipliedBy($taxRate, \Brick\Math\RoundingMode::HALF_UP);
             } else {
                 $invoiceLine->total_line_tax = Money::zero($subtotal->getCurrency()->getCurrencyCode());
             }
@@ -136,12 +132,12 @@ class InvoiceLineObserver
         $exchangeRate = $invoice->exchange_rate_at_creation;
 
         // Convert total amounts using the stored exchange rate
-        $totalAmountCompanyCurrency = $invoice->total_amount->getAmount()->toFloat() * $exchangeRate;
-        $totalTaxCompanyCurrency = $invoice->total_tax->getAmount()->toFloat() * $exchangeRate;
+        $totalAmountCompanyCurrency = $invoice->total_amount->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+        $totalTaxCompanyCurrency = $invoice->total_tax->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
 
         $invoice->update([
-            'total_amount_company_currency' => Money::of($totalAmountCompanyCurrency, $companyCurrency->code),
-            'total_tax_company_currency' => Money::of($totalTaxCompanyCurrency, $companyCurrency->code),
+            'total_amount_company_currency' => $totalAmountCompanyCurrency,
+            'total_tax_company_currency' => $totalTaxCompanyCurrency,
         ]);
     }
 }
