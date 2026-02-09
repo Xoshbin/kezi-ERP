@@ -12,18 +12,23 @@ class AccountGroupSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
+    public function run(?Company $company = null): void
     {
-        $companyId = DB::table('companies')
-            ->where('name', 'Kezi Solutions')
-            ->value('id');
+        $companyId = $company?->id;
+
+        if (! $companyId) {
+            $companyId = DB::table('companies')
+                ->where('name', 'Kezi Solutions')
+                ->value('id');
+        }
 
         if (! $companyId) {
             $companyId = DB::table('companies')->value('id');
         }
 
         if (! $companyId) {
-            return; // Silently fail if no company exists yet
+            // Silently fail if no company exists yet, unless seeded via tests/console
+            return;
         }
 
         $groups = [

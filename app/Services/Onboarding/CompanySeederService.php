@@ -38,6 +38,11 @@ class CompanySeederService
     {
         // We provide the full ERP system with a comprehensive Chart of Accounts
         // regardless of industry selection to ensure all features are available.
+
+        // Seed Account Groups first so accounts can be assigned to them
+        $groupSeeder = new \Kezi\Accounting\Database\Seeders\AccountGroupSeeder;
+        $groupSeeder->run($company);
+
         $seeder = new \Kezi\Accounting\Database\Seeders\AccountSeeder;
         $seeder->run($company);
 
