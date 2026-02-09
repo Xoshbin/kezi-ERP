@@ -1,5 +1,6 @@
 <?php
 
+use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Kezi\Accounting\Actions\Assets\ComputeDepreciationScheduleAction;
 use Kezi\Accounting\Actions\Assets\CreateAssetAction;
@@ -33,8 +34,8 @@ test('asset can be created manually and confirmed', function () {
         company_id: $this->company->id,
         name: 'Test Asset',
         purchase_date: now(),
-        purchase_value: 100000,
-        salvage_value: 10000,
+        purchase_value: Money::of(100000, $currencyCode),
+        salvage_value: Money::of(10000, $currencyCode),
         useful_life_years: 5,
         depreciation_method: DepreciationMethod::StraightLine,
         asset_account_id: $this->assetAccount->id,
@@ -70,8 +71,8 @@ test('confirming asset generates initial journal entry', function () {
         company_id: $this->company->id,
         name: 'Test Asset',
         purchase_date: now(),
-        purchase_value: 100000,
-        salvage_value: 10000,
+        purchase_value: Money::of(100000, $currencyCode),
+        salvage_value: Money::of(10000, $currencyCode),
         useful_life_years: 5,
         depreciation_method: DepreciationMethod::StraightLine,
         asset_account_id: $this->assetAccount->id,
@@ -114,8 +115,8 @@ test('depreciation calculation generates correct draft entries', function () {
         company_id: $this->company->id,
         name: 'Test Asset',
         purchase_date: now(),
-        purchase_value: 120000,
-        salvage_value: 0,
+        purchase_value: Money::of(120000, $this->company->currency->code),
+        salvage_value: Money::of(0, $this->company->currency->code),
         useful_life_years: 10,
         depreciation_method: DepreciationMethod::StraightLine,
         asset_account_id: $this->assetAccount->id,
@@ -147,8 +148,8 @@ test('automated depreciation job posts correct journal entries periodically', fu
         company_id: $this->company->id,
         name: 'Test Asset',
         purchase_date: now()->subMonth(),
-        purchase_value: 120000,
-        salvage_value: 0,
+        purchase_value: Money::of(120000, $this->company->currency->code),
+        salvage_value: Money::of(0, $this->company->currency->code),
         useful_life_years: 10,
         depreciation_method: DepreciationMethod::StraightLine,
         asset_account_id: $this->assetAccount->id,
@@ -195,8 +196,8 @@ test('posted depreciation entries are immutable and hashed', function () {
         company_id: $this->company->id,
         name: 'Test Asset',
         purchase_date: now()->subMonth(),
-        purchase_value: 120000,
-        salvage_value: 0,
+        purchase_value: Money::of(120000, $this->company->currency->code),
+        salvage_value: Money::of(0, $this->company->currency->code),
         useful_life_years: 10,
         depreciation_method: DepreciationMethod::StraightLine,
         asset_account_id: $this->assetAccount->id,
@@ -231,8 +232,8 @@ test('asset modification recomputes future depreciation schedule', function () {
         company_id: $this->company->id,
         name: 'Test Asset',
         purchase_date: now()->subYears(2),
-        purchase_value: 120000, // Represents 120,000.000 IQD
-        salvage_value: 0,
+        purchase_value: Money::of(120000, $this->company->currency->code), // Represents 120,000.000 IQD
+        salvage_value: Money::of(0, $this->company->currency->code),
         useful_life_years: 10,
         depreciation_method: DepreciationMethod::StraightLine,
         asset_account_id: $this->assetAccount->id,
@@ -254,8 +255,8 @@ test('asset modification recomputes future depreciation schedule', function () {
     $updateAssetDTO = new UpdateAssetDTO(
         name: 'Test Asset Updated',
         purchase_date: $asset->purchase_date,
-        purchase_value: 240000, // New value: 240,000.000 IQD
-        salvage_value: 0,
+        purchase_value: Money::of(240000, $this->company->currency->code), // New value: 240,000.000 IQD
+        salvage_value: Money::of(0, $this->company->currency->code),
         useful_life_years: 10,
         depreciation_method: DepreciationMethod::StraightLine,
         asset_account_id: $asset->asset_account_id,
@@ -295,8 +296,8 @@ test('asset disposal correctly generates final journal entries', function () {
         company_id: $this->company->id,
         name: 'Test Asset',
         purchase_date: now()->subYears(5),
-        purchase_value: 120000,
-        salvage_value: 0,
+        purchase_value: Money::of(120000, $this->company->currency->code),
+        salvage_value: Money::of(0, $this->company->currency->code),
         useful_life_years: 10,
         depreciation_method: DepreciationMethod::StraightLine,
         asset_account_id: $this->assetAccount->id,
@@ -320,7 +321,7 @@ test('asset disposal correctly generates final journal entries', function () {
     // Act
     $disposeAssetDTO = new DisposeAssetDTO(
         disposal_date: now(),
-        disposal_value: 70000,
+        disposal_value: Money::of(70000, $this->company->currency->code),
         gain_loss_account_id: $this->company->default_gain_loss_account_id,
     );
     (app(DisposeAssetAction::class))->execute($asset->fresh(), $disposeAssetDTO, $this->user);

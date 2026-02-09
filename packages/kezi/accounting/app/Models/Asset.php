@@ -39,6 +39,8 @@ use Kezi\Foundation\Models\Currency;
  * @property int $useful_life_years
  * @property DepreciationMethod $depreciation_method
  * @property AssetStatus $status
+ * @property Carbon|null $disposal_date
+ * @property Money|null $disposal_price
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Account $accumulatedDepreciationAccount
@@ -131,6 +133,8 @@ class Asset extends Model
         'currency_id',
         'source_type',
         'source_id',
+        'disposal_date',
+        'disposal_price',
     ];
 
     /**
@@ -148,6 +152,8 @@ class Asset extends Model
         'depreciation_method' => DepreciationMethod::class,
         'prorata_temporis' => 'boolean',
         'declining_factor' => 'double',
+        'disposal_date' => 'date',
+        'disposal_price' => \Kezi\Foundation\Casts\BaseCurrencyMoneyCast::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

@@ -2,6 +2,7 @@
 
 namespace Kezi\Accounting\DataTransferObjects\Assets;
 
+use Brick\Money\Money;
 use Carbon\Carbon;
 use Kezi\Accounting\Enums\Assets\DepreciationMethod;
 
@@ -11,8 +12,8 @@ readonly class CreateAssetDTO
         public int $company_id,
         public string $name,
         public Carbon $purchase_date,
-        public int $purchase_value,
-        public int $salvage_value,
+        public Money $purchase_value,
+        public Money $salvage_value,
         public int $useful_life_years,
         public DepreciationMethod $depreciation_method,
         public int $asset_account_id,

@@ -85,14 +85,14 @@
                                                             {{ $line['contraAccount'] }}
                                                         </td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                                                            @if($line['debitAmount'] > 0)
+                                                            @if($line['hasDebit'])
                                                                 {{ $line['debit'] }}
                                                             @else
                                                                 <span class="text-gray-400">-</span>
                                                             @endif
                                                         </td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                                                            @if($line['creditAmount'] > 0)
+                                                            @if($line['hasCredit'])
                                                                 {{ $line['credit'] }}
                                                             @else
                                                                 <span class="text-gray-400">-</span>

@@ -117,8 +117,6 @@ class ViewTaxReport extends Page
                     'taxRate' => $line->taxRate,
                     'netAmount' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($line->netAmount),
                     'taxAmount' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($line->taxAmount),
-                    'netAmountRaw' => $line->netAmount->getAmount()->toFloat(),
-                    'taxAmountRaw' => $line->taxAmount->getAmount()->toFloat(),
                 ];
             })->toArray(),
             'inputTaxLines' => $report->inputTaxLines->map(function ($line) {
@@ -128,14 +126,12 @@ class ViewTaxReport extends Page
                     'taxRate' => $line->taxRate,
                     'netAmount' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($line->netAmount),
                     'taxAmount' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($line->taxAmount),
-                    'netAmountRaw' => $line->netAmount->getAmount()->toFloat(),
-                    'taxAmountRaw' => $line->taxAmount->getAmount()->toFloat(),
                 ];
             })->toArray(),
             'totalOutputTax' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalOutputTax),
             'totalInputTax' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalInputTax),
             'netTaxPayable' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($report->netTaxPayable),
-            'netTaxPayableRaw' => $report->netTaxPayable->getAmount()->toFloat(),
+            'isRefundable' => $report->netTaxPayable->isNegative(),
             'companyName' => $company->name,
         ];
 

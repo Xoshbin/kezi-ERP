@@ -103,11 +103,11 @@ test('generates iraq vat return correctly', function () {
     expect($report['boxes'])->not->toBeEmpty();
 
     // Verify Net Sales (1000) - Box 1
-    // Box 1 value is float
-    expect($report['boxes']['1']['value'])->toBe(1000.0);
+    // Box 1 value is string representation of Money
+    expect($report['boxes']['1']['value'])->toBe((string) \Brick\Money\Money::of(1000, 'IQD'));
 
     // Verify Tax Output (150) - Box 2
-    expect($report['boxes']['2']['value'])->toBe(150.0);
+    expect($report['boxes']['2']['value'])->toBe((string) \Brick\Money\Money::of(150, 'IQD'));
 
     // Initial check done.
 
@@ -152,15 +152,15 @@ test('generates iraq vat return correctly', function () {
     $report = $generator->generate($company, $start, $end);
 
     // Check Sales unchanged
-    expect($report['boxes']['1']['value'])->toBe(1000.0);
-    expect($report['boxes']['2']['value'])->toBe(150.0);
+    expect($report['boxes']['1']['value'])->toBe((string) \Brick\Money\Money::of(1000, 'IQD'));
+    expect($report['boxes']['2']['value'])->toBe((string) \Brick\Money\Money::of(150, 'IQD'));
 
     // Check Purchases
     // Box 3 Net Purchases: 500
-    expect($report['boxes']['3']['value'])->toBe(500.0);
+    expect($report['boxes']['3']['value'])->toBe((string) \Brick\Money\Money::of(500, 'IQD'));
     // Box 4 Tax Input: 75
-    expect($report['boxes']['4']['value'])->toBe(75.0);
+    expect($report['boxes']['4']['value'])->toBe((string) \Brick\Money\Money::of(75, 'IQD'));
 
     // Net Payable: 150 - 75 = 75
-    expect($report['boxes']['5']['value'])->toBe(75.0);
+    expect($report['boxes']['5']['value'])->toBe((string) \Brick\Money\Money::of(75, 'IQD'));
 });

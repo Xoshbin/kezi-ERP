@@ -115,13 +115,12 @@ class ViewTrialBalance extends Page
                 'accountType' => $line->accountType->value,
                 'debit' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($line->debit),
                 'credit' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($line->credit),
-                'debitAmount' => $line->debit->getAmount()->toFloat(),
-                'creditAmount' => $line->credit->getAmount()->toFloat(),
+                'hasDebit' => $line->debit->isPositive(),
+                'hasCredit' => $line->credit->isPositive(),
             ])->toArray(),
             'totalDebit' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalDebit),
             'totalCredit' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalCredit),
-            'totalDebitAmount' => $report->totalDebit->getAmount()->toFloat(),
-            'totalCreditAmount' => $report->totalCredit->getAmount()->toFloat(),
+            'difference' => \Kezi\Foundation\Support\NumberFormatter::formatMoneyTo($report->totalDebit->minus($report->totalCredit)->abs()),
             'isBalanced' => $report->isBalanced,
         ];
     }

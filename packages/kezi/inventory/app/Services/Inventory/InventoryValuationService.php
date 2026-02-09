@@ -389,6 +389,7 @@ class InventoryValuationService
             $totalCOGS = $totalCOGS->plus($layerCOGS);
 
             // Update the cost layer
+            /** @var InventoryCostLayer $layer */
             $layer->remaining_quantity -= $quantityToConsume;
             $layer->save();
 
@@ -763,7 +764,7 @@ class InventoryValuationService
             ->where('journal_entry_id', $journalEntry->id)
             ->first();
 
-        if ($existingValuation) {
+        if ($existingValuation instanceof StockMoveValuation) {
             // Valuation record already exists, return it instead of creating a duplicate
             return $existingValuation;
         }
