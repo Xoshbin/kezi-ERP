@@ -31,6 +31,7 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\JournalEntries\Pages\
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\Journal;
 use Kezi\Accounting\Models\JournalEntry;
+use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
@@ -113,17 +114,9 @@ class JournalEntryResource extends Resource
                         ->createOptionModalHeading(__('accounting::common.modal_title_create_currency'))
                         ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
                         ->columnSpan(2),
-                    TextInput::make('exchange_rate')
-                        ->label(__('accounting::journal_entry.exchange_rate'))
-                        ->numeric()
-                        ->default(1)
-                        ->required()
-                        ->live(onBlur: true)
+                    ExchangeRateInput::make('exchange_rate')
                         ->columnSpan(2)
-                        ->dehydrated()
-                        ->hidden(fn (Get $get) => ! $get('currency_id') ||
-                            ($get('currency_id') == (Filament::getTenant() instanceof Company ? Filament::getTenant()->currency_id : null))
-                        )
+                        ->required()
                         ->afterStateUpdated(function ($set, $get, $state) {
                             self::updateTotals($set, $get('lines') ?? [], (float) $state);
                         }),
