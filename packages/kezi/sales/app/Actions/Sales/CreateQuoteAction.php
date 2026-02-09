@@ -16,6 +16,7 @@ class CreateQuoteAction
     public function __construct(
         protected SequenceService $sequenceService,
         protected CreateQuoteLineAction $createLineAction,
+        protected \Kezi\Foundation\Services\ExchangeRateService $exchangeRateService,
     ) {}
 
     /**
@@ -61,6 +62,17 @@ class CreateQuoteAction
             $quote->refresh();
             $quote->calculateTotals();
             $quote->save();
+
+            // Persist the exchange rate to the central table if it's a foreign currency transaction
+            if ($quote->currency_id !== $quote->company->currency_id && $quote->exchange_rate) {
+                $this->exchangeRateService->storeRate(
+                    $quote->currency,
+                    $quote->exchange_rate,
+                    $quote->quote_date,
+                    'transaction',
+                    $quote->company_id
+                );
+            }
 
             return $quote;
         });

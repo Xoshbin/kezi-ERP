@@ -25,11 +25,13 @@ beforeEach(function () {
     $this->lockDateService = Mockery::mock(LockDateService::class);
     $this->sequenceService = Mockery::mock(SequenceService::class);
     $this->budgetControlService = Mockery::mock(BudgetControlService::class);
+    $this->exchangeRateService = Mockery::mock(\Kezi\Foundation\Services\ExchangeRateService::class);
 
     $this->service = new PurchaseOrderService(
         $this->lockDateService,
         $this->sequenceService,
-        $this->budgetControlService
+        $this->budgetControlService,
+        $this->exchangeRateService
     );
 });
 
