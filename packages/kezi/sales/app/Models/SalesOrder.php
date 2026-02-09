@@ -4,6 +4,7 @@ namespace Kezi\Sales\Models;
 
 use App\Models\Company;
 use App\Models\User;
+use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Collection;
@@ -227,17 +228,11 @@ class SalesOrder extends Model
         }
 
         // Convert to company currency
-        $totalAmountCompany = Money::of(
-            $totalAmount->getAmount()->toFloat() * $exchangeRate,
-            $baseCurrencyCode
-        );
-        $totalTaxCompany = Money::of(
-            $totalTax->getAmount()->toFloat() * $exchangeRate,
-            $baseCurrencyCode
-        );
+        $totalAmountCompany = $totalAmount->multipliedBy($exchangeRate, RoundingMode::HALF_UP);
+        $totalTaxCompany = $totalTax->multipliedBy($exchangeRate, RoundingMode::HALF_UP);
 
-        $this->total_amount_company_currency = $totalAmountCompany;
-        $this->total_tax_company_currency = $totalTaxCompany;
+        $this->total_amount_company_currency = Money::of($totalAmountCompany->getAmount(), $baseCurrencyCode);
+        $this->total_tax_company_currency = Money::of($totalTaxCompany->getAmount(), $baseCurrencyCode);
     }
 
     /**
