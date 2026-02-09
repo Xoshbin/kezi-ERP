@@ -27,7 +27,12 @@ class CreateLetterOfCredit extends CreateRecord
             purchase_order_id: $data['purchase_order_id'] ?? null,
             created_by_user_id: $user->id,
             amount: \Brick\Money\Money::of($data['amount'], \Kezi\Foundation\Models\Currency::find($data['currency_id'])->code),
-            amount_company_currency: \Brick\Money\Money::of($data['amount'], $company->currency->code), // TODO: Handle exchange rate conversion
+            amount_company_currency: app(\Kezi\Foundation\Services\CurrencyConverterService::class)->convert(
+                \Brick\Money\Money::of($data['amount'], \Kezi\Foundation\Models\Currency::find($data['currency_id'])->code),
+                $company->currency,
+                $data['issue_date'],
+                $company
+            ),
             issue_date: \Illuminate\Support\Carbon::parse($data['issue_date']),
             expiry_date: \Illuminate\Support\Carbon::parse($data['expiry_date']),
             shipment_date: isset($data['shipment_date']) ? \Illuminate\Support\Carbon::parse($data['shipment_date']) : null,
