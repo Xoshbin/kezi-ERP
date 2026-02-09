@@ -126,7 +126,7 @@ class EmployeeService
             throw new Exception('Only terminated employees can be reactivated.');
         }
 
-        DB::transaction(function () use ($employee) {
+        DB::transaction(function () use ($employee, $reactivationDate, $user) {
             $employee->update([
                 'employment_status' => 'active',
                 'termination_date' => null,
@@ -134,7 +134,17 @@ class EmployeeService
             ]);
 
             // TODO: Create new employment contract if needed
-            // TODO: Create audit log entry for reactivation
+            AuditLog::create([
+                'user_id' => $user->id,
+                'company_id' => $employee->company_id,
+                'event_type' => 'employee_reactivated',
+                'auditable_type' => get_class($employee),
+                'auditable_id' => $employee->getKey(),
+                'old_values' => ['employment_status' => 'terminated'],
+                'new_values' => ['employment_status' => 'active'],
+                'description' => "Reactivated on {$reactivationDate}",
+                'ip_address' => request()->ip(),
+            ]);
         });
     }
 
