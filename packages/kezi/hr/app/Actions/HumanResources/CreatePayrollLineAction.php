@@ -28,9 +28,12 @@ class CreatePayrollLineAction
         // Calculate company currency amount if needed
         $amountCompanyCurrency = null;
         if ($payroll->currency_id !== $payroll->company->currency_id) {
-            // TODO: Implement currency conversion using CurrencyConverterService
-            // For now, set to same amount
-            $amountCompanyCurrency = $amount;
+            $amountCompanyCurrency = app(\Kezi\Foundation\Services\CurrencyConverterService::class)->convert(
+                $amount,
+                $payroll->company->currency,
+                $payroll->pay_date ?? $payroll->created_at ?? now(),
+                $payroll->company
+            );
         }
 
         return PayrollLine::create([
