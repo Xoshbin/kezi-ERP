@@ -155,14 +155,35 @@ class EmployeeService
     {
         Gate::forUser($user)->authorize('update', $employee);
 
-        DB::transaction(function () use ($employee, $newDepartmentId, $newPositionId, $newManagerId) {
+        $oldValues = [
+            'department_id' => $employee->department_id,
+            'position_id' => $employee->position_id,
+            'manager_id' => $employee->manager_id,
+        ];
+
+        DB::transaction(function () use ($employee, $newDepartmentId, $newPositionId, $newManagerId, $effectiveDate, $user, $oldValues) {
             $employee->update([
                 'department_id' => $newDepartmentId ?? $employee->department_id,
                 'position_id' => $newPositionId ?? $employee->position_id,
                 'manager_id' => $newManagerId ?? $employee->manager_id,
             ]);
 
-            // TODO: Create audit log entry for transfer
+            AuditLog::create([
+                'user_id' => $user->id,
+                'company_id' => $employee->company_id,
+                'event_type' => 'employee_transferred',
+                'auditable_type' => get_class($employee),
+                'auditable_id' => $employee->getKey(),
+                'old_values' => $oldValues,
+                'new_values' => [
+                    'department_id' => $employee->department_id,
+                    'position_id' => $employee->position_id,
+                    'manager_id' => $employee->manager_id,
+                ],
+                'description' => "Transferred effective {$effectiveDate}",
+                'ip_address' => request()->ip(),
+            ]);
+
             // TODO: Handle contract updates if needed
         });
     }
