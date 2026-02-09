@@ -29,4 +29,9 @@ return [
     'bank_charges' => 'Bank Charges',
     'lc_utilizations' => 'LC Utilizations',
     'upcoming_expirations' => 'LCs Expiring in Next 30 Days',
+    'utilization_created' => 'Utilization created successfully',
+    'utilization_date' => 'Utilization Date',
+    'utilize_lc' => 'Utilize LC',
+    'utilize_lc_against_bill' => 'Utilize LC against Bill',
+    'utilized_amount' => 'Utilized Amount',
 ];

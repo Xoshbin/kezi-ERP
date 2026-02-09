@@ -16,4 +16,9 @@ return [
     'issue_date' => 'تاريخ الإصدار',
     'cancel' => 'إلغاء',
     'beneficiary_vendor' => 'المستفيد (المورد)',
+    'utilization_created' => 'تم إنشاء الاستخدام بنجاح',
+    'utilization_date' => 'تاريخ الاستخدام',
+    'utilize_lc' => 'استخدام LC',
+    'utilize_lc_against_bill' => 'استخدام LC مقابل فاتورة',
+    'utilized_amount' => 'المبلغ المستخدم',
 ];

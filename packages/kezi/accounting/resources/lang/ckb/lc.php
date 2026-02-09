@@ -29,4 +29,9 @@ return [
     'bank_charges' => 'خەرجییە بانکییەکان',
     'lc_utilizations' => 'بەکارهێنانەکانی LC',
     'upcoming_expirations' => 'ئەو LCیانەی لە ٣٠ ڕۆژی داهاتوودا بەسەردەچن',
+    'utilization_created' => 'بەکارهێنانی LC بە سەرکەوتوویی دروستکرا',
+    'utilization_date' => 'بەرواری بەکارهێنان',
+    'utilize_lc' => 'بەکارهێنانی LC',
+    'utilize_lc_against_bill' => 'بەکارهێنانی LC بەرامبەر پسوڵە',
+    'utilized_amount' => 'بڕی بەکارهاتوو',
 ];
