@@ -58,3 +58,31 @@ it('creates audit log when employee is reactivated', function () {
         'company_id' => $this->company->id,
     ]);
 });
+
+it('creates audit log when employee is transferred', function () {
+    // Arrange
+    $oldDepartment = \Kezi\HR\Models\Department::factory()->create(['company_id' => $this->company->id]);
+    $newDepartment = \Kezi\HR\Models\Department::factory()->create(['company_id' => $this->company->id]);
+
+    $employee = Employee::factory()->create([
+        'company_id' => $this->company->id,
+        'department_id' => $oldDepartment->id,
+        'position_id' => null,
+        'manager_id' => null,
+        'employment_status' => 'active',
+    ]);
+
+    $service = app(EmployeeService::class);
+    $effectiveDate = now()->toDateString();
+
+    // Act
+    $service->transferEmployee($employee, $newDepartment->id, null, null, $effectiveDate, $this->user);
+
+    // Assert
+    $this->assertDatabaseHas('audit_logs', [
+        'auditable_type' => Employee::class,
+        'auditable_id' => $employee->id,
+        'event_type' => 'employee_transferred',
+        'company_id' => $this->company->id,
+    ]);
+});
