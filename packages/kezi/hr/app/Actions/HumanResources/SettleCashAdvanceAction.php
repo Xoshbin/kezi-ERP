@@ -10,6 +10,7 @@ use Kezi\Accounting\Actions\Accounting\CreateJournalEntryAction;
 use Kezi\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Kezi\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Kezi\Accounting\Services\Accounting\LockDateService;
+use Kezi\Foundation\Models\AuditLog;
 use Kezi\HR\Enums\CashAdvanceStatus;
 use Kezi\HR\Enums\ExpenseReportStatus;
 use Kezi\HR\Models\CashAdvance;
@@ -280,6 +281,16 @@ class SettleCashAdvanceAction
             $cashAdvance->update([
                 'status' => CashAdvanceStatus::Settled,
                 'settled_at' => now(),
+            ]);
+
+            AuditLog::create([
+                'user_id' => $user->id,
+                'company_id' => $cashAdvance->company_id,
+                'event_type' => 'cash_advance_settled',
+                'auditable_type' => get_class($cashAdvance),
+                'auditable_id' => $cashAdvance->getKey(),
+                'description' => "Cash advance settled. Method: {$settlementMethod}",
+                'ip_address' => request()->ip(),
             ]);
         });
     }

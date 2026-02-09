@@ -28,6 +28,14 @@ describe('RejectCashAdvanceAction', function () {
 
         expect($cashAdvance->refresh())
             ->status->toBe(CashAdvanceStatus::Rejected);
+
+        $this->assertDatabaseHas('audit_logs', [
+            'auditable_type' => CashAdvance::class,
+            'auditable_id' => $cashAdvance->id,
+            'event_type' => 'cash_advance_rejected',
+            'description' => 'Budget constraints',
+            'user_id' => $this->approver->id,
+        ]);
     });
 
     it('appends rejection reason to notes', function () {

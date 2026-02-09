@@ -32,6 +32,14 @@ describe('ApproveCashAdvanceAction', function () {
             ->status->toBe(CashAdvanceStatus::Approved)
             ->approved_at->not->toBeNull()
             ->approved_by_user_id->toBe($this->approver->id);
+
+        $this->assertDatabaseHas('audit_logs', [
+            'auditable_type' => CashAdvance::class,
+            'auditable_id' => $cashAdvance->id,
+            'event_type' => 'cash_advance_approved',
+            'company_id' => $this->company->id,
+            'user_id' => $this->approver->id,
+        ]);
     });
 
     it('can approve with a lower amount than requested', function () {

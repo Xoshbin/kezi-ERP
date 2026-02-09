@@ -10,6 +10,7 @@ use Kezi\Accounting\Actions\Accounting\CreateJournalEntryAction;
 use Kezi\Accounting\DataTransferObjects\Accounting\CreateJournalEntryDTO;
 use Kezi\Accounting\DataTransferObjects\Accounting\CreateJournalEntryLineDTO;
 use Kezi\Accounting\Services\Accounting\LockDateService;
+use Kezi\Foundation\Models\AuditLog;
 use Kezi\HR\Enums\CashAdvanceStatus;
 use Kezi\HR\Models\CashAdvance;
 use Kezi\Payment\Actions\Payments\CreatePaymentAction;
@@ -133,6 +134,16 @@ class DisburseCashAdvanceAction
                 'disbursed_by_user_id' => $user->id,
                 'disbursement_journal_entry_id' => $journalEntry->id,
                 'payment_id' => $payment->id,
+            ]);
+
+            AuditLog::create([
+                'user_id' => $user->id,
+                'company_id' => $cashAdvance->company_id,
+                'event_type' => 'cash_advance_disbursed',
+                'auditable_type' => get_class($cashAdvance),
+                'auditable_id' => $cashAdvance->getKey(),
+                'description' => "Cash advance disbursed via payment #{$payment->payment_number}",
+                'ip_address' => request()->ip(),
             ]);
         });
     }

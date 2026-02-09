@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Kezi\Foundation\Models\AuditLog;
 use Kezi\HR\Actions\HumanResources\CreateLeaveRequestAction;
 use Kezi\HR\DataTransferObjects\HumanResources\CreateLeaveRequestDTO;
 use Kezi\HR\Models\Employee;
@@ -51,6 +52,16 @@ class LeaveManagementService
                 'approval_notes' => $notes,
             ]);
 
+            AuditLog::create([
+                'user_id' => $approver->id,
+                'company_id' => $leaveRequest->company_id,
+                'event_type' => 'leave_approved',
+                'auditable_type' => get_class($leaveRequest),
+                'auditable_id' => $leaveRequest->getKey(),
+                'description' => $notes ?? 'Leave request approved',
+                'ip_address' => request()->ip(),
+            ]);
+
             // Create attendance records for approved leave
             $this->createLeaveAttendanceRecords($leaveRequest);
         });
@@ -73,6 +84,16 @@ class LeaveManagementService
             'approved_at' => now(),
             'rejection_reason' => $reason,
         ]);
+
+        AuditLog::create([
+            'user_id' => $approver->id,
+            'company_id' => $leaveRequest->company_id,
+            'event_type' => 'leave_rejected',
+            'auditable_type' => get_class($leaveRequest),
+            'auditable_id' => $leaveRequest->getKey(),
+            'description' => $reason,
+            'ip_address' => request()->ip(),
+        ]);
     }
 
     /**
@@ -86,12 +107,22 @@ class LeaveManagementService
             throw new Exception('Only pending or approved leave requests can be cancelled.');
         }
 
-        DB::transaction(function () use ($leaveRequest, $reason) {
+        DB::transaction(function () use ($leaveRequest, $reason, $user) {
             $wasApproved = $leaveRequest->status === 'approved';
 
             $leaveRequest->update([
                 'status' => 'cancelled',
                 'rejection_reason' => $reason,
+            ]);
+
+            AuditLog::create([
+                'user_id' => $user->id,
+                'company_id' => $leaveRequest->company_id,
+                'event_type' => 'leave_cancelled',
+                'auditable_type' => get_class($leaveRequest),
+                'auditable_id' => $leaveRequest->getKey(),
+                'description' => $reason,
+                'ip_address' => request()->ip(),
             ]);
 
             // Remove attendance records if leave was already approved
