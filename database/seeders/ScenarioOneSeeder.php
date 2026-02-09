@@ -63,6 +63,7 @@ class ScenarioOneSeeder extends Seeder
         ]);
 
         (new UserSeeder)->run();
+        (new \Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder)->run();
 
         // Step 1.3: Create User (Soran)
         $user = DB::table('users')->updateOrInsert(
@@ -81,6 +82,23 @@ class ScenarioOneSeeder extends Seeder
         DB::table('company_user')->updateOrInsert(
             ['company_id' => $company, 'user_id' => $userId],
             ['created_at' => now(), 'updated_at' => now()]
+        );
+
+        // Ensure super_admin role exists for THIS company and assign to Soran
+        $role = \Spatie\Permission\Models\Role::firstOrCreate(
+            ['name' => 'super_admin', 'company_id' => $company],
+            ['guard_name' => 'web']
+        );
+        $role->givePermissionTo(\Spatie\Permission\Models\Permission::all());
+
+        DB::table('model_has_roles')->updateOrInsert(
+            [
+                'role_id' => $role->id,
+                'model_type' => 'App\Models\User',
+                'model_id' => $userId,
+                'company_id' => $company,
+            ],
+            []
         );
 
         $user = $userId; // Keep $user variable for later use
