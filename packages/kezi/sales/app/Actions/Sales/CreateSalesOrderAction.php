@@ -15,6 +15,7 @@ class CreateSalesOrderAction
     public function __construct(
         protected \Kezi\Accounting\Services\Accounting\LockDateService $lockDateService,
         protected CreateSalesOrderLineAction $createLineAction,
+        protected \Kezi\Foundation\Services\ExchangeRateService $exchangeRateService,
     ) {}
 
     /**
@@ -55,6 +56,17 @@ class CreateSalesOrderAction
             $salesOrder->refresh();
             $salesOrder->calculateTotals();
             $salesOrder->save();
+
+            // Persist the exchange rate to the central table if it's a foreign currency transaction
+            if ($salesOrder->currency_id !== $salesOrder->company->currency_id && $salesOrder->exchange_rate_at_creation) {
+                $this->exchangeRateService->storeRate(
+                    $salesOrder->currency,
+                    $salesOrder->exchange_rate_at_creation,
+                    $salesOrder->so_date,
+                    'transaction',
+                    $salesOrder->company_id
+                );
+            }
 
             return $salesOrder;
         });

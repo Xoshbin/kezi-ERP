@@ -243,6 +243,17 @@ class InvoiceService
             'total_amount_company_currency' => $totalAmountCompanyCurrency,
             'total_tax_company_currency' => $totalTaxCompanyCurrency,
         ]);
+
+        // Persist the exchange rate to the central table if it's a foreign currency transaction
+        if ($invoice->currency_id !== $invoice->company->currency_id && $exchangeRate) {
+            $this->exchangeRateService->storeRate(
+                $invoice->currency,
+                $exchangeRate,
+                Carbon::parse($invoice->invoice_date),
+                'transaction',
+                $invoice->company_id
+            );
+        }
     }
 
     /**

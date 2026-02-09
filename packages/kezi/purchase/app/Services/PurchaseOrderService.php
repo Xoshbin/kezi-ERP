@@ -20,6 +20,7 @@ class PurchaseOrderService
         protected \Kezi\Accounting\Services\Accounting\LockDateService $lockDateService,
         protected SequenceService $sequenceService,
         protected \Kezi\Accounting\Services\BudgetControlService $budgetControlService,
+        protected \Kezi\Foundation\Services\ExchangeRateService $exchangeRateService,
     ) {}
 
     /**
@@ -113,6 +114,17 @@ class PurchaseOrderService
 
             // Trigger event for listeners (e.g. creating stock picking)
             \Kezi\Purchase\Events\PurchaseOrderConfirmed::dispatch($purchaseOrder);
+
+            // Persist the exchange rate to the central table if it's a foreign currency transaction
+            if ($purchaseOrder->currency_id !== $purchaseOrder->company->currency_id && $purchaseOrder->exchange_rate_at_creation) {
+                $this->exchangeRateService->storeRate(
+                    $purchaseOrder->currency,
+                    $purchaseOrder->exchange_rate_at_creation,
+                    $purchaseOrder->po_date,
+                    'transaction',
+                    $purchaseOrder->company_id
+                );
+            }
 
             return $purchaseOrder;
         });
