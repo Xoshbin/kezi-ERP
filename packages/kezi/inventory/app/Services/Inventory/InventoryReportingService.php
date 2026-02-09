@@ -251,7 +251,7 @@ class InventoryReportingService
 
         // Calculate turnover metrics
         $inventoryTurnoverRatio = $averageInventoryValue->isZero() ? 0 :
-            $totalCogs->getAmount()->toFloat() / $averageInventoryValue->getAmount()->toFloat();
+            (float) $totalCogs->getAmount()->dividedBy($averageInventoryValue->getAmount(), 4, RoundingMode::HALF_UP)->toFloat();
 
         $daysSalesInventory = $inventoryTurnoverRatio > 0 ?
             365 / $inventoryTurnoverRatio : 0;

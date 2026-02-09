@@ -44,7 +44,7 @@ it('recomputes annuity payment after mid-term rate change', function () {
     $balance = Money::of('10000', $code);
     $r = 0.12 / 12;
     for ($i = 0; $i < 6; $i++) {
-        $interest = Money::of($balance->getAmount()->toFloat() * $r, $code, null, \Brick\Math\RoundingMode::HALF_UP);
+        $interest = $balance->multipliedBy($r, \Brick\Math\RoundingMode::HALF_UP);
         $principalComponent = $pmt12->minus($interest);
         $balance = $balance->minus($principalComponent);
     }

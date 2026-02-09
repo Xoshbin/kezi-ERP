@@ -2,7 +2,6 @@
 
 namespace Kezi\Purchase\Observers;
 
-use Brick\Money\Money;
 use Kezi\Purchase\Models\VendorBill;
 use Kezi\Purchase\Models\VendorBillLine;
 
@@ -87,12 +86,12 @@ class VendorBillLineObserver
         $exchangeRate = $vendorBill->exchange_rate_at_creation;
 
         // Convert total amounts using the stored exchange rate
-        $totalAmountCompanyCurrency = $vendorBill->total_amount->getAmount()->toFloat() * $exchangeRate;
-        $totalTaxCompanyCurrency = $vendorBill->total_tax->getAmount()->toFloat() * $exchangeRate;
+        $totalAmountCompanyCurrency = $vendorBill->total_amount->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+        $totalTaxCompanyCurrency = $vendorBill->total_tax->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
 
         $vendorBill->update([
-            'total_amount_company_currency' => Money::of($totalAmountCompanyCurrency, $companyCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP),
-            'total_tax_company_currency' => Money::of($totalTaxCompanyCurrency, $companyCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP),
+            'total_amount_company_currency' => $totalAmountCompanyCurrency,
+            'total_tax_company_currency' => $totalTaxCompanyCurrency,
         ]);
     }
 }

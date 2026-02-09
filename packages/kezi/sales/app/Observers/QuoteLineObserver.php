@@ -93,7 +93,7 @@ class QuoteLineObserver
 
         // Calculate discount
         $discountPercentage = (float) ($line->discount_percentage ?? 0);
-        $discountAmount = $grossAmount->multipliedBy($discountPercentage / 100, \Brick\Math\RoundingMode::HALF_UP);
+        $discountAmount = $grossAmount->multipliedBy($discountPercentage)->dividedBy(100, \Brick\Math\RoundingMode::HALF_UP);
         $line->discount_amount = $discountAmount;
 
         // Subtotal after discount
@@ -104,7 +104,7 @@ class QuoteLineObserver
         $taxAmount = Money::of(0, $currency->code);
         if ($line->tax_id && $line->tax) {
             $taxRate = (float) ($line->tax->rate ?? 0);
-            $taxAmount = $subtotal->multipliedBy($taxRate / 100, \Brick\Math\RoundingMode::HALF_UP);
+            $taxAmount = $subtotal->multipliedBy($taxRate)->dividedBy(100, \Brick\Math\RoundingMode::HALF_UP);
         }
         $line->tax_amount = $taxAmount;
 
@@ -117,36 +117,11 @@ class QuoteLineObserver
         $baseCurrencyCode = $company?->currency?->code ?? 'IQD';
 
         if ($currency->id !== $company?->currency_id) {
-            $line->unit_price_company_currency = Money::of(
-                $unitPrice->getAmount()->toFloat() * $exchangeRate,
-                $baseCurrencyCode,
-                null,
-                \Brick\Math\RoundingMode::HALF_UP
-            );
-            $line->discount_amount_company_currency = Money::of(
-                $discountAmount->getAmount()->toFloat() * $exchangeRate,
-                $baseCurrencyCode,
-                null,
-                \Brick\Math\RoundingMode::HALF_UP
-            );
-            $line->subtotal_company_currency = Money::of(
-                $subtotal->getAmount()->toFloat() * $exchangeRate,
-                $baseCurrencyCode,
-                null,
-                \Brick\Math\RoundingMode::HALF_UP
-            );
-            $line->tax_amount_company_currency = Money::of(
-                $taxAmount->getAmount()->toFloat() * $exchangeRate,
-                $baseCurrencyCode,
-                null,
-                \Brick\Math\RoundingMode::HALF_UP
-            );
-            $line->total_company_currency = Money::of(
-                $line->total->getAmount()->toFloat() * $exchangeRate,
-                $baseCurrencyCode,
-                null,
-                \Brick\Math\RoundingMode::HALF_UP
-            );
+            $line->unit_price_company_currency = $unitPrice->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+            $line->discount_amount_company_currency = $discountAmount->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+            $line->subtotal_company_currency = $subtotal->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+            $line->tax_amount_company_currency = $taxAmount->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+            $line->total_company_currency = $line->total->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
         }
     }
 }
