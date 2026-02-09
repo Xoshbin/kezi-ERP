@@ -7,6 +7,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Kezi\Foundation\Models\AuditLog;
 use Kezi\HR\Actions\HumanResources\CreateEmploymentContractAction;
 use Kezi\HR\DataTransferObjects\HumanResources\CreateEmployeeDTO;
 use Kezi\HR\DataTransferObjects\HumanResources\CreateEmploymentContractDTO;
@@ -80,7 +81,7 @@ class EmployeeService
     {
         Gate::forUser($user)->authorize('update', $employee);
 
-        DB::transaction(function () use ($employee, $terminationDate) {
+        DB::transaction(function () use ($employee, $terminationDate, $user, $reason) {
             // Update employee status
             $employee->update([
                 'employment_status' => 'terminated',
@@ -97,7 +98,18 @@ class EmployeeService
                 ]);
             }
 
-            // TODO: Create audit log entry for termination
+            AuditLog::create([
+                'user_id' => $user->id,
+                'company_id' => $employee->company_id,
+                'event_type' => 'employee_terminated',
+                'auditable_type' => get_class($employee),
+                'auditable_id' => $employee->getKey(),
+                'old_values' => ['employment_status' => 'active'],
+                'new_values' => ['employment_status' => 'terminated'],
+                'description' => $reason,
+                'ip_address' => request()->ip(),
+            ]);
+
             // TODO: Handle final payroll processing
             // TODO: Handle asset returns
         });
