@@ -2,11 +2,10 @@
 
 namespace Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\Schemas;
 
-use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
-
 use Filament\Forms;
 use Filament\Schemas\Schema;
 use Kezi\Accounting\Models\Tax;
+use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\Partner;
 use Kezi\Product\Models\Product;
