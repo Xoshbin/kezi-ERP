@@ -52,6 +52,7 @@ beforeEach(function () {
     ]);
 
     $this->service = app(TransferOrderService::class);
+    $this->stockQuantService = app(\Kezi\Inventory\Services\Inventory\StockQuantService::class);
 });
 
 it('creates a transfer order in draft state', function () {
@@ -119,6 +120,15 @@ it('ships transfer order and moves stock to transit', function () {
     );
 
     $transfer = $this->service->create($dto);
+
+    // Seed stock at source
+    $this->stockQuantService->adjust(
+        $this->company->id,
+        $this->product->id,
+        $this->sourceLocation->id,
+        100.0
+    );
+
     $this->service->confirm($transfer, $this->user);
 
     $shipDto = new ShipTransferDTO(
@@ -150,6 +160,15 @@ it('receives transfer order and moves stock to destination', function () {
     );
 
     $transfer = $this->service->create($dto);
+
+    // Seed stock at source
+    $this->stockQuantService->adjust(
+        $this->company->id,
+        $this->product->id,
+        $this->sourceLocation->id,
+        100.0
+    );
+
     $this->service->confirm($transfer, $this->user);
 
     $shipDto = new ShipTransferDTO(
@@ -188,6 +207,15 @@ it('cancels confirmed transfer order', function () {
     );
 
     $transfer = $this->service->create($dto);
+
+    // Seed stock at source
+    $this->stockQuantService->adjust(
+        $this->company->id,
+        $this->product->id,
+        $this->sourceLocation->id,
+        100.0
+    );
+
     $this->service->confirm($transfer, $this->user);
 
     $cancelledTransfer = $this->service->cancel($transfer->fresh(), $this->user);
@@ -237,6 +265,15 @@ it('prevents receiving when transfer is not shipped', function () {
     );
 
     $transfer = $this->service->create($dto);
+
+    // Seed stock at source
+    $this->stockQuantService->adjust(
+        $this->company->id,
+        $this->product->id,
+        $this->sourceLocation->id,
+        100.0
+    );
+
     $this->service->confirm($transfer, $this->user);
 
     $receiveDto = new ReceiveTransferDTO(
@@ -264,6 +301,15 @@ it('prevents cancelling shipped transfer', function () {
     );
 
     $transfer = $this->service->create($dto);
+
+    // Seed stock at source
+    $this->stockQuantService->adjust(
+        $this->company->id,
+        $this->product->id,
+        $this->sourceLocation->id,
+        100.0
+    );
+
     $this->service->confirm($transfer, $this->user);
 
     $shipDto = new ShipTransferDTO(

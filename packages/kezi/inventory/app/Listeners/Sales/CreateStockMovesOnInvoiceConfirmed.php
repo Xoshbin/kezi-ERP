@@ -4,6 +4,7 @@ namespace Kezi\Inventory\Listeners\Sales;
 
 use Illuminate\Support\Collection;
 use Kezi\Inventory\Actions\Inventory\CreateStockMoveAction;
+use Kezi\Inventory\Actions\Inventory\ValidateStockPickingAction;
 use Kezi\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use Kezi\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
 use Kezi\Inventory\Enums\Inventory\StockLocationType;
@@ -32,6 +33,7 @@ class CreateStockMovesOnInvoiceConfirmed
     public function __construct(
         protected CreateStockMoveAction $createStockMoveAction,
         protected StockReservationService $reservationService,
+        protected ValidateStockPickingAction $validateStockPickingAction,
     ) {}
 
     /**
@@ -71,21 +73,23 @@ class CreateStockMovesOnInvoiceConfirmed
         }
 
         // Create a Delivery picking to group all moves for this invoice
+        // Initially in Assigned state since we will validate it
         $picking = StockPicking::create([
             'company_id' => $invoice->company_id,
             'type' => StockPickingType::Delivery,
-            'state' => StockPickingState::Done,
+            'state' => StockPickingState::Assigned,
             'partner_id' => $invoice->customer_id,
             'scheduled_date' => $invoice->posted_at ?? now(),
-            'completed_at' => now(),
             'reference' => $invoice->invoice_number,
             'origin' => 'Invoice#'.$invoice->getKey(),
             'created_by_user_id' => $invoice->user_id ?? auth()->id() ?? 1,
         ]);
 
+        $movesData = [];
+
         foreach ($invoice->invoiceLines as $line) {
             if ($line->product && $line->product->type === ProductType::Storable) {
-                // Create move as Draft (status inherited from createStockMoveForLine change)
+                // Create move as Draft
                 $stockMove = $this->createStockMoveForLine(
                     $invoice,
                     $line,
@@ -96,14 +100,45 @@ class CreateStockMovesOnInvoiceConfirmed
                 // Attach to picking
                 $stockMove->update(['picking_id' => $picking->getKey()]);
 
-                // Reserve as much as possible from warehouse before confirming the move
-                $this->reservationService->reserveForMove($stockMove, $locations['warehouse']->id);
+                // Reserve as much as possible from warehouse
+                $reservedQty = $this->reservationService->reserveForMove($stockMove, $locations['warehouse']->id);
 
-                // Now confirm the move to Done. This will trigger the StockMoveObserver->updated loop,
-                // which dispatches StockMoveConfirmed, which triggers ProcessOutgoingStockAction.
-                $stockMove->update(['status' => StockMoveStatus::Done]);
+                // Prepare data for validation action
+                // We assume the "actual" quantity is what we could reserve
+                // ValidateStockPickingAction expects 'moves' array with 'move_id', 'product_line_id', 'planned_quantity', 'actual_quantity'
+
+                // Since CreateStockMoveAction creates a product line, we need to fetch it
+                $productLine = $stockMove->productLines()->first();
+
+                if ($productLine) {
+                    $movesData[] = [
+                        'move_id' => $stockMove->id,
+                        'product_line_id' => $productLine->id,
+                        'planned_quantity' => (float) $line->quantity,
+                        'actual_quantity' => $reservedQty, // The amount we actually have and are shipping now
+                    ];
+                }
 
                 $stockMoves->push($stockMove);
+            }
+        }
+
+        if (! empty($movesData)) {
+            // Check if we have ANY actual quantity to move
+            $hasActualQty = collect($movesData)->sum('actual_quantity') > 0;
+
+            if ($hasActualQty) {
+                // Validate only if we have something to move immediately
+                // This validates the partial amount and creates a backorder for the rest
+                $this->validateStockPickingAction->execute(
+                    $picking,
+                    ['moves' => $movesData],
+                    true // Create backorder = true
+                );
+            } else {
+                // If nothing was reserved, we leave the picking as Assigned (Confirmed)
+                // The user can manually check availability later
+                // We do NOT want to mark it as Done with 0 quantity
             }
         }
 
@@ -159,7 +194,7 @@ class CreateStockMovesOnInvoiceConfirmed
             company_id: $invoice->company_id,
             product_lines: [$productLineDto],
             move_type: StockMoveType::Outgoing,
-            status: StockMoveStatus::Draft,
+            status: StockMoveStatus::Draft, // Start as Draft, let ValidateStockPickingAction handle transition
             move_date: $invoice->posted_at ?? now(),
             reference: $invoice->invoice_number,
             description: "Stock delivery for invoice {$invoice->invoice_number}",

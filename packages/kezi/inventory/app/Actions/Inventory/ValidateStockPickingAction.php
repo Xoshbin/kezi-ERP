@@ -71,7 +71,6 @@ class ValidateStockPickingAction
                 // Mark Move as Done
                 if (! in_array($move->id, $processedMoveIds)) {
                     $move->update(['status' => StockMoveStatus::Done]);
-                    $this->reservationService->consumeForMove($move);
                     $processedMoveIds[] = $move->id;
                 }
             }
