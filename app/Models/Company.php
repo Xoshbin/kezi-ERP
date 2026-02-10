@@ -269,6 +269,7 @@ class Company extends Model
         'default_raw_materials_inventory_id',
         'default_manufacturing_journal_id',
         'default_wip_account_id',
+        'default_manufacturing_overhead_account_id',
         // Cheque Settings
         'default_pdc_receivable_account_id',
         'default_pdc_payable_account_id',
@@ -689,6 +690,14 @@ class Company extends Model
     public function defaultManufacturingJournal(): BelongsTo
     {
         return $this->belongsTo(Journal::class, 'default_manufacturing_journal_id');
+    }
+
+    /**
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
+     */
+    public function defaultManufacturingOverheadAccount(): BelongsTo
+    {
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_manufacturing_overhead_account_id');
     }
 
     /*

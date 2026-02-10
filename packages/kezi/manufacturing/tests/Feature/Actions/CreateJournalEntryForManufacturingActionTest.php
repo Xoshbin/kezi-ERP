@@ -43,6 +43,13 @@ beforeEach(function () {
         'type' => \Kezi\Accounting\Enums\Accounting\AccountType::CurrentAssets,
     ]);
 
+    $this->overheadAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'code' => '5010',
+        'name' => 'Manufacturing Overhead',
+        'type' => \Kezi\Accounting\Enums\Accounting\AccountType::Expense,
+    ]);
+
     // Setup Journal
     $this->manufacturingJournal = Journal::factory()->create([
         'company_id' => $this->company->id,
@@ -57,6 +64,7 @@ beforeEach(function () {
         'default_raw_materials_inventory_id' => $this->rmAccount->id,
         'default_finished_goods_inventory_id' => $this->fgAccount->id,
         'default_wip_account_id' => $this->wipAccount->id,
+        'default_manufacturing_overhead_account_id' => $this->overheadAccount->id,
     ]);
 
     $this->action = app(CreateJournalEntryForManufacturingAction::class);
@@ -207,4 +215,54 @@ it('handles multi-component BOM consumption accounting', function () {
     // WIP credit is aggregated
     expect($wipCredits)->toHaveCount(1)
         ->and($wipCredits->first()->credit->getAmount()->toFloat())->toBe(250.0);
+});
+
+it('includes manufacturing overhead in the journal entry when work orders exist', function () {
+    // Arrange
+    $mo = ManufacturingOrder::factory()->create([
+        'company_id' => $this->company->id,
+        'quantity_produced' => 1,
+    ]);
+
+    $mo->lines()->delete();
+    $mo->workOrders()->delete();
+
+    // 1 component costing 100
+    ManufacturingOrderLine::factory()->forOrder($mo)->create([
+        'quantity_consumed' => 1,
+        'unit_cost' => Money::of(100, $this->company->currency->code),
+    ]);
+
+    // 1 work order with 2 hours at 50/hour = 100 overhead
+    $workCenter = \Kezi\Manufacturing\Models\WorkCenter::factory()->create([
+        'company_id' => $this->company->id,
+        'hourly_cost' => Money::of(50, $this->company->currency->code),
+    ]);
+
+    \Kezi\Manufacturing\Models\WorkOrder::factory()->create([
+        'company_id' => $this->company->id,
+        'manufacturing_order_id' => $mo->id,
+        'work_center_id' => $workCenter->id,
+        'actual_duration' => 2.0,
+        'status' => \Kezi\Manufacturing\Enums\WorkOrderStatus::Done,
+    ]);
+
+    // Act
+    $journalEntry = $this->action->execute($mo, $this->user);
+
+    // Assert
+    // Total Production Cost = 100 (components) + 100 (overhead) = 200
+    // Lines: 1 FG (Debit 200), 1 WIP (Credit 100), 1 Overhead (Credit 100)
+    expect($journalEntry->lines)->toHaveCount(3);
+
+    $fgDebit = $journalEntry->lines()->where('account_id', $this->fgAccount->id)->first();
+    expect($fgDebit->debit->getAmount()->toFloat())->toBe(200.0);
+
+    $wipCredit = $journalEntry->lines()->where('account_id', $this->wipAccount->id)->first();
+    expect($wipCredit->credit->getAmount()->toFloat())->toBe(100.0)
+        ->and($wipCredit->description)->toContain('WIP Clearance (Components)');
+
+    $overheadCredit = $journalEntry->lines()->where('account_id', $this->overheadAccount->id)->first();
+    expect($overheadCredit->credit->getAmount()->toFloat())->toBe(100.0)
+        ->and($overheadCredit->description)->toContain('Manufacturing Overhead applied');
 });
