@@ -336,6 +336,7 @@ class VendorBill extends Model
     public function payments(): BelongsToMany
     {
         return $this->belongsToMany(Payment::class, 'payment_document_links', 'vendor_bill_id', 'payment_id')
+            ->using(PaymentDocumentLink::class)
             ->withPivot('amount_applied');
     }
 

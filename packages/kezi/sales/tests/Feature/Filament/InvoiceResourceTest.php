@@ -150,65 +150,88 @@ it('can confirm an invoice', function () {
     expect($invoice->status)->toBe(InvoiceStatus::Posted);
 });
 
-// TODO:: In future if you pland to add back the reset button just enable the test below and enable the action button in the Invoice resource
-/*
- * Temprarily disable reset button since we are not sure about this feature wheter it's good or no
- * the feature is woking and passing tests */
-// it('can reset an invoice to draft', function () {
-//     // Create accounts for the journal entry
-//     $receivableAccount = \Kezi\Sales\Models\Account::factory()->create([
-//         'company_id' => $this->company->id,
-//         'type' => 'receivable',
-//         'name' => 'Accounts Receivable',
-//     ]);
+it('can reset an invoice to draft', function () {
+    // Create accounts for the journal entry
+    $receivableAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => 'receivable',
+        'name' => 'Accounts Receivable',
+    ]);
 
-//     $salesAccount = \Kezi\Sales\Models\Account::factory()->create([
-//         'company_id' => $this->company->id,
-//         'type' => 'income',
-//         'name' => 'Sales Revenue',
-//     ]);
+    $salesAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => 'income',
+        'name' => 'Sales Revenue',
+    ]);
 
-//     // Create a proper journal entry with lines for the invoice
-//     $journalEntry = \Kezi\Sales\Models\JournalEntry::factory()->create([
-//         'company_id' => $this->company->id,
-//         'is_posted' => true,
-//     ]);
+    // Create a proper journal entry with lines for the invoice
+    $journalEntry = \Kezi\Accounting\Models\JournalEntry::factory()->create([
+        'company_id' => $this->company->id,
+        'is_posted' => true,
+    ]);
 
-//     // Add lines to the journal entry
-//     $journalEntry->lines()->create([
-//         'account_id' => $receivableAccount->id,
-//         'debit' => \Brick\Money\Money::of(100, $this->company->currency->code),
-//         'credit' => \Brick\Money\Money::of(0, $this->company->currency->code),
-//         'description' => 'Test line',
-//     ]);
+    // Add lines to the journal entry
+    $journalEntry->lines()->create([
+        'company_id' => $this->company->id,
+        'account_id' => $receivableAccount->id,
+        'debit' => Money::of(100, $this->company->currency->code),
+        'credit' => Money::of(0, $this->company->currency->code),
+        'description' => 'Test line',
+    ]);
 
-//     $journalEntry->lines()->create([
-//         'account_id' => $salesAccount->id,
-//         'debit' => \Brick\Money\Money::of(0, $this->company->currency->code),
-//         'credit' => \Brick\Money\Money::of(100, $this->company->currency->code),
-//         'description' => 'Test line 2',
-//     ]);
+    $journalEntry->lines()->create([
+        'company_id' => $this->company->id,
+        'account_id' => $salesAccount->id,
+        'debit' => Money::of(0, $this->company->currency->code),
+        'credit' => Money::of(100, $this->company->currency->code),
+        'description' => 'Test line 2',
+    ]);
 
-//     $invoice = Invoice::factory()->withLines(1)->create([
-//         'company_id' => $this->company->id,
-//         'status' => InvoiceStatus::Posted,
-//         'posted_at' => now(),
-//         'invoice_number' => 'INV-00001',
-//         'journal_entry_id' => $journalEntry->id,
-//     ]);
+    $invoice = Invoice::factory()->withLines(1)->create([
+        'company_id' => $this->company->id,
+        'status' => InvoiceStatus::Posted,
+        'posted_at' => now(),
+        'invoice_number' => 'INV-00001',
+        'journal_entry_id' => $journalEntry->id,
+    ]);
 
-//     $response = livewire(InvoiceResource\Pages\EditInvoice::class, [
-//         'record' => $invoice->getRouteKey(),
-//     ])
-//         ->callAction('resetToDraft', data: [
-//             'reason' => 'Test reason',
-//         ]);
+    livewire(EditInvoice::class, [
+        'record' => $invoice->getRouteKey(),
+    ])
+        ->callAction('resetToDraft', data: [
+            'reason' => 'Test reason',
+        ])
+        ->assertHasNoErrors()
+        ->assertNotified(__('accounting::invoice.notification.reset_success'));
 
-//     $response->assertHasNoErrors();
+    $invoice->refresh();
+    expect($invoice->status)->toBe(InvoiceStatus::Draft);
+    expect($invoice->invoice_number)->toBeNull();
+    expect($invoice->journal_entry_id)->toBeNull();
+    expect($invoice->reset_to_draft_log)->not->toBeEmpty();
+});
 
-//     $invoice->refresh();
-//     expect($invoice->status)->toBe(InvoiceStatus::Draft);
-// });
+it('prevents resetting an invoice with linked payments to draft', function () {
+    $invoice = Invoice::factory()->withLines(1)->create([
+        'company_id' => $this->company->id,
+        'status' => InvoiceStatus::Posted,
+        'posted_at' => now(),
+        'invoice_number' => 'INV-00001',
+    ]);
+
+    // Link a payment
+    $payment = \Kezi\Payment\Models\Payment::factory()->create([
+        'company_id' => $this->company->id,
+        'status' => \Kezi\Payment\Enums\Payments\PaymentStatus::Confirmed,
+    ]);
+
+    $invoice->payments()->attach($payment, ['amount_applied' => $invoice->total_amount, 'company_id' => $this->company->id]);
+
+    livewire(EditInvoice::class, [
+        'record' => $invoice->getRouteKey(),
+    ])
+        ->assertActionHidden('resetToDraft');
+});
 
 describe('Invoice Confirmation Business Rules', function () {
     it('prevents confirming invoice without line items via UI', function () {
@@ -360,4 +383,83 @@ it('can register payment for a posted invoice', function () {
     $this->assertDatabaseHas('payment_document_links', [
         'invoice_id' => $invoice->id,
     ]);
+});
+
+it('can reset an invoice to draft from the list page', function () {
+    // Create accounts for the journal entry
+    $receivableAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => 'receivable',
+        'name' => 'Accounts Receivable',
+    ]);
+
+    $salesAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => 'income',
+        'name' => 'Sales Revenue',
+    ]);
+
+    // Create a proper journal entry with lines for the invoice
+    $journalEntry = \Kezi\Accounting\Models\JournalEntry::factory()->create([
+        'company_id' => $this->company->id,
+        'is_posted' => true,
+    ]);
+
+    // Add lines to the journal entry
+    $journalEntry->lines()->create([
+        'company_id' => $this->company->id,
+        'account_id' => $receivableAccount->id,
+        'debit' => Money::of(100, $this->company->currency->code),
+        'credit' => Money::of(0, $this->company->currency->code),
+        'description' => 'Test line',
+    ]);
+
+    $journalEntry->lines()->create([
+        'company_id' => $this->company->id,
+        'account_id' => $salesAccount->id,
+        'debit' => Money::of(0, $this->company->currency->code),
+        'credit' => Money::of(100, $this->company->currency->code),
+        'description' => 'Test line 2',
+    ]);
+
+    $invoice = Invoice::factory()->withLines(1)->create([
+        'company_id' => $this->company->id,
+        'status' => InvoiceStatus::Posted,
+        'posted_at' => now(),
+        'invoice_number' => 'INV-00001',
+        'journal_entry_id' => $journalEntry->id,
+    ]);
+
+    livewire(\Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ListInvoices::class)
+        ->callTableAction('resetToDraft', $invoice, data: [
+            'reason' => 'Test reason from list',
+        ])
+        ->assertHasNoTableActionErrors()
+        ->assertNotified(__('accounting::invoice.notification.reset_success'));
+
+    $invoice->refresh();
+    expect($invoice->status)->toBe(InvoiceStatus::Draft);
+    expect($invoice->invoice_number)->toBeNull();
+    expect($invoice->journal_entry_id)->toBeNull();
+    expect($invoice->reset_to_draft_log)->not->toBeEmpty();
+});
+
+it('prevents resetting an invoice with linked payments from the list page', function () {
+    $invoice = Invoice::factory()->withLines(1)->create([
+        'company_id' => $this->company->id,
+        'status' => InvoiceStatus::Posted,
+        'posted_at' => now(),
+        'invoice_number' => 'INV-00001',
+    ]);
+
+    // Link a payment
+    $payment = \Kezi\Payment\Models\Payment::factory()->create([
+        'company_id' => $this->company->id,
+        'status' => \Kezi\Payment\Enums\Payments\PaymentStatus::Confirmed,
+    ]);
+
+    $invoice->payments()->attach($payment, ['amount_applied' => $invoice->total_amount, 'company_id' => $this->company->id]);
+
+    livewire(\Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ListInvoices::class)
+        ->assertTableActionHidden('resetToDraft', $invoice);
 });

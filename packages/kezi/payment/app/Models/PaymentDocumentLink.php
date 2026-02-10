@@ -7,9 +7,9 @@ use Brick\Money\Money;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Carbon;
 use InvalidArgumentException;
 use Kezi\Foundation\Casts\DocumentCurrencyMoneyCast;
@@ -49,8 +49,12 @@ use Kezi\Sales\Models\Invoice;
  *
  * @mixin Eloquent
  */
-class PaymentDocumentLink extends Model
+class PaymentDocumentLink extends Pivot
 {
+    public $incrementing = true;
+
+    public $timestamps = true;
+
     /** @use HasFactory<\Kezi\Payment\Database\Factories\PaymentDocumentLinkFactory> */
     use HasFactory;
 
