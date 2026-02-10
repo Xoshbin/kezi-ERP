@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Kezi\Accounting\Enums\Accounting\AccountType;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\Journal;
+use Kezi\Inventory\Models\StockLocation;
 use Kezi\Manufacturing\DataTransferObjects\CreateManufacturingOrderDTO;
 use Kezi\Manufacturing\Enums\ManufacturingOrderStatus;
 use Kezi\Manufacturing\Models\BillOfMaterial;
@@ -52,6 +53,19 @@ beforeEach(function () {
         'name' => 'Manufacturing Journal',
         'type' => \Kezi\Accounting\Enums\Accounting\JournalType::Miscellaneous,
         'short_code' => 'MFG',
+    ]);
+
+    // 3. Setup Locations
+    $this->sourceLocation = StockLocation::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'WH/Stock',
+        'type' => \Kezi\Inventory\Enums\Inventory\StockLocationType::Internal,
+    ]);
+
+    $this->destinationLocation = StockLocation::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'Virtual/Production',
+        'type' => \Kezi\Inventory\Enums\Inventory\StockLocationType::Internal,
     ]);
 
     // Configure Company Defaults
@@ -103,8 +117,16 @@ test('consumption creates wip entries', function () {
         productId: $this->finishedProduct->id,
         quantityToProduce: 1,
         plannedStartDate: now(),
-        sourceLocationId: 1, // Mock locations
-        destinationLocationId: 2,
+        sourceLocationId: $this->sourceLocation->id,
+        destinationLocationId: $this->destinationLocation->id,
+    );
+
+    // Seed stock for component
+    app(\Kezi\Inventory\Services\Inventory\StockQuantService::class)->adjust(
+        $this->company->id,
+        $this->componentProduct->id,
+        $this->sourceLocation->id,
+        10.0 // Sufficient stock (needs 2)
     );
 
     $mo = $this->service->create($dto);
@@ -149,8 +171,16 @@ test('production clears wip entries', function () {
         productId: $this->finishedProduct->id,
         quantityToProduce: 1,
         plannedStartDate: now(),
-        sourceLocationId: 1,
-        destinationLocationId: 2,
+        sourceLocationId: $this->sourceLocation->id,
+        destinationLocationId: $this->destinationLocation->id,
+    );
+
+    // Seed stock for component
+    app(\Kezi\Inventory\Services\Inventory\StockQuantService::class)->adjust(
+        $this->company->id,
+        $this->componentProduct->id,
+        $this->sourceLocation->id,
+        10.0 // Sufficient stock (needs 2)
     );
 
     $mo = $this->service->create($dto);

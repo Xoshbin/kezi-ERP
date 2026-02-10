@@ -349,6 +349,7 @@ it('handles partial reservations and backorders correctly', function () {
     // Should create delivery picking (backorder functionality not yet implemented)
     $deliveryPicking = StockPicking::where('company_id', $this->company->id)
         ->where('type', StockPickingType::Delivery)
+        ->where('origin', 'not like', '%(Backorder)%')
         ->first();
 
     expect($deliveryPicking)->not->toBeNull();
@@ -357,7 +358,7 @@ it('handles partial reservations and backorders correctly', function () {
     // Move should have full requested quantity (10 units) but only 3 reserved/consumed
     $move = $deliveryPicking->stockMoves()->first();
     $productLine = $move->productLines()->first();
-    expect((float) $productLine->quantity)->toBe(10.0); // Full requested quantity
+    expect((float) $productLine->quantity)->toBe(3.0); // Actual moved quantity (available)
 
     // Only 3 units should be consumed from available stock
     $productLine = $move->productLines()->first();
@@ -370,5 +371,72 @@ it('handles partial reservations and backorders correctly', function () {
     expect($quant->quantity)->toBe(0.0);
     expect($quant->reserved_quantity)->toBe(0.0);
 
-    // TODO: Implement backorder functionality to create separate picking for remaining 7 units
+    // Verify Backorder Creation
+    $backorderPicking = StockPicking::where('company_id', $this->company->id)
+        ->where('type', StockPickingType::Delivery)
+        ->where('state', StockPickingState::Assigned)
+        ->first();
+
+    expect($backorderPicking)->not->toBeNull();
+    expect($backorderPicking->origin)->toContain('Backorder');
+
+    $backorderMove = $backorderPicking->stockMoves()->first();
+    expect($backorderMove)->not->toBeNull();
+    expect($backorderMove->status)->toBe(StockMoveStatus::Draft);
+
+    $backorderLine = $backorderMove->productLines()->first();
+    expect((float) $backorderLine->quantity)->toBe(7.0); // Remaining quantity (10 - 3)
+});
+
+it('does not validate picking when zero stock is available', function () {
+    $currentDate = Carbon::create(2025, 2, 15);
+    Carbon::setTestNow($currentDate);
+
+    // Ensure no stock exists for the product (new product)
+    $product = Product::factory()->for($this->company)->create([
+        'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
+    ]);
+
+    // Create sales order/invoice
+    $invoice = Invoice::factory()->for($this->company)->create([
+        'customer_id' => $this->customer->id,
+        'status' => 'draft',
+    ]);
+
+    $lineDto = new CreateInvoiceLineDTO(
+        description: 'No Stock Item',
+        quantity: 5,
+        unit_price: Money::of(200, $this->company->currency->code),
+        income_account_id: $product->income_account_id,
+        product_id: $product->id,
+        tax_id: null,
+    );
+
+    app(CreateInvoiceLineAction::class)->execute($invoice, $lineDto);
+    app(InvoiceService::class)->confirm($invoice->fresh(), $this->user);
+    $invoice->refresh();
+
+    // Retrieve the picking created
+    $picking = StockPicking::where('company_id', $this->company->id)
+        ->where('type', StockPickingType::Delivery)
+        ->where('reference', $invoice->invoice_number)
+        ->first();
+
+    expect($picking)->not->toBeNull();
+
+    // Crucial Assertion: State should be Assigned/Confirmed, NOT Done
+    expect($picking->state)->not->toBe(StockPickingState::Done);
+    expect($picking->state)->toBe(StockPickingState::Assigned); // Or Confirmed/Waiting
+
+    // Ensure NO backorder was created (because the original one serves as the "backorder" effectively)
+    $backorderCount = StockPicking::where('origin', 'like', '%(Backorder)%')->count();
+    expect($backorderCount)->toBe(0);
+
+    // Evaluate Moves
+    $move = $picking->stockMoves()->first();
+    expect($move)->not->toBeNull();
+    expect($move->status)->not->toBe(StockMoveStatus::Done);
+
+    $productLine = $move->productLines()->first();
+    expect((float) $productLine->quantity)->toBe(5.0); // Full quantity remains requested
 });

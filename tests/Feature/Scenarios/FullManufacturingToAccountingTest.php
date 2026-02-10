@@ -159,6 +159,21 @@ it('completes full manufacturing flow to accounting', function () {
     // 2. Create Manufacturing Order
     // ==========================================
 
+    // Seed current stock for components
+    app(\Kezi\Inventory\Services\Inventory\StockQuantService::class)->adjust(
+        $this->company->id,
+        $this->rawMaterial1->id,
+        $this->stockLocation->id,
+        100.0 // Sufficient for 10 units * 2 = 20
+    );
+
+    app(\Kezi\Inventory\Services\Inventory\StockQuantService::class)->adjust(
+        $this->company->id,
+        $this->rawMaterial2->id,
+        $this->stockLocation->id,
+        50.0 // Sufficient for 10 units * 1 = 10
+    );
+
     $moDto = new CreateManufacturingOrderDTO(
         companyId: $this->company->id,
         bomId: $bom->id,
