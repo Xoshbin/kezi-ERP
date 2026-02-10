@@ -14,6 +14,7 @@ class ListDeductionRules extends ListRecords
     {
         return [
             CreateAction::make(),
+            \Kezi\Foundation\Filament\Actions\DocsAction::make('deduction-rules'),
         ];
     }
 }

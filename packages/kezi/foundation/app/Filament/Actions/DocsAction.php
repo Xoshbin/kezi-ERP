@@ -66,6 +66,7 @@ class DocsAction
             'analytic-report' => 'how-to/analytic-report',
             'cheque-management' => 'how-to/cheque-management',
             'employee-management' => 'how-to/manage-employees',
+            'deduction-rules' => 'how-to/deduction-rules',
             'onboarding-your-first-employee' => 'tutorials/onboarding-your-first-employee',
             'employee-records' => 'explanation/employee-records',
             'employee-fields-and-statuses' => 'reference/employee-fields-and-statuses',

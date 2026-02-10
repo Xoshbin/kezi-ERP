@@ -15,4 +15,11 @@ class CreateDeductionRule extends CreateRecord
 
         return $data;
     }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            \Kezi\Foundation\Filament\Actions\DocsAction::make('deduction-rules'),
+        ];
+    }
 }
