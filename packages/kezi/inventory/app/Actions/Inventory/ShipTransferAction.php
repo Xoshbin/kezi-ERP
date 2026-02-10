@@ -27,6 +27,7 @@ class ShipTransferAction
 {
     public function __construct(
         private readonly StockMoveService $stockMoveService,
+        private readonly \Kezi\Inventory\Services\Inventory\StockReservationService $reservationService,
     ) {}
 
     public function execute(StockPicking $picking, ShipTransferDTO $dto, User $user): StockPicking
@@ -42,11 +43,11 @@ class ShipTransferAction
             foreach ($picking->stockMoves as $existingMove) {
                 foreach ($existingMove->productLines as $productLine) {
                     /** @var \Kezi\Inventory\Models\StockMoveProductLine $productLine */
-                    // Create the ship move (source -> transit)
+                    // 1. Create the ship move in Draft status (source -> transit)
                     $shipMoveDto = new CreateStockMoveDTO(
                         company_id: $picking->company_id,
                         move_type: StockMoveType::InternalTransfer,
-                        status: StockMoveStatus::Done,
+                        status: StockMoveStatus::Draft,
                         move_date: Carbon::now(),
                         created_by_user_id: $user->id,
                         product_lines: [
@@ -64,7 +65,17 @@ class ShipTransferAction
                         source_id: $picking->id,
                     );
 
-                    $this->stockMoveService->createMove($shipMoveDto);
+                    $shipMove = $this->stockMoveService->createMove($shipMoveDto);
+
+                    // 2. Transmit reservations from the existing move to the new ship move
+                    // This ensures ProcessInternalTransferAction (triggered by observer) will consume them.
+                    \Kezi\Inventory\Models\StockReservation::where('stock_move_id', $existingMove->id)
+                        ->where('product_id', $productLine->product_id)
+                        ->update(['stock_move_id' => $shipMove->id]);
+
+                    // 3. Confirm the ship move to 'Done' to trigger the observer and process quants
+                    // We must reload the shipMove to ensure it has its productLines and reservations correctly loaded
+                    $shipMove->fresh()->update(['status' => StockMoveStatus::Done]);
                 }
 
                 // Mark the original move as confirmed (waiting for receive step)

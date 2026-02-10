@@ -143,4 +143,9 @@ class StockMove extends Model
     {
         return \Kezi\Inventory\Database\Factories\StockMoveFactory::new();
     }
+
+    public function reservations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(StockReservation::class, 'stock_move_id');
+    }
 }
