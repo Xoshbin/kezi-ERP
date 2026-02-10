@@ -88,7 +88,7 @@ class PayrollService
                 health_insurance: $deductions['health_insurance'],
                 pension_contribution: $deductions['pension_contribution'],
                 loan_deduction: Money::of(0, $contract->currency->code),
-                other_deductions: Money::of(0, $contract->currency->code),
+                other_deductions: $deductions['other_deductions'],
                 regular_hours: $attendanceData['regular_hours'],
                 overtime_hours: $attendanceData['overtime_hours'],
                 payrollLines: $payrollLines,
@@ -211,29 +211,53 @@ class PayrollService
     /**
      * @return array<string, Money>
      */
+    /**
+     * @return array<string, mixed>
+     */
     private function calculateDeductions(Money $grossSalary, EmploymentContract $contract): array
     {
         $currency = $contract->currency->code;
+        $rules = \Kezi\HR\Models\DeductionRule::active()
+            ->where('company_id', $contract->company_id)
+            ->get();
 
-        // TODO: Implement proper tax calculation based on company's tax rules
-        // For now, using simple percentages with RationalMoney to avoid rounding issues
-        $incomeTax = $grossSalary->toRational()
-            ->multipliedBy('0.10')
-            ->to($grossSalary->getContext(), RoundingMode::HALF_UP); // 10% income tax
-        $socialSecurity = $grossSalary->toRational()
-            ->multipliedBy('0.05')
-            ->to($grossSalary->getContext(), RoundingMode::HALF_UP); // 5% social security
-        $healthInsurance = Money::of(50, $currency); // Fixed amount
-        $pensionContribution = $grossSalary->toRational()
-            ->multipliedBy('0.03')
-            ->to($grossSalary->getContext(), RoundingMode::HALF_UP); // 3% pension
-
-        return [
-            'income_tax' => $incomeTax,
-            'social_security' => $socialSecurity,
-            'health_insurance' => $healthInsurance,
-            'pension_contribution' => $pensionContribution,
+        $deductions = [
+            'income_tax' => Money::of(0, $currency),
+            'social_security' => Money::of(0, $currency),
+            'health_insurance' => Money::of(0, $currency),
+            'pension_contribution' => Money::of(0, $currency),
+            'other_deductions' => Money::of(0, $currency),
         ];
+
+        // Map rule codes to specific deduction keys
+        $codeMap = [
+            'income_tax' => 'income_tax',
+            'social_security' => 'social_security',
+            'health_insurance' => 'health_insurance',
+            'pension' => 'pension_contribution',
+        ];
+
+        foreach ($rules as $rule) {
+            $amount = match ($rule->type) {
+                'percentage' => $grossSalary->toRational()
+                    ->multipliedBy($rule->value)
+                    ->to($grossSalary->getContext(), RoundingMode::HALF_UP),
+                'fixed_amount' => Money::ofMinor($rule->amount, $rule->currency_code ?? $currency),
+            };
+
+            // Determine target key safely
+            $targetKey = $codeMap[$rule->code] ?? 'other_deductions';
+
+            // If mapping exists, replace/add to specific bucket
+            if (isset($codeMap[$rule->code])) {
+                $deductions[$targetKey] = $deductions[$targetKey]->plus($amount);
+            } else {
+                // For unknown codes, add to 'other_deductions'
+                $deductions['other_deductions'] = $deductions['other_deductions']->plus($amount);
+            }
+        }
+
+        return $deductions;
     }
 
     /**
