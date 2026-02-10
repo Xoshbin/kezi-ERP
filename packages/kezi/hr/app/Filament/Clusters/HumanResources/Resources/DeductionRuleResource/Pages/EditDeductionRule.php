@@ -14,6 +14,7 @@ class EditDeductionRule extends EditRecord
     {
         return [
             DeleteAction::make(),
+            \Kezi\Foundation\Filament\Actions\DocsAction::make('deduction-rules'),
         ];
     }
 }
