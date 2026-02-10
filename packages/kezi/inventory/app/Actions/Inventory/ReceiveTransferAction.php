@@ -71,8 +71,10 @@ class ReceiveTransferAction
                     $this->stockMoveService->createMove($receiveMoveDto);
                 }
 
-                // Mark the original move as done
-                $existingMove->update(['status' => StockMoveStatus::Done]);
+                // Mark the original move as done quietly to avoid re-triggering quant updates
+                // (The stock movement is already handled by the receiveMove above)
+                $existingMove->status = StockMoveStatus::Done;
+                $existingMove->saveQuietly();
             }
 
             // Update picking state and timestamps

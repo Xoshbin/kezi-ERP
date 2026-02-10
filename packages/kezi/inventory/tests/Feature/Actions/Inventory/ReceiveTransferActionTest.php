@@ -65,6 +65,14 @@ it('receives a transfer from transit location', function () {
         'company_id' => $this->company->id,
     ]);
 
+    // Provide initial stock at transit
+    app(\Kezi\Inventory\Services\Inventory\StockQuantService::class)->adjust(
+        $this->company->id,
+        $product->id,
+        $transitLocation->id,
+        10.0
+    );
+
     // Create a reservation for this move
     StockQuant::factory()->create([
         'company_id' => $this->company->id,
