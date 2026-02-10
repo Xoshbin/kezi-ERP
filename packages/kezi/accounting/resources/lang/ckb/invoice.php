@@ -84,6 +84,10 @@ return [
     'error_resetting_invoice_to_draft' => 'هەڵە لە گەڕاندنەوەی پسووڵە بۆ ڕەشنووس',
     'invoice_reset_to_draft' => 'گەڕاندنەوەی پسووڵە بۆ ڕەشنووس',
     'error_resetting_invoice' => 'هەڵە لە گەڕاندنەوەی پسووڵە',
+    'notification' => [
+        'reset_success' => 'پسووڵە بە سەرکەوتوویی گەڕێندرایەوە بۆ ڕەشنووس',
+        'reset_error' => 'هەڵە لە گەڕاندنەوەی پسووڵە',
+    ],
 
     // Validation Messages
     'validation_no_line_items' => 'ناتوانرێت پسووڵەی فرۆشتن بەبێ بڕگەکان پشتڕاست بکرێتەوە',
