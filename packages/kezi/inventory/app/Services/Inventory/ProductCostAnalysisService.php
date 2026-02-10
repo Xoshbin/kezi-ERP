@@ -88,15 +88,15 @@ class ProductCostAnalysisService
         } elseif ($vendorBillAnalysis['draft_count'] > 0 && $vendorBillAnalysis['posted_count'] === 0) {
             $suggestions[] = "Post the {$vendorBillAnalysis['draft_count']} draft vendor bill(s) for this product to establish cost";
         } elseif ($vendorBillAnalysis['posted_count'] > 0) {
-            if ($product->inventory_valuation_method === ValuationMethod::AVCO && ! $hasAverageCost) {
+            if ($product->inventory_valuation_method === ValuationMethod::Avco && ! $hasAverageCost) {
                 $suggestions[] = 'Check why posted vendor bills are not updating the average cost - verify product configuration and bill posting process';
-            } elseif ($product->inventory_valuation_method !== ValuationMethod::AVCO && ! $hasCostLayers) {
+            } elseif ($product->inventory_valuation_method !== ValuationMethod::Avco && ! $hasCostLayers) {
                 $suggestions[] = 'Check why posted vendor bills are not creating cost layers - verify inventory accounting configuration';
             }
         }
 
         // Valuation method specific suggestions
-        if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
+        if ($product->inventory_valuation_method === ValuationMethod::Avco) {
             if (! $hasAverageCost && $vendorBillAnalysis['posted_count'] === 0) {
                 $suggestions[] = 'Average cost is calculated automatically from posted vendor bills - no manual entry needed';
             }
@@ -131,7 +131,7 @@ class ProductCostAnalysisService
 
         $explanation = "Cannot determine cost for product '{$product->name}' (ID: {$product->id}). ";
 
-        if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
+        if ($product->inventory_valuation_method === ValuationMethod::Avco) {
             $explanation .= 'Using AVCO valuation method - requires positive average cost. ';
 
             if ($vendorBillAnalysis['posted_count'] > 0) {
@@ -178,7 +178,7 @@ class ProductCostAnalysisService
             $steps[] = '4. Contact system administrator if cost calculation is not working';
         }
 
-        if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
+        if ($product->inventory_valuation_method === ValuationMethod::Avco) {
             $steps[] = 'Note: AVCO method automatically calculates average cost from all posted vendor bills';
         } else {
             $steps[] = 'Note: FIFO/LIFO methods create individual cost layers for each purchase transaction';
@@ -192,7 +192,7 @@ class ProductCostAnalysisService
      */
     public function isReadyForInventoryMovements(Product $product): bool
     {
-        if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
+        if ($product->inventory_valuation_method === ValuationMethod::Avco) {
             return $product->average_cost && $product->average_cost->isPositive();
         }
 
@@ -211,7 +211,7 @@ class ProductCostAnalysisService
             'inventory_accounts' => 'Product must have inventory accounts configured',
         ];
 
-        if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
+        if ($product->inventory_valuation_method === ValuationMethod::Avco) {
             $requirements['valuation_method'] = 'AVCO method requires average cost calculation from vendor bills';
         } else {
             $requirements['valuation_method'] = 'FIFO/LIFO methods require cost layer creation from vendor bills';

@@ -77,7 +77,7 @@ class PostLandedCostAction
                 $valuationMethod = $product->inventory_valuation_method;
 
                 // Logic for FIFO/LIFO: Update Cost Layers & Split Cost
-                if (in_array($valuationMethod, [ValuationMethod::FIFO, ValuationMethod::LIFO])) {
+                if (in_array($valuationMethod, [ValuationMethod::Fifo, ValuationMethod::Lifo])) {
                     // Find related cost layers for this specific stock move
                     /** @var \Illuminate\Database\Eloquent\Collection<int, \Kezi\Inventory\Models\InventoryCostLayer> $layers */
                     $layers = \Kezi\Inventory\Models\InventoryCostLayer::query()

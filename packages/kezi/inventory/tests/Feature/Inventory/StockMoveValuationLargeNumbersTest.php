@@ -29,7 +29,7 @@ it('can store large cost impact values', function () {
         // If we pass an integer directly, it's stored as is.
         // MoneyCast expects numeric or Money instance.
         'cost_impact' => $largeValue,
-        'valuation_method' => ValuationMethod::FIFO,
+        'valuation_method' => ValuationMethod::Fifo,
         'move_type' => 'incoming',
         'cost_source' => CostSource::VendorBill,
         'source_type' => 'Kezi\Purchase\Models\VendorBill', // Dummy source
@@ -73,7 +73,7 @@ it('can store large cost impact values', function () {
         'stock_move_id' => $stockMove->id,
         'quantity' => 1000,
         'cost_impact' => $moneyValue,
-        'valuation_method' => ValuationMethod::FIFO,
+        'valuation_method' => ValuationMethod::Fifo,
         'move_type' => 'incoming',
         'cost_source' => CostSource::VendorBill,
         'source_type' => 'Kezi\Purchase\Models\VendorBill', // Dummy source

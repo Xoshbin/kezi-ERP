@@ -34,7 +34,7 @@ beforeEach(function () {
     // Create a storable product with a non-zero average cost to be used for manual moves
     $this->product = Product::factory()->for($this->company)->create([
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'average_cost' => Money::of(120, $this->company->currency->code),
@@ -103,7 +103,7 @@ it('throws exception for manual stock moves when product has no cost information
     // Arrange: Create a product with zero average cost and no cost layers
     $productWithoutCost = Product::factory()->for($this->company)->create([
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'average_cost' => Money::of(0, $this->company->currency->code), // Zero average cost
@@ -147,7 +147,7 @@ it('throws exception for outgoing stock moves when product has no cost informati
 
     $productWithoutCost = Product::factory()->for($this->company)->create([
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'default_cogs_account_id' => $cogsAccount->id,

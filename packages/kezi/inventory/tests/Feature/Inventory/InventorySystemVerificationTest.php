@@ -45,7 +45,7 @@ describe('Inventory System Verification with Sample Figures', function () {
             'name' => 'Test Product',
             'sku' => 'TEST-001',
             'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-            'inventory_valuation_method' => ValuationMethod::AVCO,
+            'inventory_valuation_method' => ValuationMethod::Avco,
             'unit_price' => Money::of(100000, 'IQD'), // 100 IQD
             'default_inventory_account_id' => $this->inventoryAccount->id,
             'default_stock_input_account_id' => $this->stockInputAccount->id,

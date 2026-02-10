@@ -116,14 +116,14 @@ class StockManagementTranslationsTest extends TestCase
     {
         app()->setLocale('en');
 
-        $this->assertEquals('First In, First Out (FIFO)', ValuationMethod::FIFO->label());
+        $this->assertEquals('First In, First Out (FIFO)', ValuationMethod::Fifo->label());
         $this->assertEquals('Internal', StockLocationType::Internal->label());
         $this->assertEquals('Incoming', StockMoveType::Incoming->label());
         $this->assertEquals('Draft', StockMoveStatus::Draft->label());
 
         app()->setLocale('ckb');
 
-        $this->assertEquals('یەکەم هات، یەکەم چوو (FIFO)', ValuationMethod::FIFO->label());
+        $this->assertEquals('یەکەم هات، یەکەم چوو (FIFO)', ValuationMethod::Fifo->label());
         $this->assertEquals('ناوخۆیی', StockLocationType::Internal->label());
         $this->assertEquals('هاتووە ژوورەوە', StockMoveType::Incoming->label());
         $this->assertEquals('ڕەشنووس', StockMoveStatus::Draft->label());

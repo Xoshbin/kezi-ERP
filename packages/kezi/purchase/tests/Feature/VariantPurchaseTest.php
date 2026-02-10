@@ -106,7 +106,7 @@ beforeEach(function () {
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
         'expense_account_id' => $this->expenseAccount->id,
         'default_inventory_account_id' => $this->inventoryAccount->id,
-        'inventory_valuation_method' => \Kezi\Inventory\Enums\Inventory\ValuationMethod::FIFO,
+        'inventory_valuation_method' => \Kezi\Inventory\Enums\Inventory\ValuationMethod::Fifo,
         'unit_price' => Money::of(500, $this->company->currency->code),
     ]);
 

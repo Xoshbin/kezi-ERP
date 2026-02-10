@@ -74,7 +74,7 @@ class ManualStockMoveFilamentTest extends TestCase
         $this->product = Product::factory()->create([
             'company_id' => $this->company->id,
             'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-            'inventory_valuation_method' => ValuationMethod::FIFO,
+            'inventory_valuation_method' => ValuationMethod::Fifo,
             'quantity_on_hand' => 0,
             'average_cost' => Money::of(0, $this->company->currency->code),
         ]);
@@ -219,7 +219,7 @@ class ManualStockMoveFilamentTest extends TestCase
         $productWithoutCost = Product::factory()->create([
             'company_id' => $this->company->id,
             'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-            'inventory_valuation_method' => ValuationMethod::FIFO,
+            'inventory_valuation_method' => ValuationMethod::Fifo,
             'average_cost' => Money::of(0, $this->company->currency->code),
         ]);
 

@@ -109,7 +109,7 @@ class InventoryValuationService
 
         $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($date));
 
-        if ($product->inventory_valuation_method === ValuationMethod::STANDARD) {
+        if ($product->inventory_valuation_method === ValuationMethod::Standard) {
             throw new Exception('Standard costing is not supported in Phase 1');
         }
 
@@ -171,7 +171,7 @@ class InventoryValuationService
             // Instead, we rely on the caller (ProcessIncomingStockAction loop) to call processIncomingStock for each move.
         } else {
             // Process based on valuation method (Local processing for non-consolidated)
-            if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
+            if ($product->inventory_valuation_method === ValuationMethod::Avco) {
                 $this->processIncomingStockAVCO($product, $quantity, $costPerUnit);
             } else {
                 $this->processIncomingStockFIFOLIFO($product, $quantity, $costPerUnit, $date, $sourceDocument);
@@ -230,7 +230,7 @@ class InventoryValuationService
     {
         $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($date));
 
-        if ($product->inventory_valuation_method === ValuationMethod::STANDARD) {
+        if ($product->inventory_valuation_method === ValuationMethod::Standard) {
             throw new Exception('Standard costing is not supported in Phase 1');
         }
 
@@ -330,7 +330,7 @@ class InventoryValuationService
     private function calculateCOGS(Product $product, float $quantity): Money
     {
 
-        if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
+        if ($product->inventory_valuation_method === ValuationMethod::Avco) {
             // For AVCO, use the product's average cost
             if (! $product->average_cost || ! $product->average_cost->isPositive()) {
                 Log::warning("Product {$product->id} has no positive average cost set, cannot calculate COGS");
@@ -355,7 +355,7 @@ class InventoryValuationService
         $remainingQuantity = $quantity;
 
         // Get cost layers ordered by date (FIFO) or reverse date (LIFO)
-        $orderDirection = $product->inventory_valuation_method === ValuationMethod::FIFO ? 'asc' : 'desc';
+        $orderDirection = $product->inventory_valuation_method === ValuationMethod::Fifo ? 'asc' : 'desc';
 
         $costLayers = InventoryCostLayer::where('product_id', $product->id)
             ->where('remaining_quantity', '>', 0)
@@ -1379,7 +1379,7 @@ class InventoryValuationService
         Log::info("Processing incoming stock for product {$product->id}, Quantity: {$quantity}, Cost per unit: {$costPerUnit->getAmount()}");
 
         // Process inventory based on valuation method
-        if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
+        if ($product->inventory_valuation_method === ValuationMethod::Avco) {
             $this->processIncomingStockAVCO($product, $quantity, $costPerUnit);
         } else {
             $this->processIncomingStockFIFOLIFO($product, $quantity, $costPerUnit, $date, $sourceDocument);

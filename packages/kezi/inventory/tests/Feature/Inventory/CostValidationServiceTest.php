@@ -38,7 +38,7 @@ it('validates cost availability for product with average cost', function () {
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'average_cost' => Money::of(50000, 'IQD'), // 500.00 IQD
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -63,7 +63,7 @@ it('validates cost unavailability for product without cost information', functio
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'average_cost' => Money::of(0, 'IQD'), // Zero cost
         'unit_price' => Money::of(0, 'IQD'), // Zero price
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -88,7 +88,7 @@ it('provides cost preview for valid product', function () {
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'average_cost' => Money::of(50000, 'IQD'), // 500.00 IQD
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -143,7 +143,7 @@ it('provides appropriate suggested actions', function () {
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'average_cost' => Money::of(0, 'IQD'), // Zero cost
         'unit_price' => Money::of(100000, 'IQD'), // Has unit price
         'default_inventory_account_id' => $this->inventoryAccount->id,

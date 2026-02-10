@@ -448,7 +448,7 @@ class InventoryReportingService
         $value = Money::of(0, $product->company->currency->code);
         $layers = [];
 
-        if ($product->inventory_valuation_method === ValuationMethod::AVCO) {
+        if ($product->inventory_valuation_method === ValuationMethod::Avco) {
             // For AVCO, calculate historical average cost as of the date
             $incomingValuations = $productValuations->where('move_type', StockMoveType::Incoming)->sortBy('stockMove.move_date');
             $outgoingValuations = $productValuations->where('move_type', StockMoveType::Outgoing)->sortBy('stockMove.move_date');

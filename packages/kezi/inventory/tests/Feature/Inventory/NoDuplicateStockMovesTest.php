@@ -35,7 +35,7 @@ beforeEach(function () {
         'company_id' => $this->company->id,
         'name' => 'Test Product',
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
     ]);
 });
 

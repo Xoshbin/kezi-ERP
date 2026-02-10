@@ -42,7 +42,7 @@ it('calculates correct valuation at specific date using AVCO method', function (
     // Arrange
     $product = Product::factory()->for($this->company)->create([
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -89,7 +89,7 @@ it('calculates correct valuation using FIFO method with cost layers', function (
     // Arrange
     $product = Product::factory()->for($this->company)->create([
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::FIFO,
+        'inventory_valuation_method' => ValuationMethod::Fifo,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -128,7 +128,7 @@ it('reconciles valuation with GL account balances', function () {
     // Arrange
     $product = Product::factory()->for($this->company)->create([
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -154,7 +154,7 @@ it('correctly ages inventory by receipt date', function () {
     // Arrange
     $product = Product::factory()->for($this->company)->create([
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::FIFO,
+        'inventory_valuation_method' => ValuationMethod::Fifo,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -201,7 +201,7 @@ it('handles lot expiration in ageing report', function () {
     // Arrange
     $product = Product::factory()->for($this->company)->create([
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::FIFO,
+        'inventory_valuation_method' => ValuationMethod::Fifo,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -240,7 +240,7 @@ it('calculates inventory turnover correctly', function () {
     // Arrange
     $product = Product::factory()->for($this->company)->create([
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -424,7 +424,7 @@ it('traces complete lot journey from receipt to delivery', function () {
     // Arrange
     $product = Product::factory()->for($this->company)->create([
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::FIFO,
+        'inventory_valuation_method' => ValuationMethod::Fifo,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -475,7 +475,7 @@ it('includes journal entry links in lot trace', function () {
     // Arrange
     $product = Product::factory()->for($this->company)->create([
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::FIFO,
+        'inventory_valuation_method' => ValuationMethod::Fifo,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -504,7 +504,7 @@ it('identifies products below minimum stock levels', function () {
     // Arrange
     $product = Product::factory()->for($this->company)->create([
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -545,7 +545,7 @@ it('calculates available to promise correctly with reservations', function () {
     // Arrange
     $product = Product::factory()->for($this->company)->create([
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,

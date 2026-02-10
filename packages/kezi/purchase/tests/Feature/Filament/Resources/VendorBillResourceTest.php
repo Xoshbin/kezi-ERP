@@ -580,7 +580,7 @@ it('records stock moves and inventory/AP postings for storable products and upda
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'default_inventory_account_id' => $inventoryAccount->id,
         'default_stock_input_account_id' => Account::factory()->create([
             'company_id' => $this->company->id,

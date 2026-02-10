@@ -92,7 +92,7 @@ it('can create and post a landed cost', function () {
         'stock_move_id' => $move1->id,
         'quantity' => 10,
         'cost_impact' => 1000, // 10.00 in base currency minor units
-        'valuation_method' => \Kezi\Inventory\Enums\Inventory\ValuationMethod::STANDARD,
+        'valuation_method' => \Kezi\Inventory\Enums\Inventory\ValuationMethod::Standard,
         'move_type' => \Kezi\Inventory\Enums\Inventory\StockMoveType::InternalTransfer,
         'cost_source' => \Kezi\Inventory\Enums\Inventory\CostSource::Manual,
         'source_type' => \Kezi\Inventory\Models\StockMove::class,

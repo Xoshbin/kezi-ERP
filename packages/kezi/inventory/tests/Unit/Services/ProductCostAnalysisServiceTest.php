@@ -94,7 +94,7 @@ it('checks if ready for inventory movements (AVCO)', function () {
     /** @var Product $product */
     $product = Product::factory()->for($company)->create([
         'type' => ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'average_cost' => \Brick\Money\Money::of(0, $company->currency->code),
     ]);
 
@@ -116,7 +116,7 @@ it('checks if ready for inventory movements (FIFO)', function () {
     /** @var Product $product */
     $product = Product::factory()->for($company)->create([
         'type' => ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::FIFO,
+        'inventory_valuation_method' => ValuationMethod::Fifo,
     ]);
 
     // Not ready initially (no cost layers)
@@ -185,7 +185,7 @@ it('provides contextual suggestions correctly', function () {
     /** @var Product $product */
     $product = Product::factory()->for($company)->create([
         'type' => ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'average_cost' => \Brick\Money\Money::of(0, $company->currency->code),
     ]);
 
@@ -206,7 +206,7 @@ it('provides cost status explanation for AVCO', function () {
     /** @var Product $product */
     $product = Product::factory()->for($company)->create([
         'type' => ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
     ]);
 
     $explanation = $service->getCostStatusExplanation($product);

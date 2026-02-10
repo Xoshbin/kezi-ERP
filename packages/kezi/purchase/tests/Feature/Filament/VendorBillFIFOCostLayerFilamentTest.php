@@ -41,7 +41,7 @@ it('creates FIFO cost layer when posting vendor bill via Filament action', funct
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::FIFO,
+        'inventory_valuation_method' => ValuationMethod::Fifo,
         'quantity_on_hand' => 0,
         'average_cost' => Money::of(0, $this->company->currency->code),
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -122,7 +122,7 @@ it('creates LIFO cost layer when posting vendor bill via Filament action', funct
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::LIFO,
+        'inventory_valuation_method' => ValuationMethod::Lifo,
         'quantity_on_hand' => 0,
         'average_cost' => Money::of(0, $this->company->currency->code),
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -179,7 +179,7 @@ it('creates proper Anglo-Saxon journal entries when posting vendor bill with FIF
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::FIFO,
+        'inventory_valuation_method' => ValuationMethod::Fifo,
         'quantity_on_hand' => 0,
         'average_cost' => Money::of(0, $this->company->currency->code),
         'default_inventory_account_id' => $this->inventoryAccount->id,

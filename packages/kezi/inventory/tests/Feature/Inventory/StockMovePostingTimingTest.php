@@ -23,7 +23,7 @@ beforeEach(function () {
     // Create a storable product with required inventory accounts and valid average cost
     $this->product = Product::factory()->for($this->company)->create([
         'type' => ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'average_cost' => Money::of(100, $this->company->currency->code), // Valid cost for testing

@@ -554,7 +554,7 @@ test('Kezi ERP complete accounting scenario - Full Workflow', function () {
             'sku' => 'ITWS001',
             'unit_price' => 10000000,
             'type' => \Kezi\Product\Enums\Products\ProductType::Storable->value,
-            'inventory_valuation_method' => ValuationMethod::AVCO->value,
+            'inventory_valuation_method' => ValuationMethod::Avco->value,
             'default_inventory_account_id' => $inventoryAccountsCreated['1100']->id,
             'default_cogs_account_id' => $inventoryAccountsCreated['6000']->id,
             'default_stock_input_account_id' => $inventoryAccountsCreated['2150']->id,

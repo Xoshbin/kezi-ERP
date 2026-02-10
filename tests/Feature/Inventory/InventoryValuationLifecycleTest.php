@@ -70,7 +70,7 @@ test('landed cost updates inventory asset and fifo layer when items are in stock
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'storable',
-        'inventory_valuation_method' => ValuationMethod::FIFO,
+        'inventory_valuation_method' => ValuationMethod::Fifo,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->expenseAccount->id, // Simplified
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -169,7 +169,7 @@ test('landed cost splits between inventory and cogs when items are partially sol
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => 'storable',
-        'inventory_valuation_method' => ValuationMethod::FIFO,
+        'inventory_valuation_method' => ValuationMethod::Fifo,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->expenseAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,

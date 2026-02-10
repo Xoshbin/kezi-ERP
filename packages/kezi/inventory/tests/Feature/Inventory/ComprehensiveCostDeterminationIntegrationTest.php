@@ -68,7 +68,7 @@ it('demonstrates complete cost determination workflow from vendor bill to manual
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'average_cost' => Money::of(0, 'IQD'), // No initial average cost
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -162,7 +162,7 @@ it('demonstrates fallback cost determination with warnings', function () {
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'average_cost' => Money::of(0, 'IQD'),
         'unit_price' => Money::of(75000, 'IQD'),
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -196,7 +196,7 @@ it('demonstrates complete failure scenario with actionable suggestions', functio
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'average_cost' => Money::of(0, 'IQD'),
         'unit_price' => Money::of(0, 'IQD'),
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -247,7 +247,7 @@ it('demonstrates FIFO cost layer fallback', function () {
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::FIFO,
+        'inventory_valuation_method' => ValuationMethod::Fifo,
         'average_cost' => Money::of(0, 'IQD'),
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,

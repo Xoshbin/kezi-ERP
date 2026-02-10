@@ -66,7 +66,7 @@ it('uses vendor bill cost as highest priority source', function () {
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'average_cost' => Money::of(30000, 'IQD'), // Lower than vendor bill cost
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -104,7 +104,7 @@ it('falls back to average cost when vendor bill cost unavailable', function () {
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'average_cost' => Money::of(40000, 'IQD'),
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -132,7 +132,7 @@ it('falls back to cost layer for FIFO/LIFO products', function () {
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::FIFO,
+        'inventory_valuation_method' => ValuationMethod::Fifo,
         'average_cost' => Money::of(0, 'IQD'), // Zero average cost
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
@@ -167,7 +167,7 @@ it('uses unit price fallback when allowed', function () {
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'average_cost' => Money::of(0, 'IQD'),
         'unit_price' => Money::of(60000, 'IQD'),
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -197,7 +197,7 @@ it('throws detailed exception when no cost sources available', function () {
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'average_cost' => Money::of(0, 'IQD'),
         'unit_price' => Money::of(0, 'IQD'),
         'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -222,7 +222,7 @@ it('tracks cost source in stock move valuations', function () {
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'average_cost' => Money::of(45000, 'IQD'),
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,

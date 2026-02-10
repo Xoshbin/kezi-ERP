@@ -99,7 +99,7 @@ beforeEach(function () {
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
         'expense_account_id' => $this->expenseAccount->id,
         'default_inventory_account_id' => $this->inventoryAccount->id,
-        'inventory_valuation_method' => \Kezi\Inventory\Enums\Inventory\ValuationMethod::FIFO,
+        'inventory_valuation_method' => \Kezi\Inventory\Enums\Inventory\ValuationMethod::Fifo,
     ]);
 
     // Create attributes
@@ -219,7 +219,7 @@ it('fifo calculation per variant works correctly', function () {
     $variant = $this->variants->where('sku', 'WIDGET-SMALL-PLASTIC')->first();
 
     // Verify variant uses FIFO (inherited from template)
-    expect($variant->inventory_valuation_method)->toBe(\Kezi\Inventory\Enums\Inventory\ValuationMethod::FIFO);
+    expect($variant->inventory_valuation_method)->toBe(\Kezi\Inventory\Enums\Inventory\ValuationMethod::Fifo);
 
     // Purchase 1: 50 units at $10 each
     $vendorBill1 = VendorBill::factory()->create([
@@ -322,7 +322,7 @@ it('average cost per variant is calculated independently', function () {
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
         'expense_account_id' => $this->expenseAccount->id,
         'default_inventory_account_id' => $this->inventoryAccount->id,
-        'inventory_valuation_method' => \Kezi\Inventory\Enums\Inventory\ValuationMethod::AVCO,
+        'inventory_valuation_method' => \Kezi\Inventory\Enums\Inventory\ValuationMethod::Avco,
     ]);
 
     // Generate variants for AVCO template

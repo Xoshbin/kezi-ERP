@@ -30,7 +30,7 @@ it('processes incoming stock from vendor bill', function () {
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => \Kezi\Inventory\Enums\Inventory\ValuationMethod::FIFO,
+        'inventory_valuation_method' => \Kezi\Inventory\Enums\Inventory\ValuationMethod::Fifo,
         // Accounts are needed for Journal Entry creation
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,

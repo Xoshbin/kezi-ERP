@@ -19,7 +19,7 @@ beforeEach(function () {
     $this->product = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::FIFO,
+        'inventory_valuation_method' => ValuationMethod::Fifo,
         'average_cost' => Money::of(0, $this->company->currency->code),
     ]);
 
@@ -207,7 +207,7 @@ it('handles AVCO valuation method appropriately', function () {
     $avcoProduct = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'average_cost' => Money::of(0, $this->company->currency->code),
     ]);
 

@@ -21,7 +21,7 @@ class StockMoveValuationFactory extends Factory
             'stock_move_id' => StockMove::factory(),
             'quantity' => $this->faker->randomFloat(2, 1, 100),
             'cost_impact' => Money::of(100, 'IQD'),
-            'valuation_method' => ValuationMethod::AVCO,
+            'valuation_method' => ValuationMethod::Avco,
             'move_type' => 'incoming',
             'source_type' => StockMove::class,
             'source_id' => 1,

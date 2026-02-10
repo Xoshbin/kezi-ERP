@@ -29,7 +29,7 @@ class ProductFactory extends Factory
             'description' => $this->faker->sentence(),
             'unit_price' => Money::of($this->faker->randomFloat(2, 100, 10000), 'USD'),
             'type' => \Kezi\Product\Enums\Products\ProductType::Service, // Default to Service to avoid inventory complications in tests
-            'inventory_valuation_method' => ValuationMethod::AVCO,
+            'inventory_valuation_method' => ValuationMethod::Avco,
             'income_account_id' => function (array $attributes) {
                 return Account::factory()->state(['company_id' => $attributes['company_id']])->create()->id;
             },
