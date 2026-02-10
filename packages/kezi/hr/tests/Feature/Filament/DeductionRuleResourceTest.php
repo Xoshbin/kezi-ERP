@@ -55,7 +55,7 @@ describe('DeductionRuleResource', function () {
     it('can create deduction rule', function () {
         $newData = [
             'name' => 'Custom Tax',
-            'code' => 'custom_tax',
+            'code' => 'unique_tax_code_'.now()->timestamp,
             'type' => 'percentage',
             'value' => 0.15,
             'is_active' => true,
@@ -68,7 +68,7 @@ describe('DeductionRuleResource', function () {
 
         $this->assertDatabaseHas('deduction_rules', [
             'name' => 'Custom Tax',
-            'code' => 'custom_tax',
+            'code' => $newData['code'],
             'company_id' => $this->company->id,
         ]);
     });
