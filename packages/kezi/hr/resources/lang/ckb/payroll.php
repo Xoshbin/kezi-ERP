@@ -114,4 +114,5 @@ return [
     'liability_account' => 'هەژماری قەرز (Liability)',
     'is_statutory' => 'یاساییە',
     'is_active' => 'چالاکە',
+    'currency' => 'پارە',
 ];
