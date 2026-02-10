@@ -48,6 +48,8 @@ beforeEach(function () {
         'name' => 'In Transit',
         'type' => StockLocationType::Transit,
     ]);
+
+    $this->stockQuantService = app(\Kezi\Inventory\Services\Inventory\StockQuantService::class);
 });
 
 it('displays ship action for confirmed internal transfer', function () {
@@ -108,6 +110,14 @@ it('ships internal transfer via ship action', function () {
         'from_location_id' => $this->sourceLocation->id,
         'to_location_id' => $this->destLocation->id,
     ]);
+
+    // Seed stock at source
+    $this->stockQuantService->adjust(
+        $this->company->id,
+        $this->product->id,
+        $this->sourceLocation->id,
+        100.0
+    );
 
     Livewire::test(ViewStockPicking::class, ['record' => $transfer->id])
         ->callAction('ship')
@@ -184,6 +194,14 @@ it('receives internal transfer via receive action', function () {
         'to_location_id' => $this->destLocation->id,
     ]);
 
+    // Seed stock at transit (simulating having been shipped correctly)
+    $this->stockQuantService->adjust(
+        $this->company->id,
+        $this->product->id,
+        $this->transitLocation->id,
+        10.0
+    );
+
     Livewire::test(ViewStockPicking::class, ['record' => $transfer->id])
         ->callAction('receive')
         ->assertNotified();
@@ -224,6 +242,14 @@ it('creates stock moves when shipping transfer', function () {
         'to_location_id' => $this->destLocation->id,
     ]);
 
+    // Seed stock at source
+    $this->stockQuantService->adjust(
+        $this->company->id,
+        $this->product->id,
+        $this->sourceLocation->id,
+        100.0
+    );
+
     Livewire::test(ViewStockPicking::class, ['record' => $transfer->id])
         ->callAction('ship');
 
@@ -262,6 +288,14 @@ it('creates stock moves when receiving transfer', function () {
         'from_location_id' => $this->sourceLocation->id,
         'to_location_id' => $this->destLocation->id,
     ]);
+
+    // Seed stock at transit (simulating having been shipped correctly)
+    $this->stockQuantService->adjust(
+        $this->company->id,
+        $this->product->id,
+        $this->transitLocation->id,
+        10.0
+    );
 
     Livewire::test(ViewStockPicking::class, ['record' => $transfer->id])
         ->callAction('receive');

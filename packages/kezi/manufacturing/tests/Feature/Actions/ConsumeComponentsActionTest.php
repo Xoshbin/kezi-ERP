@@ -100,6 +100,14 @@ describe('ConsumeComponentsAction', function () {
             'currency_code' => $this->company->currency->code,
         ]);
 
+        // Seed stock for component
+        app(\Kezi\Inventory\Services\Inventory\StockQuantService::class)->adjust(
+            $this->company->id,
+            $component->id,
+            $this->sourceLocation->id,
+            100.0 // Sufficient stock
+        );
+
         // Act
         $action = app(ConsumeComponentsAction::class);
         $updatedMo = $action->execute($mo);
@@ -212,6 +220,14 @@ describe('ConsumeComponentsAction', function () {
             'currency_code' => $this->company->currency->code,
         ]);
 
+        // Seed stock for component
+        app(\Kezi\Inventory\Services\Inventory\StockQuantService::class)->adjust(
+            $this->company->id,
+            $component->id,
+            $this->sourceLocation->id,
+            200.0 // Sufficient stock
+        );
+
         // Act
         $action = app(ConsumeComponentsAction::class);
         $updatedMo = $action->execute($mo);
@@ -273,6 +289,21 @@ describe('ConsumeComponentsAction', function () {
             'unit_cost' => 5000,
             'currency_code' => $this->company->currency->code,
         ]);
+
+        // Seed stock for components
+        app(\Kezi\Inventory\Services\Inventory\StockQuantService::class)->adjust(
+            $this->company->id,
+            $component1->id,
+            $this->sourceLocation->id,
+            100.0 // Sufficient stock
+        );
+
+        app(\Kezi\Inventory\Services\Inventory\StockQuantService::class)->adjust(
+            $this->company->id,
+            $component2->id,
+            $this->sourceLocation->id,
+            100.0 // Sufficient stock
+        );
 
         // Act
         $action = app(ConsumeComponentsAction::class);
