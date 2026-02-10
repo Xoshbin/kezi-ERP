@@ -67,12 +67,10 @@ it('can create a quote via filament form', function () {
     ]);
 
     $quote = Quote::latest()->first();
+    assert($quote instanceof Quote);
     expect($quote->lines)->toHaveCount(1);
 
-    // TODO: Investigate why Filament test produces 1000x factor difference (200 expected vs 200000 actual).
-    // Likely related to Money input hydration or test state. Feature tests confirm logic is correct.
-    // For now checking lines existence and roughly valid presence.
-    // ->and($quote->total->getAmount()->toInt())->toBe(200);
+    expect($quote->total->getAmount()->toInt())->toBe(200);
 });
 
 it('can edit a draft quote', function () {
