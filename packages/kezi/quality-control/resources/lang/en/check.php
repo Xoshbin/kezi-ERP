@@ -18,4 +18,11 @@ return [
     'blocking_yes' => 'Blocking',
     'blocking_no' => 'Optional',
     'quality_gate_failed' => 'Cannot validate picking: All mandatory quality checks must be passed.',
+    'record_results' => 'Record Results',
+    'record_results_modal_heading' => 'Record Quality Check Results',
+    'record_results_success' => 'Quality check results recorded successfully.',
+    'line_result' => 'Result',
+    'line_notes' => 'Line Notes',
+    'pass' => 'Pass',
+    'fail' => 'Fail',
 ];

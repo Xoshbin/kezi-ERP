@@ -15,5 +15,12 @@ return [
     'is_blocking' => 'حاظر',
     'blocking_yes' => 'حاظر',
     'blocking_no' => 'اختياري',
-    'quality_gate_failed' => 'لا يمكن التحقق من الفحص: يجب اجتياز جميع فحوصات الجودة الإلزامية.',
+    'quality_gate_failed' => 'لا يمكن التحقق من الانتقاء: يجب اجتياز جميع فحوصات الجودة الإلزامية.',
+    'record_results' => 'تسجيل النتائج',
+    'record_results_modal_heading' => 'تسجيل نتائج فحص الجودة',
+    'record_results_success' => 'تم تسجيل نتائج فحص الجودة بنجاح.',
+    'line_result' => 'النتيجة',
+    'line_notes' => 'الملاحظات',
+    'pass' => 'ناجح',
+    'fail' => 'فاشل',
 ];
