@@ -114,4 +114,5 @@ return [
     'liability_account' => 'Liability Account',
     'is_statutory' => 'Is Statutory',
     'is_active' => 'Is Active',
+    'currency' => 'Currency',
 ];

@@ -87,4 +87,5 @@ return [
     'liability_account' => 'حساب الالتزام',
     'is_statutory' => 'قانوني',
     'is_active' => 'نشط',
+    'currency' => 'العملة',
 ];

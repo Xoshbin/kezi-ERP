@@ -14,6 +14,13 @@ use Kezi\HR\Services\HumanResources\EmployeeService;
 use Kezi\HR\Services\HumanResources\PayrollService;
 use Tests\Traits\WithConfiguredCompany;
 
+/**
+ * @property \App\Models\Company $company
+ * @property \Kezi\Foundation\Models\Currency $currency
+ * @property \App\Models\User $user
+ * @property \Kezi\HR\Models\Employee $employee
+ * @property \Kezi\HR\Models\EmploymentContract $contract
+ */
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
@@ -270,6 +277,29 @@ function createHRAccounts($company, $currency)
         'default_social_security_payable_account_id' => $socialSecurityPayableAccount->id,
         'default_health_insurance_payable_account_id' => $healthInsurancePayableAccount->id,
         'default_pension_payable_account_id' => $pensionPayableAccount->id,
+    ]);
+
+    // Create active deduction rules for income tax and social security
+    \Kezi\HR\Models\DeductionRule::factory()->create([
+        'company_id' => $company->id,
+        'name' => 'Income Tax',
+        'code' => 'income_tax',
+        'type' => 'percentage',
+        'value' => 0.10, // 10%
+        'is_active' => true,
+        'is_statutory' => true,
+        'liability_account_id' => $incomeTaxPayableAccount->id,
+    ]);
+
+    \Kezi\HR\Models\DeductionRule::factory()->create([
+        'company_id' => $company->id,
+        'name' => 'Social Security',
+        'code' => 'social_security',
+        'type' => 'percentage',
+        'value' => 0.05, // 5%
+        'is_active' => true,
+        'is_statutory' => true,
+        'liability_account_id' => $socialSecurityPayableAccount->id,
     ]);
 }
 
