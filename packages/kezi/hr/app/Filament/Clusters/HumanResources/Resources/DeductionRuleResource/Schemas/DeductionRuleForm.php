@@ -24,8 +24,11 @@ class DeductionRuleForm
                     TextInput::make('code')
                         ->label(__('hr::payroll.deduction_code'))
                         ->helperText(__('hr::payroll.deduction_code_helper'))
-                        ->unique(ignoreRecord: true, modifyRuleUsing: fn (\Illuminate\Validation\Rules\Unique $rule) => $rule->where('company_id', \Filament\Facades\Filament::getTenant()->id))
-                        ->maxLength(50),
+                        ->unique(
+                            ignoreRecord: true,
+                            modifyRuleUsing: fn (\Illuminate\Validation\Rules\Unique $rule) => $rule->where('company_id', \Filament\Facades\Filament::getTenant()?->id)
+                        )
+                        ->maxLength(100),
 
                     Select::make('type')
                         ->label(__('hr::payroll.deduction_type'))
