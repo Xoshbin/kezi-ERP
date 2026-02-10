@@ -55,7 +55,7 @@ describe('DeductionRuleResource', function () {
     it('can create deduction rule', function () {
         $newData = [
             'name' => 'Custom Tax',
-            'code' => 'unique_tax_code_'.now()->timestamp,
+            'code' => 'unique_tax_code_'.\Illuminate\Support\Str::uuid(),
             'type' => 'percentage',
             'value' => 0.15,
             'is_active' => true,
