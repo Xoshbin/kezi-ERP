@@ -23,6 +23,10 @@ return [
     'default_outstanding_receipts_account' => 'Default Outstanding Receipts Account',
     'default_pdc_receivable_account' => 'Default PDC Receivable Account',
     'default_pdc_payable_account' => 'Default PDC Payable Account',
+    'default_finished_goods_inventory' => 'Default Finished Goods Inventory',
+    'default_wip_account' => 'Default WIP Account',
+    'default_manufacturing_overhead_account' => 'Default Manufacturing Overhead Account',
+    'default_manufacturing_journal' => 'Default Manufacturing Journal',
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
 
