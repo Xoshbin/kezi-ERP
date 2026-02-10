@@ -342,7 +342,8 @@ class Invoice extends Model
      */
     public function payments(): BelongsToMany
     {
-        return $this->belongsToMany(Payment::class, 'payment_document_links', 'invoice_id', 'payment_id')
+        return $this->belongsToMany(\Kezi\Payment\Models\Payment::class, 'payment_document_links', 'invoice_id', 'payment_id')
+            ->using(\Kezi\Payment\Models\PaymentDocumentLink::class)
             ->withPivot('amount_applied');
     }
 

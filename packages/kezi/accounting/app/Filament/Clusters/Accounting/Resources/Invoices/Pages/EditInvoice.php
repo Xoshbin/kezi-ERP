@@ -275,23 +275,34 @@ class EditInvoice extends EditRecord
                     return $res;
                 }),
 
-            // Actions\Action::make('resetToDraft')
-            //     ->label(__('invoice.reset_to_draft'))
-            //     ->color('warning')
-            //     ->requiresConfirmation()
-            //     ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Posted)
-            //     ->form([
-            //         \Filament\Forms\Components\Textarea::make('reason')->label(__('invoice.reason'))->required(),
-            //     ])
-            //     ->action(function (Invoice $record, array $data): void {
-            //         $service = app(InvoiceService::class);
-            //         try {
-            //             $service->resetToDraft($record, Auth::user(), $data['reason']);
-            //             Notification::make()->title(__('invoice.invoice_reset_to_draft'))->success()->send();
-            //         } catch (\Exception $e) {
-            //             Notification::make()->title(__('invoice.error_resetting_invoice'))->body($e->getMessage())->danger()->send();
-            //         }
-            //     }),
+            Action::make('resetToDraft')
+                ->label(__('accounting::invoice.reset_to_draft'))
+                ->color('warning')
+                ->icon('heroicon-o-arrow-path')
+                ->requiresConfirmation()
+                ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Posted && $record->isNotPaid())
+                ->form([
+                    \Filament\Forms\Components\Textarea::make('reason')
+                        ->label(__('accounting::invoice.reason'))
+                        ->required(),
+                ])
+                ->action(function (Invoice $record, array $data): void {
+                    $service = app(InvoiceService::class);
+                    try {
+                        $service->resetToDraft($record, Auth::user(), $data['reason']);
+                        Notification::make()
+                            ->title(__('accounting::invoice.notification.reset_success'))
+                            ->success()
+                            ->send();
+                        $this->redirect(InvoiceResource::getUrl('edit', ['record' => $record]));
+                    } catch (\Exception $e) {
+                        Notification::make()
+                            ->title(__('accounting::invoice.notification.reset_error'))
+                            ->body($e->getMessage())
+                            ->danger()
+                            ->send();
+                    }
+                }),
 
             DeleteAction::make()
                 ->action(function (Model $record) {
