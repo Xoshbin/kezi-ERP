@@ -260,9 +260,7 @@ class StockQuantService
             ->where('product_id', $productId)
             ->where('location_id', $locationId);
 
-        if ($lotId !== null) {
-            $query->where('lot_id', $lotId);
-        }
+        $query->where('lot_id', $lotId);
 
         $quant = $query->first();
 
