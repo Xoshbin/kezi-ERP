@@ -36,6 +36,7 @@ class TransferOrderService
     public function __construct(
         private readonly ShipTransferAction $shipTransferAction,
         private readonly ReceiveTransferAction $receiveTransferAction,
+        private readonly StockReservationService $stockReservationService,
     ) {}
 
     /**
@@ -101,7 +102,16 @@ class TransferOrderService
                 $move->update(['status' => StockMoveStatus::Confirmed]);
             }
 
-            // TODO: Create stock reservations for the source quantities
+            // Create stock reservations for the source quantities
+            foreach ($picking->stockMoves as $move) {
+                // Determine source location from the first product line
+                // In TransferOrderService::create, we ensure each move has product lines with correct from_location_id
+                $locationId = $move->productLines->first()?->from_location_id;
+
+                if ($locationId) {
+                    $this->stockReservationService->reserveForMove($move, $locationId);
+                }
+            }
 
             /** @var StockPicking $result */
             $result = $picking->fresh();
@@ -149,7 +159,10 @@ class TransferOrderService
                 $move->update(['status' => StockMoveStatus::Cancelled]);
             }
 
-            // TODO: Release stock reservations
+            // Release stock reservations
+            foreach ($picking->stockMoves as $move) {
+                $this->stockReservationService->releaseForMove($move);
+            }
 
             $picking->update(['state' => StockPickingState::Cancelled]);
 
