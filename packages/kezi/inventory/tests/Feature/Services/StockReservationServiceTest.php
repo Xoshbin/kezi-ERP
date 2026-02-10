@@ -312,3 +312,76 @@ it('updates available quantity in StockQuantService after reservation', function
     $this->service->releaseForMove($move);
     expect($this->stockQuantService->available($this->company->id, $this->product->id, $this->sourceLocation->id))->toBe(100.0);
 });
+
+it('reserves available stock for a multi-product move', function () {
+    $product2 = Product::factory()->for($this->company)->create([
+        'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
+    ]);
+
+    // Setup initial stock: 100 units for product 1, 50 units for product 2
+    StockQuant::factory()->create([
+        'company_id' => $this->company->id,
+        'product_id' => $this->product->id,
+        'location_id' => $this->sourceLocation->id,
+        'quantity' => 100,
+        'reserved_quantity' => 0,
+    ]);
+
+    StockQuant::factory()->create([
+        'company_id' => $this->company->id,
+        'product_id' => $product2->id,
+        'location_id' => $this->sourceLocation->id,
+        'quantity' => 50,
+        'reserved_quantity' => 0,
+    ]);
+
+    // Create a multi-product move
+    $move = StockMove::factory()->create([
+        'company_id' => $this->company->id,
+        'move_type' => StockMoveType::Outgoing,
+        'status' => StockMoveStatus::Draft,
+    ]);
+
+    // Remove automatically created line from factory if any (depends on factory behavior)
+    // Looking at StockMoveFactory, it only creates a line if 'product_id' attribute is passed.
+    // In our case, we didn't pass it, so it should be empty.
+
+    // Add first product line (40 units)
+    $move->productLines()->create([
+        'company_id' => $this->company->id,
+        'product_id' => $this->product->id,
+        'quantity' => 40,
+        'from_location_id' => $this->sourceLocation->id,
+        'to_location_id' => $this->destLocation->id,
+    ]);
+
+    // Add second product line (20 units)
+    $move->productLines()->create([
+        'company_id' => $this->company->id,
+        'product_id' => $product2->id,
+        'quantity' => 20,
+        'from_location_id' => $this->sourceLocation->id,
+        'to_location_id' => $this->destLocation->id,
+    ]);
+
+    $reserved = $this->service->reserveForMove($move, $this->sourceLocation->id);
+
+    // Total reserved should be 40 + 20 = 60
+    expect($reserved)->toBe(60.0);
+
+    // Verify reservation records
+    expect(StockReservation::where('stock_move_id', $move->id)->count())->toBe(2);
+
+    $res1 = StockReservation::where('stock_move_id', $move->id)->where('product_id', $this->product->id)->first();
+    expect((float) $res1->quantity)->toBe(40.0);
+
+    $res2 = StockReservation::where('stock_move_id', $move->id)->where('product_id', $product2->id)->first();
+    expect((float) $res2->quantity)->toBe(20.0);
+
+    // Verify quant reserved quantities
+    $quant1 = StockQuant::where('product_id', $this->product->id)->where('location_id', $this->sourceLocation->id)->first();
+    expect($quant1->reserved_quantity)->toBe(40.0);
+
+    $quant2 = StockQuant::where('product_id', $product2->id)->where('location_id', $this->sourceLocation->id)->first();
+    expect($quant2->reserved_quantity)->toBe(20.0);
+});
