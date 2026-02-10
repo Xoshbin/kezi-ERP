@@ -5,6 +5,7 @@ namespace Kezi\Inventory\Observers;
 use Illuminate\Support\Facades\Auth;
 use Kezi\Foundation\Models\AuditLog;
 use Kezi\Inventory\Actions\Inventory\ProcessIncomingStockAction;
+use Kezi\Inventory\Actions\Inventory\ProcessInternalTransferAction;
 use Kezi\Inventory\Actions\Inventory\ProcessOutgoingStockAction;
 use Kezi\Inventory\Enums\Inventory\StockMoveStatus;
 use Kezi\Inventory\Enums\Inventory\StockMoveType;
@@ -60,6 +61,8 @@ class StockMoveObserver
             app(ProcessIncomingStockAction::class)->execute($stockMove);
         } elseif ($stockMove->move_type === StockMoveType::Outgoing) {
             app(ProcessOutgoingStockAction::class)->execute($stockMove);
+        } elseif ($stockMove->move_type === StockMoveType::InternalTransfer) {
+            app(ProcessInternalTransferAction::class)->execute($stockMove);
         }
 
         // Still dispatch event for other modules to listen (non-core side effects)

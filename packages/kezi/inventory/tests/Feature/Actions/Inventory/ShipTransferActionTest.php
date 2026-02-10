@@ -59,6 +59,14 @@ it('ships a transfer to transit location', function () {
         'company_id' => $this->company->id,
     ]);
 
+    // Provide initial stock at source
+    app(\Kezi\Inventory\Services\Inventory\StockQuantService::class)->adjust(
+        $this->company->id,
+        $product->id,
+        $sourceLocation->id,
+        10.0
+    );
+
     $dto = new ShipTransferDTO(
         stock_picking_id: $picking->id,
         shipped_by_user_id: $this->user->id
