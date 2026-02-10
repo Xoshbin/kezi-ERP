@@ -30,15 +30,23 @@ class CreateJournalEntryForManufacturingAction
     {
         return DB::transaction(function () use ($mo, $user) {
             // Load necessary relationships (include company.currency for Money cast)
-            $mo->load('company.currency', 'product', 'lines.product', 'lines.company.currency', 'destinationLocation', 'sourceLocation');
+            $mo->load([
+                'company.currency',
+                'product',
+                'lines.product',
+                'lines.company.currency',
+                'destinationLocation',
+                'sourceLocation',
+                'workOrders.workCenter',
+            ]);
 
             $company = $mo->company;
             $currency = $company->currency;
 
             // Get required account IDs from company configuration
             $finishedGoodsAccountId = $company->default_finished_goods_inventory_id;
-            // $rawMaterialsAccountId is not used here anymore, we credit WIP instead
             $wipAccountId = $company->default_wip_account_id;
+            $overheadAccountId = $company->default_manufacturing_overhead_account_id;
             $manufacturingJournalId = $company->default_manufacturing_journal_id;
 
             if (! $finishedGoodsAccountId || ! $wipAccountId || ! $manufacturingJournalId) {
@@ -58,19 +66,47 @@ class CreateJournalEntryForManufacturingAction
                 $totalComponentCost = $totalComponentCost->plus($lineCost);
             }
 
-            // TODO: Add Manufacturing Overhead if work centers are used
-            // For now, the total cost equals component cost
-            $totalProductionCost = $totalComponentCost;
+            // Calculate Manufacturing Overhead from work orders
+            $totalOverheadCost = Money::of(0, $currency->code);
+            foreach ($mo->workOrders as $workOrder) {
+                if ($workOrder->actual_duration > 0) {
+                    $hourlyCost = $workOrder->workCenter->hourly_cost;
+
+                    $workOrderCost = $hourlyCost->multipliedBy($workOrder->actual_duration);
+                    $totalOverheadCost = $totalOverheadCost->plus($workOrderCost);
+                }
+            }
+
+            // Total cost equals component cost + overhead
+            $totalProductionCost = $totalComponentCost->plus($totalOverheadCost);
 
             // Credit WIP Account (Transferring cost from WIP to Finished Goods)
-            $lineDTOs[] = new CreateJournalEntryLineDTO(
-                account_id: $wipAccountId,
-                debit: Money::of(0, $currency->code),
-                credit: $totalProductionCost,
-                description: "WIP Clearance: MO/{$mo->number}",
-                partner_id: null,
-                analytic_account_id: null,
-            );
+            if (! $totalComponentCost->isZero()) {
+                $lineDTOs[] = new CreateJournalEntryLineDTO(
+                    account_id: $wipAccountId,
+                    debit: Money::of(0, $currency->code),
+                    credit: $totalComponentCost,
+                    description: "WIP Clearance (Components): MO/{$mo->number}",
+                    partner_id: null,
+                    analytic_account_id: null,
+                );
+            }
+
+            // Credit Overhead Account if applicable
+            if (! $totalOverheadCost->isZero()) {
+                if (! $overheadAccountId) {
+                    throw new RuntimeException('Manufacturing Overhead account is not configured but overhead costs were calculated.');
+                }
+
+                $lineDTOs[] = new CreateJournalEntryLineDTO(
+                    account_id: $overheadAccountId,
+                    debit: Money::of(0, $currency->code),
+                    credit: $totalOverheadCost,
+                    description: "Manufacturing Overhead applied: MO/{$mo->number}",
+                    partner_id: null,
+                    analytic_account_id: null,
+                );
+            }
 
             // Debit Finished Goods Inventory
             $lineDTOs[] = new CreateJournalEntryLineDTO(
