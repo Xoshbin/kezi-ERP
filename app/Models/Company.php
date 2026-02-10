@@ -685,6 +685,22 @@ class Company extends Model
     }
 
     /**
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
+     */
+    public function defaultFinishedGoodsInventoryAccount(): BelongsTo
+    {
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_finished_goods_inventory_id');
+    }
+
+    /**
+     * @return BelongsTo<\Kezi\Accounting\Models\Account, static>
+     */
+    public function defaultRawMaterialsInventoryAccount(): BelongsTo
+    {
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_raw_materials_inventory_id');
+    }
+
+    /**
      * @return BelongsTo<Journal, static>
      */
     public function defaultManufacturingJournal(): BelongsTo

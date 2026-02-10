@@ -202,7 +202,28 @@ class CompanyResource extends Resource
                             ->label(__('company.default_pdc_payable_account'))
                             ->searchable()
                             ->preload(),
+                        TranslatableSelect::make('default_finished_goods_inventory_id')
+                            ->relationship('defaultFinishedGoodsInventoryAccount', 'name')
+                            ->label(__('company.default_finished_goods_inventory'))
+                            ->searchable()
+                            ->preload(),
+                        TranslatableSelect::make('default_wip_account_id')
+                            ->relationship('defaultWipAccount', 'name')
+                            ->label(__('company.default_wip_account'))
+                            ->searchable()
+                            ->preload(),
+                        TranslatableSelect::make('default_manufacturing_overhead_account_id')
+                            ->relationship('defaultManufacturingOverheadAccount', 'name')
+                            ->label(__('company.default_manufacturing_overhead_account'))
+                            ->searchable()
+                            ->preload(),
+                        TranslatableSelect::make('default_manufacturing_journal_id')
+                            ->relationship('defaultManufacturingJournal', 'name')
+                            ->label(__('company.default_manufacturing_journal'))
+                            ->searchable()
+                            ->preload(),
                     ])
+
                     ->columns(2)
                     ->columnSpanFull(),
 
