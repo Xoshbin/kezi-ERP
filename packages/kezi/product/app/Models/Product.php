@@ -214,7 +214,7 @@ class Product extends Model
             }
 
             // Phase 1: Standard costing is not supported
-            if ($product->inventory_valuation_method === ValuationMethod::STANDARD) {
+            if ($product->inventory_valuation_method === ValuationMethod::Standard) {
                 throw ValidationException::withMessages([
                     'inventory_valuation_method' => __('This project does not support Standard costing in Phase 1.'),
                 ]);

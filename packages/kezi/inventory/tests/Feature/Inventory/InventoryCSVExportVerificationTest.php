@@ -136,7 +136,7 @@ describe('Inventory CSV Export Verification', function () {
             'name' => 'Product with "Quotes" & Commas, Special chars',
             'sku' => 'SPECIAL-001',
             'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-            'inventory_valuation_method' => ValuationMethod::FIFO,
+            'inventory_valuation_method' => ValuationMethod::Fifo,
             'default_inventory_account_id' => test()->inventoryAccount->id,
         ]);
 
@@ -167,7 +167,7 @@ describe('Inventory CSV Export Verification', function () {
         // Create many products and stock quants
         $products = Product::factory()->count(100)->for(test()->company)->create([
             'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-            'inventory_valuation_method' => ValuationMethod::FIFO,
+            'inventory_valuation_method' => ValuationMethod::Fifo,
             'default_inventory_account_id' => test()->inventoryAccount->id,
         ]);
 
@@ -308,21 +308,21 @@ function setupExportTestData(): void
             'name' => 'Test Product A',
             'sku' => 'TEST-A',
             'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-            'inventory_valuation_method' => ValuationMethod::FIFO,
+            'inventory_valuation_method' => ValuationMethod::Fifo,
             'default_inventory_account_id' => test()->inventoryAccount->id,
         ]),
         Product::factory()->for(test()->company)->create([
             'name' => 'Test Product B',
             'sku' => 'TEST-B',
             'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-            'inventory_valuation_method' => ValuationMethod::AVCO,
+            'inventory_valuation_method' => ValuationMethod::Avco,
             'default_inventory_account_id' => test()->inventoryAccount->id,
         ]),
         Product::factory()->for(test()->company)->create([
             'name' => 'Test Product C',
             'sku' => 'TEST-C',
             'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-            'inventory_valuation_method' => ValuationMethod::LIFO,
+            'inventory_valuation_method' => ValuationMethod::Lifo,
             'default_inventory_account_id' => test()->inventoryAccount->id,
         ]),
     ]);

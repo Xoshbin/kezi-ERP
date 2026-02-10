@@ -26,7 +26,7 @@ beforeEach(function () {
 it('processes outgoing stock and calculates COGS (AVCO)', function () {
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'average_cost' => \Brick\Money\Money::of(100, $this->company->currency->code),
     ]);
 
@@ -82,7 +82,7 @@ it('processes outgoing stock and calculates COGS (AVCO)', function () {
 it('processes outgoing stock and calculates COGS (FIFO)', function () {
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
-        'inventory_valuation_method' => ValuationMethod::FIFO,
+        'inventory_valuation_method' => ValuationMethod::Fifo,
     ]);
 
     InventoryCostLayer::create([

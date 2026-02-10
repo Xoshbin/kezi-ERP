@@ -63,7 +63,7 @@ class ProductSeeder extends Seeder
             [
                 'name' => 'NVIDIA RTX 4090 Graphics Card',
                 'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-                'inventory_valuation_method' => ValuationMethod::FIFO,
+                'inventory_valuation_method' => ValuationMethod::Fifo,
                 'unit_price' => 2500000,
                 'default_inventory_account_id' => $inventoryAccount->id,
                 'default_stock_input_account_id' => $stockInputAccount->id,
@@ -80,7 +80,7 @@ class ProductSeeder extends Seeder
             [
                 'name' => 'DDR5 32GB Memory Module',
                 'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-                'inventory_valuation_method' => ValuationMethod::AVCO,
+                'inventory_valuation_method' => ValuationMethod::Avco,
                 'unit_price' => 400000,
                 'default_inventory_account_id' => $inventoryAccount->id,
                 'default_stock_input_account_id' => $stockInputAccount->id,
@@ -97,7 +97,7 @@ class ProductSeeder extends Seeder
             [
                 'name' => '2TB NVMe SSD Drive',
                 'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-                'inventory_valuation_method' => ValuationMethod::LIFO,
+                'inventory_valuation_method' => ValuationMethod::Lifo,
                 'unit_price' => 300000,
                 'default_inventory_account_id' => $inventoryAccount->id,
                 'default_stock_input_account_id' => $stockInputAccount->id,

@@ -21,21 +21,21 @@ it('can create a product using factory without specifying inventory valuation me
 
     expect($product)->toBeInstanceOf(Product::class)
         ->and($product->inventory_valuation_method)->toBeInstanceOf(ValuationMethod::class)
-        ->and($product->inventory_valuation_method)->toBe(ValuationMethod::AVCO);
+        ->and($product->inventory_valuation_method)->toBe(ValuationMethod::Avco);
 });
 
 it('can create a product with explicit inventory valuation method', function () {
     $product = Product::factory()->for($this->company)->create([
-        'inventory_valuation_method' => ValuationMethod::FIFO,
+        'inventory_valuation_method' => ValuationMethod::Fifo,
     ]);
 
-    expect($product->inventory_valuation_method)->toBe(ValuationMethod::FIFO);
+    expect($product->inventory_valuation_method)->toBe(ValuationMethod::Fifo);
 });
 
 it('defaults to AVCO valuation method when not specified', function () {
     $product = Product::factory()->for($this->company)->make();
 
-    expect($product->inventory_valuation_method)->toBe(ValuationMethod::AVCO);
+    expect($product->inventory_valuation_method)->toBe(ValuationMethod::Avco);
 });
 
 it('properly casts inventory valuation method to enum', function () {
@@ -44,5 +44,5 @@ it('properly casts inventory valuation method to enum', function () {
     ]);
 
     expect($product->inventory_valuation_method)->toBeInstanceOf(ValuationMethod::class)
-        ->and($product->inventory_valuation_method)->toBe(ValuationMethod::FIFO);
+        ->and($product->inventory_valuation_method)->toBe(ValuationMethod::Fifo);
 });

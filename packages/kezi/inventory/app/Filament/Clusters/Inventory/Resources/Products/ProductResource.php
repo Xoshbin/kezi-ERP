@@ -270,7 +270,7 @@ class ProductResource extends Resource
                                 collect(ValuationMethod::cases())
                                     ->mapWithKeys(fn (ValuationMethod $method) => [$method->value => $method->label()])
                             )
-                            ->default(ValuationMethod::AVCO->value)
+                            ->default(ValuationMethod::Avco->value)
                             ->searchable()
                             ->live()
                             ->visible(fn (Get $get) => $get('type') === \Kezi\Product\Enums\Products\ProductType::Storable->value)
@@ -499,10 +499,10 @@ class ProductResource extends Resource
                     ->badge()
                     ->formatStateUsing(fn (?ValuationMethod $state): string => $state?->label() ?? '-')
                     ->color(fn (?ValuationMethod $state): string => match ($state) {
-                        ValuationMethod::AVCO => 'primary',
-                        ValuationMethod::FIFO => 'success',
-                        ValuationMethod::LIFO => 'warning',
-                        ValuationMethod::STANDARD => 'info',
+                        ValuationMethod::Avco => 'primary',
+                        ValuationMethod::Fifo => 'success',
+                        ValuationMethod::Lifo => 'warning',
+                        ValuationMethod::Standard => 'info',
                         default => 'gray',
                     })
                     ->visible(fn () => request()->has('inventory_view'))

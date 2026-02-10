@@ -34,7 +34,7 @@ it('can create a product with explicit inventory valuation method', function () 
         'income_account_id' => $incomeAccount->id,
         'expense_account_id' => $expenseAccount->id,
         'default_inventory_account_id' => $inventoryAccount->id,
-        'inventory_valuation_method' => ValuationMethod::AVCO, // Explicitly set
+        'inventory_valuation_method' => ValuationMethod::Avco, // Explicitly set
         'is_active' => true,
         'company_id' => $this->company->id,
     ]);
@@ -44,14 +44,14 @@ it('can create a product with explicit inventory valuation method', function () 
         ->and($product->name)->toBe('iphone')
         ->and($product->sku)->toBe('iphone17')
         ->and($product->type)->toBe(\Kezi\Product\Enums\Products\ProductType::Storable)
-        ->and($product->inventory_valuation_method)->toBe(ValuationMethod::AVCO);
+        ->and($product->inventory_valuation_method)->toBe(ValuationMethod::Avco);
 
     // Verify it's saved in the database
     $this->assertDatabaseHas('products', [
         'name' => json_encode(['en' => 'iphone']),
         'sku' => 'iphone17',
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable->value,
-        'inventory_valuation_method' => ValuationMethod::AVCO->value,
+        'inventory_valuation_method' => ValuationMethod::Avco->value,
         'company_id' => $this->company->id,
     ]);
 });
@@ -60,7 +60,7 @@ it('can create a product using factory that matches the database default', funct
     $product = Product::factory()->for($this->company)->create();
 
     // Verify the factory default matches the database default
-    expect($product->inventory_valuation_method)->toBe(ValuationMethod::AVCO);
+    expect($product->inventory_valuation_method)->toBe(ValuationMethod::Avco);
 
     // Verify it's properly stored in the database
     $this->assertDatabaseHas('products', [
@@ -93,7 +93,7 @@ it('can create a product through Filament interface with default valuation metho
         'name' => json_encode(['en' => 'Test Product']),
         'sku' => 'TEST-001',
         'type' => \Kezi\Product\Enums\Products\ProductType::Storable->value,
-        'inventory_valuation_method' => ValuationMethod::AVCO->value,
+        'inventory_valuation_method' => ValuationMethod::Avco->value,
         'company_id' => $this->company->id,
     ]);
 });

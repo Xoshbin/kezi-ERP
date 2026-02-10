@@ -37,7 +37,7 @@ describe('VendorBill FIFO Cost Layer Creation', function () {
         $product = Product::factory()->create([
             'company_id' => $this->company->id,
             'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-            'inventory_valuation_method' => ValuationMethod::FIFO,
+            'inventory_valuation_method' => ValuationMethod::Fifo,
             'quantity_on_hand' => 0,
             'average_cost' => Money::of(0, $this->company->currency->code),
             'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -85,7 +85,7 @@ describe('VendorBill FIFO Cost Layer Creation', function () {
         $product = Product::factory()->create([
             'company_id' => $this->company->id,
             'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-            'inventory_valuation_method' => ValuationMethod::LIFO,
+            'inventory_valuation_method' => ValuationMethod::Lifo,
             'quantity_on_hand' => 0,
             'average_cost' => Money::of(0, $this->company->currency->code),
             'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -130,7 +130,7 @@ describe('VendorBill FIFO Cost Layer Creation', function () {
         $product = Product::factory()->create([
             'company_id' => $this->company->id,
             'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-            'inventory_valuation_method' => ValuationMethod::AVCO,
+            'inventory_valuation_method' => ValuationMethod::Avco,
             'quantity_on_hand' => 0,
             'average_cost' => Money::of(0, $this->company->currency->code),
             'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -176,7 +176,7 @@ describe('Multiple VendorBill Cost Layer Order', function () {
         $product = Product::factory()->create([
             'company_id' => $this->company->id,
             'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-            'inventory_valuation_method' => ValuationMethod::FIFO,
+            'inventory_valuation_method' => ValuationMethod::Fifo,
             'quantity_on_hand' => 0,
             'average_cost' => Money::of(0, $this->company->currency->code),
             'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -251,7 +251,7 @@ describe('StockMoveConfirmed Event', function () {
         $product = Product::factory()->create([
             'company_id' => $this->company->id,
             'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-            'inventory_valuation_method' => ValuationMethod::FIFO,
+            'inventory_valuation_method' => ValuationMethod::Fifo,
             'quantity_on_hand' => 0,
             'average_cost' => Money::of(0, $this->company->currency->code),
             'default_inventory_account_id' => $this->inventoryAccount->id,
@@ -294,7 +294,7 @@ describe('Anglo-Saxon Accounting Journal Entries', function () {
         $product = Product::factory()->create([
             'company_id' => $this->company->id,
             'type' => \Kezi\Product\Enums\Products\ProductType::Storable,
-            'inventory_valuation_method' => ValuationMethod::FIFO,
+            'inventory_valuation_method' => ValuationMethod::Fifo,
             'quantity_on_hand' => 0,
             'average_cost' => Money::of(0, $this->company->currency->code),
             'default_inventory_account_id' => $this->inventoryAccount->id,

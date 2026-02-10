@@ -40,7 +40,7 @@ beforeEach(function () {
 
     $this->product = Product::factory()->for($this->company)->create([
         'type' => ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
         'default_inventory_account_id' => $this->inventoryAccount->id,
         'default_stock_input_account_id' => $this->stockInputAccount->id,
         'default_cogs_account_id' => $this->cogsAccount->id,
