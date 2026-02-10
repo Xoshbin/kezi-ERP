@@ -90,12 +90,53 @@ class EmployeeService
             ]);
 
             // Deactivate current contract
+            // Refresh relation to ensure we get it from DB
+            $employee->unsetRelation('currentContract');
             $currentContract = $employee->currentContract;
+
             if ($currentContract) {
                 $currentContract->update([
                     'is_active' => false,
                     'end_date' => $terminationDate,
                 ]);
+
+                // Handle final payroll processing
+                // Calculate period start date (start of the month of termination)
+                $terminationInfo = \Carbon\Carbon::parse($terminationDate);
+                $periodStartDate = $terminationInfo->copy()->startOfMonth()->toDateString();
+
+                // Only process payroll if we have a valid period
+                try {
+                    $payrollService = app(\Kezi\HR\Services\HumanResources\PayrollService::class);
+                    // Check if payroll already exists for this period to avoid duplicates
+                    $existingPayroll = \Kezi\HR\Models\Payroll::where('employee_id', $employee->id)
+                        ->where('period_end_date', $terminationDate)
+                        ->exists();
+
+                    if (! $existingPayroll) {
+                        try {
+                            $payrollService->processPayroll(
+                                employee: $employee,
+                                periodStartDate: $periodStartDate,
+                                periodEndDate: $terminationDate,
+                                payDate: $terminationDate, // Pay on termination date
+                                user: $user
+                            )->update([
+                                'notes' => "Final Settlement - Termination Reason: {$reason}",
+                            ]);
+                        } catch (Exception $innerEx) {
+                            \Illuminate\Support\Facades\Log::error('Inner exception processing payroll: '.$innerEx->getMessage());
+                            throw $innerEx;
+                        }
+                    } else {
+                        \Illuminate\Support\Facades\Log::info("Payroll already exists for employee {$employee->id} on {$terminationDate}");
+                    }
+                } catch (Exception $e) {
+                    // Log error but don't fail termination
+                    \Illuminate\Support\Facades\Log::error("Failed to process final payroll for employee {$employee->id}: ".$e->getMessage());
+                }
+            } else {
+                \Illuminate\Support\Facades\Log::warning("No active contract found for employee {$employee->id} during termination.");
             }
 
             AuditLog::create([
@@ -110,8 +151,18 @@ class EmployeeService
                 'ip_address' => request()->ip(),
             ]);
 
-            // TODO: Handle final payroll processing
-            // TODO: Handle asset returns
+            // Log asset return check skipped
+            AuditLog::create([
+                'user_id' => $user->id,
+                'company_id' => $employee->company_id,
+                'event_type' => 'asset_check_skipped',
+                'auditable_type' => get_class($employee),
+                'auditable_id' => $employee->getKey(),
+                'old_values' => [],
+                'new_values' => [],
+                'description' => 'Asset return check skipped: No asset assignment feature.',
+                'ip_address' => request()->ip(),
+            ]);
         });
     }
 
@@ -133,7 +184,19 @@ class EmployeeService
                 'is_active' => true,
             ]);
 
-            // TODO: Create new employment contract if needed
+            // Warning: Create log to prompt manual contract creation
+            AuditLog::create([
+                'user_id' => $user->id,
+                'company_id' => $employee->company_id,
+                'event_type' => 'contract_review_needed',
+                'auditable_type' => get_class($employee),
+                'auditable_id' => $employee->getKey(),
+                'old_values' => [],
+                'new_values' => [],
+                'description' => 'Employee reactivated. Please review or create a new employment contract.',
+                'ip_address' => request()->ip(),
+            ]);
+
             AuditLog::create([
                 'user_id' => $user->id,
                 'company_id' => $employee->company_id,
@@ -184,7 +247,18 @@ class EmployeeService
                 'ip_address' => request()->ip(),
             ]);
 
-            // TODO: Handle contract updates if needed
+            // Log warning to review contract
+            AuditLog::create([
+                'user_id' => $user->id,
+                'company_id' => $employee->company_id,
+                'event_type' => 'contract_review_needed',
+                'auditable_type' => get_class($employee),
+                'auditable_id' => $employee->getKey(),
+                'old_values' => [],
+                'new_values' => [],
+                'description' => 'Employee transferred. Please review Employment Contract for potential role/salary updates.',
+                'ip_address' => request()->ip(),
+            ]);
         });
     }
 
