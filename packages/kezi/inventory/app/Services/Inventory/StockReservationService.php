@@ -68,110 +68,131 @@ class StockReservationService
     public function reserveForMove(StockMove $move, int $locationId): float
     {
         return DB::transaction(function () use ($move, $locationId) {
-            // Handle both old structure (direct product_id) and new structure (product lines)
-            // For now, if this is a multi-product move, we'll reserve for the first product line
-            // TODO: This service needs to be refactored to handle multi-product moves properly
+            $totalReservedOverall = 0.0;
 
-            $productId = null;
-            $quantity = 0;
+            // Handle both old structure (direct product_id) and new structure (product lines)
+            $productLinesData = [];
 
             // Check if this is an old-style stock move with direct product_id
-            if (isset($move->product_id) && $move->product_id) {
-                $productId = $move->product_id;
-                $quantity = $move->quantity;
+            // Even if product_id is set, newer logic might have created product lines
+            if (isset($move->product_id) && $move->product_id && $move->productLines()->count() === 0) {
+                $productLinesData[] = [
+                    'product_id' => $move->product_id,
+                    'quantity' => $move->quantity,
+                ];
             } else {
-                // New structure - use first product line
-                $firstProductLine = $move->productLines()->first();
-                if ($firstProductLine) {
-                    $productId = $firstProductLine->product_id;
-                    $quantity = $firstProductLine->quantity;
+                // Use all product lines
+                $productLines = $move->productLines()->get();
+                foreach ($productLines as $line) {
+                    $productLinesData[] = [
+                        'product_id' => $line->product_id,
+                        'quantity' => $line->quantity,
+                    ];
                 }
             }
 
-            // If we couldn't determine product_id, return 0
-            if (! $productId) {
-                return 0.0;
-            }
-
-            // Check if we already reserved for this move+location
-            $existingReservations = StockReservation::where('stock_move_id', $move->id)
-                ->where('product_id', $productId)
-                ->where('location_id', $locationId)
-                ->get();
-
-            if ($existingReservations->isNotEmpty()) {
-                return (float) $existingReservations->sum('quantity');
-            }
-
-            // Get available lots ordered by FEFO
-            $availableLots = $this->stockQuantService->getAvailableLotsByFEFO(
-                $move->company_id,
-                $productId,
-                $locationId
-            );
-
-            $totalReserved = 0.0;
-            $remainingToReserve = (float) $quantity;
-
-            // Reserve from lots using FEFO
-            foreach ($availableLots as $lotInfo) {
-                if ($remainingToReserve <= 0) {
-                    break;
-                }
-
-                $availableInLot = $lotInfo['available_quantity'];
-                $toReserveFromLot = min($remainingToReserve, $availableInLot);
-
-                if ($toReserveFromLot > 0) {
-                    // Reserve from this specific lot
-                    $this->stockQuantService->reserve(
-                        $move->company_id,
-                        $productId,
-                        $locationId,
-                        $toReserveFromLot,
-                        $lotInfo['lot_id']
-                    );
-
-                    $totalReserved += $toReserveFromLot;
-                    $remainingToReserve -= $toReserveFromLot;
+            // Aggregate requirements by product to handle multi-line moves for the same product
+            $requirements = [];
+            foreach ($productLinesData as $lineData) {
+                $pid = $lineData['product_id'];
+                if ($pid) {
+                    $requirements[$pid] = ($requirements[$pid] ?? 0.0) + (float) $lineData['quantity'];
                 }
             }
 
-            // If no lots available, try to reserve from non-lot stock
-            if ($totalReserved == 0) {
-                $available = $this->stockQuantService->getAvailableQuantityByLot(
+            foreach ($requirements as $productId => $quantity) {
+                // Check if we already reserved enough for this move+location+product
+                $existingReservations = StockReservation::where('stock_move_id', $move->id)
+                    ->where('product_id', $productId)
+                    ->where('location_id', $locationId)
+                    ->get();
+
+                $alreadyReserved = (float) $existingReservations->sum('quantity');
+
+                if ($alreadyReserved >= $quantity) {
+                    $totalReservedOverall += $alreadyReserved;
+
+                    continue;
+                }
+
+                $remainingToReserve = $quantity - $alreadyReserved;
+                $newlyReservedForProduct = 0.0;
+
+                // Get available lots ordered by FEFO
+                $availableLots = $this->stockQuantService->getAvailableLotsByFEFO(
                     $move->company_id,
                     $productId,
-                    $locationId,
-                    null // No lot
+                    $locationId
                 );
 
-                $toReserve = min($remainingToReserve, $available);
-                if ($toReserve > 0) {
-                    $this->stockQuantService->reserve(
+                // Reserve from lots using FEFO
+                foreach ($availableLots as $lotInfo) {
+                    if ($remainingToReserve <= 0) {
+                        break;
+                    }
+
+                    $availableInLot = $lotInfo['available_quantity'];
+                    $toReserveFromLot = min($remainingToReserve, $availableInLot);
+
+                    if ($toReserveFromLot > 0) {
+                        // Reserve from this specific lot
+                        $this->stockQuantService->reserve(
+                            $move->company_id,
+                            $productId,
+                            $locationId,
+                            $toReserveFromLot,
+                            $lotInfo['lot_id']
+                        );
+
+                        $newlyReservedForProduct += $toReserveFromLot;
+                        $remainingToReserve -= $toReserveFromLot;
+                    }
+                }
+
+                // If still quantity remaining after lots, try to reserve from non-lot stock
+                if ($remainingToReserve > 0) {
+                    $available = $this->stockQuantService->getAvailableQuantityByLot(
                         $move->company_id,
                         $productId,
                         $locationId,
-                        $toReserve,
-                        null
+                        null // No lot
                     );
 
-                    $totalReserved += $toReserve;
+                    $toReserve = min($remainingToReserve, $available);
+                    if ($toReserve > 0) {
+                        $this->stockQuantService->reserve(
+                            $move->company_id,
+                            $productId,
+                            $locationId,
+                            $toReserve,
+                            null
+                        );
+
+                        $newlyReservedForProduct += $toReserve;
+                    }
                 }
+
+                // Create or update the reservation record
+                if ($newlyReservedForProduct > 0) {
+                    $reservation = $existingReservations->first();
+
+                    if ($reservation) {
+                        $reservation->increment('quantity', $newlyReservedForProduct);
+                    } else {
+                        StockReservation::create([
+                            'company_id' => $move->company_id,
+                            'product_id' => $productId,
+                            'stock_move_id' => $move->id,
+                            'location_id' => $locationId,
+                            'quantity' => $newlyReservedForProduct,
+                        ]);
+                    }
+                }
+
+                $totalReservedOverall += ($alreadyReserved + $newlyReservedForProduct);
             }
 
-            // Create a single reservation record for the total reserved quantity
-            if ($totalReserved > 0) {
-                StockReservation::create([
-                    'company_id' => $move->company_id,
-                    'product_id' => $productId,
-                    'stock_move_id' => $move->id,
-                    'location_id' => $locationId,
-                    'quantity' => $totalReserved,
-                ]);
-            }
-
-            return $totalReserved;
+            return $totalReservedOverall;
         });
     }
 
