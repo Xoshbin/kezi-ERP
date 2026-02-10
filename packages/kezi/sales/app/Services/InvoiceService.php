@@ -89,6 +89,21 @@ class InvoiceService
             throw new Exception('Only posted invoices can be reset to draft.');
         }
 
+        // Safety Case: Check for linked payments.
+        // If an invoice has confirmed payments, it should NOT be reset to draft.
+        if ($invoice->isFullyPaid() || $invoice->isPartiallyPaid()) {
+            throw new Exception('Cannot reset a paid or partially paid invoice to draft. Please cancel the payments first.');
+        }
+
+        // Safety Case: Check for adjustment documents.
+        // If an invoice has credit notes or other adjustments, they must be cancelled/reversed first.
+        if ($invoice->adjustmentDocuments()->exists()) {
+            throw new Exception('Cannot reset an invoice that has linked adjustment documents. Please cancel those documents first.');
+        }
+
+        // Accounting Principle: Enforce lock date for the invoice date (since we are reversing it)
+        $this->lockDateService->enforce(Company::findOrFail($invoice->company_id), Carbon::parse($invoice->invoice_date));
+
         DB::transaction(function () use ($invoice, $user, $reason) {
             $originalEntry = $invoice->journalEntry;
             if (! $originalEntry) {
@@ -128,14 +143,14 @@ class InvoiceService
                 'original_posted_at' => $originalPostedAt?->toISOString(),
             ];
 
-            // Step 5: Update the invoice's status and clear posted fields.
-            $invoice->status = InvoiceStatus::Draft;
-            $invoice->posted_at = null;
-            $invoice->journal_entry_id = null;
-            $invoice->invoice_number = null;
-            $invoice->reset_to_draft_log = $resetLog;
-
-            $invoice->save();
+            // Step 5: Update the invoice
+            $invoice->update([
+                'status' => InvoiceStatus::Draft,
+                'invoice_number' => null,
+                'posted_at' => null,
+                'journal_entry_id' => null,
+                'reset_to_draft_log' => $resetLog,
+            ]);
         });
     }
 

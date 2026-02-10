@@ -2,6 +2,7 @@
 
 use App\Models\Company;
 use App\Models\User;
+use Brick\Money\Money;
 use Filament\Facades\Filament;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
 use Kezi\Accounting\Models\Account;
@@ -140,35 +141,35 @@ test('edit page shows all expected actions', function () {
     $component->assertActionExists('post'); // For draft invoices
 });
 
-// TODO:: In future if you pland to add back the reset button just enable the test below and enable the action button in the Invoice resource
-/*
- * Temprarily disable reset button since we are not sure about this feature wheter it's good or no
- * the feature is woking and passing tests */
+it('show different actions for posted invoice on edit page', function () {
+    // Arrange
+    $invoice = Invoice::factory()->create([
+        'company_id' => $this->company->id,
+        'customer_id' => $this->customer->id,
+        'currency_id' => $this->currency->id,
+        'status' => InvoiceStatus::Posted,
+        'invoice_number' => 'INV-001',
+    ]);
 
-// test('edit page shows different actions for posted invoice', function () {
-//     // Arrange
-//     $invoice = Invoice::factory()->create([
-//         'company_id' => $this->company->id,
-//         'customer_id' => $this->customer->id,
-//         'currency_id' => $this->currency->id,
-//         'status' => InvoiceStatus::Posted,
-//         'invoice_number' => 'INV-001',
-//     ]);
+    InvoiceLine::factory()->create([
+        'invoice_id' => $invoice->id,
+        'income_account_id' => $this->account->id,
+        'unit_price' => Money::of(100, $this->currency->code),
+        'quantity' => 1,
+    ]);
 
-//     InvoiceLine::factory()->create([
-//         'invoice_id' => $invoice->id,
-//         'income_account_id' => $this->account->id,
-//     ]);
+    $invoice->calculateTotalsFromLines();
+    $invoice->save();
 
-//     // Action
-//     $component = Livewire::actingAs($this->user)
-//         ->test(InvoiceResource\Pages\EditInvoice::class, [
-//             'record' => $invoice->getRouteKey(),
-//         ]);
+    // Action
+    $component = Livewire::actingAs($this->user)
+        ->test(EditInvoice::class, [
+            'record' => $invoice->getRouteKey(),
+        ]);
 
-//     // Assert - Check that all expected actions exist
-//     $component->assertActionExists('viewPdf');
-//     $component->assertActionExists('downloadPdf');
-//     $component->assertActionExists('registerPayment'); // For posted invoices
-//     $component->assertActionExists('resetToDraft'); // For posted invoices
-// });
+    // Assert - Check that all expected actions exist
+    $component->assertActionExists('viewPdf');
+    $component->assertActionExists('downloadPdf');
+    $component->assertActionExists('register_payment'); // For posted invoices
+    $component->assertActionExists('resetToDraft'); // For posted invoices
+});

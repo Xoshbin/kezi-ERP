@@ -731,29 +731,33 @@ class InvoiceResource extends Resource
                         fn (Invoice $record) => $record->status === InvoiceStatus::Posted &&
                         ! $record->getRemainingAmount()->isZero()
                     ),
-                // Action::make('resetToDraft')
-                //     ->label(__('invoice.reset_to_draft'))
-                //     ->action(function (Invoice $record, array $data) {
-                //         $invoiceService = app(InvoiceService::class);
-                //         try {
-                //             $invoiceService->resetToDraft($record, Auth::user(), $data['reason']);
-                //             Notification::make()
-                //                 ->title(__('invoice.invoice_reset_to_draft_successfully'))
-                //                 ->success()
-                //                 ->send();
-                //         } catch (\Exception $e) {
-                //             Notification::make()
-                //                 ->title(__('invoice.error_resetting_invoice_to_draft'))
-                //                 ->body($e->getMessage())
-                //                 ->danger()
-                //                 ->send();
-                //         }
-                //     })
-                //     ->form([
-                //         Forms\Components\Textarea::make('reason')->label(__('invoice.reason'))->required(),
-                //     ])
-                //     ->requiresConfirmation()
-                //     ->visible(fn(Invoice $record) => $record->status === InvoiceStatus::Posted),
+                Action::make('resetToDraft')
+                    ->label(__('accounting::invoice.reset_to_draft'))
+                    ->color('warning')
+                    ->icon('heroicon-o-arrow-path')
+                    ->requiresConfirmation()
+                    ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Posted && $record->isNotPaid())
+                    ->form([
+                        Textarea::make('reason')
+                            ->label(__('accounting::invoice.reason'))
+                            ->required(),
+                    ])
+                    ->action(function (Invoice $record, array $data): void {
+                        $invoiceService = app(InvoiceService::class);
+                        try {
+                            $invoiceService->resetToDraft($record, Auth::user(), $data['reason']);
+                            Notification::make()
+                                ->title(__('accounting::invoice.notification.reset_success'))
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->title(__('accounting::invoice.notification.reset_error'))
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    }),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
