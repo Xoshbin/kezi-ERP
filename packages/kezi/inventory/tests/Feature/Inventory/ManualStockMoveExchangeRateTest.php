@@ -97,19 +97,19 @@ beforeEach(function () {
     $this->product1 = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
     ]);
 
     $this->product2 = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
     ]);
 
     $this->product3 = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => ProductType::Storable,
-        'inventory_valuation_method' => ValuationMethod::AVCO,
+        'inventory_valuation_method' => ValuationMethod::Avco,
     ]);
 });
 
