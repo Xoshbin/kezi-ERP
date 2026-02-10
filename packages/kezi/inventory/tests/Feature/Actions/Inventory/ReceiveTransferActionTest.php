@@ -13,6 +13,8 @@ use Kezi\Inventory\Models\StockLocation;
 use Kezi\Inventory\Models\StockMove;
 use Kezi\Inventory\Models\StockMoveProductLine;
 use Kezi\Inventory\Models\StockPicking;
+use Kezi\Inventory\Models\StockQuant;
+use Kezi\Inventory\Models\StockReservation;
 use Kezi\Product\Models\Product;
 use Tests\Traits\WithConfiguredCompany;
 
@@ -63,6 +65,23 @@ it('receives a transfer from transit location', function () {
         'company_id' => $this->company->id,
     ]);
 
+    // Create a reservation for this move
+    StockQuant::factory()->create([
+        'company_id' => $this->company->id,
+        'product_id' => $product->id,
+        'location_id' => $sourceLocation->id,
+        'quantity' => 10,
+        'reserved_quantity' => 7,
+    ]);
+
+    StockReservation::create([
+        'company_id' => $this->company->id,
+        'product_id' => $product->id,
+        'stock_move_id' => $move->id,
+        'location_id' => $sourceLocation->id,
+        'quantity' => 7,
+    ]);
+
     $dto = new ReceiveTransferDTO(
         stock_picking_id: $picking->id,
         received_by_user_id: $this->user->id
@@ -96,4 +115,13 @@ it('receives a transfer from transit location', function () {
     // Verify original move is now Done
     $move->refresh();
     expect($move->status)->toBe(StockMoveStatus::Done);
+
+    // Verify reservation was released
+    expect(StockReservation::where('stock_move_id', $move->id)->count())->toBe(0);
+
+    // Verify quant reservation was released
+    $quant = StockQuant::where('product_id', $product->id)
+        ->where('location_id', $sourceLocation->id)
+        ->first();
+    expect($quant->reserved_quantity)->toEqual(0.0);
 });

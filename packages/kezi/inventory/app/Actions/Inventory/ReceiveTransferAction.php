@@ -13,6 +13,7 @@ use Kezi\Inventory\Enums\Inventory\StockMoveType;
 use Kezi\Inventory\Enums\Inventory\StockPickingState;
 use Kezi\Inventory\Models\StockPicking;
 use Kezi\Inventory\Services\Inventory\StockMoveService;
+use Kezi\Inventory\Services\Inventory\StockReservationService;
 
 /**
  * Receive Transfer Action
@@ -28,6 +29,7 @@ class ReceiveTransferAction
 {
     public function __construct(
         private readonly StockMoveService $stockMoveService,
+        private readonly StockReservationService $reservationService,
     ) {}
 
     public function execute(StockPicking $picking, ReceiveTransferDTO $dto, User $user): StockPicking
@@ -81,7 +83,10 @@ class ReceiveTransferAction
                 'completed_at' => Carbon::now(),
             ]);
 
-            // TODO: Release stock reservations
+            // Release stock reservations
+            foreach ($picking->stockMoves as $existingMove) {
+                $this->reservationService->releaseForMove($existingMove);
+            }
 
             /** @var StockPicking $result */
             $result = $picking->fresh(['stockMoves.productLines', 'destinationLocation']);
