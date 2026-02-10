@@ -211,6 +211,48 @@ test('it applies correct automatic deductions', function () {
     Gate::shouldReceive('forUser')->with($user)->andReturnSelf();
     Gate::shouldReceive('authorize')->with('create', Payroll::class)->andReturn(true);
 
+    // Seed Deduction Rules
+    \Kezi\HR\Models\DeductionRule::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'Income Tax',
+        'code' => 'income_tax',
+        'type' => 'percentage',
+        'value' => 0.10,
+    ]);
+    \Kezi\HR\Models\DeductionRule::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'Social Security',
+        'code' => 'social_security',
+        'type' => 'percentage',
+        'value' => 0.05,
+    ]);
+    \Kezi\HR\Models\DeductionRule::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'Health Insurance',
+        'code' => 'health_insurance',
+        'type' => 'fixed_amount',
+        'amount' => 50000, // 50.000 (assuming minor units or direct value depending on implementation, previously Money::of(50, currency))
+        // WAIT: Previous code was matching Money::of(50, 'IQD').
+        // IQD has 3 decimal places usually, but in tests it was instantiated as Money::of(50, 'IQD').
+        // If IQD has 3 decimals, 50 units = 50.000.
+        // Money::of(50, 'IQD') creates 50.000.
+        // DeductionRule amount is in minor units?
+        // Money::ofMinor(amount, currency).
+        // If 50.000 IQD, minor units = 50 * 1000 = 50000?
+        // Let's check Currency config.
+        // The test says: $this->currency = ... ['decimal_places' => 3].
+        // So Money::of(50, 'IQD') = 50.000.
+        // Minor units for 50.000 is 50000.
+        'currency_code' => 'IQD',
+    ]);
+    \Kezi\HR\Models\DeductionRule::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'Pension',
+        'code' => 'pension', // Mapped to 'pension_contribution' in service
+        'type' => 'percentage',
+        'value' => 0.03,
+    ]);
+
     $payroll = $this->service->processPayroll(
         $this->employee,
         '2023-01-01',
@@ -244,6 +286,37 @@ test('it generates correct accounting lines with balanced debits and credits', f
     $this->company->update([
         'default_salary_expense_account_id' => $salaryExpenseAccount->id,
         'default_salary_payable_account_id' => $salaryPayableAccount->id,
+    ]);
+
+    // Seed Deduction Rules for accounting test
+    \Kezi\HR\Models\DeductionRule::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'Income Tax',
+        'code' => 'income_tax',
+        'type' => 'percentage',
+        'value' => 0.10,
+    ]);
+    \Kezi\HR\Models\DeductionRule::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'Social Security',
+        'code' => 'social_security',
+        'type' => 'percentage',
+        'value' => 0.05,
+    ]);
+    \Kezi\HR\Models\DeductionRule::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'Health Insurance',
+        'code' => 'health_insurance',
+        'type' => 'fixed_amount',
+        'amount' => 50000,
+        'currency_code' => 'IQD',
+    ]);
+    \Kezi\HR\Models\DeductionRule::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'Pension',
+        'code' => 'pension',
+        'type' => 'percentage',
+        'value' => 0.03,
     ]);
 
     $payroll = $this->service->processPayroll(
