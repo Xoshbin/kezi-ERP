@@ -11,6 +11,14 @@
             @payment-complete="handlePaymentComplete"
         />
 
+        <!-- Close Session Modal -->
+        <CloseSessionModal 
+            :visible="showCloseSessionModal"
+            :currency-code="currentCurrency"
+            @close="showCloseSessionModal = false"
+            @session-closed="onSessionClosed"
+        />
+
         <!-- Success Overlay -->
         <div v-if="orderSuccess" class="fixed inset-0 z-[110] bg-white dark:bg-gray-900 flex flex-col items-center justify-center text-center p-6 transition-all duration-300">
             <div class="w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mb-6 animate-bounce">
@@ -188,6 +196,9 @@
                     </button>
                 </div>
 
+                <!-- Customer Selection -->
+                <CustomerSelector />
+
                 <!-- Cart Items List -->
                 <div class="flex-1 overflow-y-auto p-4 space-y-4">
                     <div v-if="cart.items.length === 0" class="flex flex-col items-center justify-center h-full text-gray-400 text-sm">
@@ -257,6 +268,8 @@ import { syncOrders } from './services/sync-service';
 import { db } from './db/pos-db';
 import OpenSessionModal from './components/OpenSessionModal.vue';
 import PaymentModal from './components/PaymentModal.vue';
+import CloseSessionModal from './components/CloseSessionModal.vue';
+import CustomerSelector from './components/CustomerSelector.vue';
 
 const connectivity = useConnectivityStore();
 const cart = useCartStore();
@@ -265,6 +278,7 @@ const sessionStore = useSessionStore();
 
 const currentCurrency = ref('USD');
 const showPaymentModal = ref(false);
+const showCloseSessionModal = ref(false);
 const orderSuccess = ref(null);
 
 onMounted(async () => {
@@ -305,23 +319,13 @@ onMounted(async () => {
     await cart.loadTaxes();
 });
 
-const handleCloseSession = async () => {
-    const amount = window.prompt('Enter closing cash amount (e.g. 150.00):', '0.00');
-    if (amount === null) return;
-    
-    const minorUnits = Math.round(parseFloat(amount) * 100);
-    if (isNaN(minorUnits) || minorUnits < 0) {
-        alert('Invalid amount');
-        return;
-    }
+const handleCloseSession = () => {
+    showCloseSessionModal.value = true;
+};
 
-    if (window.confirm('Are you sure you want to close this session? This will clear your current cart.')) {
-        try {
-            await sessionStore.closeSession(minorUnits);
-        } catch (e) {
-            alert('Failed to close session: ' + (e.response?.data?.message || e.message));
-        }
-    }
+const onSessionClosed = (summary) => {
+    showCloseSessionModal.value = false;
+    // You could show a final summary report here if desired
 };
 
 // ... existing code ...

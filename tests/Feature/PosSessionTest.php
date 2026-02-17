@@ -137,6 +137,26 @@ test('close session returns summary', function () {
         ]);
 });
 
+test('close session with zero orders returns zero summary', function () {
+    Sanctum::actingAs($this->user, ['*']);
+    $profile = PosProfile::factory()->create(['company_id' => $this->company->id]);
+    $session = PosSession::factory()->create([
+        'pos_profile_id' => $profile->id,
+        'user_id' => $this->user->id,
+        'status' => 'opened',
+    ]);
+
+    $response = $this->postJson("/api/pos/sessions/{$session->id}/close", [
+        'closing_cash' => 10000,
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJsonFragment([
+            'order_count' => 0,
+            'total_revenue' => 0,
+        ]);
+});
+
 test('cannot close already closed session', function () {
     Sanctum::actingAs($this->user, ['*']);
     $profile = PosProfile::factory()->create(['company_id' => $this->company->id]);
