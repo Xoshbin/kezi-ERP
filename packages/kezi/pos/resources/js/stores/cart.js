@@ -83,6 +83,10 @@ export const useCartStore = defineStore('cart', {
                 }
             }
         },
+
+        setCustomer(customer) {
+            this.currentCustomer = customer;
+        },
         
         async clearCart() {
             this.items = [];

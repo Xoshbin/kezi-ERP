@@ -10,6 +10,7 @@ export const useSessionStore = defineStore('session', {
         loading: false,
         error: null,
         showOpenSessionModal: false,
+        lastClosedSessionSummary: null,
     }),
 
     getters: {
@@ -73,12 +74,16 @@ export const useSessionStore = defineStore('session', {
             this.error = null;
             try {
                 const sessionId = this.sessionId;
-                await syncService.closeSession(sessionId, closingCashMinor);
+                const data = await syncService.closeSession(sessionId, closingCashMinor);
+                
+                this.lastClosedSessionSummary = data.summary;
                 this.currentSession = null;
                 this.showOpenSessionModal = true;
                 
                 const cart = useCartStore();
                 await cart.clearCart();
+                
+                return data;
             } catch (error) {
                 this.error = error.response?.data?.message || 'Failed to close session.';
                 throw error;
