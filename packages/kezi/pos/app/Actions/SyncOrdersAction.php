@@ -5,12 +5,17 @@ namespace Kezi\Pos\Actions;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Kezi\Pos\DataTransferObjects\PosOrderData;
 use Kezi\Pos\Models\PosOrder;
 use Kezi\Pos\Models\PosOrderLine;
 
 class SyncOrdersAction
 {
+    public function __construct(
+        protected DeductPosOrderStockAction $deductStockAction,
+    ) {}
+
     /**
      * @param  Collection<int, PosOrderData>  $ordersData
      */
@@ -67,6 +72,17 @@ class SyncOrdersAction
                             'total_amount' => \Brick\Money\Money::ofMinor($lineData->total_amount, $currencyCode),
                             'metadata' => $lineData->metadata,
                         ]);
+                    }
+
+                    // Deduct stock after order lines are created
+                    try {
+                        $this->deductStockAction->execute($order);
+                    } catch (\Exception $e) {
+                        $strictMode = $order->session?->profile?->settings['strict_stock_check'] ?? false;
+                        if ($strictMode) {
+                            throw $e;
+                        }
+                        Log::warning("Stock deduction failed for POS order {$orderData->uuid}: {$e->getMessage()}");
                     }
                 });
 

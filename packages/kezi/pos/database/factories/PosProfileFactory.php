@@ -19,6 +19,7 @@ class PosProfileFactory extends Factory
             'features' => [],
             'settings' => [],
             'is_active' => true,
+            'stock_location_id' => null,
         ];
     }
 }
