@@ -3,6 +3,7 @@
 namespace Kezi\Pos\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Kezi\Pos\Http\Requests\OpenSessionRequest;
 use Kezi\Pos\Http\Resources\PosSessionResource;
@@ -11,11 +12,14 @@ use Kezi\Pos\Models\PosSession;
 
 class SessionController extends Controller
 {
-    public function open(OpenSessionRequest $request)
+    public function open(OpenSessionRequest $request): JsonResponse
     {
         // One session per user at a time across any profile
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
         $existing = PosSession::with('profile')
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', $user->id)
             ->where('status', 'opened')
             ->first();
 
@@ -26,12 +30,13 @@ class SessionController extends Controller
             ], 409);
         }
 
+        /** @var PosProfile $profile */
         $profile = PosProfile::with('company.currency')->findOrFail($request->pos_profile_id);
         $currency = $profile->company->currency;
 
         $session = PosSession::create([
             'pos_profile_id' => $profile->id,
-            'user_id' => $request->user()->id,
+            'user_id' => $user->id,
             'opened_at' => now(),
             'opening_cash' => \Brick\Money\Money::ofMinor($request->opening_cash, $currency->code),
             'status' => 'opened',
@@ -43,9 +48,12 @@ class SessionController extends Controller
         ], 201);
     }
 
-    public function close(Request $request, PosSession $session)
+    public function close(Request $request, PosSession $session): JsonResponse
     {
-        if ($session->user_id !== $request->user()->id) {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        if ($session->user_id !== $user->id) {
             abort(403);
         }
 
@@ -78,9 +86,12 @@ class SessionController extends Controller
         ]);
     }
 
-    public function current(Request $request)
+    public function current(Request $request): JsonResponse
     {
-        $session = PosSession::where('user_id', $request->user()->id)
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        $session = PosSession::where('user_id', $user->id)
             ->where('status', 'opened')
             ->latest()
             ->with(['profile', 'orders'])

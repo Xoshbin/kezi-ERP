@@ -22,9 +22,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class PosSession extends Model
 {
+    /** @use HasFactory<\Kezi\Pos\Database\Factories\PosSessionFactory> */
     use HasFactory;
 
-    protected static function newFactory()
+    protected static function newFactory(): \Kezi\Pos\Database\Factories\PosSessionFactory
     {
         return \Kezi\Pos\Database\Factories\PosSessionFactory::new();
     }

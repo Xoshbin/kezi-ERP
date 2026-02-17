@@ -13,16 +13,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $company_id
  * @property string $name
  * @property string $type
- * @property array $features
- * @property array $settings
+ * @property array<string, mixed> $features
+ * @property array<string, mixed> $settings
  * @property bool $is_active
  * @property-read \App\Models\Company $company
  */
 class PosProfile extends Model
 {
+    /** @use HasFactory<\Kezi\Pos\Database\Factories\PosProfileFactory> */
     use HasFactory;
 
-    protected static function newFactory()
+    protected static function newFactory(): \Kezi\Pos\Database\Factories\PosProfileFactory
     {
         return \Kezi\Pos\Database\Factories\PosProfileFactory::new();
     }

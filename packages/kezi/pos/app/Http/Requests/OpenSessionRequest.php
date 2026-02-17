@@ -12,20 +12,27 @@ class OpenSessionRequest extends FormRequest
         return true;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [
             'pos_profile_id' => [
                 'required',
                 'exists:pos_profiles,id',
-                function ($attribute, $value, $fail) {
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    /** @var PosProfile|null $profile */
                     $profile = PosProfile::find($value);
                     if (! $profile) {
                         return;
                     }
 
+                    /** @var \App\Models\User $user */
+                    $user = $this->user();
+
                     // Company scoping: profile must belong to one of user's companies
-                    $userCompanies = $this->user()->companies()->pluck('companies.id')->toArray();
+                    $userCompanies = $user->companies()->pluck('companies.id')->toArray();
                     if (! in_array($profile->company_id, $userCompanies)) {
                         $fail('You do not have access to this POS profile.');
                     }
@@ -40,6 +47,9 @@ class OpenSessionRequest extends FormRequest
         ];
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [

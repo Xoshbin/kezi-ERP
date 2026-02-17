@@ -221,6 +221,7 @@ import { ref, onMounted, computed, watch } from 'vue';
 import { useConnectivityStore } from './stores/connectivity';
 import { useCartStore } from './stores/cart';
 import { useProductsStore } from './stores/products';
+import { useSessionStore } from './stores/session';
 import { startSyncWorker } from './services/sync-worker';
 import { db } from './db/pos-db';
 import OpenSessionModal from './components/OpenSessionModal.vue';
