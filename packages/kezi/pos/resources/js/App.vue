@@ -53,6 +53,12 @@
             </div>
         </div>
 
+        <ScanToast 
+            :visible="scanToast.visible" 
+            :type="scanToast.type" 
+            :message="scanToast.message" 
+        />
+
         <!-- Top Bar -->
         <header class="h-16 bg-white dark:bg-gray-900 shadow-sm border-b dark:border-gray-800 flex items-center justify-between px-6 z-10">
             <div class="flex items-center gap-4">
@@ -80,7 +86,7 @@
                     v-if="sessionStore.hasActiveSession"
                     @click="showOrderHistory = true"
                     class="w-8 h-8 rounded-lg bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 transition-all flex items-center justify-center border dark:border-gray-700"
-                    title="Order History"
+                    title="Order History (F9)"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -111,7 +117,7 @@
                         v-if="sessionStore.hasActiveSession"
                         @click="handleCloseSession" 
                         class="w-10 h-10 rounded-xl bg-gray-50 hover:bg-rose-50 dark:bg-gray-800 dark:hover:bg-rose-500/10 text-gray-400 hover:text-rose-600 transition-all flex items-center justify-center border dark:border-gray-700 hover:border-rose-200"
-                        title="Close Session"
+                        title="Close Session (F10)"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                     </button>
@@ -158,9 +164,10 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                             </span>
                             <input 
+                                ref="searchInputRef"
                                 v-model="searchQuery"
                                 type="text" 
-                                placeholder="Search products, barcodes..." 
+                                placeholder="Search products, barcodes... (F2)" 
                                 class="w-full bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 rounded-2xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none shadow-sm dark:text-white"
                             >
                         </div>
@@ -214,7 +221,7 @@
                         <h2 class="text-xl font-extrabold text-gray-900 dark:text-white">Current Order</h2>
                         <p class="text-xs text-gray-400 leading-none">Order #Local-Draft</p>
                     </div>
-                    <button @click="cart.clearCart" class="text-gray-400 hover:text-red-500 transition-colors" title="Clear Cart">
+                    <button @click="cart.clearCart" class="text-gray-400 hover:text-red-500 transition-colors" title="Clear Cart (F8)">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                     </button>
                 </div>
@@ -270,6 +277,7 @@
 
                     <button @click="showPaymentModal = true" class="pay-button w-full bg-primary-600 hover:bg-primary-700 text-white py-5 rounded-3xl font-extrabold text-xl shadow-xl shadow-primary-500/30 flex items-center justify-center gap-3 transition-all active:scale-95 group" :disabled="cart.items.length === 0" :class="{'opacity-50 cursor-not-allowed': cart.items.length === 0}">
                         Confirm & Pay
+                        <span class="text-[10px] opacity-60 bg-white/20 px-1.5 py-0.5 rounded ml-2">F4</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
@@ -295,6 +303,9 @@ import CloseSessionModal from './components/CloseSessionModal.vue';
 import CustomerSelector from './components/CustomerSelector.vue';
 import OrderHistoryPanel from './components/OrderHistoryPanel.vue';
 import { useReceipt } from './composables/useReceipt';
+import { useBarcodeScanner } from './composables/useBarcodeScanner';
+import { useKeyboardShortcuts } from './composables/useKeyboardShortcuts';
+import ScanToast from './components/ScanToast.vue';
 
 const connectivity = useConnectivityStore();
 const cart = useCartStore();
@@ -305,6 +316,88 @@ const currentCurrency = ref('USD');
 const showPaymentModal = ref(false);
 const showCloseSessionModal = ref(false);
 const orderSuccess = ref(null);
+
+// Barcode scanner
+const scanToast = ref({ visible: false, type: 'success', message: '' });
+
+const showScanFeedback = (type, message) => {
+    scanToast.value = { visible: true, type, message };
+    setTimeout(() => { scanToast.value.visible = false; }, type === 'success' ? 1500 : 2500);
+};
+
+const handleBarcodeScan = (barcode) => {
+    const product = productsStore.products.find(
+        p => p.sku && p.sku.toLowerCase() === barcode.toLowerCase()
+    );
+    
+    if (product) {
+        cart.addItem(product);
+        showScanFeedback('success', `"${product.name}" added to cart`);
+    } else {
+        showScanFeedback('error', `Product not found: ${barcode}`);
+    }
+};
+
+const { pauseScanner, resumeScanner } = useBarcodeScanner(handleBarcodeScan);
+
+// Keyboard shortcuts
+const searchInputRef = ref(null);
+
+useKeyboardShortcuts({
+    focusSearch: () => {
+        searchInputRef.value?.focus();
+    },
+    openPayment: () => {
+        if (cart.items.length > 0 && !showPaymentModal.value) {
+            showPaymentModal.value = true;
+        }
+    },
+    clearCart: () => {
+        if (cart.items.length > 0) {
+            cart.clearCart();
+        }
+    },
+    toggleOrderHistory: () => {
+        showOrderHistory.value = !showOrderHistory.value;
+    },
+    closeSession: () => {
+        if (sessionStore.hasActiveSession) {
+            showCloseSessionModal.value = true;
+        }
+    },
+    closeModal: () => {
+        if (orderSuccess.value) {
+            orderSuccess.value = null;
+        } else if (showPaymentModal.value) {
+            showPaymentModal.value = false;
+        } else if (showCloseSessionModal.value) {
+            showCloseSessionModal.value = false;
+        } else if (showOrderHistory.value) {
+            showOrderHistory.value = false;
+        }
+    },
+    incrementLastItem: () => {
+        const lastItem = cart.items[cart.items.length - 1];
+        if (lastItem) cart.addItem(lastItem);
+    },
+    decrementLastItem: () => {
+        const lastItem = cart.items[cart.items.length - 1];
+        if (lastItem) cart.updateQuantity(lastItem.id, lastItem.quantity - 1);
+    },
+    removeLastItem: () => {
+        const lastItem = cart.items[cart.items.length - 1];
+        if (lastItem) cart.removeItem(lastItem.id);
+    },
+});
+
+// Watch modals to pause/resume scanner
+watch([showPaymentModal, showCloseSessionModal], ([pay, close]) => {
+    if (pay || close) {
+        pauseScanner();
+    } else {
+        resumeScanner();
+    }
+});
 
 onMounted(async () => {
     // Initialize connectivity listeners
