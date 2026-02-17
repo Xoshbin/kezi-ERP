@@ -17,7 +17,7 @@ class PosProfileResource extends Resource
 {
     protected static ?string $model = PosProfile::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-computer-desktop';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-computer-desktop';
 
     protected static ?string $cluster = PosCluster::class;
 

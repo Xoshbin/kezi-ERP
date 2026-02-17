@@ -3,15 +3,22 @@
 namespace Kezi\Pos\Models;
 
 use App\Models\Company;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Kezi\Foundation\Casts\MoneyCast;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\Partner;
 
 class PosOrder extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory()
+    {
+        return \Kezi\Pos\Database\Factories\PosOrderFactory::new();
+    }
+
     protected $fillable = [
         'uuid',
         'pos_session_id',
@@ -31,8 +38,8 @@ class PosOrder extends Model
     {
         return [
             'ordered_at' => 'datetime',
-            'total_amount' => MoneyCast::class,
-            'total_tax' => MoneyCast::class,
+            'total_amount' => \Kezi\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+            'total_tax' => \Kezi\Foundation\Casts\DocumentCurrencyMoneyCast::class,
             'sector_data' => 'array',
         ];
     }

@@ -3,12 +3,20 @@
 namespace Kezi\Pos\Models;
 
 use App\Models\Company;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PosProfile extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory()
+    {
+        return \Kezi\Pos\Database\Factories\PosProfileFactory::new();
+    }
+
     protected $fillable = [
         'company_id',
         'name',

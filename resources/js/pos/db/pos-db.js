@@ -2,13 +2,14 @@ import Dexie from 'dexie';
 
 export const db = new Dexie('KeziPosDatabase');
 
-db.version(1).stores({
-    products: '++id, name, sku, category_id',
+db.version(2).stores({
+    products: '++id, name, sku, category_id', // Assuming re-declaration is needed for migration or just bump
     categories: '++id, name',
     orders: '++id, uuid, status, sync_status',
     order_lines: '++id, order_id, product_id',
     customers: '++id, name, email',
-    settings: 'key'
+    settings: 'key',
+    profiles: '++id, name'
 });
 
 export const getMasterData = async () => {

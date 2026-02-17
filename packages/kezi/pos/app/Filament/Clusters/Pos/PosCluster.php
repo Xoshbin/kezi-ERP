@@ -7,7 +7,7 @@ use Filament\Support\Icons\Heroicon;
 
 class PosCluster extends Cluster
 {
-    protected static ?string $navigationIcon = Heroicon::CreditCard;
+    protected static string|\BackedEnum|null $navigationIcon = Heroicon::CreditCard;
 
     public static function getNavigationLabel(): string
     {
