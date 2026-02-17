@@ -60,15 +60,21 @@ export function useReceipt() {
         `;
 
         const itemsHtml = lines.map(line => `
-            <div>
+            <div style="margin-bottom: 5px;">
                 <div class="row item-name">
                     <span>${line.product_name}</span>
                     <span>x ${line.quantity}</span>
                 </div>
                 <div class="row item-details">
                     <span>@ ${formatMoney(line.unit_price)}</span>
-                    <span>${formatMoney(line.total_amount)}</span>
+                    <span>${formatMoney(line.unit_price * line.quantity)}</span>
                 </div>
+                ${line.discount_amount > 0 ? `
+                    <div class="row item-details" style="color: #444;">
+                        <span>Line Discount</span>
+                        <span>-${formatMoney(line.discount_amount)}</span>
+                    </div>
+                ` : ''}
             </div>
         `).join('');
 
@@ -101,8 +107,14 @@ export function useReceipt() {
                 <div class="totals">
                     <div class="row">
                         <span>Subtotal</span>
-                        <span>${formatMoney(order.total_amount - order.total_tax)}</span>
+                        <span>${formatMoney(lines.reduce((sum, l) => sum + (l.unit_price * l.quantity), 0))}</span>
                     </div>
+                    ${order.discount_amount > 0 ? `
+                        <div class="row" style="font-weight: bold;">
+                            <span>Discount</span>
+                            <span>-${formatMoney(order.discount_amount)}</span>
+                        </div>
+                    ` : ''}
                     <div class="row">
                         <span>Tax</span>
                         <span>${formatMoney(order.total_tax)}</span>

@@ -21,6 +21,7 @@ class PosOrderLine extends Model
         'product_id',
         'quantity',
         'unit_price',
+        'discount_amount',
         'tax_amount',
         'total_amount',
         'metadata',
@@ -31,6 +32,7 @@ class PosOrderLine extends Model
         return [
             'quantity' => 'decimal:4',
             'unit_price' => \Kezi\Pos\Casts\PosOrderLineMoneyCast::class,
+            'discount_amount' => \Kezi\Pos\Casts\PosOrderLineMoneyCast::class,
             'tax_amount' => \Kezi\Pos\Casts\PosOrderLineMoneyCast::class,
             'total_amount' => \Kezi\Pos\Casts\PosOrderLineMoneyCast::class,
             'metadata' => 'array',
