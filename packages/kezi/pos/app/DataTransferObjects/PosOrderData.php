@@ -13,6 +13,7 @@ class PosOrderData
         public string $ordered_at, // ISO String
         public string $total_amount, // Stringified integer (minor units)
         public string $total_tax, // Stringified integer (minor units)
+        public string $discount_amount, // Stringified integer (minor units)
         public ?string $notes,
         public ?int $customer_id,
         public int $currency_id,
@@ -30,6 +31,7 @@ class PosOrderData
             ordered_at: $data['ordered_at'],
             total_amount: (string) $data['total_amount'],
             total_tax: (string) $data['total_tax'],
+            discount_amount: (string) ($data['discount_amount'] ?? 0),
             notes: $data['notes'] ?? null,
             customer_id: $data['customer_id'] ?? null,
             currency_id: $data['currency_id'],

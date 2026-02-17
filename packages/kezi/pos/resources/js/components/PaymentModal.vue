@@ -26,6 +26,10 @@
                         <span>Subtotal</span>
                         <span class="font-medium">{{ formatMoney(cart.subtotal) }}</span>
                     </div>
+                    <div v-if="cart.totalDiscount > 0" class="flex justify-between text-rose-500 text-sm">
+                        <span>Discount</span>
+                        <span class="font-medium">-{{ formatMoney(cart.totalDiscount) }}</span>
+                    </div>
                     <div class="flex justify-between text-gray-500 text-sm">
                         <span>Tax</span>
                         <span class="font-medium">{{ formatMoney(cart.tax) }}</span>

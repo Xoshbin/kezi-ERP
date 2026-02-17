@@ -53,6 +53,15 @@
             </div>
         </div>
 
+        <!-- Discount Popover -->
+        <DiscountPopover 
+            :visible="discountModal.visible"
+            :item="discountModal.item"
+            :currency-code="currentCurrency"
+            @close="discountModal.visible = false"
+            @apply="applyItemDiscount"
+        />
+
         <ScanToast 
             :visible="scanToast.visible" 
             :type="scanToast.type" 
@@ -248,10 +257,34 @@
                                 <span class="text-xs text-gray-500">{{ formatMoney(item.unit_price) }} × {{ item.quantity }}</span>
                                 <span class="text-sm font-black">{{ formatMoney(item.unit_price * item.quantity) }}</span>
                             </div>
+
+                            <!-- Discount display -->
+                            <div v-if="item.discount_type" class="flex items-center gap-2 mt-1">
+                                <span class="text-xs text-rose-500 font-bold">
+                                    -{{ item.discount_type === 'percentage' ? item.discount_value + '%' : formatMoney(item.discount_value) }}
+                                </span>
+                                <button @click="cart.clearItemDiscount(item.id)" class="text-gray-400 hover:text-rose-500">
+                                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
                             <div class="flex items-center gap-2 mt-2">
                                 <button @click="cart.updateQuantity(item.id, item.quantity - 1)" class="w-6 h-6 rounded-lg bg-white dark:bg-gray-700 border dark:border-gray-600 flex items-center justify-center hover:bg-gray-100">-</button>
                                 <span class="text-xs font-bold w-6 text-center">{{ item.quantity }}</span>
                                 <button @click="cart.addItem(item)" class="w-6 h-6 rounded-lg bg-white dark:bg-gray-700 border dark:border-gray-600 flex items-center justify-center hover:bg-gray-100">+</button>
+                                
+                                <!-- Discount button -->
+                                <button 
+                                    @click="openItemDiscount(item)"
+                                    class="ml-auto w-6 h-6 rounded-lg text-gray-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 flex items-center justify-center transition-colors"
+                                    title="Add Discount"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -264,11 +297,55 @@
                             <span>Subtotal</span>
                             <span class="font-medium">{{ formatMoney(cart.subtotal) }}</span>
                         </div>
+
+                        <!-- Line Discounts (if any) -->
+                        <div v-if="cart.lineDiscountTotal > 0" class="flex justify-between text-sm text-rose-500">
+                            <span>Line Discounts</span>
+                            <span class="font-medium">-{{ formatMoney(cart.lineDiscountTotal) }}</span>
+                        </div>
+
+                        <!-- Order Discount -->
+                        <div class="flex justify-between text-sm items-center">
+                            <button 
+                                @click="showOrderDiscountInput = !showOrderDiscountInput"
+                                class="text-primary-600 hover:text-primary-700 font-medium flex items-center gap-1"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                </svg>
+                                {{ cart.orderDiscountAmount > 0 ? 'Edit Order Discount' : 'Add Order Discount' }}
+                            </button>
+                            <span v-if="cart.orderDiscountAmount > 0" class="text-rose-500 font-medium">
+                                -{{ formatMoney(cart.orderDiscountAmount) }}
+                            </span>
+                        </div>
+
+                        <!-- Inline order discount input -->
+                        <div v-if="showOrderDiscountInput" class="flex gap-2 items-center bg-white dark:bg-gray-800 rounded-xl p-2 border dark:border-gray-700">
+                            <input 
+                                v-model.number="orderDiscountInput"
+                                type="number"
+                                min="0" max="100" step="1"
+                                placeholder="0"
+                                class="w-16 text-center bg-transparent border-b-2 border-primary-500 outline-none font-bold text-sm py-1 dark:text-white"
+                                @keyup.enter="applyOrderDiscount"
+                            >
+                            <span class="text-xs font-bold text-gray-400">%</span>
+                            <button @click="applyOrderDiscount" class="text-primary-600 text-xs font-bold px-2 py-1 rounded hover:bg-primary-50">Apply</button>
+                            <button @click="clearOrderDiscount" class="text-gray-400 text-xs font-bold px-2 py-1 rounded hover:bg-gray-100">Clear</button>
+                        </div>
+
                         <div class="flex justify-between text-sm text-gray-500">
-                           <!-- Hardcoded tax rate visualization for now, logic in store -->
-                            <span>Tax (Approx)</span>
+                            <span>Tax</span>
                             <span class="font-medium">{{ formatMoney(cart.tax) }}</span>
                         </div>
+
+                        <!-- Show total discount summary if any -->
+                        <div v-if="cart.totalDiscount > 0" class="flex justify-between text-sm text-rose-500 font-bold">
+                            <span>Total Savings</span>
+                            <span>-{{ formatMoney(cart.totalDiscount) }}</span>
+                        </div>
+
                         <div class="flex justify-between items-end pt-4 border-t dark:border-gray-700">
                             <span class="text-lg font-bold">Total</span>
                             <span class="text-3xl font-black text-primary-600">{{ formatMoney(cart.total) }}</span>
@@ -306,6 +383,7 @@ import { useReceipt } from './composables/useReceipt';
 import { useBarcodeScanner } from './composables/useBarcodeScanner';
 import { useKeyboardShortcuts } from './composables/useKeyboardShortcuts';
 import ScanToast from './components/ScanToast.vue';
+import DiscountPopover from './components/DiscountPopover.vue';
 
 const connectivity = useConnectivityStore();
 const cart = useCartStore();
@@ -316,6 +394,10 @@ const currentCurrency = ref('USD');
 const showPaymentModal = ref(false);
 const showCloseSessionModal = ref(false);
 const orderSuccess = ref(null);
+
+const discountModal = ref({ visible: false, item: null });
+const showOrderDiscountInput = ref(false);
+const orderDiscountInput = ref(0);
 
 // Barcode scanner
 const scanToast = ref({ visible: false, type: 'success', message: '' });
@@ -456,6 +538,28 @@ const onSessionClosed = (summary) => {
     // You could show a final summary report here if desired
 };
 
+const openItemDiscount = (item) => {
+    discountModal.value = { visible: true, item };
+};
+
+const applyItemDiscount = ({ type, value }) => {
+    if (discountModal.value.item) {
+        cart.setItemDiscount(discountModal.value.item.id, type, value);
+    }
+    discountModal.value.visible = false;
+};
+
+const applyOrderDiscount = () => {
+    cart.setOrderDiscount('percentage', Number(orderDiscountInput.value || 0));
+    showOrderDiscountInput.value = false;
+};
+
+const clearOrderDiscount = () => {
+    cart.clearOrderDiscount();
+    orderDiscountInput.value = 0;
+    showOrderDiscountInput.value = false;
+};
+
 // ... existing code ...
 
 // Alias for refresh button
@@ -497,6 +601,7 @@ const handlePaymentComplete = async (paymentData) => {
             ordered_at: new Date().toISOString(),
             total_amount: cart.total,
             total_tax: cart.tax,
+            discount_amount: cart.totalDiscount,
             notes: '',
             customer_id: cart.currentCustomer?.id || null,
             currency_id: currencyId,
@@ -512,6 +617,7 @@ const handlePaymentComplete = async (paymentData) => {
             product_id: item.id,
             quantity: item.quantity,
             unit_price: item.unit_price,
+            discount_amount: item.discount_amount,
             tax_amount: item.tax_amount,
             total_amount: item.total_amount,
             metadata: [],

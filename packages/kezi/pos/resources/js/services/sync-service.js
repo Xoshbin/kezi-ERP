@@ -70,6 +70,7 @@ export const syncOrders = async () => {
                 ordered_at: order.ordered_at, // Ensure format
                 total_amount: String(order.total_amount),
                 total_tax: String(order.total_tax),
+                discount_amount: String(order.discount_amount || 0),
                 notes: order.notes,
                 customer_id: order.customer_id,
                 currency_id: order.currency_id,
@@ -79,6 +80,7 @@ export const syncOrders = async () => {
                     product_id: l.product_id,
                     quantity: Number(l.quantity),
                     unit_price: String(l.unit_price),
+                    discount_amount: String(l.discount_amount || 0),
                     tax_amount: String(l.tax_amount),
                     total_amount: String(l.total_amount),
                     metadata: l.metadata || []

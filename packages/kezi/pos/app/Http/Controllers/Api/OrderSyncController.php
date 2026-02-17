@@ -17,7 +17,9 @@ class OrderSyncController extends Controller
             'orders.*.currency_id' => 'required|integer',
             'orders.*.pos_session_id' => 'required|integer',
             'orders.*.total_amount' => 'required',
+            'orders.*.discount_amount' => 'nullable|integer',
             'orders.*.lines' => 'array',
+            'orders.*.lines.*.discount_amount' => 'nullable|integer',
         ]);
 
         $ordersData = PosOrderData::collect($request->input('orders', []));
