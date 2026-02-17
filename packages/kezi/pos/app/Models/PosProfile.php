@@ -8,6 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property string $name
+ * @property string $type
+ * @property array $features
+ * @property array $settings
+ * @property bool $is_active
+ * @property-read \App\Models\Company $company
+ */
 class PosProfile extends Model
 {
     use HasFactory;

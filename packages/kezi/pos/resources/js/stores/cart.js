@@ -6,6 +6,7 @@ export const useCartStore = defineStore('cart', {
         items: [],
         currentCustomer: null,
         profile: null,
+        posSessionId: null,
     }),
     
     getters: {

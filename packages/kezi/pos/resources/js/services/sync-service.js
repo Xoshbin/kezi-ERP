@@ -101,6 +101,18 @@ export const syncOrders = async () => {
     }
 };
 
+export const getCurrentSession = async () => {
+    try {
+        const response = await api.get('/sessions/current');
+        return response.data;
+    } catch (error) {
+        if (error.response && error.response.status === 404) {
+            return null;
+        }
+        throw error;
+    }
+};
+
 export const openSession = async (profileId, openingCash) => {
     const response = await api.post('/sessions/open', { pos_profile_id: profileId, opening_cash: openingCash });
     return response.data;
