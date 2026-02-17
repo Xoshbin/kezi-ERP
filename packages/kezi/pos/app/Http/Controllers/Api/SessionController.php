@@ -4,38 +4,30 @@ namespace Kezi\Pos\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Kezi\Foundation\Casts\MoneyCast;
+use Kezi\Pos\Http\Requests\OpenSessionRequest;
+use Kezi\Pos\Http\Resources\PosSessionResource;
 use Kezi\Pos\Models\PosProfile;
 use Kezi\Pos\Models\PosSession;
 
 class SessionController extends Controller
 {
-    public function open(Request $request)
+    public function open(OpenSessionRequest $request)
     {
-        $request->validate([
-            'pos_profile_id' => 'required|exists:pos_profiles,id',
-            'opening_cash' => 'required|numeric|min:0', // Amount in major units or minor?
-            // MoneyCast usually expects specific format.
-            // If strictly API, usually minor units (integers).
-            // But validation rule 'numeric' allows floats.
-            // Let's assume minor units (int) for API to be consistent with MoneyCast logic which might map to integer column.
-        ]);
-
-        $profile = PosProfile::with('company.currency')->findOrFail($request->pos_profile_id);
-        $currency = $profile->company->currency;
-
-        // ... existing check ...
-        $existing = PosSession::where('user_id', $request->user()->id)
-            ->where('pos_profile_id', $profile->id)
-            ->where('status', 'opened') // or 'opening'
+        // One session per user at a time across any profile
+        $existing = PosSession::with('profile')
+            ->where('user_id', $request->user()->id)
+            ->where('status', 'opened')
             ->first();
 
         if ($existing) {
             return response()->json([
-                'message' => 'Session already open',
-                'session' => $existing,
+                'message' => 'User already has an open session on profile: '.$existing->profile->name,
+                'session' => new PosSessionResource($existing),
             ], 409);
         }
+
+        $profile = PosProfile::with('company.currency')->findOrFail($request->pos_profile_id);
+        $currency = $profile->company->currency;
 
         $session = PosSession::create([
             'pos_profile_id' => $profile->id,
@@ -47,19 +39,22 @@ class SessionController extends Controller
 
         return response()->json([
             'message' => 'Session opened',
-            'session' => $session,
+            'session' => new PosSessionResource($session->load('profile')),
         ], 201);
     }
 
     public function close(Request $request, PosSession $session)
     {
-        // Validation: Ensure session belongs to user
         if ($session->user_id !== $request->user()->id) {
             abort(403);
         }
 
+        if ($session->status !== 'opened') {
+            return response()->json(['message' => 'Session is already closed or not open'], 409);
+        }
+
         $request->validate([
-            'closing_cash' => 'required|numeric|min:0',
+            'closing_cash' => 'required|integer|min:0',
         ]);
 
         $session->load('profile.company.currency');
@@ -71,9 +66,15 @@ class SessionController extends Controller
             'status' => 'closed',
         ]);
 
+        $summary = [
+            'order_count' => $session->orders()->count(),
+            'total_revenue' => (int) $session->orders()->sum('total_amount'),
+        ];
+
         return response()->json([
             'message' => 'Session closed',
-            'session' => $session,
+            'session' => new PosSessionResource($session),
+            'summary' => $summary,
         ]);
     }
 
@@ -82,13 +83,16 @@ class SessionController extends Controller
         $session = PosSession::where('user_id', $request->user()->id)
             ->where('status', 'opened')
             ->latest()
-            ->with('profile')
+            ->with(['profile', 'orders'])
             ->first();
 
         if (! $session) {
             return response()->json(['message' => 'No open session'], 404);
         }
 
-        return response()->json(['session' => $session]);
+        return response()->json([
+            'session' => new PosSessionResource($session),
+            'order_count' => $session->orders->count(),
+        ]);
     }
 }
