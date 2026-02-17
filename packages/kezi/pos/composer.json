@@ -1,0 +1,34 @@
+{
+    "name": "kezi/pos",
+    "description": "Point of Sale module for Kezi",
+    "authors": [
+        {
+            "name": "Khoshbin",
+            "email": "xoshbin@gmail.com"
+        }
+    ],
+    "type": "library",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^12.0",
+        "filament/filament": "^4.0",
+        "kezi/foundation": "*",
+        "kezi/product": "*",
+        "kezi/inventory": "*",
+        "kezi/accounting": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kezi\\Pos\\": "app/",
+            "Kezi\\Pos\\Database\\Factories\\": "database/factories/",
+            "Kezi\\Pos\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Kezi\\Pos\\Providers\\PosServiceProvider"
+            ]
+        }
+    }
+}
