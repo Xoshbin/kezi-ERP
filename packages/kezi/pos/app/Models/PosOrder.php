@@ -30,6 +30,7 @@ class PosOrder extends Model
         'ordered_at',
         'total_amount',
         'total_tax',
+        'discount_amount',
         'sector_data',
         'notes',
     ];
@@ -40,6 +41,7 @@ class PosOrder extends Model
             'ordered_at' => 'datetime',
             'total_amount' => \Kezi\Foundation\Casts\DocumentCurrencyMoneyCast::class,
             'total_tax' => \Kezi\Foundation\Casts\DocumentCurrencyMoneyCast::class,
+            'discount_amount' => \Kezi\Foundation\Casts\DocumentCurrencyMoneyCast::class,
             'sector_data' => 'array',
         ];
     }
