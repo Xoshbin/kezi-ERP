@@ -8,6 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int $pos_profile_id
+ * @property int $user_id
+ * @property \Illuminate\Support\Carbon|null $opened_at
+ * @property \Illuminate\Support\Carbon|null $closed_at
+ * @property string $status
+ * @property \Brick\Money\Money|null $opening_cash
+ * @property \Brick\Money\Money|null $closing_cash
+ * @property-read \Kezi\Pos\Models\PosProfile $profile
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Pos\Models\PosOrder> $orders
+ */
 class PosSession extends Model
 {
     use HasFactory;

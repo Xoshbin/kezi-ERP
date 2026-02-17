@@ -1,5 +1,8 @@
 <template>
     <div class="pos-container h-full w-full flex flex-col bg-gray-100 dark:bg-gray-950 font-sans antialiased text-gray-900 dark:text-gray-100 overflow-hidden">
+        <!-- Session Gating Modal -->
+        <OpenSessionModal v-if="sessionStore.showOpenSessionModal" />
+
         <!-- Top Bar -->
         <header class="h-16 bg-white dark:bg-gray-900 shadow-sm border-b dark:border-gray-800 flex items-center justify-between px-6 z-10">
             <div class="flex items-center gap-4">
@@ -15,6 +18,14 @@
             </div>
 
             <div class="flex items-center gap-6">
+                <!-- Session Info -->
+                <div v-if="sessionStore.hasActiveSession" class="hidden lg:flex items-center gap-2 px-4 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-full border dark:border-gray-700">
+                    <span class="w-2 h-2 rounded-full bg-primary-500 animate-pulse"></span>
+                    <span class="text-xs font-bold text-gray-700 dark:text-gray-300">
+                        Session #{{ sessionStore.sessionId }} · {{ sessionStore.profileName }}
+                    </span>
+                </div>
+
                 <!-- Status Indicators -->
                 <div class="flex items-center gap-3 text-xs font-medium">
                     <div :class="[
@@ -28,19 +39,31 @@
                     </div>
                 </div>
 
-                <!-- User Profile -->
-                <div class="flex items-center gap-3">
+                <!-- User Profile & Actions -->
+                <div class="flex items-center gap-3 pl-6 border-l dark:border-gray-800">
                     <div class="text-right hidden sm:block">
                         <p class="text-sm font-semibold">Cashier</p>
                         <p class="text-[10px] text-gray-500 uppercase tracking-wider">Main Register</p>
                     </div>
-                    <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-800 border-2 border-white dark:border-gray-700"></div>
+                    
+                    <button 
+                        v-if="sessionStore.hasActiveSession"
+                        @click="handleCloseSession" 
+                        class="w-10 h-10 rounded-xl bg-gray-50 hover:bg-rose-50 dark:bg-gray-800 dark:hover:bg-rose-500/10 text-gray-400 hover:text-rose-600 transition-all flex items-center justify-center border dark:border-gray-700 hover:border-rose-200"
+                        title="Close Session"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                    </button>
+
+                    <div class="w-10 h-10 rounded-xl bg-gray-200 dark:bg-gray-800 border-2 border-white dark:border-gray-700 shadow-sm overflow-hidden flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                    </div>
                 </div>
             </div>
         </header>
 
         <!-- Main Content Area -->
-        <main class="flex-1 flex overflow-hidden">
+        <main :class="{'pointer-events-none opacity-50 blur-sm': !sessionStore.hasActiveSession}" class="flex-1 flex overflow-hidden transition-all duration-300">
             <!-- Left Sidebar - Navigation / Categories -->
             <nav class="w-20 bg-white dark:bg-gray-900 border-r dark:border-gray-800 flex flex-col items-center py-6 gap-6 shadow-sm z-5">
                 <button 
@@ -200,10 +223,12 @@ import { useCartStore } from './stores/cart';
 import { useProductsStore } from './stores/products';
 import { startSyncWorker } from './services/sync-worker';
 import { db } from './db/pos-db';
+import OpenSessionModal from './components/OpenSessionModal.vue';
 
 const connectivity = useConnectivityStore();
 const cart = useCartStore();
 const productsStore = useProductsStore();
+const sessionStore = useSessionStore();
 
 const currentCurrency = ref('USD');
 
@@ -216,6 +241,9 @@ onMounted(async () => {
     
     // Start background worker
     startSyncWorker();
+    
+    // Check session first
+    await sessionStore.checkCurrentSession();
     
     // Initial sync and load logic
     try {
@@ -238,6 +266,27 @@ onMounted(async () => {
         productsStore.loading = false;
     }
 });
+
+const handleCloseSession = async () => {
+    const amount = window.prompt('Enter closing cash amount (e.g. 150.00):', '0.00');
+    if (amount === null) return;
+    
+    const minorUnits = Math.round(parseFloat(amount) * 100);
+    if (isNaN(minorUnits) || minorUnits < 0) {
+        alert('Invalid amount');
+        return;
+    }
+
+    if (window.confirm('Are you sure you want to close this session? This will clear your current cart.')) {
+        try {
+            await sessionStore.closeSession(minorUnits);
+        } catch (e) {
+            alert('Failed to close session: ' + (e.response?.data?.message || e.message));
+        }
+    }
+};
+
+// ... existing code ...
 
 // Alias for refresh button
 const loadProducts = async () => {
