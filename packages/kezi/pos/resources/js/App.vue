@@ -52,11 +52,11 @@
                 </button>
                 <!-- Categories -->
                 <button 
-                    v-for="cat in categories" 
+                    v-for="cat in productsStore.categories" 
                     :key="cat.id"
                     @click="filterCategory(cat.id)"
                     class="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 group relative text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-600 dark:hover:text-gray-200"
-                    :class="{ 'bg-primary-50 text-primary-600': selectedCategory === cat.id }"
+                    :class="{ 'bg-primary-50 text-primary-600': productsStore.selectedCategory === cat.id }"
                 >
                     <!-- Placeholder Icon -->
                     <span class="font-bold text-xs">{{ cat.name.substring(0,2).toUpperCase() }}</span>
@@ -86,17 +86,17 @@
                     </div>
 
                     <!-- Grid -->
-                    <div v-if="loading" class="flex justify-center py-20">
+                    <div v-if="productsStore.loading" class="flex justify-center py-20">
                         <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
                     </div>
                     
-                    <div v-else-if="filteredProducts.length === 0" class="text-center py-20 text-gray-500">
+                    <div v-else-if="productsStore.filteredProducts.length === 0" class="text-center py-20 text-gray-500">
                         No products found.
                     </div>
 
                     <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                         <div 
-                            v-for="product in filteredProducts" 
+                            v-for="product in productsStore.filteredProducts" 
                             :key="product.id" 
                             @click="addToCart(product)"
                             class="product-card group bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-4 transition-all duration-300 hover:shadow-2xl hover:shadow-gray-200/50 dark:hover:shadow-black/50 hover:-translate-y-1 cursor-pointer"
@@ -106,7 +106,9 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
-                                <div class="absolute top-2 right-2 px-2 py-1 bg-white/90 dark:bg-gray-900/90 backdrop-blur rounded-lg text-[10px] font-bold text-primary-600">IN STOCK</div>
+                                <div class="absolute top-2 right-2 px-2 py-1 bg-white/90 dark:bg-gray-900/90 backdrop-blur rounded-lg text-[10px] font-bold text-primary-600">
+                                    {{ product.available_quantity > 0 ? 'IN STOCK' : 'OUT OF STOCK' }}
+                                </div>
                             </div>
                             <h3 class="font-bold text-gray-800 dark:text-gray-100 mb-1 group-hover:text-primary-600 transition-colors line-clamp-2 min-h-[2.5em]">{{ product.name }}</h3>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">{{ product.sku || 'No SKU' }}</p>
@@ -195,21 +197,18 @@
 import { ref, onMounted, computed, watch } from 'vue';
 import { useConnectivityStore } from './stores/connectivity';
 import { useCartStore } from './stores/cart';
+import { useProductsStore } from './stores/products';
 import { startSyncWorker } from './services/sync-worker';
 import { db } from './db/pos-db';
 
 const connectivity = useConnectivityStore();
 const cart = useCartStore();
+const productsStore = useProductsStore();
 
-const products = ref([]);
-const categories = ref([]);
-const searchQuery = ref('');
-const selectedCategory = ref(null);
-const loading = ref(true);
+const currentCurrency = ref('USD');
 
 onMounted(async () => {
     // Initialize connectivity listeners
-    // Explicitly check navigator status first
     if (typeof navigator !== 'undefined') {
         connectivity.setOnline(navigator.onLine);
     }
@@ -218,49 +217,44 @@ onMounted(async () => {
     // Start background worker
     startSyncWorker();
     
-    // Load local data
-    await loadData();
+    // Initial sync and load logic
+    try {
+        if (connectivity.isOnline) {
+             // If online, sync first then load
+             await productsStore.syncAndReload();
+        } else {
+             // Offline, just load
+             await productsStore.loadFromDb();
+        }
+        
+        // Load currency from DB (synced)
+        const setting = await db.settings.get('company_currency');
+        if (setting && setting.value) {
+            currentCurrency.value = setting.value.code || 'USD';
+        }
+    } catch(e) {
+        console.error('Initial load failed', e);
+        // Ensure at least loading is false
+        productsStore.loading = false;
+    }
 });
 
-const loadData = async () => {
-    loading.value = true;
-    try {
-        products.value = await db.products.toArray();
-        categories.value = await db.categories.toArray();
-    } catch (e) {
-        console.error('Failed to load local data', e);
-    } finally {
-        loading.value = false;
-    }
+// Alias for refresh button
+const loadProducts = async () => {
+    await productsStore.syncAndReload();
 };
 
-const loadProducts = loadData; // Alias for refresh button
-
 const filterCategory = (id) => {
-    selectedCategory.value = id;
+    productsStore.selectCategory(id);
 };
 
 const addToCart = (product) => {
     cart.addItem(product);
 };
 
-// Filter Logic
-const filteredProducts = computed(() => {
-    let result = products.value;
-    
-    if (selectedCategory.value) {
-        result = result.filter(p => p.category_id === selectedCategory.value);
-    }
-    
-    if (searchQuery.value) {
-        const q = searchQuery.value.toLowerCase();
-        result = result.filter(p => 
-            p.name.toLowerCase().includes(q) || 
-            (p.sku && p.sku.toLowerCase().includes(q))
-        );
-    }
-    
-    return result;
+const searchQuery = computed({
+    get: () => productsStore.searchQuery,
+    set: (val) => productsStore.setSearchQuery(val)
 });
 
 // Helper for money formatting (assuming minor units, e.g. cents)
@@ -268,7 +262,7 @@ const formatMoney = (amount) => {
     if (amount === undefined || amount === null) return '$0.00';
     // Amount is in minor units (integer). Divide by 100.
     const val = Number(amount) / 100;
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currentCurrency.value }).format(val);
 };
 
 </script>

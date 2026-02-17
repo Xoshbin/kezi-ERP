@@ -17,18 +17,12 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     // Setup basic data
-    $this->company = Company::factory()->create();
+    $this->currency = Currency::factory()->create(['code' => 'USD', 'is_active' => true]);
+    $this->company = Company::factory()->create(['currency_id' => $this->currency->id]);
     $this->user = User::factory()->create();
     $this->user->companies()->attach($this->company);
 
     Sanctum::actingAs($this->user, ['*']);
-
-    // Ensure currency exists for company (usually created by factory?)
-    // If Company factory creates currency, good. If not, create one.
-    if (! $this->company->currency_id) {
-        $currency = Currency::factory()->create(['code' => 'USD']);
-        $this->company->update(['currency_id' => $currency->id]);
-    }
 });
 
 test('can fetch master data', function () {
@@ -51,7 +45,22 @@ test('can fetch master data', function () {
     // Check content
     $products = $response->json('products');
     expect($products)->not->toBeEmpty();
-    expect($products[0]['id'])->toBe($product->id);
+    $firstProduct = $products[0];
+
+    expect($firstProduct['id'])->toBe($product->id)
+        ->and($firstProduct['name'])->toBeString() // Ensure translation is resolved to string
+        ->and($firstProduct['unit_price'])->toBeInt()
+        ->and($firstProduct['tax_ids'])->toBeArray();
+
+    $currencyCode = $this->company->currency->code;
+
+    if (isset($firstProduct['currency_code'])) {
+        expect($firstProduct['currency_code'])->toBe($currencyCode);
+    }
+
+    // Check company currency
+    expect($response->json('company_currency'))->not->toBeNull();
+    expect($response->json('company_currency.code'))->toBe($currencyCode);
 
     // Check company scoping (create another company's product)
     $otherCompany = Company::factory()->create();
