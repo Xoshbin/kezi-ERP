@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7357594b2503d4bcd4ad4adde0b8d80b",
+    "content-hash": "42f7c8f0c01cfb7f9459aef24f350b0b",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -2611,7 +2611,7 @@
         },
         {
             "name": "kezi/accounting",
-            "version": "dev-main",
+            "version": "dev-POS",
             "dist": {
                 "type": "path",
                 "url": "packages/kezi/accounting",
@@ -2655,7 +2655,7 @@
         },
         {
             "name": "kezi/foundation",
-            "version": "dev-main",
+            "version": "dev-POS",
             "dist": {
                 "type": "path",
                 "url": "packages/kezi/foundation",
@@ -2699,7 +2699,7 @@
         },
         {
             "name": "kezi/hr",
-            "version": "dev-main",
+            "version": "dev-POS",
             "dist": {
                 "type": "path",
                 "url": "packages/kezi/hr",
@@ -2741,7 +2741,7 @@
         },
         {
             "name": "kezi/inventory",
-            "version": "dev-main",
+            "version": "dev-POS",
             "dist": {
                 "type": "path",
                 "url": "packages/kezi/inventory",
@@ -2784,7 +2784,7 @@
         },
         {
             "name": "kezi/manufacturing",
-            "version": "dev-main",
+            "version": "dev-POS",
             "dist": {
                 "type": "path",
                 "url": "packages/kezi/manufacturing",
@@ -2828,7 +2828,7 @@
         },
         {
             "name": "kezi/payment",
-            "version": "dev-main",
+            "version": "dev-POS",
             "dist": {
                 "type": "path",
                 "url": "packages/kezi/payment",
@@ -2868,8 +2868,51 @@
             }
         },
         {
+            "name": "kezi/pos",
+            "version": "dev-POS",
+            "dist": {
+                "type": "path",
+                "url": "packages/kezi/pos",
+                "reference": "f39948339c21df3cc4571dd4eff468d94626bec3"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "kezi/accounting": "*",
+                "kezi/foundation": "*",
+                "kezi/inventory": "*",
+                "kezi/product": "*",
+                "laravel/framework": "^12.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Kezi\\Pos\\Providers\\PosServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Kezi\\Pos\\": "app/",
+                    "Kezi\\Pos\\Database\\Factories\\": "database/factories/",
+                    "Kezi\\Pos\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Khoshbin",
+                    "email": "xoshbin@gmail.com"
+                }
+            ],
+            "description": "Point of Sale module for Kezi",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "kezi/product",
-            "version": "dev-main",
+            "version": "dev-POS",
             "dist": {
                 "type": "path",
                 "url": "packages/kezi/product",
@@ -2910,7 +2953,7 @@
         },
         {
             "name": "kezi/project-management",
-            "version": "dev-main",
+            "version": "dev-POS",
             "dist": {
                 "type": "path",
                 "url": "packages/kezi/project-management",
@@ -2951,7 +2994,7 @@
         },
         {
             "name": "kezi/purchase",
-            "version": "dev-main",
+            "version": "dev-POS",
             "dist": {
                 "type": "path",
                 "url": "packages/kezi/purchase",
@@ -2994,7 +3037,7 @@
         },
         {
             "name": "kezi/quality-control",
-            "version": "dev-main",
+            "version": "dev-POS",
             "dist": {
                 "type": "path",
                 "url": "packages/kezi/quality-control",
@@ -3036,7 +3079,7 @@
         },
         {
             "name": "kezi/sales",
-            "version": "dev-main",
+            "version": "dev-POS",
             "dist": {
                 "type": "path",
                 "url": "packages/kezi/sales",
