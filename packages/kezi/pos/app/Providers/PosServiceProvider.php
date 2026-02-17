@@ -15,5 +15,9 @@ class PosServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'pos');
+
+        \Illuminate\Support\Facades\Route::middleware('api')
+            ->prefix('api/pos')
+            ->group(__DIR__.'/../../routes/api.php');
     }
 }
