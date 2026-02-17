@@ -63,10 +63,17 @@ class PosSyncService
 
         // Currencies
         $currencies = Currency::query()
-            ->where('active', true)
+            ->where('is_active', true)
             ->tap($applySince)
             ->get();
 
-        return compact('products', 'categories', 'taxes', 'customers', 'profiles', 'currencies');
+        $company = \App\Models\Company::find($companyId);
+        // Explicitly load currency if not loaded (though find usually doesn't load relations unless with)
+        // But Company model might not have currency relation defined as 'currency', check Model?
+        // Product model uses 'company.currency'. So likely Company has 'currency'.
+
+        $company_currency = $company?->currency;
+
+        return compact('products', 'categories', 'taxes', 'customers', 'profiles', 'currencies', 'company_currency');
     }
 }

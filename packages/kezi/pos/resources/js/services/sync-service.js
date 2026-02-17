@@ -26,18 +26,17 @@ export const syncMasterData = async () => {
         // Dexie ignores extra fields in object unless defined in store? 
         // No, Dexie stores the object. The schema defines indices.
         
-        await db.transaction('rw', db.products, db.categories, db.customers, db.settings, async () => {
+        await db.transaction('rw', db.products, db.categories, db.customers, db.taxes, db.profiles, db.settings, async () => {
             if (data.products && data.products.length) await db.products.bulkPut(data.products);
             if (data.categories && data.categories.length) await db.categories.bulkPut(data.categories);
             if (data.customers && data.customers.length) await db.customers.bulkPut(data.customers);
-            if (data.profiles && data.profiles.length) {
-                // profiles store? missing in Step 11 schema. 
-                // Need to add 'profiles' store to pos-db.js or ignore.
-                // User said "PosProfile settings". Maybe store in settings or separate store.
-                // "pos_profiles — Terminal configuration" in DB schema.
-                // IndexDB should probably store profiles too.
-            }
+            if (data.taxes && data.taxes.length) await db.taxes.bulkPut(data.taxes);
+            if (data.profiles && data.profiles.length) await db.profiles.bulkPut(data.profiles);
             
+            if (data.company_currency) {
+                await db.settings.put({ key: 'company_currency', value: data.company_currency });
+            }
+
             await db.settings.put({ key: 'last_master_sync', value: data.timestamp });
         });
         

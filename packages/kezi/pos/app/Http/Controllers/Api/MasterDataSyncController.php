@@ -31,7 +31,8 @@ class MasterDataSyncController extends Controller
             'taxes' => TaxResource::collection($data['taxes']),
             'customers' => CustomerResource::collection($data['customers']),
             'profiles' => PosProfileResource::collection($data['profiles']),
-            // 'currencies' => ...
+            'currencies' => $data['currencies'] ?? [],
+            'company_currency' => $data['company_currency'] ?? null,
             'timestamp' => now()->toIso8601String(),
         ]);
     }
