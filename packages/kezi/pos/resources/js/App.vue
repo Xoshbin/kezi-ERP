@@ -3,6 +3,36 @@
         <!-- Session Gating Modal -->
         <OpenSessionModal v-if="sessionStore.showOpenSessionModal" />
 
+        <!-- Payment Modal -->
+        <PaymentModal 
+            :visible="showPaymentModal" 
+            :currency-code="currentCurrency"
+            @close="showPaymentModal = false"
+            @payment-complete="handlePaymentComplete"
+        />
+
+        <!-- Success Overlay -->
+        <div v-if="orderSuccess" class="fixed inset-0 z-[110] bg-white dark:bg-gray-900 flex flex-col items-center justify-center text-center p-6 transition-all duration-300">
+            <div class="w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mb-6 animate-bounce">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h2 class="text-3xl font-black text-gray-900 dark:text-white mb-2">Order Confirmed!</h2>
+            <p class="text-gray-500 dark:text-gray-400 mb-8 font-mono text-lg">{{ orderSuccess.orderNumber }}</p>
+            
+            <div class="space-y-2 mb-10">
+                <p class="text-4xl font-black text-primary-600">{{ formatMoney(orderSuccess.total) }}</p>
+                <p v-if="orderSuccess.method === 'cash'" class="text-gray-500">
+                    Change Given: <span class="font-bold text-gray-900 dark:text-white">{{ formatMoney(orderSuccess.change) }}</span>
+                </p>
+            </div>
+            
+            <button @click="dismissSuccess" class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-8 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition-transform shadow-xl">
+                New Sale
+            </button>
+        </div>
+
         <!-- Top Bar -->
         <header class="h-16 bg-white dark:bg-gray-900 shadow-sm border-b dark:border-gray-800 flex items-center justify-between px-6 z-10">
             <div class="flex items-center gap-4">
@@ -204,7 +234,7 @@
                         </div>
                     </div>
 
-                    <button class="pay-button w-full bg-primary-600 hover:bg-primary-700 text-white py-5 rounded-3xl font-extrabold text-xl shadow-xl shadow-primary-500/30 flex items-center justify-center gap-3 transition-all active:scale-95 group" :disabled="cart.items.length === 0" :class="{'opacity-50 cursor-not-allowed': cart.items.length === 0}">
+                    <button @click="showPaymentModal = true" class="pay-button w-full bg-primary-600 hover:bg-primary-700 text-white py-5 rounded-3xl font-extrabold text-xl shadow-xl shadow-primary-500/30 flex items-center justify-center gap-3 transition-all active:scale-95 group" :disabled="cart.items.length === 0" :class="{'opacity-50 cursor-not-allowed': cart.items.length === 0}">
                         Confirm & Pay
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -223,8 +253,10 @@ import { useCartStore } from './stores/cart';
 import { useProductsStore } from './stores/products';
 import { useSessionStore } from './stores/session';
 import { startSyncWorker } from './services/sync-worker';
+import { syncOrders } from './services/sync-service';
 import { db } from './db/pos-db';
 import OpenSessionModal from './components/OpenSessionModal.vue';
+import PaymentModal from './components/PaymentModal.vue';
 
 const connectivity = useConnectivityStore();
 const cart = useCartStore();
@@ -232,6 +264,8 @@ const productsStore = useProductsStore();
 const sessionStore = useSessionStore();
 
 const currentCurrency = ref('USD');
+const showPaymentModal = ref(false);
+const orderSuccess = ref(null);
 
 onMounted(async () => {
     // Initialize connectivity listeners
@@ -266,6 +300,9 @@ onMounted(async () => {
         // Ensure at least loading is false
         productsStore.loading = false;
     }
+
+    // Load taxes
+    await cart.loadTaxes();
 });
 
 const handleCloseSession = async () => {
@@ -300,6 +337,93 @@ const filterCategory = (id) => {
 
 const addToCart = (product) => {
     cart.addItem(product);
+};
+
+const handlePaymentComplete = async (paymentData) => {
+    try {
+        // 1. Generate UUID & Order Number
+        const orderUuid = crypto.randomUUID();
+        const lastOrderNumSetting = await db.settings.get('last_order_number');
+        let sequence = 1;
+        if (lastOrderNumSetting) {
+            sequence = (parseInt(lastOrderNumSetting.value) || 0) + 1;
+        }
+        const orderNumber = `POS-${sessionStore.sessionId}-${String(sequence).padStart(4, '0')}`;
+        
+        // 2. Get Currency
+        const currencySetting = await db.settings.get('company_currency');
+        const currencyId = currencySetting?.value?.id || 1; 
+        
+        // 3. Prepare Order Data
+        // IMPORTANT: Calculate totals from itemsWithTax to ensure consistency
+        const items = cart.itemsWithTax;
+        
+        const order = {
+            uuid: orderUuid,
+            order_number: orderNumber,
+            status: 'paid',
+            ordered_at: new Date().toISOString(),
+            total_amount: cart.total,
+            total_tax: cart.tax,
+            notes: '',
+            customer_id: cart.currentCustomer?.id || null,
+            currency_id: currencyId,
+            pos_session_id: sessionStore.sessionId,
+            sector_data: [],
+            sync_status: 'pending',
+            payment_method: paymentData.method,
+            amount_tendered: paymentData.amount_tendered,
+            change_given: paymentData.change_given,
+        };
+        
+        const lines = items.map(item => ({
+            product_id: item.id,
+            quantity: item.quantity,
+            unit_price: item.unit_price,
+            tax_amount: item.tax_amount,
+            total_amount: item.total_amount,
+            metadata: [],
+        }));
+
+        // 4. Save to DB Transaction
+        await db.transaction('rw', db.orders, db.order_lines, db.settings, async () => {
+            const orderId = await db.orders.add(order);
+            const linesWithOrderId = lines.map(l => ({ ...l, order_id: orderId }));
+            await db.order_lines.bulkAdd(linesWithOrderId);
+            await db.settings.put({ key: 'last_order_number', value: sequence });
+        });
+        
+        // 5. Success UI
+        showPaymentModal.value = false;
+        orderSuccess.value = {
+            orderNumber: orderNumber,
+            total: order.total_amount,
+            change: order.change_given,
+            method: order.payment_method
+        };
+        
+        // 6. Clear Cart & Sync
+        await cart.clearCart();
+        
+        // Auto-dismiss success after 5 seconds if not clicked
+        setTimeout(() => {
+             if (orderSuccess.value && orderSuccess.value.orderNumber === orderNumber) {
+                 orderSuccess.value = null;
+             }
+        }, 5000);
+
+        if (connectivity.isOnline) {
+            syncOrders();
+        }
+
+    } catch (e) {
+        console.error('Failed to create order', e);
+        alert('Failed to process order. Please try again.');
+    }
+};
+
+const dismissSuccess = () => {
+    orderSuccess.value = null;
 };
 
 const searchQuery = computed({
