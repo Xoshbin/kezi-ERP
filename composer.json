@@ -22,6 +22,7 @@
         "kezi/inventory": "*",
         "kezi/manufacturing": "*",
         "kezi/payment": "*",
+        "kezi/pos": "*",
         "kezi/product": "*",
         "kezi/project-management": "*",
         "kezi/purchase": "*",
