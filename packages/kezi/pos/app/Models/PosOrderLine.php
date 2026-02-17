@@ -2,13 +2,20 @@
 
 namespace Kezi\Pos\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Kezi\Foundation\Casts\MoneyCast;
 use Kezi\Product\Models\Product;
 
 class PosOrderLine extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory()
+    {
+        return \Kezi\Pos\Database\Factories\PosOrderLineFactory::new();
+    }
+
     protected $fillable = [
         'pos_order_id',
         'product_id',
@@ -23,9 +30,9 @@ class PosOrderLine extends Model
     {
         return [
             'quantity' => 'decimal:4',
-            'unit_price' => MoneyCast::class,
-            'tax_amount' => MoneyCast::class,
-            'total_amount' => MoneyCast::class,
+            'unit_price' => \Kezi\Pos\Casts\PosOrderLineMoneyCast::class,
+            'tax_amount' => \Kezi\Pos\Casts\PosOrderLineMoneyCast::class,
+            'total_amount' => \Kezi\Pos\Casts\PosOrderLineMoneyCast::class,
             'metadata' => 'array',
         ];
     }
