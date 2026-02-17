@@ -33,6 +33,7 @@ class PosSession extends Model
     protected $fillable = [
         'pos_profile_id',
         'user_id',
+        'company_id',
         'opened_at',
         'closed_at',
         'opening_cash',
@@ -58,6 +59,11 @@ class PosSession extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Company::class);
     }
 
     public function orders(): HasMany

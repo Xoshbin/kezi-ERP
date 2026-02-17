@@ -17,6 +17,7 @@ class PosPlugin implements Plugin
         $panel
             ->discoverResources(in: __DIR__.'/Clusters/Pos/Resources', for: 'Kezi\\Pos\\Filament\\Clusters\\Pos\\Resources')
             ->discoverPages(in: __DIR__.'/Clusters/Pos/Pages', for: 'Kezi\\Pos\\Filament\\Clusters\\Pos\\Pages')
+            ->discoverWidgets(in: __DIR__.'/Clusters/Pos/Widgets', for: 'Kezi\\Pos\\Filament\\Clusters\\Pos\\Widgets')
             ->discoverClusters(in: __DIR__.'/Clusters', for: 'Kezi\\Pos\\Filament\\Clusters');
     }
 
