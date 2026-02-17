@@ -4,9 +4,16 @@ namespace Kezi\Pos\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Kezi\Pos\Models\PosSession;
 
+/**
+ * @mixin PosSession
+ */
 class PosSessionResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         return [
