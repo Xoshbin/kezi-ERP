@@ -66,6 +66,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     /** @use HasFactory<UserFactory> */
     use HasFactory;
 
+    use \Laravel\Sanctum\HasApiTokens;
     use Notifiable;
     use \Spatie\Permission\Traits\HasRoles;
 

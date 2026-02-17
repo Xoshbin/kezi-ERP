@@ -3,13 +3,20 @@
 namespace Kezi\Pos\Models;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Kezi\Foundation\Casts\MoneyCast;
 
 class PosSession extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory()
+    {
+        return \Kezi\Pos\Database\Factories\PosSessionFactory::new();
+    }
+
     protected $fillable = [
         'pos_profile_id',
         'user_id',
@@ -25,8 +32,8 @@ class PosSession extends Model
         return [
             'opened_at' => 'datetime',
             'closed_at' => 'datetime',
-            'opening_cash' => MoneyCast::class,
-            'closing_cash' => MoneyCast::class,
+            'opening_cash' => \Kezi\Pos\Casts\PosSessionMoneyCast::class,
+            'closing_cash' => \Kezi\Pos\Casts\PosSessionMoneyCast::class,
         ];
     }
 

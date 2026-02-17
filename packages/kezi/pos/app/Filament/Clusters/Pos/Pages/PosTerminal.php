@@ -9,9 +9,9 @@ class PosTerminal extends Page
 {
     protected static ?string $cluster = PosCluster::class;
 
-    protected static string $view = 'pos::filament.clusters.pos.pages.pos-terminal';
+    protected string $view = 'pos::filament.clusters.pos.pages.pos-terminal';
 
-    protected static ?string $navigationIcon = 'heroicon-o-presentation-chart-line';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-presentation-chart-line';
 
     public static function getNavigationLabel(): string
     {
