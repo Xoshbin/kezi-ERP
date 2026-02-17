@@ -19,6 +19,12 @@
             @session-closed="onSessionClosed"
         />
 
+        <!-- Order History Panel -->
+        <OrderHistoryPanel
+            :visible="showOrderHistory"
+            @close="showOrderHistory = false"
+        />
+
         <!-- Success Overlay -->
         <div v-if="orderSuccess" class="fixed inset-0 z-[110] bg-white dark:bg-gray-900 flex flex-col items-center justify-center text-center p-6 transition-all duration-300">
             <div class="w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mb-6 animate-bounce">
@@ -36,9 +42,15 @@
                 </p>
             </div>
             
-            <button @click="dismissSuccess" class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-8 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition-transform shadow-xl">
-                New Sale
-            </button>
+            <div class="flex gap-4">
+                <button @click="printLastReceipt" class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 px-6 py-4 rounded-2xl font-bold text-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-lg flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                    Print Receipt
+                </button>
+                <button @click="dismissSuccess" class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-8 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition-transform shadow-xl">
+                    New Sale
+                </button>
+            </div>
         </div>
 
         <!-- Top Bar -->
@@ -63,6 +75,17 @@
                         Session #{{ sessionStore.sessionId }} · {{ sessionStore.profileName }}
                     </span>
                 </div>
+
+                <button 
+                    v-if="sessionStore.hasActiveSession"
+                    @click="showOrderHistory = true"
+                    class="w-8 h-8 rounded-lg bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 transition-all flex items-center justify-center border dark:border-gray-700"
+                    title="Order History"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                </button>
 
                 <!-- Status Indicators -->
                 <div class="flex items-center gap-3 text-xs font-medium">
@@ -270,6 +293,8 @@ import OpenSessionModal from './components/OpenSessionModal.vue';
 import PaymentModal from './components/PaymentModal.vue';
 import CloseSessionModal from './components/CloseSessionModal.vue';
 import CustomerSelector from './components/CustomerSelector.vue';
+import OrderHistoryPanel from './components/OrderHistoryPanel.vue';
+import { useReceipt } from './composables/useReceipt';
 
 const connectivity = useConnectivityStore();
 const cart = useCartStore();
@@ -318,6 +343,16 @@ onMounted(async () => {
     // Load taxes
     await cart.loadTaxes();
 });
+
+const showOrderHistory = ref(false);
+
+const { printReceipt } = useReceipt();
+
+const printLastReceipt = async () => {
+    if (orderSuccess.value?.orderId) {
+        await printReceipt(orderSuccess.value.orderId);
+    }
+};
 
 const handleCloseSession = () => {
     showCloseSessionModal.value = true;
@@ -390,16 +425,18 @@ const handlePaymentComplete = async (paymentData) => {
         }));
 
         // 4. Save to DB Transaction
-        await db.transaction('rw', db.orders, db.order_lines, db.settings, async () => {
-            const orderId = await db.orders.add(order);
-            const linesWithOrderId = lines.map(l => ({ ...l, order_id: orderId }));
+        const orderId = await db.transaction('rw', db.orders, db.order_lines, db.settings, async () => {
+            const id = await db.orders.add(order);
+            const linesWithOrderId = lines.map(l => ({ ...l, order_id: id }));
             await db.order_lines.bulkAdd(linesWithOrderId);
             await db.settings.put({ key: 'last_order_number', value: sequence });
+            return id;
         });
         
         // 5. Success UI
         showPaymentModal.value = false;
         orderSuccess.value = {
+            orderId: orderId,
             orderNumber: orderNumber,
             total: order.total_amount,
             change: order.change_given,
