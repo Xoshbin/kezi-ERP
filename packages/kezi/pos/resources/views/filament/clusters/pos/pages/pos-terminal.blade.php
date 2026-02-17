@@ -1,4 +1,4 @@
-@vite(['resources/js/pos.js'])
+@vite(['packages/kezi/pos/resources/js/pos.js'])
 
 <x-filament-panels::page>
     <div id="pos-terminal" class="min-h-screen">

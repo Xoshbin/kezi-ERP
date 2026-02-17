@@ -9,7 +9,7 @@ export default defineConfig({
             input: [
                 "resources/css/app.css",
                 "resources/js/app.js",
-                "resources/js/pos.js",
+                "packages/kezi/pos/resources/js/pos.js",
                 "resources/css/filament/kezi/theme.css",
             ],
             refresh: true,
