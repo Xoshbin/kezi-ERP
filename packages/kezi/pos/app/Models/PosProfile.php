@@ -16,7 +16,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property array<string, mixed> $features
  * @property array<string, mixed> $settings
  * @property bool $is_active
+ * @property int|null $stock_location_id
  * @property-read \App\Models\Company $company
+ * @property-read \Kezi\Inventory\Models\StockLocation|null $stockLocation
  */
 class PosProfile extends Model
 {
@@ -35,6 +37,7 @@ class PosProfile extends Model
         'features',
         'settings',
         'is_active',
+        'stock_location_id',
     ];
 
     protected function casts(): array
@@ -59,5 +62,10 @@ class PosProfile extends Model
     public function resources(): HasMany
     {
         return $this->hasMany(PosResource::class);
+    }
+
+    public function stockLocation(): BelongsTo
+    {
+        return $this->belongsTo(\Kezi\Inventory\Models\StockLocation::class);
     }
 }

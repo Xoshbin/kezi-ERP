@@ -11,6 +11,8 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Kezi\Inventory\Enums\Inventory\StockLocationType;
+use Kezi\Inventory\Models\StockLocation;
 
 class PosProfileForm
 {
@@ -38,6 +40,17 @@ class PosProfileForm
 
                         Toggle::make('is_active')
                             ->default(true),
+
+                        Select::make('stock_location_id')
+                            ->label('Stock Location')
+                            ->helperText('The inventory location from which products will be sold')
+                            ->options(fn () => StockLocation::query()
+                                ->where('company_id', Auth::user()?->company_id)
+                                ->where('type', StockLocationType::Internal)
+                                ->where('is_active', true)
+                                ->pluck('name', 'id'))
+                            ->searchable()
+                            ->required(),
                     ]),
 
                 Section::make('Feature Modules')
