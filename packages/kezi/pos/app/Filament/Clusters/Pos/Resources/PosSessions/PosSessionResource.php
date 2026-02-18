@@ -60,7 +60,7 @@ class PosSessionResource extends Resource
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('total_revenue')
-                    ->state(fn (PosSession $record): float => $record->orders->sum('total_amount') / 100)
+                    ->state(fn (PosSession $record): float => $record->orders()->sum('total_amount') / 100)
                     ->numeric()
                     ->label('Total Revenue'),
             ])

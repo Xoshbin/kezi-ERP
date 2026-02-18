@@ -29,6 +29,7 @@ it('can sync an order with real tax amounts', function () {
     $session = PosSession::factory()->create([
         'user_id' => $this->user->id,
         'pos_profile_id' => $this->profile->id,
+        'company_id' => $this->company->id,
         'status' => 'opened',
     ]);
 
@@ -83,6 +84,7 @@ it('can sync multiple orders in a single request', function () {
     $session = PosSession::factory()->create([
         'user_id' => $this->user->id,
         'pos_profile_id' => $this->profile->id,
+        'company_id' => $this->company->id,
         'status' => 'opened',
     ]);
 
@@ -146,6 +148,7 @@ it('syncs orders with line and order discounts', function () {
     $session = PosSession::factory()->create([
         'user_id' => $this->user->id,
         'pos_profile_id' => $this->profile->id,
+        'company_id' => $this->company->id,
         'status' => 'opened',
     ]);
 

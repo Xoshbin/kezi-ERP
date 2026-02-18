@@ -5,7 +5,7 @@ use Kezi\Pos\Http\Controllers\Api\MasterDataSyncController;
 use Kezi\Pos\Http\Controllers\Api\OrderSyncController;
 use Kezi\Pos\Http\Controllers\Api\SessionController;
 
-Route::middleware(['auth:sanctum'])
+Route::middleware(['auth:sanctum', 'throttle:60,1'])
     ->group(function () {
         // Master Data Sync
         Route::get('/sync/master-data', [MasterDataSyncController::class, 'index']);

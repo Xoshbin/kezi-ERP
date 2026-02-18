@@ -37,6 +37,7 @@ class SessionController extends Controller
         $session = PosSession::create([
             'pos_profile_id' => $profile->id,
             'user_id' => $user->id,
+            'company_id' => $profile->company_id,
             'opened_at' => now(),
             'opening_cash' => \Brick\Money\Money::ofMinor($request->opening_cash, $currency->code),
             'status' => 'opened',
