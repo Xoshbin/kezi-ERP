@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'label' => 'پڕۆفایلی کاشێر',
+    'plural_label' => 'پڕۆفایلەکانی کاشێر',
+    'basic_configuration' => 'ڕێکخستنە سەرەتاییەکان',
+    'name' => 'ناو',
+    'type' => 'جۆر',
+    'is_active' => 'چالاکە',
+    'stock_location' => 'شوێنی کۆگا',
+    'stock_location_helper' => 'ئەو کۆگایەی کە کاڵاکانی لێ دەفرۆشرێت',
+    'feature_modules' => 'مۆدیوڵەکان',
+    'features' => 'تایبەتمەندییەکان',
+    'terminal_settings' => 'ڕێکخستنەکانی تێرمیناڵ',
+    'option' => 'بژاردە',
+    'value' => 'نرخ',
+    'retail' => 'تفرەفرۆشی',
+    'hospitality' => 'میوانداری',
+    'service' => 'خزمەتگوزاری',
+    'tables' => 'بەڕێوەبردنی مێزەکان',
+    'barcodes' => 'سکانکردنی بارکۆد',
+    'split_bill' => 'دابەشکردنی وەسڵ',
+    'kitchen_printer' => 'چاپکەری چێشتخانە',
+    'inventory_check' => 'پشکنینی کۆگا بە شێوەی ڕاستەوخۆ',
+];

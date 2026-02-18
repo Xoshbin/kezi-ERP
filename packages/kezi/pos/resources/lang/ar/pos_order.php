@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'label' => 'POS Order',
+    'plural_label' => 'POS Orders',
+    'order_details' => 'Order Details',
+    'session' => 'Session',
+    'user' => 'User',
+    'ordered_at' => 'Ordered At',
+    'status' => 'Status',
+    'customer' => 'Customer',
+    'total_amount' => 'Total Amount',
+    'total_tax' => 'Total Tax',
+    'discount_amount' => 'Discount Amount',
+    'financials' => 'Financials',
+    'currency' => 'Currency',
+    'lines' => 'Lines',
+    'product' => 'Product',
+    'quantity' => 'Quantity',
+    'unit_price' => 'Unit Price',
+    'total' => 'Total',
+    'order_number' => 'Order Number',
+    'session_id' => 'Session ID',
+    'draft' => 'Draft',
+    'paid' => 'Paid',
+    'cancelled' => 'Cancelled',
+];

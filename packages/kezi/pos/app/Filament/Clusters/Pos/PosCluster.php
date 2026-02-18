@@ -11,6 +11,6 @@ class PosCluster extends Cluster
 
     public static function getNavigationLabel(): string
     {
-        return __('Point of Sale');
+        return __('pos::navigation.pos');
     }
 }

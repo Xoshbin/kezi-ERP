@@ -13,9 +13,11 @@ class PosTerminal extends Page
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-presentation-chart-line';
 
-    public static function getNavigationLabel(): string
+    protected function getHeaderActions(): array
     {
-        return __('POS Terminal');
+        return [
+            \Kezi\Foundation\Filament\Actions\DocsAction::make('pos-terminal'),
+        ];
     }
 
     public function getHeader(): null

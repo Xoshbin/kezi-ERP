@@ -5,7 +5,6 @@ namespace Kezi\Pos\Filament\Clusters\Pos\Resources\PosProfiles;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Kezi\Pos\Filament\Clusters\Pos\PosCluster;
 use Kezi\Pos\Filament\Clusters\Pos\Resources\PosProfiles\Pages\CreatePosProfile;
 use Kezi\Pos\Filament\Clusters\Pos\Resources\PosProfiles\Pages\EditPosProfile;
 use Kezi\Pos\Filament\Clusters\Pos\Resources\PosProfiles\Pages\ListPosProfiles;
@@ -17,9 +16,20 @@ class PosProfileResource extends Resource
 {
     protected static ?string $model = PosProfile::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-computer-desktop';
+    public static function getModelLabel(): string
+    {
+        return __('pos::pos_profile.label');
+    }
 
-    protected static ?string $cluster = PosCluster::class;
+    public static function getPluralModelLabel(): string
+    {
+        return __('pos::pos_profile.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('pos::pos_profile.plural_label');
+    }
 
     protected static ?int $navigationSort = 1;
 
