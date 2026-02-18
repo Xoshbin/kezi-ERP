@@ -67,8 +67,15 @@ beforeEach(function () {
         'type' => JournalType::Sale,
     ]);
 
+    $this->receivableAccount = Account::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => AccountType::Receivable,
+    ]);
+
     $this->company->update([
         'default_sales_journal_id' => $this->salesJournal->id,
+        'default_accounts_receivable_id' => $this->receivableAccount->id,
+        'default_stock_location_id' => $this->warehouseLocation->id,
     ]);
 });
 
@@ -134,10 +141,9 @@ it('deducts stock when a POS order is synced', function () {
 
     // Verify stock was deducted
     assertDatabaseHas('stock_moves', [
-        'reference' => 'POS-POS-STOCK-001',
         'move_type' => 'outgoing',
         'status' => 'done',
-        'source_type' => \Kezi\Pos\Models\PosOrder::class,
+        'source_type' => \Kezi\Sales\Models\Invoice::class,
     ]);
 
     // Verify stock move product line
@@ -330,5 +336,5 @@ it('does not duplicate stock deduction on idempotent order sync', function () {
     expect((float) $quant->quantity)->toBe(95.0);
 
     // Only one stock move created
-    expect(\Kezi\Inventory\Models\StockMove::where('source_type', \Kezi\Pos\Models\PosOrder::class)->count())->toBe(1);
+    expect(\Kezi\Inventory\Models\StockMove::where('source_type', \Kezi\Sales\Models\Invoice::class)->count())->toBe(1);
 });

@@ -14,6 +14,7 @@ class SyncOrdersAction
 {
     public function __construct(
         protected DeductPosOrderStockAction $deductStockAction,
+        protected CreateInvoiceFromPosOrderAction $createInvoiceAction,
     ) {}
 
     /**
@@ -58,7 +59,8 @@ class SyncOrdersAction
                         'currency_id' => $orderData->currency_id,
                         'sector_data' => $orderData->sector_data,
                         'pos_session_id' => $orderData->pos_session_id,
-                        // 'user_id' => $user->id, // PosOrder doesn't seem to have user_id in fillable/migration yet strictly? Model didn't show it in Step 201.
+                        // 'user_id' => $user->id,
+                        'invoice_id' => null, // Will be set after invoice creation
                     ]);
 
                     foreach ($orderData->lines as $lineData) {
@@ -74,15 +76,17 @@ class SyncOrdersAction
                         ]);
                     }
 
-                    // Deduct stock after order lines are created
+                    // Create invoice if not already present
                     try {
-                        $this->deductStockAction->execute($order);
+                        if (! $order->invoice_id) {
+                            $this->createInvoiceAction->execute($order);
+                        }
                     } catch (\Exception $e) {
                         $strictMode = $order->session?->profile?->settings['strict_stock_check'] ?? false;
                         if ($strictMode) {
                             throw $e;
                         }
-                        Log::warning("Stock deduction failed for POS order {$orderData->uuid}: {$e->getMessage()}");
+                        Log::warning("Invoice creation failed for POS order {$orderData->uuid}: {$e->getMessage()}");
                     }
                 });
 
