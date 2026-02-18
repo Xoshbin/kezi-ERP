@@ -51,7 +51,7 @@ it('validates a goods receipt successfully', function () {
         'purchase_order_id' => $po->id,
     ]);
 
-    $move = StockMove::factory()->create([
+    $move = StockMove::factory()->receipt()->create([
         'company_id' => $this->company->id,
         'picking_id' => $picking->id,
         'status' => StockMoveStatus::Confirmed,
@@ -110,7 +110,7 @@ it('creates a backorder for partial receipt', function () {
         'purchase_order_id' => $po->id,
     ]);
 
-    $move = StockMove::factory()->create([
+    $move = StockMove::factory()->receipt()->create([
         'company_id' => $this->company->id,
         'picking_id' => $picking->id,
     ]);
