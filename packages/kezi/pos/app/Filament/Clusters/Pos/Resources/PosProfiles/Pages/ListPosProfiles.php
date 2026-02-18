@@ -13,6 +13,7 @@ class ListPosProfiles extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Kezi\Foundation\Filament\Actions\DocsAction::make('pos-profiles'),
             Actions\CreateAction::make(),
         ];
     }

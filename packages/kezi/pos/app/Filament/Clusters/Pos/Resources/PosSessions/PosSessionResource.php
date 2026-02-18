@@ -17,7 +17,20 @@ class PosSessionResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clock';
 
-    protected static ?string $navigationLabel = 'Sessions';
+    public static function getModelLabel(): string
+    {
+        return __('pos::pos_session.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('pos::pos_session.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('pos::pos_session.plural_label');
+    }
 
     protected static ?string $slug = 'sessions';
 
@@ -34,10 +47,10 @@ class PosSessionResource extends Resource
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('user.name')
-                    ->label('User')
+                    ->label(__('pos::pos_session.user'))
                     ->sortable(),
                 TextColumn::make('profile.name')
-                    ->label('Profile')
+                    ->label(__('pos::pos_session.profile'))
                     ->sortable(),
                 TextColumn::make('opened_at')
                     ->dateTime()
@@ -62,7 +75,7 @@ class PosSessionResource extends Resource
                 TextColumn::make('total_revenue')
                     ->state(fn (PosSession $record): float => $record->orders()->sum('total_amount') / 100)
                     ->numeric()
-                    ->label('Total Revenue'),
+                    ->label(__('pos::pos_session.total_revenue')),
             ])
             ->filters([
                 //

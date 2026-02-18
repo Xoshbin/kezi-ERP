@@ -22,7 +22,20 @@ class PosOrderResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
-    protected static ?string $navigationLabel = 'Orders';
+    public static function getModelLabel(): string
+    {
+        return __('pos::pos_order.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('pos::pos_order.plural_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('pos::pos_order.plural_label');
+    }
 
     protected static ?string $slug = 'orders';
 
@@ -35,10 +48,10 @@ class PosOrderResource extends Resource
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('session.id')
-                    ->label('Session')
+                    ->label(__('pos::pos_order.session'))
                     ->sortable(),
                 TextColumn::make('session.user.name')
-                    ->label('User')
+                    ->label(__('pos::pos_order.user'))
                     ->sortable(),
                 TextColumn::make('ordered_at')
                     ->dateTime()
@@ -66,13 +79,13 @@ class PosOrderResource extends Resource
             ->filters([
                 SelectFilter::make('status')
                     ->options([
-                        'draft' => 'Draft',
-                        'paid' => 'Paid',
-                        'cancelled' => 'Cancelled',
+                        'draft' => __('pos::pos_order.draft'),
+                        'paid' => __('pos::pos_order.paid'),
+                        'cancelled' => __('pos::pos_order.cancelled'),
                     ]),
                 SelectFilter::make('pos_session_id')
                     ->relationship('session', 'id')
-                    ->label('Session'),
+                    ->label(__('pos::pos_order.session')),
             ])
             ->actions([
                 ViewAction::make(),
@@ -83,28 +96,28 @@ class PosOrderResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Order Details')
+                Section::make(__('pos::pos_order.order_details'))
                     ->schema([
-                        TextEntry::make('order_number'),
-                        TextEntry::make('ordered_at')->dateTime(),
-                        TextEntry::make('status')->badge(),
-                        TextEntry::make('session.id')->label('Session ID'),
+                        TextEntry::make('order_number')->label(__('pos::pos_order.order_number')),
+                        TextEntry::make('ordered_at')->label(__('pos::pos_order.ordered_at'))->dateTime(),
+                        TextEntry::make('status')->label(__('pos::pos_order.status'))->badge(),
+                        TextEntry::make('session.id')->label(__('pos::pos_order.session_id')),
                     ])->columns(2),
-                Section::make('Financials')
+                Section::make(__('pos::pos_order.financials'))
                     ->schema([
-                        TextEntry::make('total_amount')->numeric(),
-                        TextEntry::make('total_tax')->numeric(),
-                        TextEntry::make('discount_amount')->numeric(),
-                        TextEntry::make('currency.code')->label('Currency'),
+                        TextEntry::make('total_amount')->label(__('pos::pos_order.total_amount'))->numeric(),
+                        TextEntry::make('total_tax')->label(__('pos::pos_order.total_tax'))->numeric(),
+                        TextEntry::make('discount_amount')->label(__('pos::pos_order.discount_amount'))->numeric(),
+                        TextEntry::make('currency.code')->label(__('pos::pos_order.currency')),
                     ])->columns(2),
-                Section::make('Lines')
+                Section::make(__('pos::pos_order.lines'))
                     ->schema([
                         RepeatableEntry::make('lines')
                             ->schema([
-                                TextEntry::make('product.name')->label('Product'),
-                                TextEntry::make('qty')->label('Quantity'),
-                                TextEntry::make('unit_price')->numeric()->label('Unit Price'),
-                                TextEntry::make('total_amount')->numeric()->label('Total'),
+                                TextEntry::make('product.name')->label(__('pos::pos_order.product')),
+                                TextEntry::make('qty')->label(__('pos::pos_order.quantity')),
+                                TextEntry::make('unit_price')->label(__('pos::pos_order.unit_price'))->numeric(),
+                                TextEntry::make('total_amount')->label(__('pos::pos_order.total'))->numeric(),
                             ])->columns(4),
                     ]),
             ]);

@@ -12,7 +12,7 @@ class ListPosSessions extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            // No create action as sessions are managed via POS terminal
+            \Kezi\Foundation\Filament\Actions\DocsAction::make('pos-sessions'),
         ];
     }
 }
