@@ -15,9 +15,15 @@ class PosDashboard extends Dashboard
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
 
-    protected static ?string $title = 'POS Overview';
+    public function getTitle(): string
+    {
+        return __('pos::pos_dashboard.title');
+    }
 
-    protected static ?string $navigationLabel = 'Dashboard';
+    public static function getNavigationLabel(): string
+    {
+        return __('pos::pos_dashboard.navigation_label');
+    }
 
     public function getWidgets(): array
     {

@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'label' => 'POS Profile',
+    'plural_label' => 'POS Profiles',
+    'basic_configuration' => 'Basic Configuration',
+    'name' => 'Name',
+    'type' => 'Type',
+    'is_active' => 'Is Active',
+    'stock_location' => 'Stock Location',
+    'stock_location_helper' => 'The inventory location from which products will be sold',
+    'feature_modules' => 'Feature Modules',
+    'features' => 'Features',
+    'terminal_settings' => 'Terminal Settings',
+    'option' => 'Option',
+    'value' => 'Value',
+    'retail' => 'Retail',
+    'hospitality' => 'Hospitality',
+    'service' => 'Service',
+    'tables' => 'Table Management',
+    'barcodes' => 'Barcode Scanning',
+    'split_bill' => 'Split Billing',
+    'kitchen_printer' => 'Kitchen Printing',
+    'inventory_check' => 'Real-time Stock Check',
+];

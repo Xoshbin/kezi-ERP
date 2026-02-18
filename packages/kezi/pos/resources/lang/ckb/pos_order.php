@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'label' => 'داواکاری کاشێر',
+    'plural_label' => 'داواکارییەکانی کاشێر',
+    'order_details' => 'وردەکارییەکانی داواکاری',
+    'session' => 'خوول',
+    'user' => 'بەکارهێنەر',
+    'ordered_at' => 'کاتی داواکاری',
+    'status' => 'بارودۆخ',
+    'customer' => 'کڕیار',
+    'total_amount' => 'کۆی گشتی',
+    'total_tax' => 'کۆی باج',
+    'discount_amount' => 'بڕی داشکاندن',
+    'financials' => 'دارایی',
+    'currency' => 'دراو',
+    'lines' => 'کاڵاکان',
+    'product' => 'کاڵا',
+    'quantity' => 'بڕ',
+    'unit_price' => 'نرخی تاک',
+    'total' => 'کۆی گشتی',
+    'order_number' => 'ژمارەی داواکاری',
+    'session_id' => 'ناسنامەی خوول',
+    'draft' => 'تایبەت',
+    'paid' => 'دراوە',
+    'cancelled' => 'هەڵوەشاوەتەوە',
+];

@@ -16,10 +16,12 @@ class PosProfilesTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label(__('pos::pos_profile.name'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('type')
+                    ->label(__('pos::pos_profile.type'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'retail' => 'success',
@@ -29,6 +31,7 @@ class PosProfilesTable
                     }),
 
                 IconColumn::make('is_active')
+                    ->label(__('pos::pos_profile.is_active'))
                     ->boolean(),
 
                 TextColumn::make('created_at')

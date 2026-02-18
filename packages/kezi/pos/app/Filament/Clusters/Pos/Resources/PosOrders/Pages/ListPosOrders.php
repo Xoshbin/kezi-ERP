@@ -12,7 +12,7 @@ class ListPosOrders extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            // Read-only
+            \Kezi\Foundation\Filament\Actions\DocsAction::make('pos-orders'),
         ];
     }
 }

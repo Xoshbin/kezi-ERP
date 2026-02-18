@@ -20,7 +20,7 @@ class PosProfileForm
     {
         return $schema
             ->components([
-                Section::make('Basic Configuration')
+                Section::make(__('pos::pos_profile.basic_configuration'))
                     ->schema([
                         Hidden::make('company_id')
                             ->default(fn () => Auth::user()?->company_id),
@@ -31,19 +31,20 @@ class PosProfileForm
 
                         Select::make('type')
                             ->options([
-                                'retail' => 'Retail',
-                                'hospitality' => 'Hospitality',
-                                'service' => 'Service',
+                                'retail' => __('pos::pos_profile.retail'),
+                                'hospitality' => __('pos::pos_profile.hospitality'),
+                                'service' => __('pos::pos_profile.service'),
                             ])
                             ->required()
                             ->live(),
 
                         Toggle::make('is_active')
+                            ->label(__('pos::pos_profile.is_active'))
                             ->default(true),
 
                         Select::make('stock_location_id')
-                            ->label('Stock Location')
-                            ->helperText('The inventory location from which products will be sold')
+                            ->label(__('pos::pos_profile.stock_location'))
+                            ->helperText(__('pos::pos_profile.stock_location_helper'))
                             ->options(fn () => StockLocation::query()
                                 ->where('company_id', Auth::user()?->company_id)
                                 ->where('type', StockLocationType::Internal)
@@ -53,24 +54,25 @@ class PosProfileForm
                             ->required(),
                     ]),
 
-                Section::make('Feature Modules')
+                Section::make(__('pos::pos_profile.feature_modules'))
                     ->schema([
                         CheckboxList::make('features')
+                            ->label(__('pos::pos_profile.features'))
                             ->options([
-                                'tables' => 'Table Management',
-                                'barcodes' => 'Barcode Scanning',
-                                'split_bill' => 'Split Billing',
-                                'kitchen_printer' => 'Kitchen Printing',
-                                'inventory_check' => 'Real-time Stock Check',
+                                'tables' => __('pos::pos_profile.tables'),
+                                'barcodes' => __('pos::pos_profile.barcodes'),
+                                'split_bill' => __('pos::pos_profile.split_bill'),
+                                'kitchen_printer' => __('pos::pos_profile.kitchen_printer'),
+                                'inventory_check' => __('pos::pos_profile.inventory_check'),
                             ])
                             ->columns(2),
                     ]),
 
-                Section::make('Terminal Settings')
+                Section::make(__('pos::pos_profile.terminal_settings'))
                     ->schema([
                         KeyValue::make('settings')
-                            ->keyLabel('Option')
-                            ->valueLabel('Value'),
+                            ->keyLabel(__('pos::pos_profile.option'))
+                            ->valueLabel(__('pos::pos_profile.value')),
                     ]),
             ]);
     }

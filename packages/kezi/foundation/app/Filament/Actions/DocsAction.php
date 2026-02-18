@@ -163,6 +163,10 @@ class DocsAction
             'configure-currencies' => 'how-to/configure-currencies',
             'manage-users' => 'how-to/manage-users',
             'setting-up-your-company' => 'tutorials/setting-up-your-company',
+            'pos-terminal' => 'how-to/pos-terminal',
+            'pos-orders' => 'how-to/pos-orders',
+            'pos-profiles' => 'how-to/pos-profiles',
+            'pos-sessions' => 'how-to/pos-sessions',
         ];
 
         return $mapping[$slug] ?? $slug;
