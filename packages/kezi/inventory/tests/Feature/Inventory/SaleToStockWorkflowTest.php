@@ -395,6 +395,7 @@ it('auto-confirms delivery when company inventory_accounting_mode is automatic',
         'customer_id' => $this->customer->id,
         'status' => \Kezi\Sales\Enums\Sales\SalesOrderStatus::Draft,
         'currency_id' => $this->company->currency_id,
+        'delivery_location_id' => $this->warehouseLocation->id,
         'created_by_user_id' => $this->user->id,
     ]);
 
@@ -457,6 +458,7 @@ it('does not auto-confirm delivery when company inventory_accounting_mode is man
         'customer_id' => $this->customer->id,
         'status' => \Kezi\Sales\Enums\Sales\SalesOrderStatus::Draft,
         'currency_id' => $this->company->currency_id,
+        'delivery_location_id' => $this->warehouseLocation->id,
         'created_by_user_id' => $this->user->id,
     ]);
 

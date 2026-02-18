@@ -30,6 +30,21 @@ use Tests\Builders\CompanyBuilder;
  *
  * @mixin \Tests\TestCase
  */
+/**
+ * @property \Kezi\Inventory\Models\StockLocation $stockLocation
+ * @property \Kezi\Inventory\Models\StockLocation $warehouse
+ * @property \Kezi\Inventory\Models\StockLocation $vendorLocation
+ * @property \Kezi\Inventory\Models\StockLocation $customerLocation
+ * @property \Kezi\Inventory\Models\StockLocation $adjustmentLocation
+ * @property \Kezi\Accounting\Models\Account $stockInputAccount
+ * @property \Kezi\Accounting\Models\Account $cogsAccount
+ * @property \Kezi\Accounting\Models\Account $inventoryAccount
+ * @property \Kezi\Foundation\Models\Partner $vendor
+ * @property \Kezi\Foundation\Models\Partner $customer
+ * @property \App\Models\Company $company
+ * @property \App\Models\User $user
+ * @property \Kezi\Product\Models\Product $product
+ */
 trait WithConfiguredCompany
 {
     public function setupWithConfiguredCompany(): void
@@ -132,9 +147,24 @@ trait WithConfiguredCompany
             'default_adjustment_location_id' => $adjustmentLocation->id,
         ]);
 
-        // 4. Create a default vendor for the tests
         /** @var Partner $vendor */
         $vendor = \Kezi\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Kezi\Foundation\Enums\Partners\PartnerType::Vendor]);
         $this->vendor = $vendor;
+    }
+
+    /**
+     * Seed stock for a product at a location
+     */
+    protected function seedStock(\Kezi\Product\Models\Product $product, \Kezi\Inventory\Models\StockLocation $location, float $quantity, ?int $lotId = null, ?int $serialId = null): void
+    {
+        app(\Kezi\Inventory\Services\Inventory\StockQuantService::class)->adjust(
+            $product->company_id,
+            $product->id,
+            $location->id,
+            $quantity,
+            0,
+            $lotId,
+            $serialId
+        );
     }
 }

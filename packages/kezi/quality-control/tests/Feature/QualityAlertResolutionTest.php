@@ -82,6 +82,8 @@ class QualityAlertResolutionTest extends TestCase
             'product_id' => $product->id,
         ]);
 
+        $this->seedStock($product, $this->company->defaultStockLocation, 10);
+
         $alert = QualityAlert::factory()->create([
             'company_id' => $this->company->id,
             'product_id' => $product->id,
