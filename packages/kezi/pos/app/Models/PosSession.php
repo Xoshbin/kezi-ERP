@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Brick\Money\Money|null $opening_cash
  * @property \Brick\Money\Money|null $closing_cash
  * @property-read \Kezi\Pos\Models\PosProfile $profile
+ * @property-read \App\Models\User $user
+ * @property-read \App\Models\Company $company
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Pos\Models\PosOrder> $orders
  */
 class PosSession extends Model

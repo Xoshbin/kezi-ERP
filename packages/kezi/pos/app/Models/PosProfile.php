@@ -38,6 +38,8 @@ class PosProfile extends Model
         'settings',
         'is_active',
         'stock_location_id',
+        'default_income_account_id',
+        'default_payment_journal_id',
     ];
 
     protected function casts(): array
@@ -67,5 +69,15 @@ class PosProfile extends Model
     public function stockLocation(): BelongsTo
     {
         return $this->belongsTo(\Kezi\Inventory\Models\StockLocation::class);
+    }
+
+    public function defaultIncomeAccount(): BelongsTo
+    {
+        return $this->belongsTo(\Kezi\Accounting\Models\Account::class, 'default_income_account_id');
+    }
+
+    public function defaultPaymentJournal(): BelongsTo
+    {
+        return $this->belongsTo(\Kezi\Accounting\Models\Journal::class, 'default_payment_journal_id');
     }
 }

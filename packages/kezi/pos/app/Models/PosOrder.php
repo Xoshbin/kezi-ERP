@@ -10,6 +10,29 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\Partner;
 
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property int $pos_session_id
+ * @property int $company_id
+ * @property int|null $customer_id
+ * @property int $currency_id
+ * @property string $order_number
+ * @property string $status
+ * @property \Illuminate\Support\Carbon $ordered_at
+ * @property \Brick\Money\Money $total_amount
+ * @property \Brick\Money\Money $total_tax
+ * @property \Brick\Money\Money $discount_amount
+ * @property array|null $sector_data
+ * @property string|null $notes
+ * @property int|null $invoice_id
+ * @property-read \Kezi\Pos\Models\PosSession|null $session
+ * @property-read \App\Models\Company $company
+ * @property-read \Kezi\Foundation\Models\Partner|null $customer
+ * @property-read \Kezi\Foundation\Models\Currency $currency
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Pos\Models\PosOrderLine> $lines
+ * @property-read \Kezi\Sales\Models\Invoice|null $invoice
+ */
 class PosOrder extends Model
 {
     use HasFactory;
@@ -33,6 +56,7 @@ class PosOrder extends Model
         'discount_amount',
         'sector_data',
         'notes',
+        'invoice_id',
     ];
 
     protected function casts(): array
@@ -69,5 +93,10 @@ class PosOrder extends Model
     public function lines(): HasMany
     {
         return $this->hasMany(PosOrderLine::class);
+    }
+
+    public function invoice(): BelongsTo
+    {
+        return $this->belongsTo(\Kezi\Sales\Models\Invoice::class);
     }
 }
