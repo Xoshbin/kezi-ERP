@@ -42,6 +42,8 @@ it('creates stock moves for storable products on invoice', function () {
         'type' => ProductType::Storable,
     ]);
 
+    $this->seedStock($storableProduct, $warehouse, 100);
+
     $serviceProduct = Product::factory()->create([
         'company_id' => $this->company->id,
         'type' => ProductType::Service,
