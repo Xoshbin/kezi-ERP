@@ -24,7 +24,17 @@ class OrderSyncController extends Controller
 
         $ordersData = PosOrderData::collect($request->input('orders', []));
         $user = $request->user();
-        $companyId = $request->input('company_id') ?? $user->companies()->first()?->id;
+        $companyId = $request->input('company_id');
+
+        if ($companyId) {
+            // Verify user has access to this company
+            if (! $user->companies()->where('companies.id', $companyId)->exists()) {
+                return response()->json(['message' => 'Unauthorized company access'], 403);
+            }
+        } else {
+            // Default to first company if not specified
+            $companyId = $user->companies()->first()?->id;
+        }
 
         if (! $companyId) {
             return response()->json(['message' => 'Company ID required'], 400);

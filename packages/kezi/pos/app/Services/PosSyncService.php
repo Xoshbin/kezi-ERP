@@ -49,7 +49,7 @@ class PosSyncService
         // Customers: Partners (Assuming global or scoped? Check Partner model later. Defaulting to all active customers)
         // Usually Partners are shared.
         $customers = Partner::query()
-            // ->tap($byCompany) // Partner model check needed. Assuming global for now.
+            ->tap($byCompany) // Partner model has company_id
             ->tap($applySince)
             ->limit(1000) // Safety limit for POS sync
             ->get();
