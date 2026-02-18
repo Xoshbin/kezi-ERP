@@ -111,6 +111,8 @@ test('debit note with storable products creates stock move from internal to vend
             'description' => 'Returned to vendor',
         ]);
 
+    $this->seedStock($product, $this->stockLocation, 10);
+
     // 2. Act - Dispatch the event
     AdjustmentDocumentPosted::dispatch($adjustment);
 
