@@ -7,6 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Kezi\Product\Models\Product;
 
+/**
+ * @property int $id
+ * @property int $pos_order_id
+ * @property int $product_id
+ * @property float $quantity
+ * @property \Brick\Money\Money $unit_price
+ * @property \Brick\Money\Money $discount_amount
+ * @property \Brick\Money\Money $tax_amount
+ * @property \Brick\Money\Money $total_amount
+ * @property array|null $metadata
+ * @property-read \Kezi\Pos\Models\PosOrder $order
+ * @property-read \Kezi\Product\Models\Product|null $product
+ */
 class PosOrderLine extends Model
 {
     use HasFactory;
