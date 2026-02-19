@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             SetLocaleFromSession::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'api/pos/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->report(function (\Throwable $e) {

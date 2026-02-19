@@ -372,7 +372,7 @@ import { useCartStore } from './stores/cart';
 import { useProductsStore } from './stores/products';
 import { useSessionStore } from './stores/session';
 import { startSyncWorker } from './services/sync-worker';
-import { syncOrders } from './services/sync-service';
+import { syncOrders, syncMasterData } from './services/sync-service';
 import { db } from './db/pos-db';
 import OpenSessionModal from './components/OpenSessionModal.vue';
 import PaymentModal from './components/PaymentModal.vue';
@@ -491,16 +491,30 @@ onMounted(async () => {
     // Start background worker
     startSyncWorker();
     
-    // Check session first
-    await sessionStore.checkCurrentSession();
-    
     // Initial sync and load logic
     try {
         if (connectivity.isOnline) {
-             // If online, sync first then load
-             await productsStore.syncAndReload();
+             // 1. Try to sync master data (profiles, settings, etc.)
+             try {
+                 await syncMasterData();
+             } catch (syncError) {
+                 console.error('Master data sync failed', syncError);
+                 sessionStore.error = 'Failed to sync terminal data. Using local cache if available.';
+             }
+
+             // 2. Check session status
+             await sessionStore.checkCurrentSession();
+
+             // 3. Try to sync products
+             try {
+                 await productsStore.syncAndReload();
+             } catch (productError) {
+                 console.error('Products sync failed, loading from DB', productError);
+                 await productsStore.loadFromDb();
+             }
         } else {
-             // Offline, just load
+             // Offline mode
+             await sessionStore.checkCurrentSession();
              await productsStore.loadFromDb();
         }
         
