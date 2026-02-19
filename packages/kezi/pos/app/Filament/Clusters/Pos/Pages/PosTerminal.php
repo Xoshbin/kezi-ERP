@@ -25,6 +25,11 @@ class PosTerminal extends Page
         return null; // Empty header to maximize space
     }
 
+    public function mount(): void
+    {
+        redirect()->route('pos.terminal');
+    }
+
     public static function shouldRegisterNavigation(): bool
     {
         return true;
