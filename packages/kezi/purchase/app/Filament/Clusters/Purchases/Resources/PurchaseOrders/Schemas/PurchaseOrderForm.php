@@ -29,6 +29,7 @@ use Kezi\Foundation\Models\Currency;
 use Kezi\Product\Models\Product;
 use Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus;
 use Kezi\Purchase\Models\PurchaseOrder;
+use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PurchaseOrderForm
 {
@@ -36,7 +37,118 @@ class PurchaseOrderForm
     {
         return $schema
             ->components([
-                Section::make(__('purchase::purchase_orders.sections.basic_info'))
+                Section::make(__('purchase::purchase_orders.sections.vendor_currency_info'))
+                    ->description(__('purchase::purchase_orders.sections.vendor_currency_info_description'))
+                    ->schema([
+                        TranslatableSelect::make('vendor_id')
+                            ->label(__('purchase::purchase_orders.fields.vendor'))
+                            ->relationship('vendor', 'name')
+                            ->searchableFields(['name', 'email', 'contact_person'])
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->columnSpan(2)
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->required(),
+                                TextInput::make('email')
+                                    ->email(),
+                                Select::make('type')
+                                    ->label(__('purchase::partner.type'))
+                                    ->options(
+                                        collect(PartnerType::cases())
+                                            ->mapWithKeys(fn (PartnerType $type) => [$type->value => $type->label()])
+                                    )
+                                    ->default(PartnerType::Both)
+                                    ->required(),
+                            ]),
+
+                        Select::make('currency_id')
+                            ->label(__('purchase::purchase_orders.fields.currency'))
+                            ->options(fn () => Currency::all()->pluck('name', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(function (callable $set, callable $get, $state) {
+                                $currencyId = $state;
+                                if (! $currencyId) {
+                                    $set('exchange_rate_at_creation', 1);
+
+                                    return;
+                                }
+
+                                $company = Filament::getTenant();
+                                if (! $company) {
+                                    $company = Auth::user()?->company;
+                                }
+
+                                $currency = Currency::find($currencyId);
+                                $baseCurrency = $company?->currency;
+                                $newRate = 1.0;
+
+                                if ($currency && $baseCurrency) {
+                                    if ($currency->id === $baseCurrency->id) {
+                                        $set('exchange_rate_at_creation', 1);
+                                        $newRate = 1.0;
+                                    } else {
+                                        $service = app(\Kezi\Foundation\Services\CurrencyConverterService::class);
+                                        $rate = $service->getExchangeRate($currency, now(), $company) ?? $service->getLatestExchangeRate($currency, $company);
+                                        $newRate = $rate ?? 1.0;
+                                        $set('exchange_rate_at_creation', $newRate);
+                                    }
+                                }
+
+                                // Recalculate prices for existing lines
+                                $lines = $get('lines') ?? [];
+                                if (! empty($lines)) {
+                                    foreach ($lines as $uuid => $line) {
+                                        if (isset($line['product_id'])) {
+                                            $product = Product::find($line['product_id']);
+                                            if ($product instanceof Product && $product->unit_price) {
+                                                // Get the underlying decimal amount from the Money object or value
+                                                $basePrice = $product->unit_price instanceof Money
+                                                    ? $product->unit_price->getAmount()->toBigDecimal()
+                                                    : $product->unit_price;
+
+                                                if ($newRate == 1.0) {
+                                                    // Reverting to base currency: use original base price
+                                                    $lines[$uuid]['unit_price'] = (string) $basePrice;
+                                                } else {
+                                                    // Converting to foreign currency: Base / Rate
+                                                    // We use standard division here. In a robust system, we might check for 0.
+                                                    if ($newRate > 0) {
+                                                        $converted = \Brick\Math\BigDecimal::of($basePrice)->dividedBy($newRate, 6, \Brick\Math\RoundingMode::HALF_UP);
+                                                        $lines[$uuid]['unit_price'] = (string) $converted;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    $set('lines', $lines);
+                                }
+                            }),
+
+                        ExchangeRateInput::make('exchange_rate_at_creation')
+                            ->columnSpan(1),
+
+                        Select::make('incoterm')
+                            ->label(__('purchase::purchase_orders.fields.incoterm'))
+                            ->options(Incoterm::class)
+                            ->searchable()
+                            ->preload(),
+
+                        Select::make('delivery_location_id')
+                            ->label(__('purchase::purchase_orders.fields.delivery_location'))
+                            ->relationship('deliveryLocation', 'name')
+                            ->searchable()
+                            ->preload(),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull(),
+
+                Section::make(__('purchase::purchase_orders.sections.order_details'))
+                    ->description(__('purchase::purchase_orders.sections.order_details_description'))
                     ->schema([
                         Hidden::make('company_id')
                             ->default(fn () => Filament::getTenant()?->id),
@@ -44,221 +156,106 @@ class PurchaseOrderForm
                         Hidden::make('created_by_user_id')
                             ->default(fn () => Auth::id()),
 
-                        Grid::make(2)
-                            ->schema([
-                                TextInput::make('po_number')
-                                    ->label(__('purchase::purchase_orders.fields.po_number'))
-                                    ->disabled()
-                                    ->dehydrated(false)
-                                    ->placeholder(__('purchase::purchase_orders.help.po_number')),
+                        TextInput::make('po_number')
+                            ->label(__('purchase::purchase_orders.fields.po_number'))
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->placeholder(__('purchase::purchase_orders.help.po_number')),
 
-                                Select::make('status')
-                                    ->label(__('purchase::purchase_orders.fields.status'))
-                                    ->options(function (?string $operation, ?PurchaseOrder $record) {
-                                        // In create mode, show all statuses
-                                        if ($operation === 'create') {
-                                            return PurchaseOrderStatus::class;
-                                        }
+                        Select::make('status')
+                            ->label(__('purchase::purchase_orders.fields.status'))
+                            ->options(function (?string $operation, ?PurchaseOrder $record) {
+                                // In create mode, show all statuses
+                                if ($operation === 'create') {
+                                    return PurchaseOrderStatus::class;
+                                }
 
-                                        // In edit mode, show only valid forward transitions
-                                        if ($operation === 'edit' && $record) {
-                                            $validTransitions = $record->status->getValidTransitions();
-                                            $options = [];
-                                            foreach ($validTransitions as $status) {
-                                                $options[$status->value] = $status->label();
-                                            }
+                                // In edit mode, show only valid forward transitions
+                                if ($operation === 'edit' && $record) {
+                                    $validTransitions = $record->status->getValidTransitions();
+                                    $options = [];
+                                    foreach ($validTransitions as $status) {
+                                        $options[$status->value] = $status->label();
+                                    }
 
-                                            return $options;
-                                        }
+                                    return $options;
+                                }
 
-                                        return PurchaseOrderStatus::class;
-                                    })
-                                    ->default(PurchaseOrderStatus::Draft)
-                                    ->disabled(function (?string $operation, ?PurchaseOrder $record) {
-                                        // Always editable in create mode
-                                        if ($operation === 'create') {
-                                            return false;
-                                        }
+                                return PurchaseOrderStatus::class;
+                            })
+                            ->default(PurchaseOrderStatus::Draft)
+                            ->disabled(function (?string $operation, ?PurchaseOrder $record) {
+                                // Always editable in create mode
+                                if ($operation === 'create') {
+                                    return false;
+                                }
 
-                                        // In edit mode, allow editing if status allows flexibility
-                                        if ($operation === 'edit' && $record) {
-                                            // Allow editing for active statuses that might need manual adjustment
-                                            return ! in_array($record->status, [
-                                                PurchaseOrderStatus::Draft,
-                                                PurchaseOrderStatus::Sent,
-                                                PurchaseOrderStatus::Confirmed,
-                                                PurchaseOrderStatus::ToReceive,
-                                                PurchaseOrderStatus::PartiallyReceived,
-                                                PurchaseOrderStatus::FullyReceived,
-                                                PurchaseOrderStatus::ToBill,
-                                                PurchaseOrderStatus::PartiallyBilled,
-                                            ]);
-                                        }
+                                // In edit mode, allow editing if status allows flexibility
+                                if ($operation === 'edit' && $record) {
+                                    // Allow editing for active statuses that might need manual adjustment
+                                    return ! in_array($record->status, [
+                                        PurchaseOrderStatus::Draft,
+                                        PurchaseOrderStatus::Sent,
+                                        PurchaseOrderStatus::Confirmed,
+                                        PurchaseOrderStatus::ToReceive,
+                                        PurchaseOrderStatus::PartiallyReceived,
+                                        PurchaseOrderStatus::FullyReceived,
+                                        PurchaseOrderStatus::ToBill,
+                                        PurchaseOrderStatus::PartiallyBilled,
+                                    ]);
+                                }
 
-                                        return true;
-                                    })
-                                    ->helperText(function (?string $operation, ?PurchaseOrder $record) {
-                                        if ($operation === 'edit' && $record) {
-                                            $messages = [];
+                                return true;
+                            })
+                            ->helperText(function (?string $operation, ?PurchaseOrder $record) {
+                                if ($operation === 'edit' && $record) {
+                                    $messages = [];
 
-                                            // Bill creation status message
-                                            if ($record->canCreateBill()) {
-                                                $messages[] = __('purchase::purchase_orders.help.status_can_create_bill');
-                                            } elseif ($record->hasBills()) {
-                                                $messages[] = __('purchase::purchase_orders.help.status_bills_already_exist');
-                                            } else {
-                                                $messages[] = __('purchase::purchase_orders.help.status_cannot_create_bill');
-                                            }
+                                    // Bill creation status message
+                                    if ($record->canCreateBill()) {
+                                        $messages[] = __('purchase::purchase_orders.help.status_can_create_bill');
+                                    } elseif ($record->hasBills()) {
+                                        $messages[] = __('purchase::purchase_orders.help.status_bills_already_exist');
+                                    } else {
+                                        $messages[] = __('purchase::purchase_orders.help.status_cannot_create_bill');
+                                    }
 
-                                            // Forward-only transition message
-                                            $messages[] = __('purchase::purchase_orders.help.status_forward_only');
+                                    // Forward-only transition message
+                                    $messages[] = __('purchase::purchase_orders.help.status_forward_only');
 
-                                            return implode(' ', $messages);
-                                        }
+                                    return implode(' ', $messages);
+                                }
 
-                                        return null;
-                                    })
-                                    ->required(),
-                            ]),
+                                return null;
+                            })
+                            ->required(),
 
-                        Grid::make(2)
-                            ->schema([
-                                DatePicker::make('po_date')
-                                    ->label(__('purchase::purchase_orders.fields.po_date'))
-                                    ->default(now())
-                                    ->required(),
+                        DatePicker::make('po_date')
+                            ->label(__('purchase::purchase_orders.fields.po_date'))
+                            ->default(now())
+                            ->required(),
 
-                                TextInput::make('reference')
-                                    ->label(__('purchase::purchase_orders.fields.reference'))
-                                    ->helperText(__('purchase::purchase_orders.help.reference')),
-                            ]),
-                    ]),
+                        DatePicker::make('expected_delivery_date')
+                            ->label(__('purchase::purchase_orders.fields.expected_delivery_date'))
+                            ->live()
+                            ->afterStateUpdated(function (callable $set, callable $get, $state) {
+                                // Update all line items' expected_delivery_date to match the header
+                                $lines = $get('lines') ?? [];
+                                if (! empty($lines)) {
+                                    foreach ($lines as $uuid => $line) {
+                                        $lines[$uuid]['expected_delivery_date'] = $state;
+                                    }
+                                    $set('lines', $lines);
+                                }
+                            }),
 
-                Section::make(__('purchase::purchase_orders.sections.vendor_details'))
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                Select::make('vendor_id')
-                                    ->label(__('purchase::purchase_orders.fields.vendor'))
-                                    ->relationship('vendor', 'name')
-                                    ->searchable()
-                                    ->preload()
-                                    ->required()
-                                    ->createOptionForm([
-                                        TextInput::make('name')
-                                            ->required(),
-                                        TextInput::make('email')
-                                            ->email(),
-                                        Select::make('type')
-                                            ->label(__('purchase::partner.type'))
-                                            ->options(
-                                                collect(PartnerType::cases())
-                                                    ->mapWithKeys(fn (PartnerType $type) => [$type->value => $type->label()])
-                                            )
-                                            ->default(PartnerType::Both)
-                                            ->required(),
-                                    ]),
-
-                                Select::make('currency_id')
-                                    ->options(fn () => Currency::all()->pluck('name', 'id'))
-                                    ->searchable()
-                                    ->preload()
-                                    ->required()
-                                    ->live()
-                                    ->afterStateUpdated(function (callable $set, callable $get, $state) {
-                                        $currencyId = $state;
-                                        if (! $currencyId) {
-                                            $set('exchange_rate_at_creation', 1);
-
-                                            return;
-                                        }
-
-                                        $company = Filament::getTenant();
-                                        if (! $company) {
-                                            $company = Auth::user()?->company;
-                                        }
-
-                                        $currency = Currency::find($currencyId);
-                                        $baseCurrency = $company?->currency;
-                                        $newRate = 1.0;
-
-                                        if ($currency && $baseCurrency) {
-                                            if ($currency->id === $baseCurrency->id) {
-                                                $set('exchange_rate_at_creation', 1);
-                                                $newRate = 1.0;
-                                            } else {
-                                                $service = app(\Kezi\Foundation\Services\CurrencyConverterService::class);
-                                                $rate = $service->getExchangeRate($currency, now(), $company) ?? $service->getLatestExchangeRate($currency, $company);
-                                                $newRate = $rate ?? 1.0;
-                                                $set('exchange_rate_at_creation', $newRate);
-                                            }
-                                        }
-
-                                        // Recalculate prices for existing lines
-                                        $lines = $get('lines') ?? [];
-                                        if (! empty($lines)) {
-                                            foreach ($lines as $uuid => $line) {
-                                                if (isset($line['product_id'])) {
-                                                    $product = Product::find($line['product_id']);
-                                                    if ($product instanceof Product && $product->unit_price) {
-                                                        // Get the underlying decimal amount from the Money object or value
-                                                        $basePrice = $product->unit_price instanceof Money
-                                                            ? $product->unit_price->getAmount()->toBigDecimal()
-                                                            : $product->unit_price;
-
-                                                        if ($newRate == 1.0) {
-                                                            // Reverting to base currency: use original base price
-                                                            $lines[$uuid]['unit_price'] = (string) $basePrice;
-                                                        } else {
-                                                            // Converting to foreign currency: Base / Rate
-                                                            // We use standard division here. In a robust system, we might check for 0.
-                                                            if ($newRate > 0) {
-                                                                $converted = \Brick\Math\BigDecimal::of($basePrice)->dividedBy($newRate, 6, \Brick\Math\RoundingMode::HALF_UP);
-                                                                $lines[$uuid]['unit_price'] = (string) $converted;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            $set('lines', $lines);
-                                        }
-                                    }),
-
-                                ExchangeRateInput::make('exchange_rate_at_creation'),
-
-                                Select::make('incoterm')
-                                    ->label(__('purchase::purchase_orders.fields.incoterm'))
-                                    ->options(Incoterm::class)
-                                    ->searchable()
-                                    ->preload(),
-                            ]),
-                    ]),
-
-                Section::make(__('purchase::purchase_orders.sections.delivery_info'))
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                DatePicker::make('expected_delivery_date')
-                                    ->label(__('purchase::purchase_orders.fields.expected_delivery_date'))
-                                    ->live()
-                                    ->afterStateUpdated(function (callable $set, callable $get, $state) {
-                                        // Update all line items' expected_delivery_date to match the header
-                                        $lines = $get('lines') ?? [];
-                                        if (! empty($lines)) {
-                                            foreach ($lines as $uuid => $line) {
-                                                $lines[$uuid]['expected_delivery_date'] = $state;
-                                            }
-                                            $set('lines', $lines);
-                                        }
-                                    }),
-
-                                Select::make('delivery_location_id')
-                                    ->label(__('purchase::purchase_orders.fields.delivery_location'))
-                                    ->relationship('deliveryLocation', 'name')
-                                    ->searchable()
-                                    ->preload(),
-                            ]),
-                    ]),
+                        TextInput::make('reference')
+                            ->label(__('purchase::purchase_orders.fields.reference'))
+                            ->helperText(__('purchase::purchase_orders.help.reference'))
+                            ->columnSpan(2),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull(),
 
                 Section::make(__('purchase::purchase_orders.sections.line_items'))
                     ->description(__('purchase::purchase_orders.sections.line_items_description'))
