@@ -4,7 +4,9 @@ namespace Kezi\Pos\Filament\Clusters\Pos\Resources\PosProfiles;
 
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Kezi\Pos\Filament\Clusters\Pos\PosCluster;
 use Kezi\Pos\Filament\Clusters\Pos\Resources\PosProfiles\Pages\CreatePosProfile;
 use Kezi\Pos\Filament\Clusters\Pos\Resources\PosProfiles\Pages\EditPosProfile;
 use Kezi\Pos\Filament\Clusters\Pos\Resources\PosProfiles\Pages\ListPosProfiles;
@@ -15,6 +17,10 @@ use Kezi\Pos\Models\PosProfile;
 class PosProfileResource extends Resource
 {
     protected static ?string $model = PosProfile::class;
+
+    protected static ?string $cluster = PosCluster::class;
+
+    protected static string|\BackedEnum|null $navigationIcon = Heroicon::Identification;
 
     public static function getModelLabel(): string
     {
