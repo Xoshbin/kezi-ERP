@@ -352,7 +352,7 @@
                         </div>
                     </div>
 
-                    <button @click="showPaymentModal = true" class="pay-button w-full bg-primary-600 hover:bg-primary-700 text-white py-5 rounded-3xl font-extrabold text-xl shadow-xl shadow-primary-500/30 flex items-center justify-center gap-3 transition-all active:scale-95 group" :disabled="cart.items.length === 0" :class="{'opacity-50 cursor-not-allowed': cart.items.length === 0}">
+                    <button @click="showPaymentModal = true" class="pay-button w-full bg-primary-600 hover:bg-primary-700 !text-gray-900 py-5 rounded-3xl font-extrabold text-xl shadow-xl shadow-primary-500/30 flex items-center justify-center gap-3 transition-all active:scale-95 group" :disabled="cart.items.length === 0" :class="{'opacity-50 cursor-not-allowed': cart.items.length === 0}">
                         Confirm & Pay
                         <span class="text-[10px] opacity-60 bg-white/20 px-1.5 py-0.5 rounded ml-2">F4</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">

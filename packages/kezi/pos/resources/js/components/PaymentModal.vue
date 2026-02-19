@@ -129,7 +129,7 @@
                         <button 
                             @click="completeSale"
                             :disabled="!isValidPayment"
-                            class="py-5 rounded-3xl font-extrabold text-xl bg-primary-600 text-white shadow-xl shadow-primary-500/30 hover:bg-primary-700 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="py-5 rounded-3xl font-extrabold text-xl bg-primary-600 !text-gray-900 shadow-xl shadow-primary-500/30 hover:bg-primary-700 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                              {{ paymentMethod === 'card' ? 'Charge & Complete' : 'Complete Sale' }}
                         </button>
