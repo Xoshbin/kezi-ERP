@@ -90,8 +90,10 @@ trait WithConfiguredCompany
         $this->user->unsetRelation('permissions');
 
         // This access forces Spatie to hydrate its internal cache/state for this user instance
-        // We use findOrCreate to ensure it exists if the seeder somehow skipped it
-        \Spatie\Permission\Models\Permission::findOrCreate('create_invoice', 'web');
+        // We ensure critical permissions exist to avoid mass failures in parallel tests
+        foreach (['create_invoice', 'confirm_vendor_bill'] as $permission) {
+            \Spatie\Permission\Models\Permission::findOrCreate($permission, 'web');
+        }
         $this->user->hasPermissionTo('create_invoice');
 
         $this->actingAs($this->user);
