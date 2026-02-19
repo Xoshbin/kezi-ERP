@@ -18,6 +18,13 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
  * @property \Kezi\Accounting\Models\Account $account
  * @property \Kezi\Accounting\Models\Account $inventoryAccount
  * @property \Kezi\Accounting\Models\Account $stockInputAccount
+ * @property \Kezi\Accounting\Models\Account $stockOutputAccount
+ * @property \Kezi\Accounting\Models\Account $finishedGoodsAccount
+ * @property \Kezi\Accounting\Models\Account $rawMaterialsAccount
+ * @property \Kezi\Accounting\Models\Account $wipAccount
+ * @property \Kezi\Accounting\Models\Journal $manufacturingJournal
+ * @property \Kezi\Inventory\Models\StockLocation $sourceLocation
+ * @property \Kezi\Inventory\Models\StockLocation $destinationLocation
  * @property \Kezi\Accounting\Models\Account $cogsAccount
  * @property \Kezi\Inventory\Models\StockLocation $vendorLocation
  * @property \Kezi\Inventory\Models\StockLocation $stockLocation

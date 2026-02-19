@@ -47,13 +47,13 @@ use Tests\Builders\CompanyBuilder;
  */
 trait WithConfiguredCompany
 {
-    public function setupWithConfiguredCompany(): void
+    public function setUpWithConfiguredCompany(): void
     {
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Seed roles and permissions
-        if (\Spatie\Permission\Models\Role::count() === 0) {
+        // Seed roles and permissions if they are missing
+        if (\Spatie\Permission\Models\Permission::count() === 0 || \Spatie\Permission\Models\Role::count() === 0) {
             $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
         }
 
@@ -90,6 +90,8 @@ trait WithConfiguredCompany
         $this->user->unsetRelation('permissions');
 
         // This access forces Spatie to hydrate its internal cache/state for this user instance
+        // We use findOrCreate to ensure it exists if the seeder somehow skipped it
+        \Spatie\Permission\Models\Permission::findOrCreate('create_invoice', 'web');
         $this->user->hasPermissionTo('create_invoice');
 
         $this->actingAs($this->user);
