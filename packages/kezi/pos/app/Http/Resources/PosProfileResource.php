@@ -10,10 +10,10 @@ class PosProfileResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'settings' => $this->settings,
-            'features' => $this->features,
+            'id' => $this->resource->id,
+            'name' => $this->resource->name,
+            'settings' => $this->resource->settings,
+            'features' => $this->resource->features,
         ];
     }
 }

@@ -14,7 +14,6 @@ use Kezi\Pos\Models\PosSession;
 class SyncOrdersAction
 {
     public function __construct(
-        protected DeductPosOrderStockAction $deductStockAction,
         protected CreateInvoiceFromPosOrderAction $createInvoiceAction,
     ) {}
 

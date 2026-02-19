@@ -26,8 +26,8 @@ class PosPlugin implements Plugin
         //
     }
 
-    public static function make(): static
+    public static function make(): self
     {
-        return new static;
+        return new self;
     }
 }
