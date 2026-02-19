@@ -5,7 +5,7 @@ use Kezi\Pos\Http\Controllers\Api\MasterDataSyncController;
 use Kezi\Pos\Http\Controllers\Api\OrderSyncController;
 use Kezi\Pos\Http\Controllers\Api\SessionController;
 
-Route::middleware(['auth:sanctum', 'throttle:60,1'])
+Route::middleware(['auth', 'throttle:60,1'])
     ->group(function () {
         // Master Data Sync
         Route::get('/sync/master-data', [MasterDataSyncController::class, 'index'])->name('sync.master-data');
@@ -17,7 +17,7 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])
     });
 
 // Order sync gets a higher throttle — batch uploads from offline POS sessions can be large.
-Route::middleware(['auth:sanctum', 'throttle:600,1'])
+Route::middleware(['auth', 'throttle:600,1'])
     ->group(function () {
         Route::post('/sync/orders', [OrderSyncController::class, 'store'])->name('sync.orders');
     });
