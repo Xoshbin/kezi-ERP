@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Kezi\Pos\DataTransferObjects\PosOrderData;
 use Kezi\Pos\Models\PosOrder;
 use Kezi\Pos\Models\PosOrderLine;
+use Kezi\Pos\Models\PosSession;
 
 class SyncOrdersAction
 {
@@ -28,6 +29,15 @@ class SyncOrdersAction
 
         foreach ($ordersData as $orderData) {
             try {
+                // Verify the session belongs to the authenticated user
+                $session = PosSession::where('id', $orderData->pos_session_id)
+                    ->where('user_id', $user->id)
+                    ->first();
+
+                if (! $session) {
+                    throw new \Exception('Invalid or unauthorized session.');
+                }
+
                 // Idempotency check: If order with this UUID exists for this company, skip processing
                 if (PosOrder::where('uuid', $orderData->uuid)->where('company_id', $companyId)->exists()) {
                     $synced[] = $orderData->uuid;

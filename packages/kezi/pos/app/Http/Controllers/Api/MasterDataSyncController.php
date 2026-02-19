@@ -22,8 +22,16 @@ class MasterDataSyncController extends Controller
 
         $since = $request->input('since') ? \Carbon\Carbon::parse($request->input('since')) : null;
         $companyId = $request->input('company_id');
+        $user = $request->user();
 
-        $data = $service->getMasterData($request->user(), $since, $companyId);
+        if ($companyId) {
+            // Verify user has access to this company
+            if (! $user->companies()->where('companies.id', $companyId)->exists()) {
+                return response()->json(['message' => 'Unauthorized company access'], 403);
+            }
+        }
+
+        $data = $service->getMasterData($user, $since, $companyId);
 
         return response()->json([
             'products' => ProductResource::collection($data['products']),
