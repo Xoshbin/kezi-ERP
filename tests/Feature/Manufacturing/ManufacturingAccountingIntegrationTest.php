@@ -17,7 +17,7 @@ use Tests\Traits\WithConfiguredCompany;
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
-    $this->setupWithConfiguredCompany();
+    $this->setUpWithConfiguredCompany();
 
     // Create necessary accounts for manufacturing
     $this->finishedGoodsAccount = Account::factory()->create([
