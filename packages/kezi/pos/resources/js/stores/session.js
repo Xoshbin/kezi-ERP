@@ -34,12 +34,19 @@ export const useSessionStore = defineStore('session', {
                 } else {
                     this.currentSession = null;
                     this.showOpenSessionModal = true;
+                    await this.loadProfiles();
                 }
             } catch (error) {
-                console.error('Check session failed', error);
-                this.currentSession = null;
-                this.showOpenSessionModal = true; // Show modal so user can try to open/see error
-                this.error = 'Failed to check session status. Please check your connection.';
+                if (error.response && error.response.status === 404) {
+                    this.currentSession = null;
+                    this.showOpenSessionModal = true;
+                    await this.loadProfiles();
+                } else {
+                    console.error('Check session failed', error);
+                    this.currentSession = null;
+                    this.showOpenSessionModal = true;
+                    this.error = 'Failed to check session status. Please check your connection.';
+                }
             } finally {
                 this.loading = false;
             }

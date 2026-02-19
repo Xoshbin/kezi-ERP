@@ -18,6 +18,7 @@ class ProductResource extends JsonResource
 
         return [
             'id' => $product->id,
+            'category_id' => $product->category_id,
             'name' => $product->getTranslation('name', app()->getLocale()),
             'sku' => $product->sku,
             'description' => $product->getTranslation('description', app()->getLocale()) ?? '',

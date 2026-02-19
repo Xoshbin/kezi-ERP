@@ -20,7 +20,7 @@ class PosProfileResource extends Resource
 
     protected static ?string $cluster = PosCluster::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = Heroicon::Identification;
+    protected static \BackedEnum|string|null $navigationIcon = Heroicon::Identification;
 
     public static function getModelLabel(): string
     {
