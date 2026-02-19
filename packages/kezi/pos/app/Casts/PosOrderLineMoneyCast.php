@@ -14,6 +14,7 @@ class PosOrderLineMoneyCast extends MoneyCast
     protected function resolveCurrency(Model $model): Currency
     {
         if (method_exists($model, 'order')) {
+            // @phpstan-ignore-next-line
             $order = $model->order;
 
             if (! $model->relationLoaded('order')) {

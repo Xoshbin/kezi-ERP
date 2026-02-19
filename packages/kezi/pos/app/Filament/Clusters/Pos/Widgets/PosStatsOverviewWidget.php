@@ -2,6 +2,7 @@
 
 namespace Kezi\Pos\Filament\Clusters\Pos\Widgets;
 
+use Filament\Facades\Filament;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
@@ -12,23 +13,31 @@ class PosStatsOverviewWidget extends BaseWidget
 {
     protected function getStats(): array
     {
+        /** @var \App\Models\Company|null $company */
+        $company = Filament::getTenant()
+            ?? auth()->user()?->companies()->first();
+        $companyId = $company?->id;
         $today = Carbon::today();
 
+        // Eager-load currency so DocumentCurrencyMoneyCast can resolve the Money object.
         $ordersToday = PosOrder::query()
+            ->where('company_id', $companyId)
             ->where('status', '!=', 'cancelled')
             ->whereDate('ordered_at', $today)
-            ->get();
+            ->with('currency')
+            ->get(['id', 'total_amount', 'currency_id', 'status', 'ordered_at']);
 
-        $totalSalesToday = $ordersToday->sum(fn ($order) => $order->total_amount->getAmount()->toFloat());
+        $totalSalesToday = $ordersToday->sum(
+            fn (PosOrder $order) => $order->total_amount->getAmount()->toFloat()
+        );
         $totalOrdersToday = $ordersToday->count();
 
         $activeSessions = PosSession::query()
+            ->where('company_id', $companyId)
             ->where('status', 'opened')
             ->count();
 
-        $avgTicketSize = $totalOrdersToday > 0
-            ? $totalSalesToday / $totalOrdersToday
-            : 0;
+        $avgTicketSize = $totalOrdersToday > 0 ? $totalSalesToday / $totalOrdersToday : 0;
 
         return [
             Stat::make('Total Sales (Today)', number_format($totalSalesToday, 2)),

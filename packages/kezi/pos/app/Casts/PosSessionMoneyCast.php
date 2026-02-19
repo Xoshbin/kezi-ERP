@@ -12,6 +12,7 @@ class PosSessionMoneyCast extends BaseCurrencyMoneyCast
     {
         if (method_exists($model, 'profile')) {
             $profile = $model->relationLoaded('profile')
+                // @phpstan-ignore-next-line
                 ? $model->profile
                 : ($model->getAttribute('pos_profile_id') ? $model->profile()->with('company.currency')->first() : null);
 

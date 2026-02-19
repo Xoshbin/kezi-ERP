@@ -4,23 +4,29 @@ namespace Kezi\Pos\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Kezi\Product\Models\Product;
 
+/**
+ * @mixin Product
+ */
 class ProductResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        /** @var Product $product */
+        $product = $this->resource;
+
         return [
-            'id' => $this->id,
-            'name' => $this->getTranslation('name', app()->getLocale()),
-            'sku' => $this->sku,
-            'description' => $this->getTranslation('description', app()->getLocale()) ?? '',
-            'unit_price' => $this->unit_price?->getMinorAmount()->toInt() ?? 0,
-            'currency_code' => $this->unit_price?->getCurrency()->getCurrencyCode(),
-            'category_id' => $this->product_category_id,
-            'type' => $this->type?->value,
-            'available_quantity' => $this->available_quantity,
-            'tax_ids' => $this->purchaseTaxes->pluck('id')->values()->all(),
-            'is_active' => $this->is_active,
+            'id' => $product->id,
+            'name' => $product->getTranslation('name', app()->getLocale()),
+            'sku' => $product->sku,
+            'description' => $product->getTranslation('description', app()->getLocale()) ?? '',
+            'unit_price' => $product->unit_price?->getMinorAmount()->toInt() ?? 0,
+            'currency_code' => $product->unit_price?->getCurrency()->getCurrencyCode(),
+            'type' => $product->type->value,
+            'available_quantity' => $product->available_quantity,
+            'tax_ids' => $product->purchaseTaxes->pluck('id')->values()->all(),
+            'is_active' => $product->is_active,
         ];
     }
 }

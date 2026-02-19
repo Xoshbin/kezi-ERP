@@ -3,6 +3,7 @@
 namespace Kezi\Pos\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Kezi\Pos\Http\Resources\CategoryResource;
 use Kezi\Pos\Http\Resources\CustomerResource;
@@ -13,25 +14,16 @@ use Kezi\Pos\Services\PosSyncService;
 
 class MasterDataSyncController extends Controller
 {
-    public function index(Request $request, PosSyncService $service)
+    public function index(Request $request, PosSyncService $service): JsonResponse
     {
         $request->validate([
             'since' => 'nullable|date',
-            'company_id' => 'nullable|integer',
         ]);
 
         $since = $request->input('since') ? \Carbon\Carbon::parse($request->input('since')) : null;
-        $companyId = $request->input('company_id');
-        $user = $request->user();
 
-        if ($companyId) {
-            // Verify user has access to this company
-            if (! $user->companies()->where('companies.id', $companyId)->exists()) {
-                return response()->json(['message' => 'Unauthorized company access'], 403);
-            }
-        }
-
-        $data = $service->getMasterData($user, $since, $companyId);
+        // company_id is NEVER accepted from user input — it is always scoped to the authenticated user.
+        $data = $service->getMasterData($request->user(), $since, null);
 
         return response()->json([
             'products' => ProductResource::collection($data['products']),
