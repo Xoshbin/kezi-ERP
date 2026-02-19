@@ -60,7 +60,7 @@ class FullSalesCycleTest extends TestCase
     {
         parent::setUp();
 
-        $this->setupWithConfiguredCompany();
+        $this->setUpWithConfiguredCompany();
 
         $this->user = User::factory()->create();
         $this->user->companies()->attach($this->company);
@@ -136,7 +136,7 @@ class FullSalesCycleTest extends TestCase
         app(\Kezi\Sales\Actions\Sales\SendQuoteAction::class)->execute($quote);
 
         // Accept Quote
-        app(AcceptQuoteAction::class)->execute($quote, $this->user);
+        app(AcceptQuoteAction::class)->execute($quote);
 
         $this->assertEquals(QuoteStatus::Accepted, $quote->refresh()->status);
 

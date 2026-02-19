@@ -2,7 +2,6 @@
 
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockLocations;
 
-use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -22,6 +21,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Kezi\Inventory\Enums\Inventory\StockLocationType;
+use Kezi\Inventory\Filament\Clusters\Inventory\InventoryCluster;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\Pages\CreateStockLocation;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\Pages\EditStockLocation;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockLocations\Pages\ListStockLocations;
@@ -32,7 +32,7 @@ class StockLocationResource extends Resource
 {
     protected static ?string $model = StockLocation::class;
 
-    protected static ?string $cluster = SettingsCluster::class;
+    protected static ?string $cluster = InventoryCluster::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-storefront';
 

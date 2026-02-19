@@ -30,15 +30,30 @@ use Tests\Builders\CompanyBuilder;
  *
  * @mixin \Tests\TestCase
  */
+/**
+ * @property \Kezi\Inventory\Models\StockLocation $stockLocation
+ * @property \Kezi\Inventory\Models\StockLocation $warehouse
+ * @property \Kezi\Inventory\Models\StockLocation $vendorLocation
+ * @property \Kezi\Inventory\Models\StockLocation $customerLocation
+ * @property \Kezi\Inventory\Models\StockLocation $adjustmentLocation
+ * @property \Kezi\Accounting\Models\Account $stockInputAccount
+ * @property \Kezi\Accounting\Models\Account $cogsAccount
+ * @property \Kezi\Accounting\Models\Account $inventoryAccount
+ * @property \Kezi\Foundation\Models\Partner $vendor
+ * @property \Kezi\Foundation\Models\Partner $customer
+ * @property \App\Models\Company $company
+ * @property \App\Models\User $user
+ * @property \Kezi\Product\Models\Product $product
+ */
 trait WithConfiguredCompany
 {
-    public function setupWithConfiguredCompany(): void
+    public function setUpWithConfiguredCompany(): void
     {
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Seed roles and permissions
-        if (\Spatie\Permission\Models\Role::count() === 0) {
+        // Seed roles and permissions if they are missing
+        if (\Spatie\Permission\Models\Permission::count() === 0 || \Spatie\Permission\Models\Role::count() === 0) {
             $this->seed(\Kezi\Foundation\Database\Seeders\RolesAndPermissionsSeeder::class);
         }
 
@@ -75,6 +90,10 @@ trait WithConfiguredCompany
         $this->user->unsetRelation('permissions');
 
         // This access forces Spatie to hydrate its internal cache/state for this user instance
+        // We ensure critical permissions exist to avoid mass failures in parallel tests
+        foreach (['create_invoice', 'confirm_vendor_bill'] as $permission) {
+            \Spatie\Permission\Models\Permission::findOrCreate($permission, 'web');
+        }
         $this->user->hasPermissionTo('create_invoice');
 
         $this->actingAs($this->user);
@@ -132,9 +151,24 @@ trait WithConfiguredCompany
             'default_adjustment_location_id' => $adjustmentLocation->id,
         ]);
 
-        // 4. Create a default vendor for the tests
         /** @var Partner $vendor */
         $vendor = \Kezi\Foundation\Models\Partner::factory()->for($this->company)->create(['type' => \Kezi\Foundation\Enums\Partners\PartnerType::Vendor]);
         $this->vendor = $vendor;
+    }
+
+    /**
+     * Seed stock for a product at a location
+     */
+    protected function seedStock(\Kezi\Product\Models\Product $product, \Kezi\Inventory\Models\StockLocation $location, float $quantity, ?int $lotId = null, ?int $serialId = null): void
+    {
+        app(\Kezi\Inventory\Services\Inventory\StockQuantService::class)->adjust(
+            $product->company_id,
+            $product->id,
+            $location->id,
+            $quantity,
+            0,
+            $lotId,
+            $serialId
+        );
     }
 }

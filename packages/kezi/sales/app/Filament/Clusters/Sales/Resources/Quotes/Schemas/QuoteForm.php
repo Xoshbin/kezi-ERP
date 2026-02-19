@@ -29,7 +29,7 @@ class QuoteForm
                 Section::make(__('sales::quote.sections.basic_info'))
                     ->schema([
                         Hidden::make('company_id')
-                            ->default(fn () => Auth::user()?->company_id),
+                            ->default(fn () => Filament::getTenant()?->id),
 
                         Hidden::make('created_by_user_id')
                             ->default(fn () => Auth::id()),
