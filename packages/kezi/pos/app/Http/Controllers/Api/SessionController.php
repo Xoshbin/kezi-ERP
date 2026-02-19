@@ -5,6 +5,7 @@ namespace Kezi\Pos\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Kezi\Pos\Http\Requests\CloseSessionRequest;
 use Kezi\Pos\Http\Requests\OpenSessionRequest;
 use Kezi\Pos\Http\Resources\PosSessionResource;
 use Kezi\Pos\Models\PosProfile;
@@ -49,7 +50,7 @@ class SessionController extends Controller
         ], 201);
     }
 
-    public function close(Request $request, PosSession $session): JsonResponse
+    public function close(CloseSessionRequest $request, PosSession $session): JsonResponse
     {
         /** @var \App\Models\User $user */
         $user = $request->user();
@@ -61,11 +62,6 @@ class SessionController extends Controller
         if ($session->status !== 'opened') {
             return response()->json(['message' => 'Session is already closed or not open'], 409);
         }
-
-        $request->validate([
-            'closing_cash' => 'required|integer|min:0',
-            'closing_notes' => 'nullable|string',
-        ]);
 
         $session->load('profile.company.currency');
         $currency = $session->profile->company->currency;

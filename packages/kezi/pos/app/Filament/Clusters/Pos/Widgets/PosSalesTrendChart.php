@@ -2,6 +2,7 @@
 
 namespace Kezi\Pos\Filament\Clusters\Pos\Widgets;
 
+use Filament\Facades\Filament;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Carbon;
 use Kezi\Pos\Models\PosOrder;
@@ -12,12 +13,18 @@ class PosSalesTrendChart extends ChartWidget
 
     protected function getData(): array
     {
+        /** @var \App\Models\Company|null $company */
+        $company = Filament::getTenant()
+            ?? auth()->user()?->companies()->first();
+        $companyId = $company?->id;
         $today = Carbon::today();
 
         $orders = PosOrder::query()
+            ->where('company_id', $companyId)
             ->where('status', '!=', 'cancelled')
             ->whereDate('ordered_at', $today)
-            ->get();
+            ->with('currency')
+            ->get(['ordered_at', 'total_amount', 'currency_id']);
 
         $hourlyData = array_fill(0, 24, 0);
 

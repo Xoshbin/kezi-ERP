@@ -16,7 +16,7 @@ class PosSyncService
 {
     public function getMasterData(User $user, ?Carbon $since = null, ?int $companyId = null): array
     {
-        $companyId = $companyId ?? $user->companies()->first()?->id;
+        $companyId = $companyId ?? (int) $user->companies()->value('companies.id') ?: null;
 
         if (! $companyId) {
             return [];
