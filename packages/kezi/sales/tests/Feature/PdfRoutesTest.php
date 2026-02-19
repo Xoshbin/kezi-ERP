@@ -110,12 +110,12 @@ test('unauthenticated user cannot access pdf routes', function () {
         'invoice_number' => 'INV-004',
     ]);
 
-    // Action & Assert - Since no login route is defined, expect 500 error
+    // Action & Assert - A login route is defined, expect 302 redirect
     $this->get(route('invoices.pdf', $invoice))
-        ->assertStatus(500);
+        ->assertRedirect();
 
     $this->get(route('invoices.pdf.download', $invoice))
-        ->assertStatus(500);
+        ->assertRedirect();
 });
 
 test('user can specify template parameter for pdf generation', function () {

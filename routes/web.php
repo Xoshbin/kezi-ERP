@@ -11,6 +11,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/login', function () {
+    return redirect()->to('/kezi/login');
+})->name('login');
+
 Route::get('/lang/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'ckb', 'ar'])) {
         session(['locale' => $locale]);

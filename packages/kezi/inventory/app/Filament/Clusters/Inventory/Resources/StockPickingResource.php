@@ -165,7 +165,7 @@ class StockPickingResource extends Resource
                                 ->itemLabel(fn (array $state): ?string => $state['product_id'] ? \Kezi\Product\Models\Product::find($state['product_id'])?->name : null)
                                 ->deleteAction(fn ($action) => $action->requiresConfirmation())
                                 ->mutateRelationshipDataBeforeCreateUsing(function (array $data): array {
-                                    $data['company_id'] = \Illuminate\Support\Facades\Auth::user()->company_id ?? \App\Models\Company::first()->id;
+                                    $data['company_id'] = \Filament\Facades\Filament::getTenant()->id ?? \App\Models\Company::first()->id;
 
                                     return $data;
                                 }),
