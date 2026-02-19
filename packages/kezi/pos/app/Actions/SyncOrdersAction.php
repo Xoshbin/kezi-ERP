@@ -50,6 +50,7 @@ class SyncOrdersAction
                         'company_id' => $companyId,
                         'order_number' => $orderData->order_number,
                         'status' => $orderData->status,
+                        'payment_method' => $orderData->payment_method,
                         'ordered_at' => $orderData->ordered_at,
                         'total_amount' => \Brick\Money\Money::ofMinor($orderData->total_amount, $currencyCode),
                         'total_tax' => \Brick\Money\Money::ofMinor($orderData->total_tax, $currencyCode),

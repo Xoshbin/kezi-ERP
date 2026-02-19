@@ -3,6 +3,7 @@
 namespace Kezi\Pos\DataTransferObjects;
 
 use Illuminate\Support\Collection;
+use Kezi\Payment\Enums\Payments\PaymentMethod;
 
 class PosOrderData
 {
@@ -10,6 +11,7 @@ class PosOrderData
         public string $uuid,
         public string $order_number,
         public string $status,
+        public PaymentMethod $payment_method,
         public string $ordered_at, // ISO String
         public string $total_amount, // Stringified integer (minor units)
         public string $total_tax, // Stringified integer (minor units)
@@ -28,6 +30,7 @@ class PosOrderData
             uuid: $data['uuid'],
             order_number: $data['order_number'],
             status: $data['status'],
+            payment_method: PaymentMethod::tryFrom($data['payment_method'] ?? '') ?? PaymentMethod::Cash, // Default to Cash if missing
             ordered_at: $data['ordered_at'],
             total_amount: (string) $data['total_amount'],
             total_tax: (string) $data['total_tax'],

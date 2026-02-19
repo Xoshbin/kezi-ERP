@@ -40,6 +40,7 @@ class PosSession extends Model
         'closed_at',
         'opening_cash',
         'closing_cash',
+        'closing_notes',
         'status',
     ];
 

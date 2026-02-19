@@ -19,6 +19,7 @@ class PosServiceProvider extends ServiceProvider
 
         \Illuminate\Support\Facades\Route::middleware('api')
             ->prefix('api/pos')
+            ->name('api.pos.')
             ->group(__DIR__.'/../../routes/api.php');
     }
 }

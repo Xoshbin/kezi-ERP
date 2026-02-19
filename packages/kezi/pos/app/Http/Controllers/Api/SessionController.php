@@ -64,6 +64,7 @@ class SessionController extends Controller
 
         $request->validate([
             'closing_cash' => 'required|integer|min:0',
+            'closing_notes' => 'nullable|string',
         ]);
 
         $session->load('profile.company.currency');
@@ -72,6 +73,7 @@ class SessionController extends Controller
         $session->update([
             'closed_at' => now(),
             'closing_cash' => \Brick\Money\Money::ofMinor($request->closing_cash, $currency->code),
+            'closing_notes' => $request->closing_notes,
             'status' => 'closed',
         ]);
 

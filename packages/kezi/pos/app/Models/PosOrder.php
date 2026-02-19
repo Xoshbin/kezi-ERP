@@ -19,6 +19,7 @@ use Kezi\Foundation\Models\Partner;
  * @property int $currency_id
  * @property string $order_number
  * @property string $status
+ * @property \Kezi\Payment\Enums\Payments\PaymentMethod|null $payment_method
  * @property \Illuminate\Support\Carbon $ordered_at
  * @property \Brick\Money\Money $total_amount
  * @property \Brick\Money\Money $total_tax
@@ -50,6 +51,7 @@ class PosOrder extends Model
         'currency_id',
         'order_number',
         'status',
+        'payment_method',
         'ordered_at',
         'total_amount',
         'total_tax',
@@ -67,6 +69,7 @@ class PosOrder extends Model
             'total_tax' => \Kezi\Foundation\Casts\DocumentCurrencyMoneyCast::class,
             'discount_amount' => \Kezi\Foundation\Casts\DocumentCurrencyMoneyCast::class,
             'sector_data' => 'array',
+            'payment_method' => \Kezi\Payment\Enums\Payments\PaymentMethod::class,
         ];
     }
 

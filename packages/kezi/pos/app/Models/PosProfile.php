@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property array<string, mixed> $settings
  * @property bool $is_active
  * @property int|null $stock_location_id
+ * @property int|null $default_income_account_id
+ * @property int|null $default_payment_journal_id
  * @property-read \App\Models\Company $company
  * @property-read \Kezi\Inventory\Models\StockLocation|null $stockLocation
  */

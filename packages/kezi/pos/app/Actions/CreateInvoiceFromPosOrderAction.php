@@ -2,7 +2,6 @@
 
 namespace Kezi\Pos\Actions;
 
-use Carbon\Carbon;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\Journal;
 use Kezi\Foundation\Models\Partner;
@@ -16,6 +15,8 @@ class CreateInvoiceFromPosOrderAction
 {
     public function __construct(
         protected InvoiceService $invoiceService,
+        protected \Kezi\Payment\Services\PaymentService $paymentService,
+        protected \Kezi\Payment\Actions\Payments\CreatePaymentAction $createPaymentAction,
     ) {}
 
     public function execute(PosOrder $order): Invoice
@@ -54,19 +55,26 @@ class CreateInvoiceFromPosOrderAction
             $customerId = $walkIn->id;
         }
 
-        // 2. Determine Journal
-        $journalId = $profile->default_payment_journal_id;
-        if (! $journalId) {
-            // Fallback to company default sales journal
+        // 2. Determine Journal for Invoice (Must be a Sales Journal)
+        // Invoices are Sales documents, so they need a Sales Journal (Dr AR / Cr Income).
+        // The POS Profile's default_payment_journal_id is for PAYMENTS (Dr Cash / Cr AR), not Invoices.
+
+        $journal = Journal::where('company_id', $companyId)
+            ->where('type', \Kezi\Accounting\Enums\Accounting\JournalType::Sale)
+            ->where('is_active', true)
+            ->first();
+
+        if (! $journal) {
+            // Fallback to any sales journal
             $journal = Journal::where('company_id', $companyId)
                 ->where('type', \Kezi\Accounting\Enums\Accounting\JournalType::Sale)
                 ->first();
-            $journalId = $journal->id ?? null;
         }
 
-        if (! $journalId) {
-            throw new \Exception("No payment journal found for POS Order {$order->order_number}. Configure POS Profile or Company Sales Journal.");
+        if (! $journal) {
+            throw new \Exception("No Sales Journal found for Company {$companyId}. Please configure a Sales Journal.");
         }
+        $journalId = $journal->id;
 
         // 3. Create Invoice
         $invoiceData = [
@@ -77,8 +85,8 @@ class CreateInvoiceFromPosOrderAction
             'invoice_number' => 'POS-'.$order->order_number, // Temporary, confirms service might overwrite or sequence service used during posting
             // 'journal_entry_id' => will be set by posting
             // 'fiscal_position_id' => null, // or from customer
-            'invoice_date' => $order->ordered_at ? Carbon::parse($order->ordered_at) : now(),
-            'due_date' => $order->ordered_at ? Carbon::parse($order->ordered_at) : now(), // POS is immediate payment usually
+            'invoice_date' => $order->ordered_at,
+            'due_date' => $order->ordered_at, // POS is immediate payment usually
             'status' => InvoiceStatus::Draft, // Start as draft, then post
             'total_amount' => $order->total_amount,
             'total_tax' => $order->total_tax,
@@ -92,7 +100,7 @@ class CreateInvoiceFromPosOrderAction
         foreach ($order->lines as $line) {
             $incomeAccountId = $profile->default_income_account_id;
             if (! $incomeAccountId && $line->product) {
-                $incomeAccountId = $line->product->income_account_id ?? $line->product->category?->income_account_id;
+                $incomeAccountId = $line->product->income_account_id;
             }
 
             if (! $incomeAccountId) {
@@ -104,7 +112,7 @@ class CreateInvoiceFromPosOrderAction
                 'invoice_id' => $invoice->id,
                 'company_id' => $companyId,
                 'product_id' => $line->product_id,
-                'description' => $line->product?->name ?? 'POS Item',
+                'description' => $line->product->name,
                 'quantity' => $line->quantity,
                 'unit_price' => $line->unit_price,
                 'subtotal' => $line->total_amount->minus($line->tax_amount), // Approximate subtotal if not stored directly
@@ -126,6 +134,39 @@ class CreateInvoiceFromPosOrderAction
         }
         $user = $order->session->user;
         $this->invoiceService->confirm($invoice, $user);
+
+        // 6. Register Payment
+        // POS orders are paid immediately. We create a Payment linked to this Invoice.
+        // This clears the Receivable (AR) created by the Invoice and debits the Cash/Bank account.
+
+        $paymentJournalId = $profile->default_payment_journal_id;
+        if (! $paymentJournalId) {
+            throw new \Exception("No Payment Journal configured for POS Profile. Cannot register payment for Order {$order->order_number}.");
+        }
+
+        $paymentMethod = $order->payment_method ?? \Kezi\Payment\Enums\Payments\PaymentMethod::Cash;
+
+        $paymentDto = new \Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDTO(
+            company_id: $companyId,
+            journal_id: $paymentJournalId,
+            currency_id: $order->currency_id,
+            payment_date: $order->ordered_at->toDateString(),
+            payment_type: \Kezi\Payment\Enums\Payments\PaymentType::Inbound,
+            payment_method: $paymentMethod,
+            paid_to_from_partner_id: $customerId,
+            amount: null, // Calculated from links
+            document_links: [
+                new \Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO(
+                    document_type: 'invoice',
+                    document_id: $invoice->id,
+                    amount_applied: $invoice->total_amount, // Pay full amount
+                ),
+            ],
+            reference: 'POS Payment '.$order->order_number,
+        );
+
+        $payment = $this->createPaymentAction->execute($paymentDto, $user);
+        $this->paymentService->confirm($payment, $user);
 
         // 6. Link to POS Order
         $order->update(['invoice_id' => $invoice->id]);
