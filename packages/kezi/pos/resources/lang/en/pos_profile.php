@@ -22,4 +22,9 @@ return [
     'split_bill' => 'Split Billing',
     'kitchen_printer' => 'Kitchen Printing',
     'inventory_check' => 'Real-time Stock Check',
+    'accounting_settings' => 'Accounting Settings',
+    'default_income_account' => 'Default Income Account',
+    'default_income_account_helper' => 'The general ledger account where sales revenue will be recorded',
+    'default_payment_journal' => 'Default Payment Journal',
+    'default_payment_journal_helper' => 'The journal used to record payments received (e.g., Cash Journal, Bank Journal)',
 ];

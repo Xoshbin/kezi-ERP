@@ -22,4 +22,9 @@ return [
     'split_bill' => 'دابەشکردنی وەسڵ',
     'kitchen_printer' => 'چاپکەری چێشتخانە',
     'inventory_check' => 'پشکنینی کۆگا بە شێوەی ڕاستەوخۆ',
+    'accounting_settings' => 'ڕێکخستنەکانی ژمێریاری',
+    'default_income_account' => 'ئەکاونتی داهاتی بنەڕەتی',
+    'default_income_account_helper' => 'ئەو کۆدەی کە داهاتی فرۆشی لێ تۆمار دەکرێت',
+    'default_payment_journal' => 'ڕۆژنامەی پارەدانی بنەڕەتی',
+    'default_payment_journal_helper' => 'ئەو ڕۆژنامەیەی کە بۆ تۆمارکردنی پارە وەرگیراوەکان بەکاردێت',
 ];
