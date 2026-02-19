@@ -21,5 +21,7 @@ class PosServiceProvider extends ServiceProvider
             ->prefix('api/pos')
             ->name('api.pos.')
             ->group(__DIR__.'/../../routes/api.php');
+
+        \Illuminate\Support\Facades\Route::group([], __DIR__.'/../../routes/web.php');
     }
 }
