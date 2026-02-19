@@ -122,6 +122,18 @@ class RequestForQuotation extends Model
         'total' => DocumentCurrencyMoneyCast::class,
     ];
 
+    /**
+     * Boot the model and set up event listeners.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (self $rfq) {
+            if ($rfq->relationLoaded('lines')) {
+                $rfq->calculateTotals();
+            }
+        });
+    }
+
     // =========================================================================
     // Relationships
     // =========================================================================
@@ -181,10 +193,7 @@ class RequestForQuotation extends Model
 
     public function calculateTotals(): void
     {
-        $currency = $this->currency ?? $this->currency()->first();
-        if (! $currency) {
-            return;
-        }
+        $currency = $this->currency;
 
         $subtotal = Money::of(0, $currency->code);
         $taxTotal = Money::of(0, $currency->code);

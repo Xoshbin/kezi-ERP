@@ -86,6 +86,16 @@ class RequestForQuotationLine extends Model
         'total' => DocumentCurrencyMoneyCast::class,
     ];
 
+    /**
+     * Boot the model and set up event listeners.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (self $line) {
+            $line->calculateTotals();
+        });
+    }
+
     protected $with = ['rfq.currency'];
 
     // =========================================================================
@@ -112,22 +122,22 @@ class RequestForQuotationLine extends Model
      */
     public function calculateTotals(): void
     {
-        $currencyCode = $this->rfq?->currency?->code ?? $this->rfq()->first()->currency->code;
+        $currencyCode = $this->rfq->currency->code;
 
         // Calculate subtotal
         $this->subtotal = $this->unit_price->multipliedBy($this->quantity, \Brick\Math\RoundingMode::HALF_UP);
 
         // Calculate tax
         if ($this->tax_id) {
-            $tax = $this->tax ?? $this->tax()->first();
+            $tax = $this->tax;
             if ($tax) {
                 $taxRate = $tax->rate / 100;
                 $this->tax_amount = $this->subtotal->multipliedBy((string) $taxRate, \Brick\Math\RoundingMode::HALF_UP);
             } else {
-                $this->tax_amount = Money::of(0, $currencyCode);
+                $this->tax_amount = Money::of(0, $this->subtotal->getCurrency());
             }
         } else {
-            $this->tax_amount = Money::of(0, $currencyCode);
+            $this->tax_amount = Money::of(0, $this->subtotal->getCurrency());
         }
 
         // Calculate total
