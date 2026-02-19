@@ -12,6 +12,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
  *
  * @property \App\Models\Company $company
  * @property \App\Models\User $user
+ * @property \Kezi\Foundation\Models\Partner $customer
  * @property \Kezi\Foundation\Models\Partner $partner
  * @property \Kezi\Foundation\Models\Currency $currency
  * @property \Kezi\Product\Models\Product $product
