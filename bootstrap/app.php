@@ -14,7 +14,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
+            \App\Http\Middleware\RestrictPosOnlyUser::class,
             SetLocaleFromSession::class,
+        ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'api/pos/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

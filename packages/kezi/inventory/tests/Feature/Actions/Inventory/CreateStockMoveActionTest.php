@@ -77,6 +77,8 @@ it('creates a done stock move directly', function () {
         to_location_id: $toLocation->id
     );
 
+    $this->seedStock($product, $fromLocation, 10);
+
     $dto = new CreateStockMoveDTO(
         company_id: $this->company->id,
         move_type: StockMoveType::Outgoing,

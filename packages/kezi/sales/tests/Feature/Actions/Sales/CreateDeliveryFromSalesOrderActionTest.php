@@ -36,6 +36,8 @@ beforeEach(function () {
         'type' => \Kezi\Accounting\Enums\Accounting\JournalType::Sale,
     ]);
     $this->company->update(['default_sales_journal_id' => $journal->id]);
+
+    $this->seedStock($this->product, $this->warehouse, 100);
 });
 
 it('create delivery from sales order success', function () {

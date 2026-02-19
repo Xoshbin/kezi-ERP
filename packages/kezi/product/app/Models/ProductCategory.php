@@ -2,12 +2,11 @@
 
 namespace Kezi\Product\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
-use Illuminate\Validation\ValidationException;
-
 /**
  * @property int $id
  * @property string $name
@@ -31,8 +30,17 @@ use Illuminate\Validation\ValidationException;
  *
  * @mixin \Eloquent
  */
+use Illuminate\Validation\ValidationException;
+
 class ProductCategory extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory()
+    {
+        return \Kezi\Product\Database\Factories\ProductCategoryFactory::new();
+    }
+
     /**
      * The attributes that are mass assignable.
      */

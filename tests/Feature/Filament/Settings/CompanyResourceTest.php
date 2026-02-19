@@ -22,7 +22,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     /** @var \Tests\TestCase $this */
-    $this->setupWithConfiguredCompany();
+    $this->setUpWithConfiguredCompany();
 });
 
 it('can render list companies page', function () {

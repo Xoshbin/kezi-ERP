@@ -31,6 +31,7 @@ use Kezi\HR\Filament\HRPlugin;
 use Kezi\Inventory\Filament\InventoryPlugin;
 use Kezi\Manufacturing\Filament\ManufacturingPlugin;
 use Kezi\Payment\Filament\PaymentPlugin;
+use Kezi\Pos\Filament\PosPlugin;
 use Kezi\Product\Filament\ProductPlugin;
 use Kezi\ProjectManagement\Filament\ProjectManagementPlugin;
 use Kezi\Purchase\Filament\PurchasePlugin;
@@ -195,6 +196,7 @@ class KeziPanelProvider extends PanelProvider
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,
+                \App\Http\Middleware\RestrictPosOnlyUser::class,
                 AuthenticateSession::class,
                 ShareErrorsFromSession::class,
                 VerifyCsrfToken::class,
@@ -232,6 +234,7 @@ class KeziPanelProvider extends PanelProvider
                 PurchasePlugin::make(),
                 QualityControlPlugin::make(),
                 SalesPlugin::make(),
+                PosPlugin::make(),
                 FilamentLanguageSwitcherPlugin::make()
                     ->locales([
                         ['code' => 'ckb', 'name' => 'کوردی'],
