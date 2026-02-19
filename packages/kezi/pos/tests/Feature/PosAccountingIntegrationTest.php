@@ -101,6 +101,7 @@ it('creates and posts invoice when pos order is synced', function () {
         uuid: $uuid,
         order_number: 'ORD-001',
         status: 'paid',
+        payment_method: \Kezi\Payment\Enums\Payments\PaymentMethod::Cash,
         ordered_at: now(),
         total_amount: 100000,
         total_tax: 0,
@@ -141,9 +142,18 @@ it('creates and posts invoice when pos order is synced', function () {
 
     $invoice = Invoice::find($posOrder->invoice_id);
     $this->assertNotNull($invoice);
-    $this->assertEquals(InvoiceStatus::Posted, $invoice->status);
+    $this->assertEquals(InvoiceStatus::Paid, $invoice->status);
     $this->assertNotNull($invoice->invoice_number);
     $this->assertTrue($invoice->total_amount->isEqualTo(Money::of(100, $this->currency->code)));
+
+    // Verify Payment Creation
+    $this->assertNotNull($invoice->payments->first(), 'Payment should be created linked to invoice');
+    $payment = $invoice->payments->first();
+    $this->assertEquals(\Kezi\Payment\Enums\Payments\PaymentMethod::Cash, $payment->payment_method);
+    $this->assertTrue($payment->amount->isEqualTo(Money::of(100, $this->currency->code)));
+
+    // Check Invoice Status is Paid
+    $this->assertEquals(InvoiceStatus::Paid, $invoice->fresh()->status);
 
     // Verify Journal Entry
     $this->assertNotNull($invoice->journal_entry_id);
@@ -173,6 +183,7 @@ it('handles walk in customer creation', function () {
         uuid: $uuid,
         order_number: 'ORD-WALKIN',
         status: 'paid',
+        payment_method: \Kezi\Payment\Enums\Payments\PaymentMethod::Cash,
         ordered_at: now(),
         total_amount: 100000,
         total_tax: 0,
