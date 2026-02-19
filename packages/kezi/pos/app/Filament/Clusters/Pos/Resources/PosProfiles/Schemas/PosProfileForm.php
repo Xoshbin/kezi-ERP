@@ -22,7 +22,7 @@ class PosProfileForm
                 Section::make(__('pos::pos_profile.basic_configuration'))
                     ->schema([
                         Hidden::make('company_id')
-                            ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
+                            ->default(fn () => \Filament\Facades\Filament::getTenant()?->getKey()),
 
                         TextInput::make('name')
                             ->required()
@@ -45,7 +45,7 @@ class PosProfileForm
                             ->label(__('pos::pos_profile.stock_location'))
                             ->helperText(__('pos::pos_profile.stock_location_helper'))
                             ->options(fn () => StockLocation::query()
-                                ->where('company_id', \Filament\Facades\Filament::getTenant()?->id)
+                                ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
                                 ->where('type', StockLocationType::Internal)
                                 ->where('is_active', true)
                                 ->pluck('name', 'id'))
@@ -72,6 +72,28 @@ class PosProfileForm
                         KeyValue::make('settings')
                             ->keyLabel(__('pos::pos_profile.option'))
                             ->valueLabel(__('pos::pos_profile.value')),
+                    ]),
+
+                Section::make(__('pos::pos_profile.accounting_settings'))
+                    ->schema([
+                        Select::make('default_income_account_id')
+                            ->label(__('pos::pos_profile.default_income_account'))
+                            ->helperText(__('pos::pos_profile.default_income_account_helper'))
+                            ->options(fn () => \Kezi\Accounting\Models\Account::query()
+                                ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
+                                ->where('type', \Kezi\Accounting\Enums\Accounting\AccountType::Income)
+                                ->pluck('name', 'id'))
+                            ->searchable()
+                            ->required(),
+
+                        Select::make('default_payment_journal_id')
+                            ->label(__('pos::pos_profile.default_payment_journal'))
+                            ->helperText(__('pos::pos_profile.default_payment_journal_helper'))
+                            ->options(fn () => \Kezi\Accounting\Models\Journal::query()
+                                ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
+                                ->pluck('name', 'id'))
+                            ->searchable()
+                            ->required(),
                     ]),
             ]);
     }
