@@ -12,7 +12,12 @@ return [
     'sections' => [
         'basic_info' => 'Basic Information',
         'vendor_details' => 'Vendor Details',
+        'vendor_currency_info' => 'Vendor & Currency Information',
+        'vendor_currency_info_description' => 'Select vendor and currency details for this order',
+        'order_details' => 'Order Details',
+        'order_details_description' => 'Basic information about the purchase order',
         'basic_information' => 'Basic Information',
+        'vendor_currency_information' => 'Vendor & Currency Information',
         'delivery_info' => 'Delivery Information',
         'delivery_information' => 'Delivery Information',
         'line_items' => 'Line Items',
