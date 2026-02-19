@@ -10,7 +10,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\Auth;
 use Kezi\Inventory\Enums\Inventory\StockLocationType;
 use Kezi\Inventory\Models\StockLocation;
 
@@ -23,7 +22,7 @@ class PosProfileForm
                 Section::make(__('pos::pos_profile.basic_configuration'))
                     ->schema([
                         Hidden::make('company_id')
-                            ->default(fn () => Auth::user()?->company_id),
+                            ->default(fn () => \Filament\Facades\Filament::getTenant()?->id),
 
                         TextInput::make('name')
                             ->required()
@@ -46,7 +45,7 @@ class PosProfileForm
                             ->label(__('pos::pos_profile.stock_location'))
                             ->helperText(__('pos::pos_profile.stock_location_helper'))
                             ->options(fn () => StockLocation::query()
-                                ->where('company_id', Auth::user()?->company_id)
+                                ->where('company_id', \Filament\Facades\Filament::getTenant()?->id)
                                 ->where('type', StockLocationType::Internal)
                                 ->where('is_active', true)
                                 ->pluck('name', 'id'))
