@@ -37,9 +37,8 @@ export const useSessionStore = defineStore('session', {
                 }
             } catch (error) {
                 console.error('Check session failed', error);
-                // If offline, check if we have a locally stored session? 
-                // The task doesn't specify offline session persistence yet.
-                // Assuming session check requires online connectivity for now as it calls API.
+                this.currentSession = null;
+                this.showOpenSessionModal = true; // Show modal so user can try to open/see error
                 this.error = 'Failed to check session status. Please check your connection.';
             } finally {
                 this.loading = false;
