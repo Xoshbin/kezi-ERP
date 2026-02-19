@@ -39,14 +39,20 @@ export const useProductsStore = defineStore('products', {
     actions: {
         async loadFromDb() {
             try {
-                // Load products
-                this.products = await db.products.where('is_active').equals(true).toArray();
+                // Try loading active products using index
+                try {
+                    this.products = await db.products.where('is_active').equals(true).toArray();
+                } catch (indexedError) {
+                    console.warn('Indexed query for is_active failed, falling back to full scan:', indexedError);
+                    // Fallback: Fetch all and filter in memory if index is broken
+                    const allProducts = await db.products.toArray();
+                    this.products = allProducts.filter(p => p.is_active === true || p.is_active === 1 || p.is_active === undefined);
+                }
                 
-                // If index doesn't exist yet (migration might be needed if old DB), fallback
+                // Fallback for empty products (might be first load or migration issue)
                 if (this.products.length === 0) {
-                     // Try fetching all
                      const all = await db.products.toArray();
-                     this.products = all.filter(p => p.is_active !== false); // Default true
+                     this.products = all.filter(p => p.is_active !== false && p.is_active !== 0); 
                 }
                 
                 // Load categories
