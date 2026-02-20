@@ -54,7 +54,7 @@ describe('PurchaseOrder Filament Create Bill Action', function () {
             ->assertNotified();
 
         $po->refresh();
-        expect($po->status)->toBe(PurchaseOrderStatus::PartiallyBilled);
+        expect($po->status)->toBe(PurchaseOrderStatus::FullyBilled);
         expect($po->vendorBills)->toHaveCount(1);
 
         $vendorBill = $po->vendorBills->first();

@@ -113,7 +113,7 @@ describe('CreateVendorBillFromPurchaseOrderAction', function () {
         expect($vendorBill->total_amount->getAmount()->toFloat())->toBe(1100.0);
 
         $po->refresh();
-        expect($po->status)->toBe(PurchaseOrderStatus::PartiallyBilled);
+        expect($po->status)->toBe(PurchaseOrderStatus::FullyBilled);
         expect($po->vendor_id)->toBe($vendorBill->vendor_id);
     });
 
@@ -491,5 +491,32 @@ describe('CreateVendorBillFromPurchaseOrderAction', function () {
         $vendorBill2 = $this->action->execute($dto2);
         expect($vendorBill2)->toBeInstanceOf(VendorBill::class);
         expect($po->vendorBills()->count())->toBe(2);
+    });
+
+    it('transfers exchange rate correctly from PO to vendor bill', function () {
+        $po = PurchaseOrder::factory()->for($this->company)->create([
+            'status' => PurchaseOrderStatus::Confirmed,
+            'exchange_rate_at_creation' => 1.234567,
+        ]);
+
+        PurchaseOrderLine::factory()->create([
+            'purchase_order_id' => $po->id,
+            'product_id' => $this->storableProduct->id,
+            'quantity' => 1,
+            'unit_price' => 100,
+        ]);
+
+        $dto = new CreateVendorBillFromPurchaseOrderDTO(
+            purchase_order_id: $po->id,
+            bill_reference: 'XR-BILL',
+            bill_date: now()->format('Y-m-d'),
+            accounting_date: now()->format('Y-m-d'),
+            due_date: null,
+            created_by_user_id: $this->user->id
+        );
+
+        $vendorBill = $this->action->execute($dto);
+
+        expect((float) $vendorBill->exchange_rate_at_creation)->toBe(1.234567);
     });
 });

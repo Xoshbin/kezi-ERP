@@ -23,5 +23,6 @@ readonly class CreateVendorBillDTO
         public ?int $purchase_order_id = null,
         public ?int $fiscal_position_id = null,
         public ?Incoterm $incoterm = null,
+        public ?float $exchange_rate_at_creation = null,
     ) {}
 }
