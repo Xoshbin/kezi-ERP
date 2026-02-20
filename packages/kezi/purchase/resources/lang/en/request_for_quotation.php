@@ -19,6 +19,7 @@ return [
         'date' => 'Date',
         'bid_notes' => 'Bid Notes',
         'vendor_reference' => 'Vendor Reference',
+        'notes' => 'Notes',
     ],
     'sections' => [
         'general' => 'General Information',

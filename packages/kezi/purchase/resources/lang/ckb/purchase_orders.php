@@ -12,7 +12,12 @@ return [
     'sections' => [
         'basic_info' => 'زانیاری سەرەتایی',
         'vendor_details' => 'وردەکارییەکانی فرۆشیار',
+        'vendor_currency_info' => 'زانیارییەکانی فرۆشیار و دراو',
+        'vendor_currency_info_description' => 'وردەکارییەکانی فرۆشیار و دراو هەڵبژێرە بۆ ئەم داواکارییە',
+        'order_details' => 'وردەکارییەکانی داواکاری',
+        'order_details_description' => 'زانیاری بنەڕەتی دەربارەی داواکاری کڕین',
         'basic_information' => 'زانیاری بنەڕەتی',
+        'vendor_currency_information' => 'زانیارییەکانی فرۆشیار و دراو',
         'delivery_info' => 'زانیاری گەیاندن',
         'delivery_information' => 'زانیاری گەیاندن',
         'line_items' => 'بەندەکان',
