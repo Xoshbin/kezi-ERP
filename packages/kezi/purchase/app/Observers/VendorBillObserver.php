@@ -90,7 +90,12 @@ class VendorBillObserver
             } else {
                 // For foreign currency, use the exchange rate to convert
                 $exchangeRate = $vendorBill->exchange_rate_at_creation ?? 1.0;
-                $unitPriceInCompanyCurrency = $line->unit_price->multipliedBy($exchangeRate, RoundingMode::HALF_UP);
+                $unitPriceInCompanyCurrency = app(\Kezi\Foundation\Services\CurrencyConverterService::class)->convertWithRate(
+                    $line->unit_price,
+                    $exchangeRate,
+                    $costCurrency,
+                    false
+                );
             }
         }
 
@@ -100,7 +105,12 @@ class VendorBillObserver
             $taxInCompanyCurrency = $line->total_line_tax_company_currency ?? $line->total_line_tax;
             if (! $line->total_line_tax_company_currency && $vendorBill->currency_id !== $company->currency_id) {
                 $exchangeRate = $vendorBill->exchange_rate_at_creation ?? 1.0;
-                $taxInCompanyCurrency = $line->total_line_tax->multipliedBy($exchangeRate, RoundingMode::HALF_UP);
+                $taxInCompanyCurrency = app(\Kezi\Foundation\Services\CurrencyConverterService::class)->convertWithRate(
+                    $line->total_line_tax,
+                    $exchangeRate,
+                    $costCurrency,
+                    false
+                );
             }
 
             // Add tax to unit price for cost calculation
