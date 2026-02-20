@@ -182,6 +182,7 @@ class VendorBill extends Model
         // financial transaction once the bill is posted .
         'fiscal_position_id',
         'posted_at',            // Nullable timestamp indicating when the vendor bill was confirmed/posted .
+        'incoterm_location',
         'inter_company_source_id',
         'inter_company_source_type',
         'reset_to_draft_log',   // JSON/Text field to log instances where a 'Posted' bill was

@@ -137,6 +137,8 @@ class CreateVendorBillFromPurchaseOrderAction
             created_by_user_id: $dto->created_by_user_id,
             payment_term_id: $dto->payment_term_id,
             purchase_order_id: $purchaseOrder->id,
+            incoterm: $purchaseOrder->incoterm,
+            incoterm_location: $purchaseOrder->incoterm_location,
             exchange_rate_at_creation: $dto->exchange_rate_at_creation ?? (float) $purchaseOrder->exchange_rate_at_creation,
         );
     }
