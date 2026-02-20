@@ -233,10 +233,10 @@
                 <div><strong>{{ __('company.tax_id') }}:</strong> {{ $company->tax_id }}</div>
             @endif
             @if($company->phone)
-                <div><strong>{{ __('partner.phone') }}:</strong> {{ $company->phone }}</div>
+                <div><strong>{{ __('accounting::partner.phone') }}:</strong> {{ $company->phone }}</div>
             @endif
             @if($company->email)
-                <div><strong>{{ __('partner.email') }}:</strong> {{ $company->email }}</div>
+                <div><strong>{{ __('accounting::partner.email') }}:</strong> {{ $company->email }}</div>
             @endif
         </div>
 
@@ -253,13 +253,13 @@
                 <div>{{ $customer->city }}, {{ $customer->state }} {{ $customer->zip_code }}</div>
             @endif
             @if($customer->tax_id)
-                <div><strong>{{ __('partner.tax_id') }}:</strong> {{ $customer->tax_id }}</div>
+                <div><strong>{{ __('accounting::partner.tax_id') }}:</strong> {{ $customer->tax_id }}</div>
             @endif
             @if($customer->phone)
-                <div><strong>{{ __('partner.phone') }}:</strong> {{ $customer->phone }}</div>
+                <div><strong>{{ __('accounting::partner.phone') }}:</strong> {{ $customer->phone }}</div>
             @endif
             @if($customer->email)
-                <div><strong>{{ __('partner.email') }}:</strong> {{ $customer->email }}</div>
+                <div><strong>{{ __('accounting::partner.email') }}:</strong> {{ $customer->email }}</div>
             @endif
         </div>
     </div>
