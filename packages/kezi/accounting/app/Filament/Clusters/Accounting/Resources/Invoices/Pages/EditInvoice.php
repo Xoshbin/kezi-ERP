@@ -370,7 +370,7 @@ class EditInvoice extends EditRecord
             due_date: $data['due_date'],
             lines: $lineDTOs,
             fiscal_position_id: $data['fiscal_position_id'] ?? null,
-            incoterm: isset($data['incoterm']) ? Incoterm::tryFrom($data['incoterm']) : null
+            incoterm: $data['incoterm'] instanceof Incoterm ? $data['incoterm'] : (isset($data['incoterm']) ? Incoterm::tryFrom($data['incoterm']) : null)
         );
 
         $updatedInvoice = app(UpdateInvoiceAction::class)->execute($invoiceDTO);
