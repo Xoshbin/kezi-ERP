@@ -27,6 +27,7 @@ use Kezi\Product\Models\Product;
  * @property string $description
  * @property float $quantity
  * @property float $quantity_received
+ * @property float $quantity_billed
  * @property Money $unit_price
  * @property Money $subtotal
  * @property Money $total_line_tax
@@ -89,6 +90,7 @@ class PurchaseOrderLine extends Model
         'description',
         'quantity',
         'quantity_received',
+        'quantity_billed',
         'unit_price',
         'subtotal',
         'total_line_tax',
@@ -108,6 +110,7 @@ class PurchaseOrderLine extends Model
     protected $casts = [
         'quantity' => 'float',
         'quantity_received' => 'float',
+        'quantity_billed' => 'float',
         'unit_price' => \Kezi\Foundation\Casts\DocumentCurrencyMoneyCast::class,
         'shipping_cost_type' => ShippingCostType::class,
         'subtotal' => \Kezi\Foundation\Casts\DocumentCurrencyMoneyCast::class,
@@ -218,6 +221,33 @@ class PurchaseOrderLine extends Model
         $this->quantity_received = min(
             $this->quantity,
             $this->quantity_received + $additionalQuantity
+        );
+    }
+
+    /**
+     * Get the remaining quantity to be billed.
+     */
+    public function getRemainingBillableQuantity(): float
+    {
+        return max(0, $this->quantity - $this->quantity_billed);
+    }
+
+    /**
+     * Check if this line is fully billed.
+     */
+    public function isFullyBilled(): bool
+    {
+        return $this->quantity_billed >= $this->quantity;
+    }
+
+    /**
+     * Update the billed quantity for this line.
+     */
+    public function updateBilledQuantity(float $additionalQuantity): void
+    {
+        $this->quantity_billed = min(
+            $this->quantity,
+            $this->quantity_billed + $additionalQuantity
         );
     }
 
