@@ -127,3 +127,32 @@ it('can convert rfq to purchase order via view page action', function () {
         'reference' => 'REF-123',
     ]);
 });
+
+it('renders infolist with products on view page', function () {
+    $product = \Kezi\Product\Models\Product::factory()->create([
+        'company_id' => $this->company->id,
+        'name' => 'Viewable Product',
+    ]);
+
+    $rfq = RequestForQuotation::factory()
+        ->has(
+            \Kezi\Purchase\Models\RequestForQuotationLine::factory()->state([
+                'product_id' => $product->id,
+                'description' => 'Product Description',
+                'quantity' => 5,
+                'unit_price' => \Brick\Money\Money::of(100, $this->company->currency->code),
+            ]),
+            'lines'
+        )
+        ->create([
+            'company_id' => $this->company->id,
+            'vendor_id' => $this->vendor->id,
+        ]);
+
+    $this->actingAs($this->user);
+
+    Livewire::test(ViewRequestForQuotation::class, ['record' => $rfq->id])
+        ->assertSuccessful()
+        ->assertSee('Viewable Product')
+        ->assertSee('Product Description');
+});
