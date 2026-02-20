@@ -188,15 +188,15 @@ class ProductResource extends Resource
                             ->modifyQueryUsing(fn ($query) => $query->whereIn('type', [\Kezi\Accounting\Enums\Accounting\AccountType::Income, \Kezi\Accounting\Enums\Accounting\AccountType::OtherIncome]))
                             ->createOptionForm([
                                 TextInput::make('code')
-                                    ->label(__('account.code'))
+                                    ->label(__('accounting::common.account.code'))
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('name')
-                                    ->label(__('account.name'))
+                                    ->label(__('accounting::common.account.name'))
                                     ->required()
                                     ->maxLength(255),
                                 Select::make('type')
-                                    ->label(__('account.type'))
+                                    ->label(__('accounting::common.account.type'))
                                     ->required()
                                     ->options(
                                         collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())
@@ -204,7 +204,7 @@ class ProductResource extends Resource
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
-                                    ->label(__('account.is_deprecated'))
+                                    ->label(__('accounting::common.account.is_deprecated'))
                                     ->default(false),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_account'))
@@ -222,15 +222,15 @@ class ProductResource extends Resource
                             ->modifyQueryUsing(fn ($query) => $query->whereIn('type', [\Kezi\Accounting\Enums\Accounting\AccountType::Expense, \Kezi\Accounting\Enums\Accounting\AccountType::Depreciation, \Kezi\Accounting\Enums\Accounting\AccountType::CostOfRevenue]))
                             ->createOptionForm([
                                 TextInput::make('code')
-                                    ->label(__('account.code'))
+                                    ->label(__('accounting::common.account.code'))
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('name')
-                                    ->label(__('account.name'))
+                                    ->label(__('accounting::common.account.name'))
                                     ->required()
                                     ->maxLength(255),
                                 Select::make('type')
-                                    ->label(__('account.type'))
+                                    ->label(__('accounting::common.account.type'))
                                     ->required()
                                     ->options(
                                         collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())
@@ -238,7 +238,7 @@ class ProductResource extends Resource
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
-                                    ->label(__('account.is_deprecated'))
+                                    ->label(__('accounting::common.account.is_deprecated'))
                                     ->default(false),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_account'))
@@ -296,15 +296,15 @@ class ProductResource extends Resource
                                 Hidden::make('company_id')
                                     ->default(fn () => Filament::getTenant()?->getKey()),
                                 TextInput::make('code')
-                                    ->label(__('account.code'))
+                                    ->label(__('accounting::common.account.code'))
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('name')
-                                    ->label(__('account.name'))
+                                    ->label(__('accounting::common.account.name'))
                                     ->required()
                                     ->maxLength(255),
                                 Select::make('type')
-                                    ->label(__('account.type'))
+                                    ->label(__('accounting::common.account.type'))
                                     ->required()
                                     ->options(
                                         collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())
@@ -312,7 +312,7 @@ class ProductResource extends Resource
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
-                                    ->label(__('account.is_deprecated'))
+                                    ->label(__('accounting::common.account.is_deprecated'))
                                     ->default(false),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_account'))
@@ -332,15 +332,15 @@ class ProductResource extends Resource
                                 Hidden::make('company_id')
                                     ->default(fn () => Filament::getTenant()?->getKey()),
                                 TextInput::make('code')
-                                    ->label(__('account.code'))
+                                    ->label(__('accounting::common.account.code'))
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('name')
-                                    ->label(__('account.name'))
+                                    ->label(__('accounting::common.account.name'))
                                     ->required()
                                     ->maxLength(255),
                                 Select::make('type')
-                                    ->label(__('account.type'))
+                                    ->label(__('accounting::common.account.type'))
                                     ->required()
                                     ->options(
                                         collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())
@@ -348,7 +348,7 @@ class ProductResource extends Resource
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
-                                    ->label(__('account.is_deprecated'))
+                                    ->label(__('accounting::common.account.is_deprecated'))
                                     ->default(false),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_account'))
@@ -369,15 +369,15 @@ class ProductResource extends Resource
                                 Hidden::make('company_id')
                                     ->default(fn () => Filament::getTenant()?->getKey()),
                                 TextInput::make('code')
-                                    ->label(__('account.code'))
+                                    ->label(__('accounting::common.account.code'))
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('name')
-                                    ->label(__('account.name'))
+                                    ->label(__('accounting::common.account.name'))
                                     ->required()
                                     ->maxLength(255),
                                 Select::make('type')
-                                    ->label(__('account.type'))
+                                    ->label(__('accounting::common.account.type'))
                                     ->required()
                                     ->options(
                                         collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())
@@ -385,7 +385,7 @@ class ProductResource extends Resource
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
-                                    ->label(__('account.is_deprecated'))
+                                    ->label(__('accounting::common.account.is_deprecated'))
                                     ->default(false),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_account'))
@@ -404,15 +404,15 @@ class ProductResource extends Resource
                                 Hidden::make('company_id')
                                     ->default(fn () => Filament::getTenant()?->getKey()),
                                 TextInput::make('code')
-                                    ->label(__('account.code'))
+                                    ->label(__('accounting::common.account.code'))
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('name')
-                                    ->label(__('account.name'))
+                                    ->label(__('accounting::common.account.name'))
                                     ->required()
                                     ->maxLength(255),
                                 Select::make('type')
-                                    ->label(__('account.type'))
+                                    ->label(__('accounting::common.account.type'))
                                     ->required()
                                     ->options(
                                         collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())
@@ -420,7 +420,7 @@ class ProductResource extends Resource
                                     )
                                     ->searchable(),
                                 Toggle::make('is_deprecated')
-                                    ->label(__('account.is_deprecated'))
+                                    ->label(__('accounting::common.account.is_deprecated'))
                                     ->default(false),
                             ])
                             ->createOptionModalHeading(__('common.modal_title_create_account'))

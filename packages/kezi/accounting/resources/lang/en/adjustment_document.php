@@ -46,4 +46,6 @@ return [
     'messages' => [
         'reference_copied' => 'Reference copied!',
     ],
+    'no_records_found' => 'No adjustment documents found',
+    'create_first_record' => 'Create your first adjustment document to get started.',
 ];

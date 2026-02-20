@@ -25,6 +25,8 @@ return [
         'notes' => 'Notes & Terms',
         'totals' => 'Totals',
         'lines' => 'Order Lines',
+        'attachments' => 'Attachments',
+        'attachments_description' => 'Manage document attachments for this order',
     ],
 
     'fields' => [
@@ -60,6 +62,7 @@ return [
         'quantity' => 'Quantity',
         'unit_price' => 'Unit Price',
         'tax' => 'Tax',
+        'shipping_type' => 'Shipping Type',
     ],
 
     'line_fields' => [
