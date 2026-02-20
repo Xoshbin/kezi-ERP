@@ -29,18 +29,18 @@ class VendorBillsRelationManager extends RelationManager
         return $schema
             ->components([
                 TextInput::make('bill_reference')
-                    ->label(__('payment.relation_manager.vendor_bills.form.bill_reference'))
+                    ->label(__('accounting::payment.relation_manager.vendor_bills.form.bill_reference'))
                     ->required()
                     ->maxLength(255),
                 DatePicker::make('bill_date')
-                    ->label(__('payment.relation_manager.vendor_bills.form.bill_date'))
+                    ->label(__('accounting::payment.relation_manager.vendor_bills.form.bill_date'))
                     ->required(),
                 DatePicker::make('accounting_date')
-                    ->label(__('payment.relation_manager.vendor_bills.form.accounting_date'))
+                    ->label(__('accounting::payment.relation_manager.vendor_bills.form.accounting_date'))
                     ->required(),
-                DatePicker::make('due_date')->label(__('payment.relation_manager.vendor_bills.form.due_date')),
+                DatePicker::make('due_date')->label(__('accounting::payment.relation_manager.vendor_bills.form.due_date')),
                 Select::make('status')
-                    ->label(__('payment.relation_manager.vendor_bills.form.status'))
+                    ->label(__('accounting::payment.relation_manager.vendor_bills.form.status'))
                     ->options([
                         VendorBillStatus::Draft->value => VendorBillStatus::Draft->label(),
                         VendorBillStatus::Posted->value => VendorBillStatus::Posted->label(),
@@ -50,7 +50,7 @@ class VendorBillsRelationManager extends RelationManager
                     ->required()
                     ->default(VendorBillStatus::Draft->value),
                 TextInput::make('total_amount')
-                    ->label(__('payment.relation_manager.vendor_bills.form.total_amount'))
+                    ->label(__('accounting::payment.relation_manager.vendor_bills.form.total_amount'))
                     ->required()
                     ->numeric(),
             ]);
@@ -62,22 +62,22 @@ class VendorBillsRelationManager extends RelationManager
             ->recordTitleAttribute('bill_reference')
             ->columns([
                 TextColumn::make('bill_reference')
-                    ->label(__('payment.relation_manager.vendor_bills.column.bill_reference'))
+                    ->label(__('accounting::payment.relation_manager.vendor_bills.column.bill_reference'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('bill_date')
-                    ->label(__('payment.relation_manager.vendor_bills.column.bill_date'))
+                    ->label(__('accounting::payment.relation_manager.vendor_bills.column.bill_date'))
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('due_date')
-                    ->label(__('payment.relation_manager.vendor_bills.column.due_date'))
+                    ->label(__('accounting::payment.relation_manager.vendor_bills.column.due_date'))
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('status')
-                    ->label(__('payment.relation_manager.vendor_bills.column.status'))
+                    ->label(__('accounting::payment.relation_manager.vendor_bills.column.status'))
                     ->formatStateUsing(fn (VendorBillStatus $state): string => $state->label())
                     ->badge()
                     ->color(fn (VendorBillStatus $state): string => match ($state) {
@@ -88,11 +88,11 @@ class VendorBillsRelationManager extends RelationManager
                     }),
 
                 MoneyColumn::make('total_amount')
-                    ->label(__('payment.relation_manager.vendor_bills.column.total_amount'))
+                    ->label(__('accounting::payment.relation_manager.vendor_bills.column.total_amount'))
                     ->sortable(),
 
                 MoneyColumn::make('pivot.amount_applied')
-                    ->label(__('payment.relation_manager.vendor_bills.column.amount_applied'))
+                    ->label(__('accounting::payment.relation_manager.vendor_bills.column.amount_applied'))
                     ->sortable(),
             ])
             ->filters([

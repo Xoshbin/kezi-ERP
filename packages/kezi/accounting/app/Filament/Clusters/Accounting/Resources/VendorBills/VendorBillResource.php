@@ -139,28 +139,28 @@ class VendorBillResource extends Resource
                         ->columnSpan(1)
                         ->createOptionForm([
                             TextInput::make('name')
-                                ->label(__('partner.name'))
+                                ->label(__('accounting::partner.name'))
                                 ->required()
                                 ->maxLength(255),
                             Select::make('type')
-                                ->label(__('partner.type'))
+                                ->label(__('accounting::partner.type'))
                                 ->required()
                                 ->options(
                                     collect(\Kezi\Foundation\Enums\Partners\PartnerType::cases())
                                         ->mapWithKeys(fn (\Kezi\Foundation\Enums\Partners\PartnerType $type) => [$type->value => $type->label()])
                                 ),
                             TextInput::make('contact_person')
-                                ->label(__('partner.contact_person'))
+                                ->label(__('accounting::partner.contact_person'))
                                 ->maxLength(255),
                             TextInput::make('email')
-                                ->label(__('partner.email'))
+                                ->label(__('accounting::partner.email'))
                                 ->email()
                                 ->maxLength(255),
                             TextInput::make('phone')
-                                ->label(__('partner.phone'))
+                                ->label(__('accounting::partner.phone'))
                                 ->maxLength(255),
                             Textarea::make('address')
-                                ->label(__('partner.address'))
+                                ->label(__('accounting::partner.address'))
                                 ->columnSpanFull(),
                         ])
                         ->createOptionModalHeading(__('accounting::common.modal_title_create_partner'))
@@ -753,7 +753,7 @@ class VendorBillResource extends Resource
                     ->modalDescription(__('Register a payment for this vendor bill'))
                     ->schema([
                         Select::make('journal_id')
-                            ->label(__('payment.form.journal_id'))
+                            ->label(__('accounting::payment.form.journal_id'))
                             ->options(function (): array {
                                 $tenant = Filament::getTenant();
                                 if (! $tenant instanceof Company) {
@@ -776,16 +776,16 @@ class VendorBillResource extends Resource
                                     ->value('id');
                             }),
                         DatePicker::make('payment_date')
-                            ->label(__('payment.form.payment_date'))
+                            ->label(__('accounting::payment.form.payment_date'))
                             ->default(now())
                             ->required(),
                         MoneyInput::make('amount')
-                            ->label(__('payment.form.amount'))
+                            ->label(__('accounting::payment.form.amount'))
                             ->currencyField('currency_id')
                             ->default(fn (VendorBill $record) => $record->getRemainingAmount())
                             ->required(),
                         TextInput::make('reference')
-                            ->label(__('payment.form.reference'))
+                            ->label(__('accounting::payment.form.reference'))
                             ->placeholder(__('Optional reference')),
                         Hidden::make('currency_id')
                             ->default(fn (VendorBill $record) => $record->currency_id),

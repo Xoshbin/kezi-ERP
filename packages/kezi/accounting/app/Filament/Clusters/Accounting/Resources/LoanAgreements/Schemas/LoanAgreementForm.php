@@ -46,10 +46,10 @@ class LoanAgreementForm
                         ->columnSpanFull()
                         ->createOptionForm([
                             Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
-                            TextInput::make('name')->label(__('partner.name') ?: 'Name')->required(),
-                            Select::make('type')->label(__('partner.type') ?: 'Type')->options(\Kezi\Foundation\Enums\Partners\PartnerType::class)->required(),
-                            TextInput::make('email')->label(__('partner.email') ?: 'Email')->email(),
-                            TextInput::make('contact_person')->label(__('partner.contact_person') ?: 'Contact Person'),
+                            TextInput::make('name')->label(__('accounting::partner.name'))->required(),
+                            Select::make('type')->label(__('accounting::partner.type'))->options(\Kezi\Foundation\Enums\Partners\PartnerType::class)->required(),
+                            TextInput::make('email')->label(__('accounting::partner.email'))->email(),
+                            TextInput::make('contact_person')->label(__('accounting::partner.contact_person')),
                         ])
                         ->createOptionUsing(fn (array $data) => Partner::create($data)->getKey())
                         ->createOptionModalHeading(__('accounting::common.modal_title_create_partner') ?: 'Create Partner')
@@ -108,7 +108,7 @@ class LoanAgreementForm
                     Group::make()
                         ->schema([
                             TranslatableSelect::forModel('currency_id', Currency::class, 'name')
-                                ->label(__('invoice.currency'))
+                                ->label(__('accounting::invoice.currency'))
                                 ->required()
                                 ->live()
                                 ->preload()

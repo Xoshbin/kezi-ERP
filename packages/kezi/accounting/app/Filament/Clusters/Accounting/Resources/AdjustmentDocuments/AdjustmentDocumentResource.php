@@ -470,8 +470,8 @@ class AdjustmentDocumentResource extends Resource
                         ->requiresConfirmation(),
                 ]),
             ])
-            ->emptyStateHeading(__('filament.empty_states.no_records_found'))
-            ->emptyStateDescription(__('filament.empty_states.create_first_record'))
+            ->emptyStateHeading(__('accounting::adjustment_document.no_records_found'))
+            ->emptyStateDescription(__('accounting::adjustment_document.create_first_record'))
             ->emptyStateIcon('heroicon-o-document-text');
     }
 

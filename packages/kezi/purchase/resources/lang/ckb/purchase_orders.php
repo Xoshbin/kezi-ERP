@@ -24,7 +24,9 @@ return [
         'line_items_description' => 'بەرهەم و خزمەتگوزاری زیاد بکە بۆ ئەم داواکارییە',
         'notes' => 'تێبینی و مەرجەکان',
         'totals' => 'کۆی گشتی',
-        'lines' => 'هێڵەکانی داواکاری',
+        'lines' => 'بڕگەکانی داواکاری',
+        'attachments' => 'پاشکۆکان',
+        'attachments_description' => 'بەڕێوەبردنی پاشکۆکانی بەڵگەنامە بۆ ئەم داواکارییە',
     ],
 
     'fields' => [
@@ -60,6 +62,7 @@ return [
         'quantity' => 'بڕ',
         'unit_price' => 'نرخی یەکە',
         'tax' => 'باج',
+        'shipping_type' => 'جۆری ناردن',
     ],
 
     'line_fields' => [

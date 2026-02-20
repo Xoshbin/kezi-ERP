@@ -30,53 +30,53 @@ class BankStatementLinesRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('payment.bank_statement_lines_relation_manager.title');
+        return __('accounting::payment.relation_manager.bank_statement_lines_relation_manager.title');
     }
 
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make(__('payment.bank_statement_lines_relation_manager.statement_line_details'))
+                Section::make(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.statement_line_details'))
                     ->schema([
                         DatePicker::make('date')
-                            ->label(__('payment.bank_statement_lines_relation_manager.date'))
+                            ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.date'))
                             ->required()
                             ->disabled(),
 
                         Textarea::make('description')
-                            ->label(__('payment.bank_statement_lines_relation_manager.description'))
+                            ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.description'))
                             ->disabled()
                             ->columnSpanFull(),
 
                         TextInput::make('partner_name')
-                            ->label(__('payment.bank_statement_lines_relation_manager.partner_name'))
+                            ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.partner_name'))
                             ->disabled(),
 
                         TextInput::make('amount')
-                            ->label(__('payment.bank_statement_lines_relation_manager.amount'))
+                            ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.amount'))
                             ->disabled()
                             ->numeric(),
 
                         Toggle::make('is_reconciled')
-                            ->label(__('payment.bank_statement_lines_relation_manager.is_reconciled'))
+                            ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.is_reconciled'))
                             ->disabled(),
                     ])
                     ->columns(2),
 
-                Section::make(__('payment.bank_statement_lines_relation_manager.bank_statement_details'))
+                Section::make(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.bank_statement_details'))
                     ->schema([
                         Select::make('bankStatement.id')
-                            ->label(__('payment.bank_statement_lines_relation_manager.bank_statement'))
+                            ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.bank_statement'))
                             ->relationship('bankStatement', 'name')
                             ->disabled(),
 
                         DatePicker::make('bankStatement.statement_date')
-                            ->label(__('payment.bank_statement_lines_relation_manager.statement_date'))
+                            ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.statement_date'))
                             ->disabled(),
 
                         TextInput::make('bankStatement.reference')
-                            ->label(__('payment.bank_statement_lines_relation_manager.statement_reference'))
+                            ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.statement_reference'))
                             ->disabled(),
                     ])
                     ->columns(2),
@@ -89,12 +89,12 @@ class BankStatementLinesRelationManager extends RelationManager
             ->recordTitleAttribute('description')
             ->columns([
                 TextColumn::make('date')
-                    ->label(__('payment.bank_statement_lines_relation_manager.date'))
+                    ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.date'))
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('description')
-                    ->label(__('payment.bank_statement_lines_relation_manager.description'))
+                    ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.description'))
                     ->searchable()
                     ->limit(50)
                     ->tooltip(function (TextColumn $column): ?string {
@@ -107,16 +107,16 @@ class BankStatementLinesRelationManager extends RelationManager
                     }),
 
                 TextColumn::make('partner_name')
-                    ->label(__('payment.bank_statement_lines_relation_manager.partner_name'))
+                    ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.partner_name'))
                     ->searchable()
                     ->toggleable(),
 
                 MoneyColumn::make('amount')
-                    ->label(__('payment.bank_statement_lines_relation_manager.amount'))
+                    ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.amount'))
                     ->sortable(),
 
                 IconColumn::make('is_reconciled')
-                    ->label(__('payment.bank_statement_lines_relation_manager.reconciliation_status'))
+                    ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.reconciliation_status'))
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
@@ -124,37 +124,37 @@ class BankStatementLinesRelationManager extends RelationManager
                     ->falseColor('danger'),
 
                 TextColumn::make('bankStatement.name')
-                    ->label(__('payment.bank_statement_lines_relation_manager.bank_statement'))
+                    ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.bank_statement'))
                     ->toggleable(),
 
                 TextColumn::make('bankStatement.statement_date')
-                    ->label(__('payment.bank_statement_lines_relation_manager.statement_date'))
+                    ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.statement_date'))
                     ->date()
                     ->toggleable(),
 
                 TextColumn::make('bankStatement.reference')
-                    ->label(__('payment.bank_statement_lines_relation_manager.statement_reference'))
+                    ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.statement_reference'))
                     ->toggleable(),
 
                 TextColumn::make('created_at')
-                    ->label(__('payment.bank_statement_lines_relation_manager.created_at'))
+                    ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 TernaryFilter::make('is_reconciled')
-                    ->label(__('payment.bank_statement_lines_relation_manager.filter_reconciliation_status'))
-                    ->placeholder(__('payment.bank_statement_lines_relation_manager.filter_all'))
-                    ->trueLabel(__('payment.bank_statement_lines_relation_manager.filter_reconciled'))
-                    ->falseLabel(__('payment.bank_statement_lines_relation_manager.filter_not_reconciled')),
+                    ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.filter_reconciliation_status'))
+                    ->placeholder(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.filter_all'))
+                    ->trueLabel(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.filter_reconciled'))
+                    ->falseLabel(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.filter_not_reconciled')),
 
                 Filter::make('date_range')
                     ->schema([
                         DatePicker::make('date_from')
-                            ->label(__('payment.bank_statement_lines_relation_manager.date_from')),
+                            ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.date_from')),
                         DatePicker::make('date_to')
-                            ->label(__('payment.bank_statement_lines_relation_manager.date_to')),
+                            ->label(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.date_to')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -172,7 +172,7 @@ class BankStatementLinesRelationManager extends RelationManager
                 // View action removed for now - can be added when proper routes are configured
             ])
             ->defaultSort('date', 'desc')
-            ->emptyStateHeading(__('payment.bank_statement_lines_relation_manager.no_bank_statement_lines'))
-            ->emptyStateDescription(__('payment.bank_statement_lines_relation_manager.no_bank_statement_lines_description'));
+            ->emptyStateHeading(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.no_bank_statement_lines'))
+            ->emptyStateDescription(__('accounting::payment.relation_manager.bank_statement_lines_relation_manager.no_bank_statement_lines_description'));
     }
 }

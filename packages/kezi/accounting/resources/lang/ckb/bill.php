@@ -99,6 +99,7 @@ return [
     'notification_update_not_allowed' => 'نوێکردنەوە ڕێگەپێدراو نییە',
     'errors' => [
         'cannot_create_bill_title' => 'نەتوانرا پسووڵە دروست بکرێت',
+        'cannot_create_bill_body' => 'هیچ داواکارییەکی کڕین ئامادە نییە بۆ پسووڵەکردن بۆ فرۆشیاری دیاریکراو.',
     ],
 
     // Validation Messages

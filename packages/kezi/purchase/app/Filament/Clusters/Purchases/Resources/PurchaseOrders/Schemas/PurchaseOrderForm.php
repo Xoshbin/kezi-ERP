@@ -268,7 +268,7 @@ class PurchaseOrderForm
                                 TableColumn::make(__('purchase::purchase_orders.fields.quantity'))->width('8%'),
                                 TableColumn::make(__('purchase::purchase_orders.fields.unit_price'))->width('12%'),
                                 TableColumn::make(__('purchase::purchase_orders.fields.tax'))->width('12%'),
-                                TableColumn::make(__('Shipping Type'))->width('12%'),
+                                TableColumn::make(__('foundation::enums.shipping_cost_type.freight'))->width('12%'),
                                 TableColumn::make(__('purchase::purchase_orders.fields.expected_delivery_date'))->width('12%'),
                                 TableColumn::make(__('purchase::purchase_orders.fields.notes'))->width('20%'),
                             ])
@@ -369,7 +369,7 @@ class PurchaseOrderForm
                                             ->searchable()
                                             ->preload(),
                                     ])
-                                    ->createOptionModalHeading(__('common.modal_title_create_product'))
+                                    ->createOptionModalHeading(__('foundation::common.modal_title_create_product'))
                                     ->createOptionAction(function (Action $action) {
                                         return $action->modalWidth('lg');
                                     })
@@ -428,23 +428,23 @@ class PurchaseOrderForm
                                                     ->where('is_deprecated', false)
                                                     ->pluck('name', 'id');
                                             })
-                                            ->label(__('tax.tax_account'))
+                                            ->label(__('accounting::tax.tax_account'))
                                             ->searchable()
                                             ->required(),
                                         TextInput::make('name')
-                                            ->label(__('tax.name'))
+                                            ->label(__('accounting::tax.name'))
                                             ->required()
                                             ->maxLength(255),
                                         TextInput::make('rate')
-                                            ->label(__('tax.rate'))
+                                            ->label(__('accounting::tax.rate'))
                                             ->required()
                                             ->numeric(),
                                         Select::make('type')
-                                            ->label(__('tax.type'))
+                                            ->label(__('accounting::tax.type'))
                                             ->options(collect(TaxType::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
                                             ->required(),
                                         Toggle::make('is_active')
-                                            ->label(__('tax.is_active'))
+                                            ->label(__('accounting::tax.is_active'))
                                             ->default(true),
                                     ])
                                     ->createOptionUsing(function (array $data): int {
@@ -452,7 +452,7 @@ class PurchaseOrderForm
 
                                         return $tax->getKey();
                                     })
-                                    ->createOptionModalHeading(__('common.modal_title_create_tax'))
+                                    ->createOptionModalHeading(__('foundation::common.modal_title_create_tax'))
                                     ->createOptionAction(function (Action $action) {
                                         return $action->modalWidth('lg');
                                     })
@@ -463,9 +463,9 @@ class PurchaseOrderForm
                                     ->default(fn (callable $get) => $get('../../expected_delivery_date'))
                                     ->columnSpan(3),
                                 Select::make('shipping_cost_type')
-                                    ->label(__('Shipping Type'))
+                                    ->label(__('foundation::enums.shipping_cost_type.freight'))
                                     ->options(\Kezi\Foundation\Enums\ShippingCostType::class)
-                                    ->placeholder(__('None'))
+                                    ->placeholder(__('foundation::enums.shipping_cost_type.none'))
                                     ->nullable()
                                     ->columnSpan(3),
                                 Textarea::make('notes')
