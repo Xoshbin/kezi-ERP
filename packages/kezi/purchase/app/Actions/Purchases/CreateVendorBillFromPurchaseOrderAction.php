@@ -59,8 +59,12 @@ class CreateVendorBillFromPurchaseOrderAction
         $vendorBillLines = [];
 
         foreach ($purchaseOrder->lines as $poLine) {
-            // Use custom quantity if provided, otherwise use remaining unbilled quantity
-            $quantity = $dto->line_quantities[$poLine->id] ?? $poLine->getRemainingBillableQuantity();
+            // Determine quantity based on line_quantities and copy_all_lines flag
+            if ($dto->line_quantities !== null && array_key_exists($poLine->id, $dto->line_quantities)) {
+                $quantity = $dto->line_quantities[$poLine->id];
+            } else {
+                $quantity = $dto->copy_all_lines ? $poLine->getRemainingBillableQuantity() : 0.0;
+            }
 
             // Skip lines with zero quantity
             if ($quantity <= 0) {
@@ -132,7 +136,8 @@ class CreateVendorBillFromPurchaseOrderAction
             lines: $vendorBillLines,
             created_by_user_id: $dto->created_by_user_id,
             payment_term_id: $dto->payment_term_id,
-            purchase_order_id: $purchaseOrder->id
+            purchase_order_id: $purchaseOrder->id,
+            exchange_rate_at_creation: $dto->exchange_rate_at_creation ?? (float) $purchaseOrder->exchange_rate_at_creation,
         );
     }
 }

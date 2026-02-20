@@ -238,9 +238,7 @@ test('full purchase cycle: rfq -> po -> receipt -> bill -> payment', function ()
 
     // Verify PO status
     $purchaseOrder->refresh();
-    // Logic in PurchaseOrder::updateStatusBasedOnBilling sets it to PartiallyBilled (as per code reading)
-    // even if it might be logically FullyBilled.
-    expect($purchaseOrder->status)->toBe(PurchaseOrderStatus::PartiallyBilled);
+    expect($purchaseOrder->status)->toBe(PurchaseOrderStatus::FullyBilled);
 
     // ==========================================
     // 5. Payment Phase
