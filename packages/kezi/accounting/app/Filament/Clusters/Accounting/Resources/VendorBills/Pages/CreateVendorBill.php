@@ -89,23 +89,12 @@ class CreateVendorBill extends CreateRecord
         // Add company_id from tenant context
         $data['company_id'] = (int) (Filament::getTenant()?->getKey() ?? 0);
 
-        // Store exchange_rate_at_creation separately since it's not in the DTO
-        $exchangeRate = $data['exchange_rate_at_creation'] ?? null;
-        unset($data['exchange_rate_at_creation']);
-
         if (isset($data['incoterm'])) {
             $data['incoterm'] = $data['incoterm'] instanceof Incoterm ? $data['incoterm'] : Incoterm::tryFrom($data['incoterm']);
         }
 
         $vendorBillDTO = new CreateVendorBillDTO(...$data);
         $vendorBill = app(CreateVendorBillAction::class)->execute($vendorBillDTO);
-
-        // Set exchange_rate_at_creation if provided
-        if ($exchangeRate) {
-            $vendorBill->update([
-                'exchange_rate_at_creation' => $exchangeRate,
-            ]);
-        }
 
         // Store attachments for later processing
         $this->attachments = $attachments;
