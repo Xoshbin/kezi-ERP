@@ -105,10 +105,10 @@ class StockManagementTranslationsTest extends TestCase
     public function it_has_navigation_group_translations()
     {
         app()->setLocale('en');
-        $this->assertEquals('Inventory Management', __('navigation.groups.inventory'));
+        $this->assertEquals('Inventory', __('inventory::navigation.groups.inventory_settings'));
 
         app()->setLocale('ckb');
-        $this->assertEquals('بەڕێوەبردنی کۆگا', __('navigation.groups.inventory'));
+        $this->assertEquals('کۆگا', __('inventory::navigation.groups.inventory_settings'));
     }
 
     /** @test */

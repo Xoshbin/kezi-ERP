@@ -27,7 +27,7 @@ class CreateAccount extends CreateRecord
 
     public function getTitle(): string
     {
-        return __('filament.actions.create').' '.__('accounting::account.label');
+        return __('accounting::common.create').' '.__('accounting::account.label');
     }
 
     protected function mutateFormDataBeforeCreate(array $data): array

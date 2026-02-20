@@ -51,18 +51,18 @@ class SettlementSummaryWidget extends BaseWidget
                 ->color($outstandingBalance->isZero() ? 'success' : 'warning')
                 ->icon('heroicon-o-exclamation-triangle'),
 
-            // Stat::make(__('invoice.settlement_widget.last_payment'), $lastPaymentDate)
-            //     ->description(__('invoice.settlement_widget.most_recent_payment'))
-            //     ->color($lastPaymentDate === __('invoice.settlement_widget.no_payments') ? 'gray' : 'info')
+            // Stat::make(__('accounting::invoice.settlement_widget.last_payment'), $lastPaymentDate)
+            //     ->description(__('accounting::invoice.settlement_widget.most_recent_payment'))
+            //     ->color($lastPaymentDate === __('accounting::invoice.settlement_widget.no_payments') ? 'gray' : 'info')
             //     ->icon('heroicon-o-clock'),
 
-            // Stat::make(__('invoice.settlement_widget.payment_count'), $this->getPaymentCount($invoice))
-            //     ->description(__('invoice.settlement_widget.total_payments'))
+            // Stat::make(__('accounting::invoice.settlement_widget.payment_count'), $this->getPaymentCount($invoice))
+            //     ->description(__('accounting::invoice.settlement_widget.total_payments'))
             //     ->color('info')
             //     ->icon('heroicon-o-list-bullet'),
 
-            // Stat::make(__('invoice.settlement_widget.payment_methods'), $paymentMethodBreakdown)
-            //     ->description(__('invoice.settlement_widget.payment_breakdown'))
+            // Stat::make(__('accounting::invoice.settlement_widget.payment_methods'), $paymentMethodBreakdown)
+            //     ->description(__('accounting::invoice.settlement_widget.payment_breakdown'))
             //     ->color('info')
             //     ->icon('heroicon-o-credit-card'),
         ];
