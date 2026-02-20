@@ -276,8 +276,8 @@ class PurchaseOrder extends Model
             return false;
         }
 
-        // Then check if bills already exist for this PO
-        return ! $this->hasBills();
+        // Then check if any line still has remaining quantity to be billed
+        return $this->lines->contains(fn (PurchaseOrderLine $line) => $line->getRemainingBillableQuantity() > 0);
     }
 
     /**
@@ -380,20 +380,20 @@ class PurchaseOrder extends Model
             return; // Don't change final statuses
         }
 
-        $billsCount = $this->getBillsCount();
-
-        if ($billsCount === 0) {
-            // No bills exist - status should remain as is
+        $totalOrdered = $this->getTotalQuantityOrdered();
+        if ($totalOrdered === 0.0) {
             return;
-        } elseif ($billsCount === 1) {
-            // First bill created - move to PartiallyBilled
+        }
+
+        $totalBilled = $this->lines->sum('quantity_billed');
+
+        if ($totalBilled >= $totalOrdered) {
+            $this->status = PurchaseOrderStatus::FullyBilled;
+        } elseif ($totalBilled > 0) {
             $this->status = PurchaseOrderStatus::PartiallyBilled;
         } else {
-            // Multiple bills exist - could be PartiallyBilled or FullyBilled
-            // For now, we'll keep it as PartiallyBilled
-            // In the future, this could be enhanced to check if total billed amount
-            // equals total PO amount to determine FullyBilled status
-            $this->status = PurchaseOrderStatus::PartiallyBilled;
+            // No quantities billed, status depends on receipts
+            $this->updateStatusBasedOnReceipts(true);
         }
 
         $this->save();

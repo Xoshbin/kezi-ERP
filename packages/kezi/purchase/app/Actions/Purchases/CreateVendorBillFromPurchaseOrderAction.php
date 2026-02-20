@@ -59,12 +59,19 @@ class CreateVendorBillFromPurchaseOrderAction
         $vendorBillLines = [];
 
         foreach ($purchaseOrder->lines as $poLine) {
-            // Use custom quantity if provided, otherwise use PO quantity
-            $quantity = $dto->line_quantities[$poLine->id] ?? $poLine->quantity;
+            // Use custom quantity if provided, otherwise use remaining unbilled quantity
+            $quantity = $dto->line_quantities[$poLine->id] ?? $poLine->getRemainingBillableQuantity();
 
             // Skip lines with zero quantity
             if ($quantity <= 0) {
                 continue;
+            }
+
+            // Over-billing protection
+            if ($quantity > $poLine->getRemainingBillableQuantity()) {
+                throw ValidationException::withMessages([
+                    'lines' => "Quantity for '{$poLine->description}' exceeds the remaining unbilled quantity ({$poLine->getRemainingBillableQuantity()}).",
+                ]);
             }
 
             // Determine expense account - use product's account or require it to be set
@@ -102,6 +109,10 @@ class CreateVendorBillFromPurchaseOrderAction
                 analytic_account_id: null, // Could be enhanced to copy from PO if needed
                 currency: $purchaseOrder->currency->code
             );
+
+            // Update unbilled quantity tracking
+            $poLine->updateBilledQuantity($quantity);
+            $poLine->save();
         }
 
         if (empty($vendorBillLines)) {
