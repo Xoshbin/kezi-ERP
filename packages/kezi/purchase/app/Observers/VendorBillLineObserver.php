@@ -85,20 +85,9 @@ class VendorBillLineObserver
         $companyCurrency = $vendorBill->company->currency;
         $exchangeRate = $vendorBill->exchange_rate_at_creation;
 
-        // Convert total amounts using the stored exchange rate via the CurrencyConverterService
-        $currencyConverter = app(\Kezi\Foundation\Services\CurrencyConverterService::class);
-        $totalAmountCompanyCurrency = $currencyConverter->convertWithRate(
-            $vendorBill->total_amount,
-            $exchangeRate,
-            $companyCurrency->code,
-            false
-        );
-        $totalTaxCompanyCurrency = $currencyConverter->convertWithRate(
-            $vendorBill->total_tax,
-            $exchangeRate,
-            $companyCurrency->code,
-            false
-        );
+        // Convert total amounts using the stored exchange rate
+        $totalAmountCompanyCurrency = $vendorBill->total_amount->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+        $totalTaxCompanyCurrency = $vendorBill->total_tax->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
 
         $vendorBill->update([
             'total_amount_company_currency' => $totalAmountCompanyCurrency,

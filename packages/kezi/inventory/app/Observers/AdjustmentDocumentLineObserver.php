@@ -54,11 +54,10 @@ class AdjustmentDocumentLineObserver
         $companyCurrency = $adjustmentDocument->company->currency;
         $exchangeRate = $adjustmentDocument->exchange_rate_at_creation;
 
-        // Convert total amounts using the stored exchange rate via the CurrencyConverterService
-        $currencyConverter = app(\Kezi\Foundation\Services\CurrencyConverterService::class);
-        $subtotalCompanyCurrency = $currencyConverter->convertWithRate($adjustmentDocument->subtotal, $exchangeRate, $companyCurrency->code, false);
-        $totalAmountCompanyCurrency = $currencyConverter->convertWithRate($adjustmentDocument->total_amount, $exchangeRate, $companyCurrency->code, false);
-        $totalTaxCompanyCurrency = $currencyConverter->convertWithRate($adjustmentDocument->total_tax, $exchangeRate, $companyCurrency->code, false);
+        // Convert total amounts using the stored exchange rate
+        $subtotalCompanyCurrency = $adjustmentDocument->subtotal->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+        $totalAmountCompanyCurrency = $adjustmentDocument->total_amount->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+        $totalTaxCompanyCurrency = $adjustmentDocument->total_tax->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
 
         $adjustmentDocument->update([
             'subtotal_company_currency' => $subtotalCompanyCurrency,
