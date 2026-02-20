@@ -32,6 +32,10 @@ class PurchaseOrderInfolist
                             ->label(__('purchase::purchase_orders.fields.incoterm'))
                             ->placeholder('—'),
 
+                        TextEntry::make('incoterm_location')
+                            ->label(__('purchase::purchase_orders.fields.incoterm_location'))
+                            ->placeholder('—'),
+
                         TextEntry::make('deliveryLocation.name')
                             ->label(__('purchase::purchase_orders.fields.delivery_location'))
                             ->placeholder('—'),

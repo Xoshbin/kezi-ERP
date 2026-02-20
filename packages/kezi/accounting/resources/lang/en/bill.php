@@ -67,6 +67,7 @@ return [
     'fiscal_position' => 'Fiscal Position',
     'fiscal_position_helper' => 'Fiscal position used for this bill',
     'incoterm' => 'Incoterm',
+    'incoterm_location' => 'Incoterm Location',
     'post' => 'Post',
 
     // Actions

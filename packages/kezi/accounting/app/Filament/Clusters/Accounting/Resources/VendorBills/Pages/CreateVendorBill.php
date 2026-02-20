@@ -171,6 +171,8 @@ class CreateVendorBill extends CreateRecord
             'payment_term_id' => null,
             'exchange_rate_at_creation' => $purchaseOrder->exchange_rate_at_creation,
             'purchase_order_id' => $purchaseOrder->id,
+            'incoterm' => $purchaseOrder->incoterm?->value,
+            'incoterm_location' => $purchaseOrder->incoterm_location,
             'lines' => [],
         ];
 

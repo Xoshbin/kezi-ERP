@@ -138,6 +138,10 @@ class PurchaseOrderForm
                             ->searchable()
                             ->preload(),
 
+                        TextInput::make('incoterm_location')
+                            ->label(__('purchase::purchase_orders.fields.incoterm_location'))
+                            ->maxLength(255),
+
                         Select::make('delivery_location_id')
                             ->label(__('purchase::purchase_orders.fields.delivery_location'))
                             ->relationship('deliveryLocation', 'name')
