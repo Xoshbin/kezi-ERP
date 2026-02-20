@@ -150,6 +150,10 @@ test('full purchase cycle: rfq -> po -> receipt -> bill -> payment', function ()
     );
 
     $purchaseOrder = app(ConvertRFQToPurchaseOrderAction::class)->execute($convertDto);
+    $purchaseOrder->update([
+        'incoterm' => \Kezi\Foundation\Enums\Incoterm::Ddp,
+        'incoterm_location' => 'Dubai Port',
+    ]);
 
     expect($purchaseOrder)->toBeInstanceOf(PurchaseOrder::class)
         ->and($purchaseOrder->status)->toBe(PurchaseOrderStatus::Draft);
@@ -225,7 +229,9 @@ test('full purchase cycle: rfq -> po -> receipt -> bill -> payment', function ()
 
     expect($vendorBill)->toBeInstanceOf(VendorBill::class)
         ->and($vendorBill->status)->toBe(VendorBillStatus::Draft)
-        ->and($vendorBill->total_amount->getAmount()->toFloat())->toBe(1000.0);
+        ->and($vendorBill->total_amount->getAmount()->toFloat())->toBe(1000.0)
+        ->and($vendorBill->incoterm)->toBe(Kezi\Foundation\Enums\Incoterm::Ddp)
+        ->and($vendorBill->incoterm_location)->toBe('Dubai Port');
 
     // Post Bill - Mock Permissions
     Gate::shouldReceive('forUser->authorize')->with('post', \Mockery::any())->andReturn(true);

@@ -39,6 +39,7 @@ return [
         'currency' => 'دراو',
         'expected_delivery_date' => 'بەرواری گەیشتنی پێشبینیکراو',
         'incoterm' => 'ئین کۆتێرم',
+        'incoterm_location' => 'شوێنی ئینکۆتێرم',
         'delivery_location' => 'شوێنی گەیاندن',
         'notes' => 'تێبینیەکان',
         'terms_and_conditions' => 'مەرج و ڕێنماییەکان',
