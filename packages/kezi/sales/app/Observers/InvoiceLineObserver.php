@@ -131,20 +131,9 @@ class InvoiceLineObserver
         $companyCurrency = $invoice->company->currency;
         $exchangeRate = $invoice->exchange_rate_at_creation;
 
-        // Convert total amounts using the stored exchange rate via the CurrencyConverterService
-        $currencyConverter = app(\Kezi\Foundation\Services\CurrencyConverterService::class);
-        $totalAmountCompanyCurrency = $currencyConverter->convertWithRate(
-            $invoice->total_amount,
-            $exchangeRate,
-            $companyCurrency->code,
-            false
-        );
-        $totalTaxCompanyCurrency = $currencyConverter->convertWithRate(
-            $invoice->total_tax,
-            $exchangeRate,
-            $companyCurrency->code,
-            false
-        );
+        // Convert total amounts using the stored exchange rate
+        $totalAmountCompanyCurrency = $invoice->total_amount->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+        $totalTaxCompanyCurrency = $invoice->total_tax->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
 
         $invoice->update([
             'total_amount_company_currency' => $totalAmountCompanyCurrency,

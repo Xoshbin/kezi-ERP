@@ -27,9 +27,6 @@ use Tests\Builders\CompanyBuilder;
  * @property Currency $usdCurrency
  * @property Currency $eurCurrency
  * @property Journal $usdBankJournal
- * @property Currency $baseCurrency
- * @property Currency $foreignCurrency
- * @property float $exchangeRate
  *
  * @mixin \Tests\TestCase
  */
