@@ -123,6 +123,7 @@ class PurchaseOrder extends Model
         'notes',
         'terms_and_conditions',
         'delivery_location_id',
+        'incoterm_location',
     ];
 
     /**

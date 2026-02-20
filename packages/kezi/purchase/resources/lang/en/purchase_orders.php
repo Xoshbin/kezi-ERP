@@ -39,6 +39,7 @@ return [
         'currency' => 'Currency',
         'expected_delivery_date' => 'Expected Delivery Date',
         'incoterm' => 'Incoterm',
+        'incoterm_location' => 'Incoterm Location',
         'delivery_location' => 'Delivery Location',
         'notes' => 'Notes',
         'terms_and_conditions' => 'Terms & Conditions',

@@ -236,6 +236,9 @@ class VendorBillResource extends Resource
                         ->options(Incoterm::class)
                         ->searchable()
                         ->preload(),
+                    TextInput::make('incoterm_location')
+                        ->label(__('accounting::bill.incoterm_location'))
+                        ->maxLength(255),
                     Select::make('fiscal_position_id')
                         ->label(__('accounting::bill.fiscal_position'))
                         ->relationship('fiscalPosition', 'name')

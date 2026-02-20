@@ -67,6 +67,7 @@ return [
     'fiscal_position' => 'دۆخی دارایی',
     'fiscal_position_helper' => 'دۆخی دارایی بەکارهاتوو بۆ ئەم پسووڵەیە',
     'incoterm' => 'ئینکۆتێرم (Incoterm)',
+    'incoterm_location' => 'شوێنی ئینکۆتێرم',
     'post' => 'ناردن (Post)',
 
     // Actions
