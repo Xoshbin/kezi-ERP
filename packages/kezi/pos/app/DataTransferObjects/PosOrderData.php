@@ -30,7 +30,7 @@ class PosOrderData
             uuid: $data['uuid'],
             order_number: $data['order_number'],
             status: $data['status'],
-            payment_method: PaymentMethod::tryFrom($data['payment_method'] ?? '') ?? PaymentMethod::Cash, // Default to Cash if missing
+            payment_method: $data['payment_method'] instanceof PaymentMethod ? $data['payment_method'] : (PaymentMethod::tryFrom($data['payment_method'] ?? '') ?? PaymentMethod::Cash), // Default to Cash if missing
             ordered_at: $data['ordered_at'],
             total_amount: (string) $data['total_amount'],
             total_tax: (string) $data['total_tax'],

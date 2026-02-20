@@ -268,8 +268,8 @@ class EditPurchaseOrder extends EditRecord
             notes: $data['notes'] ?? null,
             terms_and_conditions: $data['terms_and_conditions'] ?? null,
             delivery_location_id: $data['delivery_location_id'] ?? null,
-            incoterm: isset($data['incoterm']) ? Incoterm::tryFrom($data['incoterm']) : null,
-            status: isset($data['status']) ? PurchaseOrderStatus::from($data['status']) : null,
+            incoterm: $data['incoterm'] instanceof Incoterm ? $data['incoterm'] : (isset($data['incoterm']) ? Incoterm::tryFrom($data['incoterm']) : null),
+            status: $data['status'] instanceof PurchaseOrderStatus ? $data['status'] : (isset($data['status']) ? PurchaseOrderStatus::from($data['status']) : null),
         );
 
         try {
