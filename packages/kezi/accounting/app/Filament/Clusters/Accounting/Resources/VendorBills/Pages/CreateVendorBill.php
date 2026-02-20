@@ -67,7 +67,7 @@ class CreateVendorBill extends CreateRecord
                 expense_account_id: $line['expense_account_id'],
                 tax_id: $line['tax_id'] ?? null,
                 analytic_account_id: $line['analytic_account_id'] ?? null,
-                shipping_cost_type: isset($line['shipping_cost_type']) ? \Kezi\Foundation\Enums\ShippingCostType::tryFrom($line['shipping_cost_type']) : null,
+                shipping_cost_type: $line['shipping_cost_type'] instanceof \Kezi\Foundation\Enums\ShippingCostType ? $line['shipping_cost_type'] : (isset($line['shipping_cost_type']) ? \Kezi\Foundation\Enums\ShippingCostType::tryFrom($line['shipping_cost_type']) : null),
                 asset_category_id: $line['asset_category_id'] ?? null,
                 deferred_start_date: $line['deferred_start_date'] ?? null,
                 deferred_end_date: $line['deferred_end_date'] ?? null,
@@ -94,7 +94,7 @@ class CreateVendorBill extends CreateRecord
         unset($data['exchange_rate_at_creation']);
 
         if (isset($data['incoterm'])) {
-            $data['incoterm'] = Incoterm::tryFrom($data['incoterm']);
+            $data['incoterm'] = $data['incoterm'] instanceof Incoterm ? $data['incoterm'] : Incoterm::tryFrom($data['incoterm']);
         }
 
         $vendorBillDTO = new CreateVendorBillDTO(...$data);
