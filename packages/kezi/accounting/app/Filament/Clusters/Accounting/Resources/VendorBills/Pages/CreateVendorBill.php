@@ -187,11 +187,13 @@ class CreateVendorBill extends CreateRecord
 
         // Transform PO lines to vendor bill lines
         foreach ($purchaseOrder->lines as $poLine) {
-            if ($poLine->product && $poLine->product->expense_account_id) {
+            $remainingQty = $poLine->getRemainingBillableQuantity();
+
+            if ($remainingQty > 0 && $poLine->product && $poLine->product->expense_account_id) {
                 $formData['lines'][] = [
                     'product_id' => $poLine->product_id,
                     'description' => $poLine->description,
-                    'quantity' => $poLine->quantity,
+                    'quantity' => $remainingQty,
                     'unit_price' => $poLine->unit_price->getAmount()->toFloat(),
                     'expense_account_id' => $poLine->product->expense_account_id,
                     'tax_id' => $poLine->tax_id,
@@ -224,8 +226,8 @@ class CreateVendorBill extends CreateRecord
                         }
 
                         return PurchaseOrder::where('vendor_id', $vendorId)
-                            ->whereIn('status', ['confirmed', 'to_receive', 'partially_received', 'fully_received', 'to_bill', 'partially_billed'])
                             ->get()
+                            ->filter(fn (PurchaseOrder $po) => $po->canCreateBill())
                             ->mapWithKeys(fn ($po) => [$po->id => "{$po->po_number} - {$po->reference}"])
                             ->toArray();
                     })
