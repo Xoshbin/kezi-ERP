@@ -4,7 +4,7 @@
 <div>
     @if(!empty($preview['issues']))
         <div class="p-3 mb-3 rounded bg-[var(--color-danger-50)] text-[var(--color-danger-800)]">
-            <div class="font-semibold mb-1">{{ __('posting_preview.errors_title') }}</div>
+            <div class="font-semibold mb-1">{{ __('accounting::bill.posting_preview.errors_title') }}</div>
             <ul class="list-disc pl-5 space-y-1">
                 @foreach($preview['issues'] as $issue)
                     <li>
@@ -65,9 +65,9 @@
     <div class="mt-3 flex items-center justify-between">
         <div>
             <a href="{{ AccountResource::getUrl('index') }}"
-               class="underline text-gray-700" target="_blank">{{ __('posting_preview.links.open_accounts') }}</a>
+               class="underline text-gray-700" target="_blank">{{ __('accounting::bill.posting_preview.links.open_accounts') }}</a>
             <a href="{{ CompanyResource::getUrl('edit', ['record' => $adjustment->company_id]) }}"
-               class="underline text-gray-700 ml-4" target="_blank">{{ __('posting_preview.links.open_company') }}</a>
+               class="underline text-gray-700 ml-4" target="_blank">{{ __('accounting::bill.posting_preview.links.open_company') }}</a>
         </div>
         <div class="text-right">
             @php($totals = $preview['totals'])

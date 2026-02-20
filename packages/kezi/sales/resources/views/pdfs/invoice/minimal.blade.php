@@ -233,13 +233,13 @@
                 <div class="detail-line">{{ $company->city }}</div>
             @endif
             @if($company->tax_id)
-                <div class="detail-line">{{ __('company.tax_id') }}: {{ $company->tax_id }}</div>
+                <p><strong>{{ __('accounting::partner.tax_id') }}:</strong> {{ $company->tax_id }}</p>
             @endif
             @if($company->phone)
-                <div class="detail-line">{{ __('partner.phone') }}: {{ $company->phone }}</div>
+                <p><strong>{{ __('accounting::partner.phone') }}:</strong> {{ $company->phone }}</p>
             @endif
             @if($company->email)
-                <div class="detail-line">{{ __('partner.email') }}: {{ $company->email }}</div>
+                <p><strong>{{ __('accounting::partner.email') }}:</strong> {{ $company->email }}</p>
             @endif
         </div>
 
@@ -256,13 +256,13 @@
                 <div class="detail-line">{{ $customer->city }}, {{ $customer->state }} {{ $customer->zip_code }}</div>
             @endif
             @if($customer->tax_id)
-                <div class="detail-line">{{ __('partner.tax_id') }}: {{ $customer->tax_id }}</div>
+                <p><strong>{{ __('accounting::partner.tax_id') }}:</strong> {{ $customer->tax_id }}</p>
             @endif
             @if($customer->phone)
-                <div class="detail-line">{{ __('partner.phone') }}: {{ $customer->phone }}</div>
+                <p><strong>{{ __('accounting::partner.phone') }}:</strong> {{ $customer->phone }}</p>
             @endif
             @if($customer->email)
-                <div class="detail-line">{{ __('partner.email') }}: {{ $customer->email }}</div>
+                <p><strong>{{ __('accounting::partner.email') }}:</strong> {{ $customer->email }}</p>
             @endif
         </div>
     </div>

@@ -22,7 +22,7 @@
     </style>
 </head>
 <body>
-<h2>{{ __('posting_preview.pdf.invoice_heading') }}</h2>
+<h2>{{ __('accounting::bill.posting_preview.pdf.invoice_heading') }}</h2>
 <p>Invoice: {{ $invoice->invoice_number ?? ('DRAFT-' . str_pad($invoice->id, 5, '0', STR_PAD_LEFT)) }} | Company: {{ $invoice->company->name }}</p>
 
 @if(!empty($preview['errors']))

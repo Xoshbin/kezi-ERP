@@ -15,11 +15,11 @@ enum ShippingCostType: string implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::Freight => __('Freight'),
-            self::Insurance => __('Insurance'),
-            self::CustomsDuty => __('Customs Duty'),
-            self::Handling => __('Handling'),
-            self::PortCharges => __('Port Charges'),
+            self::Freight => __('foundation::enums.shipping_cost_type.freight'),
+            self::Insurance => __('foundation::enums.shipping_cost_type.insurance'),
+            self::CustomsDuty => __('foundation::enums.shipping_cost_type.customs_duty'),
+            self::Handling => __('foundation::enums.shipping_cost_type.handling'),
+            self::PortCharges => __('foundation::enums.shipping_cost_type.port_charges'),
         };
     }
 }
