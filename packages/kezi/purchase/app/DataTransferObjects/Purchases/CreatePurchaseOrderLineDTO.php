@@ -44,7 +44,7 @@ readonly class CreatePurchaseOrderLineDTO
             quantity: (float) $data['quantity'],
             unit_price: $unitPrice,
             tax_id: $data['tax_id'] ?? null,
-            shipping_cost_type: $data['shipping_cost_type'] instanceof \Kezi\Foundation\Enums\ShippingCostType ? $data['shipping_cost_type'] : (isset($data['shipping_cost_type']) ? \Kezi\Foundation\Enums\ShippingCostType::tryFrom($data['shipping_cost_type']) : null),
+            shipping_cost_type: (($data['shipping_cost_type'] ?? null) instanceof \Kezi\Foundation\Enums\ShippingCostType) ? $data['shipping_cost_type'] : (isset($data['shipping_cost_type']) ? \Kezi\Foundation\Enums\ShippingCostType::tryFrom($data['shipping_cost_type']) : null),
             expected_delivery_date: isset($data['expected_delivery_date']) ? Carbon::parse($data['expected_delivery_date']) : null,
             notes: $data['notes'] ?? null,
         );
