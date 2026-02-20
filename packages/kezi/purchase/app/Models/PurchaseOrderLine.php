@@ -270,7 +270,12 @@ class PurchaseOrderLine extends Model
         }
 
         // Convert to company currency
-        return $this->unit_price->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+        return app(\Kezi\Foundation\Services\CurrencyConverterService::class)->convertWithRate(
+            $this->unit_price,
+            $exchangeRate,
+            $purchaseOrder->company->currency->code,
+            false
+        );
     }
 
     /**
