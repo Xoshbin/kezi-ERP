@@ -117,12 +117,11 @@ class QuoteLineObserver
         $baseCurrencyCode = $company?->currency?->code ?? 'IQD';
 
         if ($currency->id !== $company?->currency_id) {
-            $currencyConverter = app(\Kezi\Foundation\Services\CurrencyConverterService::class);
-            $line->unit_price_company_currency = $currencyConverter->convertWithRate($unitPrice, $exchangeRate, $baseCurrencyCode, false);
-            $line->discount_amount_company_currency = $currencyConverter->convertWithRate($discountAmount, $exchangeRate, $baseCurrencyCode, false);
-            $line->subtotal_company_currency = $currencyConverter->convertWithRate($subtotal, $exchangeRate, $baseCurrencyCode, false);
-            $line->tax_amount_company_currency = $currencyConverter->convertWithRate($taxAmount, $exchangeRate, $baseCurrencyCode, false);
-            $line->total_company_currency = $currencyConverter->convertWithRate($line->total, $exchangeRate, $baseCurrencyCode, false);
+            $line->unit_price_company_currency = $unitPrice->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+            $line->discount_amount_company_currency = $discountAmount->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+            $line->subtotal_company_currency = $subtotal->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+            $line->tax_amount_company_currency = $taxAmount->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
+            $line->total_company_currency = $line->total->multipliedBy($exchangeRate, \Brick\Math\RoundingMode::HALF_UP);
         }
     }
 }
