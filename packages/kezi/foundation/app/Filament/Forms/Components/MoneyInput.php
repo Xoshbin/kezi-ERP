@@ -53,6 +53,14 @@ class MoneyInput extends TextInput
                 if ($this->currencyFieldName) {
                     /** @var int|null $currencyId */
                     $currencyId = $get($this->currencyFieldName);
+
+                    if (! $currencyId && str_ends_with($this->currencyFieldName, 'company.currency_id')) {
+                        $tenant = Filament::getTenant();
+                        if ($tenant instanceof \App\Models\Company) {
+                            $currencyId = $tenant->currency_id;
+                        }
+                    }
+
                     if ($currencyId) {
                         $currency = Currency::find($currencyId);
                         if ($currency) {
@@ -129,6 +137,14 @@ class MoneyInput extends TextInput
         // This is for the Create page or live updates.
         if ($this->currencyFieldName) {
             $currencyId = $get($this->currencyFieldName);
+
+            if (! $currencyId && str_ends_with($this->currencyFieldName, 'company.currency_id')) {
+                $tenant = Filament::getTenant();
+                if ($tenant instanceof \App\Models\Company) {
+                    $currencyId = $tenant->currency_id;
+                }
+            }
+
             if ($currencyId) {
                 // To avoid too many database queries, we can cache the result.
                 static $currencyCache = [];
