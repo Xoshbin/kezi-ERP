@@ -63,7 +63,7 @@ readonly class CreatePurchaseOrderDTO
             notes: $data['notes'] ?? null,
             terms_and_conditions: $data['terms_and_conditions'] ?? null,
             delivery_location_id: $data['delivery_location_id'] ?? null,
-            incoterm: isset($data['incoterm']) ? Incoterm::tryFrom($data['incoterm']) : null,
+            incoterm: $data['incoterm'] instanceof Incoterm ? $data['incoterm'] : (isset($data['incoterm']) ? Incoterm::tryFrom($data['incoterm']) : null),
             lines: $lines,
         );
     }

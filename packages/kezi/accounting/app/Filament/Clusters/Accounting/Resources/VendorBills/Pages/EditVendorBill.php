@@ -320,7 +320,7 @@ class EditVendorBill extends EditRecord
                 expense_account_id: $line['expense_account_id'],
                 tax_id: $line['tax_id'] ?? null,
                 analytic_account_id: $line['analytic_account_id'] ?? null,
-                shipping_cost_type: isset($line['shipping_cost_type']) ? \Kezi\Foundation\Enums\ShippingCostType::tryFrom($line['shipping_cost_type']) : null,
+                shipping_cost_type: $line['shipping_cost_type'] instanceof \Kezi\Foundation\Enums\ShippingCostType ? $line['shipping_cost_type'] : (isset($line['shipping_cost_type']) ? \Kezi\Foundation\Enums\ShippingCostType::tryFrom($line['shipping_cost_type']) : null),
                 asset_category_id: $line['asset_category_id'] ?? null,
                 deferred_start_date: $line['deferred_start_date'] ?? null,
                 deferred_end_date: $line['deferred_end_date'] ?? null
@@ -338,7 +338,7 @@ class EditVendorBill extends EditRecord
             due_date: $data['due_date'] ?? null,
             lines: $lineDTOs,
             updated_by_user_id: (int) Auth::id(),
-            incoterm: isset($data['incoterm']) ? \Kezi\Foundation\Enums\Incoterm::tryFrom($data['incoterm']) : null
+            incoterm: $data['incoterm'] instanceof \Kezi\Foundation\Enums\Incoterm ? $data['incoterm'] : (isset($data['incoterm']) ? \Kezi\Foundation\Enums\Incoterm::tryFrom($data['incoterm']) : null)
         );
 
         try {
