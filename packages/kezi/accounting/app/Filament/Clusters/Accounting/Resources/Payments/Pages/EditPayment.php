@@ -35,7 +35,7 @@ class EditPayment extends EditRecord
         return [
             DocsAction::make('payments'),
             Action::make('confirm')
-                ->label(__('payment.edit.action.confirm.label'))
+                ->label(__('accounting::payment.edit.action.confirm.label'))
                 ->color('success')
                 ->requiresConfirmation()
                 ->visible(fn (Payment $record): bool => $record->status === PaymentStatus::Draft)
@@ -48,9 +48,9 @@ class EditPayment extends EditRecord
                             throw new Exception('User must be authenticated to confirm payment');
                         }
                         $service->confirm($record, $user);
-                        Notification::make()->title(__('payment.action.confirm.notification.success'))->success()->send();
+                        Notification::make()->title(__('accounting::payment.action.confirm.notification.success'))->success()->send();
                     } catch (Exception $e) {
-                        Notification::make()->title(__('payment.action.confirm.notification.error'))->body($e->getMessage())->danger()->send();
+                        Notification::make()->title(__('accounting::payment.action.confirm.notification.error'))->body($e->getMessage())->danger()->send();
                     }
                 }),
             Action::make('cancel')

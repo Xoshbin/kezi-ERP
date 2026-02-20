@@ -101,6 +101,7 @@ return [
     'notification_payment_error' => 'Error registering payment',
     'errors' => [
         'cannot_create_bill_title' => 'Cannot Create Bill',
+        'cannot_create_bill_body' => 'There are no purchase orders ready to be billed for the selected vendor.',
     ],
 
     // Validation Messages

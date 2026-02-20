@@ -335,7 +335,7 @@ categories:
       bank_statement_lines:
         en: "Bank Statement Lines"
         ar: "بنود كشف الحساب البنكي"
-        ckb: "هێڵەکانی ڕاپۆرتی بانک"
+        ckb: "بڕگەکانی ڕاپۆرتی بانک"
         notes: "Individual transactions on bank statement"
       cash:
         en: "Cash"
@@ -1003,12 +1003,12 @@ categories:
       straight_line:
         en: "Straight Line"
         ar: "القسط الثابت"
-        ckb: "هێڵی ڕاست"
+        ckb: "قیستی یەکسان"
         notes: "Equal depreciation each period"
       declining_balance:
         en: "Declining Balance"
         ar: "الرصيد المتناقص"
-        ckb: "باڵانسی کەمکراو"
+        ckb: "قیستی کەمکراوە"
         notes: "Accelerated depreciation method"
 
   inventory_management:
