@@ -2,8 +2,11 @@
 
 namespace Kezi\Foundation\Providers;
 
+use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Number;
 use Illuminate\Support\ServiceProvider;
+use Kezi\Foundation\Support\NumberFormatter;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
@@ -24,6 +27,12 @@ class FoundationServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
+
+        Number::useLocale(NumberFormatter::getNumberLocale());
+
+        $numberLocale = NumberFormatter::getNumberLocale();
+
+        Schema::configureUsing(fn (Schema $schema) => $schema->defaultNumberLocale($numberLocale));
     }
 
     /**
