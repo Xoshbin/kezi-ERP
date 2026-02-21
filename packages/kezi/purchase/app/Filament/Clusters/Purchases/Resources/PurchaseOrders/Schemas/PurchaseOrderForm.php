@@ -7,15 +7,16 @@ use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Get;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Kezi\Accounting\Enums\Accounting\TaxType;
@@ -155,7 +156,7 @@ class PurchaseOrderForm
                     ->description(__('purchase::purchase_orders.sections.order_details_description'))
                     ->schema([
                         Hidden::make('company_id')
-                            ->default(fn () => Filament::getTenant()?->id),
+                            ->default(fn () => Filament::getTenant()?->getKey()),
 
                         Hidden::make('created_by_user_id')
                             ->default(fn () => Auth::id()),
@@ -279,13 +280,6 @@ class PurchaseOrderForm
                             ->live()
                             ->reorderable(true)
                             ->minItems(1)
-                            ->afterStateHydrated(function (callable $set, callable $get) {
-                                // Calculate totals when form is first loaded (e.g., on edit page or page refresh)
-                                static::updateTotals($set, $get);
-                            })
-                            ->afterStateUpdated(function (callable $set, $state, callable $get) {
-                                static::updateTotals($set, $get);
-                            })
                             ->schema([
                                 Select::make('product_id')
                                     ->options(fn () => Product::all()->pluck('name', 'id'))
@@ -400,9 +394,6 @@ class PurchaseOrderForm
                                     ->minValue(0.01)
                                     ->live(onBlur: true)
                                     ->extraInputAttributes(['onclick' => 'this.select()'])
-                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
-                                        static::updateTotals($set, $get);
-                                    })
                                     ->columnSpan(2),
 
                                 \Kezi\Foundation\Filament\Forms\Components\MoneyInput::make('unit_price')
@@ -410,9 +401,6 @@ class PurchaseOrderForm
                                     ->currencyField('../../currency_id')
                                     ->required()
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
-                                        static::updateTotals($set, $get);
-                                    })
                                     ->columnSpan(3),
 
                                 Select::make('tax_id')
@@ -420,9 +408,6 @@ class PurchaseOrderForm
                                     ->searchable()
                                     ->preload()
                                     ->live()
-                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
-                                        static::updateTotals($set, $get);
-                                    })
                                     ->createOptionForm([
                                         Hidden::make('company_id')
                                             ->default(fn () => Filament::getTenant()?->getKey()),
@@ -484,17 +469,17 @@ class PurchaseOrderForm
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                \Kezi\Foundation\Filament\Forms\Components\MoneyInput::make('total_tax')
+                                Placeholder::make('total_tax_display')
                                     ->label(__('purchase::purchase_orders.fields.total_tax'))
-                                    ->currencyField('currency_id')
-                                    ->disabled()
-                                    ->dehydrated(false),
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'tax');
+                                    }),
 
-                                \Kezi\Foundation\Filament\Forms\Components\MoneyInput::make('total_amount')
+                                Placeholder::make('total_amount_display')
                                     ->label(__('purchase::purchase_orders.fields.total_amount'))
-                                    ->currencyField('currency_id')
-                                    ->disabled()
-                                    ->dehydrated(false),
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'total');
+                                    }),
                             ]),
                     ])
                     ->collapsible()
@@ -525,22 +510,17 @@ class PurchaseOrderForm
     /**
      * Update the purchase order totals based on line items
      */
-    public static function updateTotals(callable $set, callable $get): void
+    public static function calculateTotalDisplay(Get $get, string $type): string
     {
-        $lines = $get('lines') ?? [];
+        /** @var array<int|string, array<string, mixed>> $linesData */
+        $linesData = $get('lines') ?? [];
+        $lines = $linesData;
         $currencyId = $get('currency_id');
+        /** @var \Kezi\Foundation\Models\Currency|null $currency */
+        $currency = $currencyId ? Currency::where('id', $currencyId)->first() : null;
 
-        if (! $currencyId || empty($lines)) {
-            $set('total_amount', 0);
-            $set('total_tax', 0);
-
-            return;
-        }
-
-        // Get currency for calculations
-        $currency = Currency::find($currencyId);
-        if (! $currency) {
-            return;
+        if (! $currency || count($lines) === 0) {
+            return '-';
         }
 
         $totalAmount = \Brick\Math\BigDecimal::zero();
@@ -562,7 +542,7 @@ class PurchaseOrderForm
             $lineTax = \Brick\Math\BigDecimal::zero();
             if ($taxId) {
                 $tax = Tax::find($taxId);
-                if ($tax) {
+                if ($tax instanceof Tax) {
                     $lineTax = $lineSubtotal->multipliedBy($tax->rate)->dividedBy(100, 10, \Brick\Math\RoundingMode::HALF_UP);
                 }
             }
@@ -574,8 +554,12 @@ class PurchaseOrderForm
             $totalTax = $totalTax->plus($lineTax);
         }
 
-        // Set the totals
-        $set('total_amount', (string) $totalAmount);
-        $set('total_tax', (string) $totalTax);
+        $amount = match ($type) {
+            'tax' => (float) (string) $totalTax,
+            'total' => (float) (string) $totalAmount,
+            default => 0,
+        };
+
+        return $currency->symbol.' '.number_format($amount, $currency->decimal_places);
     }
 }

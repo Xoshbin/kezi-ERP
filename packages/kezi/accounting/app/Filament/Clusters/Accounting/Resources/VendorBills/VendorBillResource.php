@@ -14,16 +14,17 @@ use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -559,28 +560,62 @@ class VendorBillResource extends Resource
                 ->columnSpanFull()
                 ->collapsed(fn (?VendorBill $record) => $record && $record->attachments()->count() === 0),
 
-            Section::make(__('accounting::bill.company_currency_totals'))
+            Section::make(__('accounting::bill.totals'))
                 ->schema([
-                    TextInput::make('exchange_rate_at_creation')
-                        ->label(__('accounting::bill.exchange_rate_at_creation'))
-                        ->numeric()
-                        ->disabled()
-                        ->visible(fn (?VendorBill $record) => $record && $record->exchange_rate_at_creation),
+                    Placeholder::make('total_amount_display')
+                        ->label(__('accounting::bill.total'))
+                        ->content(function (Get $get) {
+                            $lines = collect($get('lines') ?? []);
+                            if ($lines->isEmpty()) {
+                                return '-';
+                            }
 
-                    MoneyInput::make('total_amount_company_currency')
+                            $currencyId = $get('currency_id');
+                            $currency = $currencyId ? Currency::find($currencyId) : null;
+                            if (! $currency) {
+                                return '-';
+                            }
+
+                            $totalAmount = $lines->reduce(function ($carry, $line) {
+                                $qty = (float) ($line['quantity'] ?? 0);
+                                $price = (float) ($line['unit_price'] ?? 0);
+
+                                return $carry + ($qty * $price);
+                            }, 0);
+
+                            return $currency->symbol.' '.number_format($totalAmount, $currency->decimal_places);
+                        }),
+
+                    Placeholder::make('total_amount_company_currency_display')
                         ->label(__('accounting::bill.total_amount_company_currency'))
-                        ->currencyField('../../company.currency_id')
-                        ->disabled()
-                        ->visible(fn (?VendorBill $record) => $record && $record->total_amount_company_currency),
+                        ->content(function (Get $get) {
+                            $lines = collect($get('lines') ?? []);
+                            if ($lines->isEmpty()) {
+                                return '-';
+                            }
 
-                    MoneyInput::make('total_tax_company_currency')
-                        ->label(__('accounting::bill.total_tax_company_currency'))
-                        ->currencyField('../../company.currency_id')
-                        ->disabled()
-                        ->visible(fn (?VendorBill $record) => $record && $record->total_tax_company_currency),
+                            $exchangeRate = (float) ($get('exchange_rate_at_creation') ?? 1.0);
+                            $company = Filament::getTenant();
+                            $companyCurrency = $company ? Currency::find($company->currency_id) : null;
+
+                            if (! $companyCurrency) {
+                                return '-';
+                            }
+
+                            $totalAmount = $lines->reduce(function ($carry, $line) {
+                                $qty = (float) ($line['quantity'] ?? 0);
+                                $price = (float) ($line['unit_price'] ?? 0);
+
+                                return $carry + ($qty * $price);
+                            }, 0);
+
+                            $totalInLocal = $totalAmount * $exchangeRate;
+
+                            return $companyCurrency->symbol.' '.number_format($totalInLocal, $companyCurrency->decimal_places);
+                        }),
                 ])
-                ->columnSpanFull()
-                ->visible(fn (?VendorBill $record) => $record && ($record->exchange_rate_at_creation || $record->total_amount_company_currency)),
+                ->columns(2)
+                ->columnSpanFull(),
         ]);
     }
 

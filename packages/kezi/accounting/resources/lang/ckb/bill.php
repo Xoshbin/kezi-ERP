@@ -86,6 +86,7 @@ return [
     'payment_term' => 'مەرجی پارەدان',
     'date' => 'ڕێکەوت',
     'total' => 'کۆ',
+    'totals' => 'کۆی گشتی',
     'reference' => 'سەرچاوە',
 
     // Notifications

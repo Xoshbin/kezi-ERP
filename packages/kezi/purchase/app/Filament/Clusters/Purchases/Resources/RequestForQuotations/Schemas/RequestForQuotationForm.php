@@ -4,8 +4,10 @@ namespace Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotatio
 
 use Filament\Facades\Filament;
 use Filament\Forms;
+use Filament\Forms\Components\Placeholder;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Kezi\Accounting\Models\Tax;
@@ -129,9 +131,6 @@ class RequestForQuotationForm
                                     ->default(1)
                                     ->required()
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
-                                        static::updateTotals($set, $get);
-                                    })
                                     ->columnSpan(2),
 
                                 Forms\Components\TextInput::make('unit')
@@ -142,9 +141,6 @@ class RequestForQuotationForm
                                     ->label(__('purchase::request_for_quotation.lines.unit_price'))
                                     ->currencyField('../../currency_id')
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
-                                        static::updateTotals($set, $get);
-                                    })
                                     ->columnSpan(3),
 
                                 Forms\Components\Select::make('tax_id')
@@ -153,42 +149,33 @@ class RequestForQuotationForm
                                     ->searchable()
                                     ->preload()
                                     ->live()
-                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
-                                        static::updateTotals($set, $get);
-                                    })
                                     ->columnSpan(3),
                             ])
                             ->columns(17)
-                            ->defaultItems(1)
-                            ->afterStateHydrated(function (callable $set, callable $get) {
-                                static::updateTotals($set, $get);
-                            })
-                            ->afterStateUpdated(function (callable $set, $state, callable $get) {
-                                static::updateTotals($set, $get);
-                            }),
+                            ->defaultItems(1),
                     ])->columnSpanFull(),
 
                 Section::make(__('purchase::request_for_quotation.sections.totals'))
                     ->schema([
                         Grid::make(3)
                             ->schema([
-                                MoneyInput::make('subtotal')
+                                Placeholder::make('subtotal_display')
                                     ->label(__('purchase::request_for_quotation.fields.subtotal'))
-                                    ->currencyField('currency_id')
-                                    ->disabled()
-                                    ->dehydrated(false),
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'subtotal');
+                                    }),
 
-                                MoneyInput::make('tax_total')
+                                Placeholder::make('tax_total_display')
                                     ->label(__('purchase::request_for_quotation.fields.tax_total'))
-                                    ->currencyField('currency_id')
-                                    ->disabled()
-                                    ->dehydrated(false),
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'tax');
+                                    }),
 
-                                MoneyInput::make('total')
+                                Placeholder::make('total_display')
                                     ->label(__('purchase::request_for_quotation.fields.total'))
-                                    ->currencyField('currency_id')
-                                    ->disabled()
-                                    ->dehydrated(false),
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'total');
+                                    }),
                             ]),
                     ])
                     ->collapsible()
@@ -204,26 +191,17 @@ class RequestForQuotationForm
             ]);
     }
 
-    /**
-     * Update the RFQ totals based on line items
-     */
-    public static function updateTotals(callable $set, callable $get): void
+    public static function calculateTotalDisplay(Get $get, string $type): string
     {
-        $lines = $get('lines') ?? [];
+        /** @var array<int|string, array<string, mixed>> $linesData */
+        $linesData = $get('lines') ?? [];
+        $lines = $linesData;
         $currencyId = $get('currency_id');
+        /** @var \Kezi\Foundation\Models\Currency|null $currency */
+        $currency = $currencyId ? Currency::where('id', $currencyId)->first() : null;
 
-        if (! $currencyId || empty($lines)) {
-            $set('total', 0);
-            $set('subtotal', 0);
-            $set('tax_total', 0);
-
-            return;
-        }
-
-        // Get currency for calculations
-        $currency = Currency::find($currencyId);
-        if (! $currency) {
-            return;
+        if (! $currency || count($lines) === 0) {
+            return '-';
         }
 
         $subtotal = \Brick\Math\BigDecimal::zero();
@@ -252,9 +230,13 @@ class RequestForQuotationForm
             }
         }
 
-        // Set the totals
-        $set('subtotal', (string) $subtotal);
-        $set('tax_total', (string) $totalTax);
-        $set('total', (string) $subtotal->plus($totalTax));
+        $amount = match ($type) {
+            'subtotal' => (float) (string) $subtotal,
+            'tax' => (float) (string) $totalTax,
+            'total' => (float) (string) $subtotal->plus($totalTax),
+            default => 0,
+        };
+
+        return $currency->symbol.' '.number_format($amount, $currency->decimal_places);
     }
 }

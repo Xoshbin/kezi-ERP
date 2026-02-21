@@ -173,10 +173,13 @@ it('loads existing lines when editing a sales order', function () {
         'record' => $salesOrder->getRouteKey(),
     ]);
 
+    $lines = $livewire->get('data.lines');
+    $firstKey = array_key_first($lines);
+
     // Check that the form was populated with the existing line data
     $livewire->assertFormSet([
-        'lines.0.product_id' => $product->id,
-        'lines.0.description' => 'Existing line item',
-        'lines.0.quantity' => 7.0,
+        "lines.{$firstKey}.product_id" => $product->id,
+        "lines.{$firstKey}.description" => 'Existing line item',
+        "lines.{$firstKey}.quantity" => 7.0,
     ]);
 });
