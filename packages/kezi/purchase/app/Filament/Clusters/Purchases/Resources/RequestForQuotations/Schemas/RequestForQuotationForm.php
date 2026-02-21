@@ -119,11 +119,22 @@ class RequestForQuotationForm
                                         }
 
                                         // Recalculate prices for existing lines
+                                        /** @var array<string, array<string, mixed>> $lines */
                                         $lines = $get('lines') ?? [];
                                         if (! empty($lines)) {
+                                            /** @var \Illuminate\Support\Collection<int, int|string> $productIds */
+                                            $productIds = collect($lines)
+                                                ->pluck('product_id')
+                                                ->filter()
+                                                ->unique()
+                                                ->values();
+
+                                            $products = Product::findMany($productIds->toArray())->keyBy('id');
+
                                             foreach ($lines as $uuid => $line) {
                                                 if (isset($line['product_id'])) {
-                                                    $product = Product::find($line['product_id']);
+                                                    $product = $products->get($line['product_id']);
+
                                                     if ($product instanceof Product && $product->average_cost) {
                                                         // Get the underlying decimal amount from the Money object or value
                                                         $basePrice = $product->average_cost->getAmount()->toBigDecimal();
