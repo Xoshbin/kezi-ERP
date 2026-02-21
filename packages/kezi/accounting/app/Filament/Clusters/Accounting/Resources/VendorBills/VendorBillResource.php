@@ -564,64 +564,49 @@ class VendorBillResource extends Resource
                 ->schema([
                     \Filament\Schemas\Components\Fieldset::make(__('accounting::bill.document_currency'))
                         ->schema([
+                            Placeholder::make('subtotal_display')
+                                ->label(__('accounting::bill.subtotal'))
+                                ->content(function (Get $get) {
+                                    return static::calculateTotalDisplay($get, 'subtotal', false);
+                                }),
+                            Placeholder::make('total_tax_display')
+                                ->label(__('accounting::bill.tax'))
+                                ->content(function (Get $get) {
+                                    return static::calculateTotalDisplay($get, 'tax', false);
+                                }),
                             Placeholder::make('total_amount_display')
                                 ->label(__('accounting::bill.total'))
                                 ->content(function (Get $get) {
-                                    $lines = collect($get('lines') ?? []);
-                                    if ($lines->isEmpty()) {
-                                        return '-';
-                                    }
-
-                                    $currencyId = $get('currency_id');
-                                    $currency = $currencyId ? Currency::find($currencyId) : null;
-                                    if (! $currency) {
-                                        return '-';
-                                    }
-
-                                    $totalAmount = $lines->reduce(function ($carry, $line) {
-                                        $qty = (float) ($line['quantity'] ?? 0);
-                                        $price = (float) ($line['unit_price'] ?? 0);
-
-                                        return $carry + ($qty * $price);
-                                    }, 0);
-
-                                    return $currency->symbol.' '.number_format($totalAmount, $currency->decimal_places);
-                                }),
+                                    return static::calculateTotalDisplay($get, 'total', false);
+                                })
+                                ->weight('bold')
+                                ->size('lg'),
                         ])
-                        ->columns(1),
+                        ->columns(3),
 
                     \Filament\Schemas\Components\Fieldset::make(__('accounting::bill.company_currency'))
                         ->schema([
+                            Placeholder::make('subtotal_company_currency_display')
+                                ->label(__('accounting::bill.subtotal'))
+                                ->content(function (Get $get) {
+                                    return static::calculateTotalDisplay($get, 'subtotal', true);
+                                }),
+                            Placeholder::make('total_tax_company_currency_display')
+                                ->label(__('accounting::bill.tax'))
+                                ->content(function (Get $get) {
+                                    return static::calculateTotalDisplay($get, 'tax', true);
+                                }),
                             Placeholder::make('total_amount_company_currency_display')
                                 ->label(__('accounting::bill.total_amount_company_currency'))
                                 ->content(function (Get $get) {
-                                    $lines = collect($get('lines') ?? []);
-                                    if ($lines->isEmpty()) {
-                                        return '-';
-                                    }
-
-                                    $exchangeRate = (float) ($get('exchange_rate_at_creation') ?? 1.0);
-                                    $company = Filament::getTenant();
-                                    $companyCurrency = $company ? Currency::find($company->currency_id) : null;
-
-                                    if (! $companyCurrency) {
-                                        return '-';
-                                    }
-
-                                    $totalAmount = $lines->reduce(function ($carry, $line) {
-                                        $qty = (float) ($line['quantity'] ?? 0);
-                                        $price = (float) ($line['unit_price'] ?? 0);
-
-                                        return $carry + ($qty * $price);
-                                    }, 0);
-
-                                    $totalInLocal = $totalAmount * $exchangeRate;
-
-                                    return $companyCurrency->symbol.' '.number_format($totalInLocal, $companyCurrency->decimal_places);
-                                }),
+                                    return static::calculateTotalDisplay($get, 'total', true);
+                                })
+                                ->weight('bold')
+                                ->size('lg'),
                         ])
-                        ->columns(1)
+                        ->columns(3)
                         ->visible(function (Get $get) {
+                            /** @var \App\Models\Company|null $company */
                             $company = Filament::getTenant();
 
                             return $company && $get('currency_id') && $get('currency_id') != $company->currency_id;
@@ -630,6 +615,76 @@ class VendorBillResource extends Resource
                 ->columns(2)
                 ->columnSpanFull(),
         ]);
+    }
+
+    /**
+     * Update the vendor bill totals based on line items
+     */
+    public static function calculateTotalDisplay(Get $get, string $type, bool $inCompanyCurrency = false): string
+    {
+        /** @var array<int|string, array<string, mixed>>|null $linesData */
+        $linesData = $get('lines');
+        $lines = is_array($linesData) ? $linesData : [];
+
+        if (count($lines) === 0) {
+            return '-';
+        }
+
+        $currencyId = $get('currency_id');
+        /** @var \Kezi\Foundation\Models\Currency|null $currency */
+        $currency = $currencyId ? Currency::find($currencyId) : null;
+        if (! $currency) {
+            return '-';
+        }
+
+        $subtotal = 0.0;
+        $totalTax = 0.0;
+
+        foreach ($lines as $line) {
+            $qty = (float) ($line['quantity'] ?? 0);
+            $price = (float) ($line['unit_price'] ?? 0);
+            $taxId = $line['tax_id'] ?? null;
+
+            if ($qty == 0 || $price == 0) {
+                continue;
+            }
+
+            $lineSubtotal = $qty * $price;
+            $subtotal += $lineSubtotal;
+
+            if ($taxId && (is_string($taxId) || is_numeric($taxId))) {
+                /** @var \Kezi\Accounting\Models\Tax|null $tax */
+                $tax = \Kezi\Accounting\Models\Tax::find($taxId);
+                if ($tax) {
+                    $totalTax += $lineSubtotal * ((float) $tax->rate / 100);
+                }
+            }
+        }
+
+        $amount = match ($type) {
+            'subtotal' => $subtotal,
+            'tax' => $totalTax,
+            'total' => $subtotal + $totalTax,
+            default => 0.0,
+        };
+
+        if ($inCompanyCurrency) {
+            $exchangeRate = (float) ($get('exchange_rate_at_creation') ?? 1.0);
+            /** @var \App\Models\Company|null $company */
+            $company = Filament::getTenant();
+            /** @var \Kezi\Foundation\Models\Currency|null $companyCurrency */
+            $companyCurrency = $company ? Currency::find($company->currency_id) : null;
+
+            if (! $companyCurrency) {
+                return '-';
+            }
+
+            $totalInLocal = $amount * $exchangeRate;
+
+            return $companyCurrency->symbol.' '.number_format($totalInLocal, $companyCurrency->decimal_places);
+        }
+
+        return $currency->symbol.' '.number_format($amount, $currency->decimal_places);
     }
 
     public static function table(Table $table): Table

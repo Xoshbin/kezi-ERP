@@ -29,6 +29,7 @@ return [
     'unit_price' => 'Unit Price',
     'tax' => 'Tax',
     'income_account' => 'Income Account',
+    'subtotal' => 'Subtotal',
     'total_amount' => 'Total Amount',
     'total_tax' => 'Total Tax',
     'reason' => 'Reason',

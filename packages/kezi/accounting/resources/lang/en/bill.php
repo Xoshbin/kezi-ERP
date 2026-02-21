@@ -27,6 +27,7 @@ return [
     'tax' => 'Tax',
     'expense_account' => 'Expense Account',
     'analytic_account' => 'Analytic Account',
+    'subtotal' => 'Subtotal',
     'total_amount' => 'Total Amount',
     'total_tax' => 'Total Tax',
     'journal_entry_id' => 'Journal Entry ID',
