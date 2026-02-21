@@ -44,13 +44,13 @@ class DocumentTotalsHelper
                     ->schema([
                         TextEntry::make($subtotalKey)
                             ->label($subtotalLabel ?? __("{$translationPrefix}.subtotal"))
-                            ->money(fn ($record) => $record->currency->code),
+                            ->formatStateUsing(fn ($state, $record) => static::formatMoneyState($state, $record, false)),
                         TextEntry::make($taxKey)
                             ->label($taxLabel ?? __("{$translationPrefix}.tax"))
-                            ->money(fn ($record) => $record->currency->code),
+                            ->formatStateUsing(fn ($state, $record) => static::formatMoneyState($state, $record, false)),
                         TextEntry::make($totalKey)
                             ->label($totalLabel ?? __("{$translationPrefix}.total"))
-                            ->money(fn ($record) => $record->currency->code)
+                            ->formatStateUsing(fn ($state, $record) => static::formatMoneyState($state, $record, false))
                             ->weight('bold')
                             ->size('lg'),
                     ])
@@ -60,13 +60,13 @@ class DocumentTotalsHelper
                     ->schema([
                         TextEntry::make($subtotalCompanyKey)
                             ->label($subtotalLabel ?? __("{$translationPrefix}.subtotal"))
-                            ->money(fn ($record) => $record->company->currency->code),
+                            ->formatStateUsing(fn ($state, $record) => static::formatMoneyState($state, $record, true)),
                         TextEntry::make($taxCompanyKey)
                             ->label($taxLabel ?? __("{$translationPrefix}.tax"))
-                            ->money(fn ($record) => $record->company->currency->code),
+                            ->formatStateUsing(fn ($state, $record) => static::formatMoneyState($state, $record, true)),
                         TextEntry::make($totalCompanyKey)
                             ->label($companyCurrencyTotalLabel ?? __("{$translationPrefix}.total_amount_company_currency"))
-                            ->money(fn ($record) => $record->company->currency->code)
+                            ->formatStateUsing(fn ($state, $record) => static::formatMoneyState($state, $record, true))
                             ->weight('bold')
                             ->size('lg'),
                     ])
@@ -137,6 +137,29 @@ class DocumentTotalsHelper
             ])
             ->columns(2)
             ->columnSpanFull();
+    }
+
+    /**
+     * Format a money state properly to handle Brick\Money\Money.
+     */
+    public static function formatMoneyState(mixed $state, mixed $record, bool $isCompanyCurrency = false): string
+    {
+        $currency = $isCompanyCurrency ? $record?->company?->currency : $record?->currency;
+        $decimalPlaces = $currency ? $currency->decimal_places : 2;
+        $symbol = $currency ? $currency->symbol.' ' : '';
+
+        $amount = 0.0;
+        if ($state instanceof \Brick\Money\Money) {
+            $amount = $state->getAmount()->toFloat();
+        } elseif ($state instanceof \Brick\Math\BigDecimal) {
+            $amount = $state->toFloat();
+        } elseif (is_numeric($state)) {
+            $amount = (float) $state;
+        } elseif (is_string($state)) {
+            $amount = (float) preg_replace('/[^0-9.-]/', '', $state);
+        }
+
+        return $symbol.number_format($amount, $decimalPlaces);
     }
 
     /**
