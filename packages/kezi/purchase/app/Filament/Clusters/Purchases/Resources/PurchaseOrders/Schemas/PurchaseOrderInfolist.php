@@ -7,6 +7,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 
 class PurchaseOrderInfolist
 {
@@ -128,49 +129,14 @@ class PurchaseOrderInfolist
                     ])
                     ->columnSpanFull(),
 
-                Section::make(__('purchase::purchase_orders.sections.totals'))
-                    ->schema([
-                        \Filament\Schemas\Components\Fieldset::make(__('purchase::purchase_orders.fields.document_currency'))
-                            ->schema([
-                                TextEntry::make('subtotal')
-                                    ->label(__('purchase::purchase_orders.fields.subtotal'))
-                                    ->money(fn ($record) => $record->currency->code),
-
-                                TextEntry::make('total_tax')
-                                    ->label(__('purchase::purchase_orders.fields.total_tax'))
-                                    ->money(fn ($record) => $record->currency->code),
-
-                                TextEntry::make('total_amount')
-                                    ->label(__('purchase::purchase_orders.fields.total_amount'))
-                                    ->money(fn ($record) => $record->currency->code)
-                                    ->weight('bold')
-                                    ->size('lg'),
-                            ])->columns(3),
-
-                        \Filament\Schemas\Components\Fieldset::make(__('purchase::purchase_orders.fields.company_currency'))
-                            ->schema([
-                                TextEntry::make('subtotal_company_currency')
-                                    ->label(__('purchase::purchase_orders.fields.subtotal'))
-                                    ->money(fn ($record) => $record->company->currency->code)
-                                    ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
-
-                                TextEntry::make('total_tax_company_currency')
-                                    ->label(__('purchase::purchase_orders.fields.total_tax'))
-                                    ->money(fn ($record) => $record->company->currency->code)
-                                    ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
-
-                                TextEntry::make('total_amount_company_currency')
-                                    ->label(__('purchase::purchase_orders.fields.total_amount'))
-                                    ->money(fn ($record) => $record->company->currency->code)
-                                    ->weight('bold')
-                                    ->size('lg')
-                                    ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
-                            ])->columns(3)
-                            ->visible(function ($record) {
-                                return $record && $record->exchange_rate_at_creation && $record->currency_id != $record->company->currency_id;
-                            }),
-                    ])
-                    ->columnSpanFull(),
+                DocumentTotalsHelper::makeInfolist(
+                    translationPrefix: 'purchase::purchase_orders.fields',
+                    totalsLabel: __('purchase::purchase_orders.sections.totals'),
+                    subtotalLabel: __('purchase::purchase_orders.fields.subtotal'),
+                    taxLabel: __('purchase::purchase_orders.fields.total_tax'),
+                    totalLabel: __('purchase::purchase_orders.fields.total_amount'),
+                    companyCurrencyTotalLabel: __('purchase::purchase_orders.fields.total_amount_company_currency')
+                ),
 
                 Section::make(__('purchase::purchase_orders.sections.notes'))
                     ->schema([
