@@ -130,41 +130,45 @@ class PurchaseOrderInfolist
 
                 Section::make(__('purchase::purchase_orders.sections.totals'))
                     ->schema([
-                        Grid::make(2)
+                        \Filament\Schemas\Components\Fieldset::make(__('purchase::purchase_orders.fields.document_currency'))
                             ->schema([
-                                \Filament\Schemas\Components\Fieldset::make(__('purchase::purchase_orders.fields.document_currency'))
-                                    ->schema([
-                                        TextEntry::make('total_tax')
-                                            ->label(__('purchase::purchase_orders.fields.total_tax'))
-                                            ->money(fn ($record) => $record->currency->code),
+                                TextEntry::make('subtotal')
+                                    ->label(__('purchase::purchase_orders.fields.subtotal'))
+                                    ->money(fn ($record) => $record->currency->code),
 
-                                        TextEntry::make('total_amount')
-                                            ->label(__('purchase::purchase_orders.fields.total_amount'))
-                                            ->money(fn ($record) => $record->currency->code)
-                                            ->weight('bold')
-                                            ->size('lg'),
-                                    ])
-                                    ->columns(2),
+                                TextEntry::make('total_tax')
+                                    ->label(__('purchase::purchase_orders.fields.total_tax'))
+                                    ->money(fn ($record) => $record->currency->code),
 
-                                // Company Currency Totals (Conditional)
-                                \Filament\Schemas\Components\Fieldset::make(__('purchase::purchase_orders.fields.company_currency'))
-                                    ->schema([
-                                        TextEntry::make('total_tax_company_currency')
-                                            ->label(__('purchase::purchase_orders.fields.total_tax_company_currency'))
-                                            ->money(fn ($record) => $record->company->currency->code)
-                                            ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
+                                TextEntry::make('total_amount')
+                                    ->label(__('purchase::purchase_orders.fields.total_amount'))
+                                    ->money(fn ($record) => $record->currency->code)
+                                    ->weight('bold')
+                                    ->size('lg'),
+                            ])->columns(3),
 
-                                        TextEntry::make('total_amount_company_currency')
-                                            ->label(__('purchase::purchase_orders.fields.total_amount_company_currency'))
-                                            ->money(fn ($record) => $record->company->currency->code)
-                                            ->weight('bold')
-                                            ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
-                                    ])
-                                    ->columns(2)
-                                    ->visible(function ($record) {
-                                        return $record && $record->exchange_rate_at_creation && $record->currency_id != $record->company->currency_id;
-                                    }),
-                            ]),
+                        \Filament\Schemas\Components\Fieldset::make(__('purchase::purchase_orders.fields.company_currency'))
+                            ->schema([
+                                TextEntry::make('subtotal_company_currency')
+                                    ->label(__('purchase::purchase_orders.fields.subtotal'))
+                                    ->money(fn ($record) => $record->company->currency->code)
+                                    ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
+
+                                TextEntry::make('total_tax_company_currency')
+                                    ->label(__('purchase::purchase_orders.fields.total_tax'))
+                                    ->money(fn ($record) => $record->company->currency->code)
+                                    ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
+
+                                TextEntry::make('total_amount_company_currency')
+                                    ->label(__('purchase::purchase_orders.fields.total_amount'))
+                                    ->money(fn ($record) => $record->company->currency->code)
+                                    ->weight('bold')
+                                    ->size('lg')
+                                    ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
+                            ])->columns(3)
+                            ->visible(function ($record) {
+                                return $record && $record->exchange_rate_at_creation && $record->currency_id != $record->company->currency_id;
+                            }),
                     ])
                     ->columnSpanFull(),
 

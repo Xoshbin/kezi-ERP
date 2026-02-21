@@ -57,6 +57,7 @@ return [
         'exchange_rate_at_creation' => 'نرخی ئاڵوگۆڕ',
         'total_amount_company_currency' => 'کۆی گشتی (دراوی کۆمپانیا)',
         'total_tax_company_currency' => 'باج (دراوی کۆمپانیا)',
+        'subtotal' => 'کۆی لاوەکی',
         'billing_status' => 'دۆخی پسوڵە',
         // Line item fields
         'lines' => 'بەندەکان',
