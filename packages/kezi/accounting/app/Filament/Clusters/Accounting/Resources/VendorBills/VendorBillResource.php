@@ -567,6 +567,135 @@ class VendorBillResource extends Resource
         ]);
     }
 
+
+    public static function infolist(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                \Filament\Infolists\Components\TextEntry::make('shipping_warnings')
+                    ->columnSpanFull()
+                    ->hidden(fn ($record) => ! $record || ! $record->incoterm)
+                    ->state(function ($record) {
+                        if (! $record || ! $record->incoterm) {
+                            return null;
+                        }
+
+                        $result = app(\Kezi\Purchase\Services\VendorBillService::class)->validateShippingCosts($record);
+
+                        if ($result->isValid()) {
+                            return null;
+                        }
+
+                        $warnings = collect($result->warnings)
+                            ->map(fn ($warning) => '<li>'.e($warning).'</li>')
+                            ->implode('');
+
+                        return new \Illuminate\Support\HtmlString("
+                            <div class=\"p-4 bg-danger-500/10 border border-danger-500/20 rounded-lg\">
+                                <h4 class=\"text-danger-700 font-bold mb-2 flex items-center\">
+                                    <svg class=\"w-5 h-5 mr-2\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z\" clip-rule=\"evenodd\"/></svg>
+                                    Shipping Cost Responsibility Warnings
+                                </h4>
+                                <ul class=\"list-disc list-inside text-danger-600\">
+                                    {$warnings}
+                                </ul>
+                                <p class=\"mt-2 text-xs text-danger-500\">
+                                    According to Incoterm {$record->incoterm->getLabel()}, these costs are typically the responsabilidad of the seller.
+                                </p>
+                            </div>
+                        ");
+                    })
+                    ->html(),
+
+                \Filament\Schemas\Components\Section::make(__('accounting::bill.vendor_currency_info'))
+                    ->description(__('accounting::bill.vendor_currency_info_description'))
+                    ->schema([
+                        \Filament\Infolists\Components\TextEntry::make('vendor.name')
+                            ->label(__('accounting::bill.vendor')),
+                        \Filament\Infolists\Components\TextEntry::make('currency.name')
+                            ->label(__('accounting::bill.currency')),
+                        \Filament\Infolists\Components\TextEntry::make('exchange_rate_at_creation')
+                            ->label(__('accounting::bill.exchange_rate'))
+                            ->visible(fn ($record) => $record && $record->exchange_rate_at_creation && $record->currency_id != $record->company->currency_id),
+                        \Filament\Infolists\Components\TextEntry::make('reference')
+                            ->label(__('accounting::bill.reference')),
+                        \Filament\Infolists\Components\TextEntry::make('purchaseOrder.po_number')
+                            ->label(__('accounting::bill.purchase_order')),
+                        \Filament\Infolists\Components\TextEntry::make('incoterm')
+                            ->label(__('accounting::bill.incoterm'))
+                            ->state(fn ($record) => $record->incoterm?->getLabel()),
+                    ])
+                    ->columns(2),
+
+                \Filament\Schemas\Components\Section::make(__('accounting::bill.invoice_details'))
+                    ->schema([
+                        \Filament\Infolists\Components\TextEntry::make('bill_date')
+                            ->label(__('accounting::bill.bill_date'))
+                            ->date(),
+                        \Filament\Infolists\Components\TextEntry::make('accounting_date')
+                            ->label(__('accounting::bill.accounting_date'))
+                            ->date(),
+                        \Filament\Infolists\Components\TextEntry::make('due_date')
+                            ->label(__('accounting::bill.due_date'))
+                            ->date(),
+                        \Filament\Infolists\Components\TextEntry::make('paymentTerm.name')
+                            ->label(__('accounting::bill.payment_term')),
+                    ])
+                    ->columns(4),
+
+                \Filament\Schemas\Components\Section::make(__('accounting::bill.line_items'))
+                    ->description(__('accounting::bill.line_items_description'))
+                    ->schema([
+                        \Filament\Infolists\Components\RepeatableEntry::make('lines')
+                            ->label(__('accounting::bill.lines'))
+                            ->schema([
+                                \Filament\Infolists\Components\TextEntry::make('product.name')
+                                    ->label(__('accounting::bill.product')),
+                                \Filament\Infolists\Components\TextEntry::make('description')
+                                    ->label(__('accounting::bill.description')),
+                                \Filament\Infolists\Components\TextEntry::make('quantity')
+                                    ->label(__('accounting::bill.quantity')),
+                                \Filament\Infolists\Components\TextEntry::make('unit_price')
+                                    ->label(__('accounting::bill.unit_price'))
+                                    ->money(fn ($record) => $record->vendorBill->currency->code),
+                                \Filament\Infolists\Components\TextEntry::make('expenseAccount.name')
+                                    ->label(__('accounting::bill.expense_account')),
+                                \Filament\Infolists\Components\TextEntry::make('tax.name')
+                                    ->label(__('accounting::bill.tax')),
+                            ])
+                            ->columns(6),
+                    ]),
+
+                \Filament\Schemas\Components\Section::make(__('accounting::bill.attachments'))
+                    ->description(__('accounting::bill.attachments_description'))
+                    ->schema([
+                        \Filament\Infolists\Components\RepeatableEntry::make('attachments')
+                            ->label(__('accounting::bill.attachments'))
+                            ->schema([
+                                \Filament\Infolists\Components\TextEntry::make('file_name')
+                                    ->label(__('accounting::bill.file_name'))
+                                    ->url(fn ($record) => \Illuminate\Support\Facades\Storage::disk('local')->url($record->file_path))
+                                    ->openUrlInNewTab(),
+                                \Filament\Infolists\Components\TextEntry::make('formatted_file_size')
+                                    ->label(__('accounting::bill.file_size')),
+                            ])
+                            ->columns(2),
+                    ])
+                    ->collapsible()
+                    ->collapsed(fn ($record) => $record && $record->attachments()->count() === 0),
+
+                DocumentTotalsHelper::makeInfolist(
+                    translationPrefix: 'accounting::bill',
+                    subtotalKey: 'subtotal',
+                    taxKey: 'total_tax',
+                    totalKey: 'total_amount',
+                    subtotalCompanyKey: 'subtotal_company_currency',
+                    taxCompanyKey: 'total_tax_company_currency',
+                    totalCompanyKey: 'total_amount_company_currency',
+                    exchangeRateKey: 'exchange_rate_at_creation'
+                ),
+            ]);
+    }
     public static function table(Table $table): Table
     {
         return $table

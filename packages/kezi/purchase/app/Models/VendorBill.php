@@ -7,6 +7,7 @@ use Brick\Money\Money;
 use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -452,6 +453,42 @@ class VendorBill extends Model
      * Generate payment installments based on payment terms.
      * This should be called when the vendor bill is posted.
      */
+    /**
+     * Get the subtotal.
+     */
+    protected function subtotal(): Attribute
+    {
+        return Attribute::get(function () {
+            /** @phpstan-ignore-next-line */
+            if (! $this->total_amount) {
+                return null;
+            }
+
+            // Handle potential null tax by defaulting to 0 in document currency
+            $tax = $this->total_tax ?? Money::of(0, $this->total_amount->getCurrency());
+
+            return $this->total_amount->minus($tax);
+        });
+    }
+
+    /**
+     * Get the subtotal in company currency.
+     */
+    protected function subtotalCompanyCurrency(): Attribute
+    {
+        return Attribute::get(function () {
+            /** @phpstan-ignore-next-line */
+            if (! $this->total_amount_company_currency) {
+                return null;
+            }
+
+            // Handle potential null tax by defaulting to 0 in company currency
+            $tax = $this->total_tax_company_currency ?? Money::of(0, $this->total_amount_company_currency->getCurrency());
+
+            return $this->total_amount_company_currency->minus($tax);
+        });
+    }
+
     public function generatePaymentInstallments(): void
     {
         // Clear existing installments
