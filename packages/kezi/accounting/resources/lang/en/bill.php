@@ -86,6 +86,7 @@ return [
     'payment_term' => 'Payment Term',
     'date' => 'Date',
     'total' => 'Total',
+    'totals' => 'Totals',
     'reference' => 'Reference',
 
     // Notifications

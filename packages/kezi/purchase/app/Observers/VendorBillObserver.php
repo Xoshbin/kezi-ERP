@@ -90,7 +90,8 @@ class VendorBillObserver
             } else {
                 // For foreign currency, use the exchange rate to convert
                 $exchangeRate = $vendorBill->exchange_rate_at_creation ?? 1.0;
-                $unitPriceInCompanyCurrency = $line->unit_price->multipliedBy($exchangeRate, RoundingMode::HALF_UP);
+                $unitPriceInBase = $line->unit_price->getAmount()->multipliedBy($exchangeRate);
+                $unitPriceInCompanyCurrency = Money::of($unitPriceInBase, $companyCurrency->code, null, RoundingMode::HALF_UP);
             }
         }
 
@@ -100,7 +101,8 @@ class VendorBillObserver
             $taxInCompanyCurrency = $line->total_line_tax_company_currency ?? $line->total_line_tax;
             if (! $line->total_line_tax_company_currency && $vendorBill->currency_id !== $company->currency_id) {
                 $exchangeRate = $vendorBill->exchange_rate_at_creation ?? 1.0;
-                $taxInCompanyCurrency = $line->total_line_tax->multipliedBy($exchangeRate, RoundingMode::HALF_UP);
+                $taxInBase = $line->total_line_tax->getAmount()->multipliedBy($exchangeRate);
+                $taxInCompanyCurrency = Money::of($taxInBase, $companyCurrency->code, null, RoundingMode::HALF_UP);
             }
 
             // Add tax to unit price for cost calculation
