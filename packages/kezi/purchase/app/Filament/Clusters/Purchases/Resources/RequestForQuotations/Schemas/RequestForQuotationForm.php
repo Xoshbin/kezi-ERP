@@ -4,14 +4,15 @@ namespace Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotatio
 
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\Placeholder;
-use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
-use Filament\Facades\Filament;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Enums\Partners\PartnerType;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
@@ -226,7 +227,7 @@ class RequestForQuotationForm
 
                 Section::make(__('purchase::request_for_quotation.sections.totals'))
                     ->schema([
-                        Grid::make(3)
+                        Fieldset::make(__('purchase::request_for_quotation.fields.document_currency'))
                             ->schema([
                                 Placeholder::make('subtotal_display')
                                     ->label(__('purchase::request_for_quotation.fields.subtotal'))
@@ -245,7 +246,35 @@ class RequestForQuotationForm
                                     ->content(function (Get $get) {
                                         return static::calculateTotalDisplay($get, 'total');
                                     }),
-                            ]),
+                            ])
+                            ->columns(3),
+
+                        Fieldset::make(__('purchase::request_for_quotation.fields.company_currency'))
+                            ->schema([
+                                Placeholder::make('subtotal_company_currency_display')
+                                    ->label(__('purchase::request_for_quotation.fields.subtotal'))
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'subtotal', true);
+                                    }),
+
+                                Placeholder::make('tax_total_company_currency_display')
+                                    ->label(__('purchase::request_for_quotation.fields.tax_total'))
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'tax', true);
+                                    }),
+
+                                Placeholder::make('total_company_currency_display')
+                                    ->label(__('accounting::bill.total_amount_company_currency'))
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'total', true);
+                                    }),
+                            ])
+                            ->columns(3)
+                            ->visible(function (Get $get) {
+                                $company = Filament::getTenant();
+
+                                return $company && $get('currency_id') && $get('currency_id') != $company->currency_id;
+                            }),
                     ])
                     ->collapsible()
                     ->collapsed(false),
@@ -260,7 +289,7 @@ class RequestForQuotationForm
             ]);
     }
 
-    public static function calculateTotalDisplay(Get $get, string $type): string
+    public static function calculateTotalDisplay(Get $get, string $type, bool $inCompanyCurrency = false): string
     {
         /** @var array<int|string, array<string, mixed>> $linesData */
         $linesData = $get('lines') ?? [];
@@ -305,6 +334,20 @@ class RequestForQuotationForm
             'total' => (float) (string) $subtotal->plus($totalTax),
             default => 0,
         };
+
+        if ($inCompanyCurrency) {
+            $exchangeRate = (float) ($get('exchange_rate') ?? 1.0);
+            $company = Filament::getTenant();
+            $companyCurrency = $company ? Currency::find($company->currency_id) : null;
+
+            if (! $companyCurrency) {
+                return '-';
+            }
+
+            $totalInLocal = $amount * $exchangeRate;
+
+            return $companyCurrency->symbol.' '.number_format($totalInLocal, $companyCurrency->decimal_places);
+        }
 
         return $currency->symbol.' '.number_format($amount, $currency->decimal_places);
     }
