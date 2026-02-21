@@ -2,14 +2,16 @@
 
 namespace Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\Schemas;
 
-use Filament\Facades\Filament;
+use Brick\Math\BigDecimal;
+use Brick\Math\RoundingMode;
 use Filament\Forms;
 use Filament\Forms\Components\Placeholder;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Filament\Facades\Filament;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Enums\Partners\PartnerType;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
@@ -78,9 +80,70 @@ class RequestForQuotationForm
                                     ->options(fn () => Currency::all()->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
-                                    ->default(fn () => Currency::where('code', 'USD')->first()?->id)
+                                    ->default(fn () => Filament::getTenant()?->getAttribute('currency_id'))
                                     ->required()
-                                    ->live(),
+                                    ->live()
+                                    ->afterStateUpdated(function (callable $set, callable $get, $state) {
+                                        $currencyId = $state;
+                                        if (! $currencyId) {
+                                            $set('exchange_rate', 1);
+
+                                            return;
+                                        }
+
+                                        /** @var \App\Models\Company|null $company */
+                                        $company = Filament::getTenant();
+                                        if (! $company) {
+                                            /** @var \App\Models\User|null $user */
+                                            $user = Auth::user();
+                                            $company = $user?->company;
+                                        }
+
+                                        /** @var \Kezi\Foundation\Models\Currency|null $currency */
+                                        $currency = Currency::find($currencyId);
+                                        /** @var \Kezi\Foundation\Models\Currency|null $baseCurrency */
+                                        $baseCurrency = $company?->currency;
+                                        $newRate = 1.0;
+
+                                        if ($company && $currency && $baseCurrency) {
+                                            if ($currency->id === $baseCurrency->id) {
+                                                $set('exchange_rate', 1);
+                                                $newRate = 1.0;
+                                            } else {
+                                                /** @var \Kezi\Foundation\Services\CurrencyConverterService $service */
+                                                $service = app(\Kezi\Foundation\Services\CurrencyConverterService::class);
+                                                $rate = $service->getExchangeRate($currency, now(), $company) ?? $service->getLatestExchangeRate($currency, $company);
+                                                $newRate = $rate ?? 1.0;
+                                                $set('exchange_rate', $newRate);
+                                            }
+                                        }
+
+                                        // Recalculate prices for existing lines
+                                        $lines = $get('lines') ?? [];
+                                        if (! empty($lines)) {
+                                            foreach ($lines as $uuid => $line) {
+                                                if (isset($line['product_id'])) {
+                                                    $product = Product::find($line['product_id']);
+                                                    if ($product instanceof Product && $product->average_cost) {
+                                                        // Get the underlying decimal amount from the Money object or value
+                                                        $basePrice = $product->average_cost->getAmount()->toBigDecimal();
+
+                                                        if ($newRate == 1.0) {
+                                                            // Reverting to base currency: use original base price
+                                                            $lines[$uuid]['unit_price'] = (string) $basePrice;
+                                                        } else {
+                                                            // Converting to foreign currency: Base / Rate
+                                                            if ($newRate > 0) {
+                                                                $converted = BigDecimal::of($basePrice)->dividedBy($newRate, 6, RoundingMode::HALF_UP);
+                                                                $lines[$uuid]['unit_price'] = (string) $converted;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            $set('lines', $lines);
+                                        }
+                                    }),
 
                                 ExchangeRateInput::make('exchange_rate')
                                     ->label(__('purchase::request_for_quotation.fields.exchange_rate')),
@@ -204,12 +267,12 @@ class RequestForQuotationForm
             return '-';
         }
 
-        $subtotal = \Brick\Math\BigDecimal::zero();
-        $totalTax = \Brick\Math\BigDecimal::zero();
+        $subtotal = BigDecimal::zero();
+        $totalTax = BigDecimal::zero();
 
         foreach ($lines as $line) {
-            $quantity = \Brick\Math\BigDecimal::of(filled($line['quantity'] ?? null) ? $line['quantity'] : 0);
-            $unitPrice = \Brick\Math\BigDecimal::of(filled($line['unit_price'] ?? null) ? $line['unit_price'] : 0);
+            $quantity = BigDecimal::of(filled($line['quantity'] ?? null) ? $line['quantity'] : 0);
+            $unitPrice = BigDecimal::of(filled($line['unit_price'] ?? null) ? $line['unit_price'] : 0);
             $taxId = $line['tax_id'] ?? null;
 
             if ($quantity->isZero() || $unitPrice->isZero()) {
@@ -224,7 +287,7 @@ class RequestForQuotationForm
             if ($taxId) {
                 $tax = Tax::find($taxId);
                 if ($tax instanceof Tax) {
-                    $lineTax = $lineSubtotal->multipliedBy($tax->rate)->dividedBy(100, 10, \Brick\Math\RoundingMode::HALF_UP);
+                    $lineTax = $lineSubtotal->multipliedBy($tax->rate)->dividedBy(100, 10, RoundingMode::HALF_UP);
                     $totalTax = $totalTax->plus($lineTax);
                 }
             }
