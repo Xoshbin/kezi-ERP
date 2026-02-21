@@ -133,7 +133,7 @@ describe('Consolidated Exchange Rate Field', function () {
         $livewire = Livewire::test(\Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ViewVendorBill::class, ['record' => $postedBill->id]);
         // For View page, we assert the field is visible (infolist or disabled form)
         // Since ViewRecord falls back to disabled form, assertFormFieldExists should work if it renders the form
-        $livewire->assertFormFieldExists('exchange_rate_at_creation');
+        $livewire->assertSchemaComponentExists('exchange_rate_at_creation', 'infolist');
     });
 
     test('exchange rate field can be set and persists', function () {
