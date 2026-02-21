@@ -184,7 +184,7 @@ class QuoteForm
 
                 Section::make(__('sales::quote.sections.totals'))
                     ->schema([
-                        Grid::make(4)
+                        \Filament\Schemas\Components\Fieldset::make(__('sales::quote.fields.document_currency'))
                             ->schema([
                                 Placeholder::make('subtotal_display')
                                     ->label(__('sales::quote.fields.subtotal'))
@@ -209,7 +209,41 @@ class QuoteForm
                                     ->content(function (Get $get) {
                                         return static::calculateTotalDisplay($get, 'total');
                                     }),
-                            ]),
+                            ])
+                            ->columns(4),
+
+                        \Filament\Schemas\Components\Fieldset::make(__('sales::quote.fields.company_currency'))
+                            ->schema([
+                                Placeholder::make('subtotal_company_currency_display')
+                                    ->label(__('sales::quote.fields.subtotal'))
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'subtotal', true);
+                                    }),
+
+                                Placeholder::make('discount_total_company_currency_display')
+                                    ->label(__('sales::quote.fields.discount_total'))
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'discount', true);
+                                    }),
+
+                                Placeholder::make('tax_total_company_currency_display')
+                                    ->label(__('sales::quote.fields.tax_total'))
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'tax', true);
+                                    }),
+
+                                Placeholder::make('total_company_currency_display')
+                                    ->label(__('sales::quote.fields.total'))
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'total', true);
+                                    }),
+                            ])
+                            ->columns(4)
+                            ->visible(function (Get $get) {
+                                $company = Filament::getTenant();
+
+                                return $company && $get('currency_id') && $get('currency_id') != $company->currency_id;
+                            }),
                     ])
                     ->collapsible()
                     ->collapsed(false),
@@ -230,7 +264,7 @@ class QuoteForm
             ]);
     }
 
-    public static function calculateTotalDisplay(Get $get, string $type): string
+    public static function calculateTotalDisplay(Get $get, string $type, bool $inCompanyCurrency = false): string
     {
         /** @var array<int|string, array<string, mixed>> $linesData */
         $linesData = $get('lines') ?? [];
@@ -281,6 +315,20 @@ class QuoteForm
             'total' => (float) (string) $subtotal->plus($taxTotal),
             default => 0,
         };
+
+        if ($inCompanyCurrency) {
+            $exchangeRate = (float) ($get('exchange_rate') ?? 1.0);
+            $company = Filament::getTenant();
+            $companyCurrency = $company ? Currency::find($company->currency_id) : null;
+
+            if (! $companyCurrency) {
+                return '-';
+            }
+
+            $totalInLocal = $amount * $exchangeRate;
+
+            return $companyCurrency->symbol.' '.number_format($totalInLocal, $companyCurrency->decimal_places);
+        }
 
         return $currency->symbol.' '.number_format($amount, $currency->decimal_places);
     }

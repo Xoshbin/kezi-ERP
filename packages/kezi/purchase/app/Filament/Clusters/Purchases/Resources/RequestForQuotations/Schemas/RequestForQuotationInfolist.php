@@ -89,7 +89,7 @@ class RequestForQuotationInfolist
 
                 Section::make(__('purchase::request_for_quotation.sections.totals'))
                     ->schema([
-                        Grid::make(3)
+                        \Filament\Schemas\Components\Fieldset::make(__('purchase::request_for_quotation.fields.document_currency'))
                             ->schema([
                                 TextEntry::make('subtotal')
                                     ->label(__('purchase::request_for_quotation.fields.subtotal'))
@@ -104,7 +104,30 @@ class RequestForQuotationInfolist
                                     ->money(fn ($record) => $record->currency->code)
                                     ->weight('bold')
                                     ->size('lg'),
-                            ]),
+                            ])->columns(3),
+
+                        \Filament\Schemas\Components\Fieldset::make(__('purchase::request_for_quotation.fields.company_currency'))
+                            ->schema([
+                                TextEntry::make('subtotal_company_currency')
+                                    ->label(__('purchase::request_for_quotation.fields.subtotal'))
+                                    ->money(fn ($record) => $record->company->currency->code)
+                                    ->visible(fn ($record) => $record && $record->exchange_rate),
+
+                                TextEntry::make('tax_total_company_currency')
+                                    ->label(__('purchase::request_for_quotation.fields.tax_total'))
+                                    ->money(fn ($record) => $record->company->currency->code)
+                                    ->visible(fn ($record) => $record && $record->exchange_rate),
+
+                                TextEntry::make('total_company_currency')
+                                    ->label(__('purchase::request_for_quotation.fields.total'))
+                                    ->money(fn ($record) => $record->company->currency->code)
+                                    ->weight('bold')
+                                    ->size('lg')
+                                    ->visible(fn ($record) => $record && $record->exchange_rate),
+                            ])->columns(3)
+                            ->visible(function ($record) {
+                                return $record && $record->exchange_rate && $record->currency_id != $record->company->currency_id;
+                            }),
                     ])
                     ->columnSpanFull(),
 

@@ -2,10 +2,13 @@
 
 return [
     // General
+    'document_currency' => 'Document Currency',
+    'company_currency' => 'Company Currency',
     'label' => 'Invoice',
     'plural_label' => 'Invoices',
     'invoice' => 'Invoice',
     'invoices' => 'Invoices',
+    'totals' => 'Totals',
 
     // Form Fields
     'company' => 'Company',

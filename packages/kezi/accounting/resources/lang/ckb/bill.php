@@ -2,6 +2,8 @@
 
 return [
     // General
+    'document_currency' => 'دراوی بەڵگەنامە',
+    'company_currency' => 'دراوی کۆمپانیا',
     'label' => 'پسووڵەی کڕین',
     'plural_label' => 'پسووڵەکانی کڕین',
     'vendor_bill' => 'پسووڵەی کڕین',

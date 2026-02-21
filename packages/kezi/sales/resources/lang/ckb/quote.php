@@ -10,6 +10,8 @@ return [
         'plural_label' => 'تەرسیمەکان',
     ],
     'fields' => [
+        'document_currency' => 'دراوی بەڵگەنامە',
+        'company_currency' => 'دراوی کۆمپانیا',
         'quote_number' => 'ژمارەی تەرسیمە',
         'quote_date' => 'بەروار',
         'valid_until' => 'بەکارهێنانی هەتا',
