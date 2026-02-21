@@ -30,6 +30,7 @@ return [
     'unit_price' => 'نرخی یەکە',
     'tax' => 'باج',
     'income_account' => 'هەژماری داهات',
+    'subtotal' => 'سابتۆتاڵ',
     'total_amount' => 'کۆی گشتی',
     'total_tax' => 'کۆی باج',
     'reason' => 'هۆکار',

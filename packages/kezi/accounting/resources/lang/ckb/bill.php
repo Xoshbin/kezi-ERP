@@ -27,6 +27,7 @@ return [
     'tax' => 'باج',
     'expense_account' => 'هەژماری خەرجی',
     'analytic_account' => 'هەژماری شیکاری',
+    'subtotal' => 'سابتۆتاڵ',
     'total_amount' => 'کۆی گشتی',
     'total_tax' => 'کۆی باج',
     'journal_entry_id' => 'ناسنامەی تۆماری ڕۆژانە',
