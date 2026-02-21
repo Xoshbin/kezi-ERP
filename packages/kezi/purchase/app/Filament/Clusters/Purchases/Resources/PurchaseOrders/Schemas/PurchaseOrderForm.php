@@ -7,7 +7,6 @@ use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
@@ -25,6 +24,7 @@ use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Enums\Partners\PartnerType;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
+use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Product\Models\Product;
 use Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus;
@@ -464,59 +464,15 @@ class PurchaseOrderForm
                             ->columns(18),
                     ])->columnSpanFull(),
 
-                Section::make(__('purchase::purchase_orders.sections.totals'))
-                    ->schema([
-                        \Filament\Schemas\Components\Fieldset::make(__('purchase::purchase_orders.fields.document_currency'))
-                            ->schema([
-                                Placeholder::make('subtotal_display')
-                                    ->label(__('purchase::purchase_orders.line_fields.subtotal'))
-                                    ->content(function (Get $get) {
-                                        return static::calculateTotalDisplay($get, 'subtotal');
-                                    }),
-
-                                Placeholder::make('total_tax_display')
-                                    ->label(__('purchase::purchase_orders.fields.total_tax'))
-                                    ->content(function (Get $get) {
-                                        return static::calculateTotalDisplay($get, 'tax');
-                                    }),
-
-                                Placeholder::make('total_amount_display')
-                                    ->label(__('purchase::purchase_orders.fields.total_amount'))
-                                    ->content(function (Get $get) {
-                                        return static::calculateTotalDisplay($get, 'total');
-                                    }),
-                            ])
-                            ->columns(3),
-
-                        \Filament\Schemas\Components\Fieldset::make(__('purchase::purchase_orders.fields.company_currency'))
-                            ->schema([
-                                Placeholder::make('subtotal_company_currency_display')
-                                    ->label(__('purchase::purchase_orders.line_fields.subtotal'))
-                                    ->content(function (Get $get) {
-                                        return static::calculateTotalDisplay($get, 'subtotal', true);
-                                    }),
-
-                                Placeholder::make('total_tax_company_currency_display')
-                                    ->label(__('purchase::purchase_orders.fields.total_tax'))
-                                    ->content(function (Get $get) {
-                                        return static::calculateTotalDisplay($get, 'tax', true);
-                                    }),
-
-                                Placeholder::make('total_amount_company_currency_display')
-                                    ->label(__('purchase::purchase_orders.fields.total_amount'))
-                                    ->content(function (Get $get) {
-                                        return static::calculateTotalDisplay($get, 'total', true);
-                                    }),
-                            ])
-                            ->columns(3)
-                            ->visible(function (Get $get) {
-                                $company = Filament::getTenant();
-
-                                return $company && $get('currency_id') && $get('currency_id') != $company->currency_id;
-                            }),
-                    ])
-                    ->collapsible()
-                    ->collapsed(false),
+                DocumentTotalsHelper::make(
+                    linesKey: 'lines',
+                    translationPrefix: 'purchase::purchase_orders.fields',
+                    totalsLabel: __('purchase::purchase_orders.sections.totals'),
+                    subtotalLabel: __('purchase::purchase_orders.fields.subtotal'),
+                    taxLabel: __('purchase::purchase_orders.fields.total_tax'),
+                    totalLabel: __('purchase::purchase_orders.fields.total_amount'),
+                    companyCurrencyTotalLabel: __('purchase::purchase_orders.fields.total_amount_company_currency')
+                )->collapsible()->collapsed(false),
 
                 Section::make(__('purchase::purchase_orders.sections.notes'))
                     ->schema([
@@ -538,71 +494,5 @@ class PurchaseOrderForm
                     deletableCallback: fn (?PurchaseOrder $record) => $record === null || $record->status === PurchaseOrderStatus::Draft
                 ),
             ]);
-    }
-
-    /**
-     * Update the purchase order totals based on line items
-     */
-    public static function calculateTotalDisplay(Get $get, string $type, bool $inCompanyCurrency = false): string
-    {
-        /** @var array<int|string, array<string, mixed>> $linesData */
-        $linesData = $get('lines') ?? [];
-        $lines = $linesData;
-        $currencyId = $get('currency_id');
-        /** @var \Kezi\Foundation\Models\Currency|null $currency */
-        $currency = $currencyId ? Currency::where('id', $currencyId)->first() : null;
-
-        if (! $currency || count($lines) === 0) {
-            return '-';
-        }
-
-        $subtotal = \Brick\Math\BigDecimal::zero();
-        $totalTax = \Brick\Math\BigDecimal::zero();
-
-        foreach ($lines as $line) {
-            $quantity = \Brick\Math\BigDecimal::of(filled($line['quantity'] ?? null) ? $line['quantity'] : 0);
-            $unitPrice = \Brick\Math\BigDecimal::of(filled($line['unit_price'] ?? null) ? $line['unit_price'] : 0);
-            $taxId = $line['tax_id'] ?? null;
-
-            if ($quantity->isZero() || $unitPrice->isZero()) {
-                continue;
-            }
-
-            // Calculate line subtotal
-            $lineSubtotal = $quantity->multipliedBy($unitPrice);
-            $subtotal = $subtotal->plus($lineSubtotal);
-
-            // Calculate line tax
-            if ($taxId) {
-                $tax = Tax::find($taxId);
-                if ($tax instanceof Tax) {
-                    $lineTax = $lineSubtotal->multipliedBy($tax->rate)->dividedBy(100, 10, \Brick\Math\RoundingMode::HALF_UP);
-                    $totalTax = $totalTax->plus($lineTax);
-                }
-            }
-        }
-
-        $amount = match ($type) {
-            'subtotal' => (float) (string) $subtotal,
-            'tax' => (float) (string) $totalTax,
-            'total' => (float) (string) $subtotal->plus($totalTax),
-            default => 0,
-        };
-
-        if ($inCompanyCurrency) {
-            $exchangeRate = (float) ($get('exchange_rate_at_creation') ?? 1.0);
-            $company = Filament::getTenant();
-            $companyCurrency = $company ? Currency::find($company->currency_id) : null;
-
-            if (! $companyCurrency) {
-                return '-';
-            }
-
-            $totalInLocal = $amount * $exchangeRate;
-
-            return $companyCurrency->symbol.' '.number_format($totalInLocal, $companyCurrency->decimal_places);
-        }
-
-        return $currency->symbol.' '.number_format($amount, $currency->decimal_places);
     }
 }
