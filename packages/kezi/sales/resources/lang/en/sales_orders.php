@@ -10,6 +10,8 @@ return [
         'plural_label' => 'Sales Orders',
     ],
     'fields' => [
+        'document_currency' => 'Document Currency',
+        'company_currency' => 'Company Currency',
         'so_number' => 'Order Number',
         'reference' => 'Reference',
         'status' => 'Status',

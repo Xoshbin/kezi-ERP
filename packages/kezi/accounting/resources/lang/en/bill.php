@@ -2,6 +2,8 @@
 
 return [
     // General
+    'document_currency' => 'Document Currency',
+    'company_currency' => 'Company Currency',
     'label' => 'Vendor Bill',
     'plural_label' => 'Vendor Bills',
     'vendor_bill' => 'Vendor Bill',

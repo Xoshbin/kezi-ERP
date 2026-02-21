@@ -132,8 +132,7 @@ class PurchaseOrderInfolist
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                // Document Currency Totals
-                                Grid::make(1)
+                                \Filament\Schemas\Components\Fieldset::make(__('purchase::purchase_orders.fields.document_currency'))
                                     ->schema([
                                         TextEntry::make('total_tax')
                                             ->label(__('purchase::purchase_orders.fields.total_tax'))
@@ -145,10 +144,10 @@ class PurchaseOrderInfolist
                                             ->weight('bold')
                                             ->size('lg'),
                                     ])
-                                    ->columnSpan(1),
+                                    ->columns(2),
 
                                 // Company Currency Totals (Conditional)
-                                Grid::make(1)
+                                \Filament\Schemas\Components\Fieldset::make(__('purchase::purchase_orders.fields.company_currency'))
                                     ->schema([
                                         TextEntry::make('total_tax_company_currency')
                                             ->label(__('purchase::purchase_orders.fields.total_tax_company_currency'))
@@ -161,7 +160,10 @@ class PurchaseOrderInfolist
                                             ->weight('bold')
                                             ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
                                     ])
-                                    ->columnSpan(1),
+                                    ->columns(2)
+                                    ->visible(function ($record) {
+                                        return $record && $record->exchange_rate_at_creation && $record->currency_id != $record->company->currency_id;
+                                    }),
                             ]),
                     ])
                     ->columnSpanFull(),

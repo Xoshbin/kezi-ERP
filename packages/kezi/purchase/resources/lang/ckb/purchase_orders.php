@@ -30,6 +30,8 @@ return [
     ],
 
     'fields' => [
+        'document_currency' => 'دراوی بەڵگەنامە',
+        'company_currency' => 'دراوی کۆمپانیا',
         'id' => 'ناسنامە',
         'po_number' => 'ژمارەی داواکاری',
         'status' => 'دۆخ',

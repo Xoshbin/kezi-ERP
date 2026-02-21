@@ -562,56 +562,69 @@ class VendorBillResource extends Resource
 
             Section::make(__('accounting::bill.totals'))
                 ->schema([
-                    Placeholder::make('total_amount_display')
-                        ->label(__('accounting::bill.total'))
-                        ->content(function (Get $get) {
-                            $lines = collect($get('lines') ?? []);
-                            if ($lines->isEmpty()) {
-                                return '-';
-                            }
+                    \Filament\Schemas\Components\Fieldset::make(__('accounting::bill.document_currency'))
+                        ->schema([
+                            Placeholder::make('total_amount_display')
+                                ->label(__('accounting::bill.total'))
+                                ->content(function (Get $get) {
+                                    $lines = collect($get('lines') ?? []);
+                                    if ($lines->isEmpty()) {
+                                        return '-';
+                                    }
 
-                            $currencyId = $get('currency_id');
-                            $currency = $currencyId ? Currency::find($currencyId) : null;
-                            if (! $currency) {
-                                return '-';
-                            }
+                                    $currencyId = $get('currency_id');
+                                    $currency = $currencyId ? Currency::find($currencyId) : null;
+                                    if (! $currency) {
+                                        return '-';
+                                    }
 
-                            $totalAmount = $lines->reduce(function ($carry, $line) {
-                                $qty = (float) ($line['quantity'] ?? 0);
-                                $price = (float) ($line['unit_price'] ?? 0);
+                                    $totalAmount = $lines->reduce(function ($carry, $line) {
+                                        $qty = (float) ($line['quantity'] ?? 0);
+                                        $price = (float) ($line['unit_price'] ?? 0);
 
-                                return $carry + ($qty * $price);
-                            }, 0);
+                                        return $carry + ($qty * $price);
+                                    }, 0);
 
-                            return $currency->symbol.' '.number_format($totalAmount, $currency->decimal_places);
-                        }),
+                                    return $currency->symbol.' '.number_format($totalAmount, $currency->decimal_places);
+                                }),
+                        ])
+                        ->columns(1),
 
-                    Placeholder::make('total_amount_company_currency_display')
-                        ->label(__('accounting::bill.total_amount_company_currency'))
-                        ->content(function (Get $get) {
-                            $lines = collect($get('lines') ?? []);
-                            if ($lines->isEmpty()) {
-                                return '-';
-                            }
+                    \Filament\Schemas\Components\Fieldset::make(__('accounting::bill.company_currency'))
+                        ->schema([
+                            Placeholder::make('total_amount_company_currency_display')
+                                ->label(__('accounting::bill.total_amount_company_currency'))
+                                ->content(function (Get $get) {
+                                    $lines = collect($get('lines') ?? []);
+                                    if ($lines->isEmpty()) {
+                                        return '-';
+                                    }
 
-                            $exchangeRate = (float) ($get('exchange_rate_at_creation') ?? 1.0);
+                                    $exchangeRate = (float) ($get('exchange_rate_at_creation') ?? 1.0);
+                                    $company = Filament::getTenant();
+                                    $companyCurrency = $company ? Currency::find($company->currency_id) : null;
+
+                                    if (! $companyCurrency) {
+                                        return '-';
+                                    }
+
+                                    $totalAmount = $lines->reduce(function ($carry, $line) {
+                                        $qty = (float) ($line['quantity'] ?? 0);
+                                        $price = (float) ($line['unit_price'] ?? 0);
+
+                                        return $carry + ($qty * $price);
+                                    }, 0);
+
+                                    $totalInLocal = $totalAmount * $exchangeRate;
+
+                                    return $companyCurrency->symbol.' '.number_format($totalInLocal, $companyCurrency->decimal_places);
+                                }),
+                        ])
+                        ->columns(1)
+                        ->visible(function (Get $get) {
                             $company = Filament::getTenant();
-                            $companyCurrency = $company ? Currency::find($company->currency_id) : null;
 
-                            if (! $companyCurrency) {
-                                return '-';
-                            }
-
-                            $totalAmount = $lines->reduce(function ($carry, $line) {
-                                $qty = (float) ($line['quantity'] ?? 0);
-                                $price = (float) ($line['unit_price'] ?? 0);
-
-                                return $carry + ($qty * $price);
-                            }, 0);
-
-                            $totalInLocal = $totalAmount * $exchangeRate;
-
-                            return $companyCurrency->symbol.' '.number_format($totalInLocal, $companyCurrency->decimal_places);
+                            return $company && $get('currency_id') && $get('currency_id') != $company->currency_id;
                         }),
                 ])
                 ->columns(2)
