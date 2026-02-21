@@ -5,18 +5,21 @@ namespace Kezi\Sales\Filament\Clusters\Sales\Resources\Quotes\Schemas;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Kezi\Accounting\Enums\Accounting\TaxType;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
+use Kezi\Foundation\Models\Currency;
 use Kezi\Product\Models\Product;
 use Kezi\Sales\Enums\Sales\QuoteStatus;
 
@@ -110,12 +113,6 @@ class QuoteForm
                             ->live()
                             ->reorderable(true)
                             ->minItems(1)
-                            ->afterStateHydrated(function (callable $set, callable $get) {
-                                static::updateTotals($set, $get);
-                            })
-                            ->afterStateUpdated(function (callable $set, $state, callable $get) {
-                                static::updateTotals($set, $get);
-                            })
                             ->schema([
                                 Select::make('product_id')
                                     ->label(__('sales::quote.fields.product'))
@@ -134,7 +131,6 @@ class QuoteForm
                                                 $set('unit_price', (string) $basePrice);
                                             }
                                         }
-                                        static::updateTotals($set, $get);
                                     })
                                     ->columnSpan(3),
 
@@ -152,9 +148,6 @@ class QuoteForm
                                     ->minValue(0.01)
                                     ->step(0.01)
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
-                                        static::updateTotals($set, $get);
-                                    })
                                     ->columnSpan(2),
 
                                 MoneyInput::make('unit_price')
@@ -162,9 +155,6 @@ class QuoteForm
                                     ->currencyField('../../currency_id')
                                     ->required()
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
-                                        static::updateTotals($set, $get);
-                                    })
                                     ->columnSpan(3),
 
                                 TextInput::make('discount_percentage')
@@ -175,24 +165,18 @@ class QuoteForm
                                     ->maxValue(100)
                                     ->suffix('%')
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
-                                        static::updateTotals($set, $get);
-                                    })
                                     ->columnSpan(2),
 
                                 Select::make('tax_id')
                                     ->label(__('sales::quote.fields.tax'))
                                     ->options(function () {
-                                        return Tax::where('company_id', Filament::getTenant()?->id)
-                                            ->where('type', TaxType::Sales)
+                                        return Tax::where('company_id', Filament::getTenant()?->getKey())
+                                            ->where('type', TaxType::Sales->value)
                                             ->pluck('name', 'id');
                                     })
                                     ->searchable()
                                     ->preload()
                                     ->live()
-                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
-                                        static::updateTotals($set, $get);
-                                    })
                                     ->columnSpan(3),
                             ])
                             ->columns(18),
@@ -202,29 +186,29 @@ class QuoteForm
                     ->schema([
                         Grid::make(4)
                             ->schema([
-                                MoneyInput::make('subtotal')
+                                Placeholder::make('subtotal_display')
                                     ->label(__('sales::quote.fields.subtotal'))
-                                    ->currencyField('currency_id')
-                                    ->disabled()
-                                    ->dehydrated(false),
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'subtotal');
+                                    }),
 
-                                MoneyInput::make('discount_total')
+                                Placeholder::make('discount_total_display')
                                     ->label(__('sales::quote.fields.discount_total'))
-                                    ->currencyField('currency_id')
-                                    ->disabled()
-                                    ->dehydrated(false),
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'discount');
+                                    }),
 
-                                MoneyInput::make('tax_total')
+                                Placeholder::make('tax_total_display')
                                     ->label(__('sales::quote.fields.tax_total'))
-                                    ->currencyField('currency_id')
-                                    ->disabled()
-                                    ->dehydrated(false),
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'tax');
+                                    }),
 
-                                MoneyInput::make('total')
+                                Placeholder::make('total_display')
                                     ->label(__('sales::quote.fields.total'))
-                                    ->currencyField('currency_id')
-                                    ->disabled()
-                                    ->dehydrated(false),
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'total');
+                                    }),
                             ]),
                     ])
                     ->collapsible()
@@ -246,54 +230,58 @@ class QuoteForm
             ]);
     }
 
-    public static function updateTotals(callable $set, callable $get): void
+    public static function calculateTotalDisplay(Get $get, string $type): string
     {
-        $lines = $get('lines') ?? [];
+        /** @var array<int|string, array<string, mixed>> $linesData */
+        $linesData = $get('lines') ?? [];
+        $lines = $linesData;
         $currencyId = $get('currency_id');
+        /** @var \Kezi\Foundation\Models\Currency|null $currency */
+        $currency = $currencyId ? Currency::where('id', $currencyId)->first() : null;
 
-        if (! $currencyId || empty($lines)) {
-            $set('subtotal', 0);
-            $set('discount_total', 0);
-            $set('tax_total', 0);
-            $set('total', 0);
-
-            return;
+        if (! $currency || count($lines) === 0) {
+            return '-';
         }
 
-        $subtotal = 0;
-        $discountTotal = 0;
-        $taxTotal = 0;
+        $subtotal = \Brick\Math\BigDecimal::zero();
+        $discountTotal = \Brick\Math\BigDecimal::zero();
+        $taxTotal = \Brick\Math\BigDecimal::zero();
 
         foreach ($lines as $line) {
-            $quantity = (float) ($line['quantity'] ?? 0);
-            $unitPrice = (float) ($line['unit_price'] ?? 0);
-            $discountPct = (float) ($line['discount_percentage'] ?? 0);
+            $quantity = \Brick\Math\BigDecimal::of(filled($line['quantity'] ?? null) ? $line['quantity'] : 0);
+            $unitPrice = \Brick\Math\BigDecimal::of(filled($line['unit_price'] ?? null) ? $line['unit_price'] : 0);
+            $discountPct = \Brick\Math\BigDecimal::of(filled($line['discount_percentage'] ?? null) ? $line['discount_percentage'] : 0);
             $taxId = $line['tax_id'] ?? null;
 
-            if ($quantity <= 0 || $unitPrice <= 0) {
+            if ($quantity->isZero() || $unitPrice->isZero()) {
                 continue;
             }
 
-            $lineGross = $quantity * $unitPrice;
-            $lineDiscount = $lineGross * ($discountPct / 100);
-            $lineSubtotal = $lineGross - $lineDiscount;
+            $lineGross = $quantity->multipliedBy($unitPrice);
+            $lineDiscount = $lineGross->multipliedBy($discountPct)->dividedBy(100, 10, \Brick\Math\RoundingMode::HALF_UP);
+            $lineSubtotal = $lineGross->minus($lineDiscount);
 
-            $lineTax = 0;
+            $lineTax = \Brick\Math\BigDecimal::zero();
             if ($taxId) {
                 $tax = Tax::find($taxId);
-                if ($tax) {
-                    $lineTax = $lineSubtotal * ($tax->rate / 100);
+                if ($tax instanceof Tax) {
+                    $lineTax = $lineSubtotal->multipliedBy($tax->rate)->dividedBy(100, 10, \Brick\Math\RoundingMode::HALF_UP);
                 }
             }
 
-            $subtotal += $lineSubtotal;
-            $discountTotal += $lineDiscount;
-            $taxTotal += $lineTax;
+            $subtotal = $subtotal->plus($lineSubtotal);
+            $discountTotal = $discountTotal->plus($lineDiscount);
+            $taxTotal = $taxTotal->plus($lineTax);
         }
 
-        $set('subtotal', $subtotal);
-        $set('discount_total', $discountTotal);
-        $set('tax_total', $taxTotal);
-        $set('total', $subtotal + $taxTotal);
+        $amount = match ($type) {
+            'subtotal' => (float) (string) $subtotal,
+            'discount' => (float) (string) $discountTotal,
+            'tax' => (float) (string) $taxTotal,
+            'total' => (float) (string) $subtotal->plus($taxTotal),
+            default => 0,
+        };
+
+        return $currency->symbol.' '.number_format($amount, $currency->decimal_places);
     }
 }
