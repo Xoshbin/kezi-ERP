@@ -6,6 +6,7 @@ use App\Models\Company;
 use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
+use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -38,6 +39,7 @@ class ViewVendorBill extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            EditAction::make(),
             Action::make('register_payment')
                 ->label(__('accounting::bill.actions.register_payment'))
                 ->icon('heroicon-o-banknotes')
