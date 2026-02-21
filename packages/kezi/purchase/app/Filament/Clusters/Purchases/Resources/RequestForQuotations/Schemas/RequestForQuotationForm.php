@@ -93,11 +93,6 @@ class RequestForQuotationForm
 
                                         /** @var \App\Models\Company|null $company */
                                         $company = Filament::getTenant();
-                                        if (! $company) {
-                                            /** @var \App\Models\User|null $user */
-                                            $user = Auth::user();
-                                            $company = $user?->company;
-                                        }
 
                                         /** @var \Kezi\Foundation\Models\Currency|null $currency */
                                         $currency = Currency::find($currencyId);
