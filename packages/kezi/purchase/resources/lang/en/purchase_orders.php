@@ -30,6 +30,8 @@ return [
     ],
 
     'fields' => [
+        'document_currency' => 'Document Currency',
+        'company_currency' => 'Company Currency',
         'id' => 'ID',
         'po_number' => 'PO Number',
         'status' => 'Status',

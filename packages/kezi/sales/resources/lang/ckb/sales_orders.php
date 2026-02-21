@@ -10,6 +10,8 @@ return [
         'plural_label' => 'داواکارییەکانی فرۆشتن',
     ],
     'fields' => [
+        'document_currency' => 'دراوی بەڵگەنامە',
+        'company_currency' => 'دراوی کۆمپانیا',
         'so_number' => 'ژمارەی داواکاری',
         'reference' => 'سەرچاوە',
         'status' => 'دۆخ',

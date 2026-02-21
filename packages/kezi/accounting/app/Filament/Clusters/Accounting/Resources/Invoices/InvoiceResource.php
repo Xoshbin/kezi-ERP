@@ -427,65 +427,79 @@ class InvoiceResource extends Resource
                         ->columns(18),
                 ])->columnSpanFull(),
 
-            Section::make(__('accounting::invoice.company_currency_totals'))
+            Section::make(__('accounting::invoice.totals'))
                 ->schema([
-                    Placeholder::make('total_amount_display')
-                        ->label(__('accounting::invoice.total_amount'))
-                        ->content(function (Get $get) {
-                            /** @var array<int|string, array<string, mixed>> $linesData */
-                            $linesData = $get('invoiceLines') ?? [];
-                            $lines = $linesData;
-                            if (count($lines) === 0) {
-                                return '-';
-                            }
+                    \Filament\Schemas\Components\Fieldset::make(__('accounting::invoice.document_currency'))
+                        ->schema([
+                            Placeholder::make('total_amount_display')
+                                ->label(__('accounting::invoice.total_amount'))
+                                ->content(function (Get $get) {
+                                    /** @var array<int|string, array<string, mixed>> $linesData */
+                                    $linesData = $get('invoiceLines') ?? [];
+                                    $lines = $linesData;
+                                    if (count($lines) === 0) {
+                                        return '-';
+                                    }
 
-                            $currencyId = $get('currency_id');
-                            /** @var \Kezi\Foundation\Models\Currency|null $currency */
-                            $currency = $currencyId ? Currency::where('id', $currencyId)->first() : null;
-                            if (! $currency) {
-                                return '-';
-                            }
+                                    $currencyId = $get('currency_id');
+                                    /** @var \Kezi\Foundation\Models\Currency|null $currency */
+                                    $currency = $currencyId ? Currency::where('id', $currencyId)->first() : null;
+                                    if (! $currency) {
+                                        return '-';
+                                    }
 
-                            $totalAmount = 0.0;
-                            foreach ($lines as $line) {
-                                $qty = (float) ($line['quantity'] ?? 0);
-                                $price = (float) ($line['unit_price'] ?? 0);
-                                $totalAmount += ($qty * $price);
-                            }
+                                    $totalAmount = 0.0;
+                                    foreach ($lines as $line) {
+                                        $qty = (float) ($line['quantity'] ?? 0);
+                                        $price = (float) ($line['unit_price'] ?? 0);
+                                        $totalAmount += ($qty * $price);
+                                    }
 
-                            return $currency->symbol.' '.number_format($totalAmount, $currency->decimal_places);
-                        }),
+                                    return $currency->symbol.' '.number_format($totalAmount, $currency->decimal_places);
+                                }),
+                        ])
+                        ->columns(1),
 
-                    Placeholder::make('total_amount_company_currency_display')
-                        ->label(__('accounting::invoice.total_amount_company_currency'))
-                        ->content(function (Get $get) {
-                            /** @var array<int|string, array<string, mixed>> $linesData */
-                            $linesData = $get('invoiceLines') ?? [];
-                            $lines = $linesData;
-                            if (count($lines) === 0) {
-                                return '-';
-                            }
+                    \Filament\Schemas\Components\Fieldset::make(__('accounting::invoice.company_currency'))
+                        ->schema([
+                            Placeholder::make('total_amount_company_currency_display')
+                                ->label(__('accounting::invoice.total_amount_company_currency'))
+                                ->content(function (Get $get) {
+                                    /** @var array<int|string, array<string, mixed>> $linesData */
+                                    $linesData = $get('invoiceLines') ?? [];
+                                    $lines = $linesData;
+                                    if (count($lines) === 0) {
+                                        return '-';
+                                    }
 
-                            $exchangeRate = (float) ($get('exchange_rate_at_creation') ?? 1.0);
+                                    $exchangeRate = (float) ($get('exchange_rate_at_creation') ?? 1.0);
+                                    /** @var \App\Models\Company|null $company */
+                                    $company = Filament::getTenant();
+                                    /** @var \Kezi\Foundation\Models\Currency|null $companyCurrency */
+                                    $companyCurrency = $company ? Currency::where('id', $company->currency_id)->first() : null;
+
+                                    if (! $companyCurrency) {
+                                        return '-';
+                                    }
+
+                                    $totalAmount = 0.0;
+                                    foreach ($lines as $line) {
+                                        $qty = (float) ($line['quantity'] ?? 0);
+                                        $price = (float) ($line['unit_price'] ?? 0);
+                                        $totalAmount += ($qty * $price);
+                                    }
+
+                                    $totalInLocal = $totalAmount * $exchangeRate;
+
+                                    return $companyCurrency->symbol.' '.number_format($totalInLocal, $companyCurrency->decimal_places);
+                                }),
+                        ])
+                        ->columns(1)
+                        ->visible(function (Get $get) {
                             /** @var \App\Models\Company|null $company */
                             $company = Filament::getTenant();
-                            /** @var \Kezi\Foundation\Models\Currency|null $companyCurrency */
-                            $companyCurrency = $company ? Currency::where('id', $company->currency_id)->first() : null;
 
-                            if (! $companyCurrency) {
-                                return '-';
-                            }
-
-                            $totalAmount = 0.0;
-                            foreach ($lines as $line) {
-                                $qty = (float) ($line['quantity'] ?? 0);
-                                $price = (float) ($line['unit_price'] ?? 0);
-                                $totalAmount += ($qty * $price);
-                            }
-
-                            $totalInLocal = $totalAmount * $exchangeRate;
-
-                            return $companyCurrency->symbol.' '.number_format($totalInLocal, $companyCurrency->decimal_places);
+                            return $company && $get('currency_id') && $get('currency_id') != $company->currency_id;
                         }),
                 ])
                 ->columns(2)
@@ -788,7 +802,13 @@ class InvoiceResource extends Resource
                     ->action(function (Invoice $record, array $data): void {
                         $invoiceService = app(InvoiceService::class);
                         try {
-                            $invoiceService->resetToDraft($record, Auth::user(), $data['reason']);
+                            $user = Auth::user();
+
+                            if (! $user) {
+                                throw new \Exception('User must be authenticated');
+                            }
+
+                            $invoiceService->resetToDraft($record, $user, $data['reason']);
                             Notification::make()
                                 ->title(__('accounting::invoice.notification.reset_success'))
                                 ->success()

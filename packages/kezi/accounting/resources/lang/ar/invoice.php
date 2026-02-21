@@ -6,6 +6,7 @@ return [
     'plural_label' => 'فواتير',
     'invoice' => 'فاتورة',
     'invoices' => 'فواتير',
+    'totals' => 'الإجماليات',
 
     // Form Fields
     'company' => 'الشركة',

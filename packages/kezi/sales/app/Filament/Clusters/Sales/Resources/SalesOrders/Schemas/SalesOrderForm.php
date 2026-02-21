@@ -349,7 +349,7 @@ class SalesOrderForm
 
                 Section::make(__('sales::sales_orders.sections.totals'))
                     ->schema([
-                        Grid::make(2)
+                        \Filament\Schemas\Components\Fieldset::make(__('sales::sales_orders.fields.document_currency'))
                             ->schema([
                                 Placeholder::make('total_tax_display')
                                     ->label(__('sales::sales_orders.fields.total_tax'))
@@ -362,7 +362,29 @@ class SalesOrderForm
                                     ->content(function (Get $get) {
                                         return static::calculateTotalDisplay($get, 'total');
                                     }),
-                            ]),
+                            ])
+                            ->columns(2),
+
+                        \Filament\Schemas\Components\Fieldset::make(__('sales::sales_orders.fields.company_currency'))
+                            ->schema([
+                                Placeholder::make('total_tax_company_currency_display')
+                                    ->label(__('sales::sales_orders.fields.total_tax'))
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'tax', true);
+                                    }),
+
+                                Placeholder::make('total_amount_company_currency_display')
+                                    ->label(__('sales::sales_orders.fields.total_amount'))
+                                    ->content(function (Get $get) {
+                                        return static::calculateTotalDisplay($get, 'total', true);
+                                    }),
+                            ])
+                            ->columns(2)
+                            ->visible(function (Get $get) {
+                                $company = Filament::getTenant();
+
+                                return $company && $get('currency_id') && $get('currency_id') != $company->currency_id;
+                            }),
                     ])
                     ->collapsible()
                     ->collapsed(false),
@@ -383,7 +405,7 @@ class SalesOrderForm
             ]);
     }
 
-    public static function calculateTotalDisplay(Get $get, string $type): string
+    public static function calculateTotalDisplay(Get $get, string $type, bool $inCompanyCurrency = false): string
     {
         /** @var array<int|string, array<string, mixed>> $linesData */
         $linesData = $get('lines') ?? [];
@@ -396,8 +418,8 @@ class SalesOrderForm
             return '-';
         }
 
+        $subtotal = \Brick\Math\BigDecimal::zero();
         $totalTax = \Brick\Math\BigDecimal::zero();
-        $totalAmount = \Brick\Math\BigDecimal::zero();
 
         foreach ($lines as $line) {
             $quantity = \Brick\Math\BigDecimal::of(filled($line['quantity'] ?? null) ? $line['quantity'] : 0);
@@ -410,27 +432,38 @@ class SalesOrderForm
 
             // Calculate line subtotal
             $lineSubtotal = $quantity->multipliedBy($unitPrice);
+            $subtotal = $subtotal->plus($lineSubtotal);
 
             // Calculate line tax
-            $lineTax = \Brick\Math\BigDecimal::zero();
             if ($taxId) {
                 $tax = Tax::find($taxId);
                 if ($tax instanceof Tax) {
                     $lineTax = $lineSubtotal->multipliedBy($tax->rate)->dividedBy(100, 10, \Brick\Math\RoundingMode::HALF_UP);
+                    $totalTax = $totalTax->plus($lineTax);
                 }
             }
-
-            $lineTotal = $lineSubtotal->plus($lineTax);
-
-            $totalTax = $totalTax->plus($lineTax);
-            $totalAmount = $totalAmount->plus($lineTotal);
         }
 
         $amount = match ($type) {
+            'subtotal' => (float) (string) $subtotal,
             'tax' => (float) (string) $totalTax,
-            'total' => (float) (string) $totalAmount,
+            'total' => (float) (string) $subtotal->plus($totalTax),
             default => 0,
         };
+
+        if ($inCompanyCurrency) {
+            $exchangeRate = (float) ($get('exchange_rate_at_creation') ?? 1.0);
+            $company = Filament::getTenant();
+            $companyCurrency = $company ? Currency::find($company->currency_id) : null;
+
+            if (! $companyCurrency) {
+                return '-';
+            }
+
+            $totalInLocal = $amount * $exchangeRate;
+
+            return $companyCurrency->symbol.' '.number_format($totalInLocal, $companyCurrency->decimal_places);
+        }
 
         return $currency->symbol.' '.number_format($amount, $currency->decimal_places);
     }

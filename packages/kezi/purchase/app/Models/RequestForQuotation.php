@@ -188,6 +188,64 @@ class RequestForQuotation extends Model
     }
 
     // =========================================================================
+    // Accessors
+    // =========================================================================
+
+    /**
+     * Get the subtotal in company currency.
+     */
+    protected function subtotalCompanyCurrency(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::get(function () {
+            if (! $this->subtotal || ! $this->exchange_rate) {
+                return null;
+            }
+
+            $companyCurrency = $this->company->currency;
+
+            $amount = $this->subtotal->getAmount()->multipliedBy((string) $this->exchange_rate);
+
+            return Money::of($amount, $companyCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP);
+        });
+    }
+
+    /**
+     * Get the tax total in company currency.
+     */
+    protected function taxTotalCompanyCurrency(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::get(function () {
+            if (! $this->tax_total || ! $this->exchange_rate) {
+                return null;
+            }
+
+            $companyCurrency = $this->company->currency;
+
+            $amount = $this->tax_total->getAmount()->multipliedBy((string) $this->exchange_rate);
+
+            return Money::of($amount, $companyCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP);
+        });
+    }
+
+    /**
+     * Get the total in company currency.
+     */
+    protected function totalCompanyCurrency(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::get(function () {
+            if (! $this->total || ! $this->exchange_rate) {
+                return null;
+            }
+
+            $companyCurrency = $this->company->currency;
+
+            $amount = $this->total->getAmount()->multipliedBy((string) $this->exchange_rate);
+
+            return Money::of($amount, $companyCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP);
+        });
+    }
+
+    // =========================================================================
     // Business Logic Helpers
     // =========================================================================
 
