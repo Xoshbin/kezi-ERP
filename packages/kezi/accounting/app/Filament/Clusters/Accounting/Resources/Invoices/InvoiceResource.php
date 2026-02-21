@@ -13,7 +13,6 @@ use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
@@ -23,7 +22,6 @@ use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -47,6 +45,7 @@ use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
+use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Payment\Actions\Payments\CreatePaymentAction;
@@ -427,60 +426,10 @@ class InvoiceResource extends Resource
                         ->columns(18),
                 ])->columnSpanFull(),
 
-            Section::make(__('accounting::invoice.totals'))
-                ->schema([
-                    \Filament\Schemas\Components\Fieldset::make(__('accounting::invoice.document_currency'))
-                        ->schema([
-                            Placeholder::make('subtotal_display')
-                                ->label(__('accounting::invoice.subtotal'))
-                                ->content(function (Get $get) {
-                                    return static::calculateTotalDisplay($get, 'subtotal', false);
-                                }),
-                            Placeholder::make('total_tax_display')
-                                ->label(__('accounting::invoice.total_tax'))
-                                ->content(function (Get $get) {
-                                    return static::calculateTotalDisplay($get, 'tax', false);
-                                }),
-                            Placeholder::make('total_amount_display')
-                                ->label(__('accounting::invoice.total_amount'))
-                                ->content(function (Get $get) {
-                                    return static::calculateTotalDisplay($get, 'total', false);
-                                })
-                                ->weight('bold')
-                                ->size('lg'),
-                        ])
-                        ->columns(3),
-
-                    \Filament\Schemas\Components\Fieldset::make(__('accounting::invoice.company_currency'))
-                        ->schema([
-                            Placeholder::make('subtotal_company_currency_display')
-                                ->label(__('accounting::invoice.subtotal'))
-                                ->content(function (Get $get) {
-                                    return static::calculateTotalDisplay($get, 'subtotal', true);
-                                }),
-                            Placeholder::make('total_tax_company_currency_display')
-                                ->label(__('accounting::invoice.total_tax'))
-                                ->content(function (Get $get) {
-                                    return static::calculateTotalDisplay($get, 'tax', true);
-                                }),
-                            Placeholder::make('total_amount_company_currency_display')
-                                ->label(__('accounting::invoice.total_amount_company_currency'))
-                                ->content(function (Get $get) {
-                                    return static::calculateTotalDisplay($get, 'total', true);
-                                })
-                                ->weight('bold')
-                                ->size('lg'),
-                        ])
-                        ->columns(3)
-                        ->visible(function (Get $get) {
-                            /** @var \App\Models\Company|null $company */
-                            $company = Filament::getTenant();
-
-                            return $company && $get('currency_id') && $get('currency_id') != $company->currency_id;
-                        }),
-                ])
-                ->columns(2)
-                ->columnSpanFull(),
+            DocumentTotalsHelper::make(
+                linesKey: 'invoiceLines',
+                translationPrefix: 'accounting::invoice'
+            ),
 
             DocumentAttachmentsHelper::makeSection(
                 directory: 'invoices',
@@ -488,76 +437,6 @@ class InvoiceResource extends Resource
                 deletableCallback: fn (?Invoice $record) => $record === null || $record->status === InvoiceStatus::Draft
             ),
         ]);
-    }
-
-    /**
-     * Update the invoice totals based on line items
-     */
-    public static function calculateTotalDisplay(Get $get, string $type, bool $inCompanyCurrency = false): string
-    {
-        /** @var array<int|string, array<string, mixed>>|null $linesData */
-        $linesData = $get('invoiceLines');
-        $lines = is_array($linesData) ? $linesData : [];
-
-        if (count($lines) === 0) {
-            return '-';
-        }
-
-        $currencyId = $get('currency_id');
-        /* @phpstan-ignore-next-line */
-        $currency = $currencyId ? Currency::where('id', $currencyId)->first() : null;
-        if (! $currency) {
-            return '-';
-        }
-
-        $subtotal = 0.0;
-        $totalTax = 0.0;
-
-        foreach ($lines as $line) {
-            $qty = (float) ($line['quantity'] ?? 0);
-            $price = (float) ($line['unit_price'] ?? 0);
-            $taxId = $line['tax_id'] ?? null;
-
-            if ($qty == 0 || $price == 0) {
-                continue;
-            }
-
-            $lineSubtotal = $qty * $price;
-            $subtotal += $lineSubtotal;
-
-            if ($taxId && (is_string($taxId) || is_numeric($taxId))) {
-                /* @phpstan-ignore-next-line */
-                $tax = \Kezi\Accounting\Models\Tax::where('id', $taxId)->first();
-                if ($tax) {
-                    $totalTax += $lineSubtotal * ((float) $tax->rate / 100);
-                }
-            }
-        }
-
-        $amount = match ($type) {
-            'subtotal' => $subtotal,
-            'tax' => $totalTax,
-            'total' => $subtotal + $totalTax,
-            default => 0.0,
-        };
-
-        if ($inCompanyCurrency) {
-            $exchangeRate = (float) ($get('exchange_rate_at_creation') ?? 1.0);
-            /** @var \App\Models\Company|null $company */
-            $company = Filament::getTenant();
-            /* @phpstan-ignore-next-line */
-            $companyCurrency = $company ? Currency::where('id', $company->currency_id)->first() : null;
-
-            if (! $companyCurrency) {
-                return '-';
-            }
-
-            $totalInLocal = $amount * $exchangeRate;
-
-            return $companyCurrency->symbol.' '.number_format($totalInLocal, $companyCurrency->decimal_places);
-        }
-
-        return $currency->symbol.' '.number_format($amount, $currency->decimal_places);
     }
 
     /**
