@@ -76,15 +76,19 @@ class RegisterPaymentAction extends Action
                             ->value('id');
                     })
                     ->live()
-                    ->afterStateUpdated(function (Get $get, Set $set, ?int $state, Invoice|VendorBill $record) {
+                    ->afterStateUpdated(function (Get $get, Set $set, ?int $state, ?int $old, Invoice|VendorBill $record) {
                         if (! $state) {
                             return;
                         }
 
                         $journal = Journal::find($state);
                         if ($journal?->currency_id) {
+                            $oldCurrency = $get('currency_id');
                             $set('currency_id', $journal->currency_id);
-                            static::recalculateAmount($get, $set, $record, $journal->currency_id);
+
+                            if ($oldCurrency !== $journal->currency_id) {
+                                static::recalculateAmount($get, $set, $record, $journal->currency_id);
+                            }
                         }
                     }),
                 DatePicker::make('payment_date')
@@ -92,8 +96,10 @@ class RegisterPaymentAction extends Action
                     ->default(now())
                     ->required()
                     ->live()
-                    ->afterStateUpdated(function (Get $get, Set $set, Invoice|VendorBill $record) {
-                        static::recalculateAmount($get, $set, $record);
+                    ->afterStateUpdated(function (Get $get, Set $set, Invoice|VendorBill $record, ?string $old, ?string $state) {
+                        if ($old !== $state && $get('currency_id') !== $record->currency_id) {
+                            static::recalculateAmount($get, $set, $record);
+                        }
                     }),
                 Select::make('currency_id')
                     ->label(__('accounting::payment.form.currency_id'))
@@ -101,8 +107,10 @@ class RegisterPaymentAction extends Action
                     ->default(fn (Invoice|VendorBill $record) => $record->currency_id)
                     ->required()
                     ->live()
-                    ->afterStateUpdated(function (Get $get, Set $set, Invoice|VendorBill $record) {
-                        static::recalculateAmount($get, $set, $record);
+                    ->afterStateUpdated(function (Get $get, Set $set, Invoice|VendorBill $record, ?int $old, ?int $state) {
+                        if ($old !== $state) {
+                            static::recalculateAmount($get, $set, $record);
+                        }
                     }),
                 MoneyInput::make('amount')
                     ->label(__('accounting::payment.form.amount'))
