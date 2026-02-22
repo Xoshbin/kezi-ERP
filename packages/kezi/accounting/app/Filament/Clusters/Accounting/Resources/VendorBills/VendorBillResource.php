@@ -5,7 +5,6 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills;
 use App\Models\Company;
 use BackedEnum;
 use Brick\Money\Money;
-use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -22,7 +21,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -31,7 +29,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Auth;
 use Kezi\Accounting\Enums\Accounting\TaxType;
 use Kezi\Accounting\Enums\Assets\DepreciationMethod;
 use Kezi\Accounting\Filament\Clusters\Accounting\AccountingCluster;
@@ -42,7 +39,6 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\RelationM
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\PaymentsRelationManager;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\AssetCategory;
-use Kezi\Accounting\Models\Journal;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Accounting\Rules\NotInLockedPeriod;
 use Kezi\Foundation\Enums\Incoterm;
@@ -52,12 +48,7 @@ use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\CurrencyRate;
-use Kezi\Payment\Actions\Payments\CreatePaymentAction;
-use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
-use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
-use Kezi\Payment\Enums\Payments\PaymentMethod;
 use Kezi\Payment\Enums\Payments\PaymentType;
-use Kezi\Payment\Services\PaymentService;
 use Kezi\Product\Models\Product;
 use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
 use Kezi\Purchase\Models\VendorBill;
@@ -833,97 +824,10 @@ class VendorBillResource extends Resource
                             'vendor_bill_id' => $record->id,
                         ])),
                 ]),
-                Action::make('register_payment')
-                    ->label(__('accounting::bill.actions.register_payment'))
-                    ->icon('heroicon-o-banknotes')
-                    ->color('warning')
-                    ->modalHeading(__('Register Payment'))
-                    ->modalDescription(__('Register a payment for this vendor bill'))
-                    ->schema([
-                        Select::make('journal_id')
-                            ->label(__('accounting::payment.form.journal_id'))
-                            ->options(function (): array {
-                                $tenant = Filament::getTenant();
-                                if (! $tenant instanceof Company) {
-                                    return [];
-                                }
-
-                                return Journal::where('company_id', $tenant->getKey())
-                                    ->pluck('name', 'id')
-                                    ->all();
-                            })
-                            ->required()
-                            ->default(function (): ?int {
-                                $tenant = Filament::getTenant();
-                                if (! $tenant instanceof Company) {
-                                    return null;
-                                }
-
-                                return Journal::where('company_id', $tenant->getKey())
-                                    ->where('type', 'bank')
-                                    ->value('id');
-                            }),
-                        DatePicker::make('payment_date')
-                            ->label(__('accounting::payment.form.payment_date'))
-                            ->default(now())
-                            ->required(),
-                        MoneyInput::make('amount')
-                            ->label(__('accounting::payment.form.amount'))
-                            ->currencyField('currency_id')
-                            ->default(fn (VendorBill $record) => $record->getRemainingAmount())
-                            ->required(),
-                        TextInput::make('reference')
-                            ->label(__('accounting::payment.form.reference'))
-                            ->placeholder(__('Optional reference')),
-                        Hidden::make('currency_id')
-                            ->default(fn (VendorBill $record) => $record->currency_id),
-                    ])
-                    ->action(function (VendorBill $record, array $data) {
-                        try {
-                            $currency = $record->currency;
-
-                            // Create payment document link DTO
-                            $documentLink = new CreatePaymentDocumentLinkDTO(
-                                document_type: 'vendor_bill',
-                                document_id: $record->getKey(),
-                                amount_applied: Money::of($data['amount'], $currency->code)
-                            );
-
-                            // Create payment DTO
-                            $paymentDTO = new CreatePaymentDTO(
-                                company_id: $record->company_id,
-                                journal_id: $data['journal_id'],
-                                currency_id: $record->currency_id,
-                                payment_date: $data['payment_date'],
-                                // settlement inferred by presence of document links
-                                payment_type: PaymentType::Outbound,
-                                payment_method: PaymentMethod::BankTransfer,
-                                paid_to_from_partner_id: $record->vendor_id,
-                                amount: Money::of($data['amount'], $currency->code),
-                                document_links: [$documentLink],
-                                reference: $data['reference']
-                            );
-
-                            // Create and confirm payment
-                            $user = Auth::user();
-                            if (! $user) {
-                                throw new Exception('User must be authenticated to create payment');
-                            }
-                            $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
-                            app(PaymentService::class)->confirm($payment, $user);
-
-                            Notification::make()
-                                ->title(__('Payment registered successfully'))
-                                ->success()
-                                ->send();
-                        } catch (Exception $e) {
-                            Notification::make()
-                                ->title(__('Error registering payment'))
-                                ->body($e->getMessage())
-                                ->danger()
-                                ->send();
-                        }
-                    })
+                \Kezi\Accounting\Filament\Actions\RegisterPaymentAction::make()
+                    ->documentType('vendor_bill')
+                    ->paymentType(PaymentType::Outbound)
+                    ->partnerId(fn (VendorBill $record) => $record->vendor_id)
                     ->visible(
                         fn (VendorBill $record) => $record->status === VendorBillStatus::Posted &&
                         ! $record->getRemainingAmount()->isZero()
