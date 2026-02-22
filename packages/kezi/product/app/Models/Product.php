@@ -29,6 +29,7 @@ use Spatie\Translatable\HasTranslations;
 
 /**
  * @property int $id
+ * @property int|null $category_id
  * @property int $company_id
  * @property int|null $income_account_id
  * @property int|null $expense_account_id
@@ -160,6 +161,7 @@ class Product extends Model
     public array $translatable = ['name', 'description'];
 
     protected $fillable = [
+        'category_id',
         'company_id',
         'name',
         'sku',
@@ -241,6 +243,16 @@ class Product extends Model
     public function getNonTranslatableSearchFields(): array
     {
         return ['sku'];
+    }
+
+    /**
+     * Get the Category that owns the Product.
+     *
+     * @return BelongsTo<ProductCategory, static>
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(ProductCategory::class, 'category_id');
     }
 
     /**
