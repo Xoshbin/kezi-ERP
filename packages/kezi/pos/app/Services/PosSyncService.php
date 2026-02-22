@@ -14,7 +14,10 @@ use Kezi\Product\Models\ProductCategory;
 
 class PosSyncService
 {
-    public function getMasterData(User $user, ?Carbon $since = null, ?int $companyId = null): array
+    /**
+     * @return array<string, mixed>
+     */
+    public function getMasterData(User $user, ?Carbon $since = null, ?int $companyId = null, int $page = 1, int $limit = 500): array
     {
         $companyId = $companyId ?? (int) $user->companies()->value('companies.id') ?: null;
 
@@ -25,47 +28,58 @@ class PosSyncService
         $applySince = fn (Builder $query) => $since ? $query->where('updated_at', '>=', $since) : $query;
         $byCompany = fn (Builder $query) => $query->where('company_id', $companyId);
 
-        // Products: Company scoped
-        $products = Product::query()
+        // Products: Company scoped, Paginated
+        $productsPaginator = Product::query()
             ->tap($byCompany)
             ->where('is_active', true)
             ->tap($applySince)
             ->with(['company.currency', 'purchaseTaxes']) // Eager load helpful relations
-            ->get();
+            ->simplePaginate($limit, ['*'], 'page', $page);
 
-        // Categories: Global (no company_id check)
-        $categories = ProductCategory::query()
-            ->tap($applySince)
-            ->get();
+        $products = $productsPaginator->items();
 
-        // Taxes: Company scoped (Sales type)
-        $taxes = Tax::query()
-            ->tap($byCompany)
-            ->where('is_active', true)
-            ->whereIn('type', [\Kezi\Accounting\Enums\Accounting\TaxType::Sales, \Kezi\Accounting\Enums\Accounting\TaxType::Both])
-            ->tap($applySince)
-            ->get();
-
-        // Customers: Partners (Assuming global or scoped? Check Partner model later. Defaulting to all active customers)
-        // Usually Partners are shared.
-        $customers = Partner::query()
+        // Customers: Paginated
+        $customersPaginator = Partner::query()
             ->tap($byCompany) // Partner model has company_id
             ->tap($applySince)
-            ->limit(1000) // Safety limit for POS sync
-            ->get();
+            ->simplePaginate($limit, ['*'], 'page', $page);
 
-        // POS Profiles: Company scoped
-        $profiles = PosProfile::query()
-            ->tap($byCompany)
-            ->where('is_active', true)
-            ->tap($applySince)
-            ->get();
+        $customers = $customersPaginator->items();
 
-        // Currencies
-        $currencies = Currency::query()
-            ->where('is_active', true)
-            ->tap($applySince)
-            ->get();
+        $hasMore = $productsPaginator->hasMorePages() || $customersPaginator->hasMorePages();
+
+        $categories = [];
+        $taxes = [];
+        $profiles = [];
+        $currencies = [];
+
+        if ($page === 1) {
+            // Categories: Global (no company_id check)
+            $categories = ProductCategory::query()
+                ->tap($applySince)
+                ->get();
+
+            // Taxes: Company scoped (Sales type)
+            $taxes = Tax::query()
+                ->tap($byCompany)
+                ->where('is_active', true)
+                ->whereIn('type', [\Kezi\Accounting\Enums\Accounting\TaxType::Sales, \Kezi\Accounting\Enums\Accounting\TaxType::Both])
+                ->tap($applySince)
+                ->get();
+
+            // POS Profiles: Company scoped
+            $profiles = PosProfile::query()
+                ->tap($byCompany)
+                ->where('is_active', true)
+                ->tap($applySince)
+                ->get();
+
+            // Currencies
+            $currencies = Currency::query()
+                ->where('is_active', true)
+                ->tap($applySince)
+                ->get();
+        }
 
         $company = \App\Models\Company::find($companyId);
         // Explicitly load currency if not loaded (though find usually doesn't load relations unless with)
@@ -74,6 +88,6 @@ class PosSyncService
 
         $company_currency = $company?->currency;
 
-        return compact('products', 'categories', 'taxes', 'customers', 'profiles', 'currencies', 'company_currency');
+        return compact('products', 'categories', 'taxes', 'customers', 'profiles', 'currencies', 'company_currency', 'hasMore');
     }
 }
