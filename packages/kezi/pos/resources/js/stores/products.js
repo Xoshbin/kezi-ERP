@@ -67,13 +67,13 @@ export const useProductsStore = defineStore('products', {
             }
         },
         
-        async syncAndReload() {
+        async syncAndReload(onProgress = null) {
             const connectivity = useConnectivityStore();
             this.loading = true;
             
             try {
                 if (connectivity.isOnline) {
-                    await syncMasterData();
+                    await syncMasterData(onProgress);
                 }
             } catch (error) {
                 console.error('Sync failed, falling back to local data:', error);

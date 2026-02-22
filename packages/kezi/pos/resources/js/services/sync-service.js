@@ -10,25 +10,20 @@ const api = axios.create({
     }
 });
 
-export const syncMasterData = async () => {
+export const syncMasterData = async (onProgress = null) => {
     try {
         const settings = await db.settings.get('last_master_sync');
         const since = settings ? settings.value : null;
         
-        const response = await api.get('/sync/master-data', { params: { since } });
-        const data = response.data; // { products: [], categories: [], ... }
+        let page = 1;
+        const limit = 500;
+        let hasMore = true;
+        let lastTimestamp = null;
+        let totalItemsSynced = 0;
 
-        // Needs to map Resource fields to DB schema if different?
-        // Assuming Backend Resource returns fields matching DB schema expectations
-        // or we handle mapping here.
-        // DB schema: products: '++id, name, sku, category_id'
-        // Resource: id, name, sku, unit_price, ...
-        // Dexie ignores extra fields in object unless defined in store? 
-        // No, Dexie stores the object. The schema defines indices.
-        
-        await db.transaction('rw', db.products, db.categories, db.customers, db.taxes, db.profiles, db.settings, async () => {
-            // If this is a full sync (no since timestamp), clear current tables to remove stale data
-            if (!since) {
+        // If this is a full sync (no since timestamp), clear current tables to remove stale data
+        if (!since) {
+            await db.transaction('rw', db.products, db.categories, db.customers, db.taxes, db.profiles, async () => {
                 await Promise.all([
                     db.products.clear(),
                     db.categories.clear(),
@@ -36,22 +31,51 @@ export const syncMasterData = async () => {
                     db.taxes.clear(),
                     db.profiles.clear()
                 ]);
-            }
+            });
+        }
 
-            if (data.products && data.products.length) await db.products.bulkPut(data.products);
-            if (data.categories && data.categories.length) await db.categories.bulkPut(data.categories);
-            if (data.customers && data.customers.length) await db.customers.bulkPut(data.customers);
-            if (data.taxes && data.taxes.length) await db.taxes.bulkPut(data.taxes);
-            if (data.profiles && data.profiles.length) await db.profiles.bulkPut(data.profiles);
+        while (hasMore) {
+            const response = await api.get('/sync/master-data', { params: { since, page, limit } });
+            const data = response.data; // { products: [], categories: [], ... }
             
-            if (data.company_currency) {
-                await db.settings.put({ key: 'company_currency', value: data.company_currency });
-            }
+            await db.transaction('rw', db.products, db.categories, db.customers, db.taxes, db.profiles, db.settings, async () => {
+                if (data.products && data.products.length) {
+                    await db.products.bulkPut(data.products);
+                    totalItemsSynced += data.products.length;
+                }
+                if (data.categories && data.categories.length) await db.categories.bulkPut(data.categories);
+                if (data.customers && data.customers.length) {
+                    await db.customers.bulkPut(data.customers);
+                    totalItemsSynced += data.customers.length;
+                }
+                if (data.taxes && data.taxes.length) await db.taxes.bulkPut(data.taxes);
+                if (data.profiles && data.profiles.length) await db.profiles.bulkPut(data.profiles);
+                
+                if (data.company_currency) {
+                    await db.settings.put({ key: 'company_currency', value: data.company_currency });
+                }
 
-            await db.settings.put({ key: 'last_master_sync', value: data.timestamp });
-        });
+                if (data.timestamp) {
+                    lastTimestamp = data.timestamp;
+                }
+            });
+            
+            hasMore = data.has_more;
+            
+            if (onProgress) {
+                onProgress({ page, limit, hasMore, totalItemsSynced });
+            }
+            
+            page++;
+        }
+
+        if (lastTimestamp) {
+            await db.transaction('rw', db.settings, async () => {
+                await db.settings.put({ key: 'last_master_sync', value: lastTimestamp });
+            });
+        }
         
-        return data;
+        return { success: true };
     } catch (error) {
         console.error('Master Data Sync Failed:', error);
         throw error;
