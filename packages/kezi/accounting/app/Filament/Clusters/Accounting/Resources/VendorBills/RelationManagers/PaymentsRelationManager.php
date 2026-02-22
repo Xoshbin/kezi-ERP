@@ -3,7 +3,6 @@
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers;
 
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
 use Filament\Actions\DetachAction;
 use Filament\Actions\DetachBulkAction;
 use Filament\Actions\EditAction;
@@ -240,14 +239,17 @@ class PaymentsRelationManager extends RelationManager
                     ),
             ])
             ->headerActions([
-                CreateAction::make()
+                \Kezi\Accounting\Filament\Actions\RegisterPaymentAction::make()
                     ->label(__('accounting::bill.payments_relation_manager.create_payment'))
-                    ->mutateDataUsing(function (array $data): array {
-                        $owner = $this->getOwnerRecord();
-                        $data['paid_to_from_partner_id'] = $owner instanceof VendorBill ? $owner->vendor_id : null;
-
-                        return $data;
-                    }),
+                    ->modalHeading(__('accounting::bill.payments_relation_manager.create_payment'))
+                    ->modalDescription(__('accounting::bill.register_payment.description'))
+                    ->documentType('vendor_bill')
+                    ->paymentType(PaymentType::Outbound)
+                    ->partnerId(fn (VendorBill $record) => $record->vendor_id)
+                    ->visible(
+                        fn (VendorBill $ownerRecord) => $ownerRecord->status === \Kezi\Purchase\Enums\Purchases\VendorBillStatus::Posted &&
+                        ! $ownerRecord->getRemainingAmount()->isZero()
+                    ),
             ])
             ->actions([
                 ViewAction::make(),
