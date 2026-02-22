@@ -186,8 +186,9 @@
                     </div>
 
                     <!-- Grid -->
-                    <div v-if="productsStore.loading" class="flex justify-center py-20">
-                        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
+                    <div v-if="productsStore.loading || syncProgress" class="flex flex-col items-center justify-center py-20">
+                        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600 mb-4"></div>
+                        <p v-if="syncProgress" class="text-sm font-semibold text-gray-500">{{ syncProgress }}</p>
                     </div>
                     
                     <div v-else-if="productsStore.filteredProducts.length === 0" class="text-center py-20 text-gray-500">
@@ -394,6 +395,7 @@ const currentCurrency = ref('USD');
 const showPaymentModal = ref(false);
 const showCloseSessionModal = ref(false);
 const orderSuccess = ref(null);
+const syncProgress = ref('');
 
 const discountModal = ref({ visible: false, item: null });
 const showOrderDiscountInput = ref(false);
@@ -496,10 +498,14 @@ onMounted(async () => {
         if (connectivity.isOnline) {
              // 1. Sync master data (profiles, settings, products, etc.)
              try {
-                 await syncMasterData();
+                 await syncMasterData((progress) => {
+                     syncProgress.value = `Downloading Catalog: ${progress.totalItemsSynced} items...`;
+                 });
              } catch (syncError) {
                  console.error('Master data sync failed', syncError);
                  sessionStore.error = 'Failed to sync terminal data. Using local cache if available.';
+             } finally {
+                 syncProgress.value = '';
              }
 
              // 2. Check session status
@@ -581,7 +587,10 @@ const clearOrderDiscount = () => {
 
 // Alias for refresh button
 const loadProducts = async () => {
-    await productsStore.syncAndReload();
+    await productsStore.syncAndReload((progress) => {
+        syncProgress.value = `Downloading Catalog: ${progress.totalItemsSynced} items...`;
+    });
+    syncProgress.value = '';
 };
 
 const filterCategory = (id) => {
