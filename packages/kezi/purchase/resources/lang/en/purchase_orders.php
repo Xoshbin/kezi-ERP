@@ -30,6 +30,8 @@ return [
     ],
 
     'fields' => [
+        'document_currency' => 'Document Currency',
+        'company_currency' => 'Company Currency',
         'id' => 'ID',
         'po_number' => 'PO Number',
         'status' => 'Status',
@@ -55,6 +57,7 @@ return [
         'exchange_rate_at_creation' => 'Exchange Rate',
         'total_amount_company_currency' => 'Total (Company Currency)',
         'total_tax_company_currency' => 'Tax (Company Currency)',
+        'subtotal' => 'Subtotal',
         'billing_status' => 'Billing Status',
         // Line item fields
         'lines' => 'Line Items',

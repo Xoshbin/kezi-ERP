@@ -2,10 +2,13 @@
 
 return [
     // General
+    'document_currency' => 'Document Currency',
+    'company_currency' => 'Company Currency',
     'label' => 'Invoice',
     'plural_label' => 'Invoices',
     'invoice' => 'Invoice',
     'invoices' => 'Invoices',
+    'totals' => 'Totals',
 
     // Form Fields
     'company' => 'Company',
@@ -26,6 +29,7 @@ return [
     'unit_price' => 'Unit Price',
     'tax' => 'Tax',
     'income_account' => 'Income Account',
+    'subtotal' => 'Subtotal',
     'total_amount' => 'Total Amount',
     'total_tax' => 'Total Tax',
     'reason' => 'Reason',

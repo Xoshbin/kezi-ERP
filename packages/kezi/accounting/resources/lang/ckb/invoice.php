@@ -2,10 +2,13 @@
 
 return [
     // General
+    'document_currency' => 'دراوی بەڵگەنامە',
+    'company_currency' => 'دراوی کۆمپانیا',
     'label' => 'پسووڵەی فرۆشتن',
     'plural_label' => 'پسووڵەکانی فرۆشتن',
     'invoice' => 'پسووڵەی فرۆشتن',
     'invoices' => 'پسووڵەکانی فرۆشتن',
+    'totals' => 'کۆی گشتی',
     'invoice_details' => 'وردەکاریی پسووڵەی فرۆشتن',
 
     // Form Fields
@@ -27,6 +30,7 @@ return [
     'unit_price' => 'نرخی یەکە',
     'tax' => 'باج',
     'income_account' => 'هەژماری داهات',
+    'subtotal' => 'سابتۆتاڵ',
     'total_amount' => 'کۆی گشتی',
     'total_tax' => 'کۆی باج',
     'reason' => 'هۆکار',

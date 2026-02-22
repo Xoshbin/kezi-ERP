@@ -6,14 +6,12 @@ use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Kezi\Accounting\Enums\Accounting\TaxType;
@@ -21,6 +19,7 @@ use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
+use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Product\Models\Product;
 use Kezi\Sales\Enums\Sales\SalesOrderStatus;
@@ -347,25 +346,15 @@ class SalesOrderForm
                             ->columns(18),
                     ])->columnSpanFull(),
 
-                Section::make(__('sales::sales_orders.sections.totals'))
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                Placeholder::make('total_tax_display')
-                                    ->label(__('sales::sales_orders.fields.total_tax'))
-                                    ->content(function (Get $get) {
-                                        return static::calculateTotalDisplay($get, 'tax');
-                                    }),
-
-                                Placeholder::make('total_amount_display')
-                                    ->label(__('sales::sales_orders.fields.total_amount'))
-                                    ->content(function (Get $get) {
-                                        return static::calculateTotalDisplay($get, 'total');
-                                    }),
-                            ]),
-                    ])
-                    ->collapsible()
-                    ->collapsed(false),
+                DocumentTotalsHelper::make(
+                    linesKey: 'lines',
+                    translationPrefix: 'sales::sales_orders.fields',
+                    totalsLabel: __('sales::sales_orders.sections.totals'),
+                    taxLabel: __('sales::sales_orders.fields.total_tax'),
+                    totalLabel: __('sales::sales_orders.fields.total_amount'),
+                    companyCurrencyTotalLabel: __('accounting::bill.total_amount_company_currency'),
+                    exchangeRateKey: 'exchange_rate_at_creation'
+                )->collapsible()->collapsed(false),
 
                 Section::make(__('sales::sales_orders.sections.notes'))
                     ->schema([
@@ -381,57 +370,5 @@ class SalesOrderForm
                     ])
                     ->collapsible(),
             ]);
-    }
-
-    public static function calculateTotalDisplay(Get $get, string $type): string
-    {
-        /** @var array<int|string, array<string, mixed>> $linesData */
-        $linesData = $get('lines') ?? [];
-        $lines = $linesData;
-        $currencyId = $get('currency_id');
-        /** @var \Kezi\Foundation\Models\Currency|null $currency */
-        $currency = $currencyId ? Currency::where('id', $currencyId)->first() : null;
-
-        if (! $currency || count($lines) === 0) {
-            return '-';
-        }
-
-        $totalTax = \Brick\Math\BigDecimal::zero();
-        $totalAmount = \Brick\Math\BigDecimal::zero();
-
-        foreach ($lines as $line) {
-            $quantity = \Brick\Math\BigDecimal::of(filled($line['quantity'] ?? null) ? $line['quantity'] : 0);
-            $unitPrice = \Brick\Math\BigDecimal::of(filled($line['unit_price'] ?? null) ? $line['unit_price'] : 0);
-            $taxId = $line['tax_id'] ?? null;
-
-            if ($quantity->isZero() || $unitPrice->isZero()) {
-                continue;
-            }
-
-            // Calculate line subtotal
-            $lineSubtotal = $quantity->multipliedBy($unitPrice);
-
-            // Calculate line tax
-            $lineTax = \Brick\Math\BigDecimal::zero();
-            if ($taxId) {
-                $tax = Tax::find($taxId);
-                if ($tax instanceof Tax) {
-                    $lineTax = $lineSubtotal->multipliedBy($tax->rate)->dividedBy(100, 10, \Brick\Math\RoundingMode::HALF_UP);
-                }
-            }
-
-            $lineTotal = $lineSubtotal->plus($lineTax);
-
-            $totalTax = $totalTax->plus($lineTax);
-            $totalAmount = $totalAmount->plus($lineTotal);
-        }
-
-        $amount = match ($type) {
-            'tax' => (float) (string) $totalTax,
-            'total' => (float) (string) $totalAmount,
-            default => 0,
-        };
-
-        return $currency->symbol.' '.number_format($amount, $currency->decimal_places);
     }
 }

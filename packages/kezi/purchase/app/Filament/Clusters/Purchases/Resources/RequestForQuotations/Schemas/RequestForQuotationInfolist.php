@@ -7,6 +7,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 
 class RequestForQuotationInfolist
 {
@@ -87,26 +88,21 @@ class RequestForQuotationInfolist
                     ])
                     ->columnSpanFull(),
 
-                Section::make(__('purchase::request_for_quotation.sections.totals'))
-                    ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                TextEntry::make('subtotal')
-                                    ->label(__('purchase::request_for_quotation.fields.subtotal'))
-                                    ->money(fn ($record) => $record->currency->code),
-
-                                TextEntry::make('tax_total')
-                                    ->label(__('purchase::request_for_quotation.fields.tax_total'))
-                                    ->money(fn ($record) => $record->currency->code),
-
-                                TextEntry::make('total')
-                                    ->label(__('purchase::request_for_quotation.fields.total'))
-                                    ->money(fn ($record) => $record->currency->code)
-                                    ->weight('bold')
-                                    ->size('lg'),
-                            ]),
-                    ])
-                    ->columnSpanFull(),
+                DocumentTotalsHelper::makeInfolist(
+                    translationPrefix: 'purchase::request_for_quotation.fields',
+                    totalsLabel: __('purchase::request_for_quotation.sections.totals'),
+                    subtotalLabel: __('purchase::request_for_quotation.fields.subtotal'),
+                    taxLabel: __('purchase::request_for_quotation.fields.tax_total'),
+                    totalLabel: __('purchase::request_for_quotation.fields.total'),
+                    companyCurrencyTotalLabel: __('purchase::request_for_quotation.fields.total'),
+                    subtotalKey: 'subtotal',
+                    taxKey: 'tax_total',
+                    totalKey: 'total',
+                    subtotalCompanyKey: 'subtotal_company_currency',
+                    taxCompanyKey: 'tax_total_company_currency',
+                    totalCompanyKey: 'total_company_currency',
+                    exchangeRateKey: 'exchange_rate'
+                ),
 
                 Section::make(__('purchase::request_for_quotation.sections.notes'))
                     ->schema([

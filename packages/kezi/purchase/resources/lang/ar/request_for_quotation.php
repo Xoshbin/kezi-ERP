@@ -16,6 +16,7 @@ return [
         'subtotal' => 'المجموع الفرعي',
         'tax_total' => 'إجمالي الضريبة',
         'total' => 'الإجمالي',
+        'total_company_currency' => 'الإجمالي (بعملة الشركة)',
         'date' => 'التاريخ',
     ],
     'sections' => [
