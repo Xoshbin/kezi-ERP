@@ -242,10 +242,11 @@ class PaymentsRelationManager extends RelationManager
                     ->modalDescription(__('accounting::bill.register_payment.description'))
                     ->documentType('invoice')
                     ->paymentType(PaymentType::Inbound)
-                    ->partnerId(fn (Invoice $record) => $record->customer_id)
+                    ->partnerId(fn (?Invoice $record) => $record?->customer_id)
                     ->visible(
-                        fn (Invoice $ownerRecord) => $ownerRecord->status === \Kezi\Sales\Enums\Sales\InvoiceStatus::Posted &&
-                        ! $ownerRecord->getRemainingAmount()->isZero()
+                        fn (?Invoice $record) => $record &&
+                        $record->status === \Kezi\Sales\Enums\Sales\InvoiceStatus::Posted &&
+                        ! $record->getRemainingAmount()->isZero()
                     ),
             ])
             ->actions([
