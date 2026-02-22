@@ -4,18 +4,18 @@ namespace Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotatio
 
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
+use Filament\Facades\Filament;
 use Filament\Forms;
-use Filament\Forms\Components\Placeholder;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
-use Filament\Facades\Filament;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Enums\Partners\PartnerType;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
+use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\Partner;
 use Kezi\Product\Models\Product;
@@ -224,31 +224,16 @@ class RequestForQuotationForm
                             ->defaultItems(1),
                     ])->columnSpanFull(),
 
-                Section::make(__('purchase::request_for_quotation.sections.totals'))
-                    ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                Placeholder::make('subtotal_display')
-                                    ->label(__('purchase::request_for_quotation.fields.subtotal'))
-                                    ->content(function (Get $get) {
-                                        return static::calculateTotalDisplay($get, 'subtotal');
-                                    }),
-
-                                Placeholder::make('tax_total_display')
-                                    ->label(__('purchase::request_for_quotation.fields.tax_total'))
-                                    ->content(function (Get $get) {
-                                        return static::calculateTotalDisplay($get, 'tax');
-                                    }),
-
-                                Placeholder::make('total_display')
-                                    ->label(__('purchase::request_for_quotation.fields.total'))
-                                    ->content(function (Get $get) {
-                                        return static::calculateTotalDisplay($get, 'total');
-                                    }),
-                            ]),
-                    ])
-                    ->collapsible()
-                    ->collapsed(false),
+                DocumentTotalsHelper::make(
+                    linesKey: 'lines',
+                    translationPrefix: 'purchase::request_for_quotation.fields',
+                    totalsLabel: __('purchase::request_for_quotation.sections.totals'),
+                    subtotalLabel: __('purchase::request_for_quotation.fields.subtotal'),
+                    taxLabel: __('purchase::request_for_quotation.fields.tax_total'),
+                    totalLabel: __('purchase::request_for_quotation.fields.total'),
+                    companyCurrencyTotalLabel: __('accounting::bill.total_amount_company_currency'),
+                    exchangeRateKey: 'exchange_rate'
+                )->collapsible()->collapsed(false),
 
                 Section::make(__('purchase::request_for_quotation.sections.notes'))
                     ->schema([
@@ -258,54 +243,5 @@ class RequestForQuotationForm
                             ->columnSpanFull(),
                     ]),
             ]);
-    }
-
-    public static function calculateTotalDisplay(Get $get, string $type): string
-    {
-        /** @var array<int|string, array<string, mixed>> $linesData */
-        $linesData = $get('lines') ?? [];
-        $lines = $linesData;
-        $currencyId = $get('currency_id');
-        /** @var \Kezi\Foundation\Models\Currency|null $currency */
-        $currency = $currencyId ? Currency::where('id', $currencyId)->first() : null;
-
-        if (! $currency || count($lines) === 0) {
-            return '-';
-        }
-
-        $subtotal = BigDecimal::zero();
-        $totalTax = BigDecimal::zero();
-
-        foreach ($lines as $line) {
-            $quantity = BigDecimal::of(filled($line['quantity'] ?? null) ? $line['quantity'] : 0);
-            $unitPrice = BigDecimal::of(filled($line['unit_price'] ?? null) ? $line['unit_price'] : 0);
-            $taxId = $line['tax_id'] ?? null;
-
-            if ($quantity->isZero() || $unitPrice->isZero()) {
-                continue;
-            }
-
-            // Calculate line subtotal
-            $lineSubtotal = $quantity->multipliedBy($unitPrice);
-            $subtotal = $subtotal->plus($lineSubtotal);
-
-            // Calculate line tax
-            if ($taxId) {
-                $tax = Tax::find($taxId);
-                if ($tax instanceof Tax) {
-                    $lineTax = $lineSubtotal->multipliedBy($tax->rate)->dividedBy(100, 10, RoundingMode::HALF_UP);
-                    $totalTax = $totalTax->plus($lineTax);
-                }
-            }
-        }
-
-        $amount = match ($type) {
-            'subtotal' => (float) (string) $subtotal,
-            'tax' => (float) (string) $totalTax,
-            'total' => (float) (string) $subtotal->plus($totalTax),
-            default => 0,
-        };
-
-        return $currency->symbol.' '.number_format($amount, $currency->decimal_places);
     }
 }

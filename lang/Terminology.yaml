@@ -1445,6 +1445,16 @@ categories:
         ar: "حساب الدائنين"
         ckb: "هەژماری پێدان"
         notes: "Account for amounts we owe"
+      totals:
+        en: "Totals"
+        ar: "المجموعات"
+        ckb: "کۆی گشتی"
+        notes: "Total amount"
+      total:
+        en: "Total"
+        ar: "المجموعات"
+        ckb: "کۆی گشتی"
+        notes: "Total amount"
 
 # Usage Guidelines
 usage_guidelines:

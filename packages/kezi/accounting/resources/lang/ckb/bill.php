@@ -2,6 +2,8 @@
 
 return [
     // General
+    'document_currency' => 'دراوی بەڵگەنامە',
+    'company_currency' => 'دراوی کۆمپانیا',
     'label' => 'پسووڵەی کڕین',
     'plural_label' => 'پسووڵەکانی کڕین',
     'vendor_bill' => 'پسووڵەی کڕین',
@@ -25,6 +27,7 @@ return [
     'tax' => 'باج',
     'expense_account' => 'هەژماری خەرجی',
     'analytic_account' => 'هەژماری شیکاری',
+    'subtotal' => 'سابتۆتاڵ',
     'total_amount' => 'کۆی گشتی',
     'total_tax' => 'کۆی باج',
     'journal_entry_id' => 'ناسنامەی تۆماری ڕۆژانە',

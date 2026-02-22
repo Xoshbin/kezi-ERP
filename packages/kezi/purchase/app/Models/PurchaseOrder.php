@@ -46,6 +46,8 @@ use Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus;
  * @property Money|null $total_tax_company_currency
  * @property string|null $notes
  * @property string|null $terms_and_conditions
+ * @property-read Money|null $subtotal
+ * @property-read Money|null $subtotal_company_currency
  * @property int|null $delivery_location_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -409,6 +411,78 @@ class PurchaseOrder extends Model
             $this->status = PurchaseOrderStatus::Done;
             $this->save();
         }
+    }
+
+    /**
+     * Get the subtotal.
+     */
+    protected function subtotal(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::get(function () {
+            /** @phpstan-ignore-next-line */
+            if (! $this->total_amount || ! $this->total_tax) {
+                return null;
+            }
+
+            return $this->total_amount->minus($this->total_tax);
+        });
+    }
+
+    /**
+     * Get the subtotal in company currency.
+     */
+    protected function subtotalCompanyCurrency(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::get(function () {
+            /** @phpstan-ignore-next-line */
+            if (! $this->subtotal || ! $this->exchange_rate_at_creation) {
+                return null;
+            }
+
+            $companyCurrency = $this->company->currency;
+
+            $amount = $this->subtotal->getAmount()->multipliedBy((string) $this->exchange_rate_at_creation);
+
+            return Money::of($amount, $companyCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP);
+        });
+    }
+
+    /**
+     * Get the total tax in company currency.
+     */
+    protected function totalTaxCompanyCurrency(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::get(function () {
+            /** @phpstan-ignore-next-line */
+            if (! $this->total_tax || ! $this->exchange_rate_at_creation) {
+                return null;
+            }
+
+            $companyCurrency = $this->company->currency;
+
+            $amount = $this->total_tax->getAmount()->multipliedBy((string) $this->exchange_rate_at_creation);
+
+            return Money::of($amount, $companyCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP);
+        });
+    }
+
+    /**
+     * Get the total amount in company currency.
+     */
+    protected function totalAmountCompanyCurrency(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::get(function () {
+            /** @phpstan-ignore-next-line */
+            if (! $this->total_amount || ! $this->exchange_rate_at_creation) {
+                return null;
+            }
+
+            $companyCurrency = $this->company->currency;
+
+            $amount = $this->total_amount->getAmount()->multipliedBy((string) $this->exchange_rate_at_creation);
+
+            return Money::of($amount, $companyCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP);
+        });
     }
 
     protected static function newFactory(): \Kezi\Purchase\Database\Factories\PurchaseOrderFactory
