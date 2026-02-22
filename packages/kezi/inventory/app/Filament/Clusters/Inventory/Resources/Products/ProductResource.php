@@ -116,6 +116,11 @@ class ProductResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->unique(Product::class, 'sku', ignoreRecord: true),
+                        Select::make('category_id')
+                            ->relationship('category', 'name')
+                            ->label(__('product.category'))
+                            ->searchable()
+                            ->preload(),
                         Select::make('type')
                             ->label(__('product.type'))
                             ->required()
@@ -473,6 +478,10 @@ class ProductResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->weight('medium'),
+                TextColumn::make('category.name')
+                    ->label(__('product.category'))
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('sku')
                     ->label(__('product.sku'))
                     ->searchable()
