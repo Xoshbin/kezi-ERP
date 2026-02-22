@@ -239,6 +239,11 @@ class EditPurchaseOrder extends EditRecord
             throw new \InvalidArgumentException('Expected PurchaseOrder record');
         }
 
+        $currencyId = $data['currency_id'] ?? $record->currency_id;
+        /** @var \Kezi\Foundation\Models\Currency $currency */
+        $currency = \Kezi\Foundation\Models\Currency::findOrFail($currencyId);
+        $currencyCode = $currency->code;
+
         // Create line DTOs from form data
         $lineDTOs = [];
         foreach ($data['lines'] as $line) {
@@ -246,7 +251,7 @@ class EditPurchaseOrder extends EditRecord
                 product_id: $line['product_id'],
                 description: $line['description'],
                 quantity: (float) $line['quantity'],
-                unit_price: Money::of($line['unit_price'], $record->currency->code),
+                unit_price: Money::of($line['unit_price'], $currencyCode),
                 tax_id: $line['tax_id'] ?? null,
                 expected_delivery_date: isset($line['expected_delivery_date'])
                     ? Carbon::parse($line['expected_delivery_date'])
