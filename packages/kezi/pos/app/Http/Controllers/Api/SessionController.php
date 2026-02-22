@@ -46,7 +46,7 @@ class SessionController extends Controller
 
         return response()->json([
             'message' => 'Session opened',
-            'session' => new PosSessionResource($session->load('profile')),
+            'session' => new PosSessionResource($session->load(['profile', 'user'])),
         ], 201);
     }
 
@@ -93,7 +93,7 @@ class SessionController extends Controller
         $session = PosSession::where('user_id', $user->id)
             ->where('status', 'opened')
             ->latest()
-            ->with(['profile', 'orders'])
+            ->with(['profile', 'user', 'orders'])
             ->first();
 
         if (! $session) {
