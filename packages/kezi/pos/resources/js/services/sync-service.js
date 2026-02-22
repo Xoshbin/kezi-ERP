@@ -27,6 +27,17 @@ export const syncMasterData = async () => {
         // No, Dexie stores the object. The schema defines indices.
         
         await db.transaction('rw', db.products, db.categories, db.customers, db.taxes, db.profiles, db.settings, async () => {
+            // If this is a full sync (no since timestamp), clear current tables to remove stale data
+            if (!since) {
+                await Promise.all([
+                    db.products.clear(),
+                    db.categories.clear(),
+                    db.customers.clear(),
+                    db.taxes.clear(),
+                    db.profiles.clear()
+                ]);
+            }
+
             if (data.products && data.products.length) await db.products.bulkPut(data.products);
             if (data.categories && data.categories.length) await db.categories.bulkPut(data.categories);
             if (data.customers && data.customers.length) await db.customers.bulkPut(data.customers);

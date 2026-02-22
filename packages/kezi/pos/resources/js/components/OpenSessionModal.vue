@@ -27,11 +27,13 @@
                                     {{ profile.name }}
                                 </option>
                             </select>
-                            <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
                             </div>
                         </div>
-                        <div v-else class="bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 text-amber-600 dark:text-amber-400 px-4 py-3 rounded-2xl text-sm font-medium">
+                        <div v-if="sessionStore.availableProfiles.length === 0" class="bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 text-amber-600 dark:text-amber-400 px-4 py-3 rounded-2xl text-sm font-medium">
                             No POS profiles found. Please create one in the admin panel first.
                         </div>
                     </div>
