@@ -62,6 +62,13 @@ class StockQuant extends Model
         'reserved_quantity',
     ];
 
+    /**
+     * The relationships that should be touched on save.
+     *
+     * @var array
+     */
+    protected $touches = ['product'];
+
     protected $casts = [
         'quantity' => 'float',
         'reserved_quantity' => 'float',
