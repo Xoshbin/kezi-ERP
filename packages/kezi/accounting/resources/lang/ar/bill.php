@@ -25,6 +25,7 @@ return [
     'tax' => 'الضريبة',
     'expense_account' => 'حساب المصروفات',
     'analytic_account' => 'الحساب التحليلي',
+    'subtotal' => 'المجموع الفرعي',
     'total_amount' => 'المبلغ الإجمالي',
     'total_tax' => 'إجمالي الضريبة',
     'journal_entry_id' => 'معرف قيد اليومية',

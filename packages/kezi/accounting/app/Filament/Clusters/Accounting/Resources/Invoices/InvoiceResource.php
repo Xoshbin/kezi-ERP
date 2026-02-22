@@ -13,7 +13,6 @@ use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
@@ -23,7 +22,6 @@ use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -47,6 +45,7 @@ use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
+use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Payment\Actions\Payments\CreatePaymentAction;
@@ -427,69 +426,10 @@ class InvoiceResource extends Resource
                         ->columns(18),
                 ])->columnSpanFull(),
 
-            Section::make(__('accounting::invoice.company_currency_totals'))
-                ->schema([
-                    Placeholder::make('total_amount_display')
-                        ->label(__('accounting::invoice.total_amount'))
-                        ->content(function (Get $get) {
-                            /** @var array<int|string, array<string, mixed>> $linesData */
-                            $linesData = $get('invoiceLines') ?? [];
-                            $lines = $linesData;
-                            if (count($lines) === 0) {
-                                return '-';
-                            }
-
-                            $currencyId = $get('currency_id');
-                            /** @var \Kezi\Foundation\Models\Currency|null $currency */
-                            $currency = $currencyId ? Currency::where('id', $currencyId)->first() : null;
-                            if (! $currency) {
-                                return '-';
-                            }
-
-                            $totalAmount = 0.0;
-                            foreach ($lines as $line) {
-                                $qty = (float) ($line['quantity'] ?? 0);
-                                $price = (float) ($line['unit_price'] ?? 0);
-                                $totalAmount += ($qty * $price);
-                            }
-
-                            return $currency->symbol.' '.number_format($totalAmount, $currency->decimal_places);
-                        }),
-
-                    Placeholder::make('total_amount_company_currency_display')
-                        ->label(__('accounting::invoice.total_amount_company_currency'))
-                        ->content(function (Get $get) {
-                            /** @var array<int|string, array<string, mixed>> $linesData */
-                            $linesData = $get('invoiceLines') ?? [];
-                            $lines = $linesData;
-                            if (count($lines) === 0) {
-                                return '-';
-                            }
-
-                            $exchangeRate = (float) ($get('exchange_rate_at_creation') ?? 1.0);
-                            /** @var \App\Models\Company|null $company */
-                            $company = Filament::getTenant();
-                            /** @var \Kezi\Foundation\Models\Currency|null $companyCurrency */
-                            $companyCurrency = $company ? Currency::where('id', $company->currency_id)->first() : null;
-
-                            if (! $companyCurrency) {
-                                return '-';
-                            }
-
-                            $totalAmount = 0.0;
-                            foreach ($lines as $line) {
-                                $qty = (float) ($line['quantity'] ?? 0);
-                                $price = (float) ($line['unit_price'] ?? 0);
-                                $totalAmount += ($qty * $price);
-                            }
-
-                            $totalInLocal = $totalAmount * $exchangeRate;
-
-                            return $companyCurrency->symbol.' '.number_format($totalInLocal, $companyCurrency->decimal_places);
-                        }),
-                ])
-                ->columns(2)
-                ->columnSpanFull(),
+            DocumentTotalsHelper::make(
+                linesKey: 'invoiceLines',
+                translationPrefix: 'accounting::invoice'
+            ),
 
             DocumentAttachmentsHelper::makeSection(
                 directory: 'invoices',
@@ -788,7 +728,13 @@ class InvoiceResource extends Resource
                     ->action(function (Invoice $record, array $data): void {
                         $invoiceService = app(InvoiceService::class);
                         try {
-                            $invoiceService->resetToDraft($record, Auth::user(), $data['reason']);
+                            $user = Auth::user();
+
+                            if (! $user) {
+                                throw new \Exception('User must be authenticated');
+                            }
+
+                            $invoiceService->resetToDraft($record, $user, $data['reason']);
                             Notification::make()
                                 ->title(__('accounting::invoice.notification.reset_success'))
                                 ->success()

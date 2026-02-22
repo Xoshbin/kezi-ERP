@@ -14,15 +14,17 @@ use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
@@ -46,6 +48,7 @@ use Kezi\Accounting\Rules\NotInLockedPeriod;
 use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
+use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\CurrencyRate;
@@ -560,63 +563,110 @@ class VendorBillResource extends Resource
                 ->columnSpanFull()
                 ->collapsed(fn (?VendorBill $record) => $record && $record->attachments()->count() === 0),
 
-            Section::make(__('accounting::bill.totals'))
-                ->schema([
-                    Placeholder::make('total_amount_display')
-                        ->label(__('accounting::bill.total'))
-                        ->content(function (Get $get) {
-                            $lines = collect($get('lines') ?? []);
-                            if ($lines->isEmpty()) {
-                                return '-';
-                            }
-
-                            $currencyId = $get('currency_id');
-                            $currency = $currencyId ? Currency::find($currencyId) : null;
-                            if (! $currency) {
-                                return '-';
-                            }
-
-                            $totalAmount = $lines->reduce(function ($carry, $line) {
-                                $qty = (float) ($line['quantity'] ?? 0);
-                                $price = (float) ($line['unit_price'] ?? 0);
-
-                                return $carry + ($qty * $price);
-                            }, 0);
-
-                            return $currency->symbol.' '.number_format($totalAmount, $currency->decimal_places);
-                        }),
-
-                    Placeholder::make('total_amount_company_currency_display')
-                        ->label(__('accounting::bill.total_amount_company_currency'))
-                        ->content(function (Get $get) {
-                            $lines = collect($get('lines') ?? []);
-                            if ($lines->isEmpty()) {
-                                return '-';
-                            }
-
-                            $exchangeRate = (float) ($get('exchange_rate_at_creation') ?? 1.0);
-                            $company = Filament::getTenant();
-                            $companyCurrency = $company ? Currency::find($company->currency_id) : null;
-
-                            if (! $companyCurrency) {
-                                return '-';
-                            }
-
-                            $totalAmount = $lines->reduce(function ($carry, $line) {
-                                $qty = (float) ($line['quantity'] ?? 0);
-                                $price = (float) ($line['unit_price'] ?? 0);
-
-                                return $carry + ($qty * $price);
-                            }, 0);
-
-                            $totalInLocal = $totalAmount * $exchangeRate;
-
-                            return $companyCurrency->symbol.' '.number_format($totalInLocal, $companyCurrency->decimal_places);
-                        }),
-                ])
-                ->columns(2)
-                ->columnSpanFull(),
+            DocumentTotalsHelper::make(
+                linesKey: 'lines',
+                translationPrefix: 'accounting::bill'
+            ),
         ]);
+    }
+
+    public static function infolist(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Section::make(__('accounting::bill.vendor_currency_info'))
+                    ->description(__('accounting::bill.vendor_currency_info_description'))
+                    ->schema([
+                        TextEntry::make('vendor.name')
+                            ->label(__('accounting::bill.vendor'))
+                            ->weight('bold')
+                            ->columnSpan(1),
+                        TextEntry::make('currency.name')
+                            ->label(__('accounting::bill.currency'))
+                            ->columnSpan(1),
+                        TextEntry::make('exchange_rate_at_creation')
+                            ->label(__('accounting::bill.exchange_rate'))
+                            ->numeric(decimalPlaces: 6)
+                            ->columnSpan(1)
+                            ->visible(fn (?VendorBill $record) => $record && $record->exchange_rate_at_creation),
+                        TextEntry::make('incoterm')
+                            ->label(__('accounting::bill.incoterm'))
+                            ->formatStateUsing(fn (?Incoterm $state): ?string => $state?->getLabel()),
+                        TextEntry::make('incoterm_location')
+                            ->label(__('accounting::bill.incoterm_location')),
+                        TextEntry::make('fiscalPosition.name')
+                            ->label(__('accounting::bill.fiscal_position')),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull(),
+
+                Section::make(__('accounting::bill.bill_details'))
+                    ->description(__('accounting::bill.bill_details_description'))
+                    ->schema([
+                        TextEntry::make('bill_reference')
+                            ->label(__('accounting::bill.bill_reference'))
+                            ->columnSpan(1),
+                        TextEntry::make('bill_date')
+                            ->label(__('accounting::bill.bill_date'))
+                            ->date()
+                            ->columnSpan(1),
+                        TextEntry::make('accounting_date')
+                            ->label(__('accounting::bill.accounting_date'))
+                            ->date()
+                            ->columnSpan(1),
+                        TextEntry::make('due_date')
+                            ->label(__('accounting::bill.due_date'))
+                            ->date()
+                            ->columnSpan(1),
+                        TextEntry::make('paymentTerm.name')
+                            ->label(__('accounting::bill.payment_term'))
+                            ->columnSpan(1),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull(),
+
+                Section::make(__('accounting::bill.line_items'))
+                    ->description(__('accounting::bill.line_items_description'))
+                    ->schema([
+                        RepeatableEntry::make('lines')
+                            ->label(__('accounting::bill.lines'))
+                            ->schema([
+                                Grid::make(6)
+                                    ->schema([
+                                        TextEntry::make('product.name')
+                                            ->label(__('accounting::bill.product'))
+                                            ->weight('bold'),
+                                        TextEntry::make('description')
+                                            ->label(__('accounting::bill.description')),
+                                        TextEntry::make('quantity')
+                                            ->label(__('accounting::bill.quantity'))
+                                            ->numeric(decimalPlaces: 2),
+                                        TextEntry::make('unit_price')
+                                            ->label(__('accounting::bill.unit_price'))
+                                            ->money(fn ($record) => $record->vendorBill->currency->code),
+                                        TextEntry::make('expenseAccount.name')
+                                            ->label(__('accounting::bill.expense_account')),
+                                        TextEntry::make('tax.name')
+                                            ->label(__('accounting::bill.tax'))
+                                            ->placeholder('—'),
+                                    ]),
+                            ])
+                            ->contained(false)
+                            ->columnSpanFull(),
+                    ])
+                    ->columnSpanFull(),
+
+                DocumentTotalsHelper::makeInfolist(
+                    translationPrefix: 'accounting::bill',
+                    subtotalKey: 'subtotal',
+                    taxKey: 'total_tax',
+                    totalKey: 'total_amount',
+                    subtotalCompanyKey: 'subtotal_company_currency',
+                    taxCompanyKey: 'total_tax_company_currency',
+                    totalCompanyKey: 'total_amount_company_currency',
+                    exchangeRateKey: 'exchange_rate_at_creation'
+                ),
+            ]);
     }
 
     public static function table(Table $table): Table
