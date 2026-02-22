@@ -15,7 +15,8 @@ export const useSessionStore = defineStore('session', {
 
     getters: {
         hasActiveSession: (state) => !!state.currentSession,
-        sessionId: (state) => state.currentSession?.id,
+        sessionId: (state) => state.currentSession?.id || null,
+        userName: (state) => state.currentSession?.user?.name || '',
         profileName: (state) => state.currentSession?.profile?.name || '',
     },
 

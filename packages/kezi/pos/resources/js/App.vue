@@ -118,8 +118,8 @@
                 <!-- User Profile & Actions -->
                 <div class="flex items-center gap-3 pl-6 border-l dark:border-gray-800">
                     <div class="text-right hidden sm:block">
-                        <p class="text-sm font-semibold">Cashier</p>
-                        <p class="text-[10px] text-gray-500 uppercase tracking-wider">Main Register</p>
+                        <p class="text-sm font-semibold">{{ sessionStore.userName || 'Cashier' }}</p>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-wider">{{ sessionStore.profileName || 'No Profile' }}</p>
                     </div>
                     
                     <button 
@@ -494,7 +494,7 @@ onMounted(async () => {
     // Initial sync and load logic
     try {
         if (connectivity.isOnline) {
-             // 1. Try to sync master data (profiles, settings, etc.)
+             // 1. Sync master data (profiles, settings, products, etc.)
              try {
                  await syncMasterData();
              } catch (syncError) {
@@ -505,12 +505,10 @@ onMounted(async () => {
              // 2. Check session status
              await sessionStore.checkCurrentSession();
 
-             // 3. Try to sync products
-             try {
-                 await productsStore.syncAndReload();
-             } catch (productError) {
-                 console.error('Products sync failed, loading from DB', productError);
-                 await productsStore.loadFromDb();
+             // 3. Load data from IndexedDB into stores
+             await productsStore.loadFromDb();
+             if (!sessionStore.hasActiveSession) {
+                 await sessionStore.loadProfiles();
              }
         } else {
              // Offline mode
@@ -522,6 +520,11 @@ onMounted(async () => {
         const setting = await db.settings.get('company_currency');
         if (setting && setting.value) {
             currentCurrency.value = setting.value.code || 'USD';
+        }
+
+        // If no active session, make sure profiles are loaded
+        if (!sessionStore.hasActiveSession) {
+            await sessionStore.loadProfiles();
         }
     } catch(e) {
         console.error('Initial load failed', e);
