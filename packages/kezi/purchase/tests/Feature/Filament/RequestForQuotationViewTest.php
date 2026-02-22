@@ -51,8 +51,12 @@ it('displays company currency totals on view page when currency differs', functi
         'record' => $rfq->id,
     ]);
 
-    $res->assertSuccessful()
-        ->assertSee('1460000')
-        ->assertSee('146000')
-        ->assertSee('1606000');
+    // Verify in HTML (ignoring formatting like commas)
+    $res->assertSuccessful();
+    $html = $res->html();
+    $cleanHtml = str_replace(',', '', $html);
+
+    expect($cleanHtml)->toContain('1460000.000')
+        ->toContain('146000.000')
+        ->toContain('1606000.000');
 });
