@@ -245,10 +245,11 @@ class PaymentsRelationManager extends RelationManager
                     ->modalDescription(__('accounting::bill.register_payment.description'))
                     ->documentType('vendor_bill')
                     ->paymentType(PaymentType::Outbound)
-                    ->partnerId(fn (VendorBill $record) => $record->vendor_id)
+                    ->partnerId(fn (?VendorBill $record) => $record?->vendor_id)
                     ->visible(
-                        fn (VendorBill $ownerRecord) => $ownerRecord->status === \Kezi\Purchase\Enums\Purchases\VendorBillStatus::Posted &&
-                        ! $ownerRecord->getRemainingAmount()->isZero()
+                        fn (?VendorBill $record) => $record &&
+                        $record->status === \Kezi\Purchase\Enums\Purchases\VendorBillStatus::Posted &&
+                        ! $record->getRemainingAmount()->isZero()
                     ),
             ])
             ->actions([
