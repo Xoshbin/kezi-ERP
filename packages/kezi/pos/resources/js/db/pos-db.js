@@ -2,7 +2,7 @@ import Dexie from 'dexie';
 
 export const db = new Dexie('KeziPosDatabase');
 
-db.version(4).stores({
+db.version(5).stores({
     products: 'id, name, sku, category_id, is_active',
     categories: 'id, name',
     orders: '++id, uuid, status, sync_status',

@@ -41,7 +41,7 @@ export const useProductsStore = defineStore('products', {
             try {
                 // Try loading active products using index
                 try {
-                    this.products = await db.products.where('is_active').equals(true).toArray();
+                    this.products = await db.products.where('is_active').equals(1).toArray();
                 } catch (indexedError) {
                     console.warn('Indexed query for is_active failed, falling back to full scan:', indexedError);
                     // Fallback: Fetch all and filter in memory if index is broken
