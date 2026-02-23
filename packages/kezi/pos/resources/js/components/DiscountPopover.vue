@@ -82,7 +82,7 @@
                 </button>
                 <button 
                     @click="apply"
-                    class="flex-1 py-3 px-4 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl font-bold shadow-lg shadow-primary-500/30 transition-all active:scale-95"
+                    class="flex-1 py-3 px-4 bg-primary-600 hover:bg-primary-700 !text-gray-900 rounded-2xl font-bold shadow-lg shadow-primary-500/30 transition-all active:scale-95"
                 >
                     Apply Discount
                 </button>
