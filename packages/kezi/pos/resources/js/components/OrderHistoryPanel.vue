@@ -110,14 +110,9 @@ const { printReceipt } = useReceipt();
 const orders = ref([]);
 const loading = ref(false);
 const searchQuery = ref('');
-const currentCurrency = ref('USD');
-
 // Load settings on mount
 onMounted(async () => {
-    const setting = await db.settings.get('company_currency');
-    if (setting && setting.value) {
-        currentCurrency.value = setting.value.code || 'USD';
-    }
+    await sessionStore.loadCurrency();
 });
 
 // Watch visibility to reload data
@@ -171,7 +166,7 @@ const filteredOrders = computed(() => {
     
     return orders.value.filter(o => 
         o.order_number.toLowerCase().includes(q) || 
-        (o.total_amount / 100).toString().includes(q)
+        (o.total_amount / sessionStore.decimalFactor).toString().includes(q)
     );
 });
 
@@ -183,9 +178,14 @@ const totalRevenue = computed(() => {
 });
 
 const formatMoney = (amount) => {
-    if (amount === undefined || amount === null) return '$0.00';
-    const val = Number(amount) / 100;
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currentCurrency.value }).format(val);
+    if (amount === undefined || amount === null) return '0.00';
+    const val = Number(amount) / sessionStore.decimalFactor;
+    return new Intl.NumberFormat('en-US', { 
+        style: 'currency', 
+        currency: sessionStore.currencyCode,
+        minimumFractionDigits: sessionStore.decimalPlaces,
+        maximumFractionDigits: sessionStore.decimalPlaces
+    }).format(val);
 };
 
 const formatTime = (isoString) => {

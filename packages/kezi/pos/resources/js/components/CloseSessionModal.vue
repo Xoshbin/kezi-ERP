@@ -54,13 +54,13 @@
                             </div>
                             <div class="space-y-2">
                                 <div class="relative group">
-                                    <span class="absolute top-4 left-4 text-primary-600 font-bold">$</span>
+                                    <span class="absolute top-4 left-4 text-primary-600 font-bold opacity-50">{{ sessionStore.currencyCode }}</span>
                                     <input 
                                         v-model="form.actualCash"
                                         type="number" 
-                                        step="0.01"
+                                        :step="1 / sessionStore.decimalFactor"
                                         placeholder="0.00"
-                                        class="w-full bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 focus:border-primary-500 rounded-2xl py-4 pl-8 pr-4 outline-none transition-all font-black text-xl text-gray-900 dark:text-white shadow-sm"
+                                        class="w-full bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 focus:border-primary-500 rounded-2xl py-4 pl-14 pr-4 outline-none transition-all font-black text-xl text-gray-900 dark:text-white shadow-sm"
                                     >
                                     <label class="absolute -top-2.5 left-4 bg-white dark:bg-gray-800 px-2 text-[10px] font-bold uppercase tracking-widest text-gray-400">Actual Cash</label>
                                 </div>
@@ -144,7 +144,7 @@ const expectedCash = computed(() => {
 });
 
 const actualCashMinor = computed(() => {
-    return Math.round(parseFloat(form.actualCash || 0) * 100);
+    return Math.round(parseFloat(form.actualCash || 0) * sessionStore.decimalFactor);
 });
 
 const discrepancy = computed(() => {
@@ -175,9 +175,14 @@ const handleCloseSession = async () => {
 };
 
 const formatMoney = (amount) => {
-    if (amount === undefined || amount === null) return '$0.00';
-    const val = Number(amount) / 100;
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: props.currencyCode }).format(val);
+    if (amount === undefined || amount === null) return '0.00';
+    const val = Number(amount) / sessionStore.decimalFactor;
+    return new Intl.NumberFormat('en-US', { 
+        style: 'currency', 
+        currency: sessionStore.currencyCode,
+        minimumFractionDigits: sessionStore.decimalPlaces,
+        maximumFractionDigits: sessionStore.decimalPlaces
+    }).format(val);
 };
 
 const formatDateTime = (dateStr) => {
