@@ -385,13 +385,14 @@ import { useBarcodeScanner } from './composables/useBarcodeScanner';
 import { useKeyboardShortcuts } from './composables/useKeyboardShortcuts';
 import ScanToast from './components/ScanToast.vue';
 import DiscountPopover from './components/DiscountPopover.vue';
+import './echo.js';
 
 const connectivity = useConnectivityStore();
 const cart = useCartStore();
 const productsStore = useProductsStore();
 const sessionStore = useSessionStore();
 
-const currentCurrency = ref('USD');
+const currentCurrency = computed(() => sessionStore.currencyCode);
 const showPaymentModal = ref(false);
 const showCloseSessionModal = ref(false);
 const orderSuccess = ref(null);
@@ -523,10 +524,7 @@ onMounted(async () => {
         }
         
         // Load currency from DB (synced)
-        const setting = await db.settings.get('company_currency');
-        if (setting && setting.value) {
-            currentCurrency.value = setting.value.code || 'USD';
-        }
+        await sessionStore.loadCurrency();
 
         // If no active session, make sure profiles are loaded
         if (!sessionStore.hasActiveSession) {
@@ -540,6 +538,14 @@ onMounted(async () => {
 
     // Load taxes
     await cart.loadTaxes();
+
+    // Real-time stock updates
+    if (window.Echo) {
+        window.Echo.channel('products')
+            .listen('.ProductStockUpdated', (e) => {
+                productsStore.updateProductStock(e.productId, e.availableQuantity);
+            });
+    }
 });
 
 const showOrderHistory = ref(false);
@@ -697,12 +703,17 @@ const searchQuery = computed({
     set: (val) => productsStore.setSearchQuery(val)
 });
 
-// Helper for money formatting (assuming minor units, e.g. cents)
+// Helper for money formatting
 const formatMoney = (amount) => {
-    if (amount === undefined || amount === null) return '$0.00';
-    // Amount is in minor units (integer). Divide by 100.
-    const val = Number(amount) / 100;
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currentCurrency.value }).format(val);
+    if (amount === undefined || amount === null) return '0.00';
+    // Amount is in minor units (integer). Divide by decimalFactor.
+    const val = Number(amount) / sessionStore.decimalFactor;
+    return new Intl.NumberFormat('en-US', { 
+        style: 'currency', 
+        currency: sessionStore.currencyCode,
+        minimumFractionDigits: sessionStore.decimalPlaces,
+        maximumFractionDigits: sessionStore.decimalPlaces
+    }).format(val);
 };
 
 </script>
