@@ -61,15 +61,7 @@ class CreateInvoiceFromPosOrderAction
 
         $journal = Journal::where('company_id', $companyId)
             ->where('type', \Kezi\Accounting\Enums\Accounting\JournalType::Sale)
-            ->where('is_active', true)
             ->first();
-
-        if (! $journal) {
-            // Fallback to any sales journal
-            $journal = Journal::where('company_id', $companyId)
-                ->where('type', \Kezi\Accounting\Enums\Accounting\JournalType::Sale)
-                ->first();
-        }
 
         if (! $journal) {
             throw new \Exception("No Sales Journal found for Company {$companyId}. Please configure a Sales Journal.");
