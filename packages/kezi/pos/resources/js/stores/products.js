@@ -90,6 +90,23 @@ export const useProductsStore = defineStore('products', {
         
         selectCategory(id) {
             this.selectedCategory = id;
+        },
+        
+        async updateProductStock(productId, availableQuantity) {
+            const product = this.products.find(p => p.id === productId);
+            if (product) {
+                product.available_quantity = availableQuantity;
+            }
+            
+            try {
+                const dbProduct = await db.products.get(productId);
+                if (dbProduct) {
+                    dbProduct.available_quantity = availableQuantity;
+                    await db.products.put(dbProduct);
+                }
+            } catch (error) {
+                console.error('Failed to update product stock in IndexedDB:', error);
+            }
         }
     }
 });
