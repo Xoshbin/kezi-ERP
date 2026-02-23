@@ -11,6 +11,7 @@ export const useSessionStore = defineStore('session', {
         error: null,
         showOpenSessionModal: false,
         lastClosedSessionSummary: null,
+        companyCurrency: null,
     }),
 
     getters: {
@@ -18,6 +19,9 @@ export const useSessionStore = defineStore('session', {
         sessionId: (state) => state.currentSession?.id || null,
         userName: (state) => state.currentSession?.user?.name || '',
         profileName: (state) => state.currentSession?.profile?.name || '',
+        currencyCode: (state) => state.companyCurrency?.code || 'USD',
+        decimalPlaces: (state) => state.companyCurrency?.decimal_places ?? 2,
+        decimalFactor: (state) => Math.pow(10, state.companyCurrency?.decimal_places ?? 2),
     },
 
     actions: {
@@ -104,6 +108,17 @@ export const useSessionStore = defineStore('session', {
                 this.availableProfiles = await db.profiles.toArray();
             } catch (error) {
                 console.error('Load profiles failed', error);
+            }
+        },
+
+        async loadCurrency() {
+            try {
+                const setting = await db.settings.get('company_currency');
+                if (setting && setting.value) {
+                    this.companyCurrency = setting.value;
+                }
+            } catch (error) {
+                console.error('Load currency failed', error);
             }
         }
     }

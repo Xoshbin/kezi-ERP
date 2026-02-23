@@ -25,12 +25,19 @@ export function useReceipt() {
         // Get Currency
         const currencySetting = await db.settings.get('company_currency');
         const currencyCode = currencySetting?.value?.code || 'USD';
+        const decimalPlaces = currencySetting?.value?.decimal_places ?? 2;
+        const decimalFactor = Math.pow(10, decimalPlaces);
         
         // Helper for currency formatting
         const formatMoney = (amount) => {
             if (amount === undefined || amount === null) return '0.00';
-            const val = Number(amount) / 100;
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: currencyCode }).format(val);
+            const val = Number(amount) / decimalFactor;
+            return new Intl.NumberFormat('en-US', { 
+                style: 'currency', 
+                currency: currencyCode,
+                minimumFractionDigits: decimalPlaces,
+                maximumFractionDigits: decimalPlaces
+            }).format(val);
         };
 
         const formatDate = (isoString) => {

@@ -25,4 +25,9 @@ class ProductStockUpdated implements ShouldBroadcast
             new Channel('products'),
         ];
     }
+
+    public function broadcastAs(): string
+    {
+        return 'ProductStockUpdated';
+    }
 }
