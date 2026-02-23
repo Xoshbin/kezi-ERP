@@ -4,7 +4,7 @@
             <div class="bg-white dark:bg-gray-900 w-full max-w-4xl h-[90vh] rounded-[2.5rem] shadow-2xl border border-white/20 dark:border-gray-800 overflow-hidden transform transition-all scale-100 opacity-100 flex flex-col md:flex-row">
                 
                 <!-- Left Side: Order Summary -->
-                <div class="w-full md:w-1/3 bg-gray-50 dark:bg-gray-800/50 p-8 border-r dark:border-gray-800 flex flex-col">
+                <div class="w-full md:w-[40%] bg-gray-50 dark:bg-gray-800/50 p-8 border-r dark:border-gray-800 flex flex-col">
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                         <span class="bg-primary-100 text-primary-700 px-3 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-black">
                             {{ cart.totalQuantity }} Items
@@ -18,7 +18,7 @@
                                 <span class="font-semibold text-gray-800 dark:text-gray-200 block leading-tight">{{ item.name }}</span>
                                 <span class="text-[11px] text-gray-500">{{ item.quantity }} x {{ formatMoney(item.unit_price) }}</span>
                             </div>
-                            <span class="font-semibold text-gray-900 dark:text-gray-100 whitespace-nowrap">{{ formatMoney(item.unit_price * item.quantity) }}</span>
+                            <span class="font-semibold text-gray-900 dark:text-gray-100 shrink-0 text-right">{{ formatMoney(item.unit_price * item.quantity) }}</span>
                         </div>
                     </div>
 
@@ -35,9 +35,9 @@
                             <span>Tax</span>
                             <span class="font-medium">{{ formatMoney(cart.tax) }}</span>
                         </div>
-                        <div class="flex justify-between items-end pt-4 border-t dark:border-gray-700">
-                            <span class="text-xl font-bold text-gray-900 dark:text-white">Total</span>
-                            <span class="text-3xl font-black text-primary-600 tracking-tighter">{{ formatMoney(cart.total) }}</span>
+                        <div class="flex justify-between items-baseline pt-4 border-t dark:border-gray-700 gap-2">
+                            <span class="text-lg font-bold text-gray-900 dark:text-white shrink-0">Total</span>
+                            <span class="text-2xl font-black text-primary-600 tracking-tighter text-right">{{ formatMoney(cart.total) }}</span>
                         </div>
                     </div>
                 </div>
