@@ -163,7 +163,7 @@ const amountTenderedInput = ref('');
 watch(() => props.visible, (newVal) => {
     if (newVal) {
         paymentMethod.value = 'cash';
-        amountTenderedInput.value = '';
+        amountTenderedInput.value = (cart.total / sessionStore.decimalFactor).toFixed(sessionStore.decimalPlaces);
     }
 });
 
