@@ -2,6 +2,7 @@
 
 namespace Kezi\Inventory\Observers;
 
+use Kezi\Inventory\Events\ProductStockUpdated;
 use Kezi\Inventory\Models\StockQuant;
 
 /**
@@ -22,7 +23,7 @@ class StockQuantObserver
      */
     public function saved(StockQuant $stockQuant): void
     {
-        // No-op: Product.quantity_on_hand is now a computed accessor
+        $this->dispatchProductStockUpdated($stockQuant);
     }
 
     /**
@@ -30,6 +31,14 @@ class StockQuantObserver
      */
     public function deleted(StockQuant $stockQuant): void
     {
-        // No-op: Product.quantity_on_hand is now a computed accessor
+        $this->dispatchProductStockUpdated($stockQuant);
+    }
+
+    protected function dispatchProductStockUpdated(StockQuant $stockQuant): void
+    {
+        $product = $stockQuant->product;
+        if ($product) {
+            ProductStockUpdated::dispatch($product->id, $product->available_quantity);
+        }
     }
 }
