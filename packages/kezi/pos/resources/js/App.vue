@@ -402,6 +402,28 @@ const discountModal = ref({ visible: false, item: null });
 const showOrderDiscountInput = ref(false);
 const orderDiscountInput = ref(0);
 
+// UUID Fallback for non-secure contexts (HTTP)
+const generateUUID = () => {
+    try {
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+            return crypto.randomUUID();
+        }
+        
+        if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+            return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
+        }
+
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    } catch (e) {
+        return 'pos-' + Date.now() + '-' + Math.floor(Math.random() * 1000000);
+    }
+};
+
 // Barcode scanner
 const scanToast = ref({ visible: false, type: 'success', message: '' });
 
@@ -610,7 +632,7 @@ const addToCart = (product) => {
 const handlePaymentComplete = async (paymentData) => {
     try {
         // 1. Generate UUID & Order Number
-        const orderUuid = crypto.randomUUID();
+        const orderUuid = generateUUID();
         const lastOrderNumSetting = await db.settings.get('last_order_number');
         let sequence = 1;
         if (lastOrderNumSetting) {

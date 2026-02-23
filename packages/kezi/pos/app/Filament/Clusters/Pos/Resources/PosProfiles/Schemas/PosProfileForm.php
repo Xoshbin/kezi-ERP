@@ -91,6 +91,10 @@ class PosProfileForm
                             ->helperText(__('pos::pos_profile.default_payment_journal_helper'))
                             ->options(fn () => \Kezi\Accounting\Models\Journal::query()
                                 ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
+                                ->whereIn('type', [
+                                    \Kezi\Accounting\Enums\Accounting\JournalType::Cash,
+                                    \Kezi\Accounting\Enums\Accounting\JournalType::Bank,
+                                ])
                                 ->pluck('name', 'id'))
                             ->searchable()
                             ->required(),
