@@ -5,20 +5,20 @@
                 
                 <!-- Left Side: Order Summary -->
                 <div class="w-full md:w-1/3 bg-gray-50 dark:bg-gray-800/50 p-8 border-r dark:border-gray-800 flex flex-col">
-                    <h3 class="text-xl font-extrabold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                        <span class="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-xs">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                        <span class="bg-primary-100 text-primary-700 px-3 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-black">
                             {{ cart.totalQuantity }} Items
                         </span>
                         Order Summary
                     </h3>
                     
                     <div class="flex-1 overflow-y-auto space-y-4 pr-2">
-                        <div v-for="item in cart.items" :key="item.id" class="flex justify-between items-start text-sm">
-                            <div class="flex-1">
-                                <span class="font-bold text-gray-800 dark:text-gray-200 block">{{ item.name }}</span>
-                                <span class="text-xs text-gray-500">{{ item.quantity }} x {{ formatMoney(item.unit_price) }}</span>
+                        <div v-for="item in cart.items" :key="item.id" class="flex justify-between items-start text-sm py-1">
+                            <div class="flex-1 pr-4">
+                                <span class="font-semibold text-gray-800 dark:text-gray-200 block leading-tight">{{ item.name }}</span>
+                                <span class="text-[11px] text-gray-500">{{ item.quantity }} x {{ formatMoney(item.unit_price) }}</span>
                             </div>
-                            <span class="font-bold text-gray-900 dark:text-gray-100">{{ formatMoney(item.unit_price * item.quantity) }}</span>
+                            <span class="font-semibold text-gray-900 dark:text-gray-100 whitespace-nowrap">{{ formatMoney(item.unit_price * item.quantity) }}</span>
                         </div>
                     </div>
 
@@ -36,8 +36,8 @@
                             <span class="font-medium">{{ formatMoney(cart.tax) }}</span>
                         </div>
                         <div class="flex justify-between items-end pt-4 border-t dark:border-gray-700">
-                            <span class="text-2xl font-bold text-gray-900 dark:text-white">Total</span>
-                            <span class="text-4xl font-black text-primary-600">{{ formatMoney(cart.total) }}</span>
+                            <span class="text-xl font-bold text-gray-900 dark:text-white">Total</span>
+                            <span class="text-3xl font-black text-primary-600 tracking-tighter">{{ formatMoney(cart.total) }}</span>
                         </div>
                     </div>
                 </div>
@@ -49,8 +49,8 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
 
-                    <h2 class="text-3xl font-black text-gray-900 dark:text-white mb-2">Payment</h2>
-                    <p class="text-gray-500 dark:text-gray-400 mb-8">Select a payment method to complete the sale.</p>
+                    <h2 class="text-2xl font-black text-gray-900 dark:text-white mb-1">Payment</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-8">Select a payment method to complete the sale.</p>
 
                     <!-- Payment Methods -->
                     <div class="grid grid-cols-2 gap-4 mb-8">
@@ -85,13 +85,13 @@
                         <div class="space-y-2">
                             <label class="text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Amount Tendered</label>
                             <div class="relative group">
-                                <span class="absolute inset-y-0 left-5 flex items-center text-primary-600 font-bold text-2xl">{{ currencySymbol }}</span>
+                                <span class="absolute inset-y-0 left-5 flex items-center text-primary-600 font-bold text-xl">{{ currencySymbol }}</span>
                                 <input 
                                     v-model="amountTenderedInput"
                                     type="number" 
                                     step="0.01"
                                     placeholder="0.00"
-                                    class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-primary-500 rounded-3xl py-6 pl-12 pr-5 outline-none transition-all font-black text-4xl text-gray-900 dark:text-white"
+                                    class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-primary-500 rounded-3xl py-5 pl-16 pr-5 outline-none transition-all font-black text-3xl text-gray-900 dark:text-white"
                                     autofocus
                                 >
                             </div>
@@ -108,9 +108,9 @@
                         </div>
 
                         <!-- Change Due -->
-                        <div class="mt-auto p-6 bg-emerald-50 dark:bg-emerald-500/10 rounded-3xl border border-emerald-100 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 flex items-center justify-between">
-                            <span class="font-bold text-lg">Change Due</span>
-                            <span class="font-black text-3xl">{{ formatMoney(changeDue) }}</span>
+                        <div class="mt-auto p-5 bg-emerald-50 dark:bg-emerald-500/10 rounded-3xl border border-emerald-100 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 flex items-center justify-between">
+                            <span class="font-bold text-base">Change Due</span>
+                            <span class="font-black text-2xl">{{ formatMoney(changeDue) }}</span>
                         </div>
                     </div>
 
@@ -123,13 +123,13 @@
 
                     <!-- Actions -->
                     <div class="mt-8 grid grid-cols-2 gap-4">
-                        <button @click="closeModal" class="py-5 rounded-3xl font-extrabold text-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                        <button @click="closeModal" class="py-4 rounded-3xl font-black text-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
                             Cancel
                         </button>
                         <button 
                             @click="completeSale"
                             :disabled="!isValidPayment"
-                            class="py-5 rounded-3xl font-extrabold text-xl bg-primary-600 !text-gray-900 shadow-xl shadow-primary-500/30 hover:bg-primary-700 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="py-4 rounded-3xl font-black text-lg bg-primary-600 !text-gray-900 shadow-xl shadow-primary-500/30 hover:bg-primary-700 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-tight"
                         >
                              {{ paymentMethod === 'card' ? 'Charge & Complete' : 'Complete Sale' }}
                         </button>
