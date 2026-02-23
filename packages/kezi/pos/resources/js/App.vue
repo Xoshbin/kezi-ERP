@@ -722,17 +722,17 @@ const formatMoney = (amount) => {
 @import "tailwindcss";
 
 :root {
-    --primary-50: #fefce8;
-    --primary-100: #fef9c3;
-    --primary-200: #fef08a;
-    --primary-300: #fde047;
-    --primary-400: #facc15;
-    --primary-500: #eab308;
-    --primary-600: #ca8a04;
-    --primary-700: #a16207;
-    --primary-800: #854d0e;
-    --primary-900: #713f12;
-    --primary-950: #422006;
+    --color-primary-50: #fefce8;
+    --color-primary-100: #fef9c3;
+    --color-primary-200: #fef08a;
+    --color-primary-300: #fde047;
+    --color-primary-400: #facc15;
+    --color-primary-500: #eab308;
+    --color-primary-600: #ca8a04;
+    --color-primary-700: #a16207;
+    --color-primary-800: #854d0e;
+    --color-primary-900: #713f12;
+    --color-primary-950: #422006;
 }
 
 .pos-container {
