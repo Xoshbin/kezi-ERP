@@ -32,11 +32,11 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                 </svg>
             </div>
-            <h2 class="text-3xl font-black text-gray-900 dark:text-white mb-2">Order Confirmed!</h2>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">Order Confirmed!</h2>
             <p class="text-gray-500 dark:text-gray-400 mb-8 font-mono text-lg">{{ orderSuccess.orderNumber }}</p>
             
             <div class="space-y-2 mb-10">
-                <p class="text-4xl font-black text-primary-600">{{ formatMoney(orderSuccess.total) }}</p>
+                <p class="text-3xl font-black text-primary-600 tracking-tighter">{{ formatMoney(orderSuccess.total) }}</p>
                 <p v-if="orderSuccess.method === 'cash'" class="text-gray-500">
                     Change Given: <span class="font-bold text-gray-900 dark:text-white">{{ formatMoney(orderSuccess.change) }}</span>
                 </p>
@@ -211,10 +211,10 @@
                                     {{ product.available_quantity > 0 ? 'IN STOCK' : 'OUT OF STOCK' }}
                                 </div>
                             </div>
-                            <h3 class="font-bold text-gray-800 dark:text-gray-100 mb-1 group-hover:text-primary-600 transition-colors line-clamp-2 min-h-[2.5em]">{{ product.name }}</h3>
+                            <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1 group-hover:text-primary-600 transition-colors line-clamp-2 min-h-[2.5em] tracking-tight">{{ product.name }}</h3>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">{{ product.sku || 'No SKU' }}</p>
                             <div class="flex items-center justify-between">
-                                <span class="text-lg font-black text-gray-900 dark:text-white">{{ formatMoney(product.unit_price) }}</span>
+                                <span class="text-base font-bold text-gray-900 dark:text-white">{{ formatMoney(product.unit_price) }}</span>
                                 <button class="w-8 h-8 rounded-full bg-gray-50 dark:bg-gray-800 text-gray-400 group-hover:bg-primary-600 group-hover:text-white transition-all duration-300 flex items-center justify-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
                                 </button>
@@ -228,7 +228,7 @@
             <aside class="w-96 bg-white dark:bg-gray-900 border-l dark:border-gray-800 flex flex-col shadow-2xl z-10 overflow-hidden">
                 <div class="p-6 border-b dark:border-gray-800 flex items-center justify-between">
                     <div>
-                        <h2 class="text-xl font-extrabold text-gray-900 dark:text-white">Current Order</h2>
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-white tracking-tight">Current Order</h2>
                         <p class="text-xs text-gray-400 leading-none">Order #Local-Draft</p>
                     </div>
                     <button @click="cart.clearCart" class="text-gray-400 hover:text-red-500 transition-colors" title="Clear Cart (F8)">
@@ -253,10 +253,10 @@
                             {{ item.sku || 'IMG' }}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h4 class="text-sm font-bold truncate">{{ item.name }}</h4>
+                            <h4 class="text-sm font-semibold truncate">{{ item.name }}</h4>
                             <div class="flex items-center gap-2 mt-1">
                                 <span class="text-xs text-gray-500">{{ formatMoney(item.unit_price) }} × {{ item.quantity }}</span>
-                                <span class="text-sm font-black">{{ formatMoney(item.unit_price * item.quantity) }}</span>
+                                <span class="text-sm font-bold">{{ formatMoney(item.unit_price * item.quantity) }}</span>
                             </div>
 
                             <!-- Discount display -->
@@ -348,12 +348,12 @@
                         </div>
 
                         <div class="flex justify-between items-end pt-4 border-t dark:border-gray-700">
-                            <span class="text-lg font-bold">Total</span>
-                            <span class="text-3xl font-black text-primary-600">{{ formatMoney(cart.total) }}</span>
+                            <span class="text-base font-semibold uppercase tracking-wider text-gray-500">Total</span>
+                            <span class="text-2xl font-black text-primary-600 tracking-tighter">{{ formatMoney(cart.total) }}</span>
                         </div>
                     </div>
 
-                    <button @click="showPaymentModal = true" class="pay-button w-full bg-primary-600 hover:bg-primary-700 !text-gray-900 py-5 rounded-3xl font-extrabold text-xl shadow-xl shadow-primary-500/30 flex items-center justify-center gap-3 transition-all active:scale-95 group" :disabled="cart.items.length === 0" :class="{'opacity-50 cursor-not-allowed': cart.items.length === 0}">
+                    <button @click="showPaymentModal = true" class="pay-button w-full bg-primary-600 hover:bg-primary-700 !text-gray-900 py-5 rounded-3xl font-bold text-lg tracking-tight shadow-xl shadow-primary-500/30 flex items-center justify-center gap-3 transition-all active:scale-95 group" :disabled="cart.items.length === 0" :class="{'opacity-50 cursor-not-allowed': cart.items.length === 0}">
                         Confirm & Pay
                         <span class="text-[10px] opacity-60 bg-white/20 px-1.5 py-0.5 rounded ml-2">F4</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
