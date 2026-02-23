@@ -48,5 +48,14 @@ class CompanySeeder extends Seeder
             'default_stock_location_id' => $defaultStockLocation->id,
             'default_vendor_location_id' => $defaultVendorLocation->id,
         ]);
+
+        // Create the default Walk-in Customer for POS
+        \Kezi\Foundation\Models\Partner::updateOrCreate(
+            ['company_id' => $company->id, 'name' => 'Walk-in Customer'],
+            [
+                'type' => \Kezi\Foundation\Enums\Partners\PartnerType::Customer,
+                'is_active' => true,
+            ]
+        );
     }
 }
