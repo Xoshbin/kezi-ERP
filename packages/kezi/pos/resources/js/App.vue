@@ -348,8 +348,8 @@
                         </div>
 
                         <div class="flex justify-between items-end pt-4 border-t dark:border-gray-700">
-                            <span class="text-base font-semibold uppercase tracking-wider text-gray-500">Total</span>
-                            <span class="text-2xl font-black text-primary-600 tracking-tighter">{{ formatMoney(cart.total) }}</span>
+                            <span class="text-xs font-bold uppercase tracking-widest text-gray-500">Total</span>
+                            <span class="text-xl font-black text-primary-600 tracking-tighter">{{ formatMoney(cart.total) }}</span>
                         </div>
                     </div>
 
