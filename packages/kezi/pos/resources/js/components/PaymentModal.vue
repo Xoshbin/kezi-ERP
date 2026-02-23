@@ -144,6 +144,7 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import { useCartStore } from '../stores/cart';
+import { useSessionStore } from '../stores/session';
 import { db } from '../db/pos-db';
 
 const props = defineProps({
@@ -153,6 +154,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'payment-complete']);
 
+const sessionStore = useSessionStore();
 const cart = useCartStore();
 const paymentMethod = ref('cash');
 const amountTenderedInput = ref(''); 
@@ -176,7 +178,7 @@ const currencySymbol = computed(() => {
 
 const amountTenderedMinor = computed(() => {
     if (!amountTenderedInput.value) return 0;
-    return Math.round(parseFloat(amountTenderedInput.value) * 100);
+    return Math.round(parseFloat(amountTenderedInput.value) * sessionStore.decimalFactor);
 });
 
 const changeDue = computed(() => {
@@ -199,13 +201,14 @@ const quickAmounts = computed(() => {
     // Suggest rounding up to next note/bill sizes
     // Logic: if 1250 ($12.50), suggest 1300, 1500, 2000, 5000, 10000
     
-    const nextDollar = Math.ceil(total / 100) * 100;
+    const nextDollar = Math.ceil(total / sessionStore.decimalFactor) * sessionStore.decimalFactor;
     if (nextDollar > total) amounts.push(nextDollar);
     
-    [500, 1000, 2000, 5000, 10000].forEach(note => {
-        if (note > total && !amounts.includes(note)) {
-             // Basic logic to prevent too many buttons
-             if (amounts.length < 4) amounts.push(note);
+    [100, 200, 500, 1000, 2000, 5000, 10000, 25000, 50000].forEach(noteValue => {
+        // Notes are in major units (e.g., 1, 5, 10, 1000, 5000 IQD)
+        const noteMinor = noteValue * sessionStore.decimalFactor;
+        if (noteMinor > total && !amounts.includes(noteMinor)) {
+             if (amounts.length < 4) amounts.push(noteMinor);
         }
     });
 
@@ -213,13 +216,18 @@ const quickAmounts = computed(() => {
 });
 
 const setTendered = (amountMinor) => {
-    amountTenderedInput.value = (amountMinor / 100).toFixed(2);
+    amountTenderedInput.value = (amountMinor / sessionStore.decimalFactor).toFixed(sessionStore.decimalPlaces);
 };
 
 const formatMoney = (amount) => {
-    if (amount === undefined || amount === null) return '$0.00';
-    const val = Number(amount) / 100;
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: props.currencyCode }).format(val);
+    if (amount === undefined || amount === null) return '0.00';
+    const val = Number(amount) / sessionStore.decimalFactor;
+    return new Intl.NumberFormat('en-US', { 
+        style: 'currency', 
+        currency: props.currencyCode,
+        minimumFractionDigits: sessionStore.decimalPlaces,
+        maximumFractionDigits: sessionStore.decimalPlaces
+    }).format(val);
 };
 
 const completeSale = () => {
