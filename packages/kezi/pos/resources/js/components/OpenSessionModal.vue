@@ -38,17 +38,16 @@
                         </div>
                     </div>
 
-                    <!-- Opening Cash -->
                     <div class="space-y-2">
                         <label class="text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Opening Cash Balance</label>
                         <div class="relative group">
-                            <span class="absolute inset-y-0 left-5 flex items-center text-primary-600 font-bold text-lg">$</span>
+                            <span class="absolute inset-y-0 left-5 flex items-center text-primary-600 font-bold text-lg opacity-50">{{ sessionStore.currencyCode }}</span>
                             <input 
                                 v-model="form.openingCash"
                                 type="number" 
-                                step="0.01"
+                                :step="1 / sessionStore.decimalFactor"
                                 placeholder="0.00"
-                                class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-primary-500 rounded-2xl py-4 pl-10 pr-5 outline-none transition-all font-black text-2xl text-gray-900 dark:text-white"
+                                class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-primary-500 rounded-2xl py-4 pl-14 pr-5 outline-none transition-all font-black text-2xl text-gray-900 dark:text-white"
                             >
                         </div>
                         <p class="text-[10px] text-gray-400 ml-1">Count all physical cash in the drawer before starting.</p>
@@ -102,8 +101,8 @@ onMounted(async () => {
 const handleOpenSession = async () => {
     if (!isValid.value) return;
     
-    // Convert to minor units (cents)
-    const minorUnits = Math.round(parseFloat(form.openingCash) * 100);
+    // Convert to minor units
+    const minorUnits = Math.round(parseFloat(form.openingCash) * sessionStore.decimalFactor);
     await sessionStore.openSession(form.profileId, minorUnits);
 };
 </script>
