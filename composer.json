@@ -30,6 +30,7 @@
         "kezi/sales": "*",
         "lara-zeus/spatie-translatable": "^1.0",
         "laravel/framework": "^12.0",
+        "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^2.10.1",
         "pxlrbt/filament-environment-indicator": "^3.2",
