@@ -7,14 +7,21 @@
                     <h2 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Lookup Receipt</h2>
                     <p class="text-sm text-gray-500">Search for a previous transaction to start a return</p>
                 </div>
-                <button @click="$emit('close')" class="w-10 h-10 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center text-gray-400 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+                <div class="flex items-center gap-3">
+                    <!-- Offline banner -->
+                    <div v-if="isOffline" class="flex items-center gap-1.5 px-3 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-full text-xs font-bold border border-amber-100 dark:border-amber-500/20">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                        Searching local cache
+                    </div>
+                    <button @click="$emit('close')" class="w-10 h-10 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center text-gray-400 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
-            <!-- Search Bar -->
+            <!-- Search Bar & Filters -->
             <div class="p-6 bg-gray-50 dark:bg-gray-800/50 space-y-4">
                 <div class="relative group">
                     <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 group-focus-within:text-primary-500 transition-colors">
@@ -22,35 +29,107 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </span>
-                    <input 
+                    <input
                         v-model="searchQuery"
-                        type="text" 
-                        placeholder="Search by order # (e.g. POS-1234), customer name, or phone..."
+                        type="text"
+                        placeholder="Search by order # (e.g. POS-1234), customer name..."
                         class="w-full bg-white dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-700 rounded-2xl py-4 pl-14 pr-4 focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all outline-none font-medium text-lg dark:text-white shadow-sm"
                         @input="debouncedSearch"
                         autofocus
                     >
                 </div>
-                
-                <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-                    <button 
-                        v-for="filter in quickFilters" 
-                        :key="filter.id"
-                        @click="setQuickFilter(filter.id)"
+
+                <!-- Quick Filters Row -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+                        <button
+                            v-for="filter in quickFilters"
+                            :key="filter.id"
+                            @click="setQuickFilter(filter.id)"
+                            :class="[
+                                'px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap border',
+                                activeFilter === filter.id
+                                    ? 'bg-primary-600 text-gray-900 border-primary-600 shadow-lg shadow-primary-500/20'
+                                    : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-750'
+                            ]"
+                        >
+                            {{ filter.label }}
+                        </button>
+                    </div>
+
+                    <!-- Advanced Filters Toggle -->
+                    <button
+                        @click="showAdvancedFilters = !showAdvancedFilters"
+                        class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition-all"
                         :class="[
-                            'px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap border',
-                            activeFilter === filter.id 
-                                ? 'bg-primary-600 text-gray-900 border-primary-600 shadow-lg shadow-primary-500/20' 
-                                : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-750'
+                            hasAdvancedFilters
+                                ? 'bg-violet-600 text-white border-violet-600 shadow-lg shadow-violet-500/20'
+                                : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50'
                         ]"
                     >
-                        {{ filter.label }}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                        Advanced {{ hasAdvancedFilters ? '●' : '' }}
                     </button>
+                </div>
+
+                <!-- Advanced Filters Panel (6c) -->
+                <div v-if="showAdvancedFilters" class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2 border-t dark:border-gray-700 animate-in slide-in-from-top-2 duration-200">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Date From</label>
+                        <input
+                            v-model="advancedFilters.dateFrom"
+                            type="date"
+                            class="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm font-medium outline-none focus:border-primary-500 dark:text-white"
+                            @change="performSearch"
+                        >
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Date To</label>
+                        <input
+                            v-model="advancedFilters.dateTo"
+                            type="date"
+                            class="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm font-medium outline-none focus:border-primary-500 dark:text-white"
+                            @change="performSearch"
+                        >
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Product / SKU</label>
+                        <input
+                            v-model="advancedFilters.productSearch"
+                            type="text"
+                            placeholder="SKU or product name..."
+                            class="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm font-medium outline-none focus:border-primary-500 dark:text-white"
+                            @input="debouncedSearch"
+                        >
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Payment Method</label>
+                        <select
+                            v-model="advancedFilters.paymentMethod"
+                            class="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm font-medium outline-none focus:border-primary-500 dark:text-white"
+                            @change="performSearch"
+                        >
+                            <option value="">Any</option>
+                            <option value="cash">Cash</option>
+                            <option value="card">Card</option>
+                            <option value="bank_transfer">Bank Transfer</option>
+                        </select>
+                    </div>
+                    <div class="col-span-2 md:col-span-4 flex justify-end pt-1">
+                        <button
+                            @click="clearAdvancedFilters"
+                            class="text-xs font-bold text-rose-500 hover:text-rose-700 transition-colors"
+                        >
+                            Clear Advanced Filters
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- Results -->
-            <div class="flex-1 overflow-y-auto p-6 min-h-[400px]">
+            <div class="flex-1 overflow-y-auto p-6 min-h-[300px]">
                 <div v-if="loading" class="flex flex-col items-center justify-center h-full py-20">
                     <div class="animate-spin rounded-full h-12 w-12 border-4 border-primary-500/20 border-t-primary-500 mb-4"></div>
                     <p class="text-sm font-bold text-gray-500 animate-pulse">Searching Transaction History...</p>
@@ -67,15 +146,15 @@
                 </div>
 
                 <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div 
-                        v-for="order in orders" 
+                    <div
+                        v-for="order in orders"
                         :key="order.id"
                         @click="selectOrder(order)"
                         class="group cursor-pointer p-4 rounded-3xl border-2 transition-all duration-300"
                         :class="[
                             'bg-white dark:bg-gray-800/50 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-black/50 hover:-translate-y-1',
-                            selectedOrderId === order.id 
-                                ? 'border-primary-500 ring-4 ring-primary-500/10' 
+                            selectedOrderId === order.id
+                                ? 'border-primary-500 ring-4 ring-primary-500/10'
                                 : 'border-gray-100 dark:border-gray-800 hover:border-primary-300 dark:hover:border-primary-700'
                         ]"
                     >
@@ -127,8 +206,8 @@
                     <button @click="$emit('close')" class="px-6 py-3 rounded-2xl font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                         Cancel
                     </button>
-                    <button 
-                        @click="handleSelect" 
+                    <button
+                        @click="handleSelect"
                         :disabled="!selectedOrder || !selectedOrder.eligible"
                         class="px-8 py-3 bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 rounded-2xl font-black shadow-lg shadow-primary-500/20 active:scale-95 transition-all"
                     >
@@ -141,21 +220,21 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useSessionStore } from '../stores/session';
+import { useConnectivityStore } from '../stores/connectivity';
 import * as syncService from '../services/sync-service';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-
-dayjs.extend(relativeTime);
 
 const props = defineProps({
-    visible: Boolean
+    visible: Boolean,
 });
 
 const emit = defineEmits(['close', 'select-order']);
 
 const sessionStore = useSessionStore();
+const connectivityStore = useConnectivityStore();
+const isOffline = computed(() => !connectivityStore.isOnline);
+
 const searchQuery = ref('');
 const orders = ref([]);
 const loading = ref(false);
@@ -163,11 +242,30 @@ const selectedOrderId = ref(null);
 const selectedOrder = ref(null);
 const activeFilter = ref('today');
 
+// 6c Advanced Filters
+const showAdvancedFilters = ref(false);
+const advancedFilters = ref({
+    dateFrom: '',
+    dateTo: '',
+    productSearch: '',
+    paymentMethod: '',
+});
+
+const hasAdvancedFilters = computed(() => {
+    const f = advancedFilters.value;
+    return !!(f.dateFrom || f.dateTo || f.productSearch || f.paymentMethod);
+});
+
+const clearAdvancedFilters = () => {
+    advancedFilters.value = { dateFrom: '', dateTo: '', productSearch: '', paymentMethod: '' };
+    performSearch();
+};
+
 const quickFilters = [
     { id: 'today', label: 'Today' },
     { id: 'yesterday', label: 'Yesterday' },
     { id: 'week', label: 'Past 7 Days' },
-    { id: 'all', label: 'All History' }
+    { id: 'all', label: 'All History' },
 ];
 
 let searchTimeout = null;
@@ -182,33 +280,71 @@ const setQuickFilter = (id) => {
     performSearch();
 };
 
-const performSearch = async () => {
-    if (searchQuery.value.length < 3 && !activeFilter.value) {
-        orders.value = [];
-        return;
+const buildDateRange = () => {
+    // If advanced date filters are set, prefer them
+    if (advancedFilters.value.dateFrom || advancedFilters.value.dateTo) {
+        return {
+            date_from: advancedFilters.value.dateFrom || null,
+            date_to: advancedFilters.value.dateTo || null,
+        };
     }
 
+    const now = new Date();
+    if (activeFilter.value === 'today') {
+        const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+        return { date_from: start, date_to: null };
+    }
+    if (activeFilter.value === 'yesterday') {
+        const y = new Date(now);
+        y.setDate(y.getDate() - 1);
+        const start = new Date(y.getFullYear(), y.getMonth(), y.getDate()).toISOString();
+        const end = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+        return { date_from: start, date_to: end };
+    }
+    if (activeFilter.value === 'week') {
+        const w = new Date(now);
+        w.setDate(w.getDate() - 7);
+        return { date_from: w.toISOString(), date_to: null };
+    }
+    return { date_from: null, date_to: null };
+};
+
+const performSearch = async () => {
     loading.value = true;
     try {
-        const response = await syncService.quickSearchOrders(
-            searchQuery.value,
-            activeFilter.value === 'all' ? null : sessionStore.sessionId // Example filter usage
-        );
-        
-        // For each order, we need to check eligibility
-        // In a real app, the API should return this. 
-        // For now, let's assume all are eligible or fetch details.
-        
-        const results = response.data || [];
-        
-        // Enrich with eligibility (Mocking for now unless API is ready)
-        orders.value = results.map(o => ({
-            ...o,
-            eligible: true // Placeholder
-        }));
-        
+        let results = [];
+
+        if (isOffline.value) {
+            // 6d — Offline fallback: search cached orders in IndexedDB
+            results = await syncService.searchOrdersOffline(searchQuery.value, activeFilter.value);
+            results = results.map(o => ({ ...o, eligible: o.status === 'paid' }));
+        } else if (hasAdvancedFilters.value || advancedFilters.value.dateFrom || advancedFilters.value.dateTo) {
+            // 6c — Advanced search via POST /orders/search
+            const dateRange = buildDateRange();
+            const response = await syncService.api.post('/orders/search', {
+                order_number: searchQuery.value || null,
+                product_search: advancedFilters.value.productSearch || null,
+                payment_method: advancedFilters.value.paymentMethod || null,
+                date_from: dateRange.date_from,
+                date_to: dateRange.date_to,
+                per_page: 20,
+            });
+            results = response.data?.data ?? [];
+            results = results.map(o => ({ ...o, eligible: o.status === 'paid' }));
+        } else {
+            // Simple quick search
+            const response = await syncService.quickSearchOrders(
+                searchQuery.value || ' ',
+                null
+            );
+            results = response.data ?? [];
+            results = results.map(o => ({ ...o, eligible: o.status === 'paid' }));
+        }
+
+        orders.value = results;
     } catch (e) {
         console.error('Search transactions failed', e);
+        orders.value = [];
     } finally {
         loading.value = false;
     }
@@ -221,17 +357,16 @@ const selectOrder = (order) => {
 
 const handleSelect = async () => {
     if (!selectedOrder.value) return;
-    
+
     loading.value = true;
     try {
-        // Fetch full details
         const details = await syncService.getOrderDetails(selectedOrder.value.id);
         const eligibility = await syncService.checkReturnEligibility(selectedOrder.value.id);
-        
+
         emit('select-order', {
             ...details.data,
             eligible: eligibility.eligible,
-            eligibility_reasons: eligibility.reasons
+            eligibility_reasons: eligibility.reasons,
         });
     } catch (e) {
         console.error('Fetch order details failed', e);
@@ -242,15 +377,25 @@ const handleSelect = async () => {
 };
 
 const formatDate = (date) => {
-    return dayjs(date).fromNow();
+    if (!date) return '';
+    const diff = Date.now() - new Date(date).getTime();
+    const seconds = Math.round(diff / 1000);
+    const minutes = Math.round(seconds / 60);
+    const hours   = Math.round(minutes / 60);
+    const days    = Math.round(hours / 24);
+    const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+    if (seconds < 60)  return rtf.format(-seconds, 'second');
+    if (minutes < 60)  return rtf.format(-minutes, 'minute');
+    if (hours < 24)    return rtf.format(-hours,   'hour');
+    return rtf.format(-days, 'day');
 };
 
 const formatMoney = (amount) => {
     const val = Number(amount) / sessionStore.decimalFactor;
-    return new Intl.NumberFormat('en-US', { 
-        style: 'currency', 
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
         currency: sessionStore.currencyCode,
-        minimumFractionDigits: sessionStore.decimalPlaces
+        minimumFractionDigits: sessionStore.decimalPlaces,
     }).format(val);
 };
 

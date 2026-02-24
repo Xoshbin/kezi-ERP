@@ -7,39 +7,42 @@ import { db } from '../db/pos-db';
 export function useReturnProcess() {
     const sessionStore = useSessionStore();
     const connectivity = useConnectivityStore();
-    
+
     const selectedOrder = ref(null);
     const returnLines = ref([]);
-    const returnReason = ref('');
+    const returnReason = ref('customer_changed_mind');
     const returnNotes = ref('');
     const refundMethod = ref('cash');
     const processing = ref(false);
     const error = ref(null);
-    
-    // Calculate totals
-    const refundAmount = computed(() => {
-        return returnLines.value.reduce((sum, line) => {
-            return sum + (line.quantity_returned * line.unit_price);
-        }, 0);
-    });
-    
+
+    // 6a — Manager approval state
+    const requiresManagerApproval = ref(false);
+    const pendingReturnId = ref(null);
+
+    // ---------- Computed totals ----------
+
+    const refundAmount = computed(() =>
+        returnLines.value.reduce((sum, line) => sum + (line.quantity_returned * line.unit_price), 0)
+    );
+
     const restockingFee = computed(() => {
         const policy = sessionStore.currentSession?.profile?.return_policy || {};
         const feePercentage = policy.restocking_fee_percentage || 0;
         return Math.round((refundAmount.value * feePercentage) / 100);
     });
-    
-    const netRefund = computed(() => {
-        return refundAmount.value - restockingFee.value;
-    });
-    
-    // Initialize return from order
+
+    const netRefund = computed(() => refundAmount.value - restockingFee.value);
+
+    // ---------- Initialise return from order ----------
+
     const initializeReturn = (order) => {
         selectedOrder.value = order;
         returnLines.value = order.lines.map(line => ({
             original_order_line_id: line.id,
             product_id: line.product_id,
-            product_name: line.product_name,
+            product_name: line.product_name || line.product?.name,
+            product_sku: line.product_sku || line.product?.sku,
             quantity_available: line.quantity,
             quantity_returned: 0,
             unit_price: line.unit_price,
@@ -52,16 +55,26 @@ export function useReturnProcess() {
         returnNotes.value = '';
         refundMethod.value = 'cash';
         error.value = null;
+        requiresManagerApproval.value = false;
+        pendingReturnId.value = null;
     };
-    
-    // Submit return (Store + Submit in one go for common case)
+
+    // ---------- Process return ----------
+
     const processReturnRequest = async () => {
         try {
             processing.value = true;
             error.value = null;
-            
+            requiresManagerApproval.value = false;
+
             const payload = {
-                uuid: self.crypto?.randomUUID() || Math.random().toString(36).substring(7),
+                uuid: (typeof crypto !== 'undefined' && crypto.randomUUID)
+                    ? crypto.randomUUID()
+                    : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                        const r = Math.random() * 16 | 0;
+                        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                        return v.toString(16);
+                    }),
                 pos_session_id: sessionStore.sessionId,
                 original_order_id: selectedOrder.value.id,
                 currency_id: selectedOrder.value.currency_id || sessionStore.currentSession?.currency_id,
@@ -75,43 +88,54 @@ export function useReturnProcess() {
                         product_id: l.product_id,
                         original_order_line_id: l.original_order_line_id,
                         quantity_returned: l.quantity_returned,
+                        quantity_available: l.quantity_available,
                         unit_price: l.unit_price,
                         refund_amount: l.quantity_returned * l.unit_price,
                         restock: l.restock,
                         item_condition: l.item_condition,
-                        restocking_fee_line: Math.round((l.quantity_returned * l.unit_price * (sessionStore.currentSession?.profile?.return_policy?.restocking_fee_percentage || 0)) / 100)
+                        return_reason_line: l.return_reason_line,
+                        restocking_fee_line: Math.round(
+                            (l.quantity_returned * l.unit_price *
+                                (sessionStore.currentSession?.profile?.return_policy?.restocking_fee_percentage || 0)) / 100
+                        ),
+                        metadata: l.metadata || [],
                     })),
             };
 
             if (!connectivity.isOnline) {
-                // Offline support
+                // Offline support — save to IndexedDB
                 const returnId = await db.transaction('rw', db.returns, db.return_lines, async () => {
                     const id = await db.returns.add({
                         ...payload,
-                        lines: undefined, // Don't store lines in main table if using separate table
+                        lines: undefined,
                         sync_status: 'pending',
-                        status: 'draft'
+                        status: 'draft',
                     });
-                    
                     const linesWithId = payload.lines.map(l => ({ ...l, return_id: id }));
                     await db.return_lines.bulkAdd(linesWithId);
                     return id;
                 });
-                
                 return { id: returnId, return_number: 'PENDING', status: 'draft' };
             }
-            
-            // 1. Store the return on server
+
+            // 1. Create the return on the server
             const returnData = await syncService.createReturn(payload);
-            
-            // 2. Submit the return
+
+            // 2. Submit it (moves to pending_approval or approved depending on policy)
             const submittedReturn = await syncService.submitReturn(returnData.id);
-            
-            // 3. If approved automatically, try to process
+
+            // 3a. Requires manager approval — surface the PIN modal instead of processing
+            if (submittedReturn.status === 'pending_approval') {
+                requiresManagerApproval.value = true;
+                pendingReturnId.value = submittedReturn.id;
+                return { _requiresApproval: true, id: submittedReturn.id };
+            }
+
+            // 3b. Auto-approved — process immediately
             if (submittedReturn.status === 'approved') {
                 return await syncService.processReturn(submittedReturn.id);
             }
-            
+
             return submittedReturn;
         } catch (e) {
             console.error('Return process failed', e);
@@ -121,15 +145,31 @@ export function useReturnProcess() {
             processing.value = false;
         }
     };
-    
-    const requestManagerApproval = async (returnId, managerPin) => {
-        // In the backend we don't have a specific request-approval with PIN yet,
-        // usually manager does it via Filament. But for the terminal we might need it.
-        // For now, let's assume manager approves in admin panel or we implement PIN check later.
-        // Actually, the plan mentions a PIN modal. We'll need a backend endpoint for this.
-        // For now, let's stick to the basic flow.
+
+    /**
+     * 6a — Called after the manager PIN modal emits 'approved'.
+     * The backend has already approved the return; we just need to process it.
+     */
+    const handleManagerApproved = async (pinResult) => {
+        try {
+            processing.value = true;
+            error.value = null;
+            requiresManagerApproval.value = false;
+
+            const returnId = pendingReturnId.value;
+            pendingReturnId.value = null;
+
+            const processed = await syncService.processReturn(returnId);
+            return processed;
+        } catch (e) {
+            console.error('Processing after manager approval failed', e);
+            error.value = e.response?.data?.message || 'Failed to process return after approval.';
+            throw e;
+        } finally {
+            processing.value = false;
+        }
     };
-    
+
     return {
         selectedOrder,
         returnLines,
@@ -141,7 +181,10 @@ export function useReturnProcess() {
         refundAmount,
         restockingFee,
         netRefund,
+        requiresManagerApproval,
+        pendingReturnId,
         initializeReturn,
         processReturnRequest,
+        handleManagerApproved,
     };
 }

@@ -50,10 +50,20 @@
                 </svg>
             </div>
             <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">Return Processed!</h2>
-            <p class="text-gray-500 dark:text-gray-400 mb-8 font-mono text-lg">{{ returnSuccess.returnNumber }}</p>
-            <button @click="returnSuccess = null" class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-8 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition-transform shadow-xl">
-                Done
-            </button>
+            <p class="text-gray-500 dark:text-gray-400 mb-4 font-mono text-lg">{{ returnSuccess.returnNumber }}</p>
+            <div class="flex gap-4 mb-4">
+                <button
+                    v-if="returnSuccess.returnData"
+                    @click="printLastReturnReceipt"
+                    class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 px-6 py-4 rounded-2xl font-bold text-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-lg flex items-center gap-2"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                    Print Return Receipt
+                </button>
+                <button @click="returnSuccess = null" class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-8 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition-transform shadow-xl">
+                    Done
+                </button>
+            </div>
         </div>
 
         <!-- Success Overlay -->
@@ -425,6 +435,7 @@ import OrderHistoryPanel from './components/OrderHistoryPanel.vue';
 import ReceiptSearchModal from './components/ReceiptSearchModal.vue';
 import ReturnProcessModal from './components/ReturnProcessModal.vue';
 import { useReceipt } from './composables/useReceipt';
+import { cacheRecentOrders } from './services/sync-service';
 import { useBarcodeScanner } from './composables/useBarcodeScanner';
 import { useKeyboardShortcuts } from './composables/useKeyboardShortcuts';
 import ScanToast from './components/ScanToast.vue';
@@ -587,6 +598,8 @@ onMounted(async () => {
                  await syncMasterData((progress) => {
                      syncProgress.value = `Downloading Catalog: ${progress.totalItemsSynced} items...`;
                  });
+                 // 6d — Cache recent orders for offline receipt search
+                 cacheRecentOrders(50).catch(() => {});
              } catch (syncError) {
                  console.error('Master data sync failed', syncError);
                  sessionStore.error = 'Failed to sync terminal data. Using local cache if available.';
@@ -635,7 +648,7 @@ onMounted(async () => {
 
 const showOrderHistory = ref(false);
 
-const { printReceipt } = useReceipt();
+const { printReceipt, printReturnReceipt } = useReceipt();
 
 const printLastReceipt = async () => {
     if (orderSuccess.value?.orderId) {
@@ -683,8 +696,15 @@ const handleOrderSelected = (order) => {
 const handleReturnCompleted = (result) => {
     showReturnProcess.value = false;
     returnSuccess.value = {
-        returnNumber: result.return_number || result.id
+        returnNumber: result.return_number || result.id,
+        returnData: result,
     };
+};
+
+const printLastReturnReceipt = async () => {
+    if (returnSuccess.value?.returnData) {
+        await printReturnReceipt(returnSuccess.value.returnData);
+    }
 };
 
 // ... existing code ...
