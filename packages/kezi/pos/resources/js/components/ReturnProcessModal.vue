@@ -41,9 +41,9 @@
                         Select Items
                         <span class="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 rounded-md text-[10px]">{{ returnLines.length }} Products</span>
                     </h3>
-                    
+
                     <div class="space-y-3">
-                        <div v-for="(line, index) in returnLines" :key="index" 
+                        <div v-for="(line, index) in returnLines" :key="index"
                             class="bg-white dark:bg-gray-800 p-4 rounded-3xl border-2 transition-all"
                             :class="line.quantity_returned > 0 ? 'border-primary-500 shadow-lg shadow-primary-500/5' : 'border-gray-100 dark:border-gray-700'"
                         >
@@ -118,6 +118,27 @@
                     </div>
                 </div>
 
+                <!-- Manager Pin Prompt Banner (shown when requires approval) -->
+                <div v-if="requiresManagerApproval && pendingReturnId" class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/30 p-4 rounded-2xl flex items-center justify-between gap-4 animate-in slide-in-from-bottom-2 duration-300">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-amber-100 dark:bg-amber-500/20 rounded-xl flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-black text-amber-800 dark:text-amber-300">Manager Approval Required</p>
+                            <p class="text-xs text-amber-600 dark:text-amber-400">Return exceeds policy threshold. Enter manager PIN to continue.</p>
+                        </div>
+                    </div>
+                    <button
+                        @click="showPinModal = true"
+                        class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-black transition-all active:scale-95 shadow-lg shadow-amber-500/30 whitespace-nowrap"
+                    >
+                        Enter PIN
+                    </button>
+                </div>
+
                 <!-- Error Alert -->
                 <div v-if="error" class="bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 p-4 rounded-2xl text-sm font-bold flex items-center gap-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
@@ -141,13 +162,13 @@
                             {{ formatMoney(netRefund) }}
                         </div>
                     </div>
-                    
+
                     <div class="flex gap-4">
                         <button @click="$emit('close')" class="px-6 py-4 rounded-2xl font-bold text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                             Cancel
                         </button>
-                        <button 
-                            @click="handleProcess" 
+                        <button
+                            @click="handleProcess"
                             :disabled="!hasItemsToReturn || processing"
                             class="px-10 py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-2xl font-black shadow-xl disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95 transition-all flex items-center gap-3"
                         >
@@ -159,16 +180,26 @@
             </div>
         </div>
     </div>
+
+    <!-- 6a — Manager PIN Modal (rendered outside the modal so it appears above it) -->
+    <ManagerPinModal
+        v-if="showPinModal"
+        :visible="showPinModal"
+        :return-id="pendingReturnId"
+        @cancel="showPinModal = false"
+        @approved="handlePinApproved"
+    />
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useSessionStore } from '../stores/session';
 import { useReturnProcess } from '../composables/useReturnProcess';
+import ManagerPinModal from './ManagerPinModal.vue';
 
 const props = defineProps({
     visible: Boolean,
-    orderData: Object
+    orderData: Object,
 });
 
 const emit = defineEmits(['close', 'completed']);
@@ -185,13 +216,17 @@ const {
     refundAmount,
     restockingFee,
     netRefund,
+    requiresManagerApproval,
+    pendingReturnId,
     initializeReturn,
-    processReturnRequest
+    processReturnRequest,
+    handleManagerApproved,
 } = useReturnProcess();
 
-const hasItemsToReturn = computed(() => {
-    return returnLines.value.some(l => l.quantity_returned > 0);
-});
+// 6a — PIN modal state
+const showPinModal = ref(false);
+
+const hasItemsToReturn = computed(() => returnLines.value.some(l => l.quantity_returned > 0));
 
 const updateLineQty = (index, delta) => {
     const line = returnLines.value[index];
@@ -204,23 +239,36 @@ const updateLineQty = (index, delta) => {
 const handleProcess = async () => {
     try {
         const result = await processReturnRequest();
+        if (result && result._requiresApproval) {
+            // Don't emit completed yet — wait for manager PIN
+            return;
+        }
         emit('completed', result);
-    } catch (e) {
-        // Error is handled by composable state
+    } catch {
+        // Error handled by composable state
+    }
+};
+
+const handlePinApproved = async (pinResult) => {
+    showPinModal.value = false;
+    // After PIN approval, the return is now in 'approved' state — process it
+    try {
+        const result = await handleManagerApproved(pinResult);
+        emit('completed', result);
+    } catch {
+        // Error shown in composable
     }
 };
 
 const formatMoney = (amount) => {
     const val = Number(amount) / sessionStore.decimalFactor;
-    return new Intl.NumberFormat('en-US', { 
-        style: 'currency', 
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
         currency: sessionStore.currencyCode,
-        minimumFractionDigits: sessionStore.decimalPlaces
+        minimumFractionDigits: sessionStore.decimalPlaces,
     }).format(val);
 };
 
-// Initialize when order data changes
-import { watch } from 'vue';
 watch(() => props.orderData, (newVal) => {
     if (newVal) {
         initializeReturn(newVal);

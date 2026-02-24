@@ -27,6 +27,10 @@ Route::middleware(['auth', 'throttle:60,1'])
         Route::post('/returns/{return}/approve', [\Kezi\Pos\Http\Controllers\Api\PosReturnController::class, 'approve'])->name('returns.approve');
         Route::post('/returns/{return}/reject', [\Kezi\Pos\Http\Controllers\Api\PosReturnController::class, 'reject'])->name('returns.reject');
         Route::post('/returns/{return}/process', [\Kezi\Pos\Http\Controllers\Api\PosReturnController::class, 'process'])->name('returns.process');
+
+        // Manager PIN verification — approve a return at the terminal without manager login
+        Route::post('/returns/{return}/verify-pin', [\Kezi\Pos\Http\Controllers\Api\ManagerPinController::class, 'verifyAndApprove'])->name('returns.verify-pin');
+
     });
 
 // Order sync gets a higher throttle — batch uploads from offline POS sessions can be large.

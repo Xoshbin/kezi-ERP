@@ -203,6 +203,83 @@ export const processReturn = async (returnId) => {
     return response.data;
 };
 
+/**
+ * 6a — Manager PIN verification.
+ * Sends the manager's PIN to the backend for validation and, on success,
+ * immediately approves the return.
+ */
+export const verifyManagerPin = async (returnId, pin) => {
+    const response = await api.post(`/returns/${returnId}/verify-pin`, { pin });
+    return response.data;
+};
+
+/**
+ * 6d — Offline search cache.
+ * Downloads the last N orders for the current company and stores them in
+ * IndexedDB so that receipt lookups work without an internet connection.
+ */
+export const cacheRecentOrders = async (limit = 50) => {
+    try {
+        const response = await api.post('/orders/search', {
+            per_page: limit,
+            status: null, // all statuses except cancelled (handled server-side)
+        });
+        const orders = response.data?.data ?? [];
+        if (orders.length) {
+            await db.transaction('rw', db.recent_orders, async () => {
+                await db.recent_orders.clear();
+                await db.recent_orders.bulkPut(orders);
+            });
+        }
+        return orders.length;
+    } catch {
+        // Silently fail — this is an optimistic cache refresh
+        return 0;
+    }
+};
+
+/**
+ * 6d — Offline receipt search.
+ * Searches the local IndexedDB recent_orders table. Only used as a fallback
+ * when the device is offline.
+ */
+export const searchOrdersOffline = async (searchTerm, activeFilter = null) => {
+    let orders = await db.recent_orders.toArray();
+
+    // Date filter
+    if (activeFilter && activeFilter !== 'all') {
+        const now = new Date();
+        let cutoff;
+        if (activeFilter === 'today') {
+            cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+        } else if (activeFilter === 'yesterday') {
+            const y = new Date(now);
+            y.setDate(y.getDate() - 1);
+            cutoff = new Date(y.getFullYear(), y.getMonth(), y.getDate()).toISOString();
+            const end = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+            orders = orders.filter(o => o.ordered_at >= cutoff && o.ordered_at < end);
+        } else if (activeFilter === 'week') {
+            const w = new Date(now);
+            w.setDate(w.getDate() - 7);
+            cutoff = w.toISOString();
+        }
+        if (activeFilter === 'today' || activeFilter === 'week') {
+            orders = orders.filter(o => o.ordered_at >= cutoff);
+        }
+    }
+
+    // Text search
+    if (searchTerm && searchTerm.length >= 1) {
+        const q = searchTerm.toLowerCase();
+        orders = orders.filter(o =>
+            (o.order_number && o.order_number.toLowerCase().includes(q)) ||
+            (o.customer?.name && o.customer.name.toLowerCase().includes(q))
+        );
+    }
+
+    return orders.slice(0, 20);
+};
+
 export const syncReturns = async () => {
     try {
         const pending = await db.returns.where('sync_status').equals('pending').toArray();
