@@ -167,6 +167,7 @@ class DocsAction
             'pos-orders' => 'how-to/pos-orders',
             'pos-profiles' => 'how-to/pos-profiles',
             'pos-sessions' => 'how-to/pos-sessions',
+            'pos-returns' => 'how-to/pos-returns',
         ];
 
         return $mapping[$slug] ?? $slug;
