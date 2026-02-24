@@ -159,3 +159,98 @@ export const closeSession = async (sessionId, closingCash) => {
     const response = await api.post(`/sessions/${sessionId}/close`, { closing_cash: closingCash });
     return response.data;
 };
+
+// POS Returns API
+export const quickSearchOrders = async (query, sessionId = null) => {
+    const response = await api.get('/orders/quick-search', { 
+        params: { q: query, session_id: sessionId } 
+    });
+    return response.data;
+};
+
+export const getOrderDetails = async (orderId) => {
+    const response = await api.get(`/orders/${orderId}/details`);
+    return response.data;
+};
+
+export const checkReturnEligibility = async (orderId) => {
+    const response = await api.get(`/orders/${orderId}/return-eligibility`);
+    return response.data;
+};
+
+export const createReturn = async (payload) => {
+    const response = await api.post('/returns', payload);
+    return response.data;
+};
+
+export const submitReturn = async (returnId) => {
+    const response = await api.post(`/returns/${returnId}/submit`);
+    return response.data;
+};
+
+export const approveReturn = async (returnId) => {
+    const response = await api.post(`/returns/${returnId}/approve`);
+    return response.data;
+};
+
+export const rejectReturn = async (returnId, reason) => {
+    const response = await api.post(`/returns/${returnId}/reject`, { reason });
+    return response.data;
+};
+
+export const processReturn = async (returnId) => {
+    const response = await api.post(`/returns/${returnId}/process`);
+    return response.data;
+};
+
+export const syncReturns = async () => {
+    try {
+        const pending = await db.returns.where('sync_status').equals('pending').toArray();
+        if (!pending.length) return { synced: [], failed: [] };
+
+        const synced = [];
+        const failed = [];
+
+        for (const posReturn of pending) {
+            try {
+                const lines = await db.return_lines.where('return_id').equals(posReturn.id).toArray();
+                
+                const payload = {
+                    ...posReturn,
+                    lines: lines.map(l => ({
+                        ...l,
+                        refund_amount: l.quantity_returned * l.unit_price,
+                        restocking_fee_line: 0 // Placeholder or calculated
+                    }))
+                };
+
+                const response = await api.post('/returns', payload);
+                const returnData = response.data;
+
+                // 2. Submit the return
+                const submittedReturn = await submitReturn(returnData.id);
+
+                // 3. Update local DB
+                await db.transaction('rw', db.returns, async () => {
+                    await db.returns.update(posReturn.id, {
+                        uuid: submittedReturn.uuid,
+                        status: submittedReturn.status,
+                        sync_status: 'synced'
+                    });
+                });
+
+                synced.push(posReturn.uuid);
+            } catch (e) {
+                console.error(`Failed to sync return ${posReturn.uuid}`, e);
+                failed.push({ uuid: posReturn.uuid, error: e.message });
+            }
+        }
+
+        return { synced, failed };
+    } catch (error) {
+        console.error('Returns Sync Failed:', error);
+        throw error;
+    }
+};
+
+export { api };

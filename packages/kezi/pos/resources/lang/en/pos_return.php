@@ -65,4 +65,8 @@ return [
         'processed' => 'Return processed successfully.',
         'process_failed' => 'Failed to process return.',
     ],
+
+    'pending_approvals' => 'Pending Approvals',
+    'refunds_today' => 'Refunds Today',
+    'return_rate' => 'Return Rate',
 ];

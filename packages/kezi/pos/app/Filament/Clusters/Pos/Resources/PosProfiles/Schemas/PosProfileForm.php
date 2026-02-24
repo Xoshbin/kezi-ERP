@@ -99,6 +99,75 @@ class PosProfileForm
                             ->searchable()
                             ->required(),
                     ]),
+
+                Section::make(__('pos::pos_profile.return_policy'))
+                    ->schema([
+                        Toggle::make('return_policy.enabled')
+                            ->label(__('pos::pos_profile.return_policy_enabled'))
+                            ->helperText(__('pos::pos_profile.return_policy_enabled_helper'))
+                            ->live(),
+
+                        TextInput::make('return_policy.time_limit_days')
+                            ->label(__('pos::pos_profile.time_limit_days'))
+                            ->helperText(__('pos::pos_profile.time_limit_days_helper'))
+                            ->numeric()
+                            ->default(30)
+                            ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('return_policy.enabled')),
+
+                        Toggle::make('return_policy.require_receipt')
+                            ->label(__('pos::pos_profile.require_receipt'))
+                            ->default(true)
+                            ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('return_policy.enabled')),
+
+                        Toggle::make('return_policy.require_manager_approval')
+                            ->label(__('pos::pos_profile.require_manager_approval'))
+                            ->live()
+                            ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('return_policy.enabled')),
+
+                        TextInput::make('return_policy.manager_approval_threshold')
+                            ->label(__('pos::pos_profile.manager_approval_threshold'))
+                            ->helperText(__('pos::pos_profile.manager_approval_threshold_helper'))
+                            ->numeric()
+                            ->default(0)
+                            ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('return_policy.enabled') && $get('return_policy.require_manager_approval')),
+
+                        TextInput::make('return_policy.restocking_fee_percentage')
+                            ->label(__('pos::pos_profile.restocking_fee_percentage'))
+                            ->numeric()
+                            ->inputMode('decimal')
+                            ->default(0)
+                            ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('return_policy.enabled')),
+
+                        CheckboxList::make('return_policy.allowed_refund_methods')
+                            ->label(__('pos::pos_profile.allowed_refund_methods'))
+                            ->options([
+                                'original_method' => __('pos::pos_profile.original_method'),
+                                'store_credit' => __('pos::pos_profile.store_credit'),
+                                'cash' => __('pos::pos_profile.cash'),
+                            ])
+                            ->default(['original_method'])
+                            ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('return_policy.enabled')),
+
+                        Select::make('return_policy.default_restock_location_id')
+                            ->label(__('pos::pos_profile.default_restock_location'))
+                            ->options(fn () => StockLocation::query()
+                                ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
+                                ->where('type', StockLocationType::Internal)
+                                ->where('is_active', true)
+                                ->pluck('name', 'id'))
+                            ->searchable()
+                            ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('return_policy.enabled')),
+
+                        Select::make('return_policy.damaged_items_location_id')
+                            ->label(__('pos::pos_profile.damaged_items_location'))
+                            ->options(fn () => StockLocation::query()
+                                ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
+                                ->where('type', StockLocationType::Internal)
+                                ->where('is_active', true)
+                                ->pluck('name', 'id'))
+                            ->searchable()
+                            ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('return_policy.enabled')),
+                    ])->columns(2),
             ]);
     }
 }
