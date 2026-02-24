@@ -159,3 +159,175 @@ export const closeSession = async (sessionId, closingCash) => {
     const response = await api.post(`/sessions/${sessionId}/close`, { closing_cash: closingCash });
     return response.data;
 };
+
+// POS Returns API
+export const quickSearchOrders = async (query, sessionId = null) => {
+    const response = await api.get('/orders/quick-search', { 
+        params: { q: query, session_id: sessionId } 
+    });
+    return response.data;
+};
+
+export const getOrderDetails = async (orderId) => {
+    const response = await api.get(`/orders/${orderId}/details`);
+    return response.data;
+};
+
+export const checkReturnEligibility = async (orderId) => {
+    const response = await api.get(`/orders/${orderId}/return-eligibility`);
+    return response.data;
+};
+
+export const createReturn = async (payload) => {
+    const response = await api.post('/returns', payload);
+    return response.data;
+};
+
+export const submitReturn = async (returnId) => {
+    const response = await api.post(`/returns/${returnId}/submit`);
+    return response.data;
+};
+
+export const approveReturn = async (returnId) => {
+    const response = await api.post(`/returns/${returnId}/approve`);
+    return response.data;
+};
+
+export const rejectReturn = async (returnId, reason) => {
+    const response = await api.post(`/returns/${returnId}/reject`, { reason });
+    return response.data;
+};
+
+export const processReturn = async (returnId) => {
+    const response = await api.post(`/returns/${returnId}/process`);
+    return response.data;
+};
+
+/**
+ * 6a — Manager PIN verification.
+ * Sends the manager's PIN to the backend for validation and, on success,
+ * immediately approves the return.
+ */
+export const verifyManagerPin = async (returnId, pin) => {
+    const response = await api.post(`/returns/${returnId}/verify-pin`, { pin });
+    return response.data;
+};
+
+/**
+ * 6d — Offline search cache.
+ * Downloads the last N orders for the current company and stores them in
+ * IndexedDB so that receipt lookups work without an internet connection.
+ */
+export const cacheRecentOrders = async (limit = 50) => {
+    try {
+        const response = await api.post('/orders/search', {
+            per_page: limit,
+            status: null, // all statuses except cancelled (handled server-side)
+        });
+        const orders = response.data?.data ?? [];
+        if (orders.length) {
+            await db.transaction('rw', db.recent_orders, async () => {
+                await db.recent_orders.clear();
+                await db.recent_orders.bulkPut(orders);
+            });
+        }
+        return orders.length;
+    } catch {
+        // Silently fail — this is an optimistic cache refresh
+        return 0;
+    }
+};
+
+/**
+ * 6d — Offline receipt search.
+ * Searches the local IndexedDB recent_orders table. Only used as a fallback
+ * when the device is offline.
+ */
+export const searchOrdersOffline = async (searchTerm, activeFilter = null) => {
+    let orders = await db.recent_orders.toArray();
+
+    // Date filter
+    if (activeFilter && activeFilter !== 'all') {
+        const now = new Date();
+        let cutoff;
+        if (activeFilter === 'today') {
+            cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+        } else if (activeFilter === 'yesterday') {
+            const y = new Date(now);
+            y.setDate(y.getDate() - 1);
+            cutoff = new Date(y.getFullYear(), y.getMonth(), y.getDate()).toISOString();
+            const end = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+            orders = orders.filter(o => o.ordered_at >= cutoff && o.ordered_at < end);
+        } else if (activeFilter === 'week') {
+            const w = new Date(now);
+            w.setDate(w.getDate() - 7);
+            cutoff = w.toISOString();
+        }
+        if (activeFilter === 'today' || activeFilter === 'week') {
+            orders = orders.filter(o => o.ordered_at >= cutoff);
+        }
+    }
+
+    // Text search
+    if (searchTerm && searchTerm.length >= 1) {
+        const q = searchTerm.toLowerCase();
+        orders = orders.filter(o =>
+            (o.order_number && o.order_number.toLowerCase().includes(q)) ||
+            (o.customer?.name && o.customer.name.toLowerCase().includes(q))
+        );
+    }
+
+    return orders.slice(0, 20);
+};
+
+export const syncReturns = async () => {
+    try {
+        const pending = await db.returns.where('sync_status').equals('pending').toArray();
+        if (!pending.length) return { synced: [], failed: [] };
+
+        const synced = [];
+        const failed = [];
+
+        for (const posReturn of pending) {
+            try {
+                const lines = await db.return_lines.where('return_id').equals(posReturn.id).toArray();
+                
+                const payload = {
+                    ...posReturn,
+                    lines: lines.map(l => ({
+                        ...l,
+                        refund_amount: l.quantity_returned * l.unit_price,
+                        restocking_fee_line: 0 // Placeholder or calculated
+                    }))
+                };
+
+                const response = await api.post('/returns', payload);
+                const returnData = response.data;
+
+                // 2. Submit the return
+                const submittedReturn = await submitReturn(returnData.id);
+
+                // 3. Update local DB
+                await db.transaction('rw', db.returns, async () => {
+                    await db.returns.update(posReturn.id, {
+                        uuid: submittedReturn.uuid,
+                        status: submittedReturn.status,
+                        sync_status: 'synced'
+                    });
+                });
+
+                synced.push(posReturn.uuid);
+            } catch (e) {
+                console.error(`Failed to sync return ${posReturn.uuid}`, e);
+                failed.push({ uuid: posReturn.uuid, error: e.message });
+            }
+        }
+
+        return { synced, failed };
+    } catch (error) {
+        console.error('Returns Sync Failed:', error);
+        throw error;
+    }
+};
+
+export { api };

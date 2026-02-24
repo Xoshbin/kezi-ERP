@@ -25,6 +25,47 @@
             @close="showOrderHistory = false"
         />
 
+        <!-- Receipt Search Modal -->
+        <ReceiptSearchModal 
+            v-if="showReceiptSearch" 
+            :visible="showReceiptSearch"
+            @close="showReceiptSearch = false"
+            @select-order="handleOrderSelected"
+        />
+
+        <!-- Return Process Modal -->
+        <ReturnProcessModal 
+            v-if="showReturnProcess"
+            :visible="showReturnProcess"
+            :order-data="selectedReturnOrder"
+            @close="showReturnProcess = false"
+            @completed="handleReturnCompleted"
+        />
+
+        <!-- Return Success Overlay -->
+        <div v-if="returnSuccess" class="fixed inset-0 z-[110] bg-white dark:bg-gray-900 flex flex-col items-center justify-center text-center p-6 transition-all duration-300">
+            <div class="w-24 h-24 bg-rose-100 dark:bg-rose-900/30 rounded-full flex items-center justify-center mb-6 animate-bounce">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-rose-600 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z" />
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">Return Processed!</h2>
+            <p class="text-gray-500 dark:text-gray-400 mb-4 font-mono text-lg">{{ returnSuccess.returnNumber }}</p>
+            <div class="flex gap-4 mb-4">
+                <button
+                    v-if="returnSuccess.returnData"
+                    @click="printLastReturnReceipt"
+                    class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 px-6 py-4 rounded-2xl font-bold text-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-lg flex items-center gap-2"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                    Print Return Receipt
+                </button>
+                <button @click="returnSuccess = null" class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-8 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition-transform shadow-xl">
+                    Done
+                </button>
+            </div>
+        </div>
+
         <!-- Success Overlay -->
         <div v-if="orderSuccess" class="fixed inset-0 z-[110] bg-white dark:bg-gray-900 flex flex-col items-center justify-center text-center p-6 transition-all duration-300">
             <div class="w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mb-6 animate-bounce">
@@ -90,6 +131,17 @@
                         Session #{{ sessionStore.sessionId }} · {{ sessionStore.profileName }}
                     </span>
                 </div>
+
+                <button 
+                    v-if="sessionStore.hasActiveSession"
+                    @click="showReceiptSearch = true"
+                    class="w-8 h-8 rounded-lg bg-gray-50 hover:bg-rose-50 dark:bg-gray-800 dark:hover:bg-rose-500/10 text-gray-400 hover:text-rose-500 transition-all flex items-center justify-center border dark:border-gray-700 hover:border-rose-200"
+                    title="Return Items (F7)"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z" />
+                    </svg>
+                </button>
 
                 <button 
                     v-if="sessionStore.hasActiveSession"
@@ -380,7 +432,10 @@ import PaymentModal from './components/PaymentModal.vue';
 import CloseSessionModal from './components/CloseSessionModal.vue';
 import CustomerSelector from './components/CustomerSelector.vue';
 import OrderHistoryPanel from './components/OrderHistoryPanel.vue';
+import ReceiptSearchModal from './components/ReceiptSearchModal.vue';
+import ReturnProcessModal from './components/ReturnProcessModal.vue';
 import { useReceipt } from './composables/useReceipt';
+import { cacheRecentOrders } from './services/sync-service';
 import { useBarcodeScanner } from './composables/useBarcodeScanner';
 import { useKeyboardShortcuts } from './composables/useKeyboardShortcuts';
 import ScanToast from './components/ScanToast.vue';
@@ -397,6 +452,11 @@ const showPaymentModal = ref(false);
 const showCloseSessionModal = ref(false);
 const orderSuccess = ref(null);
 const syncProgress = ref('');
+
+const showReceiptSearch = ref(false);
+const showReturnProcess = ref(false);
+const selectedReturnOrder = ref(null);
+const returnSuccess = ref(null);
 
 const discountModal = ref({ visible: false, item: null });
 const showOrderDiscountInput = ref(false);
@@ -472,6 +532,9 @@ useKeyboardShortcuts({
     toggleOrderHistory: () => {
         showOrderHistory.value = !showOrderHistory.value;
     },
+    openReturn: () => {
+        showReceiptSearch.value = true;
+    },
     closeSession: () => {
         if (sessionStore.hasActiveSession) {
             showCloseSessionModal.value = true;
@@ -480,6 +543,12 @@ useKeyboardShortcuts({
     closeModal: () => {
         if (orderSuccess.value) {
             orderSuccess.value = null;
+        } else if (returnSuccess.value) {
+            returnSuccess.value = null;
+        } else if (showReceiptSearch.value) {
+            showReceiptSearch.value = false;
+        } else if (showReturnProcess.value) {
+            showReturnProcess.value = false;
         } else if (showPaymentModal.value) {
             showPaymentModal.value = false;
         } else if (showCloseSessionModal.value) {
@@ -529,6 +598,8 @@ onMounted(async () => {
                  await syncMasterData((progress) => {
                      syncProgress.value = `Downloading Catalog: ${progress.totalItemsSynced} items...`;
                  });
+                 // 6d — Cache recent orders for offline receipt search
+                 cacheRecentOrders(50).catch(() => {});
              } catch (syncError) {
                  console.error('Master data sync failed', syncError);
                  sessionStore.error = 'Failed to sync terminal data. Using local cache if available.';
@@ -577,7 +648,7 @@ onMounted(async () => {
 
 const showOrderHistory = ref(false);
 
-const { printReceipt } = useReceipt();
+const { printReceipt, printReturnReceipt } = useReceipt();
 
 const printLastReceipt = async () => {
     if (orderSuccess.value?.orderId) {
@@ -614,6 +685,26 @@ const clearOrderDiscount = () => {
     cart.clearOrderDiscount();
     orderDiscountInput.value = 0;
     showOrderDiscountInput.value = false;
+};
+
+const handleOrderSelected = (order) => {
+    selectedReturnOrder.value = order;
+    showReceiptSearch.value = false;
+    showReturnProcess.value = true;
+};
+
+const handleReturnCompleted = (result) => {
+    showReturnProcess.value = false;
+    returnSuccess.value = {
+        returnNumber: result.return_number || result.id,
+        returnData: result,
+    };
+};
+
+const printLastReturnReceipt = async () => {
+    if (returnSuccess.value?.returnData) {
+        await printReturnReceipt(returnSuccess.value.returnData);
+    }
 };
 
 // ... existing code ...
