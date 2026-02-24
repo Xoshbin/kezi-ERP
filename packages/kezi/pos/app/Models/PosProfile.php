@@ -42,6 +42,7 @@ class PosProfile extends Model
         'stock_location_id',
         'default_income_account_id',
         'default_payment_journal_id',
+        'return_policy',
     ];
 
     protected function casts(): array
@@ -49,6 +50,7 @@ class PosProfile extends Model
         return [
             'features' => 'array',
             'settings' => 'array',
+            'return_policy' => 'array',
             'is_active' => 'boolean',
         ];
     }
