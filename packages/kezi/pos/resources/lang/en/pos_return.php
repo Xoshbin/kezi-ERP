@@ -69,4 +69,9 @@ return [
     'pending_approvals' => 'Pending Approvals',
     'refunds_today' => 'Refunds Today',
     'return_rate' => 'Return Rate',
+
+    'pin' => [
+        'invalid' => 'Incorrect manager PIN. Please try again.',
+        'not_approvable' => 'This return cannot be approved in its current status.',
+    ],
 ];
