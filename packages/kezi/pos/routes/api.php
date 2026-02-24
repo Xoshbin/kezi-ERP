@@ -20,6 +20,13 @@ Route::middleware(['auth', 'throttle:60,1'])
         Route::get('/orders/quick-search', [\Kezi\Pos\Http\Controllers\PosOrderSearchController::class, 'quickSearch'])->name('orders.quick-search');
         Route::get('/orders/{order}/details', [\Kezi\Pos\Http\Controllers\PosOrderSearchController::class, 'details'])->name('orders.details');
         Route::get('/orders/{order}/return-eligibility', [\Kezi\Pos\Http\Controllers\PosOrderSearchController::class, 'checkReturnEligibility'])->name('orders.return-eligibility');
+
+        // POS Returns
+        Route::post('/returns', [\Kezi\Pos\Http\Controllers\Api\PosReturnController::class, 'store'])->name('returns.store');
+        Route::post('/returns/{return}/submit', [\Kezi\Pos\Http\Controllers\Api\PosReturnController::class, 'submit'])->name('returns.submit');
+        Route::post('/returns/{return}/approve', [\Kezi\Pos\Http\Controllers\Api\PosReturnController::class, 'approve'])->name('returns.approve');
+        Route::post('/returns/{return}/reject', [\Kezi\Pos\Http\Controllers\Api\PosReturnController::class, 'reject'])->name('returns.reject');
+        Route::post('/returns/{return}/process', [\Kezi\Pos\Http\Controllers\Api\PosReturnController::class, 'process'])->name('returns.process');
     });
 
 // Order sync gets a higher throttle — batch uploads from offline POS sessions can be large.
