@@ -17,8 +17,12 @@ return [
         'quantity' => 'بڕ',
         'reserved_quantity' => 'بڕی گیراو',
         'available_quantity' => 'بڕی بەردەست',
+        'is_negative_stock' => 'عەمباری نەرێنی (کەمی)',
         'updated_at' => 'دواین نوێکردنەوە',
     ],
+
+    'discrepancy_label' => 'کەمی و جیاوازی عەمبار',
+    'discrepancy_plural_label' => 'کەمی و جیاوازییەکانی عەمبار',
 
     'filters' => [
         'product' => 'بەرهەم',
@@ -34,5 +38,9 @@ return [
     'empty_state' => [
         'heading' => 'هیچ بڕێکی عەمبار نەدۆزرایەوە',
         'description' => 'بڕەکانی عەمبار لێرە دەردەکەون کاتێک بەرهەمەکان لە شوێنەکاندا عەمبار دەکرێن.',
+    ],
+
+    'actions' => [
+        'reconcile' => 'ڕێکخستنەوە (چارەسەرکردن)',
     ],
 ];

@@ -60,6 +60,7 @@ class StockQuant extends Model
         'serial_number_id',
         'quantity',
         'reserved_quantity',
+        'is_negative_stock',
     ];
 
     /**
@@ -72,6 +73,7 @@ class StockQuant extends Model
     protected $casts = [
         'quantity' => 'float',
         'reserved_quantity' => 'float',
+        'is_negative_stock' => 'boolean',
     ];
 
     /**
