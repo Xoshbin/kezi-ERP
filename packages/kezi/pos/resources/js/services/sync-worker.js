@@ -1,4 +1,4 @@
-import { syncOrders, syncMasterData } from './sync-service';
+import { syncOrders, syncMasterData, syncReturns } from './sync-service';
 import { useConnectivityStore } from '../stores/connectivity';
 import { useProductsStore } from '../stores/products';
 
@@ -30,6 +30,7 @@ export const startSyncWorker = (intervalMs = 30000) => {
         try {
             connectivityStore.setSyncing(true);
             await syncOrders();
+            await syncReturns();
             await syncMasterData(); // Fetch updates
             await productsStore.loadFromDb(); // Reload store from DB to show updates
             
@@ -45,6 +46,7 @@ export const startSyncWorker = (intervalMs = 30000) => {
     window.addEventListener('online', async () => {
         console.log('Back online, triggering sync...');
         await syncOrders();
+        await syncReturns();
         await syncMasterData();
         await productsStore.loadFromDb();
     });

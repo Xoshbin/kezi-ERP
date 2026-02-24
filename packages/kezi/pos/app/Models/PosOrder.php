@@ -98,6 +98,11 @@ class PosOrder extends Model
         return $this->hasMany(PosOrderLine::class);
     }
 
+    public function returns(): HasMany
+    {
+        return $this->hasMany(PosReturn::class, 'original_order_id');
+    }
+
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(\Kezi\Sales\Models\Invoice::class);
