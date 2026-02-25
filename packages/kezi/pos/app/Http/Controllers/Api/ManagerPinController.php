@@ -37,15 +37,21 @@ class ManagerPinController extends Controller
             abort(403, 'Unauthorized company access.');
         }
 
+        // Manual lockout logic to prevent brute force
+        $lockoutKey = 'pos-pin-verification:'.$cashier->id;
+
+        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($lockoutKey, 5)) {
+            $seconds = \Illuminate\Support\Facades\RateLimiter::availableIn($lockoutKey);
+
+            return response()->json([
+                'approved' => false,
+                'message' => __('pos::pos_return.pin.locked_out', ['seconds' => $seconds]),
+            ], 429);
+        }
+
         $validated = $request->validate([
             'pin' => ['required', 'string', 'digits_between:4,8'],
         ]);
-
-        /** @var \App\Models\User $cashier */
-        $cashier = $request->user();
-
-        // Resolve company id from the authenticated cashier
-        $companyId = (int) $cashier->companies()->value('companies.id');
 
         // Find a manager in the same company whose PIN matches
         $manager = \App\Models\User::query()
@@ -55,11 +61,16 @@ class ManagerPinController extends Controller
             ->first(fn ($u) => ! empty($u->pos_manager_pin) && Hash::check($validated['pin'], $u->pos_manager_pin));
 
         if (! $manager) {
+            \Illuminate\Support\Facades\RateLimiter::hit($lockoutKey, 900); // Lock for 15 mins
+
             return response()->json([
                 'approved' => false,
                 'message' => __('pos::pos_return.pin.invalid'),
             ], 422);
         }
+
+        // Success: Clear the failed attempts
+        \Illuminate\Support\Facades\RateLimiter::clear($lockoutKey);
 
         // Ensure the return is in a state that can be approved
         if (! $return->canBeApproved()) {

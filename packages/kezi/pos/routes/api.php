@@ -29,7 +29,9 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])
         Route::post('/returns/{return}/process', [\Kezi\Pos\Http\Controllers\Api\PosReturnController::class, 'process'])->name('returns.process');
 
         // Manager PIN verification — approve a return at the terminal without manager login
-        Route::post('/returns/{return}/verify-pin', [\Kezi\Pos\Http\Controllers\Api\ManagerPinController::class, 'verifyAndApprove'])->name('returns.verify-pin');
+        Route::post('/returns/{return}/verify-pin', [\Kezi\Pos\Http\Controllers\Api\ManagerPinController::class, 'verifyAndApprove'])
+            ->middleware('throttle:5,1')
+            ->name('returns.verify-pin');
 
     });
 
