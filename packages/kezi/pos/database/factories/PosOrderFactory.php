@@ -6,6 +6,7 @@ use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\Partner;
+use Kezi\Pos\Enums\PosOrderStatus;
 use Kezi\Pos\Models\PosOrder;
 use Kezi\Pos\Models\PosSession;
 
@@ -22,7 +23,7 @@ class PosOrderFactory extends Factory
             'customer_id' => Partner::factory(),
             'currency_id' => Currency::factory(),
             'order_number' => 'ORD-'.$this->faker->unique()->numberBetween(1000, 9999),
-            'status' => 'paid',
+            'status' => PosOrderStatus::Paid,
             'ordered_at' => now(),
             'total_amount' => 5000,
             'total_tax' => 500,

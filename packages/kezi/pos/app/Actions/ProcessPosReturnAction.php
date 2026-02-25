@@ -5,6 +5,7 @@ namespace Kezi\Pos\Actions;
 use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Support\Facades\DB;
+use Kezi\Foundation\Services\CurrencyConverterService;
 use Kezi\Inventory\DataTransferObjects\Inventory\ConfirmStockMoveDTO;
 use Kezi\Inventory\DataTransferObjects\Inventory\CreateStockMoveDTO;
 use Kezi\Inventory\DataTransferObjects\Inventory\CreateStockMoveProductLineDTO;
@@ -28,6 +29,7 @@ class ProcessPosReturnAction
         protected CreatePaymentAction $createPaymentAction,
         protected StockMoveService $stockMoveService,
         protected \Kezi\Payment\Services\PaymentService $paymentService,
+        protected CurrencyConverterService $currencyConverter,
     ) {}
 
     /**
@@ -100,7 +102,7 @@ class ProcessPosReturnAction
             'status' => InvoiceStatus::Draft,
             'total_amount' => $refundAmount,
             'total_tax' => Money::of(0, $currency->code),
-            'exchange_rate_at_creation' => 1.0,
+            'exchange_rate_at_creation' => $this->getExchangeRate($return),
             'notes' => "Credit Note for Return {$return->return_number}",
         ]);
 
@@ -252,5 +254,16 @@ class ProcessPosReturnAction
             'store_credit' => PaymentMethod::Manual,
             default => PaymentMethod::Cash,
         };
+    }
+
+    protected function getExchangeRate(PosReturn $return): float
+    {
+        if ($return->currency_id === $return->company->currency_id) {
+            return 1.0;
+        }
+
+        return $this->currencyConverter->getExchangeRate($return->currency, $return->return_date, $return->company)
+            ?? $this->currencyConverter->getLatestExchangeRate($return->currency, $return->company)
+            ?? 1.0;
     }
 }

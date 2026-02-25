@@ -4,13 +4,14 @@ namespace Kezi\Pos\DataTransferObjects;
 
 use Illuminate\Support\Collection;
 use Kezi\Payment\Enums\Payments\PaymentMethod;
+use Kezi\Pos\Enums\PosOrderStatus;
 
 class PosOrderData
 {
     public function __construct(
         public string $uuid,
         public string $order_number,
-        public string $status,
+        public PosOrderStatus $status,
         public PaymentMethod $payment_method,
         public string $ordered_at, // ISO String
         public string $total_amount, // Stringified integer (minor units)
@@ -29,7 +30,7 @@ class PosOrderData
         return new self(
             uuid: $data['uuid'],
             order_number: $data['order_number'],
-            status: $data['status'],
+            status: PosOrderStatus::tryFrom($data['status'] ?? '') ?? PosOrderStatus::Paid,
             payment_method: (($data['payment_method'] ?? null) instanceof PaymentMethod)
                 ? $data['payment_method']
                 : (PaymentMethod::tryFrom($data['payment_method'] ?? '') ?? PaymentMethod::Cash), // Default to Cash if missing

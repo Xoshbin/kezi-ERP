@@ -15,6 +15,8 @@ use Kezi\Inventory\Models\StockMove;
 use Kezi\Pos\Actions\SyncOrdersAction;
 use Kezi\Pos\DataTransferObjects\PosOrderData;
 use Kezi\Pos\DataTransferObjects\PosOrderLineData;
+use Kezi\Pos\Enums\PosOrderStatus;
+use Kezi\Pos\Enums\PosSessionStatus;
 use Kezi\Pos\Models\PosOrder;
 use Kezi\Pos\Models\PosProfile;
 use Kezi\Pos\Models\PosSession;
@@ -77,7 +79,7 @@ beforeEach(function () {
         'user_id' => $this->user->id,
         'opened_at' => now(),
         'opening_cash' => 0,
-        'status' => 'opened',
+        'status' => PosSessionStatus::Opened,
         'company_id' => $this->company->id,
     ]);
 
@@ -100,7 +102,7 @@ it('creates and posts invoice when pos order is synced', function () {
     $orderData = new PosOrderData(
         uuid: $uuid,
         order_number: 'ORD-001',
-        status: 'paid',
+        status: PosOrderStatus::Paid,
         payment_method: \Kezi\Payment\Enums\Payments\PaymentMethod::Cash,
         ordered_at: now(),
         total_amount: 100000,
@@ -182,7 +184,7 @@ it('handles walk in customer creation', function () {
     $orderData = new PosOrderData(
         uuid: $uuid,
         order_number: 'ORD-WALKIN',
-        status: 'paid',
+        status: PosOrderStatus::Paid,
         payment_method: \Kezi\Payment\Enums\Payments\PaymentMethod::Cash,
         ordered_at: now(),
         total_amount: 100000,

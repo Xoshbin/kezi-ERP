@@ -5,6 +5,7 @@ namespace Kezi\Pos\Actions;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\Journal;
 use Kezi\Foundation\Models\Partner;
+use Kezi\Foundation\Services\CurrencyConverterService;
 use Kezi\Pos\Models\PosOrder;
 use Kezi\Sales\Enums\Sales\InvoiceStatus;
 use Kezi\Sales\Models\Invoice;
@@ -17,6 +18,7 @@ class CreateInvoiceFromPosOrderAction
         protected InvoiceService $invoiceService,
         protected \Kezi\Payment\Services\PaymentService $paymentService,
         protected \Kezi\Payment\Actions\Payments\CreatePaymentAction $createPaymentAction,
+        protected CurrencyConverterService $currencyConverter,
     ) {}
 
     public function execute(PosOrder $order): Invoice
@@ -82,7 +84,7 @@ class CreateInvoiceFromPosOrderAction
             'status' => InvoiceStatus::Draft, // Start as draft, then post
             'total_amount' => $order->total_amount,
             'total_tax' => $order->total_tax,
-            'exchange_rate_at_creation' => 1.0, // Assuming same currency for now or handled by service
+            'exchange_rate_at_creation' => $this->getExchangeRate($order),
         ];
 
         // Create the invoice
@@ -164,5 +166,16 @@ class CreateInvoiceFromPosOrderAction
         $order->update(['invoice_id' => $invoice->id]);
 
         return $invoice;
+    }
+
+    protected function getExchangeRate(PosOrder $order): float
+    {
+        if ($order->currency_id === $order->company->currency_id) {
+            return 1.0;
+        }
+
+        return $this->currencyConverter->getExchangeRate($order->currency, $order->ordered_at, $order->company)
+            ?? $this->currencyConverter->getLatestExchangeRate($order->currency, $order->company)
+            ?? 1.0;
     }
 }

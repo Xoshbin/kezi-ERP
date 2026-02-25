@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Kezi\Foundation\Models\Currency;
+use Kezi\Pos\Enums\PosSessionStatus;
 use Kezi\Pos\Events\PosOrderSynced;
 use Kezi\Pos\Events\PosSessionClosed;
 use Kezi\Pos\Events\PosSessionOpened;
@@ -53,7 +54,7 @@ it('dispatches PosSessionOpened event when a session is opened', function () {
 
     Event::assertDispatched(PosSessionOpened::class, function (PosSessionOpened $event) {
         return $event->session->user_id === $this->user->id
-            && $event->session->status === 'opened';
+            && $event->session->status === PosSessionStatus::Opened;
     });
 });
 
@@ -73,7 +74,7 @@ it('dispatches PosSessionClosed event when a session is closed', function () {
 
     Event::assertDispatched(PosSessionClosed::class, function (PosSessionClosed $event) use ($session) {
         return $event->session->id === $session->id
-            && $event->session->status === 'closed';
+            && $event->session->status === PosSessionStatus::Closed;
     });
 });
 
@@ -174,7 +175,7 @@ it('returns 201 and session data when first session is opened successfully', fun
 
     $this->assertDatabaseHas('pos_sessions', [
         'user_id' => $this->user->id,
-        'status' => 'opened',
+        'status' => PosSessionStatus::Opened,
         'opening_cash' => 10000,
     ]);
 });

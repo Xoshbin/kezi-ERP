@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Inventory\Models\StockMove;
 use Kezi\Payment\Models\Payment;
@@ -41,7 +42,7 @@ use Kezi\Sales\Models\Invoice;
 class PosReturn extends Model
 {
     /** @use HasFactory<\Kezi\Pos\Database\Factories\PosReturnFactory> */
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected static function newFactory(): \Kezi\Pos\Database\Factories\PosReturnFactory
     {
