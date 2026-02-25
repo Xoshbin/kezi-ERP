@@ -25,8 +25,8 @@ class AccountGroupFactory extends Factory
      */
     public function definition(): array
     {
-        $prefix = $this->faker->numberBetween(1, 5);
-        $suffix = $this->faker->numberBetween(10, 50);
+        $prefix = $this->faker->unique()->numberBetween(100, 999);
+        $suffix = $this->faker->unique()->numberBetween(100, 999);
 
         return [
             'company_id' => Company::factory(),

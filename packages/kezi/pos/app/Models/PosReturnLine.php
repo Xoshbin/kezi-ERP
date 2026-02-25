@@ -27,6 +27,11 @@ class PosReturnLine extends Model
     /** @use HasFactory<\Kezi\Pos\Database\Factories\PosReturnLineFactory> */
     use HasFactory;
 
+    protected static function newFactory(): \Kezi\Pos\Database\Factories\PosReturnLineFactory
+    {
+        return \Kezi\Pos\Database\Factories\PosReturnLineFactory::new();
+    }
+
     protected $fillable = [
         'pos_return_id',
         'original_order_line_id',
