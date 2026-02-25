@@ -19,6 +19,10 @@ beforeEach(function () {
     $this->user = User::factory()->create();
     $this->user->companies()->attach($this->company);
 
+    \Spatie\Permission\Models\Permission::findOrCreate('view_any_pos_order', 'web');
+    setPermissionsTeamId($this->company->id);
+    $this->user->givePermissionTo('view_any_pos_order');
+
     Sanctum::actingAs($this->user, ['*']);
 });
 

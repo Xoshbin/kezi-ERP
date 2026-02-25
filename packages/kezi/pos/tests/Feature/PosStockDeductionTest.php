@@ -30,6 +30,10 @@ beforeEach(function () {
     $this->user->companies()->attach($this->company);
     $this->user->update(['company_id' => $this->company->id]);
 
+    \Spatie\Permission\Models\Permission::findOrCreate('create_pos_order', 'web');
+    setPermissionsTeamId($this->company->id);
+    $this->user->givePermissionTo('create_pos_order');
+
     Sanctum::actingAs($this->user, ['*']);
 
     // Create stock locations
