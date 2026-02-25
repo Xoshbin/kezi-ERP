@@ -19,6 +19,8 @@ class PosReturnController extends Controller
 {
     public function store(Request $request, CreatePosReturnAction $action): JsonResponse
     {
+        $this->authorize('create', PosReturn::class);
+
         $validated = $request->validate([
             'pos_session_id' => ['required', 'exists:pos_sessions,id'],
             'original_order_id' => ['required', 'exists:pos_orders,id'],
@@ -82,6 +84,8 @@ class PosReturnController extends Controller
 
     public function submit(PosReturn $return, SubmitPosReturnAction $action): JsonResponse
     {
+        $this->authorize('submit', $return);
+
         $return = $action->execute($return);
 
         return response()->json($return);
@@ -89,8 +93,9 @@ class PosReturnController extends Controller
 
     public function approve(PosReturn $return, ApprovePosReturnAction $action): JsonResponse
     {
+        $this->authorize('approve', $return);
+
         /** @var \App\Models\User $user */
-        $user = auth()->user();
         $return = $action->execute($return, $user);
 
         return response()->json($return);
@@ -98,6 +103,8 @@ class PosReturnController extends Controller
 
     public function reject(Request $request, PosReturn $return, RejectPosReturnAction $action): JsonResponse
     {
+        $this->authorize('reject', $return);
+
         $validated = $request->validate([
             'reason' => ['required', 'string'],
         ]);
@@ -111,8 +118,9 @@ class PosReturnController extends Controller
 
     public function process(PosReturn $return, ProcessPosReturnAction $action): JsonResponse
     {
+        $this->authorize('process', $return);
+
         /** @var \App\Models\User $user */
-        $user = auth()->user();
         $return = $action->execute($return, $user);
 
         return response()->json($return);

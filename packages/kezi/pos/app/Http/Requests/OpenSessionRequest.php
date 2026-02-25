@@ -9,7 +9,7 @@ class OpenSessionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('open', \Kezi\Pos\Models\PosSession::class);
     }
 
     /**

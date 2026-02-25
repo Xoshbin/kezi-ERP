@@ -17,6 +17,11 @@ beforeEach(function () {
         'name' => 'Main POS',
         'is_active' => true,
     ]);
+
+    \Spatie\Permission\Models\Permission::findOrCreate('create_pos_session', 'web');
+    \Spatie\Permission\Models\Permission::findOrCreate('view_any_pos_session', 'web');
+    setPermissionsTeamId($this->company->id);
+    $this->user->givePermissionTo(['create_pos_session', 'view_any_pos_session']);
 });
 
 it('can open a new session', function () {

@@ -16,6 +16,8 @@ class MasterDataSyncController extends Controller
 {
     public function index(Request $request, PosSyncService $service): JsonResponse
     {
+        $this->authorize('viewAny', \Kezi\Pos\Models\PosOrder::class);
+
         $request->validate([
             'since' => 'nullable|date',
             'page' => 'nullable|integer|min:1',

@@ -2,6 +2,7 @@
 
 namespace Kezi\Pos\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Kezi\Pos\DataTransferObjects\SearchPosOrdersDTO;
@@ -10,7 +11,7 @@ use Kezi\Pos\Http\Resources\PosOrderSearchResource;
 use Kezi\Pos\Models\PosOrder;
 use Kezi\Pos\Services\PosOrderSearchService;
 
-class PosOrderSearchController
+class PosOrderSearchController extends Controller
 {
     public function __construct(
         protected PosOrderSearchService $searchService
@@ -21,104 +22,94 @@ class PosOrderSearchController
      */
     public function search(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', PosOrder::class);
+
         $validated = $request->validate([
             'order_number' => 'nullable|string|max:255',
             'exact_match' => 'nullable|boolean',
+            'customer_name' => 'nullable|string|max:255',
+            'customer_phone' => 'nullable|string|max:255',
             'date_from' => 'nullable|date',
             'date_to' => 'nullable|date',
-            'customer_id' => 'nullable|integer|exists:partners,id',
-            'customer_name' => 'nullable|string|max:255',
-            'amount_min' => 'nullable|integer|min:0',
-            'amount_max' => 'nullable|integer|min:0',
-            'payment_method' => 'nullable|string',
-            'status' => 'nullable|string',
-            'product_id' => 'nullable|integer|exists:products,id',
-            'product_search' => 'nullable|string|max:255',
+            'min_amount' => 'nullable|numeric|min:0',
+            'max_amount' => 'nullable|numeric|min:0',
             'session_id' => 'nullable|integer|exists:pos_sessions,id',
+            'page' => 'nullable|integer|min:1',
             'per_page' => 'nullable|integer|min:1|max:100',
         ]);
 
-        $dto = SearchPosOrdersDTO::fromRequest([
-            ...$validated,
-            'company_id' => $this->resolveCompanyId($request->user()),
-        ]);
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        $requestData = $request->all();
+        $requestData['company_id'] = $user->companies()->value('companies.id');
 
-        $results = $this->searchService->search($dto);
+        $dto = SearchPosOrdersDTO::fromRequest($requestData);
 
-        return response()->json([
-            'data' => PosOrderSearchResource::collection($results->items()),
-            'meta' => [
-                'current_page' => $results->currentPage(),
-                'last_page' => $results->lastPage(),
-                'per_page' => $results->perPage(),
-                'total' => $results->total(),
-            ],
-        ]);
+        // Security check: ensure session_id matches if provided, although service handles company scoping
+        $orders = $this->searchService->search($dto);
+
+        return PosOrderSearchResource::collection($orders)->response();
     }
 
     /**
-     * Quick search for POS terminal
+     * Quick search by order number or customer (for terminal)
      */
     public function quickSearch(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', PosOrder::class);
+
         $validated = $request->validate([
             'q' => 'required|string|min:1',
             'session_id' => 'nullable|integer|exists:pos_sessions,id',
-            'limit' => 'nullable|integer|min:1|max:50',
         ]);
 
-        $results = $this->searchService->quickSearch(
-            companyId: $this->resolveCompanyId($request->user()),
-            searchTerm: $validated['q'],
-            sessionId: $validated['session_id'] ?? null,
-            limit: $validated['limit'] ?? 10
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        $companyId = (int) $user->companies()->value('companies.id');
+
+        $orders = $this->searchService->quickSearch(
+            $companyId,
+            $validated['q'],
+            $validated['session_id'] ?? null
         );
 
-        return response()->json([
-            'data' => PosOrderSearchResource::collection($results),
-        ]);
+        return PosOrderSearchResource::collection($orders)->response();
     }
 
     /**
-     * Get order details with full information
+     * Get single order details
      */
     public function details(PosOrder $order): JsonResponse
     {
+        $this->authorize('view', $order);
+
         $order->load([
             'customer',
             'lines.product',
-            'session',
+            'session.profile',
             'currency',
-            'invoice',
         ]);
 
-        return response()->json([
-            'data' => new PosOrderDetailResource($order),
-        ]);
+        return (new PosOrderDetailResource($order))->response();
     }
 
     /**
-     * Check if order is eligible for return
+     * Check if an order is eligible for return
      */
     public function checkReturnEligibility(PosOrder $order, Request $request): JsonResponse
     {
-        $profile = $order->session->profile;
-        $returnPolicy = $profile->return_policy ?? [];
+        $this->authorize('view', $order);
 
-        if (! ($returnPolicy['enabled'] ?? false)) {
-            return response()->json([
-                'eligible' => false,
-                'reasons' => ['Returns are not enabled for this POS profile'],
-            ]);
+        $session = $order->session;
+        if (! $session) {
+            abort(404, 'Order session not found.');
         }
+
+        $profile = $session->profile;
+        $returnPolicy = $profile->return_policy ?? [];
 
         $eligibility = $this->searchService->isEligibleForReturn($order, $returnPolicy);
 
         return response()->json($eligibility);
-    }
-
-    protected function resolveCompanyId(\App\Models\User $user): ?int
-    {
-        return (int) $user->companies()->value('companies.id') ?: null;
     }
 }

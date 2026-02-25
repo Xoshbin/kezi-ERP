@@ -18,6 +18,11 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
     Filament::setCurrentPanel(Filament::getPanel('kezi'));
+
+    \Spatie\Permission\Models\Permission::findOrCreate('view_any_pos_order', 'web');
+    \Spatie\Permission\Models\Permission::findOrCreate('view_any_pos_session', 'web');
+    setPermissionsTeamId($this->company->id);
+    $this->user->givePermissionTo(['view_any_pos_order', 'view_any_pos_session']);
 });
 
 it('can render pos dashboard', function () {
