@@ -740,7 +740,11 @@ const handlePaymentComplete = async (paymentData) => {
         const currencySetting = await db.settings.get('company_currency');
         const currencyId = currencySetting?.value?.id || 1; 
         
-        // 3. Prepare Order Data
+        // 3. Normalise payments — new format: { payments: [...] }
+        const payments = paymentData.payments || [];
+        const primaryPayment = payments[0] || {};
+
+        // 4. Prepare Order Data
         // IMPORTANT: Calculate totals from itemsWithTax to ensure consistency
         const items = cart.itemsWithTax;
         
@@ -758,9 +762,10 @@ const handlePaymentComplete = async (paymentData) => {
             pos_session_id: sessionStore.sessionId,
             sector_data: [],
             sync_status: 'pending',
-            payment_method: paymentData.method,
-            amount_tendered: paymentData.amount_tendered,
-            change_given: paymentData.change_given,
+            // Legacy field: primary payment method for compatibility
+            payment_method: primaryPayment.method || 'cash',
+            amount_tendered: primaryPayment.amount_tendered ?? cart.total,
+            change_given: primaryPayment.change_given ?? 0,
         };
         
         const lines = items.map(item => ({
@@ -773,11 +778,22 @@ const handlePaymentComplete = async (paymentData) => {
             metadata: [],
         }));
 
-        // 4. Save to DB Transaction
-        const orderId = await db.transaction('rw', db.orders, db.order_lines, db.settings, async () => {
+        // 5. Save to DB Transaction (now includes order_payments)
+        const orderId = await db.transaction('rw', db.orders, db.order_lines, db.order_payments, db.settings, async () => {
             const id = await db.orders.add(order);
             const linesWithOrderId = lines.map(l => ({ ...l, order_id: id }));
             await db.order_lines.bulkAdd(linesWithOrderId);
+            // Save each split payment row
+            const paymentRows = payments.map(p => ({
+                order_id: id,
+                method: p.method,
+                amount: p.amount,
+                amount_tendered: p.amount_tendered ?? null,
+                change_given: p.change_given ?? 0,
+            }));
+            if (paymentRows.length > 0) {
+                await db.order_payments.bulkAdd(paymentRows);
+            }
             await db.settings.put({ key: 'last_order_number', value: sequence });
             return id;
         });

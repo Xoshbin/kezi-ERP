@@ -129,38 +129,72 @@ class CreateInvoiceFromPosOrderAction
         $user = $order->session->user;
         $this->invoiceService->confirm($invoice, $user);
 
-        // 6. Register Payment
-        // POS orders are paid immediately. We create a Payment linked to this Invoice.
-        // This clears the Receivable (AR) created by the Invoice and debits the Cash/Bank account.
+        // 6. Register Payments
+        // POS orders are paid immediately. We create one Payment per split-payment line.
+        // Each payment clears part of the Receivable (AR) and debits the Cash/Bank account.
 
         $paymentJournalId = $profile->default_payment_journal_id;
         if (! $paymentJournalId) {
             throw new \Exception("No Payment Journal configured for POS Profile. Cannot register payment for Order {$order->order_number}.");
         }
 
-        $paymentMethod = $order->payment_method ?? \Kezi\Payment\Enums\Payments\PaymentMethod::Cash;
+        // Load the split payment rows (always present — sync action ensures at least one row)
+        $order->load('payments');
+        $orderPayments = $order->payments;
 
-        $paymentDto = new \Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDTO(
-            company_id: $companyId,
-            journal_id: $paymentJournalId,
-            currency_id: $order->currency_id,
-            payment_date: $order->ordered_at->toDateString(),
-            payment_type: \Kezi\Payment\Enums\Payments\PaymentType::Inbound,
-            payment_method: $paymentMethod,
-            paid_to_from_partner_id: $customerId,
-            amount: null, // Calculated from links
-            document_links: [
-                new \Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO(
-                    document_type: 'invoice',
-                    document_id: $invoice->id,
-                    amount_applied: $invoice->total_amount, // Pay full amount
-                ),
-            ],
-            reference: 'POS Payment '.$order->order_number,
-        );
+        if ($orderPayments->isEmpty()) {
+            // Ultimate fallback: single payment from legacy field (should never happen post-migration)
+            $orderPayments = collect([
+                new \Kezi\Pos\Models\PosOrderPayment([
+                    'payment_method' => $order->payment_method ?? \Kezi\Payment\Enums\Payments\PaymentMethod::Cash,
+                    'amount' => $order->total_amount->getMinorAmount()->toInt(),
+                    'amount_tendered' => $order->total_amount->getMinorAmount()->toInt(),
+                    'change_given' => 0,
+                ]),
+            ]);
+        }
 
-        $payment = $this->createPaymentAction->execute($paymentDto, $user);
-        $this->paymentService->confirm($payment, $user);
+        // Distribute invoice total proportionally across split payments.
+        // For a single payment this is always the full invoice total.
+        $invoiceTotal = $invoice->total_amount;
+        $currencyCode = $order->currency->code;
+        $totalPaidMinor = $orderPayments->sum('amount');
+
+        foreach ($orderPayments as $index => $splitPayment) {
+            // For the last payment take the remainder to avoid rounding drift
+            if ($index === $orderPayments->count() - 1) {
+                // Sum of all previously applied amounts
+                $alreadyApplied = $orderPayments->take($index)
+                    ->sum(fn ($p) => (int) round($invoiceTotal->getMinorAmount()->toInt() * ($p->amount / $totalPaidMinor)));
+                $appliedMinor = $invoiceTotal->getMinorAmount()->toInt() - $alreadyApplied;
+            } else {
+                $appliedMinor = (int) round($invoiceTotal->getMinorAmount()->toInt() * ($splitPayment->amount / $totalPaidMinor));
+            }
+
+            $appliedAmount = \Brick\Money\Money::ofMinor($appliedMinor, $currencyCode);
+
+            $paymentDto = new \Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDTO(
+                company_id: $companyId,
+                journal_id: $paymentJournalId,
+                currency_id: $order->currency_id,
+                payment_date: $order->ordered_at->toDateString(),
+                payment_type: \Kezi\Payment\Enums\Payments\PaymentType::Inbound,
+                payment_method: $splitPayment->payment_method,
+                paid_to_from_partner_id: $customerId,
+                amount: null, // Calculated from links
+                document_links: [
+                    new \Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO(
+                        document_type: 'invoice',
+                        document_id: $invoice->id,
+                        amount_applied: $appliedAmount,
+                    ),
+                ],
+                reference: 'POS Payment '.$order->order_number.($orderPayments->count() > 1 ? ' ('.($index + 1).'/'.$orderPayments->count().')' : ''),
+            );
+
+            $payment = $this->createPaymentAction->execute($paymentDto, $user);
+            $this->paymentService->confirm($payment, $user);
+        }
 
         // 6. Link to POS Order
         $order->update(['invoice_id' => $invoice->id]);

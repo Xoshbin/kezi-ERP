@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Kezi\Pos\DataTransferObjects\PosOrderData;
 use Kezi\Pos\Models\PosOrder;
 use Kezi\Pos\Models\PosOrderLine;
+use Kezi\Pos\Models\PosOrderPayment;
 use Kezi\Pos\Models\PosSession;
 
 class SyncOrdersAction
@@ -86,6 +87,28 @@ class SyncOrdersAction
                                 'tax_amount' => \Brick\Money\Money::ofMinor($lineData->tax_amount, $currencyCode),
                                 'total_amount' => \Brick\Money\Money::ofMinor($lineData->total_amount, $currencyCode),
                                 'metadata' => $lineData->metadata,
+                            ]);
+                        }
+
+                        // Persist split payment records
+                        if ($orderData->payments->isNotEmpty()) {
+                            foreach ($orderData->payments as $paymentData) {
+                                PosOrderPayment::create([
+                                    'pos_order_id' => $order->id,
+                                    'payment_method' => $paymentData->method,
+                                    'amount' => $paymentData->amount,
+                                    'amount_tendered' => $paymentData->amount_tendered,
+                                    'change_given' => $paymentData->change_given,
+                                ]);
+                            }
+                        } else {
+                            // Backward-compatibility: synthesise a single payment row from legacy field
+                            PosOrderPayment::create([
+                                'pos_order_id' => $order->id,
+                                'payment_method' => $orderData->payment_method,
+                                'amount' => (int) $orderData->total_amount,
+                                'amount_tendered' => (int) $orderData->total_amount,
+                                'change_given' => 0,
                             ]);
                         }
 

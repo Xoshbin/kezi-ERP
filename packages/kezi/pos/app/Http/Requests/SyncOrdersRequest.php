@@ -8,9 +8,14 @@ class SyncOrdersRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->can('syncOrders', \Kezi\Pos\Models\PosOrder::class);
+        $user = $this->user();
+
+        return $user !== null && $user->can('syncOrders', \Kezi\Pos\Models\PosOrder::class);
     }
 
+    /**
+     * @return array<string, array<int, string>>
+     */
     public function rules(): array
     {
         return [
@@ -22,6 +27,12 @@ class SyncOrdersRequest extends FormRequest
             'orders.*.discount_amount' => ['nullable', 'integer'],
             'orders.*.lines' => ['array'],
             'orders.*.lines.*.discount_amount' => ['nullable', 'integer'],
+            // Split payments (optional — backward compatible with legacy single payment_method)
+            'orders.*.payments' => ['nullable', 'array'],
+            'orders.*.payments.*.method' => ['required_with:orders.*.payments', 'string'],
+            'orders.*.payments.*.amount' => ['required_with:orders.*.payments', 'integer', 'min:1'],
+            'orders.*.payments.*.amount_tendered' => ['nullable', 'integer'],
+            'orders.*.payments.*.change_given' => ['nullable', 'integer'],
         ];
     }
 }
