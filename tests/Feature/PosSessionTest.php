@@ -17,6 +17,11 @@ beforeEach(function () {
     $this->company = Company::factory()->create(['currency_id' => $this->currency->id]);
     $this->user = User::factory()->create();
     $this->user->companies()->attach($this->company);
+
+    \Spatie\Permission\Models\Permission::findOrCreate('create_pos_session', 'web');
+    \Spatie\Permission\Models\Permission::findOrCreate('view_any_pos_session', 'web');
+    setPermissionsTeamId($this->company->id);
+    $this->user->givePermissionTo(['create_pos_session', 'view_any_pos_session']);
 });
 
 test('cannot open session without authentication', function () {
