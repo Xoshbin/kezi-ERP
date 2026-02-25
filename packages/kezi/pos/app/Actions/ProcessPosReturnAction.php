@@ -91,6 +91,8 @@ class ProcessPosReturnAction
         $currency = $return->currency;
 
         // Create credit note (negative invoice)
+        $exchangeRate = $this->getExchangeRate($return);
+
         $creditNote = Invoice::create([
             'company_id' => $return->company_id,
             'customer_id' => $originalOrder->customer_id,
@@ -102,7 +104,7 @@ class ProcessPosReturnAction
             'status' => InvoiceStatus::Draft,
             'total_amount' => $refundAmount,
             'total_tax' => Money::of(0, $currency->code),
-            'exchange_rate_at_creation' => $this->getExchangeRate($return),
+            'exchange_rate_at_creation' => $exchangeRate,
             'notes' => "Credit Note for Return {$return->return_number}",
         ]);
 
@@ -145,6 +147,8 @@ class ProcessPosReturnAction
         }
 
         // Create outbound payment (refund)
+        $exchangeRate = $this->getExchangeRate($return);
+
         $paymentDto = new \Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDTO(
             company_id: $return->company_id,
             journal_id: $paymentJournalId,
@@ -162,6 +166,7 @@ class ProcessPosReturnAction
                 ),
             ],
             reference: 'Refund for Return '.$return->return_number,
+            exchange_rate: $exchangeRate,
         );
 
         $payment = $this->createPaymentAction->execute($paymentDto, $user);

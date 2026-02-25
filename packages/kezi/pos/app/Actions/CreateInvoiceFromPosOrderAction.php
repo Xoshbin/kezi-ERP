@@ -71,6 +71,8 @@ class CreateInvoiceFromPosOrderAction
         $journalId = $journal->id;
 
         // 3. Create Invoice
+        $exchangeRate = $this->getExchangeRate($order);
+
         $invoiceData = [
             'company_id' => $companyId,
             'customer_id' => $customerId,
@@ -84,7 +86,7 @@ class CreateInvoiceFromPosOrderAction
             'status' => InvoiceStatus::Draft, // Start as draft, then post
             'total_amount' => $order->total_amount,
             'total_tax' => $order->total_tax,
-            'exchange_rate_at_creation' => $this->getExchangeRate($order),
+            'exchange_rate_at_creation' => $exchangeRate,
         ];
 
         // Create the invoice
@@ -190,6 +192,7 @@ class CreateInvoiceFromPosOrderAction
                     ),
                 ],
                 reference: 'POS Payment '.$order->order_number.($orderPayments->count() > 1 ? ' ('.($index + 1).'/'.$orderPayments->count().')' : ''),
+                exchange_rate: $exchangeRate,
             );
 
             $payment = $this->createPaymentAction->execute($paymentDto, $user);
