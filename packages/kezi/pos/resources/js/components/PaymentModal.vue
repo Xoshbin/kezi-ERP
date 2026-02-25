@@ -1,17 +1,17 @@
 <template>
     <Teleport to="body">
         <div v-if="visible" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-xl transition-all duration-500">
-            <div class="bg-white dark:bg-gray-900 w-full max-w-4xl h-[90vh] rounded-[2.5rem] shadow-2xl border border-white/20 dark:border-gray-800 overflow-hidden transform transition-all scale-100 opacity-100 flex flex-col md:flex-row">
-                
+            <div class="bg-white dark:bg-gray-900 w-full max-w-4xl rounded-[2.5rem] shadow-2xl border border-white/20 dark:border-gray-800 overflow-hidden transform transition-all scale-100 opacity-100 flex flex-col md:flex-row" style="max-height: 92vh;">
+
                 <!-- Left Side: Order Summary -->
-                <div class="w-full md:w-[40%] bg-gray-50 dark:bg-gray-800/50 p-8 border-r dark:border-gray-800 flex flex-col">
+                <div class="w-full md:w-[38%] bg-gray-50 dark:bg-gray-800/50 p-8 border-r dark:border-gray-800 flex flex-col">
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                         <span class="bg-primary-100 text-primary-700 px-3 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-black">
                             {{ cart.totalQuantity }} Items
                         </span>
                         Order Summary
                     </h3>
-                    
+
                     <div class="flex-1 overflow-y-auto space-y-4 pr-2">
                         <div v-for="item in cart.items" :key="item.id" class="flex justify-between items-start text-sm py-1">
                             <div class="flex-1 pr-4">
@@ -43,98 +43,146 @@
                 </div>
 
                 <!-- Right Side: Payment -->
-                <div class="flex-1 p-8 flex flex-col relative">
-                    <!-- Close Button (Top Right) -->
-                     <button @click="closeModal" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center transition-colors">
+                <div class="flex-1 p-8 flex flex-col relative overflow-y-auto">
+                    <!-- Close Button -->
+                    <button @click="closeModal" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center transition-colors z-10">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
 
                     <h2 class="text-2xl font-black text-gray-900 dark:text-white mb-1">Payment</h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-8">Select a payment method to complete the sale.</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-5">Add one or more payment methods to complete the sale.</p>
 
-                    <!-- Payment Methods -->
-                    <div class="grid grid-cols-2 gap-4 mb-8">
-                        <button 
-                            @click="paymentMethod = 'cash'"
-                            :class="[
-                                'p-6 rounded-3xl border-2 flex flex-col items-center gap-3 transition-all',
-                                paymentMethod === 'cash' 
-                                    ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 font-bold shadow-lg shadow-primary-500/10'
-                                    : 'border-dashed border-gray-200 dark:border-gray-700 text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800'
-                            ]"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                            <span>Cash</span>
-                        </button>
-                        <button 
-                            @click="paymentMethod = 'card'"
-                            :class="[
-                                'p-6 rounded-3xl border-2 flex flex-col items-center gap-3 transition-all',
-                                paymentMethod === 'card' 
-                                    ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 font-bold shadow-lg shadow-primary-500/10'
-                                    : 'border-dashed border-gray-200 dark:border-gray-700 text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800'
-                            ]"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
-                            <span>Card</span>
-                        </button>
+                    <!-- Remaining Balance indicator -->
+                    <div :class="[
+                        'mb-5 p-4 rounded-2xl border flex items-center justify-between transition-all',
+                        remainingBalance > 0
+                            ? 'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20 text-amber-700 dark:text-amber-400'
+                            : 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400'
+                    ]">
+                        <span class="font-bold text-sm">{{ remainingBalance > 0 ? 'Remaining Balance' : 'Fully Paid' }}</span>
+                        <span class="font-black text-xl">{{ formatMoney(Math.abs(remainingBalance)) }}</span>
                     </div>
 
-                    <!-- Cash Payment Details -->
-                    <div v-if="paymentMethod === 'cash'" class="space-y-6 flex-1">
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Amount Tendered</label>
-                            <div class="relative group">
-                                <span class="absolute inset-y-0 left-5 flex items-center text-primary-600 font-bold text-xl">{{ currencySymbol }}</span>
-                                <input 
-                                    v-model="amountTenderedInput"
-                                    type="number" 
-                                    step="0.01"
-                                    placeholder="0.00"
-                                    class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-primary-500 rounded-3xl py-5 pl-16 pr-5 outline-none transition-all font-black text-3xl text-gray-900 dark:text-white"
-                                    autofocus
+                    <!-- Payment Lines -->
+                    <div class="space-y-4 mb-4 flex-1">
+                        <div
+                            v-for="(line, index) in paymentLines"
+                            :key="index"
+                            class="rounded-2xl border border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800/40"
+                        >
+                            <!-- Line Header -->
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-bold uppercase tracking-widest text-gray-400">
+                                    Payment {{ paymentLines.length > 1 ? index + 1 : '' }}
+                                </span>
+                                <button
+                                    v-if="paymentLines.length > 1"
+                                    @click="removeLine(index)"
+                                    class="w-6 h-6 rounded-full bg-rose-100 dark:bg-rose-900/30 text-rose-500 hover:bg-rose-200 dark:hover:bg-rose-800/40 flex items-center justify-center transition-colors"
                                 >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
                             </div>
-                        </div>
 
-                        <!-- Quick Amount Buttons -->
-                        <div class="flex flex-wrap gap-2">
-                            <!-- Precise -->
-                            <button @click="setTendered(cart.total)" class="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-xl font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Exact</button>
-                            <!-- Next dollar -->
-                             <button v-for="amt in quickAmounts" :key="amt" @click="setTendered(amt)" class="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-xl font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                                {{ formatMoney(amt) }}
-                             </button>
-                        </div>
+                            <!-- Method selector -->
+                            <div class="grid grid-cols-2 gap-2 mb-3">
+                                <button
+                                    @click="line.method = 'cash'"
+                                    :class="[
+                                        'py-3 rounded-xl border-2 flex items-center justify-center gap-2 text-sm font-bold transition-all',
+                                        line.method === 'cash'
+                                            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 shadow-sm'
+                                            : 'border-gray-200 dark:border-gray-700 text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
+                                    ]"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                    Cash
+                                </button>
+                                <button
+                                    @click="line.method = 'credit_card'"
+                                    :class="[
+                                        'py-3 rounded-xl border-2 flex items-center justify-center gap-2 text-sm font-bold transition-all',
+                                        line.method === 'credit_card'
+                                            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 shadow-sm'
+                                            : 'border-gray-200 dark:border-gray-700 text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
+                                    ]"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+                                    Card
+                                </button>
+                            </div>
 
-                        <!-- Change Due -->
-                        <div class="mt-auto p-5 bg-emerald-50 dark:bg-emerald-500/10 rounded-3xl border border-emerald-100 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 flex items-center justify-between">
-                            <span class="font-bold text-base">Change Due</span>
-                            <span class="font-black text-2xl">{{ formatMoney(changeDue) }}</span>
+                            <!-- Amount input -->
+                            <div class="mb-2">
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1 block ml-1">Amount</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-4 flex items-center text-primary-600 font-bold text-lg">{{ currencySymbol }}</span>
+                                    <input
+                                        v-model="line.amountInput"
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        placeholder="0.00"
+                                        class="w-full bg-white dark:bg-gray-900 border-2 border-transparent focus:border-primary-500 rounded-2xl py-3 pl-12 pr-4 outline-none transition-all font-black text-xl text-gray-900 dark:text-white"
+                                    >
+                                </div>
+                            </div>
+
+                            <!-- Cash: amount tendered + change -->
+                            <template v-if="line.method === 'cash'">
+                                <div class="mb-2">
+                                    <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1 block ml-1">Tendered</label>
+                                    <div class="relative">
+                                        <span class="absolute inset-y-0 left-4 flex items-center text-gray-400 font-bold text-lg">{{ currencySymbol }}</span>
+                                        <input
+                                            v-model="line.amountTenderedInput"
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            placeholder="0.00"
+                                            class="w-full bg-white dark:bg-gray-900 border-2 border-transparent focus:border-primary-400 rounded-2xl py-3 pl-12 pr-4 outline-none transition-all font-bold text-lg text-gray-700 dark:text-gray-300"
+                                        >
+                                    </div>
+                                </div>
+                                <div v-if="lineChangeDue(line) > 0" class="flex items-center justify-between bg-emerald-50 dark:bg-emerald-500/10 rounded-xl px-4 py-2 text-emerald-700 dark:text-emerald-400 text-sm">
+                                    <span class="font-semibold">Change Due</span>
+                                    <span class="font-black">{{ formatMoney(lineChangeDue(line)) }}</span>
+                                </div>
+
+                                <!-- Quick amounts -->
+                                <div class="flex flex-wrap gap-1.5 mt-2">
+                                    <button @click="setLineTendered(line, lineAmountMinor(line))" class="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 rounded-lg text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">Exact</button>
+                                    <button v-for="amt in quickAmountsFor(line)" :key="amt" @click="setLineTendered(line, amt)" class="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 rounded-lg text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                                        {{ formatMoney(amt) }}
+                                    </button>
+                                </div>
+                            </template>
                         </div>
                     </div>
 
-                     <!-- Card Payment Details (Placeholder) -->
-                    <div v-else class="flex-1 flex flex-col items-center justify-center text-gray-400 border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-3xl p-8">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
-                        <p class="font-bold mb-1">Waiting for terminal...</p>
-                        <p class="text-xs">Follow instructions on the card reader.</p>
-                    </div>
+                    <!-- Add Payment Button -->
+                    <button
+                        v-if="remainingBalance > 0"
+                        @click="addLine"
+                        class="w-full py-3 mb-4 rounded-2xl border-2 border-dashed border-primary-300 dark:border-primary-700 text-primary-600 dark:text-primary-400 font-bold text-sm hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all flex items-center justify-center gap-2"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                        Add Another Payment Method
+                    </button>
 
                     <!-- Actions -->
-                    <div class="mt-8 grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-4 mt-2">
                         <button @click="closeModal" class="py-4 rounded-3xl font-black text-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
                             Cancel
                         </button>
-                        <button 
+                        <button
                             @click="completeSale"
                             :disabled="!isValidPayment"
                             class="py-4 rounded-3xl font-black text-lg bg-primary-600 !text-gray-900 shadow-xl shadow-primary-500/30 hover:bg-primary-700 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-tight"
                         >
-                             {{ paymentMethod === 'card' ? 'Charge & Complete' : 'Complete Sale' }}
+                            Complete Sale
                         </button>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -142,10 +190,9 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useCartStore } from '../stores/cart';
 import { useSessionStore } from '../stores/session';
-import { db } from '../db/pos-db';
 
 const props = defineProps({
     visible: Boolean,
@@ -156,89 +203,110 @@ const emit = defineEmits(['close', 'payment-complete']);
 
 const sessionStore = useSessionStore();
 const cart = useCartStore();
-const paymentMethod = ref('cash');
-const amountTenderedInput = ref(''); 
 
-// Reset when visible
+/** @returns {{ method: string, amountInput: string, amountTenderedInput: string }} */
+const newLine = (amountMinor = 0) => ({
+    method: 'cash',
+    amountInput: amountMinor > 0 ? (amountMinor / sessionStore.decimalFactor).toFixed(sessionStore.decimalPlaces) : '',
+    amountTenderedInput: amountMinor > 0 ? (amountMinor / sessionStore.decimalFactor).toFixed(sessionStore.decimalPlaces) : '',
+});
+
+const paymentLines = ref([newLine()]);
+
+// Reset when modal opens
 watch(() => props.visible, (newVal) => {
     if (newVal) {
-        paymentMethod.value = 'cash';
-        amountTenderedInput.value = (cart.total / sessionStore.decimalFactor).toFixed(sessionStore.decimalPlaces);
+        paymentLines.value = [newLine(cart.total)];
     }
 });
 
-const closeModal = () => {
-    emit('close');
-};
+const closeModal = () => emit('close');
 
 const currencySymbol = computed(() => {
-    // Hacky way to get symbol from code
     return (0).toLocaleString('en-US', { style: 'currency', currency: props.currencyCode, minimumFractionDigits: 0, maximumFractionDigits: 0 }).replace(/\d/g, '').trim();
 });
 
-const amountTenderedMinor = computed(() => {
-    if (!amountTenderedInput.value) return 0;
-    return Math.round(parseFloat(amountTenderedInput.value) * sessionStore.decimalFactor);
-});
+const lineAmountMinor = (line) => {
+    if (!line.amountInput) return 0;
+    return Math.round(parseFloat(line.amountInput) * sessionStore.decimalFactor);
+};
 
-const changeDue = computed(() => {
-    if (paymentMethod.value !== 'cash') return 0;
-    return Math.max(0, amountTenderedMinor.value - cart.total);
-});
+const lineTenderedMinor = (line) => {
+    if (!line.amountTenderedInput) return 0;
+    return Math.round(parseFloat(line.amountTenderedInput) * sessionStore.decimalFactor);
+};
+
+const lineChangeDue = (line) => {
+    if (line.method !== 'cash') return 0;
+    return Math.max(0, lineTenderedMinor(line) - lineAmountMinor(line));
+};
+
+const totalPaidMinor = computed(() =>
+    paymentLines.value.reduce((sum, l) => sum + lineAmountMinor(l), 0)
+);
+
+const remainingBalance = computed(() => cart.total - totalPaidMinor.value);
 
 const isValidPayment = computed(() => {
     if (!props.visible) return false;
-    if (paymentMethod.value === 'cash') {
-         return amountTenderedMinor.value >= cart.total;
-    }
-    return true; // Assume card is valid for now
+    if (remainingBalance.value > 0) return false;
+    // Cash lines must have amount_tendered >= amount
+    return paymentLines.value.every(line => {
+        if (line.method === 'cash') {
+            return lineTenderedMinor(line) >= lineAmountMinor(line);
+        }
+        return lineAmountMinor(line) > 0;
+    });
 });
 
-const quickAmounts = computed(() => {
-    const total = cart.total; 
+const addLine = () => {
+    const remaining = remainingBalance.value;
+    paymentLines.value.push(newLine(remaining > 0 ? remaining : 0));
+};
+
+const removeLine = (index) => {
+    paymentLines.value.splice(index, 1);
+};
+
+const setLineTendered = (line, amountMinor) => {
+    line.amountTenderedInput = (amountMinor / sessionStore.decimalFactor).toFixed(sessionStore.decimalPlaces);
+};
+
+const quickAmountsFor = (line) => {
+    const lineAmount = lineAmountMinor(line);
     const amounts = [];
-    
-    // Suggest rounding up to next note/bill sizes
-    // Logic: if 1250 ($12.50), suggest 1300, 1500, 2000, 5000, 10000
-    
-    const nextDollar = Math.ceil(total / sessionStore.decimalFactor) * sessionStore.decimalFactor;
-    if (nextDollar > total) amounts.push(nextDollar);
-    
+    const nextRound = Math.ceil(lineAmount / sessionStore.decimalFactor) * sessionStore.decimalFactor;
+    if (nextRound > lineAmount) amounts.push(nextRound);
     [100, 200, 500, 1000, 2000, 5000, 10000, 25000, 50000].forEach(noteValue => {
-        // Notes are in major units (e.g., 1, 5, 10, 1000, 5000 IQD)
         const noteMinor = noteValue * sessionStore.decimalFactor;
-        if (noteMinor > total && !amounts.includes(noteMinor)) {
-             if (amounts.length < 4) amounts.push(noteMinor);
+        if (noteMinor > lineAmount && !amounts.includes(noteMinor) && amounts.length < 4) {
+            amounts.push(noteMinor);
         }
     });
-
     return amounts.sort((a, b) => a - b);
-});
-
-const setTendered = (amountMinor) => {
-    amountTenderedInput.value = (amountMinor / sessionStore.decimalFactor).toFixed(sessionStore.decimalPlaces);
 };
 
 const formatMoney = (amount) => {
     if (amount === undefined || amount === null) return '0.00';
     const val = Number(amount) / sessionStore.decimalFactor;
-    return new Intl.NumberFormat('en-US', { 
-        style: 'currency', 
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
         currency: props.currencyCode,
         minimumFractionDigits: sessionStore.decimalPlaces,
-        maximumFractionDigits: sessionStore.decimalPlaces
+        maximumFractionDigits: sessionStore.decimalPlaces,
     }).format(val);
 };
 
 const completeSale = () => {
     if (!isValidPayment.value) return;
-    
-    const paymentData = {
-        method: paymentMethod.value,
-        amount_tendered: paymentMethod.value === 'cash' ? amountTenderedMinor.value : cart.total, // For card assume exact
-        change_given: changeDue.value
-    };
-    
-    emit('payment-complete', paymentData);
+
+    const payments = paymentLines.value.map(line => ({
+        method: line.method,
+        amount: lineAmountMinor(line),
+        amount_tendered: line.method === 'cash' ? lineTenderedMinor(line) : lineAmountMinor(line),
+        change_given: lineChangeDue(line),
+    }));
+
+    emit('payment-complete', { payments });
 };
 </script>

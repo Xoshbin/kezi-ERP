@@ -33,6 +33,7 @@ use Kezi\Foundation\Models\Partner;
  * @property-read \Kezi\Foundation\Models\Partner|null $customer
  * @property-read \Kezi\Foundation\Models\Currency $currency
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Pos\Models\PosOrderLine> $lines
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Pos\Models\PosOrderPayment> $payments
  * @property-read \Kezi\Sales\Models\Invoice|null $invoice
  */
 class PosOrder extends Model
@@ -98,6 +99,11 @@ class PosOrder extends Model
     public function lines(): HasMany
     {
         return $this->hasMany(PosOrderLine::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(PosOrderPayment::class);
     }
 
     public function returns(): HasMany

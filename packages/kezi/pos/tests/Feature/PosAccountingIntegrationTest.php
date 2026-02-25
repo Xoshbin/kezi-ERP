@@ -123,7 +123,8 @@ it('creates and posts invoice when pos order is synced', function () {
                 total_amount: 100000,
                 metadata: []
             ),
-        ])
+        ]),
+        payments: collect([])
     );
 
     // Act
@@ -205,7 +206,8 @@ it('handles walk in customer creation', function () {
                 total_amount: 100000,
                 metadata: []
             ),
-        ])
+        ]),
+        payments: collect([])
     );
 
     // Act
