@@ -38,7 +38,7 @@ class PosOrder extends Model
 {
     use HasFactory;
 
-    protected static function newFactory()
+    protected static function newFactory(): \Kezi\Pos\Database\Factories\PosOrderFactory
     {
         return \Kezi\Pos\Database\Factories\PosOrderFactory::new();
     }

@@ -15,6 +15,8 @@ class SessionController extends Controller
 {
     public function open(OpenSessionRequest $request): JsonResponse
     {
+        $this->authorize('open', PosSession::class);
+
         // One session per user at a time across any profile
         /** @var \App\Models\User $user */
         $user = $request->user();
@@ -52,13 +54,9 @@ class SessionController extends Controller
 
     public function close(CloseSessionRequest $request, PosSession $session): JsonResponse
     {
+        $this->authorize('close', $session);
+
         /** @var \App\Models\User $user */
-        $user = $request->user();
-
-        if ($session->user_id !== $user->id) {
-            abort(403);
-        }
-
         if ($session->status !== 'opened') {
             return response()->json(['message' => 'Session is already closed or not open'], 409);
         }
@@ -87,6 +85,8 @@ class SessionController extends Controller
 
     public function current(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', PosSession::class);
+
         /** @var \App\Models\User $user */
         $user = $request->user();
 

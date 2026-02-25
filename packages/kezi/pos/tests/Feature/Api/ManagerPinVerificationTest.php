@@ -132,6 +132,10 @@ function createPendingApprovalReturn(): array
     ]);
     $manager->companies()->attach($company->id);
 
+    \Spatie\Permission\Models\Permission::findOrCreate('create_pos_return', 'web');
+    setPermissionsTeamId($company->id);
+    $cashier->givePermissionTo('create_pos_return');
+
     return [
         'return' => $posReturn->fresh(),
         'cashier' => $cashier,

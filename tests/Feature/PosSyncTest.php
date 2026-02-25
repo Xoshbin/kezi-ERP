@@ -22,6 +22,13 @@ beforeEach(function () {
     $this->user = User::factory()->create();
     $this->user->companies()->attach($this->company);
 
+    \Spatie\Permission\Models\Permission::findOrCreate('create_pos_order', 'web');
+    \Spatie\Permission\Models\Permission::findOrCreate('create_pos_session', 'web');
+    \Spatie\Permission\Models\Permission::findOrCreate('view_any_pos_session', 'web');
+    \Spatie\Permission\Models\Permission::findOrCreate('view_any_pos_order', 'web');
+    setPermissionsTeamId($this->company->id);
+    $this->user->givePermissionTo(['create_pos_order', 'create_pos_session', 'view_any_pos_session', 'view_any_pos_order']);
+
     Sanctum::actingAs($this->user, ['*']);
 });
 

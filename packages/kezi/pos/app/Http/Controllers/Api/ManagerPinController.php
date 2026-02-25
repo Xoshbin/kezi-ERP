@@ -24,6 +24,19 @@ class ManagerPinController extends Controller
         PosReturn $return,
         ApprovePosReturnAction $approveAction
     ): JsonResponse {
+        $this->authorize('create', PosReturn::class);
+
+        /** @var \App\Models\User $cashier */
+        $cashier = $request->user();
+
+        // Resolve company id from the authenticated cashier
+        $companyId = (int) $cashier->companies()->value('companies.id');
+
+        // Security: Ensure the return belongs to the cashier's company
+        if ((int) $return->company_id !== $companyId) {
+            abort(403, 'Unauthorized company access.');
+        }
+
         $validated = $request->validate([
             'pin' => ['required', 'string', 'digits_between:4,8'],
         ]);
