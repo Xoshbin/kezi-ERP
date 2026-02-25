@@ -207,3 +207,66 @@ it('does not allow the cashier to approve their own return using their own PIN',
         ->assertStatus(422)
         ->assertJsonFragment(['approved' => false]);
 });
+
+it('locks out the cashier after 5 failed PIN attempts', function () {
+    ['return' => $posReturn, 'cashier' => $cashier] = createPendingApprovalReturn();
+
+    // Disable the route-level throttle middleware
+    $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+
+    $lockoutKey = 'pos-pin-verification:'.$cashier->id;
+
+    // Use RateLimiter facade mocking
+    \Illuminate\Support\Facades\RateLimiter::shouldReceive('tooManyAttempts')
+        ->once()
+        ->with($lockoutKey, 5)
+        ->andReturn(true);
+
+    \Illuminate\Support\Facades\RateLimiter::shouldReceive('availableIn')
+        ->once()
+        ->with($lockoutKey)
+        ->andReturn(900);
+
+    // Any attempt (even with correct PIN) should be blocked when tooManyAttempts is true
+    $this->actingAs($cashier)
+        ->postJson("/api/pos/returns/{$posReturn->id}/verify-pin", ['pin' => '1234'])
+        ->assertStatus(429)
+        ->assertJsonFragment(['approved' => false]);
+});
+
+it('increments failed attempts on an invalid PIN', function () {
+    ['return' => $posReturn, 'cashier' => $cashier] = createPendingApprovalReturn();
+
+    $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+
+    $lockoutKey = 'pos-pin-verification:'.$cashier->id;
+
+    \Illuminate\Support\Facades\RateLimiter::shouldReceive('tooManyAttempts')
+        ->andReturn(false);
+
+    \Illuminate\Support\Facades\RateLimiter::shouldReceive('hit')
+        ->once()
+        ->with($lockoutKey, 900);
+
+    $this->actingAs($cashier)
+        ->postJson("/api/pos/returns/{$posReturn->id}/verify-pin", ['pin' => '9999'])
+        ->assertStatus(422);
+});
+
+it('clears failed attempts on a successful verification', function () {
+    ['return' => $posReturn, 'cashier' => $cashier] = createPendingApprovalReturn();
+
+    $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+
+    $lockoutKey = 'pos-pin-verification:'.$cashier->id;
+
+    \Illuminate\Support\Facades\RateLimiter::shouldReceive('tooManyAttempts')->andReturn(false);
+
+    \Illuminate\Support\Facades\RateLimiter::shouldReceive('clear')
+        ->once()
+        ->with($lockoutKey);
+
+    $this->actingAs($cashier)
+        ->postJson("/api/pos/returns/{$posReturn->id}/verify-pin", ['pin' => '1234'])
+        ->assertOk();
+});

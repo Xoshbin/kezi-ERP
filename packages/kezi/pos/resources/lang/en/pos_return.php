@@ -72,6 +72,7 @@ return [
 
     'pin' => [
         'invalid' => 'Incorrect manager PIN. Please try again.',
+        'locked_out' => 'Too many failed attempts. Please try again in :seconds seconds.',
         'not_approvable' => 'This return cannot be approved in its current status.',
     ],
 ];
