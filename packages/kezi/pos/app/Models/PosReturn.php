@@ -43,6 +43,11 @@ class PosReturn extends Model
     /** @use HasFactory<\Kezi\Pos\Database\Factories\PosReturnFactory> */
     use HasFactory;
 
+    protected static function newFactory(): \Kezi\Pos\Database\Factories\PosReturnFactory
+    {
+        return \Kezi\Pos\Database\Factories\PosReturnFactory::new();
+    }
+
     protected $fillable = [
         'uuid',
         'company_id',
