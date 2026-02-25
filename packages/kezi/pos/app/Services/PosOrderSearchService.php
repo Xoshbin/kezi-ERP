@@ -128,6 +128,9 @@ class PosOrderSearchService
 
     /**
      * Check if order is eligible for return
+     *
+     * @param  array<string, mixed>  $returnPolicy
+     * @return array{eligible: bool, reasons: array<string>}
      */
     public function isEligibleForReturn(PosOrder $order, array $returnPolicy): array
     {
@@ -143,10 +146,23 @@ class PosOrderSearchService
             }
         }
 
-        // Check if order is already returned
-        if ($order->returns()->where('status', '!=', 'cancelled')->exists()) {
+        // Check if order is fully returned
+        $order->loadMissing(['lines', 'returns.lines']);
+
+        $isFullyReturned = $order->lines->every(function ($line) use ($order) {
+            $returnedQty = $order->returns
+                ->where('status', '!=', \Kezi\Pos\Enums\PosReturnStatus::Cancelled)
+                ->sum(function ($r) use ($line) {
+                    /** @var \Kezi\Pos\Models\PosReturn $r */
+                    return $r->lines->where('original_order_line_id', $line->id)->sum('quantity_returned');
+                });
+
+            return $returnedQty >= $line->quantity;
+        });
+
+        if ($isFullyReturned) {
             $eligible = false;
-            $reasons[] = 'Order already has an active return';
+            $reasons[] = 'Order has been fully returned';
         }
 
         // Check order status

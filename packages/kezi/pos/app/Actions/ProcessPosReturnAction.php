@@ -120,8 +120,8 @@ class ProcessPosReturnAction
                 'description' => 'Return: '.$returnLine->product->name,
                 'quantity' => -$returnLine->quantity_returned,
                 'unit_price' => $returnLine->unit_price,
-                'subtotal' => -$returnLine->refund_amount->getMinorAmount()->toInt(),
-                'total_line_tax' => 0,
+                'subtotal' => $returnLine->refund_amount->multipliedBy(-1),
+                'total_line_tax' => Money::of(0, $currency->code),
                 'income_account_id' => $incomeAccountId,
             ]);
         }
