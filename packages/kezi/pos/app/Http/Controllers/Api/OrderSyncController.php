@@ -4,26 +4,14 @@ namespace Kezi\Pos\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Kezi\Pos\Actions\SyncOrdersAction;
 use Kezi\Pos\DataTransferObjects\PosOrderData;
+use Kezi\Pos\Http\Requests\SyncOrdersRequest;
 
 class OrderSyncController extends Controller
 {
-    public function store(Request $request, SyncOrdersAction $action): JsonResponse
+    public function store(SyncOrdersRequest $request, SyncOrdersAction $action): JsonResponse
     {
-        $this->authorize('syncOrders', \Kezi\Pos\Models\PosOrder::class);
-
-        $request->validate([
-            'orders' => 'required|array',
-            'orders.*.uuid' => 'required|uuid',
-            'orders.*.currency_id' => 'required|integer',
-            'orders.*.pos_session_id' => 'required|integer',
-            'orders.*.total_amount' => 'required',
-            'orders.*.discount_amount' => 'nullable|integer',
-            'orders.*.lines' => 'array',
-            'orders.*.lines.*.discount_amount' => 'nullable|integer',
-        ]);
 
         /** @var \App\Models\User $user */
         $user = $request->user();
