@@ -2,6 +2,7 @@
 
 use Kezi\Pos\Models\PosProfile;
 use Kezi\Pos\Models\PosSession;
+use Laravel\Sanctum\Sanctum;
 use Tests\Traits\WithConfiguredCompany;
 
 /**
@@ -25,11 +26,12 @@ beforeEach(function () {
 });
 
 it('can open a new session', function () {
-    $response = $this->actingAs($this->user)
-        ->postJson(route('api.pos.sessions.open'), [
-            'pos_profile_id' => $this->posProfile->id,
-            'opening_cash' => 10000, // 100.00
-        ]);
+    Sanctum::actingAs($this->user, ['*']);
+
+    $response = $this->postJson(route('api.pos.sessions.open'), [
+        'pos_profile_id' => $this->posProfile->id,
+        'opening_cash' => 10000, // 100.00
+    ]);
 
     $response->assertStatus(201)
         ->assertJsonStructure(['session' => ['id', 'status', 'opened_at']]);
@@ -44,14 +46,16 @@ it('can open a new session', function () {
 });
 
 it('prevents opening multiple sessions for same user', function () {
+    Sanctum::actingAs($this->user, ['*']);
+
     // Open first session
-    $this->actingAs($this->user)->postJson(route('api.pos.sessions.open'), [
+    $this->postJson(route('api.pos.sessions.open'), [
         'pos_profile_id' => $this->posProfile->id,
         'opening_cash' => 0,
     ]);
 
     // Try opening another
-    $response = $this->actingAs($this->user)->postJson(route('api.pos.sessions.open'), [
+    $response = $this->postJson(route('api.pos.sessions.open'), [
         'pos_profile_id' => $this->posProfile->id,
         'opening_cash' => 0,
     ]);
@@ -60,6 +64,8 @@ it('prevents opening multiple sessions for same user', function () {
 });
 
 it('can retrieve current session', function () {
+    Sanctum::actingAs($this->user, ['*']);
+
     $session = PosSession::factory()->create([
         'company_id' => $this->company->id,
         'pos_profile_id' => $this->posProfile->id,
@@ -67,14 +73,15 @@ it('can retrieve current session', function () {
         'status' => 'opened',
     ]);
 
-    $response = $this->actingAs($this->user)
-        ->getJson(route('api.pos.sessions.current'));
+    $response = $this->getJson(route('api.pos.sessions.current'));
 
     $response->assertStatus(200)
         ->assertJsonPath('session.id', $session->id);
 });
 
 it('can close a session', function () {
+    Sanctum::actingAs($this->user, ['*']);
+
     $session = PosSession::factory()->create([
         'company_id' => $this->company->id,
         'pos_profile_id' => $this->posProfile->id,
@@ -82,11 +89,10 @@ it('can close a session', function () {
         'status' => 'opened',
     ]);
 
-    $response = $this->actingAs($this->user)
-        ->postJson(route('api.pos.sessions.close', $session), [
-            'closing_cash' => 15000,
-            'closing_notes' => 'End of day',
-        ]);
+    $response = $this->postJson(route('api.pos.sessions.close', $session), [
+        'closing_cash' => 15000,
+        'closing_notes' => 'End of day',
+    ]);
 
     $response->assertStatus(200);
 

@@ -18,10 +18,6 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\RestrictPosOnlyUser::class,
             SetLocaleFromSession::class,
         ]);
-
-        $middleware->validateCsrfTokens(except: [
-            'api/pos/*',
-        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->report(function (\Throwable $e) {
