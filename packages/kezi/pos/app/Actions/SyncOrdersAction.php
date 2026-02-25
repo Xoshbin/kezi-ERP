@@ -56,7 +56,7 @@ class SyncOrdersAction
                     }
                     $currencyCode = $currencies[$orderData->currency_id];
 
-                    DB::transaction(function () use ($orderData, $companyId, $currencyCode) {
+                    $order = DB::transaction(function () use ($orderData, $companyId, $currencyCode) {
                         $order = PosOrder::create([
                             'uuid' => $orderData->uuid,
                             'company_id' => $companyId,
@@ -101,7 +101,11 @@ class SyncOrdersAction
                             }
                             Log::warning("Invoice creation failed for POS order {$orderData->uuid}: {$e->getMessage()}");
                         }
+
+                        return $order;
                     });
+
+                    \Kezi\Pos\Events\PosOrderSynced::dispatch($order);
 
                     $synced[] = $orderData->uuid;
                 } catch (\Exception $e) {

@@ -63,7 +63,11 @@ class ProcessPosReturnAction
             // Mark as completed
             $return->update(['status' => PosReturnStatus::Completed]);
 
-            return $return->fresh(['creditNote', 'paymentReversal', 'stockMove']);
+            $freshReturn = $return->fresh(['creditNote', 'paymentReversal', 'stockMove']);
+
+            \Kezi\Pos\Events\PosReturnProcessed::dispatch($freshReturn);
+
+            return $freshReturn;
         });
     }
 
