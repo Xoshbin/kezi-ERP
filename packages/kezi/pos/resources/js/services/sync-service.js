@@ -113,6 +113,7 @@ export const syncOrders = async () => {
     const hydratedOrders = await Promise.all(
         pending.map(async (order) => {
             const lines = await db.order_lines.where('order_id').equals(order.id).toArray();
+            const pmts = await db.order_payments.where('order_id').equals(order.id).toArray();
 
             return {
                 uuid: order.uuid,
@@ -135,6 +136,13 @@ export const syncOrders = async () => {
                     tax_amount: String(l.tax_amount),
                     total_amount: String(l.total_amount),
                     metadata: l.metadata || [],
+                })),
+                // Split payments (new field — backend is backward-compatible)
+                payments: pmts.map((p) => ({
+                    method: p.method,
+                    amount: Number(p.amount),
+                    amount_tendered: p.amount_tendered ?? null,
+                    change_given: Number(p.change_given ?? 0),
                 })),
             };
         })
