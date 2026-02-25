@@ -47,12 +47,12 @@ class CreatePaymentAction
             // If payment currency is same as company, rate is 1.0
             $exchangeRate = 1.0;
             if ($currency->id !== $company->currency_id) {
-                // Try to fetch rate, fallback to 1.0 if not found (Draft state)
-                $exchangeRate = $this->currencyConverter->getExchangeRate(
-                    $currency,
-                    Carbon::parse($dto->payment_date),
-                    $company
-                ) ?? 1.0;
+                $exchangeRate = $dto->exchange_rate
+                    ?? $this->currencyConverter->getExchangeRate(
+                        $currency,
+                        Carbon::parse($dto->payment_date),
+                        $company
+                    ) ?? 1.0;
             }
 
             // Adjust calculation for Withholding Tax
@@ -138,6 +138,7 @@ class CreatePaymentAction
                 'amount' => $paymentAmount, // Net Amount (Gross - Tax)
                 'payment_type' => $paymentType,
                 'paid_to_from_partner_id' => $partnerId,
+                'exchange_rate_at_payment' => $exchangeRate,
                 'status' => PaymentStatus::Draft,
             ]);
 
