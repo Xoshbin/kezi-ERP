@@ -11,6 +11,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Kezi\Pos\Enums\PosReturnStatus;
 use Kezi\Pos\Filament\Clusters\Pos\PosCluster;
@@ -96,6 +97,7 @@ class PosReturnResource extends Resource
                             ->mapWithKeys(fn (PosReturnStatus $s) => [$s->value => $s->label()])
                             ->toArray()
                     ),
+                TrashedFilter::make(),
             ])
             ->actions([
                 ViewAction::make(),
