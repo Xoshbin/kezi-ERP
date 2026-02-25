@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property int $id
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $user_id
  * @property \Illuminate\Support\Carbon|null $opened_at
  * @property \Illuminate\Support\Carbon|null $closed_at
- * @property string $status
+ * @property \Kezi\Pos\Enums\PosSessionStatus $status
  * @property \Brick\Money\Money|null $opening_cash
  * @property \Brick\Money\Money|null $closing_cash
  * @property-read \Kezi\Pos\Models\PosProfile $profile
@@ -25,7 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class PosSession extends Model
 {
     /** @use HasFactory<\Kezi\Pos\Database\Factories\PosSessionFactory> */
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected static function newFactory(): \Kezi\Pos\Database\Factories\PosSessionFactory
     {
@@ -51,6 +52,7 @@ class PosSession extends Model
             'closed_at' => 'datetime',
             'opening_cash' => \Kezi\Pos\Casts\PosSessionMoneyCast::class,
             'closing_cash' => \Kezi\Pos\Casts\PosSessionMoneyCast::class,
+            'status' => \Kezi\Pos\Enums\PosSessionStatus::class,
         ];
     }
 

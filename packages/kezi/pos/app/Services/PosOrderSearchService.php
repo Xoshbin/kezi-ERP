@@ -5,6 +5,7 @@ namespace Kezi\Pos\Services;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Kezi\Pos\DataTransferObjects\SearchPosOrdersDTO;
+use Kezi\Pos\Enums\PosOrderStatus;
 use Kezi\Pos\Models\PosOrder;
 
 class PosOrderSearchService
@@ -64,7 +65,7 @@ class PosOrderSearchService
         if ($dto->status) {
             $query->where('status', $dto->status);
         } else {
-            $query->where('status', '!=', 'cancelled');
+            $query->where('status', '!=', PosOrderStatus::Cancelled);
         }
 
         // Product search (via order lines)
@@ -106,7 +107,7 @@ class PosOrderSearchService
         $query = PosOrder::query()
             ->with(['customer', 'lines.product'])
             ->where('company_id', $companyId)
-            ->where('status', '!=', 'cancelled');
+            ->where('status', '!=', PosOrderStatus::Cancelled);
 
         if ($sessionId) {
             $query->where('pos_session_id', $sessionId);
@@ -149,9 +150,9 @@ class PosOrderSearchService
         }
 
         // Check order status
-        if ($order->status !== 'paid' && $order->status !== 'completed') {
+        if ($order->status !== PosOrderStatus::Paid) {
             $eligible = false;
-            $reasons[] = 'Only paid or completed orders can be returned';
+            $reasons[] = 'Only paid orders can be returned';
         }
 
         return [

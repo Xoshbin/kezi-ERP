@@ -5,6 +5,7 @@ namespace Kezi\Pos\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Kezi\Pos\Enums\PosSessionStatus;
 use Kezi\Pos\Http\Requests\CloseSessionRequest;
 use Kezi\Pos\Http\Requests\OpenSessionRequest;
 use Kezi\Pos\Http\Resources\PosSessionResource;
@@ -25,7 +26,7 @@ class SessionController extends Controller
         $tuple = \Illuminate\Support\Facades\DB::transaction(function () use ($user, $request) {
             $existing = PosSession::with('profile')
                 ->where('user_id', $user->id)
-                ->where('status', 'opened')
+                ->where('status', PosSessionStatus::Opened)
                 ->lockForUpdate()
                 ->first();
 
@@ -43,7 +44,7 @@ class SessionController extends Controller
                 'company_id' => $profile->company_id,
                 'opened_at' => now(),
                 'opening_cash' => \Brick\Money\Money::ofMinor($request->opening_cash, $currency->code),
-                'status' => 'opened',
+                'status' => PosSessionStatus::Opened,
             ]);
 
             return [$newSession->load(['profile', 'user']), true];
@@ -70,7 +71,7 @@ class SessionController extends Controller
     {
         $this->authorize('close', $session);
 
-        if ($session->status !== 'opened') {
+        if ($session->status !== PosSessionStatus::Opened) {
             return response()->json(['message' => 'Session is already closed or not open'], 409);
         }
 
@@ -81,7 +82,7 @@ class SessionController extends Controller
             'closed_at' => now(),
             'closing_cash' => \Brick\Money\Money::ofMinor($request->closing_cash, $currency->code),
             'closing_notes' => $request->closing_notes,
-            'status' => 'closed',
+            'status' => PosSessionStatus::Closed,
         ]);
 
         \Kezi\Pos\Events\PosSessionClosed::dispatch($session);
@@ -106,7 +107,7 @@ class SessionController extends Controller
         $user = $request->user();
 
         $session = PosSession::where('user_id', $user->id)
-            ->where('status', 'opened')
+            ->where('status', PosSessionStatus::Opened)
             ->latest()
             ->with(['profile', 'user', 'orders'])
             ->first();
