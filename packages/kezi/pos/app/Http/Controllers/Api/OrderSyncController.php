@@ -12,6 +12,8 @@ class OrderSyncController extends Controller
 {
     public function store(Request $request, SyncOrdersAction $action): JsonResponse
     {
+        $this->authorize('syncOrders', \Kezi\Pos\Models\PosOrder::class);
+
         $request->validate([
             'orders' => 'required|array',
             'orders.*.uuid' => 'required|uuid',
