@@ -6,9 +6,9 @@ use Kezi\Product\Models\ProductCategory;
 use function Pest\Laravel\assertDatabaseHas;
 
 it('can create a category hierarchy', function () {
-    $parent = ProductCategory::create(['name' => 'Parent']);
-    $child = ProductCategory::create(['name' => 'Child', 'parent_id' => $parent->id]);
-    $grandchild = ProductCategory::create(['name' => 'Grandchild', 'parent_id' => $child->id]);
+    $parent = ProductCategory::factory()->create(['name' => 'Parent']);
+    $child = ProductCategory::factory()->create(['name' => 'Child', 'parent_id' => $parent->id, 'company_id' => $parent->company_id]);
+    $grandchild = ProductCategory::factory()->create(['name' => 'Grandchild', 'parent_id' => $child->id, 'company_id' => $parent->company_id]);
 
     expect($child->parent_id)->toBe($parent->id)
         ->and($grandchild->parent_id)->toBe($child->id)
@@ -16,7 +16,7 @@ it('can create a category hierarchy', function () {
 });
 
 it('prevents a category from being its own parent', function () {
-    $category = ProductCategory::create(['name' => 'Category']);
+    $category = ProductCategory::factory()->create(['name' => 'Category']);
 
     try {
         $category->parent_id = $category->id;
@@ -31,9 +31,9 @@ it('prevents a category from being its own parent', function () {
 });
 
 it('prevents circular dependencies', function () {
-    $parent = ProductCategory::create(['name' => 'Parent']);
-    $child = ProductCategory::create(['name' => 'Child', 'parent_id' => $parent->id]);
-    $grandchild = ProductCategory::create(['name' => 'Grandchild', 'parent_id' => $child->id]);
+    $parent = ProductCategory::factory()->create(['name' => 'Parent']);
+    $child = ProductCategory::factory()->create(['name' => 'Child', 'parent_id' => $parent->id, 'company_id' => $parent->company_id]);
+    $grandchild = ProductCategory::factory()->create(['name' => 'Grandchild', 'parent_id' => $child->id, 'company_id' => $parent->company_id]);
 
     // Try to make Parent a child of Grandchild
     try {
@@ -50,8 +50,8 @@ it('prevents circular dependencies', function () {
 });
 
 it('prevents deletion of category with children', function () {
-    $parent = ProductCategory::create(['name' => 'Parent']);
-    ProductCategory::create(['name' => 'Child', 'parent_id' => $parent->id]);
+    $parent = ProductCategory::factory()->create(['name' => 'Parent']);
+    ProductCategory::factory()->create(['name' => 'Child', 'parent_id' => $parent->id, 'company_id' => $parent->company_id]);
 
     try {
         $parent->delete();
@@ -72,9 +72,9 @@ it('prevents deletion of category with children', function () {
 });
 
 it('can reparent a category', function () {
-    $oldParent = ProductCategory::create(['name' => 'Old Parent']);
-    $newParent = ProductCategory::create(['name' => 'New Parent']);
-    $child = ProductCategory::create(['name' => 'Child', 'parent_id' => $oldParent->id]);
+    $oldParent = ProductCategory::factory()->create(['name' => 'Old Parent']);
+    $newParent = ProductCategory::factory()->create(['name' => 'New Parent', 'company_id' => $oldParent->company_id]);
+    $child = ProductCategory::factory()->create(['name' => 'Child', 'parent_id' => $oldParent->id, 'company_id' => $oldParent->company_id]);
 
     $child->update(['parent_id' => $newParent->id]);
 

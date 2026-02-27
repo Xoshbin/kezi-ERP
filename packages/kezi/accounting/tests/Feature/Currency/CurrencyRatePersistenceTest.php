@@ -2,8 +2,6 @@
 
 namespace Kezi\Accounting\Tests\Feature\Currency;
 
-use App\Models\Company;
-use App\Models\User;
 use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Kezi\Accounting\Models\Account;
@@ -19,7 +17,7 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
-    
+
     // Ensure we have a foreign currency (USD)
     $this->usdCurrency = Currency::factory()->createSafely([
         'code' => 'USD',
@@ -91,7 +89,7 @@ test('it can create an invoice in the default currency without any available cur
 
     // 2. Create an invoice in the base currency
     $baseCurrency = $this->company->currency;
-    
+
     $invoice = Invoice::factory()->create([
         'company_id' => $this->company->id,
         'customer_id' => $this->customer->id,

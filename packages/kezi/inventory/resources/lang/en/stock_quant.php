@@ -17,8 +17,12 @@ return [
         'quantity' => 'Quantity',
         'reserved_quantity' => 'Reserved Quantity',
         'available_quantity' => 'Available Quantity',
+        'is_negative_stock' => 'Negative Stock',
         'updated_at' => 'Last Updated',
     ],
+
+    'discrepancy_label' => 'Inventory Discrepancy',
+    'discrepancy_plural_label' => 'Inventory Discrepancies',
 
     'filters' => [
         'product' => 'Product',
@@ -34,5 +38,9 @@ return [
     'empty_state' => [
         'heading' => 'No stock quants found',
         'description' => 'Stock quants will appear here when products have inventory in locations.',
+    ],
+
+    'actions' => [
+        'reconcile' => 'Reconcile',
     ],
 ];

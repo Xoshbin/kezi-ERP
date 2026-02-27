@@ -11,6 +11,9 @@ use Kezi\Product\Models\Product;
  */
 class ProductResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         /** @var Product $product */
@@ -27,7 +30,7 @@ class ProductResource extends JsonResource
             'type' => $product->type->value,
             'available_quantity' => $product->available_quantity,
             'tax_ids' => $product->purchaseTaxes->pluck('id')->values()->all(),
-            'is_active' => $product->is_active,
+            'is_active' => $product->is_active ? 1 : 0,
         ];
     }
 }

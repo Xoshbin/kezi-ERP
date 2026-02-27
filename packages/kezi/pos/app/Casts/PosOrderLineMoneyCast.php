@@ -8,20 +8,18 @@ use InvalidArgumentException;
 use Kezi\Foundation\Casts\MoneyCast;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Pos\Models\PosOrder;
+use Kezi\Pos\Models\PosReturn;
 
 class PosOrderLineMoneyCast extends MoneyCast
 {
     protected function resolveCurrency(Model $model): Currency
     {
-        if (method_exists($model, 'order')) {
-            // @phpstan-ignore-next-line
-            $order = $model->order;
+        // Handle PosOrderLine
+        if (method_exists($model, 'order') || isset($model->pos_order_id)) {
+            $order = $model->relationLoaded('order') ? $model->order : null;
 
-            if (! $model->relationLoaded('order')) {
-                // If we have pos_order_id, fetch it
-                if ($model->getAttribute('pos_order_id')) {
-                    $order = $model->order()->with('currency')->first();
-                }
+            if (! $order && $model->getAttribute('pos_order_id')) {
+                $order = PosOrder::with('currency')->find($model->getAttribute('pos_order_id'));
             }
 
             if ($order && $order->currency) {
@@ -29,7 +27,20 @@ class PosOrderLineMoneyCast extends MoneyCast
             }
         }
 
-        throw new InvalidArgumentException('Could not resolve currency for PosOrderLine. Ensure order relationship is valid.');
+        // Handle PosReturnLine
+        if (method_exists($model, 'posReturn') || isset($model->pos_return_id)) {
+            $return = $model->relationLoaded('posReturn') ? $model->posReturn : null;
+
+            if (! $return && $model->getAttribute('pos_return_id')) {
+                $return = PosReturn::with('currency')->find($model->getAttribute('pos_return_id'));
+            }
+
+            if ($return && $return->currency) {
+                return $return->currency;
+            }
+        }
+
+        throw new InvalidArgumentException('Could not resolve currency for '.get_class($model).'. Ensure relationship is valid.');
     }
 
     /**

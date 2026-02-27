@@ -48,6 +48,8 @@ class CreateVendorBillAction
                 'due_date' => $createVendorBillDTO->due_date,
                 'payment_term_id' => $createVendorBillDTO->payment_term_id,
                 'incoterm' => $createVendorBillDTO->incoterm,
+                'incoterm_location' => $createVendorBillDTO->incoterm_location,
+                'exchange_rate_at_creation' => $createVendorBillDTO->exchange_rate_at_creation,
                 // Add default zero values to satisfy NOT NULL constraints.
                 // The VendorBillLineObserver will update these as lines are added.
                 'total_tax' => 0,

@@ -107,7 +107,7 @@ describe('VendorBill Exchange Rate Field', function () {
         $livewire = Livewire::test(\Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ViewVendorBill::class, ['record' => $vendorBill->id]);
 
         // Check that the exchange rate field exists
-        $livewire->assertFormFieldExists('exchange_rate_at_creation');
+        $livewire->assertSchemaComponentExists('exchange_rate_at_creation', 'infolist');
     });
 
     // ... lines 114-175 kept manual ...

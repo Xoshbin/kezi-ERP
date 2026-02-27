@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Kezi\Accounting\Enums\Accounting\TaxType;
+use Kezi\Accounting\Filament\Actions\RegisterPaymentAction;
 use Kezi\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\CreateInvoice;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\EditInvoice;
@@ -38,21 +39,16 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\RelationMana
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\PaymentsRelationManager;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\FiscalPosition;
-use Kezi\Accounting\Models\Journal;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Accounting\Rules\NotInLockedPeriod;
 use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
+use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Foundation\Models\Currency;
-use Kezi\Payment\Actions\Payments\CreatePaymentAction;
-use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
-use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
-use Kezi\Payment\Enums\Payments\PaymentMethod;
 use Kezi\Payment\Enums\Payments\PaymentType;
-use Kezi\Payment\Services\PaymentService;
 use Kezi\Product\Models\Product;
 use Kezi\Sales\Enums\Sales\InvoiceStatus;
 use Kezi\Sales\Models\Invoice;
@@ -425,28 +421,10 @@ class InvoiceResource extends Resource
                         ->columns(18),
                 ])->columnSpanFull(),
 
-            Section::make(__('accounting::invoice.company_currency_totals'))
-                ->schema([
-                    TextInput::make('exchange_rate_at_creation')
-                        ->label(__('accounting::invoice.exchange_rate_at_creation'))
-                        ->numeric()
-                        ->disabled()
-                        ->visible(fn (?Invoice $record) => $record && $record->exchange_rate_at_creation),
-
-                    MoneyInput::make('total_amount_company_currency')
-                        ->label(__('accounting::invoice.total_amount_company_currency'))
-                        ->currencyField('../../company.currency_id')
-                        ->disabled()
-                        ->visible(fn (?Invoice $record) => $record && $record->total_amount_company_currency),
-
-                    MoneyInput::make('total_tax_company_currency')
-                        ->label(__('accounting::invoice.total_tax_company_currency'))
-                        ->currencyField('../../company.currency_id')
-                        ->disabled()
-                        ->visible(fn (?Invoice $record) => $record && $record->total_tax_company_currency),
-                ])
-                ->columns(3)
-                ->visible(fn (?Invoice $record) => $record && ($record->exchange_rate_at_creation || $record->total_amount_company_currency)),
+            DocumentTotalsHelper::make(
+                linesKey: 'invoiceLines',
+                translationPrefix: 'accounting::invoice'
+            ),
 
             DocumentAttachmentsHelper::makeSection(
                 directory: 'invoices',
@@ -636,97 +614,10 @@ class InvoiceResource extends Resource
                     })
                     ->requiresConfirmation()
                     ->visible(fn (Invoice $record) => $record->status === InvoiceStatus::Draft),
-                Action::make('register_payment')
-                    ->label(__('accounting::invoice.register_payment'))
-                    ->icon('heroicon-o-banknotes')
-                    ->color('success')
-                    ->modalHeading(__('accounting::invoice.register_payment'))
-                    ->modalDescription(__('accounting::invoice.payments_relation_manager.payment_details'))
-                    ->schema([
-                        Select::make('journal_id')
-                            ->label(__('accounting::payment.form.journal_id'))
-                            ->options(function (): array {
-                                $tenant = Filament::getTenant();
-                                if (! $tenant instanceof Company) {
-                                    return [];
-                                }
-
-                                return Journal::where('company_id', $tenant->getKey())
-                                    ->pluck('name', 'id')
-                                    ->all();
-                            })
-                            ->required()
-                            ->default(function (): ?int {
-                                $tenant = Filament::getTenant();
-                                if (! $tenant instanceof Company) {
-                                    return null;
-                                }
-
-                                return Journal::where('company_id', $tenant->getKey())
-                                    ->where('type', 'bank')
-                                    ->value('id');
-                            }),
-                        DatePicker::make('payment_date')
-                            ->label(__('accounting::payment.form.payment_date'))
-                            ->default(now())
-                            ->required(),
-                        MoneyInput::make('amount')
-                            ->label(__('accounting::payment.form.amount'))
-                            ->currencyField('currency_id')
-                            ->default(fn (Invoice $record) => $record->getRemainingAmount())
-                            ->required(),
-                        TextInput::make('reference')
-                            ->label(__('accounting::payment.form.reference'))
-                            ->placeholder(__('accounting::invoice.optional_reference')),
-                        Hidden::make('currency_id')
-                            ->default(fn (Invoice $record) => $record->currency_id),
-                    ])
-                    ->action(function (Invoice $record, array $data) {
-                        try {
-                            $currency = $record->currency;
-
-                            // Create payment document link DTO
-                            $documentLink = new CreatePaymentDocumentLinkDTO(
-                                document_type: 'invoice',
-                                document_id: $record->getKey(),
-                                amount_applied: Money::of($data['amount'], $currency->code)
-                            );
-
-                            // Create payment DTO
-                            $paymentDTO = new CreatePaymentDTO(
-                                company_id: $record->company_id,
-                                journal_id: $data['journal_id'],
-                                currency_id: $record->currency_id,
-                                payment_date: $data['payment_date'],
-                                // settlement inferred by presence of document links
-                                payment_type: PaymentType::Inbound,
-                                payment_method: PaymentMethod::BankTransfer,
-                                paid_to_from_partner_id: $record->customer_id,
-                                amount: Money::of($data['amount'], $currency->code),
-                                document_links: [$documentLink],
-                                reference: $data['reference']
-                            );
-
-                            // Create and confirm payment
-                            $user = Auth::user();
-                            if (! $user) {
-                                throw new Exception('User must be authenticated to create payment');
-                            }
-                            $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
-                            app(PaymentService::class)->confirm($payment, $user);
-
-                            Notification::make()
-                                ->title(__('accounting::payment.action.confirm.notification.success'))
-                                ->success()
-                                ->send();
-                        } catch (Exception $e) {
-                            Notification::make()
-                                ->title(__('accounting::payment.action.confirm.notification.error'))
-                                ->body($e->getMessage())
-                                ->danger()
-                                ->send();
-                        }
-                    })
+                RegisterPaymentAction::make()
+                    ->documentType('invoice')
+                    ->paymentType(PaymentType::Inbound)
+                    ->partnerId(fn (Invoice $record) => $record->customer_id)
                     ->visible(
                         fn (Invoice $record) => $record->status === InvoiceStatus::Posted &&
                         ! $record->getRemainingAmount()->isZero()
@@ -745,7 +636,13 @@ class InvoiceResource extends Resource
                     ->action(function (Invoice $record, array $data): void {
                         $invoiceService = app(InvoiceService::class);
                         try {
-                            $invoiceService->resetToDraft($record, Auth::user(), $data['reason']);
+                            $user = Auth::user();
+
+                            if (! $user) {
+                                throw new \Exception('User must be authenticated');
+                            }
+
+                            $invoiceService->resetToDraft($record, $user, $data['reason']);
                             Notification::make()
                                 ->title(__('accounting::invoice.notification.reset_success'))
                                 ->success()

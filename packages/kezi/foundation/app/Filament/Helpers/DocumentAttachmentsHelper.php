@@ -26,11 +26,11 @@ class DocumentAttachmentsHelper
         int $maxSize = 10240,
         int $maxFiles = 10
     ): Section {
-        return Section::make(__('common.attachments'))
-            ->description(__('common.attachments_description'))
+        return Section::make(__('foundation::common.attachments'))
+            ->description(__('foundation::common.attachments_description'))
             ->schema([
                 Forms\Components\FileUpload::make('attachments')
-                    ->label(__('common.attachments'))
+                    ->label(__('foundation::common.attachments'))
                     ->multiple()
                     ->disk('local')
                     ->directory("document-attachments/{$directory}")
@@ -39,7 +39,7 @@ class DocumentAttachmentsHelper
                     ->maxSize($maxSize)
                     ->maxFiles($maxFiles)
                     ->disabled($disabledCallback ?? fn () => false)
-                    ->helperText(__('common.attachments_helper', ['maxSize' => $maxSize / 1024]))
+                    ->helperText(__('foundation::common.attachments_helper', ['maxSize' => $maxSize / 1024]))
                     ->downloadable()
                     ->openable()
                     ->deletable($deletableCallback ?? fn ($record) => $record === null)

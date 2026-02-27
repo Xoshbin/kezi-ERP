@@ -7,6 +7,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 
 class PurchaseOrderInfolist
 {
@@ -14,70 +15,77 @@ class PurchaseOrderInfolist
     {
         return $schema
             ->components([
-                Section::make(__('purchase::purchase_orders.sections.basic_information'))
+                Section::make(__('purchase::purchase_orders.sections.vendor_currency_information'))
                     ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TextEntry::make('po_number')
-                                    ->label(__('purchase::purchase_orders.fields.po_number'))
-                                    ->placeholder(__('purchase::purchase_orders.help.po_number')),
+                        TextEntry::make('vendor.name')
+                            ->label(__('purchase::purchase_orders.fields.vendor'))
+                            ->columnSpan(2),
 
-                                TextEntry::make('status')
-                                    ->label(__('purchase::purchase_orders.fields.status'))
-                                    ->badge()
-                                    ->color(fn ($state) => match ($state?->value ?? $state) {
-                                        'draft' => 'gray',
-                                        'rfq' => 'info',
-                                        'rfq_sent' => 'info',
-                                        'sent' => 'warning',
-                                        'confirmed' => 'success',
-                                        'to_receive' => 'warning',
-                                        'partially_received' => 'warning',
-                                        'fully_received' => 'success',
-                                        'to_bill' => 'warning',
-                                        'partially_billed' => 'warning',
-                                        'fully_billed' => 'success',
-                                        'done' => 'success',
-                                        'cancelled' => 'danger',
-                                        default => 'gray',
-                                    }),
+                        TextEntry::make('currency.name')
+                            ->label(__('purchase::purchase_orders.fields.currency')),
 
-                                TextEntry::make('po_date')
-                                    ->label(__('purchase::purchase_orders.fields.po_date'))
-                                    ->date(),
+                        TextEntry::make('exchange_rate_at_creation')
+                            ->label(__('purchase::purchase_orders.fields.exchange_rate'))
+                            ->numeric(decimalPlaces: 6)
+                            ->visible(fn ($record) => $record && $record->exchange_rate_at_creation),
 
-                                TextEntry::make('reference')
-                                    ->label(__('purchase::purchase_orders.fields.reference'))
-                                    ->placeholder('—'),
-                            ]),
-                    ]),
+                        TextEntry::make('incoterm')
+                            ->label(__('purchase::purchase_orders.fields.incoterm'))
+                            ->placeholder('—'),
 
-                Section::make(__('purchase::purchase_orders.sections.vendor_details'))
+                        TextEntry::make('incoterm_location')
+                            ->label(__('purchase::purchase_orders.fields.incoterm_location'))
+                            ->placeholder('—'),
+
+                        TextEntry::make('deliveryLocation.name')
+                            ->label(__('purchase::purchase_orders.fields.delivery_location'))
+                            ->placeholder('—'),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull(),
+
+                Section::make(__('purchase::purchase_orders.sections.order_details'))
                     ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TextEntry::make('vendor.name')
-                                    ->label(__('purchase::purchase_orders.fields.vendor')),
+                        TextEntry::make('po_number')
+                            ->label(__('purchase::purchase_orders.fields.po_number'))
+                            ->placeholder(__('purchase::purchase_orders.help.po_number')),
 
-                                TextEntry::make('currency.name')
-                                    ->label(__('purchase::purchase_orders.fields.currency')),
-                            ]),
-                    ]),
+                        TextEntry::make('status')
+                            ->label(__('purchase::purchase_orders.fields.status'))
+                            ->badge()
+                            ->color(fn ($state) => match ($state?->value ?? $state) {
+                                'draft' => 'gray',
+                                'rfq' => 'info',
+                                'rfq_sent' => 'info',
+                                'sent' => 'warning',
+                                'confirmed' => 'success',
+                                'to_receive' => 'warning',
+                                'partially_received' => 'warning',
+                                'fully_received' => 'success',
+                                'to_bill' => 'warning',
+                                'partially_billed' => 'warning',
+                                'fully_billed' => 'success',
+                                'done' => 'success',
+                                'cancelled' => 'danger',
+                                default => 'gray',
+                            }),
 
-                Section::make(__('purchase::purchase_orders.sections.delivery_information'))
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TextEntry::make('expected_delivery_date')
-                                    ->label(__('purchase::purchase_orders.fields.expected_delivery_date'))
-                                    ->date()
-                                    ->placeholder('—'),
+                        TextEntry::make('po_date')
+                            ->label(__('purchase::purchase_orders.fields.po_date'))
+                            ->date(),
 
-                                TextEntry::make('deliveryLocation.name')
-                                    ->label(__('purchase::purchase_orders.fields.delivery_location'))
-                                    ->placeholder('—'),
-                            ]),
-                    ]),
+                        TextEntry::make('expected_delivery_date')
+                            ->label(__('purchase::purchase_orders.fields.expected_delivery_date'))
+                            ->date()
+                            ->placeholder('—'),
+
+                        TextEntry::make('reference')
+                            ->label(__('purchase::purchase_orders.fields.reference'))
+                            ->placeholder('—')
+                            ->columnSpan(2),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull(),
 
                 Section::make(__('purchase::purchase_orders.sections.line_items'))
                     ->description(__('purchase::purchase_orders.sections.line_items_description'))
@@ -118,23 +126,17 @@ class PurchaseOrderInfolist
                             ])
                             ->contained(false)
                             ->columnSpanFull(),
-                    ]),
+                    ])
+                    ->columnSpanFull(),
 
-                Section::make(__('purchase::purchase_orders.sections.totals'))
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TextEntry::make('total_tax')
-                                    ->label(__('purchase::purchase_orders.fields.total_tax'))
-                                    ->money(fn ($record) => $record->currency->code),
-
-                                TextEntry::make('total_amount')
-                                    ->label(__('purchase::purchase_orders.fields.total_amount'))
-                                    ->money(fn ($record) => $record->currency->code)
-                                    ->weight('bold')
-                                    ->size('lg'),
-                            ]),
-                    ]),
+                DocumentTotalsHelper::makeInfolist(
+                    translationPrefix: 'purchase::purchase_orders.fields',
+                    totalsLabel: __('purchase::purchase_orders.sections.totals'),
+                    subtotalLabel: __('purchase::purchase_orders.fields.subtotal'),
+                    taxLabel: __('purchase::purchase_orders.fields.total_tax'),
+                    totalLabel: __('purchase::purchase_orders.fields.total_amount'),
+                    companyCurrencyTotalLabel: __('purchase::purchase_orders.fields.total_amount_company_currency')
+                ),
 
                 Section::make(__('purchase::purchase_orders.sections.notes'))
                     ->schema([
@@ -151,6 +153,7 @@ class PurchaseOrderInfolist
                                     ->columnSpanFull(),
                             ]),
                     ])
+                    ->columnSpanFull()
                     ->collapsible(),
             ]);
     }

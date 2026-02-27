@@ -6,6 +6,7 @@ return [
     'plural_label' => 'فواتير',
     'invoice' => 'فاتورة',
     'invoices' => 'فواتير',
+    'totals' => 'الإجماليات',
 
     // Form Fields
     'company' => 'الشركة',
@@ -17,6 +18,7 @@ return [
     'due_date' => 'تاريخ الاستحقاق',
     'status' => 'الحالة',
     'payment_state' => 'حالة الدفع',
+    'subtotal' => 'المجموع الفرعي',
     'total_amount' => 'المبلغ الإجمالي',
     'total_tax' => 'مجموع الضريبة',
     'reason' => 'السبب',

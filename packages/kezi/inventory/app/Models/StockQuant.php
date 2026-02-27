@@ -60,11 +60,20 @@ class StockQuant extends Model
         'serial_number_id',
         'quantity',
         'reserved_quantity',
+        'is_negative_stock',
     ];
+
+    /**
+     * The relationships that should be touched on save.
+     *
+     * @var array
+     */
+    protected $touches = ['product'];
 
     protected $casts = [
         'quantity' => 'float',
         'reserved_quantity' => 'float',
+        'is_negative_stock' => 'boolean',
     ];
 
     /**

@@ -19,20 +19,17 @@ class CreateRequestForQuotation extends CreateRecord
     {
         $service = app(RequestForQuotationService::class);
 
+        $currencyId = $data['currency_id'];
+        /** @var \Kezi\Foundation\Models\Currency $currency */
+        $currency = \Kezi\Foundation\Models\Currency::findOrFail($currencyId);
+        $currencyCode = $currency->code;
+
         $dtos = [];
         if (isset($data['lines'])) {
-            // Note: In Form, we might handle product/tax loading if needed,
-            // but DTO expects IDs or objects.
-            // CreateRFQLineDTO expects objects or handled in Action.
-            // Let's adapt data to DTO.
             foreach ($data['lines'] as $lineData) {
-                // Here we might need to look up product/tax models if DTO strictly requires models
-                // or update DTO to accept IDs.
-                // Assuming we update DTO or handle lookup here.
-                // For valid DTO usage:
                 $product = \Kezi\Product\Models\Product::find($lineData['product_id']);
                 $tax = isset($lineData['tax_id']) ? \Kezi\Accounting\Models\Tax::find($lineData['tax_id']) : null;
-                $unitPrice = isset($lineData['unit_price']) ? \Brick\Money\Money::of($lineData['unit_price'], $data['currency_code'] ?? 'USD') : null; // Currency handling needed
+                $unitPrice = isset($lineData['unit_price']) ? \Brick\Money\Money::of($lineData['unit_price'], $currencyCode) : null;
 
                 $dtos[] = new CreateRFQLineDTO(
                     description: $lineData['description'],
@@ -44,9 +41,6 @@ class CreateRequestForQuotation extends CreateRecord
                 );
             }
         }
-
-        $currencyId = $data['currency_id'];
-        $currency = \Kezi\Foundation\Models\Currency::find($currencyId);
 
         $dto = new CreateRFQDTO(
             companyId: $data['company_id'],

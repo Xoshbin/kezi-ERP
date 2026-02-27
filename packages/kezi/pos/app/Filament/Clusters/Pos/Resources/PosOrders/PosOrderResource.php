@@ -10,7 +10,9 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Kezi\Pos\Enums\PosOrderStatus;
 use Kezi\Pos\Filament\Clusters\Pos\PosCluster;
 use Kezi\Pos\Models\PosOrder;
 
@@ -59,13 +61,7 @@ class PosOrderResource extends Resource
                 TextColumn::make('customer.name')
                     ->sortable(),
                 TextColumn::make('status')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'draft' => 'gray',
-                        'paid' => 'success',
-                        'cancelled' => 'danger',
-                        default => 'gray',
-                    }),
+                    ->badge(),
                 TextColumn::make('total_amount')
                     ->numeric()
                     ->sortable(),
@@ -78,14 +74,11 @@ class PosOrderResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->options([
-                        'draft' => __('pos::pos_order.draft'),
-                        'paid' => __('pos::pos_order.paid'),
-                        'cancelled' => __('pos::pos_order.cancelled'),
-                    ]),
+                    ->options(PosOrderStatus::class),
                 SelectFilter::make('pos_session_id')
                     ->relationship('session', 'id')
                     ->label(__('pos::pos_order.session')),
+                TrashedFilter::make(),
             ])
             ->actions([
                 ViewAction::make(),

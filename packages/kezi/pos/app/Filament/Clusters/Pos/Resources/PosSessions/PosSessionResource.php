@@ -5,7 +5,9 @@ namespace Kezi\Pos\Filament\Clusters\Pos\Resources\PosSessions;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Kezi\Pos\Enums\PosSessionStatus;
 use Kezi\Pos\Filament\Clusters\Pos\PosCluster;
 use Kezi\Pos\Models\PosSession;
 
@@ -36,7 +38,7 @@ class PosSessionResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        $count = static::getModel()::where('status', 'opened')->count();
+        $count = static::getModel()::where('status', PosSessionStatus::Opened)->count();
 
         return $count > 0 ? (string) $count : null;
     }
@@ -61,13 +63,7 @@ class PosSessionResource extends Resource
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('status')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'opened' => 'success',
-                        'closed' => 'gray',
-                        'closing' => 'warning',
-                        default => 'gray',
-                    }),
+                    ->badge(),
                 TextColumn::make('opening_cash')
                     ->numeric()
                     ->sortable(),
@@ -80,7 +76,7 @@ class PosSessionResource extends Resource
                     ->label(__('pos::pos_session.total_revenue')),
             ])
             ->filters([
-                //
+                TrashedFilter::make(),
             ])
             ->actions([
                 ViewAction::make(),

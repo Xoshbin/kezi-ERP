@@ -24,6 +24,21 @@ class CompanyFactory extends Factory
     }
 
     /**
+     * Configure the factory.
+     */
+    public function configure(): static
+    {
+        return $this->afterCreating(function (\App\Models\Company $company) {
+            \Kezi\Foundation\Models\Partner::create([
+                'company_id' => $company->id,
+                'name' => 'Walk-in Customer',
+                'type' => \Kezi\Foundation\Enums\Partners\PartnerType::Customer,
+                'is_active' => true,
+            ]);
+        });
+    }
+
+    /**
      * Indicate that the company has reconciliation enabled.
      */
     public function withReconciliationEnabled(): static

@@ -5,6 +5,7 @@ namespace Kezi\Pos\Actions;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\Journal;
 use Kezi\Foundation\Models\Partner;
+use Kezi\Foundation\Services\CurrencyConverterService;
 use Kezi\Pos\Models\PosOrder;
 use Kezi\Sales\Enums\Sales\InvoiceStatus;
 use Kezi\Sales\Models\Invoice;
@@ -17,6 +18,7 @@ class CreateInvoiceFromPosOrderAction
         protected InvoiceService $invoiceService,
         protected \Kezi\Payment\Services\PaymentService $paymentService,
         protected \Kezi\Payment\Actions\Payments\CreatePaymentAction $createPaymentAction,
+        protected CurrencyConverterService $currencyConverter,
     ) {}
 
     public function execute(PosOrder $order): Invoice
@@ -61,15 +63,7 @@ class CreateInvoiceFromPosOrderAction
 
         $journal = Journal::where('company_id', $companyId)
             ->where('type', \Kezi\Accounting\Enums\Accounting\JournalType::Sale)
-            ->where('is_active', true)
             ->first();
-
-        if (! $journal) {
-            // Fallback to any sales journal
-            $journal = Journal::where('company_id', $companyId)
-                ->where('type', \Kezi\Accounting\Enums\Accounting\JournalType::Sale)
-                ->first();
-        }
 
         if (! $journal) {
             throw new \Exception("No Sales Journal found for Company {$companyId}. Please configure a Sales Journal.");
@@ -77,6 +71,8 @@ class CreateInvoiceFromPosOrderAction
         $journalId = $journal->id;
 
         // 3. Create Invoice
+        $exchangeRate = $this->getExchangeRate($order);
+
         $invoiceData = [
             'company_id' => $companyId,
             'customer_id' => $customerId,
@@ -90,7 +86,7 @@ class CreateInvoiceFromPosOrderAction
             'status' => InvoiceStatus::Draft, // Start as draft, then post
             'total_amount' => $order->total_amount,
             'total_tax' => $order->total_tax,
-            'exchange_rate_at_creation' => 1.0, // Assuming same currency for now or handled by service
+            'exchange_rate_at_creation' => $exchangeRate,
         ];
 
         // Create the invoice
@@ -135,42 +131,88 @@ class CreateInvoiceFromPosOrderAction
         $user = $order->session->user;
         $this->invoiceService->confirm($invoice, $user);
 
-        // 6. Register Payment
-        // POS orders are paid immediately. We create a Payment linked to this Invoice.
-        // This clears the Receivable (AR) created by the Invoice and debits the Cash/Bank account.
+        // 6. Register Payments
+        // POS orders are paid immediately. We create one Payment per split-payment line.
+        // Each payment clears part of the Receivable (AR) and debits the Cash/Bank account.
 
         $paymentJournalId = $profile->default_payment_journal_id;
         if (! $paymentJournalId) {
             throw new \Exception("No Payment Journal configured for POS Profile. Cannot register payment for Order {$order->order_number}.");
         }
 
-        $paymentMethod = $order->payment_method ?? \Kezi\Payment\Enums\Payments\PaymentMethod::Cash;
+        // Load the split payment rows (always present — sync action ensures at least one row)
+        $order->load('payments');
+        $orderPayments = $order->payments;
 
-        $paymentDto = new \Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDTO(
-            company_id: $companyId,
-            journal_id: $paymentJournalId,
-            currency_id: $order->currency_id,
-            payment_date: $order->ordered_at->toDateString(),
-            payment_type: \Kezi\Payment\Enums\Payments\PaymentType::Inbound,
-            payment_method: $paymentMethod,
-            paid_to_from_partner_id: $customerId,
-            amount: null, // Calculated from links
-            document_links: [
-                new \Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO(
-                    document_type: 'invoice',
-                    document_id: $invoice->id,
-                    amount_applied: $invoice->total_amount, // Pay full amount
-                ),
-            ],
-            reference: 'POS Payment '.$order->order_number,
-        );
+        if ($orderPayments->isEmpty()) {
+            // Ultimate fallback: single payment from legacy field (should never happen post-migration)
+            $orderPayments = collect([
+                new \Kezi\Pos\Models\PosOrderPayment([
+                    'payment_method' => $order->payment_method ?? \Kezi\Payment\Enums\Payments\PaymentMethod::Cash,
+                    'amount' => $order->total_amount->getMinorAmount()->toInt(),
+                    'amount_tendered' => $order->total_amount->getMinorAmount()->toInt(),
+                    'change_given' => 0,
+                ]),
+            ]);
+        }
 
-        $payment = $this->createPaymentAction->execute($paymentDto, $user);
-        $this->paymentService->confirm($payment, $user);
+        // Distribute invoice total proportionally across split payments.
+        // For a single payment this is always the full invoice total.
+        $invoiceTotal = $invoice->total_amount;
+        $currencyCode = $order->currency->code;
+        $totalPaidMinor = $orderPayments->sum('amount');
+
+        foreach ($orderPayments as $index => $splitPayment) {
+            // For the last payment take the remainder to avoid rounding drift
+            if ($index === $orderPayments->count() - 1) {
+                // Sum of all previously applied amounts
+                $alreadyApplied = $orderPayments->take($index)
+                    ->sum(fn ($p) => (int) round($invoiceTotal->getMinorAmount()->toInt() * ($p->amount / $totalPaidMinor)));
+                $appliedMinor = $invoiceTotal->getMinorAmount()->toInt() - $alreadyApplied;
+            } else {
+                $appliedMinor = (int) round($invoiceTotal->getMinorAmount()->toInt() * ($splitPayment->amount / $totalPaidMinor));
+            }
+
+            $appliedAmount = \Brick\Money\Money::ofMinor($appliedMinor, $currencyCode);
+
+            $paymentDto = new \Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDTO(
+                company_id: $companyId,
+                journal_id: $paymentJournalId,
+                currency_id: $order->currency_id,
+                payment_date: $order->ordered_at->toDateString(),
+                payment_type: \Kezi\Payment\Enums\Payments\PaymentType::Inbound,
+                payment_method: $splitPayment->payment_method,
+                paid_to_from_partner_id: $customerId,
+                amount: null, // Calculated from links
+                document_links: [
+                    new \Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO(
+                        document_type: 'invoice',
+                        document_id: $invoice->id,
+                        amount_applied: $appliedAmount,
+                    ),
+                ],
+                reference: 'POS Payment '.$order->order_number.($orderPayments->count() > 1 ? ' ('.($index + 1).'/'.$orderPayments->count().')' : ''),
+                exchange_rate: $exchangeRate,
+            );
+
+            $payment = $this->createPaymentAction->execute($paymentDto, $user);
+            $this->paymentService->confirm($payment, $user);
+        }
 
         // 6. Link to POS Order
         $order->update(['invoice_id' => $invoice->id]);
 
         return $invoice;
+    }
+
+    protected function getExchangeRate(PosOrder $order): float
+    {
+        if ($order->currency_id === $order->company->currency_id) {
+            return 1.0;
+        }
+
+        return $this->currencyConverter->getExchangeRate($order->currency, $order->ordered_at, $order->company)
+            ?? $this->currencyConverter->getLatestExchangeRate($order->currency, $order->company)
+            ?? 1.0;
     }
 }
