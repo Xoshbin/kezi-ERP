@@ -28,6 +28,10 @@ class PosSessionResource extends JsonResource
             'closing_cash' => $this->closing_cash ? $this->closing_cash->getAmount()->toFloat() : 0,
             'closing_cash_minor' => $this->closing_cash ? $this->closing_cash->getMinorAmount()->toInt() : 0,
             'profile' => new PosProfileResource($this->whenLoaded('profile')),
+            'user' => [
+                'id' => $this->user_id,
+                'name' => $this->user->name ?? 'Cashier',
+            ],
         ];
     }
 }

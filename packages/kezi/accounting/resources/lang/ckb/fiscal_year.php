@@ -50,6 +50,8 @@ return [
     'opening_entry_description' => 'تۆماری دەستپێک بۆ ساڵی :year',
     'action_generate_opening' => 'دروستکردنی تۆماری دەستپێک',
     'opening_in_progress' => 'دروستکردنی تۆماری دەستپێک لە پڕۆسەدایە...',
-    'opening_generated_successfully' => 'تۆماری دەستپێک بە سەرکەوتوویی دروستکرا.',
-    'opening_entry_failed' => 'نەتوانرا تۆماری دەستپێک دروست بکرێت',
+    'opening_generated_successfully' => 'تۆماری دەسپێک بە سەرکەوتوویی دروستکرا.',
+    'opening_entry_failed' => 'دروستکردنی تۆماری دەسپێک شکستی هێنا',
+    'closing_entry_description' => 'تۆماری داخستنی ساڵی دارایی: :year',
+    'reopen_reversal_reason' => 'دووبارە کردنەوەی ساڵی دارایی: :year',
 ];

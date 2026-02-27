@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\Partner;
 
@@ -18,7 +19,7 @@ use Kezi\Foundation\Models\Partner;
  * @property int|null $customer_id
  * @property int $currency_id
  * @property string $order_number
- * @property string $status
+ * @property \Kezi\Pos\Enums\PosOrderStatus $status
  * @property \Kezi\Payment\Enums\Payments\PaymentMethod|null $payment_method
  * @property \Illuminate\Support\Carbon $ordered_at
  * @property \Brick\Money\Money $total_amount
@@ -32,13 +33,14 @@ use Kezi\Foundation\Models\Partner;
  * @property-read \Kezi\Foundation\Models\Partner|null $customer
  * @property-read \Kezi\Foundation\Models\Currency $currency
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Pos\Models\PosOrderLine> $lines
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Kezi\Pos\Models\PosOrderPayment> $payments
  * @property-read \Kezi\Sales\Models\Invoice|null $invoice
  */
 class PosOrder extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    protected static function newFactory()
+    protected static function newFactory(): \Kezi\Pos\Database\Factories\PosOrderFactory
     {
         return \Kezi\Pos\Database\Factories\PosOrderFactory::new();
     }
@@ -70,6 +72,7 @@ class PosOrder extends Model
             'discount_amount' => \Kezi\Foundation\Casts\DocumentCurrencyMoneyCast::class,
             'sector_data' => 'array',
             'payment_method' => \Kezi\Payment\Enums\Payments\PaymentMethod::class,
+            'status' => \Kezi\Pos\Enums\PosOrderStatus::class,
         ];
     }
 
@@ -96,6 +99,16 @@ class PosOrder extends Model
     public function lines(): HasMany
     {
         return $this->hasMany(PosOrderLine::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(PosOrderPayment::class);
+    }
+
+    public function returns(): HasMany
+    {
+        return $this->hasMany(PosReturn::class, 'original_order_id');
     }
 
     public function invoice(): BelongsTo

@@ -24,7 +24,19 @@ enum Incoterm: string implements HasDescription, HasLabel
 
     public function getLabel(): string
     {
-        return __('enums.incoterm.'.$this->value);
+        return match ($this) {
+            self::Exw => __('foundation::enums.incoterm.exw'),
+            self::Fca => __('foundation::enums.incoterm.fca'),
+            self::Cpt => __('foundation::enums.incoterm.cpt'),
+            self::Cip => __('foundation::enums.incoterm.cip'),
+            self::Dap => __('foundation::enums.incoterm.dap'),
+            self::Dpu => __('foundation::enums.incoterm.dpu'),
+            self::Ddp => __('foundation::enums.incoterm.ddp'),
+            self::Fas => __('foundation::enums.incoterm.fas'),
+            self::Fob => __('foundation::enums.incoterm.fob'),
+            self::Cfr => __('foundation::enums.incoterm.cfr'),
+            self::Cif => __('foundation::enums.incoterm.cif'),
+        };
     }
 
     public function getDescription(): ?string

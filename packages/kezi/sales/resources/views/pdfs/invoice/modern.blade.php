@@ -307,12 +307,8 @@
             @if($company->tax_id)
                 <div class="detail-line"><strong>{{ __('company.tax_id') }}:</strong> {{ $company->tax_id }}</div>
             @endif
-            @if($company->phone)
-                <div class="detail-line"><strong>{{ __('partner.phone') }}:</strong> {{ $company->phone }}</div>
-            @endif
-            @if($company->email)
-                <div class="detail-line"><strong>{{ __('partner.email') }}:</strong> {{ $company->email }}</div>
-            @endif
+                <div class="detail-line"><strong>{{ __('accounting::partner.phone') }}:</strong> {{ $company->phone }}</div>
+                <div class="detail-line"><strong>{{ __('accounting::partner.email') }}:</strong> {{ $company->email }}</div>
         </div>
 
         <div class="customer-details">
@@ -327,15 +323,9 @@
             @if($customer->city)
                 <div class="detail-line">{{ $customer->city }}, {{ $customer->state }} {{ $customer->zip_code }}</div>
             @endif
-            @if($customer->tax_id)
-                <div class="detail-line"><strong>{{ __('partner.tax_id') }}:</strong> {{ $customer->tax_id }}</div>
-            @endif
-            @if($customer->phone)
-                <div class="detail-line"><strong>{{ __('partner.phone') }}:</strong> {{ $customer->phone }}</div>
-            @endif
-            @if($customer->email)
-                <div class="detail-line"><strong>{{ __('partner.email') }}:</strong> {{ $customer->email }}</div>
-            @endif
+                <div class="detail-line"><strong>{{ __('accounting::partner.tax_id') }}:</strong> {{ $customer->tax_id }}</div>
+                <div class="detail-line"><strong>{{ __('accounting::partner.phone') }}:</strong> {{ $customer->phone }}</div>
+                <div class="detail-line"><strong>{{ __('accounting::partner.email') }}:</strong> {{ $customer->email }}</div>
         </div>
     </div>
 

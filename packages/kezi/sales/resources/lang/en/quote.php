@@ -10,6 +10,8 @@ return [
         'plural_label' => 'Quotes',
     ],
     'fields' => [
+        'document_currency' => 'Document Currency',
+        'company_currency' => 'Company Currency',
         'quote_number' => 'Quote #',
         'quote_date' => 'Date',
         'valid_until' => 'Valid Until',

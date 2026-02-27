@@ -59,12 +59,23 @@ class CreateVendorBillFromPurchaseOrderAction
         $vendorBillLines = [];
 
         foreach ($purchaseOrder->lines as $poLine) {
-            // Use custom quantity if provided, otherwise use PO quantity
-            $quantity = $dto->line_quantities[$poLine->id] ?? $poLine->quantity;
+            // Determine quantity based on line_quantities and copy_all_lines flag
+            if ($dto->line_quantities !== null && array_key_exists($poLine->id, $dto->line_quantities)) {
+                $quantity = $dto->line_quantities[$poLine->id];
+            } else {
+                $quantity = $dto->copy_all_lines ? $poLine->getRemainingBillableQuantity() : 0.0;
+            }
 
             // Skip lines with zero quantity
             if ($quantity <= 0) {
                 continue;
+            }
+
+            // Over-billing protection
+            if ($quantity > $poLine->getRemainingBillableQuantity()) {
+                throw ValidationException::withMessages([
+                    'lines' => "Quantity for '{$poLine->description}' exceeds the remaining unbilled quantity ({$poLine->getRemainingBillableQuantity()}).",
+                ]);
             }
 
             // Determine expense account - use product's account or require it to be set
@@ -102,6 +113,10 @@ class CreateVendorBillFromPurchaseOrderAction
                 analytic_account_id: null, // Could be enhanced to copy from PO if needed
                 currency: $purchaseOrder->currency->code
             );
+
+            // Update unbilled quantity tracking
+            $poLine->updateBilledQuantity($quantity);
+            $poLine->save();
         }
 
         if (empty($vendorBillLines)) {
@@ -121,7 +136,10 @@ class CreateVendorBillFromPurchaseOrderAction
             lines: $vendorBillLines,
             created_by_user_id: $dto->created_by_user_id,
             payment_term_id: $dto->payment_term_id,
-            purchase_order_id: $purchaseOrder->id
+            purchase_order_id: $purchaseOrder->id,
+            incoterm: $purchaseOrder->incoterm,
+            incoterm_location: $purchaseOrder->incoterm_location,
+            exchange_rate_at_creation: $dto->exchange_rate_at_creation ?? (float) $purchaseOrder->exchange_rate_at_creation,
         );
     }
 }

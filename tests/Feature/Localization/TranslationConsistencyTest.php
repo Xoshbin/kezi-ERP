@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
 
 /**
@@ -20,6 +21,7 @@ test('all module translation keys used in filament code exist in locale files', 
 
     // Collect all translation key usages
     $translationUsages = [];
+    $missingTranslations = [];
 
     foreach ($phpFiles as $file) {
         if ($file->getExtension() !== 'php') {
@@ -32,63 +34,80 @@ test('all module translation keys used in filament code exist in locale files', 
         }
 
         // Match translation key patterns like __('module::file.key') or __("module::file.key")
-        // Pattern: __('module::file.key.subkey...')
-        if (preg_match_all("/__\(\s*['\"]([a-z]+)::([a-z_]+)\.([a-z_\.]+)['\"]\s*\)/i", $content, $matches, PREG_SET_ORDER)) {
-            foreach ($matches as $match) {
-                $fullKey = $match[1].'::'.$match[2].'.'.$match[3];
-                $translationUsages[$fullKey] = [
-                    'module' => strtolower($match[1]),
-                    'file' => $match[2],
-                    'key' => $match[3],
-                    'source' => $file->getRelativePathname(),
-                ];
+        // Pattern matches: __('namespace::file.key'), __('file.key'), trans('namespace::file.key')
+        $patterns = [
+            "/__\(\s*['\"](([a-z0-9_-]+)::)?([a-z0-9_-]+)\.([a-z0-9_\.-]+)['\"]\s*[,)]/i",
+            "/trans\(\s*['\"](([a-z0-9_-]+)::)?([a-z0-9_-]+)\.([a-z0-9_\.-]+)['\"]\s*[,)]/i",
+        ];
+
+        foreach ($patterns as $pattern) {
+            if (preg_match_all($pattern, $content, $matches, PREG_SET_ORDER)) {
+                foreach ($matches as $match) {
+                    $hasNamespace = ! empty($match[2]);
+                    $namespace = $hasNamespace ? strtolower($match[2]) : null;
+                    $fileName = $match[3];
+                    $keyPath = $match[4];
+                    $fullKey = $hasNamespace ? "$namespace::$fileName.$keyPath" : "$fileName.$keyPath";
+
+                    $translationUsages[$fullKey] = [
+                        'module' => $namespace,
+                        'file' => $fileName,
+                        'key' => $keyPath,
+                        'source' => $file->getRelativePathname(),
+                    ];
+                }
             }
         }
     }
 
     $this->assertNotEmpty($translationUsages, 'No translation usages found. Is the regex correct?');
 
-    $missingTranslations = [];
-
     foreach ($translationUsages as $fullKey => $usage) {
         $moduleName = $usage['module'];
         $fileName = $usage['file'];
         $keyPath = $usage['key'];
 
-        // Map module name to its directory name
-        $moduleMap = [
-            'qualitycontrol' => 'quality-control',
-            'projectmanagement' => 'project-management',
-        ];
-        $moduleDir = $moduleMap[$moduleName] ?? $moduleName;
-
         foreach ($locales as $locale) {
-            $translationFile = "$modulesPath/$moduleDir/resources/lang/$locale/$fileName.php";
+            App::setLocale($locale);
+            $translated = __($fullKey);
 
-            if (! File::exists($translationFile)) {
-                $missingTranslations[] = "[$locale] Missing translation file: $translationFile (key: $fullKey)";
-
-                continue;
-            }
-
-            // Load the translation file
-            $translations = include $translationFile;
-
-            // Check if the key exists by traversing dot notation
-            $keyParts = explode('.', $keyPath);
-            $current = $translations;
-            $found = true;
-
-            foreach ($keyParts as $part) {
-                if (! is_array($current) || ! array_key_exists($part, $current)) {
-                    $found = false;
-                    break;
+            // If the translation returns the key itself, it's missing (usually contains :: or is exactly the input)
+            if ($translated === $fullKey || (is_string($translated) && str_contains($translated, '::'))) {
+                // Try to find the file manually as a fallback to give better error message
+                $foundFile = false;
+                $moduleDir = null;
+                if ($moduleName) {
+                    $moduleMap = [
+                        'quality_control' => 'quality-control',
+                        'project_management' => 'project-management',
+                        'qualitycontrol' => 'quality-control',
+                        'projectmanagement' => 'project-management',
+                        'accounting' => 'accounting',
+                        'inventory' => 'inventory',
+                        'purchase' => 'purchase',
+                        'sales' => 'sales',
+                        'foundation' => 'foundation',
+                        'product' => 'product',
+                        'hr' => 'hr',
+                        'financial' => 'financial',
+                        'maintenance' => 'maintenance',
+                        'asset' => 'asset',
+                        'crm' => 'crm',
+                        'manufacturing' => 'manufacturing',
+                        'pos' => 'pos',
+                        'payroll' => 'payroll',
+                        'budget' => 'budget',
+                    ];
+                    $moduleDir = $moduleMap[$moduleName] ?? $moduleName;
+                    $translationFile = "$modulesPath/$moduleDir/resources/lang/$locale/$fileName.php";
+                    $foundFile = File::exists($translationFile);
                 }
-                $current = $current[$part];
-            }
 
-            if (! $found) {
-                $missingTranslations[] = "[$locale] Missing key '$fullKey' in $translationFile";
+                if ($moduleName && ! $foundFile) {
+                    $missingTranslations[] = "[$locale] Missing translation file for '$fullKey' in source {$usage['source']}. Expected: packages/kezi/$moduleDir/resources/lang/$locale/$fileName.php";
+                } else {
+                    $missingTranslations[] = "[$locale] Missing or unresolved key '$fullKey' in source {$usage['source']}";
+                }
             }
         }
     }

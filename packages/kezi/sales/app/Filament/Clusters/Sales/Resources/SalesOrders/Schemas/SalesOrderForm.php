@@ -19,6 +19,8 @@ use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
+use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
+use Kezi\Foundation\Models\Currency;
 use Kezi\Product\Models\Product;
 use Kezi\Sales\Enums\Sales\SalesOrderStatus;
 use Kezi\Sales\Models\SalesOrder;
@@ -32,7 +34,7 @@ class SalesOrderForm
                 Section::make(__('sales::sales_orders.sections.basic_info'))
                     ->schema([
                         Hidden::make('company_id')
-                            ->default(fn () => Filament::getTenant()?->id),
+                            ->default(fn () => Filament::getTenant()?->getKey()),
 
                         Hidden::make('created_by_user_id')
                             ->default(fn () => Auth::id()),
@@ -257,13 +259,6 @@ class SalesOrderForm
                             ->live()
                             ->reorderable(true)
                             ->minItems(1)
-                            ->afterStateHydrated(function (callable $set, callable $get) {
-                                // Calculate totals when form is first loaded (e.g., on edit page or page refresh)
-                                static::updateTotals($set, $get);
-                            })
-                            ->afterStateUpdated(function (callable $set, $state, callable $get) {
-                                static::updateTotals($set, $get);
-                            })
                             ->schema([
                                 Select::make('product_id')
                                     ->label(__('sales::sales_orders.fields.product'))
@@ -297,7 +292,6 @@ class SalesOrderForm
                                                 }
                                             }
                                         }
-                                        static::updateTotals($set, $get);
                                     })
                                     ->createOptionAction(
                                         fn (Action $action) => $action
@@ -321,9 +315,6 @@ class SalesOrderForm
                                     ->minValue(0.01)
                                     ->step(0.01)
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
-                                        static::updateTotals($set, $get);
-                                    })
                                     ->extraInputAttributes(['onclick' => 'this.select()'])
                                     ->columnSpan(2),
 
@@ -332,9 +323,6 @@ class SalesOrderForm
                                     ->currencyField('../../currency_id')
                                     ->required()
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
-                                        static::updateTotals($set, $get);
-                                    })
                                     ->columnSpan(3),
 
                                 Select::make('tax_id')
@@ -343,14 +331,11 @@ class SalesOrderForm
                                     ->searchable()
                                     ->preload()
                                     ->options(function () {
-                                        return Tax::where('company_id', Filament::getTenant()?->id)
-                                            ->where('type', TaxType::Sales)
+                                        return Tax::where('company_id', Filament::getTenant()?->getKey())
+                                            ->where('type', TaxType::Sales->value)
                                             ->pluck('name', 'id');
                                     })
                                     ->live()
-                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
-                                        static::updateTotals($set, $get);
-                                    })
                                     ->columnSpan(3),
 
                                 DatePicker::make('expected_delivery_date')
@@ -361,25 +346,15 @@ class SalesOrderForm
                             ->columns(18),
                     ])->columnSpanFull(),
 
-                Section::make(__('sales::sales_orders.sections.totals'))
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                MoneyInput::make('total_tax')
-                                    ->label(__('sales::sales_orders.fields.total_tax'))
-                                    ->currencyField('currency_id')
-                                    ->disabled()
-                                    ->dehydrated(false),
-
-                                MoneyInput::make('total_amount')
-                                    ->label(__('sales::sales_orders.fields.total_amount'))
-                                    ->currencyField('currency_id')
-                                    ->disabled()
-                                    ->dehydrated(false),
-                            ]),
-                    ])
-                    ->collapsible()
-                    ->collapsed(false),
+                DocumentTotalsHelper::make(
+                    linesKey: 'lines',
+                    translationPrefix: 'sales::sales_orders.fields',
+                    totalsLabel: __('sales::sales_orders.sections.totals'),
+                    taxLabel: __('sales::sales_orders.fields.total_tax'),
+                    totalLabel: __('sales::sales_orders.fields.total_amount'),
+                    companyCurrencyTotalLabel: __('accounting::bill.total_amount_company_currency'),
+                    exchangeRateKey: 'exchange_rate_at_creation'
+                )->collapsible()->collapsed(false),
 
                 Section::make(__('sales::sales_orders.sections.notes'))
                     ->schema([
@@ -395,59 +370,5 @@ class SalesOrderForm
                     ])
                     ->collapsible(),
             ]);
-    }
-
-    public static function updateTotals(callable $set, callable $get): void
-    {
-        $lines = $get('lines') ?? [];
-        $currencyId = $get('currency_id');
-
-        if (! $currencyId || empty($lines)) {
-            $set('total_amount', 0);
-            $set('total_tax', 0);
-
-            return;
-        }
-
-        // Get currency for calculations
-        $currency = \Kezi\Foundation\Models\Currency::find($currencyId);
-        if (! $currency) {
-            return;
-        }
-
-        $totalAmount = 0;
-        $totalTax = 0;
-
-        foreach ($lines as $line) {
-            $quantity = (float) ($line['quantity'] ?? 0);
-            $unitPrice = (float) ($line['unit_price'] ?? 0);
-            $taxId = $line['tax_id'] ?? null;
-
-            if ($quantity <= 0 || $unitPrice <= 0) {
-                continue;
-            }
-
-            // Calculate line subtotal
-            $lineSubtotal = $quantity * $unitPrice;
-
-            // Calculate line tax
-            $lineTax = 0;
-            if ($taxId) {
-                $tax = Tax::find($taxId);
-                if ($tax) {
-                    $lineTax = $lineSubtotal * ($tax->rate / 100);
-                }
-            }
-
-            // Calculate line total
-            $lineTotal = $lineSubtotal + $lineTax;
-
-            $totalAmount += $lineTotal;
-            $totalTax += $lineTax;
-        }
-
-        // Set the totals
-        $set('total_amount', $totalAmount);
-        $set('total_tax', $totalTax);
     }
 }

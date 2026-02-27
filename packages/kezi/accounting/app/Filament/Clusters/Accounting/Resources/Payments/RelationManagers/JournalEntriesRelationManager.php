@@ -30,37 +30,37 @@ class JournalEntriesRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('payment.journal_entries_relation_manager.title');
+        return __('accounting::payment.relation_manager.journal_entries_relation_manager.title');
     }
 
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make(__('payment.journal_entries_relation_manager.journal_entry_details'))
+                Section::make(__('accounting::payment.relation_manager.journal_entries_relation_manager.journal_entry_details'))
                     ->schema([
                         DatePicker::make('entry_date')
-                            ->label(__('payment.journal_entries_relation_manager.entry_date'))
+                            ->label(__('accounting::payment.relation_manager.journal_entries_relation_manager.entry_date'))
                             ->required()
                             ->disabled(),
 
                         TextInput::make('reference')
-                            ->label(__('payment.journal_entries_relation_manager.reference'))
+                            ->label(__('accounting::payment.relation_manager.journal_entries_relation_manager.reference'))
                             ->required()
                             ->disabled(),
 
                         Textarea::make('description')
-                            ->label(__('payment.journal_entries_relation_manager.description'))
+                            ->label(__('accounting::payment.relation_manager.journal_entries_relation_manager.description'))
                             ->disabled()
                             ->columnSpanFull(),
 
                         Select::make('journal_id')
                             ->relationship('journal', 'name')
-                            ->label(__('payment.journal_entries_relation_manager.journal'))
+                            ->label(__('accounting::payment.relation_manager.journal_entries_relation_manager.journal'))
                             ->disabled(),
 
                         Select::make('state')
-                            ->label(__('payment.journal_entries_relation_manager.state'))
+                            ->label(__('accounting::payment.relation_manager.journal_entries_relation_manager.state'))
                             ->options(JournalEntryState::class)
                             ->disabled(),
                     ])
@@ -74,17 +74,17 @@ class JournalEntriesRelationManager extends RelationManager
             ->recordTitleAttribute('reference')
             ->columns([
                 TextColumn::make('entry_date')
-                    ->label(__('payment.journal_entries_relation_manager.entry_date'))
+                    ->label(__('accounting::payment.relation_manager.journal_entries_relation_manager.entry_date'))
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('reference')
-                    ->label(__('payment.journal_entries_relation_manager.reference'))
+                    ->label(__('accounting::payment.relation_manager.journal_entries_relation_manager.reference'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('description')
-                    ->label(__('payment.journal_entries_relation_manager.description'))
+                    ->label(__('accounting::payment.relation_manager.journal_entries_relation_manager.description'))
                     ->limit(50)
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
@@ -96,21 +96,21 @@ class JournalEntriesRelationManager extends RelationManager
                     }),
 
                 TextColumn::make('journal.name')
-                    ->label(__('payment.journal_entries_relation_manager.journal'))
+                    ->label(__('accounting::payment.relation_manager.journal_entries_relation_manager.journal'))
                     ->toggleable(),
 
                 MoneyColumn::make('total_debit')
-                    ->label(__('payment.journal_entries_relation_manager.total_debit'))
+                    ->label(__('accounting::payment.relation_manager.journal_entries_relation_manager.total_debit'))
                     ->sortable()
                     ->toggleable(),
 
                 MoneyColumn::make('total_credit')
-                    ->label(__('payment.journal_entries_relation_manager.total_credit'))
+                    ->label(__('accounting::payment.relation_manager.journal_entries_relation_manager.total_credit'))
                     ->sortable()
                     ->toggleable(),
 
                 TextColumn::make('state')
-                    ->label(__('payment.journal_entries_relation_manager.state'))
+                    ->label(__('accounting::payment.relation_manager.journal_entries_relation_manager.state'))
                     ->badge()
                     ->color(fn (JournalEntryState $state): string => match ($state) {
                         JournalEntryState::Posted => 'success',
@@ -119,17 +119,17 @@ class JournalEntriesRelationManager extends RelationManager
                     }),
 
                 TextColumn::make('source_type')
-                    ->label(__('payment.journal_entries_relation_manager.source_type'))
+                    ->label(__('accounting::payment.relation_manager.journal_entries_relation_manager.source_type'))
                     ->formatStateUsing(function (?string $state): string {
                         if (! $state) {
-                            return __('payment.journal_entries_relation_manager.no_source');
+                            return __('accounting::payment.relation_manager.journal_entries_relation_manager.no_source');
                         }
 
                         return match ($state) {
-                            'Kezi\Accounting\Models\Payment' => __('payment.journal_entries_relation_manager.source_payment'),
-                            'Kezi\Accounting\Models\BankStatementLine' => __('payment.journal_entries_relation_manager.source_reconciliation'),
-                            'Kezi\Accounting\Models\Invoice' => __('payment.journal_entries_relation_manager.source_invoice'),
-                            'Kezi\Accounting\Models\VendorBill' => __('payment.journal_entries_relation_manager.source_vendor_bill'),
+                            'Kezi\Accounting\Models\Payment' => __('accounting::payment.relation_manager.journal_entries_relation_manager.source_payment'),
+                            'Kezi\Accounting\Models\BankStatementLine' => __('accounting::payment.relation_manager.journal_entries_relation_manager.source_reconciliation'),
+                            'Kezi\Accounting\Models\Invoice' => __('accounting::payment.relation_manager.journal_entries_relation_manager.source_invoice'),
+                            'Kezi\Accounting\Models\VendorBill' => __('accounting::payment.relation_manager.journal_entries_relation_manager.source_vendor_bill'),
                             default => class_basename($state),
                         };
                     })
@@ -144,31 +144,31 @@ class JournalEntriesRelationManager extends RelationManager
                     ->toggleable(),
 
                 TextColumn::make('created_at')
-                    ->label(__('payment.journal_entries_relation_manager.created_at'))
+                    ->label(__('accounting::payment.relation_manager.journal_entries_relation_manager.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('state')
-                    ->label(__('payment.journal_entries_relation_manager.filter_state'))
+                    ->label(__('accounting::payment.relation_manager.journal_entries_relation_manager.filter_state'))
                     ->options(JournalEntryState::class),
 
                 SelectFilter::make('source_type')
-                    ->label(__('payment.journal_entries_relation_manager.filter_source_type'))
+                    ->label(__('accounting::payment.relation_manager.journal_entries_relation_manager.filter_source_type'))
                     ->options([
-                        'Kezi\Accounting\Models\Payment' => __('payment.journal_entries_relation_manager.source_payment'),
-                        'Kezi\Accounting\Models\BankStatementLine' => __('payment.journal_entries_relation_manager.source_reconciliation'),
-                        'Kezi\Accounting\Models\Invoice' => __('payment.journal_entries_relation_manager.source_invoice'),
-                        'Kezi\Accounting\Models\VendorBill' => __('payment.journal_entries_relation_manager.source_vendor_bill'),
+                        'Kezi\Accounting\Models\Payment' => __('accounting::payment.relation_manager.journal_entries_relation_manager.source_payment'),
+                        'Kezi\Accounting\Models\BankStatementLine' => __('accounting::payment.relation_manager.journal_entries_relation_manager.source_reconciliation'),
+                        'Kezi\Accounting\Models\Invoice' => __('accounting::payment.relation_manager.journal_entries_relation_manager.source_invoice'),
+                        'Kezi\Accounting\Models\VendorBill' => __('accounting::payment.relation_manager.journal_entries_relation_manager.source_vendor_bill'),
                     ]),
             ])
             ->actions([
                 // View action removed for now - can be added when proper routes are configured
             ])
             ->defaultSort('entry_date', 'desc')
-            ->emptyStateHeading(__('payment.journal_entries_relation_manager.no_journal_entries'))
-            ->emptyStateDescription(__('payment.journal_entries_relation_manager.no_journal_entries_description'));
+            ->emptyStateHeading(__('accounting::payment.relation_manager.journal_entries_relation_manager.no_journal_entries'))
+            ->emptyStateDescription(__('accounting::payment.relation_manager.journal_entries_relation_manager.no_journal_entries_description'));
     }
 
     /**

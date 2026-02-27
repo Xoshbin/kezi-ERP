@@ -2,10 +2,13 @@
 
 return [
     // General
+    'document_currency' => 'Document Currency',
+    'company_currency' => 'Company Currency',
     'label' => 'Invoice',
     'plural_label' => 'Invoices',
     'invoice' => 'Invoice',
     'invoices' => 'Invoices',
+    'totals' => 'Totals',
 
     // Form Fields
     'company' => 'Company',
@@ -26,6 +29,7 @@ return [
     'unit_price' => 'Unit Price',
     'tax' => 'Tax',
     'income_account' => 'Income Account',
+    'subtotal' => 'Subtotal',
     'total_amount' => 'Total Amount',
     'total_tax' => 'Total Tax',
     'reason' => 'Reason',
@@ -162,6 +166,13 @@ return [
         'total_paid' => 'Total amount paid',
         'outstanding_balance' => 'Outstanding Balance',
         'remaining_due' => 'Amount still owed',
+        'last_payment' => 'Last Payment',
+        'most_recent_payment' => 'Most Recent Payment',
+        'payment_count' => 'Payment Count',
+        'total_payments' => 'Total Payments',
+        'payment_methods' => 'Payment Methods',
+        'payment_breakdown' => 'Payment Breakdown',
+        'no_payments' => 'No Payments',
     ],
     'adjustment_documents_relation_manager' => [
         'title' => 'Adjustments & Credit Notes',
@@ -197,5 +208,9 @@ return [
         'payment_progress' => 'Payment Progress',
         'payment_status' => 'Percentage paid',
         'current' => 'Current (Not Due)',
+        'bucket_1_30' => '1-30 Days',
+        'bucket_31_60' => '31-60 Days',
+        'bucket_61_90' => '61-90 Days',
+        'bucket_90_plus' => '90+ Days',
     ],
 ];

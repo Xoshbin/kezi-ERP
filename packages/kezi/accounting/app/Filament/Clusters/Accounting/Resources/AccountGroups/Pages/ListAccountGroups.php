@@ -21,7 +21,7 @@ class ListAccountGroups extends ListRecords
             LocaleSwitcher::make(),
             DocsAction::make('account-groups'),
             CreateAction::make()
-                ->label(__('filament.actions.create').' '.__('accounting::account_group.label')),
+                ->label(__('accounting::common.create').' '.__('accounting::account_group.label')),
         ];
     }
 }

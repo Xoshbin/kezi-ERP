@@ -2,10 +2,13 @@
 
 return [
     // General
+    'document_currency' => 'دراوی بەڵگەنامە',
+    'company_currency' => 'دراوی کۆمپانیا',
     'label' => 'پسووڵەی فرۆشتن',
     'plural_label' => 'پسووڵەکانی فرۆشتن',
     'invoice' => 'پسووڵەی فرۆشتن',
     'invoices' => 'پسووڵەکانی فرۆشتن',
+    'totals' => 'کۆی گشتی',
     'invoice_details' => 'وردەکاریی پسووڵەی فرۆشتن',
 
     // Form Fields
@@ -27,6 +30,7 @@ return [
     'unit_price' => 'نرخی یەکە',
     'tax' => 'باج',
     'income_account' => 'هەژماری داهات',
+    'subtotal' => 'سابتۆتاڵ',
     'total_amount' => 'کۆی گشتی',
     'total_tax' => 'کۆی باج',
     'reason' => 'هۆکار',
@@ -162,6 +166,13 @@ return [
         'total_paid' => 'کۆی بڕی پارەدراو',
         'outstanding_balance' => 'باڵانسی ماوە',
         'remaining_due' => 'بڕی هێشتا ماوە',
+        'last_payment' => 'دوا پارەدان',
+        'most_recent_payment' => 'دواترین پارەدان',
+        'payment_count' => 'ژمارەی پارەدانەکان',
+        'total_payments' => 'کۆی پارەدانەکان',
+        'payment_methods' => 'شێوازەکانی پارەدان',
+        'payment_breakdown' => 'کورتەی پارەدان',
+        'no_payments' => 'هیچ پارەدانێک نییە',
     ],
     'adjustment_documents_relation_manager' => [
         'title' => 'ڕاستکردنەوەکان و پسووڵەکانی وەرگرتنەوە',
@@ -195,7 +206,11 @@ return [
         'aging_bucket' => 'پۆلی تەمەن',
         'aging_category' => 'پۆلێنکردنی تەمەن',
         'payment_progress' => 'بەرەوپێشچوونی پارەدان',
-        'payment_status' => 'ڕێژەی سەدی پارەدراو',
-        'current' => 'ئێستا (شایستە نییە)',
+        'payment_status' => 'ڕێژەی دراو',
+        'current' => 'ئێستا (کاتی نەهاتووە)',
+        'bucket_1_30' => '١-٣٠ ڕۆژ',
+        'bucket_31_60' => '٣١-٦٠ ڕۆژ',
+        'bucket_61_90' => '٦١-٩٠ ڕۆژ',
+        'bucket_90_plus' => '٩٠+ ڕۆژ',
     ],
 ];

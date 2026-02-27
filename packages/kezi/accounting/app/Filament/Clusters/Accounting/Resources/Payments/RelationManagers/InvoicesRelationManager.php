@@ -29,16 +29,16 @@ class InvoicesRelationManager extends RelationManager
         return $schema
             ->components([
                 TextInput::make('invoice_number')
-                    ->label(__('payment.relation_manager.invoices.form.invoice_number'))
+                    ->label(__('accounting::payment.relation_manager.invoices.form.invoice_number'))
                     ->maxLength(255),
                 DatePicker::make('invoice_date')
-                    ->label(__('payment.relation_manager.invoices.form.invoice_date'))
+                    ->label(__('accounting::payment.relation_manager.invoices.form.invoice_date'))
                     ->required(),
                 DatePicker::make('due_date')
-                    ->label(__('payment.relation_manager.invoices.form.due_date'))
+                    ->label(__('accounting::payment.relation_manager.invoices.form.due_date'))
                     ->required(),
                 Select::make('status')
-                    ->label(__('payment.relation_manager.invoices.form.status'))
+                    ->label(__('accounting::payment.relation_manager.invoices.form.status'))
                     ->options([
                         InvoiceStatus::Draft->value => InvoiceStatus::Draft->label(),
                         InvoiceStatus::Posted->value => InvoiceStatus::Posted->label(),
@@ -48,7 +48,7 @@ class InvoicesRelationManager extends RelationManager
                     ->required()
                     ->default(InvoiceStatus::Draft->value),
                 TextInput::make('total_amount')
-                    ->label(__('payment.relation_manager.invoices.form.total_amount'))
+                    ->label(__('accounting::payment.relation_manager.invoices.form.total_amount'))
                     ->required()
                     ->numeric(),
             ]);
@@ -60,22 +60,22 @@ class InvoicesRelationManager extends RelationManager
             ->recordTitleAttribute('invoice_number')
             ->columns([
                 TextColumn::make('invoice_number')
-                    ->label(__('payment.relation_manager.invoices.column.invoice_number'))
+                    ->label(__('accounting::payment.relation_manager.invoices.column.invoice_number'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('invoice_date')
-                    ->label(__('payment.relation_manager.invoices.column.invoice_date'))
+                    ->label(__('accounting::payment.relation_manager.invoices.column.invoice_date'))
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('due_date')
-                    ->label(__('payment.relation_manager.invoices.column.due_date'))
+                    ->label(__('accounting::payment.relation_manager.invoices.column.due_date'))
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('status')
-                    ->label(__('payment.relation_manager.invoices.column.status'))
+                    ->label(__('accounting::payment.relation_manager.invoices.column.status'))
                     ->formatStateUsing(fn (InvoiceStatus $state): string => $state->label())
                     ->badge()
                     ->color(fn (InvoiceStatus $state): string => match ($state) {
@@ -86,11 +86,11 @@ class InvoicesRelationManager extends RelationManager
                     }),
 
                 MoneyColumn::make('total_amount')
-                    ->label(__('payment.relation_manager.invoices.column.total_amount'))
+                    ->label(__('accounting::payment.relation_manager.invoices.column.total_amount'))
                     ->sortable(),
 
                 MoneyColumn::make('pivot.amount_applied')
-                    ->label(__('payment.relation_manager.invoices.column.amount_applied'))
+                    ->label(__('accounting::payment.relation_manager.invoices.column.amount_applied'))
                     ->sortable(),
             ])
             ->filters([

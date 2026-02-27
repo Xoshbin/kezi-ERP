@@ -14,7 +14,7 @@
                     </div>
                     <div class="text-left truncate">
                         <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 leading-none mb-0.5">Customer</p>
-                        <p class="font-bold text-sm text-gray-900 dark:text-white truncate">
+                        <p class="font-semibold text-sm text-gray-900 dark:text-white truncate">
                             {{ cartStore.currentCustomer ? cartStore.currentCustomer.name : 'Walk-in Customer' }}
                         </p>
                     </div>
@@ -66,7 +66,7 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                                 </div>
                                 <div class="text-left">
-                                    <p class="font-black text-gray-900 dark:text-white text-sm">Walk-in Customer</p>
+                                    <p class="font-bold text-gray-900 dark:text-white text-sm">Walk-in Customer</p>
                                     <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Default Option</p>
                                 </div>
                             </div>
@@ -89,7 +89,7 @@
                                         {{ customer.name.charAt(0).toUpperCase() }}
                                     </div>
                                     <div class="text-left overflow-hidden">
-                                        <p class="font-black text-gray-900 dark:text-white text-sm truncate">{{ customer.name }}</p>
+                                        <p class="font-bold text-gray-900 dark:text-white text-sm truncate">{{ customer.name }}</p>
                                         <p class="text-xs font-medium text-gray-500 truncate">{{ customer.email || customer.phone || 'No contact info' }}</p>
                                     </div>
                                 </div>

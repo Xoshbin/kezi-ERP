@@ -41,7 +41,7 @@ export const useProductsStore = defineStore('products', {
             try {
                 // Try loading active products using index
                 try {
-                    this.products = await db.products.where('is_active').equals(true).toArray();
+                    this.products = await db.products.where('is_active').anyOf(1, true).toArray();
                 } catch (indexedError) {
                     console.warn('Indexed query for is_active failed, falling back to full scan:', indexedError);
                     // Fallback: Fetch all and filter in memory if index is broken
@@ -67,13 +67,13 @@ export const useProductsStore = defineStore('products', {
             }
         },
         
-        async syncAndReload() {
+        async syncAndReload(onProgress = null) {
             const connectivity = useConnectivityStore();
             this.loading = true;
             
             try {
                 if (connectivity.isOnline) {
-                    await syncMasterData();
+                    await syncMasterData(onProgress);
                 }
             } catch (error) {
                 console.error('Sync failed, falling back to local data:', error);
@@ -90,6 +90,23 @@ export const useProductsStore = defineStore('products', {
         
         selectCategory(id) {
             this.selectedCategory = id;
+        },
+        
+        async updateProductStock(productId, availableQuantity) {
+            const product = this.products.find(p => p.id === productId);
+            if (product) {
+                product.available_quantity = availableQuantity;
+            }
+            
+            try {
+                const dbProduct = await db.products.get(productId);
+                if (dbProduct) {
+                    dbProduct.available_quantity = availableQuantity;
+                    await db.products.put(dbProduct);
+                }
+            } catch (error) {
+                console.error('Failed to update product stock in IndexedDB:', error);
+            }
         }
     }
 });

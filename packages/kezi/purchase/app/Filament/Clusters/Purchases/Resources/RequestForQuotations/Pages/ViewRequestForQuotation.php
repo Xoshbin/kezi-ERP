@@ -4,7 +4,9 @@ namespace Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotatio
 
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Schema;
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\RequestForQuotationResource;
+use Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\Schemas\RequestForQuotationInfolist;
 
 /**
  * @extends ViewRecord<\Kezi\Purchase\Models\RequestForQuotation>
@@ -12,6 +14,11 @@ use Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\Req
 class ViewRequestForQuotation extends ViewRecord
 {
     protected static string $resource = RequestForQuotationResource::class;
+
+    public function infolist(Schema $schema): Schema
+    {
+        return RequestForQuotationInfolist::configure($schema);
+    }
 
     protected function getHeaderActions(): array
     {

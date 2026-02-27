@@ -82,7 +82,7 @@
                 </button>
                 <button 
                     @click="apply"
-                    class="flex-1 py-3 px-4 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl font-bold shadow-lg shadow-primary-500/30 transition-all active:scale-95"
+                    class="flex-1 py-3 px-4 bg-primary-600 hover:bg-primary-700 !text-gray-900 rounded-2xl font-bold shadow-lg shadow-primary-500/30 transition-all active:scale-95"
                 >
                     Apply Discount
                 </button>
@@ -93,6 +93,9 @@
 
 <script setup>
 import { ref, watch, computed, nextTick } from 'vue';
+import { useSessionStore } from '../stores/session';
+
+const sessionStore = useSessionStore();
 
 const props = defineProps({
     visible: Boolean,
@@ -111,7 +114,7 @@ watch(() => props.visible, (val) => {
         discountType.ref = props.item.discount_type || 'percentage';
         // If fixed, convert from minor units to major units for user display
         if (props.item.discount_type === 'fixed') {
-            discountValue.value = Number(props.item.discount_value) / 100;
+            discountValue.value = Number(props.item.discount_value) / sessionStore.decimalFactor;
         } else {
             discountValue.value = props.item.discount_value || 0;
         }
@@ -131,7 +134,7 @@ const savingsAmount = computed(() => {
         return Math.round(lineSubtotal * (Number(discountValue.value || 0) / 100));
     } else {
         // Convert input (major) to minor units for calculation
-        const minorValue = Math.round(Number(discountValue.value || 0) * 100);
+        const minorValue = Math.round(Number(discountValue.value || 0) * sessionStore.decimalFactor);
         return Math.min(minorValue, lineSubtotal);
     }
 });
@@ -141,7 +144,7 @@ const apply = () => {
     
     // If fixed, store as minor units
     if (discountType.value === 'fixed') {
-        finalValue = Math.round(finalValue * 100);
+        finalValue = Math.round(finalValue * sessionStore.decimalFactor);
     }
     
     emit('apply', {
@@ -151,10 +154,12 @@ const apply = () => {
 };
 
 const formatMoney = (amount) => {
-    const val = Number(amount) / 100;
+    const val = Number(amount) / sessionStore.decimalFactor;
     return new Intl.NumberFormat('en-US', { 
         style: 'currency', 
-        currency: props.currencyCode || 'USD' 
+        currency: props.currencyCode || 'USD',
+        minimumFractionDigits: sessionStore.decimalPlaces,
+        maximumFractionDigits: sessionStore.decimalPlaces
     }).format(val);
 };
 </script>

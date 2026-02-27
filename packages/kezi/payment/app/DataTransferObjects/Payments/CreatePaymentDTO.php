@@ -22,5 +22,6 @@ class CreatePaymentDTO
         public readonly ?Money $amount,
         public readonly array $document_links,
         public readonly ?string $reference,
+        public readonly ?float $exchange_rate = null,
     ) {}
 }

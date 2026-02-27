@@ -35,6 +35,11 @@ use RuntimeException;
 class StockQuantService
 {
     /**
+     * Global flag to allow negative stock quantities during certain operations (like POS sync).
+     */
+    public static bool $allowNegativeStock = false;
+
+    /**
      * Create or retrieve a stock quant for the given parameters
      *
      * This method ensures a StockQuant record exists for the specified combination
@@ -116,19 +121,20 @@ class StockQuantService
                 throw new RuntimeException('Serial-tracked product quantity cannot exceed 1');
             }
 
-            if ($newQty < 0) {
+            if ($newQty < 0 && ! self::$allowNegativeStock) {
                 throw new RuntimeException('Insufficient quantity for adjustment');
             }
             if ($newReserved < 0) {
                 throw new RuntimeException('Reserved quantity cannot be negative');
             }
-            if ($newReserved > $newQty) {
+            if ($newReserved > $newQty && ! self::$allowNegativeStock) {
                 throw new RuntimeException('Reserved quantity cannot exceed available quantity');
             }
 
             $quant->forceFill([
                 'quantity' => $newQty,
                 'reserved_quantity' => $newReserved,
+                'is_negative_stock' => $newQty < 0,
             ])->save();
 
             return $quant;

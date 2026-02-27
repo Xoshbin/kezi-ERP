@@ -128,8 +128,8 @@ class StockMoveResource extends Resource
                                 Select::make('source_type')
                                     ->label(__('inventory::stock_move.source_type'))
                                     ->options([
-                                        Invoice::class => __('invoice.label'),
-                                        VendorBill::class => __('vendor_bill.label'),
+                                        Invoice::class => __('accounting::invoice.label'),
+                                        VendorBill::class => __('accounting::bill.label'),
                                     ])
                                     ->reactive(),
                                 Select::make('source_id')

@@ -22,7 +22,7 @@
     </style>
 </head>
 <body>
-<h2>{{ __('posting_preview.pdf.adjustment_heading') }}</h2>
+<h2>{{ __('accounting::bill.posting_preview.pdf.adjustment_heading') }}</h2>
 <p>Reference: {{ $adjustment->reference_number ?? ('ADJ-' . str_pad($adjustment->id, 5, '0', STR_PAD_LEFT)) }} | Company: {{ $adjustment->company->name }}</p>
 
 @if(!empty($preview['errors']))

@@ -12,7 +12,12 @@ return [
     'sections' => [
         'basic_info' => 'Basic Information',
         'vendor_details' => 'Vendor Details',
+        'vendor_currency_info' => 'Vendor & Currency Information',
+        'vendor_currency_info_description' => 'Select vendor and currency details for this order',
+        'order_details' => 'Order Details',
+        'order_details_description' => 'Basic information about the purchase order',
         'basic_information' => 'Basic Information',
+        'vendor_currency_information' => 'Vendor & Currency Information',
         'delivery_info' => 'Delivery Information',
         'delivery_information' => 'Delivery Information',
         'line_items' => 'Line Items',
@@ -20,9 +25,13 @@ return [
         'notes' => 'Notes & Terms',
         'totals' => 'Totals',
         'lines' => 'Order Lines',
+        'attachments' => 'Attachments',
+        'attachments_description' => 'Manage document attachments for this order',
     ],
 
     'fields' => [
+        'document_currency' => 'Document Currency',
+        'company_currency' => 'Company Currency',
         'id' => 'ID',
         'po_number' => 'PO Number',
         'status' => 'Status',
@@ -32,6 +41,7 @@ return [
         'currency' => 'Currency',
         'expected_delivery_date' => 'Expected Delivery Date',
         'incoterm' => 'Incoterm',
+        'incoterm_location' => 'Incoterm Location',
         'delivery_location' => 'Delivery Location',
         'notes' => 'Notes',
         'terms_and_conditions' => 'Terms & Conditions',
@@ -47,6 +57,7 @@ return [
         'exchange_rate_at_creation' => 'Exchange Rate',
         'total_amount_company_currency' => 'Total (Company Currency)',
         'total_tax_company_currency' => 'Tax (Company Currency)',
+        'subtotal' => 'Subtotal',
         'billing_status' => 'Billing Status',
         // Line item fields
         'lines' => 'Line Items',
@@ -55,6 +66,7 @@ return [
         'quantity' => 'Quantity',
         'unit_price' => 'Unit Price',
         'tax' => 'Tax',
+        'shipping_type' => 'Shipping Type',
     ],
 
     'line_fields' => [

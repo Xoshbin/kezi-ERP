@@ -5,6 +5,7 @@ namespace Kezi\Pos\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Kezi\Pos\Enums\PosSessionStatus;
 use Kezi\Pos\Http\Requests\CloseSessionRequest;
 use Kezi\Pos\Http\Requests\OpenSessionRequest;
 use Kezi\Pos\Http\Resources\PosSessionResource;
@@ -15,51 +16,62 @@ class SessionController extends Controller
 {
     public function open(OpenSessionRequest $request): JsonResponse
     {
+        $this->authorize('open', PosSession::class);
+
         // One session per user at a time across any profile
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-        $existing = PosSession::with('profile')
-            ->where('user_id', $user->id)
-            ->where('status', 'opened')
-            ->first();
+        /** @var array{0: PosSession, 1: bool} $tuple */
+        $tuple = \Illuminate\Support\Facades\DB::transaction(function () use ($user, $request) {
+            $existing = PosSession::with('profile')
+                ->where('user_id', $user->id)
+                ->where('status', PosSessionStatus::Opened)
+                ->lockForUpdate()
+                ->first();
 
-        if ($existing) {
+            if ($existing) {
+                return [$existing, false];
+            }
+
+            /** @var PosProfile $profile */
+            $profile = PosProfile::with('company.currency')->findOrFail($request->pos_profile_id);
+            $currency = $profile->company->currency;
+
+            $newSession = PosSession::create([
+                'pos_profile_id' => $profile->id,
+                'user_id' => $user->id,
+                'company_id' => $profile->company_id,
+                'opened_at' => now(),
+                'opening_cash' => \Brick\Money\Money::ofMinor($request->opening_cash, $currency->code),
+                'status' => PosSessionStatus::Opened,
+            ]);
+
+            return [$newSession->load(['profile', 'user']), true];
+        });
+
+        [$session, $isNew] = $tuple;
+
+        if (! $isNew) {
             return response()->json([
-                'message' => 'User already has an open session on profile: '.$existing->profile->name,
-                'session' => new PosSessionResource($existing),
+                'message' => 'User already has an open session on profile: '.$session->profile->name,
+                'session' => new PosSessionResource($session),
             ], 409);
         }
 
-        /** @var PosProfile $profile */
-        $profile = PosProfile::with('company.currency')->findOrFail($request->pos_profile_id);
-        $currency = $profile->company->currency;
-
-        $session = PosSession::create([
-            'pos_profile_id' => $profile->id,
-            'user_id' => $user->id,
-            'company_id' => $profile->company_id,
-            'opened_at' => now(),
-            'opening_cash' => \Brick\Money\Money::ofMinor($request->opening_cash, $currency->code),
-            'status' => 'opened',
-        ]);
+        \Kezi\Pos\Events\PosSessionOpened::dispatch($session);
 
         return response()->json([
             'message' => 'Session opened',
-            'session' => new PosSessionResource($session->load('profile')),
+            'session' => new PosSessionResource($session),
         ], 201);
     }
 
     public function close(CloseSessionRequest $request, PosSession $session): JsonResponse
     {
-        /** @var \App\Models\User $user */
-        $user = $request->user();
+        $this->authorize('close', $session);
 
-        if ($session->user_id !== $user->id) {
-            abort(403);
-        }
-
-        if ($session->status !== 'opened') {
+        if ($session->status !== PosSessionStatus::Opened) {
             return response()->json(['message' => 'Session is already closed or not open'], 409);
         }
 
@@ -70,8 +82,10 @@ class SessionController extends Controller
             'closed_at' => now(),
             'closing_cash' => \Brick\Money\Money::ofMinor($request->closing_cash, $currency->code),
             'closing_notes' => $request->closing_notes,
-            'status' => 'closed',
+            'status' => PosSessionStatus::Closed,
         ]);
+
+        \Kezi\Pos\Events\PosSessionClosed::dispatch($session);
 
         $summary = [
             'order_count' => $session->orders()->count(),
@@ -87,13 +101,15 @@ class SessionController extends Controller
 
     public function current(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', PosSession::class);
+
         /** @var \App\Models\User $user */
         $user = $request->user();
 
         $session = PosSession::where('user_id', $user->id)
-            ->where('status', 'opened')
+            ->where('status', PosSessionStatus::Opened)
             ->latest()
-            ->with(['profile', 'orders'])
+            ->with(['profile', 'user', 'orders'])
             ->first();
 
         if (! $session) {

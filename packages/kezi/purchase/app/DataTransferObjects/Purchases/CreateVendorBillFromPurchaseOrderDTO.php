@@ -14,5 +14,6 @@ readonly class CreateVendorBillFromPurchaseOrderDTO
         public ?int $payment_term_id = null,
         public bool $copy_all_lines = true,
         public ?array $line_quantities = null, // Optional: override quantities for specific lines
+        public ?float $exchange_rate_at_creation = null,
     ) {}
 }
