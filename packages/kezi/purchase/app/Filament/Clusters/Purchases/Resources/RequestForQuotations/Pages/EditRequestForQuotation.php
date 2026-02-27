@@ -40,10 +40,12 @@ class EditRequestForQuotation extends EditRecord
     protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
     {
         /** @var \Kezi\Purchase\Models\RequestForQuotation $record */
-        $lines = collect($data['lines'] ?? [])->map(function ($lineData) use ($record) {
-            // Use currency from record (or data if changed)
-            $currencyCode = $record->currency->code; // Assuming currency not editable or handle change
+        $currencyId = $data['currency_id'] ?? $record->currency_id;
+        /** @var \Kezi\Foundation\Models\Currency $currency */
+        $currency = \Kezi\Foundation\Models\Currency::findOrFail($currencyId);
+        $currencyCode = $currency->code;
 
+        $lines = collect($data['lines'] ?? [])->map(function ($lineData) use ($currencyCode) {
             return new \Kezi\Purchase\DataTransferObjects\Purchases\CreateRFQLineDTO(
                 description: $lineData['description'],
                 quantity: (float) $lineData['quantity'],
@@ -57,7 +59,7 @@ class EditRequestForQuotation extends EditRecord
         $dto = new \Kezi\Purchase\DataTransferObjects\Purchases\UpdateRFQDTO(
             rfqId: $record->id,
             vendorId: $data['vendor_id'] ?? $record->vendor_id,
-            currencyId: $data['currency_id'] ?? $record->currency_id,
+            currencyId: $currencyId,
             rfqDate: isset($data['rfq_date']) ? \Carbon\Carbon::parse($data['rfq_date']) : null,
             validUntil: isset($data['valid_until']) ? \Carbon\Carbon::parse($data['valid_until']) : null,
             notes: $data['notes'] ?? null,

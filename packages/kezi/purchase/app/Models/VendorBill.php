@@ -182,6 +182,7 @@ class VendorBill extends Model
         // financial transaction once the bill is posted .
         'fiscal_position_id',
         'posted_at',            // Nullable timestamp indicating when the vendor bill was confirmed/posted .
+        'incoterm_location',
         'inter_company_source_id',
         'inter_company_source_type',
         'reset_to_draft_log',   // JSON/Text field to log instances where a 'Posted' bill was
@@ -486,5 +487,35 @@ class VendorBill extends Model
                 'status' => InstallmentStatus::Pending,
             ]);
         }
+    }
+
+    /**
+     * Get the subtotal.
+     */
+    protected function subtotal(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::get(function () {
+            /** @phpstan-ignore-next-line */
+            if (! $this->total_amount || ! $this->total_tax) {
+                return null;
+            }
+
+            return $this->total_amount->minus($this->total_tax);
+        });
+    }
+
+    /**
+     * Get the subtotal in company currency.
+     */
+    protected function subtotalCompanyCurrency(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::get(function () {
+            /** @phpstan-ignore-next-line */
+            if (! $this->total_amount_company_currency || ! $this->total_tax_company_currency) {
+                return null;
+            }
+
+            return $this->total_amount_company_currency->minus($this->total_tax_company_currency);
+        });
     }
 }

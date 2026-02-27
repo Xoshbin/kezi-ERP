@@ -7,12 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\ValidationException;
+
 /**
  * @property int $id
+ * @property int $company_id
  * @property string $name
  * @property int|null $parent_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read \App\Models\Company $company
  * @property-read ProductCategory|null $parent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, ProductCategory> $children
  * @property-read int|null $children_count
@@ -30,13 +34,12 @@ use Illuminate\Support\Carbon;
  *
  * @mixin \Eloquent
  */
-use Illuminate\Validation\ValidationException;
-
 class ProductCategory extends Model
 {
+    /** @use HasFactory<\Kezi\Product\Database\Factories\ProductCategoryFactory> */
     use HasFactory;
 
-    protected static function newFactory()
+    protected static function newFactory(): \Kezi\Product\Database\Factories\ProductCategoryFactory
     {
         return \Kezi\Product\Database\Factories\ProductCategoryFactory::new();
     }
@@ -45,6 +48,7 @@ class ProductCategory extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
+        'company_id',
         'name',
         'parent_id',
     ];
@@ -84,6 +88,14 @@ class ProductCategory extends Model
                 ]);
             }
         });
+    }
+
+    /**
+     * @return BelongsTo<\App\Models\Company, static>
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Company::class, 'company_id');
     }
 
     /**

@@ -46,6 +46,8 @@ use Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus;
  * @property Money|null $total_tax_company_currency
  * @property string|null $notes
  * @property string|null $terms_and_conditions
+ * @property-read Money|null $subtotal
+ * @property-read Money|null $subtotal_company_currency
  * @property int|null $delivery_location_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -123,6 +125,7 @@ class PurchaseOrder extends Model
         'notes',
         'terms_and_conditions',
         'delivery_location_id',
+        'incoterm_location',
     ];
 
     /**
@@ -276,8 +279,8 @@ class PurchaseOrder extends Model
             return false;
         }
 
-        // Then check if bills already exist for this PO
-        return ! $this->hasBills();
+        // Then check if any line still has remaining quantity to be billed
+        return $this->lines->contains(fn (PurchaseOrderLine $line) => $line->getRemainingBillableQuantity() > 0);
     }
 
     /**
@@ -380,20 +383,20 @@ class PurchaseOrder extends Model
             return; // Don't change final statuses
         }
 
-        $billsCount = $this->getBillsCount();
-
-        if ($billsCount === 0) {
-            // No bills exist - status should remain as is
+        $totalOrdered = $this->getTotalQuantityOrdered();
+        if ($totalOrdered === 0.0) {
             return;
-        } elseif ($billsCount === 1) {
-            // First bill created - move to PartiallyBilled
+        }
+
+        $totalBilled = $this->lines->sum('quantity_billed');
+
+        if ($totalBilled >= $totalOrdered) {
+            $this->status = PurchaseOrderStatus::FullyBilled;
+        } elseif ($totalBilled > 0) {
             $this->status = PurchaseOrderStatus::PartiallyBilled;
         } else {
-            // Multiple bills exist - could be PartiallyBilled or FullyBilled
-            // For now, we'll keep it as PartiallyBilled
-            // In the future, this could be enhanced to check if total billed amount
-            // equals total PO amount to determine FullyBilled status
-            $this->status = PurchaseOrderStatus::PartiallyBilled;
+            // No quantities billed, status depends on receipts
+            $this->updateStatusBasedOnReceipts(true);
         }
 
         $this->save();
@@ -408,6 +411,78 @@ class PurchaseOrder extends Model
             $this->status = PurchaseOrderStatus::Done;
             $this->save();
         }
+    }
+
+    /**
+     * Get the subtotal.
+     */
+    protected function subtotal(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::get(function () {
+            /** @phpstan-ignore-next-line */
+            if (! $this->total_amount || ! $this->total_tax) {
+                return null;
+            }
+
+            return $this->total_amount->minus($this->total_tax);
+        });
+    }
+
+    /**
+     * Get the subtotal in company currency.
+     */
+    protected function subtotalCompanyCurrency(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::get(function () {
+            /** @phpstan-ignore-next-line */
+            if (! $this->subtotal || ! $this->exchange_rate_at_creation) {
+                return null;
+            }
+
+            $companyCurrency = $this->company->currency;
+
+            $amount = $this->subtotal->getAmount()->multipliedBy((string) $this->exchange_rate_at_creation);
+
+            return Money::of($amount, $companyCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP);
+        });
+    }
+
+    /**
+     * Get the total tax in company currency.
+     */
+    protected function totalTaxCompanyCurrency(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::get(function () {
+            /** @phpstan-ignore-next-line */
+            if (! $this->total_tax || ! $this->exchange_rate_at_creation) {
+                return null;
+            }
+
+            $companyCurrency = $this->company->currency;
+
+            $amount = $this->total_tax->getAmount()->multipliedBy((string) $this->exchange_rate_at_creation);
+
+            return Money::of($amount, $companyCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP);
+        });
+    }
+
+    /**
+     * Get the total amount in company currency.
+     */
+    protected function totalAmountCompanyCurrency(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::get(function () {
+            /** @phpstan-ignore-next-line */
+            if (! $this->total_amount || ! $this->exchange_rate_at_creation) {
+                return null;
+            }
+
+            $companyCurrency = $this->company->currency;
+
+            $amount = $this->total_amount->getAmount()->multipliedBy((string) $this->exchange_rate_at_creation);
+
+            return Money::of($amount, $companyCurrency->code, null, \Brick\Math\RoundingMode::HALF_UP);
+        });
     }
 
     protected static function newFactory(): \Kezi\Purchase\Database\Factories\PurchaseOrderFactory

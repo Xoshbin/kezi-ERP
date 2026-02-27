@@ -65,7 +65,7 @@ class CreateInvoice extends CreateRecord
             due_date: $data['due_date'],
             lines: $data['invoiceLines'],
             fiscal_position_id: $data['fiscal_position_id'] ?? null,
-            incoterm: isset($data['incoterm']) ? Incoterm::tryFrom($data['incoterm']) : null,
+            incoterm: $data['incoterm'] instanceof Incoterm ? $data['incoterm'] : (isset($data['incoterm']) ? Incoterm::tryFrom($data['incoterm']) : null),
         );
 
         $invoice = app(\Kezi\Sales\Actions\Sales\CreateInvoiceAction::class)->execute($invoiceDTO);

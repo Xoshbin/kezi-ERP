@@ -25,6 +25,47 @@
             @close="showOrderHistory = false"
         />
 
+        <!-- Receipt Search Modal -->
+        <ReceiptSearchModal 
+            v-if="showReceiptSearch" 
+            :visible="showReceiptSearch"
+            @close="showReceiptSearch = false"
+            @select-order="handleOrderSelected"
+        />
+
+        <!-- Return Process Modal -->
+        <ReturnProcessModal 
+            v-if="showReturnProcess"
+            :visible="showReturnProcess"
+            :order-data="selectedReturnOrder"
+            @close="showReturnProcess = false"
+            @completed="handleReturnCompleted"
+        />
+
+        <!-- Return Success Overlay -->
+        <div v-if="returnSuccess" class="fixed inset-0 z-[110] bg-white dark:bg-gray-900 flex flex-col items-center justify-center text-center p-6 transition-all duration-300">
+            <div class="w-24 h-24 bg-rose-100 dark:bg-rose-900/30 rounded-full flex items-center justify-center mb-6 animate-bounce">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-rose-600 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z" />
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">Return Processed!</h2>
+            <p class="text-gray-500 dark:text-gray-400 mb-4 font-mono text-lg">{{ returnSuccess.returnNumber }}</p>
+            <div class="flex gap-4 mb-4">
+                <button
+                    v-if="returnSuccess.returnData"
+                    @click="printLastReturnReceipt"
+                    class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 px-6 py-4 rounded-2xl font-bold text-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-lg flex items-center gap-2"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                    Print Return Receipt
+                </button>
+                <button @click="returnSuccess = null" class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-8 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition-transform shadow-xl">
+                    Done
+                </button>
+            </div>
+        </div>
+
         <!-- Success Overlay -->
         <div v-if="orderSuccess" class="fixed inset-0 z-[110] bg-white dark:bg-gray-900 flex flex-col items-center justify-center text-center p-6 transition-all duration-300">
             <div class="w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mb-6 animate-bounce">
@@ -32,11 +73,11 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                 </svg>
             </div>
-            <h2 class="text-3xl font-black text-gray-900 dark:text-white mb-2">Order Confirmed!</h2>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">Order Confirmed!</h2>
             <p class="text-gray-500 dark:text-gray-400 mb-8 font-mono text-lg">{{ orderSuccess.orderNumber }}</p>
             
             <div class="space-y-2 mb-10">
-                <p class="text-4xl font-black text-primary-600">{{ formatMoney(orderSuccess.total) }}</p>
+                <p class="text-3xl font-black text-primary-600 tracking-tighter">{{ formatMoney(orderSuccess.total) }}</p>
                 <p v-if="orderSuccess.method === 'cash'" class="text-gray-500">
                     Change Given: <span class="font-bold text-gray-900 dark:text-white">{{ formatMoney(orderSuccess.change) }}</span>
                 </p>
@@ -93,6 +134,17 @@
 
                 <button 
                     v-if="sessionStore.hasActiveSession"
+                    @click="showReceiptSearch = true"
+                    class="w-8 h-8 rounded-lg bg-gray-50 hover:bg-rose-50 dark:bg-gray-800 dark:hover:bg-rose-500/10 text-gray-400 hover:text-rose-500 transition-all flex items-center justify-center border dark:border-gray-700 hover:border-rose-200"
+                    title="Return Items (F7)"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z" />
+                    </svg>
+                </button>
+
+                <button 
+                    v-if="sessionStore.hasActiveSession"
                     @click="showOrderHistory = true"
                     class="w-8 h-8 rounded-lg bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 transition-all flex items-center justify-center border dark:border-gray-700"
                     title="Order History (F9)"
@@ -118,8 +170,8 @@
                 <!-- User Profile & Actions -->
                 <div class="flex items-center gap-3 pl-6 border-l dark:border-gray-800">
                     <div class="text-right hidden sm:block">
-                        <p class="text-sm font-semibold">Cashier</p>
-                        <p class="text-[10px] text-gray-500 uppercase tracking-wider">Main Register</p>
+                        <p class="text-sm font-semibold">{{ sessionStore.userName || 'Cashier' }}</p>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-wider">{{ sessionStore.profileName || 'No Profile' }}</p>
                     </div>
                     
                     <button 
@@ -186,8 +238,9 @@
                     </div>
 
                     <!-- Grid -->
-                    <div v-if="productsStore.loading" class="flex justify-center py-20">
-                        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
+                    <div v-if="productsStore.loading || syncProgress" class="flex flex-col items-center justify-center py-20">
+                        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600 mb-4"></div>
+                        <p v-if="syncProgress" class="text-sm font-semibold text-gray-500">{{ syncProgress }}</p>
                     </div>
                     
                     <div v-else-if="productsStore.filteredProducts.length === 0" class="text-center py-20 text-gray-500">
@@ -210,10 +263,10 @@
                                     {{ product.available_quantity > 0 ? 'IN STOCK' : 'OUT OF STOCK' }}
                                 </div>
                             </div>
-                            <h3 class="font-bold text-gray-800 dark:text-gray-100 mb-1 group-hover:text-primary-600 transition-colors line-clamp-2 min-h-[2.5em]">{{ product.name }}</h3>
+                            <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1 group-hover:text-primary-600 transition-colors line-clamp-2 min-h-[2.5em] tracking-tight">{{ product.name }}</h3>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">{{ product.sku || 'No SKU' }}</p>
                             <div class="flex items-center justify-between">
-                                <span class="text-lg font-black text-gray-900 dark:text-white">{{ formatMoney(product.unit_price) }}</span>
+                                <span class="text-base font-bold text-gray-900 dark:text-white">{{ formatMoney(product.unit_price) }}</span>
                                 <button class="w-8 h-8 rounded-full bg-gray-50 dark:bg-gray-800 text-gray-400 group-hover:bg-primary-600 group-hover:text-white transition-all duration-300 flex items-center justify-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
                                 </button>
@@ -227,7 +280,7 @@
             <aside class="w-96 bg-white dark:bg-gray-900 border-l dark:border-gray-800 flex flex-col shadow-2xl z-10 overflow-hidden">
                 <div class="p-6 border-b dark:border-gray-800 flex items-center justify-between">
                     <div>
-                        <h2 class="text-xl font-extrabold text-gray-900 dark:text-white">Current Order</h2>
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-white tracking-tight">Current Order</h2>
                         <p class="text-xs text-gray-400 leading-none">Order #Local-Draft</p>
                     </div>
                     <button @click="cart.clearCart" class="text-gray-400 hover:text-red-500 transition-colors" title="Clear Cart (F8)">
@@ -252,10 +305,10 @@
                             {{ item.sku || 'IMG' }}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h4 class="text-sm font-bold truncate">{{ item.name }}</h4>
+                            <h4 class="text-sm font-semibold truncate">{{ item.name }}</h4>
                             <div class="flex items-center gap-2 mt-1">
                                 <span class="text-xs text-gray-500">{{ formatMoney(item.unit_price) }} × {{ item.quantity }}</span>
-                                <span class="text-sm font-black">{{ formatMoney(item.unit_price * item.quantity) }}</span>
+                                <span class="text-sm font-bold">{{ formatMoney(item.unit_price * item.quantity) }}</span>
                             </div>
 
                             <!-- Discount display -->
@@ -347,12 +400,12 @@
                         </div>
 
                         <div class="flex justify-between items-end pt-4 border-t dark:border-gray-700">
-                            <span class="text-lg font-bold">Total</span>
-                            <span class="text-3xl font-black text-primary-600">{{ formatMoney(cart.total) }}</span>
+                            <span class="text-xs font-bold uppercase tracking-widest text-gray-500">Total</span>
+                            <span class="text-xl font-black text-primary-600 tracking-tighter">{{ formatMoney(cart.total) }}</span>
                         </div>
                     </div>
 
-                    <button @click="showPaymentModal = true" class="pay-button w-full bg-primary-600 hover:bg-primary-700 !text-gray-900 py-5 rounded-3xl font-extrabold text-xl shadow-xl shadow-primary-500/30 flex items-center justify-center gap-3 transition-all active:scale-95 group" :disabled="cart.items.length === 0" :class="{'opacity-50 cursor-not-allowed': cart.items.length === 0}">
+                    <button @click="showPaymentModal = true" class="pay-button w-full bg-primary-600 hover:bg-primary-700 !text-gray-900 py-5 rounded-3xl font-bold text-lg tracking-tight shadow-xl shadow-primary-500/30 flex items-center justify-center gap-3 transition-all active:scale-95 group" :disabled="cart.items.length === 0" :class="{'opacity-50 cursor-not-allowed': cart.items.length === 0}">
                         Confirm & Pay
                         <span class="text-[10px] opacity-60 bg-white/20 px-1.5 py-0.5 rounded ml-2">F4</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -379,25 +432,62 @@ import PaymentModal from './components/PaymentModal.vue';
 import CloseSessionModal from './components/CloseSessionModal.vue';
 import CustomerSelector from './components/CustomerSelector.vue';
 import OrderHistoryPanel from './components/OrderHistoryPanel.vue';
+import ReceiptSearchModal from './components/ReceiptSearchModal.vue';
+import ReturnProcessModal from './components/ReturnProcessModal.vue';
 import { useReceipt } from './composables/useReceipt';
+import { cacheRecentOrders } from './services/sync-service';
 import { useBarcodeScanner } from './composables/useBarcodeScanner';
 import { useKeyboardShortcuts } from './composables/useKeyboardShortcuts';
 import ScanToast from './components/ScanToast.vue';
 import DiscountPopover from './components/DiscountPopover.vue';
+import './echo.js';
 
 const connectivity = useConnectivityStore();
 const cart = useCartStore();
 const productsStore = useProductsStore();
 const sessionStore = useSessionStore();
 
-const currentCurrency = ref('USD');
+const currentCurrency = computed(() => sessionStore.currencyCode);
 const showPaymentModal = ref(false);
 const showCloseSessionModal = ref(false);
 const orderSuccess = ref(null);
+const syncProgress = ref('');
+
+const showReceiptSearch = ref(false);
+const showReturnProcess = ref(false);
+const selectedReturnOrder = ref(null);
+const returnSuccess = ref(null);
 
 const discountModal = ref({ visible: false, item: null });
 const showOrderDiscountInput = ref(false);
 const orderDiscountInput = ref(0);
+
+// UUID Fallback for non-secure contexts (HTTP)
+const generateUUID = () => {
+    try {
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+            return crypto.randomUUID();
+        }
+        
+        if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
+        }
+
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    } catch (e) {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+};
 
 // Barcode scanner
 const scanToast = ref({ visible: false, type: 'success', message: '' });
@@ -442,6 +532,9 @@ useKeyboardShortcuts({
     toggleOrderHistory: () => {
         showOrderHistory.value = !showOrderHistory.value;
     },
+    openReturn: () => {
+        showReceiptSearch.value = true;
+    },
     closeSession: () => {
         if (sessionStore.hasActiveSession) {
             showCloseSessionModal.value = true;
@@ -450,6 +543,12 @@ useKeyboardShortcuts({
     closeModal: () => {
         if (orderSuccess.value) {
             orderSuccess.value = null;
+        } else if (returnSuccess.value) {
+            returnSuccess.value = null;
+        } else if (showReceiptSearch.value) {
+            showReceiptSearch.value = false;
+        } else if (showReturnProcess.value) {
+            showReturnProcess.value = false;
         } else if (showPaymentModal.value) {
             showPaymentModal.value = false;
         } else if (showCloseSessionModal.value) {
@@ -494,23 +593,27 @@ onMounted(async () => {
     // Initial sync and load logic
     try {
         if (connectivity.isOnline) {
-             // 1. Try to sync master data (profiles, settings, etc.)
+             // 1. Sync master data (profiles, settings, products, etc.)
              try {
-                 await syncMasterData();
+                 await syncMasterData((progress) => {
+                     syncProgress.value = `Downloading Catalog: ${progress.totalItemsSynced} items...`;
+                 });
+                 // 6d — Cache recent orders for offline receipt search
+                 cacheRecentOrders(50).catch(() => {});
              } catch (syncError) {
                  console.error('Master data sync failed', syncError);
                  sessionStore.error = 'Failed to sync terminal data. Using local cache if available.';
+             } finally {
+                 syncProgress.value = '';
              }
 
              // 2. Check session status
              await sessionStore.checkCurrentSession();
 
-             // 3. Try to sync products
-             try {
-                 await productsStore.syncAndReload();
-             } catch (productError) {
-                 console.error('Products sync failed, loading from DB', productError);
-                 await productsStore.loadFromDb();
+             // 3. Load data from IndexedDB into stores
+             await productsStore.loadFromDb();
+             if (!sessionStore.hasActiveSession) {
+                 await sessionStore.loadProfiles();
              }
         } else {
              // Offline mode
@@ -519,9 +622,11 @@ onMounted(async () => {
         }
         
         // Load currency from DB (synced)
-        const setting = await db.settings.get('company_currency');
-        if (setting && setting.value) {
-            currentCurrency.value = setting.value.code || 'USD';
+        await sessionStore.loadCurrency();
+
+        // If no active session, make sure profiles are loaded
+        if (!sessionStore.hasActiveSession) {
+            await sessionStore.loadProfiles();
         }
     } catch(e) {
         console.error('Initial load failed', e);
@@ -531,11 +636,19 @@ onMounted(async () => {
 
     // Load taxes
     await cart.loadTaxes();
+
+    // Real-time stock updates
+    if (window.Echo) {
+        window.Echo.channel('products')
+            .listen('.ProductStockUpdated', (e) => {
+                productsStore.updateProductStock(e.productId, e.availableQuantity);
+            });
+    }
 });
 
 const showOrderHistory = ref(false);
 
-const { printReceipt } = useReceipt();
+const { printReceipt, printReturnReceipt } = useReceipt();
 
 const printLastReceipt = async () => {
     if (orderSuccess.value?.orderId) {
@@ -574,11 +687,34 @@ const clearOrderDiscount = () => {
     showOrderDiscountInput.value = false;
 };
 
+const handleOrderSelected = (order) => {
+    selectedReturnOrder.value = order;
+    showReceiptSearch.value = false;
+    showReturnProcess.value = true;
+};
+
+const handleReturnCompleted = (result) => {
+    showReturnProcess.value = false;
+    returnSuccess.value = {
+        returnNumber: result.return_number || result.id,
+        returnData: result,
+    };
+};
+
+const printLastReturnReceipt = async () => {
+    if (returnSuccess.value?.returnData) {
+        await printReturnReceipt(returnSuccess.value.returnData);
+    }
+};
+
 // ... existing code ...
 
 // Alias for refresh button
 const loadProducts = async () => {
-    await productsStore.syncAndReload();
+    await productsStore.syncAndReload((progress) => {
+        syncProgress.value = `Downloading Catalog: ${progress.totalItemsSynced} items...`;
+    });
+    syncProgress.value = '';
 };
 
 const filterCategory = (id) => {
@@ -592,7 +728,7 @@ const addToCart = (product) => {
 const handlePaymentComplete = async (paymentData) => {
     try {
         // 1. Generate UUID & Order Number
-        const orderUuid = crypto.randomUUID();
+        const orderUuid = generateUUID();
         const lastOrderNumSetting = await db.settings.get('last_order_number');
         let sequence = 1;
         if (lastOrderNumSetting) {
@@ -604,7 +740,11 @@ const handlePaymentComplete = async (paymentData) => {
         const currencySetting = await db.settings.get('company_currency');
         const currencyId = currencySetting?.value?.id || 1; 
         
-        // 3. Prepare Order Data
+        // 3. Normalise payments — new format: { payments: [...] }
+        const payments = paymentData.payments || [];
+        const primaryPayment = payments[0] || {};
+
+        // 4. Prepare Order Data
         // IMPORTANT: Calculate totals from itemsWithTax to ensure consistency
         const items = cart.itemsWithTax;
         
@@ -622,9 +762,10 @@ const handlePaymentComplete = async (paymentData) => {
             pos_session_id: sessionStore.sessionId,
             sector_data: [],
             sync_status: 'pending',
-            payment_method: paymentData.method,
-            amount_tendered: paymentData.amount_tendered,
-            change_given: paymentData.change_given,
+            // Legacy field: primary payment method for compatibility
+            payment_method: primaryPayment.method || 'cash',
+            amount_tendered: primaryPayment.amount_tendered ?? cart.total,
+            change_given: primaryPayment.change_given ?? 0,
         };
         
         const lines = items.map(item => ({
@@ -637,11 +778,22 @@ const handlePaymentComplete = async (paymentData) => {
             metadata: [],
         }));
 
-        // 4. Save to DB Transaction
-        const orderId = await db.transaction('rw', db.orders, db.order_lines, db.settings, async () => {
+        // 5. Save to DB Transaction (now includes order_payments)
+        const orderId = await db.transaction('rw', db.orders, db.order_lines, db.order_payments, db.settings, async () => {
             const id = await db.orders.add(order);
             const linesWithOrderId = lines.map(l => ({ ...l, order_id: id }));
             await db.order_lines.bulkAdd(linesWithOrderId);
+            // Save each split payment row
+            const paymentRows = payments.map(p => ({
+                order_id: id,
+                method: p.method,
+                amount: p.amount,
+                amount_tendered: p.amount_tendered ?? null,
+                change_given: p.change_given ?? 0,
+            }));
+            if (paymentRows.length > 0) {
+                await db.order_payments.bulkAdd(paymentRows);
+            }
             await db.settings.put({ key: 'last_order_number', value: sequence });
             return id;
         });
@@ -685,12 +837,17 @@ const searchQuery = computed({
     set: (val) => productsStore.setSearchQuery(val)
 });
 
-// Helper for money formatting (assuming minor units, e.g. cents)
+// Helper for money formatting
 const formatMoney = (amount) => {
-    if (amount === undefined || amount === null) return '$0.00';
-    // Amount is in minor units (integer). Divide by 100.
-    const val = Number(amount) / 100;
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currentCurrency.value }).format(val);
+    if (amount === undefined || amount === null) return '0.00';
+    // Amount is in minor units (integer). Divide by decimalFactor.
+    const val = Number(amount) / sessionStore.decimalFactor;
+    return new Intl.NumberFormat('en-US', { 
+        style: 'currency', 
+        currency: sessionStore.currencyCode,
+        minimumFractionDigits: sessionStore.decimalPlaces,
+        maximumFractionDigits: sessionStore.decimalPlaces
+    }).format(val);
 };
 
 </script>
@@ -699,17 +856,17 @@ const formatMoney = (amount) => {
 @import "tailwindcss";
 
 :root {
-    --primary-50: #fefce8;
-    --primary-100: #fef9c3;
-    --primary-200: #fef08a;
-    --primary-300: #fde047;
-    --primary-400: #facc15;
-    --primary-500: #eab308;
-    --primary-600: #ca8a04;
-    --primary-700: #a16207;
-    --primary-800: #854d0e;
-    --primary-900: #713f12;
-    --primary-950: #422006;
+    --color-primary-50: #fefce8;
+    --color-primary-100: #fef9c3;
+    --color-primary-200: #fef08a;
+    --color-primary-300: #fde047;
+    --color-primary-400: #facc15;
+    --color-primary-500: #eab308;
+    --color-primary-600: #ca8a04;
+    --color-primary-700: #a16207;
+    --color-primary-800: #854d0e;
+    --color-primary-900: #713f12;
+    --color-primary-950: #422006;
 }
 
 .pos-container {

@@ -2,6 +2,8 @@
 
 return [
     // General
+    'document_currency' => 'دراوی بەڵگەنامە',
+    'company_currency' => 'دراوی کۆمپانیا',
     'label' => 'پسووڵەی کڕین',
     'plural_label' => 'پسووڵەکانی کڕین',
     'vendor_bill' => 'پسووڵەی کڕین',
@@ -25,6 +27,7 @@ return [
     'tax' => 'باج',
     'expense_account' => 'هەژماری خەرجی',
     'analytic_account' => 'هەژماری شیکاری',
+    'subtotal' => 'سابتۆتاڵ',
     'total_amount' => 'کۆی گشتی',
     'total_tax' => 'کۆی باج',
     'journal_entry_id' => 'ناسنامەی تۆماری ڕۆژانە',
@@ -67,6 +70,7 @@ return [
     'fiscal_position' => 'دۆخی دارایی',
     'fiscal_position_helper' => 'دۆخی دارایی بەکارهاتوو بۆ ئەم پسووڵەیە',
     'incoterm' => 'ئینکۆتێرم (Incoterm)',
+    'incoterm_location' => 'شوێنی ئینکۆتێرم',
     'post' => 'ناردن (Post)',
 
     // Actions
@@ -85,6 +89,7 @@ return [
     'payment_term' => 'مەرجی پارەدان',
     'date' => 'ڕێکەوت',
     'total' => 'کۆ',
+    'totals' => 'کۆی گشتی',
     'reference' => 'سەرچاوە',
 
     // Notifications
@@ -99,6 +104,7 @@ return [
     'notification_update_not_allowed' => 'نوێکردنەوە ڕێگەپێدراو نییە',
     'errors' => [
         'cannot_create_bill_title' => 'نەتوانرا پسووڵە دروست بکرێت',
+        'cannot_create_bill_body' => 'هیچ داواکارییەکی کڕین ئامادە نییە بۆ پسووڵەکردن بۆ فرۆشیاری دیاریکراو.',
     ],
 
     // Validation Messages

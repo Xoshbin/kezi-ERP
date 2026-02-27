@@ -5,7 +5,6 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills;
 use App\Models\Company;
 use BackedEnum;
 use Brick\Money\Money;
-use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -20,15 +19,16 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Get;
-use Filament\Notifications\Notification;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Auth;
 use Kezi\Accounting\Enums\Accounting\TaxType;
 use Kezi\Accounting\Enums\Assets\DepreciationMethod;
 use Kezi\Accounting\Filament\Clusters\Accounting\AccountingCluster;
@@ -39,21 +39,16 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\RelationM
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\PaymentsRelationManager;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\AssetCategory;
-use Kezi\Accounting\Models\Journal;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Accounting\Rules\NotInLockedPeriod;
 use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
+use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\CurrencyRate;
-use Kezi\Payment\Actions\Payments\CreatePaymentAction;
-use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
-use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
-use Kezi\Payment\Enums\Payments\PaymentMethod;
 use Kezi\Payment\Enums\Payments\PaymentType;
-use Kezi\Payment\Services\PaymentService;
 use Kezi\Product\Models\Product;
 use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
 use Kezi\Purchase\Models\VendorBill;
@@ -139,28 +134,28 @@ class VendorBillResource extends Resource
                         ->columnSpan(1)
                         ->createOptionForm([
                             TextInput::make('name')
-                                ->label(__('partner.name'))
+                                ->label(__('accounting::partner.name'))
                                 ->required()
                                 ->maxLength(255),
                             Select::make('type')
-                                ->label(__('partner.type'))
+                                ->label(__('accounting::partner.type'))
                                 ->required()
                                 ->options(
                                     collect(\Kezi\Foundation\Enums\Partners\PartnerType::cases())
                                         ->mapWithKeys(fn (\Kezi\Foundation\Enums\Partners\PartnerType $type) => [$type->value => $type->label()])
                                 ),
                             TextInput::make('contact_person')
-                                ->label(__('partner.contact_person'))
+                                ->label(__('accounting::partner.contact_person'))
                                 ->maxLength(255),
                             TextInput::make('email')
-                                ->label(__('partner.email'))
+                                ->label(__('accounting::partner.email'))
                                 ->email()
                                 ->maxLength(255),
                             TextInput::make('phone')
-                                ->label(__('partner.phone'))
+                                ->label(__('accounting::partner.phone'))
                                 ->maxLength(255),
                             Textarea::make('address')
-                                ->label(__('partner.address'))
+                                ->label(__('accounting::partner.address'))
                                 ->columnSpanFull(),
                         ])
                         ->createOptionModalHeading(__('accounting::common.modal_title_create_partner'))
@@ -236,6 +231,9 @@ class VendorBillResource extends Resource
                         ->options(Incoterm::class)
                         ->searchable()
                         ->preload(),
+                    TextInput::make('incoterm_location')
+                        ->label(__('accounting::bill.incoterm_location'))
+                        ->maxLength(255),
                     Select::make('fiscal_position_id')
                         ->label(__('accounting::bill.fiscal_position'))
                         ->relationship('fiscalPosition', 'name')
@@ -556,29 +554,110 @@ class VendorBillResource extends Resource
                 ->columnSpanFull()
                 ->collapsed(fn (?VendorBill $record) => $record && $record->attachments()->count() === 0),
 
-            Section::make(__('accounting::bill.company_currency_totals'))
-                ->schema([
-                    TextInput::make('exchange_rate_at_creation')
-                        ->label(__('accounting::bill.exchange_rate_at_creation'))
-                        ->numeric()
-                        ->disabled()
-                        ->visible(fn (?VendorBill $record) => $record && $record->exchange_rate_at_creation),
-
-                    MoneyInput::make('total_amount_company_currency')
-                        ->label(__('accounting::bill.total_amount_company_currency'))
-                        ->currencyField('../../company.currency_id')
-                        ->disabled()
-                        ->visible(fn (?VendorBill $record) => $record && $record->total_amount_company_currency),
-
-                    MoneyInput::make('total_tax_company_currency')
-                        ->label(__('accounting::bill.total_tax_company_currency'))
-                        ->currencyField('../../company.currency_id')
-                        ->disabled()
-                        ->visible(fn (?VendorBill $record) => $record && $record->total_tax_company_currency),
-                ])
-                ->columnSpanFull()
-                ->visible(fn (?VendorBill $record) => $record && ($record->exchange_rate_at_creation || $record->total_amount_company_currency)),
+            DocumentTotalsHelper::make(
+                linesKey: 'lines',
+                translationPrefix: 'accounting::bill'
+            ),
         ]);
+    }
+
+    public static function infolist(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Section::make(__('accounting::bill.vendor_currency_info'))
+                    ->description(__('accounting::bill.vendor_currency_info_description'))
+                    ->schema([
+                        TextEntry::make('vendor.name')
+                            ->label(__('accounting::bill.vendor'))
+                            ->weight('bold')
+                            ->columnSpan(1),
+                        TextEntry::make('currency.name')
+                            ->label(__('accounting::bill.currency'))
+                            ->columnSpan(1),
+                        TextEntry::make('exchange_rate_at_creation')
+                            ->label(__('accounting::bill.exchange_rate'))
+                            ->numeric(decimalPlaces: 6)
+                            ->columnSpan(1)
+                            ->visible(fn (?VendorBill $record) => $record && $record->exchange_rate_at_creation),
+                        TextEntry::make('incoterm')
+                            ->label(__('accounting::bill.incoterm'))
+                            ->formatStateUsing(fn (?Incoterm $state): ?string => $state?->getLabel()),
+                        TextEntry::make('incoterm_location')
+                            ->label(__('accounting::bill.incoterm_location')),
+                        TextEntry::make('fiscalPosition.name')
+                            ->label(__('accounting::bill.fiscal_position')),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull(),
+
+                Section::make(__('accounting::bill.bill_details'))
+                    ->description(__('accounting::bill.bill_details_description'))
+                    ->schema([
+                        TextEntry::make('bill_reference')
+                            ->label(__('accounting::bill.bill_reference'))
+                            ->columnSpan(1),
+                        TextEntry::make('bill_date')
+                            ->label(__('accounting::bill.bill_date'))
+                            ->date()
+                            ->columnSpan(1),
+                        TextEntry::make('accounting_date')
+                            ->label(__('accounting::bill.accounting_date'))
+                            ->date()
+                            ->columnSpan(1),
+                        TextEntry::make('due_date')
+                            ->label(__('accounting::bill.due_date'))
+                            ->date()
+                            ->columnSpan(1),
+                        TextEntry::make('paymentTerm.name')
+                            ->label(__('accounting::bill.payment_term'))
+                            ->columnSpan(1),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull(),
+
+                Section::make(__('accounting::bill.line_items'))
+                    ->description(__('accounting::bill.line_items_description'))
+                    ->schema([
+                        RepeatableEntry::make('lines')
+                            ->label(__('accounting::bill.lines'))
+                            ->schema([
+                                Grid::make(6)
+                                    ->schema([
+                                        TextEntry::make('product.name')
+                                            ->label(__('accounting::bill.product'))
+                                            ->weight('bold'),
+                                        TextEntry::make('description')
+                                            ->label(__('accounting::bill.description')),
+                                        TextEntry::make('quantity')
+                                            ->label(__('accounting::bill.quantity'))
+                                            ->numeric(decimalPlaces: 2),
+                                        TextEntry::make('unit_price')
+                                            ->label(__('accounting::bill.unit_price'))
+                                            ->money(fn ($record) => $record->vendorBill->currency->code),
+                                        TextEntry::make('expenseAccount.name')
+                                            ->label(__('accounting::bill.expense_account')),
+                                        TextEntry::make('tax.name')
+                                            ->label(__('accounting::bill.tax'))
+                                            ->placeholder('—'),
+                                    ]),
+                            ])
+                            ->contained(false)
+                            ->columnSpanFull(),
+                    ])
+                    ->columnSpanFull(),
+
+                DocumentTotalsHelper::makeInfolist(
+                    translationPrefix: 'accounting::bill',
+                    subtotalKey: 'subtotal',
+                    taxKey: 'total_tax',
+                    totalKey: 'total_amount',
+                    subtotalCompanyKey: 'subtotal_company_currency',
+                    taxCompanyKey: 'total_tax_company_currency',
+                    totalCompanyKey: 'total_amount_company_currency',
+                    exchangeRateKey: 'exchange_rate_at_creation'
+                ),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -745,97 +824,10 @@ class VendorBillResource extends Resource
                             'vendor_bill_id' => $record->id,
                         ])),
                 ]),
-                Action::make('register_payment')
-                    ->label(__('accounting::bill.actions.register_payment'))
-                    ->icon('heroicon-o-banknotes')
-                    ->color('warning')
-                    ->modalHeading(__('Register Payment'))
-                    ->modalDescription(__('Register a payment for this vendor bill'))
-                    ->schema([
-                        Select::make('journal_id')
-                            ->label(__('payment.form.journal_id'))
-                            ->options(function (): array {
-                                $tenant = Filament::getTenant();
-                                if (! $tenant instanceof Company) {
-                                    return [];
-                                }
-
-                                return Journal::where('company_id', $tenant->getKey())
-                                    ->pluck('name', 'id')
-                                    ->all();
-                            })
-                            ->required()
-                            ->default(function (): ?int {
-                                $tenant = Filament::getTenant();
-                                if (! $tenant instanceof Company) {
-                                    return null;
-                                }
-
-                                return Journal::where('company_id', $tenant->getKey())
-                                    ->where('type', 'bank')
-                                    ->value('id');
-                            }),
-                        DatePicker::make('payment_date')
-                            ->label(__('payment.form.payment_date'))
-                            ->default(now())
-                            ->required(),
-                        MoneyInput::make('amount')
-                            ->label(__('payment.form.amount'))
-                            ->currencyField('currency_id')
-                            ->default(fn (VendorBill $record) => $record->getRemainingAmount())
-                            ->required(),
-                        TextInput::make('reference')
-                            ->label(__('payment.form.reference'))
-                            ->placeholder(__('Optional reference')),
-                        Hidden::make('currency_id')
-                            ->default(fn (VendorBill $record) => $record->currency_id),
-                    ])
-                    ->action(function (VendorBill $record, array $data) {
-                        try {
-                            $currency = $record->currency;
-
-                            // Create payment document link DTO
-                            $documentLink = new CreatePaymentDocumentLinkDTO(
-                                document_type: 'vendor_bill',
-                                document_id: $record->getKey(),
-                                amount_applied: Money::of($data['amount'], $currency->code)
-                            );
-
-                            // Create payment DTO
-                            $paymentDTO = new CreatePaymentDTO(
-                                company_id: $record->company_id,
-                                journal_id: $data['journal_id'],
-                                currency_id: $record->currency_id,
-                                payment_date: $data['payment_date'],
-                                // settlement inferred by presence of document links
-                                payment_type: PaymentType::Outbound,
-                                payment_method: PaymentMethod::BankTransfer,
-                                paid_to_from_partner_id: $record->vendor_id,
-                                amount: Money::of($data['amount'], $currency->code),
-                                document_links: [$documentLink],
-                                reference: $data['reference']
-                            );
-
-                            // Create and confirm payment
-                            $user = Auth::user();
-                            if (! $user) {
-                                throw new Exception('User must be authenticated to create payment');
-                            }
-                            $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
-                            app(PaymentService::class)->confirm($payment, $user);
-
-                            Notification::make()
-                                ->title(__('Payment registered successfully'))
-                                ->success()
-                                ->send();
-                        } catch (Exception $e) {
-                            Notification::make()
-                                ->title(__('Error registering payment'))
-                                ->body($e->getMessage())
-                                ->danger()
-                                ->send();
-                        }
-                    })
+                \Kezi\Accounting\Filament\Actions\RegisterPaymentAction::make()
+                    ->documentType('vendor_bill')
+                    ->paymentType(PaymentType::Outbound)
+                    ->partnerId(fn (VendorBill $record) => $record->vendor_id)
                     ->visible(
                         fn (VendorBill $record) => $record->status === VendorBillStatus::Posted &&
                         ! $record->getRemainingAmount()->isZero()

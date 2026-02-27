@@ -63,7 +63,8 @@ class ViewPurchaseOrder extends ViewRecord
                         due_date: null,
                         created_by_user_id: Auth::id(),
                         payment_term_id: null,
-                        copy_all_lines: true
+                        copy_all_lines: true,
+                        exchange_rate_at_creation: $this->record->exchange_rate_at_creation,
                     );
 
                     $vendorBill = app(CreateVendorBillFromPurchaseOrderAction::class)->execute($dto);

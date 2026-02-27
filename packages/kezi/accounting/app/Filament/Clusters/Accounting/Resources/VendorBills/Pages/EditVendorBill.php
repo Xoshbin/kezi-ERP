@@ -2,17 +2,11 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages;
 
-use App\Models\Company;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Brick\Money\Money;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
-use Filament\Facades\Filament;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -22,17 +16,11 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use Kezi\Accounting\Actions\Accounting\BuildVendorBillPostingPreviewAction;
+use Kezi\Accounting\Filament\Actions\RegisterPaymentAction;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\VendorBillResource;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Widgets\SettlementSummaryWidget;
-use Kezi\Accounting\Models\Journal;
 use Kezi\Foundation\Filament\Actions\DocsAction;
-use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
-use Kezi\Payment\Actions\Payments\CreatePaymentAction;
-use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDocumentLinkDTO;
-use Kezi\Payment\DataTransferObjects\Payments\CreatePaymentDTO;
-use Kezi\Payment\Enums\Payments\PaymentMethod;
 use Kezi\Payment\Enums\Payments\PaymentType;
-use Kezi\Payment\Services\PaymentService;
 use Kezi\Purchase\Actions\Purchases\UpdateVendorBillAction;
 use Kezi\Purchase\DataTransferObjects\Purchases\UpdateVendorBillDTO;
 use Kezi\Purchase\DataTransferObjects\Purchases\VendorBillLineDTO;
@@ -55,6 +43,18 @@ class EditVendorBill extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            RegisterPaymentAction::make()
+                ->label(__('accounting::bill.actions.register_payment'))
+                ->modalHeading(__('accounting::bill.payments_relation_manager.create_payment'))
+                ->modalDescription(__('accounting::bill.register_payment.description'))
+                ->documentType('vendor_bill')
+                ->paymentType(PaymentType::Outbound)
+                ->partnerId(fn (VendorBill $record) => $record->vendor_id)
+                ->visible(
+                    fn (VendorBill $record) => $record->status === VendorBillStatus::Posted &&
+                    ! $record->getRemainingAmount()->isZero()
+                ),
+
             Action::make('preview_posting')
                 ->label(__('accounting::bill.posting_preview.preview_posting'))
                 ->icon('heroicon-o-eye')
@@ -174,119 +174,6 @@ class EditVendorBill extends EditRecord
             //         }
             //     }),
 
-            Action::make('register_payment')
-                ->label(__('accounting::bill.payments_relation_manager.create_payment'))
-                ->icon('heroicon-o-banknotes')
-                ->color('warning')
-                ->modalHeading(__('accounting::bill.payments_relation_manager.create_payment'))
-                ->modalDescription(__('accounting::bill.vendor_currency_info_description')) // Using generic desc or closest? Or create new. "Register a payment for this vendor bill"
-                // Actually let's use a new key provided or existing 'payment_details' from other file?
-                // "Register a payment for this vendor bill" -> I haven't added this key.
-                // I will use 'accounting::bill.payments_relation_manager.payment_details' as description is close enough or just remove modalDescription if not critical?
-                // The test flagged "Register Payment". I see "Register Payment" string in my code view.
-                // I added 'create_payment' => 'Create Payment' in payments_relation_manager.
-                // 'Register Payment' is slightly different.
-                // Let's use 'create_payment' for label and heading.
-                // For modalDescription, I'll assume 'accounting::bill.payments_relation_manager.payment_details' or similar.
-                // Actually I will leave modalDescription as is but wrap in __() if it's not strictly flagged, or replace with empty string?
-                // The test flagged "Register Payment" (which I assume is the label).
-                // I'll check if I added "Register a payment..." to bill.php in previous step? No.
-                // I'll just change label to 'create_payment' key which is "Create Payment". It's close enough.
-                // And Heading to same.
-                // And Description? I will replace with a generic message or just leave it for now if not flagged?
-                // Wait, "Register Payment" was flagged? I see "Register Payment" in line 175.
-                // I will use created key 'create_payment'.
-                // For description, I'll temporarily use 'payment_details'.
-                ->schema([
-                    Select::make('journal_id')
-                        ->label(__('accounting::bill.register_payment.journal'))
-                        ->options(function (): array {
-                            $tenant = Filament::getTenant();
-                            if (! $tenant instanceof Company) {
-                                return [];
-                            }
-
-                            return Journal::where('company_id', $tenant->getKey())
-                                ->pluck('name', 'id')
-                                ->all();
-                        })
-                        ->required()
-                        ->default(function (): ?int {
-                            $tenant = Filament::getTenant();
-                            if (! $tenant instanceof Company) {
-                                return null;
-                            }
-
-                            return Journal::where('company_id', $tenant->getKey())
-                                ->where('type', 'bank')
-                                ->value('id');
-                        }),
-                    DatePicker::make('payment_date')
-                        ->label(__('accounting::bill.register_payment.payment_date'))
-                        ->default(now())
-                        ->required(),
-                    MoneyInput::make('amount')
-                        ->label(__('accounting::bill.register_payment.amount'))
-                        ->currencyField('currency_id')
-                        ->default(fn (VendorBill $record) => $record->getRemainingAmount())
-                        ->required(),
-                    TextInput::make('reference')
-                        ->label(__('accounting::bill.register_payment.reference'))
-                        ->placeholder(__('accounting::bill.register_payment.optional_reference')),
-                    Hidden::make('currency_id')
-                        ->default(fn (VendorBill $record) => $record->currency_id),
-                ])
-                ->action(function (VendorBill $record, array $data): void {
-                    try {
-                        $currency = $record->currency;
-
-                        // Create payment document link DTO
-                        $documentLink = new CreatePaymentDocumentLinkDTO(
-                            document_type: 'vendor_bill',
-                            document_id: $record->id,
-                            amount_applied: Money::of($data['amount'], $currency->code)
-                        );
-
-                        // Create payment DTO
-                        $paymentDTO = new CreatePaymentDTO(
-                            company_id: $record->company_id,
-                            journal_id: $data['journal_id'],
-                            currency_id: $record->currency_id,
-                            payment_date: $data['payment_date'],
-                            // settlement inferred by presence of document links
-                            payment_type: PaymentType::Outbound,
-                            payment_method: PaymentMethod::BankTransfer,
-                            paid_to_from_partner_id: $record->vendor_id,
-                            amount: Money::of($data['amount'], $currency->code),
-                            document_links: [$documentLink],
-                            reference: $data['reference']
-                        );
-
-                        // Create and confirm payment
-                        $user = Auth::user();
-                        if (! $user) {
-                            throw new Exception('User must be authenticated to create payment');
-                        }
-                        $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
-                        app(PaymentService::class)->confirm($payment, $user);
-
-                        Notification::make()
-                            ->title(__('accounting::bill.notification_payment_registered'))
-                            ->success()
-                            ->send();
-                    } catch (Exception $e) {
-                        Notification::make()
-                            ->title(__('accounting::bill.notification_payment_error'))
-                            ->body($e->getMessage())
-                            ->danger()
-                            ->send();
-                    }
-                })
-                ->visible(
-                    fn (VendorBill $record) => $record->status === VendorBillStatus::Posted &&
-                    ! $record->getRemainingAmount()->isZero()
-                ),
-
             DeleteAction::make()
                 ->action(function (Model $record) {
                     if (! $record instanceof VendorBill) {
@@ -320,7 +207,7 @@ class EditVendorBill extends EditRecord
                 expense_account_id: $line['expense_account_id'],
                 tax_id: $line['tax_id'] ?? null,
                 analytic_account_id: $line['analytic_account_id'] ?? null,
-                shipping_cost_type: isset($line['shipping_cost_type']) ? \Kezi\Foundation\Enums\ShippingCostType::tryFrom($line['shipping_cost_type']) : null,
+                shipping_cost_type: $line['shipping_cost_type'] instanceof \Kezi\Foundation\Enums\ShippingCostType ? $line['shipping_cost_type'] : (isset($line['shipping_cost_type']) ? \Kezi\Foundation\Enums\ShippingCostType::tryFrom($line['shipping_cost_type']) : null),
                 asset_category_id: $line['asset_category_id'] ?? null,
                 deferred_start_date: $line['deferred_start_date'] ?? null,
                 deferred_end_date: $line['deferred_end_date'] ?? null
@@ -338,7 +225,7 @@ class EditVendorBill extends EditRecord
             due_date: $data['due_date'] ?? null,
             lines: $lineDTOs,
             updated_by_user_id: (int) Auth::id(),
-            incoterm: isset($data['incoterm']) ? \Kezi\Foundation\Enums\Incoterm::tryFrom($data['incoterm']) : null
+            incoterm: $data['incoterm'] instanceof \Kezi\Foundation\Enums\Incoterm ? $data['incoterm'] : (isset($data['incoterm']) ? \Kezi\Foundation\Enums\Incoterm::tryFrom($data['incoterm']) : null)
         );
 
         try {

@@ -21,7 +21,7 @@ class ListAccounts extends ListRecords
             DocsAction::make('understanding-accounts'),
             LocaleSwitcher::make(),
             CreateAction::make()
-                ->label(__('filament.actions.create').' '.__('accounting::account.label')),
+                ->label(__('accounting::common.create').' '.__('accounting::account.label')),
         ];
     }
 }

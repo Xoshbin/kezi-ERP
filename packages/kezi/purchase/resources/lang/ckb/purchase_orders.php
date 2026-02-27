@@ -12,17 +12,26 @@ return [
     'sections' => [
         'basic_info' => 'زانیاری سەرەتایی',
         'vendor_details' => 'وردەکارییەکانی فرۆشیار',
+        'vendor_currency_info' => 'زانیارییەکانی فرۆشیار و دراو',
+        'vendor_currency_info_description' => 'وردەکارییەکانی فرۆشیار و دراو هەڵبژێرە بۆ ئەم داواکارییە',
+        'order_details' => 'وردەکارییەکانی داواکاری',
+        'order_details_description' => 'زانیاری بنەڕەتی دەربارەی داواکاری کڕین',
         'basic_information' => 'زانیاری بنەڕەتی',
+        'vendor_currency_information' => 'زانیارییەکانی فرۆشیار و دراو',
         'delivery_info' => 'زانیاری گەیاندن',
         'delivery_information' => 'زانیاری گەیاندن',
         'line_items' => 'بەندەکان',
         'line_items_description' => 'بەرهەم و خزمەتگوزاری زیاد بکە بۆ ئەم داواکارییە',
         'notes' => 'تێبینی و مەرجەکان',
         'totals' => 'کۆی گشتی',
-        'lines' => 'هێڵەکانی داواکاری',
+        'lines' => 'بڕگەکانی داواکاری',
+        'attachments' => 'پاشکۆکان',
+        'attachments_description' => 'بەڕێوەبردنی پاشکۆکانی بەڵگەنامە بۆ ئەم داواکارییە',
     ],
 
     'fields' => [
+        'document_currency' => 'دراوی بەڵگەنامە',
+        'company_currency' => 'دراوی کۆمپانیا',
         'id' => 'ناسنامە',
         'po_number' => 'ژمارەی داواکاری',
         'status' => 'دۆخ',
@@ -32,6 +41,7 @@ return [
         'currency' => 'دراو',
         'expected_delivery_date' => 'بەرواری گەیشتنی پێشبینیکراو',
         'incoterm' => 'ئین کۆتێرم',
+        'incoterm_location' => 'شوێنی ئینکۆتێرم',
         'delivery_location' => 'شوێنی گەیاندن',
         'notes' => 'تێبینیەکان',
         'terms_and_conditions' => 'مەرج و ڕێنماییەکان',
@@ -47,6 +57,7 @@ return [
         'exchange_rate_at_creation' => 'نرخی ئاڵوگۆڕ',
         'total_amount_company_currency' => 'کۆی گشتی (دراوی کۆمپانیا)',
         'total_tax_company_currency' => 'باج (دراوی کۆمپانیا)',
+        'subtotal' => 'کۆی لاوەکی',
         'billing_status' => 'دۆخی پسوڵە',
         // Line item fields
         'lines' => 'بەندەکان',
@@ -55,6 +66,7 @@ return [
         'quantity' => 'بڕ',
         'unit_price' => 'نرخی یەکە',
         'tax' => 'باج',
+        'shipping_type' => 'جۆری ناردن',
     ],
 
     'line_fields' => [

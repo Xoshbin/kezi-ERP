@@ -67,7 +67,7 @@ class CreateVendorBill extends CreateRecord
                 expense_account_id: $line['expense_account_id'],
                 tax_id: $line['tax_id'] ?? null,
                 analytic_account_id: $line['analytic_account_id'] ?? null,
-                shipping_cost_type: isset($line['shipping_cost_type']) ? \Kezi\Foundation\Enums\ShippingCostType::tryFrom($line['shipping_cost_type']) : null,
+                shipping_cost_type: $line['shipping_cost_type'] instanceof \Kezi\Foundation\Enums\ShippingCostType ? $line['shipping_cost_type'] : (isset($line['shipping_cost_type']) ? \Kezi\Foundation\Enums\ShippingCostType::tryFrom($line['shipping_cost_type']) : null),
                 asset_category_id: $line['asset_category_id'] ?? null,
                 deferred_start_date: $line['deferred_start_date'] ?? null,
                 deferred_end_date: $line['deferred_end_date'] ?? null,
@@ -89,23 +89,12 @@ class CreateVendorBill extends CreateRecord
         // Add company_id from tenant context
         $data['company_id'] = (int) (Filament::getTenant()?->getKey() ?? 0);
 
-        // Store exchange_rate_at_creation separately since it's not in the DTO
-        $exchangeRate = $data['exchange_rate_at_creation'] ?? null;
-        unset($data['exchange_rate_at_creation']);
-
         if (isset($data['incoterm'])) {
-            $data['incoterm'] = Incoterm::tryFrom($data['incoterm']);
+            $data['incoterm'] = $data['incoterm'] instanceof Incoterm ? $data['incoterm'] : Incoterm::tryFrom($data['incoterm']);
         }
 
         $vendorBillDTO = new CreateVendorBillDTO(...$data);
         $vendorBill = app(CreateVendorBillAction::class)->execute($vendorBillDTO);
-
-        // Set exchange_rate_at_creation if provided
-        if ($exchangeRate) {
-            $vendorBill->update([
-                'exchange_rate_at_creation' => $exchangeRate,
-            ]);
-        }
 
         // Store attachments for later processing
         $this->attachments = $attachments;
@@ -182,16 +171,20 @@ class CreateVendorBill extends CreateRecord
             'payment_term_id' => null,
             'exchange_rate_at_creation' => $purchaseOrder->exchange_rate_at_creation,
             'purchase_order_id' => $purchaseOrder->id,
+            'incoterm' => $purchaseOrder->incoterm?->value,
+            'incoterm_location' => $purchaseOrder->incoterm_location,
             'lines' => [],
         ];
 
         // Transform PO lines to vendor bill lines
         foreach ($purchaseOrder->lines as $poLine) {
-            if ($poLine->product && $poLine->product->expense_account_id) {
+            $remainingQty = $poLine->getRemainingBillableQuantity();
+
+            if ($remainingQty > 0 && $poLine->product && $poLine->product->expense_account_id) {
                 $formData['lines'][] = [
                     'product_id' => $poLine->product_id,
                     'description' => $poLine->description,
-                    'quantity' => $poLine->quantity,
+                    'quantity' => $remainingQty,
                     'unit_price' => $poLine->unit_price->getAmount()->toFloat(),
                     'expense_account_id' => $poLine->product->expense_account_id,
                     'tax_id' => $poLine->tax_id,
@@ -224,8 +217,8 @@ class CreateVendorBill extends CreateRecord
                         }
 
                         return PurchaseOrder::where('vendor_id', $vendorId)
-                            ->whereIn('status', ['confirmed', 'to_receive', 'partially_received', 'fully_received', 'to_bill', 'partially_billed'])
                             ->get()
+                            ->filter(fn (PurchaseOrder $po) => $po->canCreateBill())
                             ->mapWithKeys(fn ($po) => [$po->id => "{$po->po_number} - {$po->reference}"])
                             ->toArray();
                     })
