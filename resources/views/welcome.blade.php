@@ -168,8 +168,12 @@
                 </div>
 
                 <a href="/kezi/login" class="text-sm font-medium text-slate-300 hover:text-amber-500 transition-colors">{{ __('Sign in') }}</a>
+                <a href="https://github.com/Xoshbin/kezi-ERP" target="_blank" class="flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg>
+                    {{ __('GitHub') }}
+                </a>
                 <a href="/kezi/register" class="px-5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-bold rounded-xl transition-all glow">
-                    {{ __('Start Free Trial') }}
+                    {{ __('Get Started') }}
                 </a>
             </div>
         </div>
@@ -183,26 +187,38 @@
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
                 </span>
-                {{ __('Next-Gen ERP for Global Business') }}
+                {{ __('Next-Gen Open-Source ERP') }}
             </div>
             
             <h1 class="text-6xl md:text-8xl font-display font-bold tracking-tight mb-8 leading-tight text-white max-w-4xl animate-fade-in-up">
                 {{ __('One Core.') }} <br>
-                <span class="text-gradient">{{ __('Unlimited Capabilities.') }}</span>
+                <span class="text-gradient">{{ __('Fully Open Source.') }}</span>
             </h1>
             
             <p class="text-lg md:text-2xl text-slate-400 max-w-3xl mx-auto mb-12 leading-relaxed animate-fade-in-up delay-100">
-                {{ __('Kezi unifies your entire business operations—from deep accounting in Iraq to global logistics—into a single, high-performance command center.') }}
+                {{ __('Kezi unifies your entire business operations—from deep accounting to global logistics—into a single, high-performance open-source command center.') }}
             </p>
 
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-6 mb-20 animate-fade-in-up delay-200">
-                <a href="/kezi/register" class="w-full sm:w-auto px-10 py-5 bg-white text-slate-950 text-lg font-bold rounded-2xl hover:bg-slate-100 transition-all transform hover:scale-105 shadow-2xl glow">
-                    {{ __('Get Started Now') }}
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8 animate-fade-in-up delay-200">
+                <a href="https://github.com/Xoshbin/kezi-ERP" target="_blank" class="w-full sm:w-auto px-10 py-5 bg-white text-slate-950 text-lg font-bold rounded-2xl hover:bg-slate-100 transition-all transform hover:scale-105 shadow-2xl glow flex items-center justify-center gap-2">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg>
+                    {{ __('View on GitHub') }}
                 </a>
-                <a href="#clusters" class="w-full sm:w-auto px-10 py-5 glass text-white text-lg font-bold rounded-2xl hover:bg-white/5 transition-all flex items-center justify-center gap-2">
-                    {{ __('Explore ERP Clusters') }}
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                <a href="/kezi/register" class="w-full sm:w-auto px-10 py-5 glass text-white text-lg font-bold rounded-2xl hover:bg-white/5 transition-all flex items-center justify-center gap-2">
+                    {{ __('Get Started') }}
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </a>
+            </div>
+
+            <div class="inline-flex flex-wrap items-center justify-center gap-x-4 gap-y-2 px-6 py-3 rounded-2xl glass border-white/10 text-slate-300 text-sm animate-fade-in-up delay-300 mb-20 shadow-xl">
+                 <span class="flex items-center gap-2 font-medium">
+                     <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                     {{ __('Try the Demo:') }}
+                 </span>
+                 <div class="flex items-center gap-2">
+                     <span class="font-mono text-amber-400 text-xs bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">demo@kezierp.com</span>
+                     <span class="font-mono text-amber-400 text-xs bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">password</span>
+                 </div>
             </div>
 
             <!-- Hero Image Visualization -->
@@ -711,10 +727,7 @@
             </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
                 <a href="/kezi/register" class="w-full sm:w-auto px-10 py-5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xl font-bold rounded-2xl transition-all glow transform hover:scale-105">
-                    {{ __('Start Your Free Trial') }}
-                </a>
-                <a href="mailto:sales@kezi.com" class="w-full sm:w-auto px-10 py-5 glass text-white text-lg font-bold rounded-2xl hover:bg-white/5 transition-all">
-                    {{ __('Talk to Sales') }}
+                    {{ __('Get Started Now') }}
                 </a>
             </div>
         </div>
@@ -729,9 +742,13 @@
                         <div class="w-8 h-8 bg-amber-500 rounded flex items-center justify-center font-display font-bold text-slate-950">K</div>
                         <span class="text-xl font-display font-bold text-white tracking-tight">{{ __('Kezi ERP') }}</span>
                     </div>
-                    <p class="text-sm text-slate-500 leading-relaxed">
+                    <p class="text-sm text-slate-500 leading-relaxed mb-4">
                         {{ __('The ultimate enterprise command center. Designed for Iraqi and global businesses.') }}
                     </p>
+                    <a href="mailto:info@kezierp.com" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-amber-500 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        info@kezierp.com
+                    </a>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-12">
                     <div>
