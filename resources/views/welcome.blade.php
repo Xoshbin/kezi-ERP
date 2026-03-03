@@ -742,9 +742,13 @@
                         <div class="w-8 h-8 bg-amber-500 rounded flex items-center justify-center font-display font-bold text-slate-950">K</div>
                         <span class="text-xl font-display font-bold text-white tracking-tight">{{ __('Kezi ERP') }}</span>
                     </div>
-                    <p class="text-sm text-slate-500 leading-relaxed">
+                    <p class="text-sm text-slate-500 leading-relaxed mb-4">
                         {{ __('The ultimate enterprise command center. Designed for Iraqi and global businesses.') }}
                     </p>
+                    <a href="mailto:info@kezierp.com" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-amber-500 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        info@kezierp.com
+                    </a>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-12">
                     <div>
