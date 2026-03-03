@@ -1,14 +1,14 @@
 <?php
 
-test('welcome page returns a successful response and contains premium CTAs', function () {
+test('welcome page returns a successful response and contains open source CTAs', function () {
     $response = $this->get('/');
 
     $response->assertStatus(200);
     $response->assertSee('Kezi');
     $response->assertSee('One Core.');
-    $response->assertSee('Unlimited Capabilities.');
+    $response->assertSee('Fully Open Source.');
     $response->assertSee('/kezi/register');
-    $response->assertDontSee('Open Source');
+    $response->assertSee('Open Source');
 
     // Iraq Localization Assertions
     $response->assertSee('Iraq');
