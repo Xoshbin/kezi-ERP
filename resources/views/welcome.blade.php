@@ -729,9 +729,6 @@
                 <a href="/kezi/register" class="w-full sm:w-auto px-10 py-5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xl font-bold rounded-2xl transition-all glow transform hover:scale-105">
                     {{ __('Get Started Now') }}
                 </a>
-                <a href="mailto:sales@kezi.com" class="w-full sm:w-auto px-10 py-5 glass text-white text-lg font-bold rounded-2xl hover:bg-white/5 transition-all">
-                    {{ __('Talk to Sales') }}
-                </a>
             </div>
         </div>
     </section>
