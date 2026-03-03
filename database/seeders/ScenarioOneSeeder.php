@@ -70,7 +70,7 @@ class ScenarioOneSeeder extends Seeder
             ['email' => 'soran@kezierp.com'],
             [
                 'name' => 'Soran',
-                'password' => Hash::make('SecurePassword123!'),
+                'password' => Hash::make('password'),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]
