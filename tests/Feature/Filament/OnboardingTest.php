@@ -17,7 +17,7 @@ test('homepage has login and register buttons', function () {
     $this->get('/')
         ->assertStatus(200)
         ->assertSee(__('Sign in'))
-        ->assertSee(__('Start Free Trial'));
+        ->assertSee(__('Get Started'));
 });
 
 test('new user can register and is redirected to company onboarding', function () {
