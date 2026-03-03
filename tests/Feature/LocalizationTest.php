@@ -21,7 +21,7 @@ test('homepage loads in kurdish when session is set', function () {
 
     $response->assertStatus(200);
     $response->assertSee('یەک ئامانج.');
-    $response->assertSee('توانای بێ سنوور.');
+    $response->assertSee('Fully Open Source.');
     $response->assertSee('dir="rtl"', false);
 });
 
@@ -30,6 +30,6 @@ test('homepage loads in arabic when session is set', function () {
 
     $response->assertStatus(200);
     $response->assertSee('نواة واحدة.');
-    $response->assertSee('قدرات غير محدودة.');
+    $response->assertSee('Fully Open Source.');
     $response->assertSee('dir="rtl"', false);
 });
