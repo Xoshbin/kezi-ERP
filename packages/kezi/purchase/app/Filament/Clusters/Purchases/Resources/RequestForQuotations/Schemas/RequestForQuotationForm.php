@@ -2,13 +2,10 @@
 
 namespace Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\Schemas;
 
-use Brick\Math\BigDecimal;
-use Brick\Math\RoundingMode;
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Kezi\Accounting\Models\Tax;
@@ -16,7 +13,6 @@ use Kezi\Foundation\Enums\Partners\PartnerType;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
-use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\Partner;
 use Kezi\Product\Models\Product;
 use Kezi\Purchase\Enums\Purchases\RequestForQuotationStatus;
@@ -75,81 +71,10 @@ class RequestForQuotationForm
                                     ->preload()
                                     ->required(),
 
-                                Forms\Components\Select::make('currency_id')
+                                \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                                     ->label(__('purchase::request_for_quotation.fields.currency'))
-                                    ->options(fn () => Currency::all()->pluck('name', 'id'))
-                                    ->searchable()
-                                    ->preload()
-                                    ->default(fn () => Filament::getTenant()?->getAttribute('currency_id'))
                                     ->required()
-                                    ->live()
-                                    ->afterStateUpdated(function (callable $set, callable $get, $state) {
-                                        $currencyId = $state;
-                                        if (! $currencyId) {
-                                            $set('exchange_rate', 1);
-
-                                            return;
-                                        }
-
-                                        /** @var \App\Models\Company|null $company */
-                                        $company = Filament::getTenant();
-
-                                        /** @var \Kezi\Foundation\Models\Currency|null $currency */
-                                        $currency = Currency::find($currencyId);
-                                        /** @var \Kezi\Foundation\Models\Currency|null $baseCurrency */
-                                        $baseCurrency = $company?->currency;
-                                        $newRate = 1.0;
-
-                                        if ($company && $currency && $baseCurrency) {
-                                            if ($currency->id === $baseCurrency->id) {
-                                                $set('exchange_rate', 1);
-                                                $newRate = 1.0;
-                                            } else {
-                                                /** @var \Kezi\Foundation\Services\CurrencyConverterService $service */
-                                                $service = app(\Kezi\Foundation\Services\CurrencyConverterService::class);
-                                                $rate = $service->getExchangeRate($currency, now(), $company) ?? $service->getLatestExchangeRate($currency, $company);
-                                                $newRate = $rate ?? 1.0;
-                                                $set('exchange_rate', $newRate);
-                                            }
-                                        }
-
-                                        // Recalculate prices for existing lines
-                                        /** @var array<string, array<string, mixed>> $lines */
-                                        $lines = $get('lines') ?? [];
-                                        if (! empty($lines)) {
-                                            /** @var \Illuminate\Support\Collection<int, int|string> $productIds */
-                                            $productIds = collect($lines)
-                                                ->pluck('product_id')
-                                                ->filter()
-                                                ->unique()
-                                                ->values();
-
-                                            $products = Product::findMany($productIds->toArray())->keyBy('id');
-
-                                            foreach ($lines as $uuid => $line) {
-                                                if (isset($line['product_id'])) {
-                                                    $product = $products->get($line['product_id']);
-
-                                                    if ($product instanceof Product && $product->average_cost) {
-                                                        // Get the underlying decimal amount from the Money object or value
-                                                        $basePrice = $product->average_cost->getAmount()->toBigDecimal();
-
-                                                        if ($newRate == 1.0) {
-                                                            // Reverting to base currency: use original base price
-                                                            $lines[$uuid]['unit_price'] = (string) $basePrice;
-                                                        } else {
-                                                            // Converting to foreign currency: Base / Rate
-                                                            if ($newRate > 0) {
-                                                                $converted = BigDecimal::of($basePrice)->dividedBy($newRate, 6, RoundingMode::HALF_UP);
-                                                                $lines[$uuid]['unit_price'] = (string) $converted;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            $set('lines', $lines);
-                                        }
-                                    }),
+                                    ->exchangeRateFieldName('exchange_rate'),
 
                                 ExchangeRateInput::make('exchange_rate')
                                     ->label(__('purchase::request_for_quotation.fields.exchange_rate')),

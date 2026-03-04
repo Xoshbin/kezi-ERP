@@ -80,17 +80,10 @@ class QuoteForm
                                     ->label(__('sales::quote.fields.partner'))
                                     ->required(),
 
-                                Select::make('currency_id')
+                                \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                                     ->label(__('sales::quote.fields.currency'))
-                                    ->relationship('currency', 'code')
-                                    ->searchable()
-                                    ->preload()
                                     ->required()
-                                    ->default(fn () => Filament::getTenant()?->currency_id)
-                                    ->live()
-                                    ->afterStateUpdated(function (callable $set) {
-                                        $set('exchange_rate', 1);
-                                    }),
+                                    ->exchangeRateFieldName('exchange_rate'),
 
                                 ExchangeRateInput::make('exchange_rate'),
                             ]),
