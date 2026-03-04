@@ -13,8 +13,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
-use Kezi\Accounting\Enums\Accounting\TaxType;
-use Kezi\Accounting\Models\Tax;
+use Kezi\Accounting\Filament\Forms\Components\TaxSelectField;
 use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
@@ -244,17 +243,10 @@ class SalesOrderForm
                                     ->required()
                                     ->live(onBlur: true)
                                     ->columnSpan(3),
-
-                                Select::make('tax_id')
+                                TaxSelectField::make('tax_id')
                                     ->label(__('sales::sales_orders.fields.tax'))
-                                    ->options(Tax::pluck('name', 'id'))
-                                    ->searchable()
-                                    ->preload()
-                                    ->options(function () {
-                                        return Tax::where('company_id', Filament::getTenant()?->getKey())
-                                            ->where('type', TaxType::Sales->value)
-                                            ->pluck('name', 'id');
-                                    })
+                                    ->taxFilter(\Kezi\Accounting\Enums\Accounting\TaxType::Sales)
+                                    ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\TaxType::Sales)
                                     ->live()
                                     ->columnSpan(3),
 
