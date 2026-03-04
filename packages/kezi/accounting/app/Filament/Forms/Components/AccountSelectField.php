@@ -58,10 +58,10 @@ class AccountSelectField extends TranslatableSelect
                 Toggle::make('is_deprecated')
                     ->label(__('accounting::account.is_deprecated'))
                     ->default(false),
-                \Filament\Forms\Components\Hidden::make('company_id')
-                    ->default(fn () => Filament::getTenant()?->id),
             ])
             ->createOptionUsing(function (array $data): int {
+                $data['company_id'] = Filament::getTenant()?->getKey();
+
                 return Account::create($data)->id;
             });
     }
