@@ -4,7 +4,6 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax;
 
 use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
-use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -21,9 +20,9 @@ use Kezi\Accounting\Enums\Accounting\WithholdingTaxApplicability;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\Pages\CreateWithholdingTaxType;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\Pages\EditWithholdingTaxType;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\WithholdingTax\Pages\ListWithholdingTaxTypes;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Accounting\Models\WithholdingTaxType;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class WithholdingTaxTypeResource extends Resource
 {
@@ -76,22 +75,8 @@ class WithholdingTaxTypeResource extends Resource
                             ->minValue(0)
                             ->maxValue(100)
                             ->suffix('%'),
-                        TranslatableSelect::make('withholding_account_id')
-                            ->searchable()
-                            ->preload()
-                            ->relationship('withholdingAccount', 'name')
+                        AccountSelectField::make('withholding_account_id')
                             ->label(__('accounting::withholding_tax.withholding_account'))
-                            ->createOptionForm([
-                                Select::make('company_id')->relationship('company', 'name')->label(__('company.name'))->required(),
-                                TextInput::make('code')->label(__('accounting::account.code'))->required(),
-                                TextInput::make('name')->label(__('accounting::account.name'))->required(),
-                                Select::make('type')->label(__('accounting::account.type'))
-                                    ->options(collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
-                                    ->required(),
-                                Toggle::make('is_deprecated')->label(__('accounting::account.is_deprecated'))->default(false),
-                            ])
-                            ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
-                            ->createOptionAction(fn (Action $a) => $a->name('create-account-option')->modalWidth('lg'))
                             ->required(),
                         Select::make('applicable_to')
                             ->label(__('accounting::withholding_tax.applicable_to'))

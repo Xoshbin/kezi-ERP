@@ -37,7 +37,7 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\Pages\ListIn
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\AdjustmentDocumentsRelationManager;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\InvoiceLinesRelationManager;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\PaymentsRelationManager;
-use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Accounting\Models\FiscalPosition;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Accounting\Rules\NotInLockedPeriod;
@@ -260,14 +260,8 @@ class InvoiceResource extends Resource
                                 ->createOptionForm([
                                     Hidden::make('company_id')
                                         ->default(fn () => Filament::getTenant()?->getKey()),
-                                    Select::make('tax_account_id')
-                                        ->options(function () {
-                                            return Account::where('company_id', Filament::getTenant()?->getKey())
-                                                ->where('is_deprecated', false)
-                                                ->pluck('name', 'id');
-                                        })
+                                    AccountSelectField::make('tax_account_id')
                                         ->label(__('accounting::tax.tax_account'))
-                                        ->searchable()
                                         ->required(),
                                     TextInput::make('name')
                                         ->label(__('accounting::tax.name'))
@@ -296,11 +290,10 @@ class InvoiceResource extends Resource
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(3),
-                            TranslatableSelect::forModel('income_account_id', Account::class, 'name')
+                            AccountSelectField::make('income_account_id')
                                 ->label(__('accounting::invoice.income_account'))
-                                ->searchable()
-                                ->preload()
-                                ->modifyQueryUsing(fn ($query) => $query->where('type', 'income'))
+                                ->accountFilter('income')
+                                ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::Income)
                                 ->required()
                                 ->columnSpan(3),
                             DatePicker::make('deferred_start_date')

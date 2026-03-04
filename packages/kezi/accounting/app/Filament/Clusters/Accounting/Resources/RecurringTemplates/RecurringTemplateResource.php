@@ -20,7 +20,7 @@ use Kezi\Accounting\Enums\Accounting\RecurringFrequency;
 use Kezi\Accounting\Enums\Accounting\RecurringStatus;
 use Kezi\Accounting\Enums\Accounting\RecurringTargetType;
 use Kezi\Accounting\Filament\Clusters\Accounting\AccountingCluster;
-use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Accounting\Models\FiscalPosition;
 use Kezi\Accounting\Models\Journal;
 use Kezi\Accounting\Models\RecurringTemplate;
@@ -144,10 +144,8 @@ class RecurringTemplateResource extends Resource
                 ->schema([
                     Grid::make(4)
                         ->schema([
-                            Select::make('account_id')
+                            AccountSelectField::make('account_id')
                                 ->label(__('accounting::account.account'))
-                                ->options(fn () => Account::where('company_id', Filament::getTenant()?->id)->pluck('name', 'id'))
-                                ->searchable()
                                 ->required(),
                             TextInput::make('debit')
                                 ->numeric()
@@ -193,10 +191,8 @@ class RecurringTemplateResource extends Resource
                             TextInput::make('description')->required(),
                             TextInput::make('quantity')->numeric()->required()->default(1),
                             TextInput::make('unit_price')->numeric()->required(),
-                            Select::make('income_account_id')
+                            AccountSelectField::make('income_account_id')
                                 ->label(__('accounting::account.income_account'))
-                                ->options(fn () => Account::where('company_id', Filament::getTenant()?->id)->pluck('name', 'id'))
-                                ->searchable()
                                 ->required(),
                             Select::make('product_id')
                                 ->label(__('accounting::recurring.product'))
