@@ -36,7 +36,7 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\Edi
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\ListVendorBills;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\AdjustmentDocumentsRelationManager;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\PaymentsRelationManager;
-use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Accounting\Models\AssetCategory;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Accounting\Rules\NotInLockedPeriod;
@@ -240,16 +240,13 @@ class VendorBillResource extends Resource
                                                     TextInput::make('name')
                                                         ->label(__('accounting::asset.category_name'))
                                                         ->required(),
-                                                    Select::make('asset_account_id')
-                                                        ->options(\Kezi\Accounting\Models\Account::all()->pluck('name', 'id'))
+                                                    AccountSelectField::make('asset_account_id')
                                                         ->label(__('accounting::asset.asset_account'))
                                                         ->required(),
-                                                    Select::make('accumulated_depreciation_account_id')
-                                                        ->options(\Kezi\Accounting\Models\Account::all()->pluck('name', 'id'))
+                                                    AccountSelectField::make('accumulated_depreciation_account_id')
                                                         ->label(__('accounting::asset.accumulated_depreciation_account'))
                                                         ->required(),
-                                                    Select::make('depreciation_expense_account_id')
-                                                        ->options(\Kezi\Accounting\Models\Account::all()->pluck('name', 'id'))
+                                                    AccountSelectField::make('depreciation_expense_account_id')
                                                         ->label(__('accounting::asset.depreciation_expense_account'))
                                                         ->required(),
                                                     Select::make('depreciation_method')
@@ -333,11 +330,8 @@ class VendorBillResource extends Resource
                                 ->label(__('accounting::bill.unit_price'))
                                 ->currencyField('../../currency_id')
                                 ->required(),
-                            TranslatableSelect::forModel('expense_account_id', Account::class, 'name')
+                            AccountSelectField::make('expense_account_id')
                                 ->label(__('accounting::bill.expense_account'))
-                                ->searchableFields(['name', 'code'])
-                                ->searchable()
-                                ->preload()
                                 ->required(),
                             TranslatableSelect::forModel('tax_id', Tax::class, 'name')
                                 ->label(__('accounting::bill.tax'))
@@ -351,14 +345,8 @@ class VendorBillResource extends Resource
                                 ->createOptionForm([
                                     Hidden::make('company_id')
                                         ->default(fn () => Filament::getTenant()?->getKey()),
-                                    Select::make('tax_account_id')
-                                        ->options(function () {
-                                            return Account::where('company_id', Filament::getTenant()?->getKey())
-                                                ->where('is_deprecated', false)
-                                                ->pluck('name', 'id');
-                                        })
+                                    AccountSelectField::make('tax_account_id')
                                         ->label(__('accounting::tax.tax_account'))
-                                        ->searchable()
                                         ->required(),
                                     TextInput::make('name')
                                         ->label(__('accounting::tax.name'))

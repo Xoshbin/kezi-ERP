@@ -11,6 +11,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 
 class ProjectBudgetForm
 {
@@ -39,10 +40,8 @@ class ProjectBudgetForm
                 Repeater::make('lines')
                     ->relationship('lines')
                     ->schema([
-                        Select::make('account_id')
-                            ->relationship('account', 'name')
-                            ->required()
-                            ->searchable(),
+                        AccountSelectField::make('account_id')
+                            ->required(),
                         TextInput::make('description'),
                         TextInput::make('budgeted_amount')
                             ->numeric()

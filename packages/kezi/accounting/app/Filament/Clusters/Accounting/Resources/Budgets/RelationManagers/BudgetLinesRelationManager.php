@@ -14,6 +14,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 
 /**
  * @extends RelationManager<\Kezi\Accounting\Models\Budget>
@@ -36,9 +37,8 @@ class BudgetLinesRelationManager extends RelationManager
                 Select::make('analytic_account_id')
                     ->label(__('accounting::budget.budget_lines.form.analytic_account_id'))
                     ->relationship('analyticAccount', 'name'),
-                Select::make('account_id')
-                    ->label(__('accounting::budget.budget_lines.form.account_id'))
-                    ->relationship('account', 'name'),
+                AccountSelectField::make('account_id')
+                    ->label(__('accounting::budget.budget_lines.form.account_id')),
                 TextInput::make('budgeted_amount')
                     ->label(__('accounting::budget.budget_lines.form.budgeted_amount'))
                     ->required()

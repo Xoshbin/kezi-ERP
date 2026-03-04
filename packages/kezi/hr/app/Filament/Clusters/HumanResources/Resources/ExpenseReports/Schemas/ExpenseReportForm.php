@@ -9,6 +9,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 
 class ExpenseReportForm
 {
@@ -36,10 +37,9 @@ class ExpenseReportForm
                     ->schema([
                         Repeater::make('lines')
                             ->schema([
-                                Select::make('expense_account_id')
+                                AccountSelectField::make('expense_account_id')
                                     ->label(__('hr::expense_report.lines.expense_account'))
-                                    ->options(\Kezi\Accounting\Models\Account::where('type', \Kezi\Accounting\Enums\Accounting\AccountType::Expense)->get()->pluck('name', 'id'))
-                                    ->searchable()
+                                    ->accountFilter('expense')
                                     ->required()
                                     ->columnSpan(2),
                                 DatePicker::make('expense_date')
