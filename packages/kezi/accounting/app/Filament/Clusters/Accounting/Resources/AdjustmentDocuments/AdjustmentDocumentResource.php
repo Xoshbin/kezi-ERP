@@ -263,7 +263,7 @@ class AdjustmentDocumentResource extends Resource
                                             $product = $product->first();
                                         }
                                         if ($product) {
-                                            $set('description', $product->name);
+                                            $set('description', $product->description ?: $product->name);
                                             // Convert Money object to string for MoneyInput component
                                             $unitPrice = $product->unit_price;
                                             if ($unitPrice instanceof Money) {
