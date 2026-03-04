@@ -1,10 +1,22 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Middleware/RestrictPosOnlyUser.php
+
+		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.expr
 			count: 2
 			path: app/Providers/Filament/KeziPanelProvider.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: packages/kezi/accounting/app/Actions/Accounting/BuildVendorBillPostingPreviewAction.php
 
 		-
 			message: '#^Match arm comparison between string and Kezi\\Inventory\\Enums\\Adjustments\\AdjustmentDocumentType\:\:CreditNote is always false\.$#'
@@ -75,6 +87,12 @@ parameters:
 		-
 			message: '#^Part \$tax\-\>name \(array\<string, string\>\|string\) of encapsed string cannot be cast to string\.$#'
 			identifier: encapsedStringPart.nonString
+			count: 1
+			path: packages/kezi/accounting/app/Actions/Accounting/CreateJournalEntryForVendorBillAction.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
 			count: 1
 			path: packages/kezi/accounting/app/Actions/Accounting/CreateJournalEntryForVendorBillAction.php
 
@@ -415,6 +433,12 @@ parameters:
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/Assets/AssetResource.php
 
 		-
+			message: '#^Method Kezi\\Accounting\\Filament\\Clusters\\Accounting\\Resources\\Assets\\AssetResource\:\:getEloquentQuery\(\) should return Illuminate\\Database\\Eloquent\\Builder\<Kezi\\Accounting\\Models\\Asset\> but returns Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: return.type
+			count: 1
+			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/Assets/AssetResource.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency\:\:\$code\.$#'
 			identifier: property.notFound
 			count: 2
@@ -478,6 +502,12 @@ parameters:
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 2
+			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/BankStatements/BankStatementResource.php
+
+		-
+			message: '#^Method Kezi\\Accounting\\Filament\\Clusters\\Accounting\\Resources\\BankStatements\\BankStatementResource\:\:getEloquentQuery\(\) should return Illuminate\\Database\\Eloquent\\Builder\<Kezi\\Accounting\\Models\\BankStatement\> but returns Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: return.type
+			count: 1
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/BankStatements/BankStatementResource.php
 
 		-
@@ -691,6 +721,12 @@ parameters:
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/FiscalYears/FiscalYearResource.php
 
 		-
+			message: '#^Method Kezi\\Accounting\\Filament\\Clusters\\Accounting\\Resources\\FiscalYears\\FiscalYearResource\:\:getEloquentQuery\(\) should return Illuminate\\Database\\Eloquent\\Builder\<Kezi\\Accounting\\Models\\FiscalYear\> but returns Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: return.type
+			count: 1
+			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/FiscalYears/FiscalYearResource.php
+
+		-
 			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -745,9 +781,9 @@ parameters:
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/FiscalYears/Pages/EditFiscalYear.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
+			message: '#^Method Kezi\\Accounting\\Filament\\Clusters\\Accounting\\Resources\\Invoices\\InvoiceResource\:\:getEloquentQuery\(\) should return Illuminate\\Database\\Eloquent\\Builder\<Kezi\\Sales\\Models\\Invoice\> but returns Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: return.type
+			count: 1
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/Invoices/InvoiceResource.php
 
 		-
@@ -802,6 +838,12 @@ parameters:
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 2
+			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/JournalEntries/JournalEntryResource.php
+
+		-
+			message: '#^Method Kezi\\Accounting\\Filament\\Clusters\\Accounting\\Resources\\JournalEntries\\JournalEntryResource\:\:getEloquentQuery\(\) should return Illuminate\\Database\\Eloquent\\Builder\<Kezi\\Accounting\\Models\\JournalEntry\> but returns Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: return.type
+			count: 1
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/JournalEntries/JournalEntryResource.php
 
 		-
@@ -865,6 +907,18 @@ parameters:
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/LetterOfCredit/LetterOfCreditResource.php
 
 		-
+			message: '#^Cannot access property \$code on Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/LetterOfCredit/LetterOfCreditResource/Pages/CreateLetterOfCredit.php
+
+		-
+			message: '#^Cannot access property \$currency on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/LetterOfCredit/LetterOfCreditResource/Pages/CreateLetterOfCredit.php
+
+		-
 			message: '#^Cannot access property \$id on App\\Models\\User\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -884,6 +938,12 @@ parameters:
 
 		-
 			message: '#^Parameter \#2 \$user of method Kezi\\Payment\\Services\\LetterOfCredit\\LetterOfCreditService\:\:create\(\) expects App\\Models\\User, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/LetterOfCredit/LetterOfCreditResource/Pages/CreateLetterOfCredit.php
+
+		-
+			message: '#^Parameter \#4 \$company of method Kezi\\Foundation\\Services\\CurrencyConverterService\:\:convert\(\) expects App\\Models\\Company, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/LetterOfCredit/LetterOfCreditResource/Pages/CreateLetterOfCredit.php
@@ -1189,14 +1249,14 @@ parameters:
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/VendorBills/Pages/CreateVendorBill.php
 
 		-
-			message: '#^Left side of && is always true\.$#'
-			identifier: booleanAnd.leftAlwaysTrue
+			message: '#^PHPDoc tag @extends contains generic type Filament\\Resources\\Pages\\CreateRecord\<Kezi\\Purchase\\Models\\VendorBill\> but class Filament\\Resources\\Pages\\CreateRecord is not generic\.$#'
+			identifier: generics.notGeneric
 			count: 1
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/VendorBills/Pages/CreateVendorBill.php
 
 		-
-			message: '#^PHPDoc tag @extends contains generic type Filament\\Resources\\Pages\\CreateRecord\<Kezi\\Purchase\\Models\\VendorBill\> but class Filament\\Resources\\Pages\\CreateRecord is not generic\.$#'
-			identifier: generics.notGeneric
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
 			count: 1
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/VendorBills/Pages/CreateVendorBill.php
 
@@ -1259,12 +1319,6 @@ parameters:
 			identifier: generics.notGeneric
 			count: 1
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/VendorBills/RelationManagers/VendorBillLinesRelationManager.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/VendorBills/VendorBillResource.php
 
 		-
 			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
@@ -1771,24 +1825,6 @@ parameters:
 			path: packages/kezi/accounting/app/Services/DeferredItemService.php
 
 		-
-			message: '#^Method Kezi\\Accounting\\Services\\ExchangeGainLossService\:\:getAccountsForRevaluation\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Accounting\\Models\\Account\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Accounting\\Services\\Account\>\.$#'
-			identifier: return.type
-			count: 1
-			path: packages/kezi/accounting/app/Services/ExchangeGainLossService.php
-
-		-
-			message: '#^PHPDoc tag @var contains unknown class Kezi\\Accounting\\Services\\Account\.$#'
-			identifier: class.notFound
-			count: 1
-			path: packages/kezi/accounting/app/Services/ExchangeGainLossService.php
-
-		-
-			message: '#^Type Kezi\\Accounting\\Services\\Account in generic type Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Accounting\\Services\\Account\> in PHPDoc tag @var is not subtype of template type TModel of Illuminate\\Database\\Eloquent\\Model of class Illuminate\\Database\\Eloquent\\Collection\.$#'
-			identifier: generics.notSubtype
-			count: 1
-			path: packages/kezi/accounting/app/Services/ExchangeGainLossService.php
-
-		-
 			message: '#^Method Kezi\\Accounting\\Services\\Reports\\BalanceSheetService\:\:mapBalancesToReportLines\(\) has parameter \$balances with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
@@ -1987,82 +2023,10 @@ parameters:
 			path: packages/kezi/accounting/database/factories/RecurringTemplateFactory.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/accounting/database/migrations/2025_07_21_144328_create_accounts_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: packages/kezi/accounting/database/migrations/2025_07_21_144347_create_journals_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/accounting/database/migrations/2025_07_21_144455_create_journal_entry_lines_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/accounting/database/migrations/2025_07_21_144615_create_fiscal_position_tax_mappings_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/accounting/database/migrations/2025_07_21_144624_create_fiscal_position_account_mappings_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: packages/kezi/accounting/database/migrations/2025_07_21_144642_create_depreciation_entries_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: packages/kezi/accounting/database/migrations/2025_07_21_144705_create_analytic_account_plan_pivots_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/accounting/database/migrations/2025_07_21_144723_create_budget_lines_table.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: packages/kezi/accounting/database/migrations/2025_07_22_173452_create_bank_statement_lines_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: packages/kezi/accounting/database/migrations/2025_08_04_144350_create_reconciliations_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/accounting/database/migrations/2025_09_07_100100_create_loan_schedule_entries_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/accounting/database/migrations/2025_09_07_110000_create_loan_fee_lines_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/accounting/database/migrations/2025_09_07_110100_create_loan_rate_changes_table.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
@@ -3153,7 +3117,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 23
+			count: 36
 			path: packages/kezi/accounting/tests/Feature/Assets/Assets/AssetLifecycleTest.php
 
 		-
@@ -3649,6 +3613,96 @@ parameters:
 			path: packages/kezi/accounting/tests/Feature/CreateJournalEntryForVendorBillTest.php
 
 		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/accounting/tests/Feature/Currency/CurrencyRatePersistenceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 9
+			path: packages/kezi/accounting/tests/Feature/Currency/CurrencyRatePersistenceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/accounting/tests/Feature/Currency/CurrencyRatePersistenceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$incomeAccount\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/accounting/tests/Feature/Currency/CurrencyRatePersistenceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$receivableAccount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Currency/CurrencyRatePersistenceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$salesJournal\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Currency/CurrencyRatePersistenceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$usdCurrency\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/accounting/tests/Feature/Currency/CurrencyRatePersistenceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/accounting/tests/Feature/Currency/CurrencyRatePersistenceTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Currency/CurrencyRatePersistenceTest.php
+
+		-
+			message: '#^Cannot access property \$exchange_rate_at_creation on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: packages/kezi/accounting/tests/Feature/Currency/CurrencyRatePersistenceTest.php
+
+		-
+			message: '#^Cannot access property \$rate on Kezi\\Foundation\\Models\\CurrencyRate\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Currency/CurrencyRatePersistenceTest.php
+
+		-
+			message: '#^Cannot access property \$source on Kezi\\Foundation\\Models\\CurrencyRate\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Currency/CurrencyRatePersistenceTest.php
+
+		-
+			message: '#^Cannot access property \$status on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Currency/CurrencyRatePersistenceTest.php
+
+		-
+			message: '#^Parameter \#1 \$invoice of method Kezi\\Sales\\Services\\InvoiceService\:\:confirm\(\) expects Kezi\\Sales\\Models\\Invoice, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/accounting/tests/Feature/Currency/CurrencyRatePersistenceTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function expect$#'
+			identifier: argument.templateType
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Currency/CurrencyRatePersistenceTest.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$currency\.$#'
 			identifier: property.notFound
 			count: 2
@@ -4001,6 +4055,78 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: packages/kezi/accounting/tests/Feature/Filament/AccountResourceTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/accounting/tests/Feature/Filament/Actions/RegisterPaymentActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 15
+			path: packages/kezi/accounting/tests/Feature/Filament/Actions/RegisterPaymentActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 9
+			path: packages/kezi/accounting/tests/Feature/Filament/Actions/RegisterPaymentActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$expenseAccount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Actions/RegisterPaymentActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$journal\.$#'
+			identifier: property.notFound
+			count: 6
+			path: packages/kezi/accounting/tests/Feature/Filament/Actions/RegisterPaymentActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$payableAccount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Actions/RegisterPaymentActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Actions/RegisterPaymentActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Actions/RegisterPaymentActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: packages/kezi/accounting/tests/Feature/Filament/Actions/RegisterPaymentActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Actions/RegisterPaymentActionTest.php
+
+		-
+			message: '#^Cannot call method getRemainingAmount\(\) on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: packages/kezi/accounting/tests/Feature/Filament/Actions/RegisterPaymentActionTest.php
+
+		-
+			message: '#^Cannot call method getRemainingAmount\(\) on Kezi\\Purchase\\Models\\VendorBill\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Actions/RegisterPaymentActionTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -4593,7 +4719,43 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 10
+			count: 5
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/LetterOfCredit/LCUtilizationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/LetterOfCredit/LCUtilizationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$lc\.$#'
+			identifier: property.notFound
+			count: 9
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/LetterOfCredit/LCUtilizationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$vendor\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/LetterOfCredit/LCUtilizationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/LetterOfCredit/LCUtilizationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/LetterOfCredit/LCUtilizationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 13
 			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/LetterOfCredit/LetterOfCreditResourceTest.php
 
 		-
@@ -4605,7 +4767,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$vendor\.$#'
 			identifier: property.notFound
-			count: 4
+			count: 6
 			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/LetterOfCredit/LetterOfCreditResourceTest.php
 
 		-
@@ -4618,6 +4780,18 @@ parameters:
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
 			identifier: method.notFound
 			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/LetterOfCredit/LetterOfCreditResourceTest.php
+
+		-
+			message: '#^Cannot access property \$amount on Kezi\\Payment\\Models\\LetterOfCredit\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/LetterOfCredit/LetterOfCreditResourceTest.php
+
+		-
+			message: '#^Cannot access property \$amount_company_currency on Kezi\\Payment\\Models\\LetterOfCredit\|null\.$#'
+			identifier: property.nonObject
+			count: 2
 			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/LetterOfCredit/LetterOfCreditResourceTest.php
 
 		-
@@ -4823,6 +4997,96 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/PettyCash/PettyCashVoucherResourceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/VendorBills/Pages/EditVendorBillTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/VendorBills/Pages/EditVendorBillTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$journal\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/VendorBills/Pages/EditVendorBillTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/VendorBills/Pages/EditVendorBillTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/VendorBills/Pages/EditVendorBillTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/VendorBills/Pages/EditVendorBillTest.php
+
+		-
+			message: '#^Cannot access property \$amount on Kezi\\Payment\\Models\\Payment\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/VendorBills/Pages/EditVendorBillTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/VendorBills/RelationManagers/PaymentsRelationManagerTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/VendorBills/RelationManagers/PaymentsRelationManagerTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$journal\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/VendorBills/RelationManagers/PaymentsRelationManagerTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/VendorBills/RelationManagers/PaymentsRelationManagerTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/VendorBills/RelationManagers/PaymentsRelationManagerTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/VendorBills/RelationManagers/PaymentsRelationManagerTest.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/VendorBills/RelationManagers/PaymentsRelationManagerTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Clusters/Accounting/Resources/VendorBills/RelationManagers/PaymentsRelationManagerTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -5743,6 +6007,36 @@ parameters:
 			path: packages/kezi/accounting/tests/Feature/Filament/PaymentResourceTest.php
 
 		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 6
+			path: packages/kezi/accounting/tests/Feature/Filament/ProductSelectionIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$partner\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/accounting/tests/Feature/Filament/ProductSelectionIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/accounting/tests/Feature/Filament/ProductSelectionIntegrationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: packages/kezi/accounting/tests/Feature/Filament/ProductSelectionIntegrationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/ProductSelectionIntegrationTest.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 5
@@ -5793,7 +6087,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 27
+			count: 29
 			path: packages/kezi/accounting/tests/Feature/Filament/Reports/Reports/ViewBalanceSheetTest.php
 
 		-
@@ -5829,7 +6123,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 8
+			count: 9
 			path: packages/kezi/accounting/tests/Feature/Filament/Reports/Reports/ViewProfitAndLossTest.php
 
 		-
@@ -8293,6 +8587,12 @@ parameters:
 			path: packages/kezi/foundation/app/Filament/Resources/PdfSettings/Pages/EditPdfSettings.php
 
 		-
+			message: '#^Method Kezi\\Foundation\\Filament\\Resources\\PdfSettings\\PdfSettingsResource\:\:getEloquentQuery\(\) should return Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\Company\> but returns Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: return.type
+			count: 1
+			path: packages/kezi/foundation/app/Filament/Resources/PdfSettings/PdfSettingsResource.php
+
+		-
 			message: '#^Method Kezi\\Foundation\\Http\\Controllers\\FoundationController\:\:create\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
@@ -8527,46 +8827,10 @@ parameters:
 			path: packages/kezi/foundation/database/factories/CurrencyFactory.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/foundation/database/migrations/2025_07_21_144310_create_audit_logs_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/foundation/database/migrations/2025_07_21_144428_create_payment_terms_table.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:comment\(\)\.$#'
 			identifier: method.notFound
 			count: 2
 			path: packages/kezi/foundation/database/migrations/2025_07_21_144430_create_partners_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/foundation/database/migrations/2025_07_21_144430_create_partners_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/foundation/database/migrations/2025_08_15_221915_create_currency_rates_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/foundation/database/migrations/2025_09_06_140001_create_payment_term_lines_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/foundation/database/migrations/2025_09_17_132648_create_custom_field_values_table.php
 
 		-
 			message: '#^Cannot access property \$id on App\\Models\\Company\|null\.$#'
@@ -9949,6 +10213,12 @@ parameters:
 			path: packages/kezi/hr/app/Actions/EmploymentContracts/CreateEmploymentContractAction.php
 
 		-
+			message: '#^Access to an undefined property Kezi\\Payment\\Models\\Payment\:\:\$payment_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/hr/app/Actions/HumanResources/DisburseCashAdvanceAction.php
+
+		-
 			message: '#^Negated boolean expression is always true\.$#'
 			identifier: booleanNot.alwaysTrue
 			count: 1
@@ -10114,6 +10384,24 @@ parameters:
 			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
 			identifier: property.nonObject
 			count: 1
+			path: packages/kezi/hr/app/Filament/Clusters/HumanResources/Resources/DeductionRuleResource/Pages/CreateDeductionRule.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/hr/app/Filament/Clusters/HumanResources/Resources/DeductionRuleResource/Schemas/DeductionRuleForm.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 1
+			path: packages/kezi/hr/app/Filament/Clusters/HumanResources/Resources/DeductionRuleResource/Tables/DeductionRuleTable.php
+
+		-
+			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: property.nonObject
+			count: 1
 			path: packages/kezi/hr/app/Filament/Clusters/HumanResources/Resources/Departments/Pages/CreateDepartment.php
 
 		-
@@ -10121,6 +10409,12 @@ parameters:
 			identifier: generics.notGeneric
 			count: 1
 			path: packages/kezi/hr/app/Filament/Clusters/HumanResources/Resources/Departments/Pages/CreateDepartment.php
+
+		-
+			message: '#^Method Kezi\\HR\\Filament\\Clusters\\HumanResources\\Resources\\Employees\\EmployeeResource\:\:getRecordRouteBindingEloquentQuery\(\) should return Illuminate\\Database\\Eloquent\\Builder\<Kezi\\HR\\Models\\Employee\> but returns Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: return.type
+			count: 1
+			path: packages/kezi/hr/app/Filament/Clusters/HumanResources/Resources/Employees/EmployeeResource.php
 
 		-
 			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
@@ -10387,6 +10681,24 @@ parameters:
 			path: packages/kezi/hr/app/Models/CashAdvance.php
 
 		-
+			message: '#^Access to an undefined property Kezi\\HR\\Models\\DeductionRule\:\:\$amount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/hr/app/Models/DeductionRule.php
+
+		-
+			message: '#^Method Kezi\\HR\\Models\\DeductionRule\:\:scopeActive\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: packages/kezi/hr/app/Models/DeductionRule.php
+
+		-
+			message: '#^Method Kezi\\HR\\Models\\DeductionRule\:\:scopeStatutory\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: packages/kezi/hr/app/Models/DeductionRule.php
+
+		-
 			message: '#^Class Kezi\\HR\\Models\\Department has PHPDoc tag @method for method whereJsonContainsLocales\(\) parameter \#2 \$locales with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -10445,6 +10757,12 @@ parameters:
 			identifier: missingType.return
 			count: 1
 			path: packages/kezi/hr/app/Models/ExpenseReportLine.php
+
+		-
+			message: '#^Class Kezi\\HR\\Models\\Holiday uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: packages/kezi/hr/app/Models/Holiday.php
 
 		-
 			message: '#^Class Kezi\\HR\\Models\\LeaveRequest uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -10543,6 +10861,36 @@ parameters:
 			path: packages/kezi/hr/app/Providers/HRServiceProvider.php
 
 		-
+			message: '#^Access to an undefined property Kezi\\HR\\Models\\DeductionRule\:\:\$amount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/hr/app/Services/HumanResources/PayrollService.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\HR\\Models\\DeductionRule\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/hr/app/Services/HumanResources/PayrollService.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\HR\\Models\\DeductionRule\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/hr/app/Services/HumanResources/PayrollService.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\HR\\Models\\DeductionRule\:\:\$value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/hr/app/Services/HumanResources/PayrollService.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: mixed$#'
+			identifier: match.unhandled
+			count: 1
+			path: packages/kezi/hr/app/Services/HumanResources/PayrollService.php
+
+		-
 			message: '#^Class Kezi\\HR\\Database\\Factories\\AttendanceFactory extends generic class Illuminate\\Database\\Eloquent\\Factories\\Factory but does not specify its types\: TModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -10553,6 +10901,12 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: packages/kezi/hr/database/factories/CashAdvanceFactory.php
+
+		-
+			message: '#^PHPDoc type class\-string\<Illuminate\\Database\\Eloquent\\Model\> of property Kezi\\HR\\Database\\Factories\\DeductionRuleFactory\:\:\$model is not covariant with PHPDoc type class\-string\<Kezi\\HR\\Models\\DeductionRule\> of overridden property Illuminate\\Database\\Eloquent\\Factories\\Factory\<Kezi\\HR\\Models\\DeductionRule\>\:\:\$model\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: packages/kezi/hr/database/factories/DeductionRuleFactory.php
 
 		-
 			message: '#^Class Kezi\\HR\\Database\\Factories\\DepartmentFactory extends generic class Illuminate\\Database\\Eloquent\\Factories\\Factory but does not specify its types\: TModel$#'
@@ -10619,60 +10973,6 @@ parameters:
 			identifier: class.nameCase
 			count: 1
 			path: packages/kezi/hr/database/factories/PositionFactory.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: packages/kezi/hr/database/migrations/2025_08_20_182156_create_departments_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: packages/kezi/hr/database/migrations/2025_08_20_182207_create_positions_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 5
-			path: packages/kezi/hr/database/migrations/2025_08_20_182217_create_employees_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: packages/kezi/hr/database/migrations/2025_08_20_182223_create_employment_contracts_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/hr/database/migrations/2025_08_20_182230_create_leave_types_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: packages/kezi/hr/database/migrations/2025_08_20_182236_create_leave_requests_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: packages/kezi/hr/database/migrations/2025_08_20_182242_create_attendances_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: packages/kezi/hr/database/migrations/2025_08_20_182248_create_payrolls_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: packages/kezi/hr/database/migrations/2025_08_20_182254_create_payroll_lines_table.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
@@ -10761,18 +11061,24 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$approver\.$#'
 			identifier: property.notFound
-			count: 14
+			count: 15
 			path: packages/kezi/hr/tests/Feature/Actions/HumanResources/ApproveCashAdvanceActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 33
+			count: 34
 			path: packages/kezi/hr/tests/Feature/Actions/HumanResources/ApproveCashAdvanceActionTest.php
 
 		-
 			message: '#^Access to an undefined property Pest\\Expectation\<mixed\>\:\:\$status\.$#'
 			identifier: property.notFound
+			count: 1
+			path: packages/kezi/hr/tests/Feature/Actions/HumanResources/ApproveCashAdvanceActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: packages/kezi/hr/tests/Feature/Actions/HumanResources/ApproveCashAdvanceActionTest.php
 
@@ -10959,7 +11265,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$disbursementUser\.$#'
 			identifier: property.notFound
-			count: 14
+			count: 15
 			path: packages/kezi/hr/tests/Feature/Actions/HumanResources/DisburseCashAdvanceActionTest.php
 
 		-
@@ -10971,6 +11277,12 @@ parameters:
 		-
 			message: '#^Access to an undefined property Pest\\Expectation\<mixed\>\:\:\$status\.$#'
 			identifier: property.notFound
+			count: 1
+			path: packages/kezi/hr/tests/Feature/Actions/HumanResources/DisburseCashAdvanceActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: packages/kezi/hr/tests/Feature/Actions/HumanResources/DisburseCashAdvanceActionTest.php
 
@@ -11007,7 +11319,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$approver\.$#'
 			identifier: property.notFound
-			count: 10
+			count: 11
 			path: packages/kezi/hr/tests/Feature/Actions/HumanResources/RejectCashAdvanceActionTest.php
 
 		-
@@ -11019,6 +11331,12 @@ parameters:
 		-
 			message: '#^Access to an undefined property Pest\\Expectation\<mixed\>\:\:\$status\.$#'
 			identifier: property.notFound
+			count: 1
+			path: packages/kezi/hr/tests/Feature/Actions/HumanResources/RejectCashAdvanceActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: packages/kezi/hr/tests/Feature/Actions/HumanResources/RejectCashAdvanceActionTest.php
 
@@ -11079,12 +11397,18 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$settlementUser\.$#'
 			identifier: property.notFound
-			count: 15
+			count: 16
 			path: packages/kezi/hr/tests/Feature/Actions/HumanResources/SettleCashAdvanceActionTest.php
 
 		-
 			message: '#^Access to an undefined property Pest\\Expectation\<mixed\>\:\:\$status\.$#'
 			identifier: property.notFound
+			count: 1
+			path: packages/kezi/hr/tests/Feature/Actions/HumanResources/SettleCashAdvanceActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: packages/kezi/hr/tests/Feature/Actions/HumanResources/SettleCashAdvanceActionTest.php
 
@@ -11567,6 +11891,54 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: packages/kezi/hr/tests/Feature/Filament/Clusters/HumanResources/Resources/AttendanceResourceTest.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\HR\\Models\\DeductionRule\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/hr/tests/Feature/Filament/DeductionRuleResourceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 9
+			path: packages/kezi/hr/tests/Feature/Filament/DeductionRuleResourceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/hr/tests/Feature/Filament/DeductionRuleResourceTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: packages/kezi/hr/tests/Feature/Filament/DeductionRuleResourceTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/hr/tests/Feature/Filament/DeductionRuleResourceTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseMissing\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/hr/tests/Feature/Filament/DeductionRuleResourceTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/hr/tests/Feature/Filament/DeductionRuleResourceTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function expect$#'
+			identifier: argument.templateType
+			count: 1
+			path: packages/kezi/hr/tests/Feature/Filament/DeductionRuleResourceTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
@@ -12105,7 +12477,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 6
+			count: 8
 			path: packages/kezi/hr/tests/Feature/HumanResources/PayrollProcessingTest.php
 
 		-
@@ -12327,7 +12699,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 7
 			path: packages/kezi/hr/tests/Feature/Services/AttendanceServiceTest.php
 
 		-
@@ -12345,7 +12717,91 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 13
+			count: 8
+			path: packages/kezi/hr/tests/Feature/Services/EmployeeServiceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/hr/tests/Feature/Services/EmployeeServiceTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: packages/kezi/hr/tests/Feature/Services/EmployeeServiceTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/hr/tests/Feature/Services/EmployeeServiceTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/hr/tests/Feature/Services/EmployeeTerminationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 7
+			path: packages/kezi/hr/tests/Feature/Services/EmployeeTerminationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/hr/tests/Feature/Services/EmployeeTerminationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/hr/tests/Feature/Services/EmployeeTerminationTest.php
+
+		-
+			message: '#^Access to an undefined property Pest\\Mixins\\Expectation\<mixed\>\:\:\$period_end_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/hr/tests/Feature/Services/EmployeeTerminationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: packages/kezi/hr/tests/Feature/Services/EmployeeTerminationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/hr/tests/Feature/Services/EmployeeTerminationTest.php
+
+		-
+			message: '#^Function createHRAccountsForTerminationTest\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: packages/kezi/hr/tests/Feature/Services/EmployeeTerminationTest.php
+
+		-
+			message: '#^Function createHRAccountsForTerminationTest\(\) has parameter \$company with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: packages/kezi/hr/tests/Feature/Services/EmployeeTerminationTest.php
+
+		-
+			message: '#^Function createHRAccountsForTerminationTest\(\) has parameter \$currency with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: packages/kezi/hr/tests/Feature/Services/EmployeeTerminationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 18
 			path: packages/kezi/hr/tests/Feature/Services/LeaveManagementServiceTest.php
 
 		-
@@ -12357,19 +12813,25 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$employee\.$#'
 			identifier: property.notFound
-			count: 8
+			count: 10
 			path: packages/kezi/hr/tests/Feature/Services/LeaveManagementServiceTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$service\.$#'
 			identifier: property.notFound
-			count: 6
+			count: 8
 			path: packages/kezi/hr/tests/Feature/Services/LeaveManagementServiceTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
 			identifier: property.notFound
-			count: 4
+			count: 6
+			path: packages/kezi/hr/tests/Feature/Services/LeaveManagementServiceTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
+			count: 3
 			path: packages/kezi/hr/tests/Feature/Services/LeaveManagementServiceTest.php
 
 		-
@@ -12399,7 +12861,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 14
+			count: 22
 			path: packages/kezi/hr/tests/Feature/Services/PayrollServiceTest.php
 
 		-
@@ -12553,6 +13015,18 @@ parameters:
 			path: packages/kezi/inventory/app/Actions/Inventory/ProcessIncomingStockAction.php
 
 		-
+			message: '#^Cannot call method update\(\) on Kezi\\Inventory\\Models\\StockMove\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: packages/kezi/inventory/app/Actions/Inventory/ShipTransferAction.php
+
+		-
+			message: '#^Property Kezi\\Inventory\\Actions\\Inventory\\ShipTransferAction\:\:\$reservationService is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: packages/kezi/inventory/app/Actions/Inventory/ShipTransferAction.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Inventory\\Models\\StockMove\>\|Kezi\\Inventory\\Models\\StockMove\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 2
@@ -12607,10 +13081,16 @@ parameters:
 			path: packages/kezi/inventory/app/Actions/Inventory/ValidateStockPickingAction.php
 
 		-
-			message: '#^Parameter \#1 \$move of method Kezi\\Inventory\\Services\\Inventory\\StockReservationService\:\:consumeForMove\(\) expects Kezi\\Inventory\\Models\\StockMove, Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Inventory\\Models\\StockMove\>\|Kezi\\Inventory\\Models\\StockMove given\.$#'
-			identifier: argument.type
+			message: '#^Property Kezi\\Inventory\\Actions\\Inventory\\ValidateStockPickingAction\:\:\$reservationService is never read, only written\.$#'
+			identifier: property.onlyWritten
 			count: 1
 			path: packages/kezi/inventory/app/Actions/Inventory/ValidateStockPickingAction.php
+
+		-
+			message: '#^Binary operation "/" between Brick\\Money\\Money\|float and Brick\\Money\\Money\|float results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: packages/kezi/inventory/app/Actions/LandedCost/AllocateLandedCostsAction.php
 
 		-
 			message: '#^Method Kezi\\Inventory\\Actions\\LandedCost\\AllocateLandedCostsAction\:\:calculateTotalBasis\(\) has parameter \$stockMoves with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
@@ -12620,6 +13100,12 @@ parameters:
 
 		-
 			message: '#^Method Kezi\\Inventory\\Actions\\LandedCost\\AllocateLandedCostsAction\:\:execute\(\) has parameter \$stockMoves with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: packages/kezi/inventory/app/Actions/LandedCost/AllocateLandedCostsAction.php
+
+		-
+			message: '#^Method Kezi\\Inventory\\Actions\\LandedCost\\AllocateLandedCostsAction\:\:sumCostImpact\(\) has parameter \$stockMoves with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
 			path: packages/kezi/inventory/app/Actions/LandedCost/AllocateLandedCostsAction.php
@@ -13063,8 +13549,8 @@ parameters:
 			path: packages/kezi/inventory/app/Filament/Clusters/Inventory/Pages/ReorderStatusReport.php
 
 		-
-			message: '#^Method Kezi\\Inventory\\Filament\\Clusters\\Inventory\\Pages\\ReorderStatusReport\:\:getTotalSuggestedValue\(\) has no return type specified\.$#'
-			identifier: missingType.return
+			message: '#^Offset ''products'' on non\-empty\-array in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.offset
 			count: 1
 			path: packages/kezi/inventory/app/Filament/Clusters/Inventory/Pages/ReorderStatusReport.php
 
@@ -13181,6 +13667,12 @@ parameters:
 			identifier: class.notFound
 			count: 1
 			path: packages/kezi/inventory/app/Filament/Clusters/Inventory/Resources/Products/Pages/CreateProduct.php
+
+		-
+			message: '#^Method Kezi\\Inventory\\Filament\\Clusters\\Inventory\\Resources\\Products\\ProductResource\:\:getEloquentQuery\(\) should return Illuminate\\Database\\Eloquent\\Builder\<Kezi\\Product\\Models\\Product\> but returns Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: return.type
+			count: 1
+			path: packages/kezi/inventory/app/Filament/Clusters/Inventory/Resources/Products/ProductResource.php
 
 		-
 			message: '#^PHPDoc tag @extends contains generic type Filament\\Resources\\RelationManagers\\RelationManager\<Kezi\\Product\\Models\\Product\> but class Filament\\Resources\\RelationManagers\\RelationManager is not generic\.$#'
@@ -13959,6 +14451,12 @@ parameters:
 		-
 			message: '#^Method Kezi\\Inventory\\Models\\StockQuant\:\:scopeWithAvailableQuantity\(\) has parameter \$query with no type specified\.$#'
 			identifier: missingType.parameter
+			count: 1
+			path: packages/kezi/inventory/app/Models/StockQuant.php
+
+		-
+			message: '#^Property Kezi\\Inventory\\Models\\StockQuant\:\:\$touches type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: packages/kezi/inventory/app/Models/StockQuant.php
 
@@ -14761,18 +15259,6 @@ parameters:
 			path: packages/kezi/inventory/database/factories/StockMoveValuationFactory.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/inventory/database/migrations/2025_08_04_082123_create_inventory_cost_layers_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/inventory/database/migrations/2026_01_12_120030_create_adjustment_documents_table.php
-
-		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$action\.$#'
 			identifier: property.notFound
 			count: 5
@@ -14884,6 +15370,12 @@ parameters:
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
 			identifier: method.notFound
 			count: 2
+			path: packages/kezi/inventory/tests/Feature/Actions/Inventory/CreateStockMoveActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:seedStock\(\)\.$#'
+			identifier: method.notFound
+			count: 1
 			path: packages/kezi/inventory/tests/Feature/Actions/Inventory/CreateStockMoveActionTest.php
 
 		-
@@ -15051,7 +15543,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 6
+			count: 9
 			path: packages/kezi/inventory/tests/Feature/Actions/Inventory/ReceiveTransferActionTest.php
 
 		-
@@ -15103,6 +15595,12 @@ parameters:
 			path: packages/kezi/inventory/tests/Feature/Actions/Inventory/ReceiveTransferActionTest.php
 
 		-
+			message: '#^Cannot access property \$reserved_quantity on Kezi\\Inventory\\Models\\StockQuant\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/inventory/tests/Feature/Actions/Inventory/ReceiveTransferActionTest.php
+
+		-
 			message: '#^Cannot access property \$status on Kezi\\Inventory\\Models\\StockMove\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -15115,6 +15613,12 @@ parameters:
 			path: packages/kezi/inventory/tests/Feature/Actions/Inventory/ReceiveTransferActionTest.php
 
 		-
+			message: '#^Unable to resolve the template type TValue in call to function expect$#'
+			identifier: argument.templateType
+			count: 1
+			path: packages/kezi/inventory/tests/Feature/Actions/Inventory/ReceiveTransferActionTest.php
+
+		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$action\.$#'
 			identifier: property.notFound
 			count: 2
@@ -15123,7 +15627,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 6
 			path: packages/kezi/inventory/tests/Feature/Actions/Inventory/ShipTransferActionTest.php
 
 		-
@@ -15526,6 +16030,18 @@ parameters:
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
 			count: 20
+			path: packages/kezi/inventory/tests/Feature/Adjustments/StockMovesOnAdjustmentPostedTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$stockLocation\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/inventory/tests/Feature/Adjustments/StockMovesOnAdjustmentPostedTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:seedStock\(\)\.$#'
+			identifier: method.notFound
+			count: 1
 			path: packages/kezi/inventory/tests/Feature/Adjustments/StockMovesOnAdjustmentPostedTest.php
 
 		-
@@ -16269,7 +16785,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 19
+			count: 23
 			path: packages/kezi/inventory/tests/Feature/Filament/TransferOrderActionsTest.php
 
 		-
@@ -16287,19 +16803,25 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$product\.$#'
 			identifier: property.notFound
-			count: 7
+			count: 11
 			path: packages/kezi/inventory/tests/Feature/Filament/TransferOrderActionsTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$sourceLocation\.$#'
 			identifier: property.notFound
-			count: 7
+			count: 9
+			path: packages/kezi/inventory/tests/Feature/Filament/TransferOrderActionsTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$stockQuantService\.$#'
+			identifier: property.notFound
+			count: 5
 			path: packages/kezi/inventory/tests/Feature/Filament/TransferOrderActionsTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$transitLocation\.$#'
 			identifier: property.notFound
-			count: 7
+			count: 9
 			path: packages/kezi/inventory/tests/Feature/Filament/TransferOrderActionsTest.php
 
 		-
@@ -17623,6 +18145,12 @@ parameters:
 			path: packages/kezi/inventory/tests/Feature/Inventory/LotTrackingAndFEFOTest.php
 
 		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$invoice_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/inventory/tests/Feature/Inventory/LotTrackingAndFEFOTest.php
+
+		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$cogsAccount\.$#'
 			identifier: property.notFound
 			count: 1
@@ -17631,13 +18159,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 29
+			count: 34
 			path: packages/kezi/inventory/tests/Feature/Inventory/LotTrackingAndFEFOTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$customer\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 4
 			path: packages/kezi/inventory/tests/Feature/Inventory/LotTrackingAndFEFOTest.php
 
 		-
@@ -17679,7 +18207,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 6
 			path: packages/kezi/inventory/tests/Feature/Inventory/LotTrackingAndFEFOTest.php
 
 		-
@@ -17707,6 +18235,12 @@ parameters:
 			path: packages/kezi/inventory/tests/Feature/Inventory/LotTrackingAndFEFOTest.php
 
 		-
+			message: '#^Cannot access property \$origin on Kezi\\Inventory\\Models\\StockPicking\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/inventory/tests/Feature/Inventory/LotTrackingAndFEFOTest.php
+
+		-
 			message: '#^Cannot access property \$quantity on Kezi\\Inventory\\Models\\StockMoveLine\|null\.$#'
 			identifier: property.nonObject
 			count: 4
@@ -17715,7 +18249,7 @@ parameters:
 		-
 			message: '#^Cannot access property \$quantity on Kezi\\Inventory\\Models\\StockMoveProductLine\|null\.$#'
 			identifier: property.nonObject
-			count: 1
+			count: 3
 			path: packages/kezi/inventory/tests/Feature/Inventory/LotTrackingAndFEFOTest.php
 
 		-
@@ -17732,6 +18266,12 @@ parameters:
 
 		-
 			message: '#^Cannot access property \$state on Kezi\\Inventory\\Models\\StockPicking\|null\.$#'
+			identifier: property.nonObject
+			count: 4
+			path: packages/kezi/inventory/tests/Feature/Inventory/LotTrackingAndFEFOTest.php
+
+		-
+			message: '#^Cannot access property \$status on Kezi\\Inventory\\Models\\StockMove\|null\.$#'
 			identifier: property.nonObject
 			count: 2
 			path: packages/kezi/inventory/tests/Feature/Inventory/LotTrackingAndFEFOTest.php
@@ -17751,25 +18291,31 @@ parameters:
 		-
 			message: '#^Cannot call method productLines\(\) on Kezi\\Inventory\\Models\\StockMove\|null\.$#'
 			identifier: method.nonObject
-			count: 3
+			count: 5
 			path: packages/kezi/inventory/tests/Feature/Inventory/LotTrackingAndFEFOTest.php
 
 		-
 			message: '#^Cannot call method stockMoves\(\) on Kezi\\Inventory\\Models\\StockPicking\|null\.$#'
 			identifier: method.nonObject
-			count: 2
+			count: 4
 			path: packages/kezi/inventory/tests/Feature/Inventory/LotTrackingAndFEFOTest.php
 
 		-
 			message: '#^Parameter \#1 \$invoice of method Kezi\\Sales\\Actions\\Sales\\CreateInvoiceLineAction\:\:execute\(\) expects Kezi\\Sales\\Models\\Invoice, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 2
+			count: 3
 			path: packages/kezi/inventory/tests/Feature/Inventory/LotTrackingAndFEFOTest.php
 
 		-
 			message: '#^Parameter \#1 \$invoice of method Kezi\\Sales\\Services\\InvoiceService\:\:confirm\(\) expects Kezi\\Sales\\Models\\Invoice, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
 			identifier: argument.type
-			count: 2
+			count: 3
+			path: packages/kezi/inventory/tests/Feature/Inventory/LotTrackingAndFEFOTest.php
+
+		-
+			message: '#^Parameter \$income_account_id of class Kezi\\Sales\\DataTransferObjects\\Sales\\CreateInvoiceLineDTO constructor expects int, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
 			path: packages/kezi/inventory/tests/Feature/Inventory/LotTrackingAndFEFOTest.php
 
 		-
@@ -18429,6 +18975,12 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
+			count: 6
+			path: packages/kezi/inventory/tests/Feature/Inventory/ProductStockBroadcastTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 23
 			path: packages/kezi/inventory/tests/Feature/Inventory/ProductVariantInventoryTest.php
 
@@ -18909,7 +19461,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$warehouseLocation\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 5
 			path: packages/kezi/inventory/tests/Feature/Inventory/SaleToStockWorkflowTest.php
 
 		-
@@ -19228,12 +19780,180 @@ parameters:
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 4
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderReservationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 7
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderReservationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderReservationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$destLocation\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderReservationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$product\.$#'
+			identifier: property.notFound
+			count: 7
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderReservationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$service\.$#'
+			identifier: property.notFound
+			count: 6
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderReservationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$sourceLocation\.$#'
+			identifier: property.notFound
+			count: 8
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderReservationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$stockQuantService\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderReservationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$transitLocation\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderReservationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 6
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderReservationTest.php
+
+		-
+			message: '#^Access to an undefined property Pest\\Mixins\\Expectation\<mixed\>\:\:\$quantity\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderReservationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderReservationTest.php
+
+		-
+			message: '#^Cannot access property \$reserved_quantity on Kezi\\Inventory\\Models\\StockQuant\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderReservationTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function expect$#'
+			identifier: argument.templateType
+			count: 2
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderReservationTest.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Inventory\\Models\\StockQuant\:\:\$quantity\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderStockMovementTest.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Inventory\\Models\\StockQuant\:\:\$reserved_quantity\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderStockMovementTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 12
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderStockMovementTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$destLocation\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderStockMovementTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$product\.$#'
+			identifier: property.notFound
+			count: 9
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderStockMovementTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$service\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderStockMovementTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$sourceLocation\.$#'
+			identifier: property.notFound
+			count: 6
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderStockMovementTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$stockQuantService\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderStockMovementTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$transitLocation\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderStockMovementTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 6
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderStockMovementTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderStockMovementTest.php
+
+		-
+			message: '#^Function assertStock\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderStockMovementTest.php
+
+		-
+			message: '#^Function assertStock\(\) has parameter \$company with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderStockMovementTest.php
+
+		-
+			message: '#^Function assertStock\(\) has parameter \$product with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderStockMovementTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 4
 			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderWorkflowTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 9
+			count: 14
 			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderWorkflowTest.php
 
 		-
@@ -19251,7 +19971,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$product\.$#'
 			identifier: property.notFound
-			count: 9
+			count: 14
 			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderWorkflowTest.php
 
 		-
@@ -19263,7 +19983,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$sourceLocation\.$#'
 			identifier: property.notFound
-			count: 9
+			count: 14
+			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderWorkflowTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$stockQuantService\.$#'
+			identifier: property.notFound
+			count: 6
 			path: packages/kezi/inventory/tests/Feature/Inventory/TransferOrderWorkflowTest.php
 
 		-
@@ -19623,31 +20349,31 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 23
+			count: 29
 			path: packages/kezi/inventory/tests/Feature/Services/StockReservationServiceTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$destLocation\.$#'
 			identifier: property.notFound
-			count: 8
+			count: 10
 			path: packages/kezi/inventory/tests/Feature/Services/StockReservationServiceTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$product\.$#'
 			identifier: property.notFound
-			count: 24
+			count: 28
 			path: packages/kezi/inventory/tests/Feature/Services/StockReservationServiceTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$service\.$#'
 			identifier: property.notFound
-			count: 12
+			count: 13
 			path: packages/kezi/inventory/tests/Feature/Services/StockReservationServiceTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$sourceLocation\.$#'
 			identifier: property.notFound
-			count: 31
+			count: 38
 			path: packages/kezi/inventory/tests/Feature/Services/StockReservationServiceTest.php
 
 		-
@@ -19683,19 +20409,19 @@ parameters:
 		-
 			message: '#^Cannot access property \$quantity on Kezi\\Inventory\\Models\\StockReservation\|null\.$#'
 			identifier: property.nonObject
-			count: 2
+			count: 4
 			path: packages/kezi/inventory/tests/Feature/Services/StockReservationServiceTest.php
 
 		-
 			message: '#^Cannot access property \$reserved_quantity on Kezi\\Inventory\\Models\\StockQuant\|null\.$#'
 			identifier: property.nonObject
-			count: 5
+			count: 7
 			path: packages/kezi/inventory/tests/Feature/Services/StockReservationServiceTest.php
 
 		-
 			message: '#^Unable to resolve the template type TValue in call to function expect$#'
 			identifier: argument.templateType
-			count: 10
+			count: 12
 			path: packages/kezi/inventory/tests/Feature/Services/StockReservationServiceTest.php
 
 		-
@@ -20367,7 +21093,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 39
+			count: 43
 			path: packages/kezi/manufacturing/tests/Feature/Actions/ConsumeComponentsActionTest.php
 
 		-
@@ -20391,7 +21117,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$sourceLocation\.$#'
 			identifier: property.notFound
-			count: 8
+			count: 12
 			path: packages/kezi/manufacturing/tests/Feature/Actions/ConsumeComponentsActionTest.php
 
 		-
@@ -20469,7 +21195,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 6
 			path: packages/kezi/manufacturing/tests/Feature/Actions/CreateJournalEntryForManufacturingActionTest.php
 
 		-
@@ -20481,25 +21207,31 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$action\.$#'
 			identifier: property.notFound
-			count: 6
+			count: 7
 			path: packages/kezi/manufacturing/tests/Feature/Actions/CreateJournalEntryForManufacturingActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 20
+			count: 26
 			path: packages/kezi/manufacturing/tests/Feature/Actions/CreateJournalEntryForManufacturingActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$fgAccount\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 6
 			path: packages/kezi/manufacturing/tests/Feature/Actions/CreateJournalEntryForManufacturingActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$manufacturingJournal\.$#'
 			identifier: property.notFound
 			count: 1
+			path: packages/kezi/manufacturing/tests/Feature/Actions/CreateJournalEntryForManufacturingActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$overheadAccount\.$#'
+			identifier: property.notFound
+			count: 2
 			path: packages/kezi/manufacturing/tests/Feature/Actions/CreateJournalEntryForManufacturingActionTest.php
 
 		-
@@ -20511,19 +21243,25 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
 			identifier: property.notFound
-			count: 6
+			count: 7
 			path: packages/kezi/manufacturing/tests/Feature/Actions/CreateJournalEntryForManufacturingActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$wipAccount\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 4
 			path: packages/kezi/manufacturing/tests/Feature/Actions/CreateJournalEntryForManufacturingActionTest.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:lines\(\)\.$#'
 			identifier: method.notFound
-			count: 4
+			count: 5
+			path: packages/kezi/manufacturing/tests/Feature/Actions/CreateJournalEntryForManufacturingActionTest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:workOrders\(\)\.$#'
+			identifier: method.notFound
+			count: 1
 			path: packages/kezi/manufacturing/tests/Feature/Actions/CreateJournalEntryForManufacturingActionTest.php
 
 		-
@@ -20535,7 +21273,7 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$mo of method Kezi\\Manufacturing\\Database\\Factories\\ManufacturingOrderLineFactory\:\:forOrder\(\) expects Kezi\\Manufacturing\\Models\\ManufacturingOrder, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 7
+			count: 8
 			path: packages/kezi/manufacturing/tests/Feature/Actions/CreateJournalEntryForManufacturingActionTest.php
 
 		-
@@ -21357,13 +22095,19 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 14
+			count: 18
 			path: packages/kezi/manufacturing/tests/Feature/WIPAccountingTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$componentProduct\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 3
+			path: packages/kezi/manufacturing/tests/Feature/WIPAccountingTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$destinationLocation\.$#'
+			identifier: property.notFound
+			count: 3
 			path: packages/kezi/manufacturing/tests/Feature/WIPAccountingTest.php
 
 		-
@@ -21394,6 +22138,12 @@ parameters:
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$service\.$#'
 			identifier: property.notFound
 			count: 9
+			path: packages/kezi/manufacturing/tests/Feature/WIPAccountingTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$sourceLocation\.$#'
+			identifier: property.notFound
+			count: 5
 			path: packages/kezi/manufacturing/tests/Feature/WIPAccountingTest.php
 
 		-
@@ -22043,30 +22793,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: packages/kezi/payment/database/factories/PettyCash/PettyCashVoucherFactory.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/payment/database/migrations/2025_07_21_144501_create_payments_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/payment/database/migrations/2025_09_06_140004_create_payment_installments_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: packages/kezi/payment/database/migrations/2025_09_06_140005_create_payment_installment_links_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: packages/kezi/payment/database/migrations/2026_01_12_120020_create_payment_document_links_table.php
 
 		-
 			message: '#^Access to an undefined property Kezi\\Payment\\Models\\Payment\:\:\$partner_id\.$#'
@@ -23695,10 +24421,1642 @@ parameters:
 			path: packages/kezi/payment/tests/Unit/Models/PaymentInstallmentTest.php
 
 		-
+			message: '#^Method Kezi\\Pos\\Actions\\ApprovePosReturnAction\:\:execute\(\) should return Kezi\\Pos\\Models\\PosReturn but returns Kezi\\Pos\\Models\\PosReturn\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: packages/kezi/pos/app/Actions/ApprovePosReturnAction.php
+
+		-
+			message: '#^Cannot access property \$name on Kezi\\Product\\Models\\Product\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/pos/app/Actions/CreateInvoiceFromPosOrderAction.php
+
+		-
+			message: '#^Cannot access property \$profile on Kezi\\Pos\\Models\\PosSession\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/pos/app/Actions/CreateInvoiceFromPosOrderAction.php
+
+		-
+			message: '#^Parameter \#1 \$string of function str_pad expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: packages/kezi/pos/app/Actions/CreatePosReturnAction.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$product\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$product_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$quantity_returned\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$refund_amount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$restock\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$unit_price\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Cannot access property \$code on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Cannot access property \$currency_id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Cannot access property \$customer_id on Kezi\\Pos\\Models\\PosOrder\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Cannot access property \$profile on Kezi\\Pos\\Models\\PosSession\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Method Kezi\\Pos\\Actions\\ProcessPosReturnAction\:\:buildProductLines\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Method Kezi\\Pos\\Actions\\ProcessPosReturnAction\:\:execute\(\) should return Kezi\\Pos\\Models\\PosReturn but returns Kezi\\Pos\\Models\\PosReturn\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Parameter \#1 \$currency of method Kezi\\Foundation\\Services\\CurrencyConverterService\:\:getExchangeRate\(\) expects Kezi\\Foundation\\Models\\Currency, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Parameter \#1 \$currency of method Kezi\\Foundation\\Services\\CurrencyConverterService\:\:getLatestExchangeRate\(\) expects Kezi\\Foundation\\Models\\Currency, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Parameter \#1 \$line of method Kezi\\Pos\\Actions\\ProcessPosReturnAction\:\:getDestinationLocation\(\) expects Kezi\\Pos\\Models\\PosReturnLine, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Parameter \#1 \$return of event class Kezi\\Pos\\Events\\PosReturnProcessed constructor expects Kezi\\Pos\\Models\\PosReturn in Kezi\\Pos\\Events\\PosReturnProcessed\:\:dispatch\(\), Kezi\\Pos\\Models\\PosReturn\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Parameter \#2 \$company of method Kezi\\Foundation\\Services\\CurrencyConverterService\:\:getLatestExchangeRate\(\) expects App\\Models\\Company, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Parameter \#3 \$company of method Kezi\\Foundation\\Services\\CurrencyConverterService\:\:getExchangeRate\(\) expects App\\Models\\Company, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: packages/kezi/pos/app/Actions/ProcessPosReturnAction.php
+
+		-
+			message: '#^Method Kezi\\Pos\\Actions\\RejectPosReturnAction\:\:execute\(\) should return Kezi\\Pos\\Models\\PosReturn but returns Kezi\\Pos\\Models\\PosReturn\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: packages/kezi/pos/app/Actions/RejectPosReturnAction.php
+
+		-
+			message: '#^Method Kezi\\Pos\\Actions\\SubmitPosReturnAction\:\:execute\(\) should return Kezi\\Pos\\Models\\PosReturn but returns Kezi\\Pos\\Models\\PosReturn\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: packages/kezi/pos/app/Actions/SubmitPosReturnAction.php
+
+		-
+			message: '#^Method Kezi\\Pos\\Actions\\SyncOrdersAction\:\:execute\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: packages/kezi/pos/app/Actions/SyncOrdersAction.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Pos\\Models\\PosOrder\>\|Kezi\\Pos\\Models\\PosOrder\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Casts/PosOrderLineMoneyCast.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$order\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Casts/PosOrderLineMoneyCast.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$posReturn\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Casts/PosOrderLineMoneyCast.php
+
+		-
+			message: '#^Method Kezi\\Pos\\DataTransferObjects\\CreatePosReturnLineDTO\:\:__construct\(\) has parameter \$metadata with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: packages/kezi/pos/app/DataTransferObjects/CreatePosReturnLineDTO.php
+
+		-
+			message: '#^Method Kezi\\Pos\\DataTransferObjects\\PosOrderLineData\:\:__construct\(\) has parameter \$metadata with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: packages/kezi/pos/app/DataTransferObjects/PosOrderLineData.php
+
+		-
+			message: '#^Method Kezi\\Pos\\DataTransferObjects\\PosOrderLineData\:\:from\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: packages/kezi/pos/app/DataTransferObjects/PosOrderLineData.php
+
+		-
+			message: '#^Method Kezi\\Pos\\DataTransferObjects\\SearchPosOrdersDTO\:\:fromRequest\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: packages/kezi/pos/app/DataTransferObjects/SearchPosOrdersDTO.php
+
+		-
+			message: '#^Cannot call method fresh\(\) on Illuminate\\Database\\Eloquent\\Model\|int\|string\|null\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: packages/kezi/pos/app/Filament/Clusters/Pos/Resources/PosReturns/Pages/ViewPosReturn.php
+
+		-
+			message: '#^Parameter \#2 \$approver of method Kezi\\Pos\\Actions\\ApprovePosReturnAction\:\:execute\(\) expects App\\Models\\User, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: packages/kezi/pos/app/Filament/Clusters/Pos/Resources/PosReturns/Pages/ViewPosReturn.php
+
+		-
+			message: '#^Parameter \#2 \$rejector of method Kezi\\Pos\\Actions\\RejectPosReturnAction\:\:execute\(\) expects App\\Models\\User, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: packages/kezi/pos/app/Filament/Clusters/Pos/Resources/PosReturns/Pages/ViewPosReturn.php
+
+		-
+			message: '#^Parameter \#2 \$user of method Kezi\\Pos\\Actions\\ProcessPosReturnAction\:\:execute\(\) expects App\\Models\\User, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: packages/kezi/pos/app/Filament/Clusters/Pos/Resources/PosReturns/Pages/ViewPosReturn.php
+
+		-
+			message: '#^Undefined variable\: \$user$#'
+			identifier: variable.undefined
+			count: 2
+			path: packages/kezi/pos/app/Http/Controllers/Api/PosReturnController.php
+
+		-
+			message: '#^Variable \$user in PHPDoc tag @var does not match assigned variable \$return\.$#'
+			identifier: varTag.differentVariable
+			count: 2
+			path: packages/kezi/pos/app/Http/Controllers/Api/PosReturnController.php
+
+		-
+			message: '#^Cannot call method can\(\) on App\\Models\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: packages/kezi/pos/app/Http/Requests/OpenSessionRequest.php
+
+		-
+			message: '#^Cannot call method can\(\) on App\\Models\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: packages/kezi/pos/app/Http/Requests/RejectPosReturnRequest.php
+
+		-
+			message: '#^Method Kezi\\Pos\\Http\\Requests\\RejectPosReturnRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: packages/kezi/pos/app/Http/Requests/RejectPosReturnRequest.php
+
+		-
+			message: '#^Cannot call method can\(\) on App\\Models\\User\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: packages/kezi/pos/app/Http/Requests/StorePosReturnRequest.php
+
+		-
+			message: '#^Method Kezi\\Pos\\Http\\Requests\\StorePosReturnRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: packages/kezi/pos/app/Http/Requests/StorePosReturnRequest.php
+
+		-
+			message: '#^Method Kezi\\Pos\\Http\\Resources\\CategoryResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/CategoryResource.php
+
+		-
+			message: '#^Method Kezi\\Pos\\Http\\Resources\\CustomerResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/CustomerResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderDetailResource\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderDetailResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderDetailResource\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/pos/app/Http/Resources/PosOrderDetailResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderDetailResource\:\:\$discount_amount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderDetailResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderDetailResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderDetailResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderDetailResource\:\:\$invoice_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderDetailResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderDetailResource\:\:\$lines\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderDetailResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderDetailResource\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderDetailResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderDetailResource\:\:\$order_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderDetailResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderDetailResource\:\:\$ordered_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderDetailResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderDetailResource\:\:\$payment_method\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderDetailResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderDetailResource\:\:\$session\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/pos/app/Http/Resources/PosOrderDetailResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderDetailResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderDetailResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderDetailResource\:\:\$total_amount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderDetailResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderDetailResource\:\:\$total_tax\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderDetailResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderDetailResource\:\:\$uuid\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderDetailResource.php
+
+		-
+			message: '#^Method Kezi\\Pos\\Http\\Resources\\PosOrderDetailResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderDetailResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderSearchResource\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderSearchResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderSearchResource\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/pos/app/Http/Resources/PosOrderSearchResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderSearchResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderSearchResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderSearchResource\:\:\$lines\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderSearchResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderSearchResource\:\:\$order_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderSearchResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderSearchResource\:\:\$ordered_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderSearchResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderSearchResource\:\:\$payment_method\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderSearchResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderSearchResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderSearchResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderSearchResource\:\:\$total_amount\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/pos/app/Http/Resources/PosOrderSearchResource.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Http\\Resources\\PosOrderSearchResource\:\:\$uuid\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderSearchResource.php
+
+		-
+			message: '#^Method Kezi\\Pos\\Http\\Resources\\PosOrderSearchResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/PosOrderSearchResource.php
+
+		-
+			message: '#^Method Kezi\\Pos\\Http\\Resources\\TaxResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: packages/kezi/pos/app/Http/Resources/TaxResource.php
+
+		-
+			message: '#^Class Kezi\\Pos\\Models\\PosOrder has PHPDoc tag @property for property \$sector_data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: packages/kezi/pos/app/Models/PosOrder.php
+
+		-
+			message: '#^Class Kezi\\Pos\\Models\\PosOrder uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: packages/kezi/pos/app/Models/PosOrder.php
+
+		-
+			message: '#^Class Kezi\\Pos\\Models\\PosOrderLine has PHPDoc tag @property for property \$metadata with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: packages/kezi/pos/app/Models/PosOrderLine.php
+
+		-
+			message: '#^Class Kezi\\Pos\\Models\\PosOrderLine uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: packages/kezi/pos/app/Models/PosOrderLine.php
+
+		-
+			message: '#^Method Kezi\\Pos\\Models\\PosOrderLine\:\:newFactory\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: packages/kezi/pos/app/Models/PosOrderLine.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: packages/kezi/pos/app/Models/PosReturn.php
+
+		-
+			message: '#^Class Kezi\\Pos\\Models\\PosReturnLine has PHPDoc tag @property for property \$metadata with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: packages/kezi/pos/app/Models/PosReturnLine.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Models\\PosSession\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/app/Policies/PosSessionPolicy.php
+
+		-
+			message: '#^Class Kezi\\Pos\\Database\\Factories\\PosOrderFactory extends generic class Illuminate\\Database\\Eloquent\\Factories\\Factory but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: packages/kezi/pos/database/factories/PosOrderFactory.php
+
+		-
+			message: '#^Class Kezi\\Pos\\Database\\Factories\\PosOrderLineFactory extends generic class Illuminate\\Database\\Eloquent\\Factories\\Factory but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: packages/kezi/pos/database/factories/PosOrderLineFactory.php
+
+		-
+			message: '#^Class Kezi\\Pos\\Database\\Factories\\PosOrderPaymentFactory extends generic class Illuminate\\Database\\Eloquent\\Factories\\Factory but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: packages/kezi/pos/database/factories/PosOrderPaymentFactory.php
+
+		-
+			message: '#^Class Kezi\\Pos\\Database\\Factories\\PosProfileFactory extends generic class Illuminate\\Database\\Eloquent\\Factories\\Factory but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: packages/kezi/pos/database/factories/PosProfileFactory.php
+
+		-
+			message: '#^Class Kezi\\Pos\\Database\\Factories\\PosReturnFactory extends generic class Illuminate\\Database\\Eloquent\\Factories\\Factory but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: packages/kezi/pos/database/factories/PosReturnFactory.php
+
+		-
+			message: '#^Class Kezi\\Pos\\Database\\Factories\\PosReturnLineFactory extends generic class Illuminate\\Database\\Eloquent\\Factories\\Factory but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: packages/kezi/pos/database/factories/PosReturnLineFactory.php
+
+		-
+			message: '#^Class Kezi\\Pos\\Database\\Factories\\PosSessionFactory extends generic class Illuminate\\Database\\Eloquent\\Factories\\Factory but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: packages/kezi/pos/database/factories/PosSessionFactory.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 7
+			path: packages/kezi/pos/tests/Feature/Api/ManagerPinVerificationTest.php
+
+		-
+			message: '#^Access to property \$company on an unknown class Tests\\Traits\\WithConfiguredCompany\.$#'
+			identifier: class.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Api/ManagerPinVerificationTest.php
+
+		-
+			message: '#^Access to property \$user on an unknown class Tests\\Traits\\WithConfiguredCompany\.$#'
+			identifier: class.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Api/ManagerPinVerificationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 9
+			path: packages/kezi/pos/tests/Feature/Api/ManagerPinVerificationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Api/ManagerPinVerificationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:withoutMiddleware\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/Api/ManagerPinVerificationTest.php
+
+		-
+			message: '#^Cannot access property \$status on Kezi\\Pos\\Models\\PosReturn\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: packages/kezi/pos/tests/Feature/Api/ManagerPinVerificationTest.php
+
+		-
+			message: '#^Function createPendingApprovalReturn\(\) should return array\{return\: Kezi\\Pos\\Models\\PosReturn, cashier\: App\\Models\\User, manager\: App\\Models\\User\} but returns array\{return\: Kezi\\Pos\\Models\\PosReturn\|null, cashier\: mixed, manager\: App\\Models\\User\}\.$#'
+			identifier: return.type
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Api/ManagerPinVerificationTest.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$test has invalid type Tests\\Traits\\WithConfiguredCompany\.$#'
+			identifier: varTag.trait
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Api/ManagerPinVerificationTest.php
+
+		-
+			message: '#^PHPDoc tag @var with type Tests\\Traits\\WithConfiguredCompany is not subtype of native type Pest\\PendingCalls\\TestCall\|Pest\\Support\\HigherOrderTapProxy\.$#'
+			identifier: varTag.nativeType
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Api/ManagerPinVerificationTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/Api/PosAuthorizationIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/pos/tests/Feature/Api/PosAuthorizationIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$order\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/pos/tests/Feature/Api/PosAuthorizationIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$return\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/Api/PosAuthorizationIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$session\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Api/PosAuthorizationIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/pos/tests/Feature/Api/PosAuthorizationIntegrationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:getJson\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/Api/PosAuthorizationIntegrationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:postJson\(\)\.$#'
+			identifier: method.notFound
+			count: 6
+			path: packages/kezi/pos/tests/Feature/Api/PosAuthorizationIntegrationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setUpWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Api/PosAuthorizationIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/pos/tests/Feature/Filament/PosDashboardTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 9
+			path: packages/kezi/pos/tests/Feature/Filament/PosDashboardTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 6
+			path: packages/kezi/pos/tests/Feature/Filament/PosDashboardTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 5
+			path: packages/kezi/pos/tests/Feature/Filament/PosDashboardTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:get\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/Filament/PosDashboardTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Filament/PosDashboardTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 7
+			path: packages/kezi/pos/tests/Feature/Filament/PosReturnResourceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Filament/PosReturnResourceTest.php
+
+		-
+			message: '#^Access to property \$company on an unknown class Tests\\Traits\\WithConfiguredCompany\.$#'
+			identifier: class.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Filament/PosReturnResourceTest.php
+
+		-
+			message: '#^Access to property \$user on an unknown class Tests\\Traits\\WithConfiguredCompany\.$#'
+			identifier: class.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Filament/PosReturnResourceTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:get\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: packages/kezi/pos/tests/Feature/Filament/PosReturnResourceTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Filament/PosReturnResourceTest.php
+
+		-
+			message: '#^Cannot access property \$approved_by_user_id on Kezi\\Pos\\Models\\PosReturn\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Filament/PosReturnResourceTest.php
+
+		-
+			message: '#^Cannot access property \$return_notes on Kezi\\Pos\\Models\\PosReturn\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Filament/PosReturnResourceTest.php
+
+		-
+			message: '#^Cannot access property \$status on Kezi\\Pos\\Models\\PosReturn\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: packages/kezi/pos/tests/Feature/Filament/PosReturnResourceTest.php
+
+		-
+			message: '#^Function createDraftReturn\(\) should return array\{return\: Kezi\\Pos\\Models\\PosReturn, order\: Kezi\\Pos\\Models\\PosOrder, user\: App\\Models\\User\} but returns array\{return\: Kezi\\Pos\\Models\\PosReturn, order\: Illuminate\\Database\\Eloquent\\Model, user\: mixed\}\.$#'
+			identifier: return.type
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Filament/PosReturnResourceTest.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$testState has invalid type Tests\\Traits\\WithConfiguredCompany\.$#'
+			identifier: varTag.trait
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Filament/PosReturnResourceTest.php
+
+		-
+			message: '#^PHPDoc tag @var with type Tests\\Traits\\WithConfiguredCompany is not subtype of native type Pest\\PendingCalls\\TestCall\|Pest\\Support\\HigherOrderTapProxy\.$#'
+			identifier: varTag.nativeType
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Filament/PosReturnResourceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Filament/PosSessionResourceTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Filament/PosSessionResourceTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Policies/PosOrderPolicyTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/Policies/PosOrderPolicyTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 13
+			path: packages/kezi/pos/tests/Feature/Policies/PosOrderPolicyTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setUpWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Policies/PosOrderPolicyTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 7
+			path: packages/kezi/pos/tests/Feature/Policies/PosReturnPolicyTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 11
+			path: packages/kezi/pos/tests/Feature/Policies/PosReturnPolicyTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$testOrder\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/pos/tests/Feature/Policies/PosReturnPolicyTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$testSession\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/pos/tests/Feature/Policies/PosReturnPolicyTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 15
+			path: packages/kezi/pos/tests/Feature/Policies/PosReturnPolicyTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setUpWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Policies/PosReturnPolicyTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/pos/tests/Feature/Policies/PosSessionPolicyTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 13
+			path: packages/kezi/pos/tests/Feature/Policies/PosSessionPolicyTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setUpWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/Policies/PosSessionPolicyTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 10
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$incomeAccount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$posProfile\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$posSession\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$product\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$salesJournal\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:seedStock\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with int will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Cannot access property \$customer on Kezi\\Sales\\Models\\Invoice\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Cannot access property \$customer_id on Kezi\\Sales\\Models\\Invoice\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Models\\Company\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Cannot access property \$journal_id on Kezi\\Accounting\\Models\\JournalEntry\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Cannot access property \$status on Kezi\\Sales\\Models\\Invoice\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Cannot call method update\(\) on App\\Models\\Company\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Parameter \$discount_amount of class Kezi\\Pos\\DataTransferObjects\\PosOrderData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Parameter \$discount_amount of class Kezi\\Pos\\DataTransferObjects\\PosOrderLineData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Parameter \$tax_amount of class Kezi\\Pos\\DataTransferObjects\\PosOrderLineData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Parameter \$total_amount of class Kezi\\Pos\\DataTransferObjects\\PosOrderData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Parameter \$total_amount of class Kezi\\Pos\\DataTransferObjects\\PosOrderLineData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Parameter \$total_tax of class Kezi\\Pos\\DataTransferObjects\\PosOrderData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Parameter \$unit_price of class Kezi\\Pos\\DataTransferObjects\\PosOrderLineData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosAccountingIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 6
+			path: packages/kezi/pos/tests/Feature/PosEventsTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/pos/tests/Feature/PosEventsTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/pos/tests/Feature/PosEventsTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$profile\.$#'
+			identifier: property.notFound
+			count: 12
+			path: packages/kezi/pos/tests/Feature/PosEventsTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 6
+			path: packages/kezi/pos/tests/Feature/PosEventsTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseCount\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosEventsTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosEventsTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:postJson\(\)\.$#'
+			identifier: method.notFound
+			count: 12
+			path: packages/kezi/pos/tests/Feature/PosEventsTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosMasterDataSyncTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/pos/tests/Feature/PosMasterDataSyncTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosMasterDataSyncTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosMasterDataSyncTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 12
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$incomeAccount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$iqd\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$paymentJournal\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$posProfile\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$posSession\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$product\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$salesJournal\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$usd\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:seedStock\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setUpWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Cannot access property \$exchange_rate_at_creation on Kezi\\Sales\\Models\\Invoice\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Cannot access property \$journalEntry on Kezi\\Sales\\Models\\Invoice\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Cannot access property \$lines on Kezi\\Accounting\\Models\\JournalEntry\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Parameter \$discount_amount of class Kezi\\Pos\\DataTransferObjects\\PosOrderData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Parameter \$discount_amount of class Kezi\\Pos\\DataTransferObjects\\PosOrderLineData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Parameter \$tax_amount of class Kezi\\Pos\\DataTransferObjects\\PosOrderLineData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Parameter \$total_amount of class Kezi\\Pos\\DataTransferObjects\\PosOrderData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Parameter \$total_amount of class Kezi\\Pos\\DataTransferObjects\\PosOrderLineData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Parameter \$total_tax of class Kezi\\Pos\\DataTransferObjects\\PosOrderData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Parameter \$unit_price of class Kezi\\Pos\\DataTransferObjects\\PosOrderLineData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosMultiCurrencyAccountingTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/pos/tests/Feature/PosOrderBatchSyncTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosOrderBatchSyncTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/pos/tests/Feature/PosOrderBatchSyncTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$profile\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosOrderBatchSyncTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$session\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/pos/tests/Feature/PosOrderBatchSyncTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosOrderBatchSyncTest.php
+
+		-
+			message: '#^Function validOrderPayload\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosOrderBatchSyncTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 7
+			path: packages/kezi/pos/tests/Feature/PosOrderCreationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/pos/tests/Feature/PosOrderCreationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/pos/tests/Feature/PosOrderCreationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$profile\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/pos/tests/Feature/PosOrderCreationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/pos/tests/Feature/PosOrderCreationTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosOrderSearchServiceTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 13
+			path: packages/kezi/pos/tests/Feature/PosOrderSearchServiceTest.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Pos\\Tests\\Feature\\PosOrderSearchServiceTest\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 10
+			path: packages/kezi/pos/tests/Feature/PosOrderSearchServiceTest.php
+
+		-
+			message: '#^Method Kezi\\Pos\\Tests\\Feature\\PosOrderSearchServiceTest\:\:test_order_is_eligible_for_return_if_partially_returned\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosOrderSearchServiceTest.php
+
+		-
+			message: '#^Method Kezi\\Pos\\Tests\\Feature\\PosOrderSearchServiceTest\:\:test_order_is_eligible_if_previous_return_was_cancelled\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosOrderSearchServiceTest.php
+
+		-
+			message: '#^Method Kezi\\Pos\\Tests\\Feature\\PosOrderSearchServiceTest\:\:test_order_is_not_eligible_if_fully_returned\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosOrderSearchServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$order of method Kezi\\Pos\\Services\\PosOrderSearchService\:\:isEligibleForReturn\(\) expects Kezi\\Pos\\Models\\PosOrder, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosOrderSearchServiceTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 19
+			path: packages/kezi/pos/tests/Feature/PosReturnProcessTest.php
+
+		-
+			message: '#^Cannot access property \$status on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosReturnProcessTest.php
+
+		-
+			message: '#^Method Kezi\\Pos\\Tests\\Feature\\PosReturnProcessTest\:\:test_can_create_and_process_return\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosReturnProcessTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosSessionApiTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/pos/tests/Feature/PosSessionApiTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$posProfile\.$#'
+			identifier: property.notFound
+			count: 7
+			path: packages/kezi/pos/tests/Feature/PosSessionApiTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 8
+			path: packages/kezi/pos/tests/Feature/PosSessionApiTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosSessionApiTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:getJson\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosSessionApiTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:postJson\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: packages/kezi/pos/tests/Feature/PosSessionApiTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosSessionApiTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 17
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 10
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 7
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$incomeAccount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$posProfile\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$posSession\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$product\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$profile\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$salesJournal\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$session\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:seedStock\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Cannot access property \$amount on Kezi\\Pos\\Models\\PosOrderPayment\|null\.$#'
+			identifier: property.nonObject
+			count: 5
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Cannot access property \$amount_tendered on Kezi\\Pos\\Models\\PosOrderPayment\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Cannot access property \$change_given on Kezi\\Pos\\Models\\PosOrderPayment\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Models\\Company\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Cannot access property \$id on Kezi\\Pos\\Models\\PosOrder\|null\.$#'
+			identifier: property.nonObject
+			count: 4
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Cannot access property \$invoice_id on Kezi\\Pos\\Models\\PosOrder\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Cannot access property \$method on Kezi\\Pos\\DataTransferObjects\\PosOrderPaymentData\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Cannot access property \$payment_method on Kezi\\Pos\\Models\\PosOrderPayment\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Cannot access property \$payments on Kezi\\Sales\\Models\\Invoice\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Cannot access property \$status on Kezi\\Sales\\Models\\Invoice\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Cannot access property \$total_amount on Kezi\\Sales\\Models\\Invoice\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Cannot call method update\(\) on App\\Models\\Company\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Parameter \$discount_amount of class Kezi\\Pos\\DataTransferObjects\\PosOrderLineData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Parameter \$tax_amount of class Kezi\\Pos\\DataTransferObjects\\PosOrderLineData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Parameter \$total_amount of class Kezi\\Pos\\DataTransferObjects\\PosOrderLineData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Parameter \$unit_price of class Kezi\\Pos\\DataTransferObjects\\PosOrderLineData constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosSplitPaymentTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 15
+			path: packages/kezi/pos/tests/Feature/PosStockDeductionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$cogsAccount\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/pos/tests/Feature/PosStockDeductionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 8
+			path: packages/kezi/pos/tests/Feature/PosStockDeductionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/pos/tests/Feature/PosStockDeductionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$customerLocation\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosStockDeductionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$inventoryAccount\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/pos/tests/Feature/PosStockDeductionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$profile\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/pos/tests/Feature/PosStockDeductionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$receivableAccount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosStockDeductionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$salesJournal\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/pos/tests/Feature/PosStockDeductionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/pos/tests/Feature/PosStockDeductionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$warehouseLocation\.$#'
+			identifier: property.notFound
+			count: 6
+			path: packages/kezi/pos/tests/Feature/PosStockDeductionTest.php
+
+		-
+			message: '#^Cannot access property \$quantity on Kezi\\Inventory\\Models\\StockQuant\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: packages/kezi/pos/tests/Feature/PosStockDeductionTest.php
+
+		-
 			message: '#^PHPDoc tag @extends contains generic type Filament\\Resources\\Pages\\CreateRecord\<Kezi\\Product\\Models\\ProductCategory\> but class Filament\\Resources\\Pages\\CreateRecord is not generic\.$#'
 			identifier: generics.notGeneric
 			count: 1
 			path: packages/kezi/product/app/Filament/Clusters/Product/Resources/ProductCategoryResource/Pages/CreateProductCategory.php
+
+		-
+			message: '#^Parameter \#1 \$model of method Filament\\Schemas\\Components\\Component\:\:actionSchemaModel\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>\|Closure\|Illuminate\\Database\\Eloquent\\Model\|null, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: packages/kezi/product/app/Filament/Forms/Components/ProductSelectField.php
 
 		-
 			message: '#^Unsafe usage of new static\(\)\.$#'
@@ -23945,6 +26303,72 @@ parameters:
 			identifier: property.notFound
 			count: 5
 			path: packages/kezi/product/database/factories/ProductFactory.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/product/tests/Feature/Filament/ProductSelectFieldTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/product/tests/Feature/Filament/ProductSelectFieldTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/product/tests/Feature/Filament/ProductSelectFieldTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/product/tests/Feature/Filament/ProductSelectFieldTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/product/tests/Feature/Filament/ProductSelectFieldTest.php
+
+		-
+			message: '#^Cannot access property \$name on Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Product\\Models\\Product\>\|Kezi\\Product\\Models\\Product\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/product/tests/Feature/Filament/ProductSelectFieldTest.php
+
+		-
+			message: '#^Cannot call method getChildComponents\(\) on class\-string\|object\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: packages/kezi/product/tests/Feature/Filament/ProductSelectFieldTest.php
+
+		-
+			message: '#^Cannot call method getName\(\) on class\-string\|object\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: packages/kezi/product/tests/Feature/Filament/ProductSelectFieldTest.php
+
+		-
+			message: '#^Method Livewire\\Component@anonymous/packages/kezi/product/tests/Feature/Filament/ProductSelectFieldTest\.php\:28\:\:render\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: packages/kezi/product/tests/Feature/Filament/ProductSelectFieldTest.php
+
+		-
+			message: '#^Parameter \#1 \$components of closure expects array, array\<Filament\\Actions\\Action\|Filament\\Actions\\ActionGroup\|Filament\\Schemas\\Components\\Component\>\|Filament\\Schemas\\Schema\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: packages/kezi/product/tests/Feature/Filament/ProductSelectFieldTest.php
+
+		-
+			message: '#^Trying to invoke Closure\|null but it might not be a callable\.$#'
+			identifier: callable.nonCallable
+			count: 1
+			path: packages/kezi/product/tests/Feature/Filament/ProductSelectFieldTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -26017,6 +28441,12 @@ parameters:
 			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Pages/ViewPurchaseOrder.php
 
 		-
+			message: '#^Cannot access property \$exchange_rate_at_creation on Illuminate\\Database\\Eloquent\\Model\|int\|string\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Pages/ViewPurchaseOrder.php
+
+		-
 			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|int\|string\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -26053,13 +28483,25 @@ parameters:
 			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/RelationManagers/VendorBillsRelationManager.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Accounting\\Models\\Tax\>\|Kezi\\Accounting\\Models\\Tax\:\:\$rate\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Schemas/PurchaseOrderForm.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency\:\:\$id\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Product\\Models\\Product\>\|Kezi\\Product\\Models\\Product\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Schemas/PurchaseOrderForm.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Product\\Models\\Product\>\|Kezi\\Product\\Models\\Product\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Schemas/PurchaseOrderForm.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Product\\Models\\Product\>\|Kezi\\Product\\Models\\Product\:\:\$unit_price\.$#'
 			identifier: property.notFound
 			count: 1
 			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Schemas/PurchaseOrderForm.php
@@ -26067,6 +28509,12 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$currency\.$#'
 			identifier: property.notFound
+			count: 1
+			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Schemas/PurchaseOrderForm.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Product\\Models\\Product\>\|Kezi\\Product\\Models\\Product\:\:purchaseTaxes\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Schemas/PurchaseOrderForm.php
 
@@ -26079,13 +28527,13 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$currency of method Kezi\\Foundation\\Services\\CurrencyConverterService\:\:getExchangeRate\(\) expects Kezi\\Foundation\\Models\\Currency, Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency given\.$#'
 			identifier: argument.type
-			count: 2
+			count: 1
 			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Schemas/PurchaseOrderForm.php
 
 		-
 			message: '#^Parameter \#1 \$currency of method Kezi\\Foundation\\Services\\CurrencyConverterService\:\:getLatestExchangeRate\(\) expects Kezi\\Foundation\\Models\\Currency, Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency given\.$#'
 			identifier: argument.type
-			count: 2
+			count: 1
 			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Schemas/PurchaseOrderForm.php
 
 		-
@@ -26153,18 +28601,6 @@ parameters:
 			identifier: argument.templateType
 			count: 1
 			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/RequestForQuotations/Pages/EditRequestForQuotation.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Product\\Models\\Product\>\|Kezi\\Product\\Models\\Product\:\:\$average_cost\.$#'
-			identifier: property.notFound
-			count: 1
-			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/RequestForQuotations/Schemas/RequestForQuotationForm.php
-
-		-
-			message: '#^Cannot access property \$current_company_id on App\\Models\\User\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/RequestForQuotations/Schemas/RequestForQuotationForm.php
 
 		-
 			message: '#^Unsafe usage of new static\(\)\.$#'
@@ -26275,12 +28711,6 @@ parameters:
 			path: packages/kezi/purchase/app/Models/PurchaseOrderLine.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$code\.$#'
-			identifier: property.notFound
-			count: 2
-			path: packages/kezi/purchase/app/Models/RequestForQuotation.php
-
-		-
 			message: '#^Class Kezi\\Purchase\\Models\\RequestForQuotation uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
@@ -26323,26 +28753,14 @@ parameters:
 			path: packages/kezi/purchase/app/Models/RequestForQuotation.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$rate\.$#'
-			identifier: property.notFound
-			count: 1
-			path: packages/kezi/purchase/app/Models/RequestForQuotationLine.php
-
-		-
-			message: '#^Cannot access property \$currency on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: packages/kezi/purchase/app/Models/RequestForQuotationLine.php
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 3
+			path: packages/kezi/purchase/app/Models/RequestForQuotation.php
 
 		-
 			message: '#^Class Kezi\\Purchase\\Models\\RequestForQuotationLine uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
-			count: 1
-			path: packages/kezi/purchase/app/Models/RequestForQuotationLine.php
-
-		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
 			count: 1
 			path: packages/kezi/purchase/app/Models/RequestForQuotationLine.php
 
@@ -26519,18 +28937,6 @@ parameters:
 			identifier: property.notFound
 			count: 3
 			path: packages/kezi/purchase/database/factories/VendorBillLineFactory.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/purchase/database/migrations/2025_09_23_000011_create_vendor_bill_lines_table.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/purchase/database/migrations/2025_09_23_000020_create_vendor_bill_attachments_table.php
 
 		-
 			message: '#^Parameter \$expense_account_id of class Kezi\\Purchase\\DataTransferObjects\\Purchases\\CreateVendorBillLineDTO constructor expects int, int\|null given\.$#'
@@ -26721,13 +29127,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$action\.$#'
 			identifier: property.notFound
-			count: 14
+			count: 15
 			path: packages/kezi/purchase/tests/Feature/Actions/CreateVendorBillFromPurchaseOrderActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 27
+			count: 28
 			path: packages/kezi/purchase/tests/Feature/Actions/CreateVendorBillFromPurchaseOrderActionTest.php
 
 		-
@@ -26751,13 +29157,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$storableProduct\.$#'
 			identifier: property.notFound
-			count: 10
+			count: 11
 			path: packages/kezi/purchase/tests/Feature/Actions/CreateVendorBillFromPurchaseOrderActionTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
 			identifier: property.notFound
-			count: 15
+			count: 16
 			path: packages/kezi/purchase/tests/Feature/Actions/CreateVendorBillFromPurchaseOrderActionTest.php
 
 		-
@@ -26987,6 +29393,36 @@ parameters:
 			identifier: method.nonObject
 			count: 2
 			path: packages/kezi/purchase/tests/Feature/Filament/DeferredVendorBillFilamentTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 6
+			path: packages/kezi/purchase/tests/Feature/Filament/ProductSelectionIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/purchase/tests/Feature/Filament/ProductSelectionIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$vendor\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/purchase/tests/Feature/Filament/ProductSelectionIntegrationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: packages/kezi/purchase/tests/Feature/Filament/ProductSelectionIntegrationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/Filament/ProductSelectionIntegrationTest.php
 
 		-
 			message: '#^Method Kezi\\Purchase\\Tests\\Feature\\Filament\\PurchaseOrderBusinessRulesTest\:\:create_bill_action_is_hidden_when_bills_already_exist\(\) has no return type specified\.$#'
@@ -27369,25 +29805,121 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 9
+			count: 6
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationCurrencyTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$iqd\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationCurrencyTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$usd\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationCurrencyTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationCurrencyTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$vendor\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationCurrencyTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationCurrencyTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationCurrencyTest.php
+
+		-
+			message: '#^Cannot access property \$currency_id on Kezi\\Purchase\\Models\\RequestForQuotation\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationCurrencyTest.php
+
+		-
+			message: '#^Cannot access property \$total on Kezi\\Purchase\\Models\\RequestForQuotation\|null\.$#'
+			identifier: property.nonObject
+			count: 4
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationCurrencyTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 8
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationFormTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$eur\.$#'
+			identifier: property.notFound
+			count: 7
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationFormTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$usd\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationFormTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationFormTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$vendor\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationFormTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationFormTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationFormTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 12
 			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationLivewireTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 6
 			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationLivewireTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$vendor\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 6
 			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationLivewireTest.php
 
 		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
 			identifier: method.notFound
-			count: 5
+			count: 6
 			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationLivewireTest.php
 
 		-
@@ -27437,6 +29969,54 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationResourceTest.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Purchase\\Models\\RequestForQuotation\:\:\$subtotal_company_currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationViewTest.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Purchase\\Models\\RequestForQuotation\:\:\$tax_total_company_currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationViewTest.php
+
+		-
+			message: '#^Access to an undefined property Kezi\\Purchase\\Models\\RequestForQuotation\:\:\$total_company_currency\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationViewTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationViewTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationViewTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$vendor\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationViewTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationViewTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/Filament/RequestForQuotationViewTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
@@ -27665,6 +30245,84 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: packages/kezi/purchase/tests/Feature/Filament/VendorBillAttachmentFilamentTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 9
+			path: packages/kezi/purchase/tests/Feature/Filament/VendorBillCalculationLivewireTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/Filament/VendorBillCalculationLivewireTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$expenseAccount\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/purchase/tests/Feature/Filament/VendorBillCalculationLivewireTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$iqd\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/Filament/VendorBillCalculationLivewireTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$product1\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/purchase/tests/Feature/Filament/VendorBillCalculationLivewireTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$product2\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/purchase/tests/Feature/Filament/VendorBillCalculationLivewireTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$product3\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/purchase/tests/Feature/Filament/VendorBillCalculationLivewireTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$usd\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/purchase/tests/Feature/Filament/VendorBillCalculationLivewireTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/Filament/VendorBillCalculationLivewireTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$vendor\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/purchase/tests/Feature/Filament/VendorBillCalculationLivewireTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/Filament/VendorBillCalculationLivewireTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assignSuperAdminRole\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/Filament/VendorBillCalculationLivewireTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:seed\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/Filament/VendorBillCalculationLivewireTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$cogsAccount\.$#'
@@ -28495,6 +31153,66 @@ parameters:
 			path: packages/kezi/purchase/tests/Feature/VendorBillAttachmentTest.php
 
 		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/VendorBillCalculationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/purchase/tests/Feature/VendorBillCalculationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$iqd\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/VendorBillCalculationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$usd\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/purchase/tests/Feature/VendorBillCalculationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/VendorBillCalculationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/VendorBillCalculationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assignSuperAdminRole\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/VendorBillCalculationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:seed\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/VendorBillCalculationTest.php
+
+		-
+			message: '#^Cannot call method getAmount\(\) on Brick\\Money\\Money\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/VendorBillCalculationTest.php
+
+		-
+			message: '#^Cannot call method getMinorAmount\(\) on Brick\\Money\\Money\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: packages/kezi/purchase/tests/Feature/VendorBillCalculationTest.php
+
+		-
 			message: '#^Array has 2 duplicate keys with value ''name'' \(''name'', ''name''\)\.$#'
 			identifier: array.duplicateKey
 			count: 1
@@ -28567,6 +31285,12 @@ parameters:
 			path: packages/kezi/purchase/tests/Unit/Services/PurchaseOrderServiceTest.php
 
 		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$exchangeRateService\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/purchase/tests/Unit/Services/PurchaseOrderServiceTest.php
+
+		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$lockDateService\.$#'
 			identifier: property.notFound
 			count: 4
@@ -28604,6 +31328,12 @@ parameters:
 
 		-
 			message: '#^Parameter \#3 \$budgetControlService of class Kezi\\Purchase\\Services\\PurchaseOrderService constructor expects Kezi\\Accounting\\Services\\BudgetControlService, Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: packages/kezi/purchase/tests/Unit/Services/PurchaseOrderServiceTest.php
+
+		-
+			message: '#^Parameter \#4 \$exchangeRateService of class Kezi\\Purchase\\Services\\PurchaseOrderService constructor expects Kezi\\Foundation\\Services\\ExchangeRateService, Mockery\\MockInterface given\.$#'
 			identifier: argument.type
 			count: 1
 			path: packages/kezi/purchase/tests/Unit/Services/PurchaseOrderServiceTest.php
@@ -28909,6 +31639,24 @@ parameters:
 			path: packages/kezi/quality-control/app/Filament/Clusters/QualityControl/Resources/QualityAlertResource/Pages/CreateQualityAlert.php
 
 		-
+			message: '#^Access to an undefined property Kezi\\QualityControl\\Models\\QualityInspectionParameter\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/quality-control/app/Filament/Clusters/QualityControl/Resources/QualityCheckResource/Pages/ViewQualityCheck.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: packages/kezi/quality-control/app/Filament/Clusters/QualityControl/Resources/QualityCheckResource/Pages/ViewQualityCheck.php
+
+		-
+			message: '#^Parameter \$inspectedByUserId of class Kezi\\QualityControl\\DataTransferObjects\\RecordQualityCheckResultDTO constructor expects int, int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: packages/kezi/quality-control/app/Filament/Clusters/QualityControl/Resources/QualityCheckResource/Pages/ViewQualityCheck.php
+
+		-
 			message: '#^Cannot call method getKey\(\) on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -29205,6 +31953,30 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
+			count: 6
+			path: packages/kezi/quality-control/tests/Feature/Filament/RecordQualityCheckResultsActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/quality-control/tests/Feature/Filament/RecordQualityCheckResultsActionTest.php
+
+		-
+			message: '#^Cannot access property \$result_numeric on Kezi\\QualityControl\\Models\\QualityCheckLine\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/quality-control/tests/Feature/Filament/RecordQualityCheckResultsActionTest.php
+
+		-
+			message: '#^Cannot access property \$result_pass_fail on Kezi\\QualityControl\\Models\\QualityCheckLine\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: packages/kezi/quality-control/tests/Feature/Filament/RecordQualityCheckResultsActionTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
 			count: 11
 			path: packages/kezi/quality-control/tests/Feature/Filament/Resources/QualityControlPointResourceTest.php
 
@@ -29385,7 +32157,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Kezi\\QualityControl\\Tests\\Feature\\QualityAlertResolutionTest\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 11
+			count: 12
 			path: packages/kezi/quality-control/tests/Feature/QualityAlertResolutionTest.php
 
 		-
@@ -29731,7 +32503,7 @@ parameters:
 			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/Quotes/Pages/ViewQuote.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Accounting\\Models\\Tax\>\|Kezi\\Accounting\\Models\\Tax\:\:\$rate\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Product\\Models\\Product\>\|Kezi\\Product\\Models\\Product\:\:\$description\.$#'
 			identifier: property.notFound
 			count: 1
 			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/Quotes/Schemas/QuoteForm.php
@@ -29857,13 +32629,13 @@ parameters:
 			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/RelationManagers/InvoicesRelationManager.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Accounting\\Models\\Tax\>\|Kezi\\Accounting\\Models\\Tax\:\:\$rate\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/Schemas/SalesOrderForm.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency\:\:\$id\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Product\\Models\\Product\>\|Kezi\\Product\\Models\\Product\:\:\$description\.$#'
 			identifier: property.notFound
 			count: 1
 			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/Schemas/SalesOrderForm.php
@@ -29893,12 +32665,6 @@ parameters:
 			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/Schemas/SalesOrderForm.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/Schemas/SalesOrderForm.php
-
-		-
 			message: '#^Instanceof between Brick\\Money\\Money and Brick\\Money\\Money will always evaluate to true\.$#'
 			identifier: instanceof.alwaysTrue
 			count: 2
@@ -29907,13 +32673,13 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$currency of method Kezi\\Foundation\\Services\\CurrencyConverterService\:\:getExchangeRate\(\) expects Kezi\\Foundation\\Models\\Currency, Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency given\.$#'
 			identifier: argument.type
-			count: 2
+			count: 1
 			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/Schemas/SalesOrderForm.php
 
 		-
 			message: '#^Parameter \#1 \$currency of method Kezi\\Foundation\\Services\\CurrencyConverterService\:\:getLatestExchangeRate\(\) expects Kezi\\Foundation\\Models\\Currency, Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency given\.$#'
 			identifier: argument.type
-			count: 2
+			count: 1
 			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/Schemas/SalesOrderForm.php
 
 		-
@@ -30271,12 +33037,6 @@ parameters:
 			path: packages/kezi/sales/database/factories/InvoiceLineFactory.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:onDelete\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: packages/kezi/sales/database/migrations/2026_01_02_120005_create_invoice_lines_table.php
-
-		-
 			message: '#^Parameter \$income_account_id of class Kezi\\Sales\\DataTransferObjects\\Sales\\CreateInvoiceLineDTO constructor expects int, int\|null given\.$#'
 			identifier: argument.type
 			count: 4
@@ -30571,6 +33331,12 @@ parameters:
 			path: packages/kezi/sales/tests/Feature/Actions/Sales/CreateDeliveryFromSalesOrderActionTest.php
 
 		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:seedStock\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/sales/tests/Feature/Actions/Sales/CreateDeliveryFromSalesOrderActionTest.php
+
+		-
 			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -30856,6 +33622,12 @@ parameters:
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
 			identifier: property.notFound
 			count: 2
+			path: packages/kezi/sales/tests/Feature/Actions/Sales/CreateStockMovesForInvoiceActionTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:seedStock\(\)\.$#'
+			identifier: method.notFound
+			count: 1
 			path: packages/kezi/sales/tests/Feature/Actions/Sales/CreateStockMovesForInvoiceActionTest.php
 
 		-
@@ -31431,37 +34203,43 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 9
+			count: 10
 			path: packages/kezi/sales/tests/Feature/Filament/InvoiceEditPageTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$account\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 6
 			path: packages/kezi/sales/tests/Feature/Filament/InvoiceEditPageTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 6
 			path: packages/kezi/sales/tests/Feature/Filament/InvoiceEditPageTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$currency\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 7
 			path: packages/kezi/sales/tests/Feature/Filament/InvoiceEditPageTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$customer\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 6
 			path: packages/kezi/sales/tests/Feature/Filament/InvoiceEditPageTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
 			identifier: property.notFound
-			count: 4
+			count: 5
+			path: packages/kezi/sales/tests/Feature/Filament/InvoiceEditPageTest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:calculateTotalsFromLines\(\)\.$#'
+			identifier: method.notFound
+			count: 1
 			path: packages/kezi/sales/tests/Feature/Filament/InvoiceEditPageTest.php
 
 		-
@@ -31485,7 +34263,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 7
 			path: packages/kezi/sales/tests/Feature/Filament/InvoiceResourceTest.php
 
 		-
@@ -31495,7 +34273,19 @@ parameters:
 			path: packages/kezi/sales/tests/Feature/Filament/InvoiceResourceTest.php
 
 		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$invoice_number\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/sales/tests/Feature/Filament/InvoiceResourceTest.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$journalEntry\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/sales/tests/Feature/Filament/InvoiceResourceTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$journal_entry_id\.$#'
 			identifier: property.notFound
 			count: 2
 			path: packages/kezi/sales/tests/Feature/Filament/InvoiceResourceTest.php
@@ -31507,21 +34297,27 @@ parameters:
 			path: packages/kezi/sales/tests/Feature/Filament/InvoiceResourceTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 3
-			path: packages/kezi/sales/tests/Feature/Filament/InvoiceResourceTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$total_amount\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$reset_to_draft_log\.$#'
 			identifier: property.notFound
 			count: 2
 			path: packages/kezi/sales/tests/Feature/Filament/InvoiceResourceTest.php
 
 		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 5
+			path: packages/kezi/sales/tests/Feature/Filament/InvoiceResourceTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$total_amount\.$#'
+			identifier: property.notFound
+			count: 4
+			path: packages/kezi/sales/tests/Feature/Filament/InvoiceResourceTest.php
+
+		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 33
+			count: 59
 			path: packages/kezi/sales/tests/Feature/Filament/InvoiceResourceTest.php
 
 		-
@@ -31532,6 +34328,12 @@ parameters:
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:invoiceLines\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: packages/kezi/sales/tests/Feature/Filament/InvoiceResourceTest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:payments\(\)\.$#'
 			identifier: method.notFound
 			count: 2
 			path: packages/kezi/sales/tests/Feature/Filament/InvoiceResourceTest.php
@@ -31587,8 +34389,38 @@ parameters:
 		-
 			message: '#^Unable to resolve the template type TValue in call to function expect$#'
 			identifier: argument.templateType
-			count: 10
+			count: 18
 			path: packages/kezi/sales/tests/Feature/Filament/InvoiceResourceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 6
+			path: packages/kezi/sales/tests/Feature/Filament/ProductSelectionIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/sales/tests/Feature/Filament/ProductSelectionIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/kezi/sales/tests/Feature/Filament/ProductSelectionIntegrationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: packages/kezi/sales/tests/Feature/Filament/ProductSelectionIntegrationTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/sales/tests/Feature/Filament/ProductSelectionIntegrationTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
@@ -31646,12 +34478,6 @@ parameters:
 
 		-
 			message: '#^Cannot access property \$id on Kezi\\Foundation\\Models\\Currency\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: packages/kezi/sales/tests/Feature/Filament/QuoteResourceTest.php
-
-		-
-			message: '#^Cannot access property \$lines on Kezi\\Sales\\Models\\Quote\|null\.$#'
 			identifier: property.nonObject
 			count: 1
 			path: packages/kezi/sales/tests/Feature/Filament/QuoteResourceTest.php
