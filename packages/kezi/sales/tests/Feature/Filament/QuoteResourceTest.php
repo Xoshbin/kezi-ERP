@@ -78,8 +78,11 @@ it('can edit a draft quote', function () {
         'currency_id' => $this->company->currency_id,
     ]);
 
+    $product = Product::factory()->create(['company_id' => $quote->company_id]);
+
     // Add a line to satisfy validation
     $quote->lines()->create([
+        'product_id' => $product->id,
         'quote_id' => $quote->id,
         'description' => 'Test',
         'quantity' => 1,

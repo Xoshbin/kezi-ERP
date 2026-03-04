@@ -19,6 +19,7 @@ beforeEach(function () {
 it('updates unit price and description when product is selected', function () {
     $product = Product::factory()->for($this->company)->create([
         'name' => 'Test Product',
+        'description' => null,
         'unit_price' => Money::of(500, 'IQD'),
     ]);
 
