@@ -2,12 +2,13 @@
 
 namespace Kezi\Purchase\Tests\Feature\Filament;
 
+use Filament\Facades\Filament;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\CurrencyRate;
+use Kezi\Foundation\Models\Partner;
+use Kezi\Product\Models\Product;
 use Kezi\Purchase\Filament\Clusters\Purchases\Resources\RequestForQuotations\Pages\CreateRequestForQuotation;
 use Livewire\Livewire;
-use Kezi\Product\Models\Product;
-use Illuminate\Support\Facades\DB;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class, \Tests\Traits\WithConfiguredCompany::class);
 
@@ -26,10 +27,10 @@ beforeEach(function () {
     );
 
     // Set up vendor
-    $this->vendor = \Kezi\Foundation\Models\Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
+    $this->vendor = Partner::factory()->vendor()->create(['company_id' => $this->company->id]);
 
-    \Filament\Facades\Filament::setCurrentPanel(
-        \Filament\Facades\Filament::getPanel('kezi')
+    Filament::setCurrentPanel(
+        Filament::getPanel('kezi')
     );
 });
 
