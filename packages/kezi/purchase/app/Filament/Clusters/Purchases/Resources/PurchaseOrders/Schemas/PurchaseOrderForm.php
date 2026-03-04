@@ -21,8 +21,8 @@ use Kezi\Accounting\Enums\Accounting\TaxType;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Enums\Incoterm;
-use Kezi\Foundation\Enums\Partners\PartnerType;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
+use Kezi\Foundation\Filament\Forms\Components\PartnerSelectField;
 use Kezi\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
 use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Models\Currency;
@@ -30,7 +30,6 @@ use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 use Kezi\Product\Models\Product;
 use Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus;
 use Kezi\Purchase\Models\PurchaseOrder;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class PurchaseOrderForm
 {
@@ -41,28 +40,10 @@ class PurchaseOrderForm
                 Section::make(__('purchase::purchase_orders.sections.vendor_currency_info'))
                     ->description(__('purchase::purchase_orders.sections.vendor_currency_info_description'))
                     ->schema([
-                        TranslatableSelect::make('vendor_id')
+                        PartnerSelectField::make('vendor_id')
                             ->label(__('purchase::purchase_orders.fields.vendor'))
-                            ->relationship('vendor', 'name')
-                            ->searchableFields(['name', 'email', 'contact_person'])
-                            ->searchable()
-                            ->preload()
                             ->required()
-                            ->columnSpan(2)
-                            ->createOptionForm([
-                                TextInput::make('name')
-                                    ->required(),
-                                TextInput::make('email')
-                                    ->email(),
-                                Select::make('type')
-                                    ->label(__('purchase::partner.type'))
-                                    ->options(
-                                        collect(PartnerType::cases())
-                                            ->mapWithKeys(fn (PartnerType $type) => [$type->value => $type->label()])
-                                    )
-                                    ->default(PartnerType::Both)
-                                    ->required(),
-                            ]),
+                            ->columnSpan(2),
 
                         Select::make('currency_id')
                             ->label(__('purchase::purchase_orders.fields.currency'))

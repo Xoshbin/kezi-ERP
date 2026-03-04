@@ -21,6 +21,7 @@ use Kezi\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\LetterOfCredit\LetterOfCreditResource\Pages;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\LetterOfCredit\LetterOfCreditResource\RelationManagers;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\LetterOfCredit\LetterOfCreditResource\Widgets;
+use Kezi\Foundation\Filament\Forms\Components\PartnerSelectField;
 use Kezi\Payment\Enums\LetterOfCredit\LCStatus;
 use Kezi\Payment\Enums\LetterOfCredit\LCType;
 use Kezi\Payment\Models\LetterOfCredit;
@@ -66,12 +67,9 @@ class LetterOfCreditResource extends Resource
                                 ->default(LCType::Import->value)
                                 ->required(),
 
-                            Select::make('vendor_id')
-                                ->relationship('vendor', 'name')
-                                ->required()
-                                ->searchable()
-                                ->preload()
-                                ->label(__('accounting::lc.beneficiary_vendor')),
+                            PartnerSelectField::make('vendor_id')
+                                ->label(__('accounting::lc.beneficiary_vendor'))
+                                ->required(),
                         ])->columnSpanFull(),
 
                         Group::make([

@@ -44,6 +44,7 @@ use Kezi\Accounting\Rules\NotInLockedPeriod;
 use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
+use Kezi\Foundation\Filament\Forms\Components\PartnerSelectField;
 use Kezi\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
 use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
@@ -92,45 +93,10 @@ class InvoiceResource extends Resource
             Section::make(__('accounting::invoice.customer_currency_info'))
                 ->description(__('accounting::invoice.customer_currency_info_description'))
                 ->schema([
-                    TranslatableSelect::make('customer_id')
-                        ->relationship('customer', 'name')
+                    PartnerSelectField::make('customer_id')
                         ->label(__('accounting::invoice.customer'))
-                        ->searchableFields(['name', 'email', 'contact_person'])
-                        ->searchable()
-                        ->preload()
                         ->required()
-                        ->columnSpan(2)
-                        ->createOptionForm([
-                            TextInput::make('name')
-                                ->label(__('accounting::partner.name'))
-                                ->required()
-                                ->maxLength(255),
-                            Select::make('type')
-                                ->label(__('accounting::partner.type'))
-                                ->required()
-                                ->options(
-                                    collect(\Kezi\Foundation\Enums\Partners\PartnerType::cases())
-                                        ->mapWithKeys(fn (\Kezi\Foundation\Enums\Partners\PartnerType $type) => [$type->value => $type->label()])
-                                ),
-                            TextInput::make('contact_person')
-                                ->label(__('accounting::partner.contact_person'))
-                                ->maxLength(255),
-                            TextInput::make('email')
-                                ->label(__('accounting::partner.email'))
-                                ->email()
-                                ->maxLength(255),
-                            TextInput::make('phone')
-                                ->label(__('accounting::partner.phone'))
-                                ->maxLength(255),
-                            Textarea::make('address')
-                                ->label(__('accounting::partner.address'))
-                                ->columnSpanFull(),
-                        ])
-                        ->createOptionModalHeading(__('accounting::invoice.modal_title_create_partner'))
-                        ->createOptionAction(function (Action $action) {
-                            return $action
-                                ->modalWidth('lg');
-                        }),
+                        ->columnSpan(2),
                     TranslatableSelect::forModel('currency_id', Currency::class, 'name')
                         ->label(__('accounting::invoice.currency'))
                         ->required()
