@@ -17,6 +17,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Kezi\Accounting\Enums\Accounting\AccountType;
 use Kezi\Accounting\Enums\Assets\AssetStatus;
 use Kezi\Accounting\Enums\Assets\DepreciationMethod;
 use Kezi\Accounting\Filament\Clusters\Accounting\AccountingCluster;
@@ -149,16 +150,19 @@ class AssetResource extends Resource
                     AccountSelectField::make('asset_account_id')
                         ->label(__('accounting::asset.asset_account'))
                         ->required()
+                        ->createOptionDefaultType(AccountType::FixedAssets)
                         ->columnSpan(1),
 
                     AccountSelectField::make('depreciation_expense_account_id')
                         ->label(__('accounting::asset.depreciation_expense_account'))
                         ->required()
+                        ->createOptionDefaultType(AccountType::Depreciation)
                         ->columnSpan(1),
 
                     AccountSelectField::make('accumulated_depreciation_account_id')
                         ->label(__('accounting::asset.accumulated_depreciation_account'))
                         ->required()
+                        ->createOptionDefaultType(AccountType::FixedAssets)
                         ->columnSpan(1),
                 ])
                 ->columns(2)
