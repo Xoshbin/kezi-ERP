@@ -64,11 +64,13 @@ class PettyCashFundResource extends Resource
 
                         AccountSelectField::make('account_id')
                             ->accountFilter('asset')
+                            ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::CurrentAssets)
                             ->required()
                             ->label(__('accounting::account.label')),
 
                         AccountSelectField::make('bank_account_id')
                             ->accountFilter('asset')
+                            ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::CurrentAssets)
                             ->required()
                             ->label(__('accounting::journal.fields.bank_account')),
 

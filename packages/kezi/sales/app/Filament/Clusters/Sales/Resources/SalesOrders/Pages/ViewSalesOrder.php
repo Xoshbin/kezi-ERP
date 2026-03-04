@@ -68,6 +68,7 @@ class ViewSalesOrder extends ViewRecord
                     AccountSelectField::make('default_income_account_id')
                         ->label(__('sales::invoice.income_account'))
                         ->accountFilter('income')
+                        ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::Income)
                         ->required(),
                 ])
                 ->action(function (array $data) {
