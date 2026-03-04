@@ -10,6 +10,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Inventory\Enums\Inventory\StockLocationType;
 use Kezi\Inventory\Models\StockLocation;
 
@@ -76,14 +77,11 @@ class PosProfileForm
 
                 Section::make(__('pos::pos_profile.accounting_settings'))
                     ->schema([
-                        Select::make('default_income_account_id')
+                        AccountSelectField::make('default_income_account_id')
                             ->label(__('pos::pos_profile.default_income_account'))
                             ->helperText(__('pos::pos_profile.default_income_account_helper'))
-                            ->options(fn () => \Kezi\Accounting\Models\Account::query()
-                                ->where('company_id', \Filament\Facades\Filament::getTenant()?->getKey())
-                                ->where('type', \Kezi\Accounting\Enums\Accounting\AccountType::Income)
-                                ->pluck('name', 'id'))
-                            ->searchable()
+                            ->accountFilter('income')
+                            ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::Income)
                             ->required(),
 
                         Select::make('default_payment_journal_id')

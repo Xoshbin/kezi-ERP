@@ -12,6 +12,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Payment\Enums\LetterOfCredit\LCChargeType;
 
 class ChargesRelationManager extends RelationManager
@@ -64,10 +65,8 @@ class ChargesRelationManager extends RelationManager
                             ->required()
                             ->prefix('IQD'),
 
-                        Forms\Components\Select::make('account_id')
-                            ->relationship('account', 'name')
+                        AccountSelectField::make('account_id')
                             ->required()
-                            ->searchable()
                             ->label(__('accounting::lc.expense_account')),
 
                         Forms\Components\DatePicker::make('charge_date')
