@@ -10,6 +10,8 @@ The system features a comprehensive suite of accounting modules managed through 
 **Email:** `demo@kezierp.com`  
 **Password:** `password`
 
+**📖 Docs & User Guides:** [https://kezierp.com/docs/v1.0/en/tutorials/getting-started](https://kezierp.com/docs/v1.0/en/tutorials/getting-started)
+
 ## Core Principles
 
 The architecture is built upon a foundation of strict accounting principles:
