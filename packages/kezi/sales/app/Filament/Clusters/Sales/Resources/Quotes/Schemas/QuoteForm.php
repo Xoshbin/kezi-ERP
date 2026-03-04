@@ -19,6 +19,7 @@ use Kezi\Accounting\Enums\Accounting\TaxType;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
+use Kezi\Foundation\Filament\Forms\Components\PartnerSelectField;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Product\Models\Product;
 use Kezi\Sales\Enums\Sales\QuoteStatus;
@@ -75,11 +76,8 @@ class QuoteForm
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                Select::make('partner_id')
+                                PartnerSelectField::make('partner_id')
                                     ->label(__('sales::quote.fields.partner'))
-                                    ->relationship('partner', 'name')
-                                    ->searchable()
-                                    ->preload()
                                     ->required(),
 
                                 Select::make('currency_id')
