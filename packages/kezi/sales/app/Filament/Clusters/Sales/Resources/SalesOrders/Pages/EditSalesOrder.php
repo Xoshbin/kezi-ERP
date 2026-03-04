@@ -6,6 +6,7 @@ use Brick\Money\Money;
 use Carbon\Carbon;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Sales\Actions\Sales\ConfirmSalesOrderAction;
 use Kezi\Sales\Actions\Sales\UpdateSalesOrderAction;
@@ -64,10 +65,10 @@ class EditSalesOrder extends EditRecord
                         ->label(__('sales::sales_orders.form.due_date'))
                         ->required()
                         ->default(now()->addDays(30)),
-                    \Filament\Forms\Components\Select::make('default_income_account_id')
+                    AccountSelectField::make('default_income_account_id')
                         ->label(__('sales::sales_orders.form.default_income_account'))
-                        ->options(\Kezi\Accounting\Models\Account::pluck('name', 'id'))
-                        ->searchable()
+                        ->accountFilter('income')
+                        ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::Income)
                         ->required(),
                 ])
                 ->action(function (SalesOrder $record, array $data) {

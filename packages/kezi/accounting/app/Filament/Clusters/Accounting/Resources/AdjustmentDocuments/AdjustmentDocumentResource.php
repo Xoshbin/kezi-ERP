@@ -29,7 +29,7 @@ use Kezi\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\CreateAdjustmentDocument;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\EditAdjustmentDocument;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\ListAdjustmentDocuments;
-use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Accounting\Rules\NotInLockedPeriod;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
@@ -289,8 +289,7 @@ class AdjustmentDocumentResource extends Resource
                                     \Kezi\Foundation\Filament\Forms\Components\MoneyInput::make('unit_price')
                                         ->label(__('product.unit_price'))
                                         ->currencyField('../../currency_id'),
-                                    Select::make('income_account_id')
-                                        ->relationship('incomeAccount', 'name')
+                                    AccountSelectField::make('income_account_id')
                                         ->label(__('product.income_account'))
                                         ->required(),
                                 ])
@@ -344,43 +343,9 @@ class AdjustmentDocumentResource extends Resource
                                         ->modalWidth('lg');
                                 })
                                 ->columnSpan(3),
-                            TranslatableSelect::forModel('account_id', Account::class)
+                            AccountSelectField::make('account_id')
                                 ->label(__('accounting::adjustment_document.account'))
-                                ->searchable()
-                                ->searchableFields(['name', 'code'])
-                                ->preload()
-                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->getTranslatedLabel('name').' ('.$record->code.')')
                                 ->required()
-                                ->createOptionForm([
-                                    Select::make('company_id')
-                                        ->label(__('accounting::account.company'))
-                                        ->relationship('company', 'name')
-                                        ->required(),
-                                    TextInput::make('code')
-                                        ->label(__('accounting::account.code'))
-                                        ->required()
-                                        ->maxLength(255),
-                                    TextInput::make('name')
-                                        ->label(__('accounting::account.name'))
-                                        ->required()
-                                        ->maxLength(255),
-                                    Select::make('type')
-                                        ->label(__('accounting::account.type'))
-                                        ->required()
-                                        ->options(
-                                            collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())
-                                                ->mapWithKeys(fn (\Kezi\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
-                                        )
-                                        ->searchable(),
-                                    Toggle::make('is_deprecated')
-                                        ->label(__('accounting::account.is_deprecated'))
-                                        ->default(false),
-                                ])
-                                ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
-                                ->createOptionAction(function (Action $action) {
-                                    return $action
-                                        ->modalWidth('lg');
-                                })
                                 ->columnSpan(3),
                         ])
                         ->columns(18),

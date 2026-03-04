@@ -15,6 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 
 /**
  * @extends RelationManager<\Kezi\Sales\Models\Invoice>
@@ -47,7 +48,9 @@ class InvoiceLinesRelationManager extends RelationManager
                 TextInput::make('quantity')->label(__('accounting::invoice.quantity'))->required()->numeric(),
                 TextInput::make('unit_price')->label(__('accounting::invoice.unit_price'))->required()->numeric(),
                 Select::make('tax_id')->relationship('tax', 'name')->label(__('accounting::invoice.tax')),
-                Select::make('income_account_id')->relationship('incomeAccount', 'name')->label(__('accounting::invoice.income_account'))->required(),
+                AccountSelectField::make('income_account_id')
+                    ->label(__('accounting::invoice.income_account'))
+                    ->required(),
             ]);
     }
 

@@ -4,7 +4,6 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Taxes;
 
 use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
-use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -21,9 +20,9 @@ use Kezi\Accounting\Enums\Accounting\TaxType;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages\CreateTax;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages\EditTax;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Taxes\Pages\ListTaxes;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Accounting\Models\Tax;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class TaxResource extends Resource
 {
@@ -71,23 +70,8 @@ class TaxResource extends Resource
                             ->live()
                             ->columnSpanFull(),
 
-                        TranslatableSelect::make('tax_account_id')
-                            ->searchable()
-                            ->preload()
-                            ->relationship('taxAccount', 'name')
+                        AccountSelectField::make('tax_account_id')
                             ->label(__('accounting::tax.tax_account'))
-                            ->createOptionForm([
-                                Select::make('company_id')->relationship('company', 'name')->label(__('company.name'))->required(),
-                                TextInput::make('code')->label(__('accounting::account.code'))->required(),
-                                TextInput::make('name')->label(__('accounting::account.name'))->required(),
-                                Select::make('type')->label(__('accounting::account.type'))
-                                    ->options(collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
-                                    ->required(),
-                                Toggle::make('is_deprecated')->label(__('accounting::account.is_deprecated'))->default(false),
-                                Toggle::make('allow_reconciliation')->label(__('accounting::account.allow_reconciliation'))->default(false),
-                            ])
-                            ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
-                            ->createOptionAction(fn (Action $a) => $a->name('create-account-option')->modalWidth('lg'))
                             ->required(fn ($get) => ! $get('is_group'))
                             ->visible(fn ($get) => ! $get('is_group')),
 

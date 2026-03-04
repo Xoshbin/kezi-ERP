@@ -13,6 +13,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 
 /**
  * @extends RelationManager<\Kezi\Purchase\Models\VendorBill>
@@ -30,7 +31,9 @@ class VendorBillLinesRelationManager extends RelationManager
                 TextInput::make('quantity')->required()->numeric()->label(__('accounting::bill.quantity')),
                 TextInput::make('unit_price')->required()->numeric()->label(__('accounting::bill.unit_price')),
                 Select::make('tax_id')->relationship('tax', 'name')->label(__('accounting::bill.tax')),
-                Select::make('expense_account_id')->relationship('expenseAccount', 'name')->required()->label(__('accounting::bill.expense_account')),
+                AccountSelectField::make('expense_account_id')
+                    ->label(__('accounting::bill.expense_account'))
+                    ->required(),
             ]);
     }
 

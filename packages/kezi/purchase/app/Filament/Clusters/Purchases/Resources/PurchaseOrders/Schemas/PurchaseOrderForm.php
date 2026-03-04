@@ -14,11 +14,10 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Kezi\Accounting\Enums\Accounting\TaxType;
-use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
@@ -273,14 +272,8 @@ class PurchaseOrderForm
                                     ->createOptionForm([
                                         Hidden::make('company_id')
                                             ->default(fn () => Filament::getTenant()?->getKey()),
-                                        Select::make('tax_account_id')
-                                            ->options(function () {
-                                                return Account::where('company_id', Filament::getTenant()?->getKey())
-                                                    ->where('is_deprecated', false)
-                                                    ->pluck('name', 'id');
-                                            })
+                                        AccountSelectField::make('tax_account_id')
                                             ->label(__('accounting::tax.tax_account'))
-                                            ->searchable()
                                             ->required(),
                                         TextInput::make('name')
                                             ->label(__('accounting::tax.name'))

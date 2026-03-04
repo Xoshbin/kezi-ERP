@@ -11,7 +11,6 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -34,7 +33,7 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Inventory\Enums\Inventory\ValuationMethod;
@@ -183,74 +182,16 @@ class ProductResource extends Resource
                 ->icon('heroicon-o-calculator')
                 ->schema([
                     Grid::make(2)->schema([
-                        TranslatableSelect::make('income_account_id')
-                            ->relationship('incomeAccount', 'name')
+                        AccountSelectField::make('income_account_id')
                             ->label(__('product.income_account'))
                             ->nullable()
-                            ->searchable()
-                            ->preload()
-                            ->searchableFields(['name', 'code'])
-                            ->modifyQueryUsing(fn ($query) => $query->whereIn('type', [\Kezi\Accounting\Enums\Accounting\AccountType::Income, \Kezi\Accounting\Enums\Accounting\AccountType::OtherIncome]))
-                            ->createOptionForm([
-                                TextInput::make('code')
-                                    ->label(__('accounting::common.account.code'))
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('name')
-                                    ->label(__('accounting::common.account.name'))
-                                    ->required()
-                                    ->maxLength(255),
-                                Select::make('type')
-                                    ->label(__('accounting::common.account.type'))
-                                    ->required()
-                                    ->options(
-                                        collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())
-                                            ->mapWithKeys(fn (\Kezi\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
-                                    )
-                                    ->searchable(),
-                                Toggle::make('is_deprecated')
-                                    ->label(__('accounting::common.account.is_deprecated'))
-                                    ->default(false),
-                            ])
-                            ->createOptionModalHeading(__('common.modal_title_create_account'))
-                            ->createOptionAction(function (Action $action) {
-                                return $action
-                                    ->modalWidth('lg');
-                            }),
-                        TranslatableSelect::make('expense_account_id')
-                            ->relationship('expenseAccount', 'name')
+                            ->accountFilter(fn ($query) => $query->whereIn('type', [\Kezi\Accounting\Enums\Accounting\AccountType::Income, \Kezi\Accounting\Enums\Accounting\AccountType::OtherIncome]))
+                            ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::Income),
+                        AccountSelectField::make('expense_account_id')
                             ->label(__('product.expense_account'))
                             ->nullable()
-                            ->searchable()
-                            ->preload()
-                            ->searchableFields(['name', 'code'])
-                            ->modifyQueryUsing(fn ($query) => $query->whereIn('type', [\Kezi\Accounting\Enums\Accounting\AccountType::Expense, \Kezi\Accounting\Enums\Accounting\AccountType::Depreciation, \Kezi\Accounting\Enums\Accounting\AccountType::CostOfRevenue]))
-                            ->createOptionForm([
-                                TextInput::make('code')
-                                    ->label(__('accounting::common.account.code'))
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('name')
-                                    ->label(__('accounting::common.account.name'))
-                                    ->required()
-                                    ->maxLength(255),
-                                Select::make('type')
-                                    ->label(__('accounting::common.account.type'))
-                                    ->required()
-                                    ->options(
-                                        collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())
-                                            ->mapWithKeys(fn (\Kezi\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
-                                    )
-                                    ->searchable(),
-                                Toggle::make('is_deprecated')
-                                    ->label(__('accounting::common.account.is_deprecated'))
-                                    ->default(false),
-                            ])
-                            ->createOptionModalHeading(__('common.modal_title_create_account'))
-                            ->createOptionAction(function (Action $action) {
-                                return $action
-                                    ->modalWidth('lg');
-                            }),
+                            ->accountFilter(fn ($query) => $query->whereIn('type', [\Kezi\Accounting\Enums\Accounting\AccountType::Expense, \Kezi\Accounting\Enums\Accounting\AccountType::Depreciation, \Kezi\Accounting\Enums\Accounting\AccountType::CostOfRevenue]))
+                            ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::Expense),
                     ]),
                     Grid::make(2)->schema([
                         TranslatableSelect::make('purchaseTaxes')
@@ -288,150 +229,22 @@ class ProductResource extends Resource
                             ->helperText(__('product.average_cost_help')),
                     ]),
                     Grid::make(2)->schema([
-                        TranslatableSelect::make('default_inventory_account_id')
-                            ->relationship('inventoryAccount', 'name')
+                        AccountSelectField::make('default_inventory_account_id')
                             ->label(__('product.default_inventory_account'))
-                            ->searchable()
-                            ->preload()
-                            ->searchableFields(['name'])
                             ->required(fn (Get $get) => $get('type') === \Kezi\Product\Enums\Products\ProductType::Storable->value)
                             ->rules(['required_if:type,'.\Kezi\Product\Enums\Products\ProductType::Storable->value])
-                            ->visible(fn (Get $get) => $get('type') === \Kezi\Product\Enums\Products\ProductType::Storable->value)
-                            ->createOptionForm([
-                                Hidden::make('company_id')
-                                    ->default(fn () => Filament::getTenant()?->getKey()),
-                                TextInput::make('code')
-                                    ->label(__('accounting::common.account.code'))
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('name')
-                                    ->label(__('accounting::common.account.name'))
-                                    ->required()
-                                    ->maxLength(255),
-                                Select::make('type')
-                                    ->label(__('accounting::common.account.type'))
-                                    ->required()
-                                    ->options(
-                                        collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())
-                                            ->mapWithKeys(fn (\Kezi\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
-                                    )
-                                    ->searchable(),
-                                Toggle::make('is_deprecated')
-                                    ->label(__('accounting::common.account.is_deprecated'))
-                                    ->default(false),
-                            ])
-                            ->createOptionModalHeading(__('common.modal_title_create_account'))
-                            ->createOptionAction(function (Action $action) {
-                                return $action->modalWidth('lg');
-                            }),
-                        TranslatableSelect::make('default_cogs_account_id')
-                            ->relationship('defaultCogsAccount', 'name')
-                            ->forModel('default_cogs_account_id', Account::class, 'name')
+                            ->visible(fn (Get $get) => $get('type') === \Kezi\Product\Enums\Products\ProductType::Storable->value),
+                        AccountSelectField::make('default_cogs_account_id')
                             ->label(__('product.default_cogs_account'))
-                            ->searchable()
-                            ->preload()
-                            ->searchableFields(['name'])
-
-                            ->visible(fn (Get $get) => $get('type') === \Kezi\Product\Enums\Products\ProductType::Storable->value)
-                            ->createOptionForm([
-                                Hidden::make('company_id')
-                                    ->default(fn () => Filament::getTenant()?->getKey()),
-                                TextInput::make('code')
-                                    ->label(__('accounting::common.account.code'))
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('name')
-                                    ->label(__('accounting::common.account.name'))
-                                    ->required()
-                                    ->maxLength(255),
-                                Select::make('type')
-                                    ->label(__('accounting::common.account.type'))
-                                    ->required()
-                                    ->options(
-                                        collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())
-                                            ->mapWithKeys(fn (\Kezi\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
-                                    )
-                                    ->searchable(),
-                                Toggle::make('is_deprecated')
-                                    ->label(__('accounting::common.account.is_deprecated'))
-                                    ->default(false),
-                            ])
-                            ->createOptionModalHeading(__('common.modal_title_create_account'))
-                            ->createOptionAction(function (Action $action) {
-                                return $action->modalWidth('lg');
-                            }),
+                            ->visible(fn (Get $get) => $get('type') === \Kezi\Product\Enums\Products\ProductType::Storable->value),
                     ]),
                     Grid::make(2)->schema([
-                        TranslatableSelect::make('default_stock_input_account_id')
-                            ->relationship('stockInputAccount', 'name')
+                        AccountSelectField::make('default_stock_input_account_id')
                             ->label(__('product.default_stock_input_account'))
-                            ->searchable()
-                            ->preload()
-                            ->searchableFields(['name', 'code'])
-
-                            ->visible(fn (Get $get) => $get('type') === \Kezi\Product\Enums\Products\ProductType::Storable->value)
-                            ->createOptionForm([
-                                Hidden::make('company_id')
-                                    ->default(fn () => Filament::getTenant()?->getKey()),
-                                TextInput::make('code')
-                                    ->label(__('accounting::common.account.code'))
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('name')
-                                    ->label(__('accounting::common.account.name'))
-                                    ->required()
-                                    ->maxLength(255),
-                                Select::make('type')
-                                    ->label(__('accounting::common.account.type'))
-                                    ->required()
-                                    ->options(
-                                        collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())
-                                            ->mapWithKeys(fn (\Kezi\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
-                                    )
-                                    ->searchable(),
-                                Toggle::make('is_deprecated')
-                                    ->label(__('accounting::common.account.is_deprecated'))
-                                    ->default(false),
-                            ])
-                            ->createOptionModalHeading(__('common.modal_title_create_account'))
-                            ->createOptionAction(function (Action $action) {
-                                return $action->modalWidth('lg');
-                            }),
-                        TranslatableSelect::make('default_price_difference_account_id')
-                            ->relationship('defaultPriceDifferenceAccount', 'name')
+                            ->visible(fn (Get $get) => $get('type') === \Kezi\Product\Enums\Products\ProductType::Storable->value),
+                        AccountSelectField::make('default_price_difference_account_id')
                             ->label(__('product.default_price_difference_account'))
-                            ->searchable()
-                            ->preload()
-                            ->searchableFields(['name', 'code'])
-
-                            ->visible(fn (Get $get) => $get('type') === \Kezi\Product\Enums\Products\ProductType::Storable->value)
-                            ->createOptionForm([
-                                Hidden::make('company_id')
-                                    ->default(fn () => Filament::getTenant()?->getKey()),
-                                TextInput::make('code')
-                                    ->label(__('accounting::common.account.code'))
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('name')
-                                    ->label(__('accounting::common.account.name'))
-                                    ->required()
-                                    ->maxLength(255),
-                                Select::make('type')
-                                    ->label(__('accounting::common.account.type'))
-                                    ->required()
-                                    ->options(
-                                        collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())
-                                            ->mapWithKeys(fn (\Kezi\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
-                                    )
-                                    ->searchable(),
-                                Toggle::make('is_deprecated')
-                                    ->label(__('accounting::common.account.is_deprecated'))
-                                    ->default(false),
-                            ])
-                            ->createOptionModalHeading(__('common.modal_title_create_account'))
-                            ->createOptionAction(function (Action $action) {
-                                return $action->modalWidth('lg');
-                            }),
+                            ->visible(fn (Get $get) => $get('type') === \Kezi\Product\Enums\Products\ProductType::Storable->value),
                     ]),
                     Grid::make(1)->schema([
                         Select::make('tracking_type')

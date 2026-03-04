@@ -13,6 +13,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Foundation\Filament\Forms\Components\PartnerSelectField;
 
 /**
@@ -26,7 +27,9 @@ class JournalEntryLinesRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                Select::make('account_id')->label(__('accounting::journal_entry.account'))->relationship('account', 'name')->required(),
+                AccountSelectField::make('account_id')
+                    ->label(__('accounting::journal_entry.account'))
+                    ->required(),
                 TextInput::make('debit')->label(__('accounting::journal_entry.debit'))->required()->numeric(),
                 TextInput::make('credit')->label(__('accounting::journal_entry.credit'))->required()->numeric(),
                 TextInput::make('description')->label(__('accounting::journal_entry.description'))->maxLength(255),

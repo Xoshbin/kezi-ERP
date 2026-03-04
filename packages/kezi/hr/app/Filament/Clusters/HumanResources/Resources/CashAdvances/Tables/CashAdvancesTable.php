@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Table;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 
 class CashAdvancesTable
 {
@@ -92,11 +93,11 @@ class CashAdvancesTable
                     ->requiresConfirmation()
                     ->visible(fn (\Kezi\HR\Models\CashAdvance $record) => $record->status === \Kezi\HR\Enums\CashAdvanceStatus::Approved)
                     ->form([
-                        \Filament\Forms\Components\Select::make('bank_account_id')
+                        AccountSelectField::make('bank_account_id')
                             ->label(__('hr::cash_advance.bank_account'))
-                            ->options(\Kezi\Accounting\Models\Account::where('type', \Kezi\Accounting\Enums\Accounting\AccountType::BankAndCash)->get()->pluck('name', 'id'))
-                            ->required()
-                            ->searchable(),
+                            ->accountFilter('bank_and_cash')
+                            ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::BankAndCash)
+                            ->required(),
                     ])
                     ->action(function (\Kezi\HR\Models\CashAdvance $record, array $data) {
                         app(\Kezi\HR\Services\HumanResources\CashAdvanceService::class)->disburse($record, (int) $data['bank_account_id'], auth()->user());
@@ -112,10 +113,11 @@ class CashAdvancesTable
                             ->label(__('hr::cash_advance.settlement_method'))
                             ->options(__('hr::cash_advance.settlement_methods'))
                             ->required(),
-                        \Filament\Forms\Components\Select::make('bank_account_id')
+                        AccountSelectField::make('bank_account_id')
                             ->label(__('hr::cash_advance.bank_account'))
                             ->helperText(__('hr::cash_advance.bank_account_helper'))
-                            ->options(\Kezi\Accounting\Models\Account::where('type', \Kezi\Accounting\Enums\Accounting\AccountType::BankAndCash)->get()->pluck('name', 'id'))
+                            ->accountFilter('bank_and_cash')
+                            ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::BankAndCash)
                             ->visible(fn ($get) => in_array($get('settlement_method'), ['cash_return', 'reimbursement'])),
                     ])
                     ->action(function (\Kezi\HR\Models\CashAdvance $record, array $data) {

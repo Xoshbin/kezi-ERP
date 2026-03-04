@@ -7,12 +7,12 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\Select;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 
 /**
  * @extends RelationManager<\Kezi\Accounting\Models\FiscalPosition>
@@ -32,12 +32,10 @@ class AccountMappingsRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                Select::make('original_account_id')
-                    ->relationship('originalAccount', 'name')
+                AccountSelectField::make('original_account_id')
                     ->label(__('accounting::fiscal_position.relation_managers.account_mappings.original_account'))
                     ->required(),
-                Select::make('mapped_account_id')
-                    ->relationship('mappedAccount', 'name')
+                AccountSelectField::make('mapped_account_id')
                     ->label(__('accounting::fiscal_position.relation_managers.account_mappings.mapped_account'))
                     ->required(),
             ]);
