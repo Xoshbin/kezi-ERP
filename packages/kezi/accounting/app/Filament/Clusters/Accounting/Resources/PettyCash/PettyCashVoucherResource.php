@@ -14,6 +14,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Kezi\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\PettyCash\PettyCashVoucherResource\Pages;
+use Kezi\Foundation\Filament\Forms\Components\PartnerSelectField;
 use Kezi\Payment\Enums\PettyCash\PettyCashVoucherStatus;
 use Kezi\Payment\Models\PettyCash\PettyCashVoucher;
 use Kezi\Payment\Services\PettyCash\PettyCashService;
@@ -79,11 +80,7 @@ class PettyCashVoucherResource extends Resource
                             ->label(__('accounting::petty_cash.fields.expense_category'))
                             ->helperText(__('accounting::petty_cash.helpers.expense_category')),
 
-                        Select::make('partner_id')
-                            ->relationship('partner', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->preload()
+                        PartnerSelectField::make('partner_id')
                             ->label(__('accounting::petty_cash.fields.vendor_payee')),
 
                         Textarea::make('description')

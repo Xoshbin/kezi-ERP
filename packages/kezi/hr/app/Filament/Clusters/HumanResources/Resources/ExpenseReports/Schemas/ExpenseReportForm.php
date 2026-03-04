@@ -55,10 +55,8 @@ class ExpenseReportForm
                                     ->label(__('hr::expense_report.lines.description'))
                                     ->required()
                                     ->columnSpan(2),
-                                Select::make('partner_id')
-                                    ->label(__('hr::expense_report.lines.partner'))
-                                    ->options(\Kezi\Foundation\Models\Partner::get()->pluck('name', 'id'))
-                                    ->searchable(),
+                                \Kezi\Foundation\Filament\Forms\Components\PartnerSelectField::make('partner_id')
+                                    ->label(__('hr::expense_report.lines.partner')),
                                 TextInput::make('receipt_reference')
                                     ->label(__('hr::expense_report.lines.receipt')),
                             ])

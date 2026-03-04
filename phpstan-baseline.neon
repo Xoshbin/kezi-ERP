@@ -1215,7 +1215,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 9
+			count: 7
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/RecurringTemplates/RecurringTemplateResource.php
 
 		-
@@ -8503,6 +8503,12 @@ parameters:
 			path: packages/kezi/foundation/app/Filament/Components/CostPreviewComponent.php
 
 		-
+			message: '#^Parameter \#1 \$model of method Filament\\Schemas\\Components\\Component\:\:actionSchemaModel\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>\|Closure\|Illuminate\\Database\\Eloquent\\Model\|null, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: packages/kezi/foundation/app/Filament/Forms/Components/PartnerSelectField.php
+
+		-
 			message: '#^Unsafe usage of new static\(\)\.$#'
 			identifier: new.static
 			count: 1
@@ -9155,6 +9161,54 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: packages/kezi/foundation/tests/Feature/Filament/CurrencyResourceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 3
+			path: packages/kezi/foundation/tests/Feature/Filament/Forms/Components/PartnerSelectFieldTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/foundation/tests/Feature/Filament/Forms/Components/PartnerSelectFieldTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:actingAs\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/foundation/tests/Feature/Filament/Forms/Components/PartnerSelectFieldTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/foundation/tests/Feature/Filament/Forms/Components/PartnerSelectFieldTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/foundation/tests/Feature/Filament/Forms/Components/PartnerSelectFieldTest.php
+
+		-
+			message: '#^Cannot call method getChildComponents\(\) on class\-string\|object\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: packages/kezi/foundation/tests/Feature/Filament/Forms/Components/PartnerSelectFieldTest.php
+
+		-
+			message: '#^Cannot call method getName\(\) on class\-string\|object\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: packages/kezi/foundation/tests/Feature/Filament/Forms/Components/PartnerSelectFieldTest.php
+
+		-
+			message: '#^Parameter \#1 \$components of closure expects array, array\<Filament\\Actions\\Action\|Filament\\Actions\\ActionGroup\|Filament\\Schemas\\Components\\Component\>\|Filament\\Schemas\\Schema\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: packages/kezi/foundation/tests/Feature/Filament/Forms/Components/PartnerSelectFieldTest.php
 
 		-
 			message: '#^Property Kezi\\Foundation\\Tests\\Feature\\Filament\\MoneySynthLivewireIntegrationTest\:\:\$company \(App\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
