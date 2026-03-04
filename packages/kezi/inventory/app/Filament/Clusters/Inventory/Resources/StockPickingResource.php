@@ -78,11 +78,8 @@ class StockPickingResource extends Resource
                         ->required()
                         ->native(false),
 
-                    Forms\Components\Select::make('partner_id')
-                        ->label(__('inventory::stock_picking.partner'))
-                        ->relationship('partner', 'name')
-                        ->searchable()
-                        ->preload(),
+                    \Kezi\Foundation\Filament\Forms\Components\PartnerSelectField::make('partner_id')
+                        ->label(__('inventory::stock_picking.partner')),
 
                     Forms\Components\DateTimePicker::make('scheduled_date')
                         ->label(__('inventory::stock_picking.scheduled_date'))
