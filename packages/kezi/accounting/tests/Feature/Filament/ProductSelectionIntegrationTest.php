@@ -47,6 +47,7 @@ it('populates fields when product is selected in Vendor Bill', function () {
     $product = Product::factory()->create([
         'company_id' => $this->company->id,
         'name' => 'Vendor Bill Product',
+        'description' => null,
         'unit_price' => \Brick\Money\Money::of(600, 'USD'),
     ]);
 

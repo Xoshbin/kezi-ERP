@@ -288,9 +288,9 @@ class PurchaseOrderForm
                                         if ($state) {
                                             $product = Product::find($state);
                                             if ($product) {
-                                                $set('description', $product->name);
+                                                $set('description', $product->description ?: $product->name);
 
-                                                $exchangeRate = (float) $get('../../exchange_rate') ?: 1.0;
+                                                $exchangeRate = (float) $get('../../exchange_rate_at_creation') ?: 1.0;
 
                                                 // Product price is in base currency
                                                 $unitPrice = $product->unit_price;

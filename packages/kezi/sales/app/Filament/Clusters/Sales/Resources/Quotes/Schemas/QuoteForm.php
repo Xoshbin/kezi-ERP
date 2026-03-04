@@ -121,7 +121,7 @@ class QuoteForm
                                         if ($state) {
                                             $product = Product::find($state);
                                             if ($product) {
-                                                $set('description', $product->name);
+                                                $set('description', $product->description ?: $product->name);
                                                 $basePrice = $product->unit_price instanceof \Brick\Money\Money
                                                     ? $product->unit_price->getAmount()->toBigDecimal()
                                                     : \Brick\Math\BigDecimal::of($product->unit_price ?? 0);

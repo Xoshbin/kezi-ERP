@@ -13,11 +13,15 @@ class ProductSelectField extends TranslatableSelect
     {
         parent::setUp();
 
-        $this->model(Product::class);
-        $this->label(__('product::product.product'));
+        $this->modelClass = Product::class;
+        $this->relationshipTitleAttribute = 'name';
+        $this->configureForModel();
+        $this->label(__('product::product.label'));
         $this->searchableFields(['name', 'sku', 'description']);
         $this->searchable();
         $this->preload();
+
+        $this->actionSchemaModel($this->modelClass);
 
         $this->createOptionForm(function (\Filament\Schemas\Schema $schema) {
             return ProductResource::form($schema)->getComponents();
