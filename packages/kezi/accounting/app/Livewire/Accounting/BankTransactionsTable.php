@@ -76,6 +76,7 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
                         AccountSelectField::make('account_id')
                             ->label(__('accounting::bank_statement.write_off_account'))
                             ->accountFilter(fn ($query) => $query->where('type', 'expense'))
+                            ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::Expense)
                             ->required(),
                         Textarea::make('reason')
                             ->label(__('accounting::bank_statement.write_off_reason'))

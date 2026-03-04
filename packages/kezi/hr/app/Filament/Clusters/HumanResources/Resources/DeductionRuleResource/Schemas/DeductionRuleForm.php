@@ -61,7 +61,8 @@ class DeductionRuleForm
 
                     AccountSelectField::make('liability_account_id')
                         ->label(__('hr::payroll.liability_account'))
-                        ->accountFilter('liability'),
+                        ->accountFilter('liability')
+                        ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::CurrentLiabilities),
 
                     Toggle::make('is_statutory')
                         ->label(__('hr::payroll.is_statutory'))

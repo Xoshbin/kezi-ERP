@@ -103,6 +103,7 @@ class EditFiscalYear extends EditRecord
                             AccountSelectField::make('retained_earnings_account_id')
                                 ->label(__('accounting::fiscal_year.field_retained_earnings_account'))
                                 ->accountFilter(fn ($query) => $query->where('type', AccountType::Equity->value))
+                                ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::Equity)
                                 ->default($suggestedAccount?->id)
                                 ->required()
                                 ->helperText(__('accounting::fiscal_year.field_retained_earnings_account_help')),

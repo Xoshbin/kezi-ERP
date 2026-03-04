@@ -40,6 +40,7 @@ class ExpenseReportForm
                                 AccountSelectField::make('expense_account_id')
                                     ->label(__('hr::expense_report.lines.expense_account'))
                                     ->accountFilter('expense')
+                                    ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::Expense)
                                     ->required()
                                     ->columnSpan(2),
                                 DatePicker::make('expense_date')

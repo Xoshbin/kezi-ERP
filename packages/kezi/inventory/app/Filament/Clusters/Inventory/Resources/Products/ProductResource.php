@@ -185,11 +185,13 @@ class ProductResource extends Resource
                         AccountSelectField::make('income_account_id')
                             ->label(__('product.income_account'))
                             ->nullable()
-                            ->accountFilter(fn ($query) => $query->whereIn('type', [\Kezi\Accounting\Enums\Accounting\AccountType::Income, \Kezi\Accounting\Enums\Accounting\AccountType::OtherIncome])),
+                            ->accountFilter(fn ($query) => $query->whereIn('type', [\Kezi\Accounting\Enums\Accounting\AccountType::Income, \Kezi\Accounting\Enums\Accounting\AccountType::OtherIncome]))
+                            ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::Income),
                         AccountSelectField::make('expense_account_id')
                             ->label(__('product.expense_account'))
                             ->nullable()
-                            ->accountFilter(fn ($query) => $query->whereIn('type', [\Kezi\Accounting\Enums\Accounting\AccountType::Expense, \Kezi\Accounting\Enums\Accounting\AccountType::Depreciation, \Kezi\Accounting\Enums\Accounting\AccountType::CostOfRevenue])),
+                            ->accountFilter(fn ($query) => $query->whereIn('type', [\Kezi\Accounting\Enums\Accounting\AccountType::Expense, \Kezi\Accounting\Enums\Accounting\AccountType::Depreciation, \Kezi\Accounting\Enums\Accounting\AccountType::CostOfRevenue]))
+                            ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::Expense),
                     ]),
                     Grid::make(2)->schema([
                         TranslatableSelect::make('purchaseTaxes')
