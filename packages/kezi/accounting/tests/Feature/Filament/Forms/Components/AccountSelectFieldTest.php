@@ -44,6 +44,30 @@ describe('AccountSelectField', function () {
             ->and($components)->not->toBeEmpty();
     });
 
+    it('has no default account type by default', function () {
+        $field = AccountSelectField::make('account_id');
+
+        expect($field->getDefaultAccountType())->toBeNull();
+    });
+
+    it('can set a default account type for the create option form', function () {
+        $field = AccountSelectField::make('account_id')
+            ->createOptionDefaultType(AccountType::FixedAssets);
+
+        expect($field->getDefaultAccountType())->toBe(AccountType::FixedAssets);
+    });
+
+    it('accepts an AccountType enum or its string value as default', function () {
+        $fieldEnum = AccountSelectField::make('account_id')
+            ->createOptionDefaultType(AccountType::Expense);
+
+        $fieldString = AccountSelectField::make('account_id')
+            ->createOptionDefaultType(AccountType::Expense->value);
+
+        expect($fieldEnum->getDefaultAccountType())->toBe(AccountType::Expense)
+            ->and($fieldString->getDefaultAccountType())->toBe(AccountType::Expense->value);
+    });
+
     it('can create account using createOptionUsing with tenant company_id', function () {
         $field = AccountSelectField::make('account_id');
         $data = [
