@@ -44,13 +44,13 @@ describe('AccountSelectField', function () {
             ->and($components)->not->toBeEmpty();
     });
 
-    it('can create account using createOptionUsing', function () {
+    it('can create account using createOptionUsing with tenant company_id', function () {
         $field = AccountSelectField::make('account_id');
         $data = [
             'code' => '1001',
             'name' => 'Test Account',
             'type' => AccountType::CurrentAssets->value,
-            'company_id' => $this->company->id,
+            // company_id intentionally NOT provided — must be set server-side
         ];
 
         $callback = $field->getCreateOptionUsing();
@@ -61,6 +61,30 @@ describe('AccountSelectField', function () {
             'id' => $id,
             'code' => '1001',
             'company_id' => $this->company->id,
+        ]);
+    });
+
+    it('ignores tampered company_id in createOptionUsing and enforces tenant', function () {
+        $otherCompany = \App\Models\Company::factory()->create();
+
+        $field = AccountSelectField::make('account_id');
+        $data = [
+            'code' => '9999',
+            'name' => 'Tampered Account',
+            'type' => AccountType::CurrentAssets->value,
+            'company_id' => $otherCompany->id, // attacker-supplied foreign company
+        ];
+
+        $callback = $field->getCreateOptionUsing();
+        $id = $callback($data);
+
+        $this->assertDatabaseHas('accounts', [
+            'id' => $id,
+            'company_id' => $this->company->id, // must be the tenant's company
+        ]);
+        $this->assertDatabaseMissing('accounts', [
+            'id' => $id,
+            'company_id' => $otherCompany->id,
         ]);
     });
 
