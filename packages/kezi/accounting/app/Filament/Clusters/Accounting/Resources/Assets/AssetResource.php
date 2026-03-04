@@ -2,7 +2,6 @@
 
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Assets;
 
-use App\Models\Company;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -30,8 +29,6 @@ use Kezi\Accounting\Models\Asset;
 use Kezi\Accounting\Rules\NotInLockedPeriod;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
-use Kezi\Foundation\Models\Currency;
-use Kezi\Foundation\Models\CurrencyRate;
 
 class AssetResource extends Resource
 {
@@ -79,55 +76,10 @@ class AssetResource extends Resource
                         ->maxLength(255)
                         ->columnSpan(2),
 
-                    Select::make('currency_id')
-                        ->relationship('currency', 'name')
+                    \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                         ->label(__('accounting::asset.currency'))
-                        ->required()
-                        ->searchable()
-                        ->preload()
-                        ->live()
-                        ->default(function (): ?int {
-                            $tenant = Filament::getTenant();
-
-                            return $tenant instanceof Company ? $tenant->currency_id : null;
-                        })
-                        ->afterStateUpdated(function (callable $set, $state) {
-                            if ($state) {
-                                /** @var Currency|null $currency */
-                                $currency = Currency::find($state);
-                                $company = Filament::getTenant();
-
-                                if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
-                                    $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
-                                    if ($latestRate) {
-                                        $set('current_exchange_rate', $latestRate);
-                                    }
-                                } else {
-                                    $set('current_exchange_rate', 1.0);
-                                }
-                            }
-                        })
-                        ->createOptionForm([
-                            TextInput::make('code')
-                                ->label(__('accounting::currency.code'))
-                                ->required()
-                                ->maxLength(255),
-                            TextInput::make('name')
-                                ->label(__('accounting::currency.name'))
-                                ->required()
-                                ->maxLength(255),
-                            TextInput::make('symbol')
-                                ->label(__('accounting::currency.symbol'))
-                                ->required()
-                                ->maxLength(5),
-                            TextInput::make('exchange_rate')
-                                ->label(__('accounting::currency.exchange_rate'))
-                                ->required()
-                                ->numeric()
-                                ->default(1),
-                        ])
-                        ->createOptionModalHeading(__('accounting::common.modal_title_create_currency'))
-                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg')),
+                        ->exchangeRateFieldName('current_exchange_rate')
+                        ->required(),
 
                     ExchangeRateInput::make('current_exchange_rate')
                         ->disabled()
