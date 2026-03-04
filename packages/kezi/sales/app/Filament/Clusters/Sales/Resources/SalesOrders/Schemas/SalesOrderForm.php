@@ -20,7 +20,6 @@ use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Filament\Forms\Components\PartnerSelectField;
 use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
-use Kezi\Foundation\Models\Currency;
 use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 use Kezi\Product\Models\Product;
 use Kezi\Sales\Enums\Sales\SalesOrderStatus;
@@ -143,71 +142,10 @@ class SalesOrderForm
                                     ->label(__('sales::sales_orders.fields.customer'))
                                     ->required(),
 
-                                Select::make('currency_id')
+                                \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                                     ->label(__('sales::sales_orders.fields.currency'))
-                                    ->relationship('currency', 'code')
-                                    ->searchable()
-                                    ->preload()
                                     ->required()
-                                    ->default(fn () => Filament::getTenant()?->currency_id)
-                                    ->live()
-                                    ->afterStateUpdated(function (callable $set, callable $get, $state) {
-                                        $currencyId = $state;
-                                        if (! $currencyId) {
-                                            $set('exchange_rate_at_creation', 1);
-
-                                            return;
-                                        }
-
-                                        $company = Filament::getTenant();
-                                        if (! $company) {
-                                            $company = Auth::user()?->company;
-                                        }
-
-                                        $currency = \Kezi\Foundation\Models\Currency::find($currencyId);
-                                        $baseCurrency = $company?->currency;
-                                        $newRate = 1.0;
-
-                                        if ($currency && $baseCurrency) {
-                                            if ($currency->id === $baseCurrency->id) {
-                                                $set('exchange_rate_at_creation', 1);
-                                                $newRate = 1.0;
-                                            } else {
-                                                $service = app(\Kezi\Foundation\Services\CurrencyConverterService::class);
-                                                $rate = $service->getExchangeRate($currency, now(), $company) ?? $service->getLatestExchangeRate($currency, $company);
-                                                $newRate = $rate ?? 1.0;
-                                                $set('exchange_rate_at_creation', $newRate);
-                                            }
-                                        }
-
-                                        // Recalculate prices for existing lines
-                                        $lines = $get('lines') ?? [];
-                                        if (! empty($lines)) {
-                                            foreach ($lines as $uuid => $line) {
-                                                if (isset($line['product_id'])) {
-                                                    $product = Product::find($line['product_id']);
-                                                    // For Sales Orders, we use unit_price
-                                                    if ($product && $product->unit_price) {
-                                                        $basePrice = $product->unit_price instanceof \Brick\Money\Money
-                                                            ? $product->unit_price->getAmount()->toBigDecimal()
-                                                            : \Brick\Math\BigDecimal::of($product->unit_price);
-
-                                                        if ($newRate == 1.0) {
-                                                            // Reverting to base currency
-                                                            $lines[$uuid]['unit_price'] = (string) $basePrice;
-                                                        } else {
-                                                            // Converting to foreign currency
-                                                            if ($newRate > 0) {
-                                                                $converted = \Brick\Math\BigDecimal::of($basePrice)->dividedBy($newRate, 6, \Brick\Math\RoundingMode::HALF_UP);
-                                                                $lines[$uuid]['unit_price'] = (string) $converted;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            $set('lines', $lines);
-                                        }
-                                    }),
+                                    ->exchangeRateFieldName('exchange_rate_at_creation'),
 
                                 ExchangeRateInput::make('exchange_rate_at_creation'),
 
