@@ -26,6 +26,7 @@ use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
 use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Models\Currency;
+use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 use Kezi\Product\Models\Product;
 use Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus;
 use Kezi\Purchase\Models\PurchaseOrder;
@@ -280,31 +281,21 @@ class PurchaseOrderForm
                             ->reorderable(true)
                             ->minItems(1)
                             ->schema([
-                                Select::make('product_id')
-                                    ->options(fn () => Product::all()->pluck('name', 'id'))
-                                    ->searchable()
-                                    ->preload()
+                                ProductSelectField::make('product_id')
                                     ->required()
-                                    ->afterStateUpdated(function (callable $set, $state, callable $get) {
+                                    ->live()
+                                    ->afterStateUpdated(function (callable $set, callable $get, $state) {
                                         if ($state) {
                                             $product = Product::find($state);
-                                            if ($product instanceof Product) {
+                                            if ($product) {
                                                 $set('description', $product->description ?: $product->name);
 
-                                                // Get the exchange rate from the form state
-                                                $exchangeRate = (float) $get('../../exchange_rate_at_creation');
-                                                if ($exchangeRate <= 0) {
-                                                    $exchangeRate = 1;
-                                                }
+                                                $exchangeRate = (float) $get('../../exchange_rate_at_creation') ?: 1.0;
 
                                                 // Product price is in base currency
                                                 $unitPrice = $product->unit_price;
 
                                                 // Calculate price in foreign currency: Base Price / Exchange Rate
-                                                // Example: 2,500,000 IQD / 1500 Rate = 1666.66 USD
-                                                // If rate is 1 (Base Currency), it stays standard.
-
-                                                // Ensure we don't divide by zero
                                                 if ($exchangeRate > 0) {
                                                     $amountDecimal = \Brick\Math\BigDecimal::of($unitPrice instanceof Money ? $unitPrice->getAmount() : (filled($unitPrice) ? $unitPrice : 0));
                                                     $convertedPrice = $amountDecimal->dividedBy($exchangeRate, 6, \Brick\Math\RoundingMode::HALF_UP)->stripTrailingZeros();
@@ -328,53 +319,6 @@ class PurchaseOrderForm
                                                 }
                                             }
                                         }
-                                    })
-                                    ->createOptionForm([
-                                        Hidden::make('company_id')
-                                            ->default(fn () => Filament::getTenant()?->getKey()),
-                                        TextInput::make('name')
-                                            ->label(__('product.name'))
-                                            ->required()
-                                            ->maxLength(255),
-                                        TextInput::make('sku')
-                                            ->label(__('product.sku'))
-                                            ->required()
-                                            ->maxLength(255),
-                                        Select::make('type')
-                                            ->label(__('product.type'))
-                                            ->required()
-                                            ->live()
-                                            ->options(
-                                                collect(\Kezi\Product\Enums\Products\ProductType::cases())
-                                                    ->mapWithKeys(fn (\Kezi\Product\Enums\Products\ProductType $type) => [$type->value => $type->label()])
-                                            ),
-                                        Textarea::make('description')
-                                            ->label(__('product.description'))
-                                            ->rows(3),
-                                        Toggle::make('is_active')
-                                            ->label(__('product.is_active'))
-                                            ->default(true),
-                                        Select::make('default_inventory_account_id')
-                                            ->label(__('product.default_inventory_account'))
-                                            ->options(function () {
-                                                return Account::where('company_id', Filament::getTenant()?->getKey())
-                                                    ->where('is_deprecated', false)
-                                                    ->pluck('name', 'id');
-                                            })
-                                            ->visible(fn ($get) => $get('type') === \Kezi\Product\Enums\Products\ProductType::Storable->value)
-                                            ->required(fn ($get) => $get('type') === \Kezi\Product\Enums\Products\ProductType::Storable->value)
-                                            ->searchable()
-                                            ->preload(),
-                                    ])
-                                    ->createOptionModalHeading(__('foundation::common.modal_title_create_product'))
-                                    ->createOptionAction(function (Action $action) {
-                                        return $action->modalWidth('lg');
-                                    })
-                                    ->createOptionUsing(function (array $data): int {
-                                        $data['company_id'] = Filament::getTenant()?->getKey();
-                                        $product = Product::create($data);
-
-                                        return $product->getKey();
                                     })
                                     ->columnSpan(3),
 

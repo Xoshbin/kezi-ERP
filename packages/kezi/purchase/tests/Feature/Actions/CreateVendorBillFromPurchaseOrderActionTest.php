@@ -24,7 +24,6 @@ use Kezi\Purchase\Services\VendorBillService;
 use Tests\Traits\WithConfiguredCompany;
 
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
-
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
     $this->action = app(CreateVendorBillFromPurchaseOrderAction::class);

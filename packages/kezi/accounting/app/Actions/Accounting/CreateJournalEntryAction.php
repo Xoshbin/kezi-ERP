@@ -108,7 +108,6 @@ class CreateJournalEntryAction implements JournalEntryCreatorContract
         }
 
         return DB::transaction(function () use ($dto, $totalDebitBaseCurrency, $totalCreditBaseCurrency, $currency, $company, $resolveExchangeRate) {
-            
             // Persist the exchange rate to the central table if it's a foreign currency transaction
             if ($currency->id !== $company->currency_id) {
                 $rate = $resolveExchangeRate();
