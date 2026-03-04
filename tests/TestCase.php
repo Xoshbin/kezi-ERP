@@ -32,6 +32,10 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
  * @property \Kezi\Inventory\Models\StockLocation $adjustmentLocation
  * @property \Kezi\Inventory\Models\StockLocation $customerLocation
  * @property \Kezi\Foundation\Models\Partner $vendor
+ * @property \Kezi\Accounting\Models\Account $expenseAccount
+ * @property \Kezi\Product\Models\Product $storableProduct
+ * @property \Kezi\Product\Models\Product $serviceProduct
+ * @property \Kezi\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction $action
  * @property \Kezi\Sales\Actions\Sales\CreateQuoteAction&\Mockery\MockInterface $createAction
  * @property \Kezi\Sales\Actions\Sales\UpdateQuoteAction&\Mockery\MockInterface $updateAction
  * @property \Kezi\Sales\Actions\Sales\SendQuoteAction&\Mockery\MockInterface $sendAction
