@@ -49,6 +49,7 @@ use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Payment\Enums\Payments\PaymentType;
+use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 use Kezi\Product\Models\Product;
 use Kezi\Sales\Enums\Sales\InvoiceStatus;
 use Kezi\Sales\Models\Invoice;
@@ -242,11 +243,7 @@ class InvoiceResource extends Resource
                         ->disabled(fn (?Invoice $record) => $record && $record->status !== InvoiceStatus::Draft)
                         ->minItems(1)
                         ->schema([
-                            TranslatableSelect::forModel('product_id', Product::class, 'name')
-                                ->label(__('accounting::invoice.product'))
-                                ->searchableFields(['name', 'sku', 'description'])
-                                ->searchable()
-                                ->preload()
+                            ProductSelectField::make('product_id')
                                 ->reactive()
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
@@ -267,77 +264,6 @@ class InvoiceResource extends Resource
                                             $set('income_account_id', $product->income_account_id);
                                         }
                                     }
-                                })
-                                ->createOptionForm([
-                                    Hidden::make('company_id')
-                                        ->default(fn () => Filament::getTenant()?->getKey()),
-                                    TextInput::make('name')
-                                        ->label(__('accounting::invoice.product_name'))
-                                        ->required()
-                                        ->maxLength(255),
-                                    TextInput::make('sku')
-                                        ->label(__('accounting::invoice.product_sku'))
-                                        ->maxLength(255),
-                                    Select::make('type')
-                                        ->label(__('accounting::invoice.product_type'))
-                                        ->required()
-                                        ->live()
-                                        ->options(
-                                            collect(\Kezi\Product\Enums\Products\ProductType::cases())
-                                                ->mapWithKeys(fn (\Kezi\Product\Enums\Products\ProductType $type) => [$type->value => $type->label()])
-                                        ),
-                                    Textarea::make('description')
-                                        ->label(__('accounting::invoice.product_description'))
-                                        ->columnSpanFull(),
-                                    TranslatableSelect::forModel('default_inventory_account_id', Account::class, 'name')
-                                        ->label(__('accounting::invoice.product_default_inventory_account'))
-                                        ->searchable()
-                                        ->preload()
-                                        ->searchableFields(['name', 'code'])
-                                        ->visible(fn ($get) => $get('type') === \Kezi\Product\Enums\Products\ProductType::Storable->value)
-                                        ->required(fn ($get) => $get('type') === \Kezi\Product\Enums\Products\ProductType::Storable->value)
-                                        ->rules(['required_if:type,'.\Kezi\Product\Enums\Products\ProductType::Storable->value])
-                                        ->createOptionForm([
-                                            Hidden::make('company_id')
-                                                ->default(fn () => Filament::getTenant()?->getKey()),
-                                            TextInput::make('code')
-                                                ->label(__('accounting::account.code'))
-                                                ->required()
-                                                ->maxLength(255),
-                                            TextInput::make('name')
-                                                ->label(__('accounting::account.name'))
-                                                ->required()
-                                                ->maxLength(255),
-                                            Select::make('type')
-                                                ->label(__('accounting::account.type'))
-                                                ->required()
-                                                ->options(
-                                                    collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())
-                                                        ->mapWithKeys(fn (\Kezi\Accounting\Enums\Accounting\AccountType $type) => [$type->value => $type->label()])
-                                                )
-                                                ->searchable(),
-                                            Toggle::make('is_deprecated')
-                                                ->label(__('accounting::account.is_deprecated'))
-                                                ->default(false),
-                                        ])
-                                        ->createOptionModalHeading(__('accounting::invoice.modal_title_create_account'))
-                                        ->createOptionAction(function (Action $action) {
-                                            return $action->modalWidth('lg');
-                                        }),
-                                    MoneyInput::make('unit_price')
-                                        ->label(__('accounting::invoice.product_unit_price'))
-                                        ->currencyField('../../currency_id'),
-                                    TranslatableSelect::forModel('income_account_id', Account::class, 'name')
-                                        ->label(__('accounting::invoice.product_income_account'))
-                                        ->searchable()
-                                        ->preload()
-                                        ->searchableFields(['name', 'code'])
-                                        ->required(),
-                                ])
-                                ->createOptionModalHeading(__('accounting::invoice.modal_title_create_product'))
-                                ->createOptionAction(function (Action $action) {
-                                    return $action
-                                        ->modalWidth('lg');
                                 })
                                 ->columnSpan(3),
                             TextInput::make('description')

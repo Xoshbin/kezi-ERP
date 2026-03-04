@@ -171,13 +171,9 @@ class RequestForQuotationForm
                             ->reorderable(true)
                             ->minItems(1)
                             ->schema([
-                                Forms\Components\Select::make('product_id')
-                                    ->label(__('purchase::request_for_quotation.lines.product'))
-                                    ->options(fn () => Product::all()->pluck('name', 'id'))
-                                    ->searchable()
-                                    ->preload()
+                                \Kezi\Product\Filament\Forms\Components\ProductSelectField::make('product_id')
                                     ->required()
-                                    ->reactive()
+                                    ->live()
                                     ->afterStateUpdated(function (callable $set, $state) {
                                         if ($state) {
                                             $product = Product::find($state);

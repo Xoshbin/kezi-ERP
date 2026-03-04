@@ -21,6 +21,7 @@ use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Models\Currency;
+use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 use Kezi\Product\Models\Product;
 use Kezi\Sales\Enums\Sales\SalesOrderStatus;
 use Kezi\Sales\Models\SalesOrder;
@@ -260,11 +261,7 @@ class SalesOrderForm
                             ->reorderable(true)
                             ->minItems(1)
                             ->schema([
-                                Select::make('product_id')
-                                    ->label(__('sales::sales_orders.fields.product'))
-                                    ->options(Product::pluck('name', 'id'))
-                                    ->searchable()
-                                    ->preload()
+                                ProductSelectField::make('product_id')
                                     ->required()
                                     ->live()
                                     ->afterStateUpdated(function (callable $set, callable $get, $state) {
@@ -293,12 +290,6 @@ class SalesOrderForm
                                             }
                                         }
                                     })
-                                    ->createOptionAction(
-                                        fn (Action $action) => $action
-                                            ->modalHeading(__('product::product.create'))
-                                            ->modalSubmitActionLabel(__('product::product.create'))
-                                            ->modalWidth('lg')
-                                    )
                                     ->columnSpan(3),
 
                                 TextInput::make('description')
