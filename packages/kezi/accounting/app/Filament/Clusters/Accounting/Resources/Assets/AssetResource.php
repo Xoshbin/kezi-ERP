@@ -3,7 +3,6 @@
 namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Assets;
 
 use BackedEnum;
-use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -25,6 +24,7 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages\CreateAs
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages\EditAsset;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Assets\Pages\ListAssets;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Assets\RelationManagers\DepreciationEntryRelationManager;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Accounting\Models\Asset;
 use Kezi\Accounting\Rules\NotInLockedPeriod;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
@@ -146,84 +146,18 @@ class AssetResource extends Resource
                         ->step(0.1)
                         ->columnSpan(1),
 
-                    Select::make('asset_account_id')
-                        ->relationship('assetAccount', 'name')
+                    AccountSelectField::make('asset_account_id')
                         ->label(__('accounting::asset.asset_account'))
-                        ->searchable(['name', 'code'])
-                        ->preload()
-                        ->createOptionForm([
-                            Select::make('company_id')
-                                ->relationship('company', 'name')
-                                ->label(__('accounting::account.company'))
-                                ->required(),
-                            TextInput::make('code')
-                                ->label(__('accounting::account.code'))
-                                ->required(),
-                            TextInput::make('name')
-                                ->label(__('accounting::account.name'))
-                                ->required(),
-                            Select::make('type')
-                                ->label(__('accounting::account.type'))
-                                ->options(collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
-                                ->default(\Kezi\Accounting\Enums\Accounting\AccountType::FixedAssets->value)
-                                ->required(),
-                        ])
-                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
-                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
                         ->required()
                         ->columnSpan(1),
 
-                    Select::make('depreciation_expense_account_id')
-                        ->relationship('depreciationExpenseAccount', 'name')
+                    AccountSelectField::make('depreciation_expense_account_id')
                         ->label(__('accounting::asset.depreciation_expense_account'))
-                        ->searchable(['name', 'code'])
-                        ->preload()
-                        ->createOptionForm([
-                            Select::make('company_id')
-                                ->relationship('company', 'name')
-                                ->label(__('accounting::account.company'))
-                                ->required(),
-                            TextInput::make('code')
-                                ->label(__('accounting::account.code'))
-                                ->required(),
-                            TextInput::make('name')
-                                ->label(__('accounting::account.name'))
-                                ->required(),
-                            Select::make('type')
-                                ->label(__('accounting::account.type'))
-                                ->options(collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
-                                ->default(\Kezi\Accounting\Enums\Accounting\AccountType::Depreciation->value)
-                                ->required(),
-                        ])
-                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
-                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
                         ->required()
                         ->columnSpan(1),
 
-                    Select::make('accumulated_depreciation_account_id')
-                        ->relationship('accumulatedDepreciationAccount', 'name')
+                    AccountSelectField::make('accumulated_depreciation_account_id')
                         ->label(__('accounting::asset.accumulated_depreciation_account'))
-                        ->searchable(['name', 'code'])
-                        ->preload()
-                        ->createOptionForm([
-                            Select::make('company_id')
-                                ->relationship('company', 'name')
-                                ->label(__('accounting::account.company'))
-                                ->required(),
-                            TextInput::make('code')
-                                ->label(__('accounting::account.code'))
-                                ->required(),
-                            TextInput::make('name')
-                                ->label(__('accounting::account.name'))
-                                ->required(),
-                            Select::make('type')
-                                ->label(__('accounting::account.type'))
-                                ->options(collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()]))
-                                ->default(\Kezi\Accounting\Enums\Accounting\AccountType::FixedAssets->value)
-                                ->required(),
-                        ])
-                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
-                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg'))
                         ->required()
                         ->columnSpan(1),
                 ])

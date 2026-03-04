@@ -18,7 +18,7 @@ use Kezi\Accounting\Actions\Loans\ComputeLoanScheduleAction;
 use Kezi\Accounting\Actions\Loans\ReclassifyLoanCurrentPortionAction;
 use Kezi\Accounting\Enums\Accounting\JournalType;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\LoanAgreements\LoanAgreementResource;
-use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Accounting\Models\Journal;
 use Kezi\Accounting\Models\LoanAgreement;
 use Kezi\Foundation\Filament\Actions\DocsAction;
@@ -87,59 +87,11 @@ class ViewLoanAgreement extends ViewRecord
                             return $action->modalWidth('lg');
                         })
                         ->required(),
-                    Select::make('interest_account_id')
+                    AccountSelectField::make('interest_account_id')
                         ->label(__('accounting::loan.interest_expense_income'))
-                        ->searchable()
-                        ->preload()
-                        ->options(function () {
-                            $tenant = Filament::getTenant();
-                            $q = Account::query();
-                            if ($tenant instanceof Company) {
-                                $q->where('company_id', $tenant->getKey());
-                            }
-
-                            return $q->pluck('name', 'id');
-                        })
-                        ->createOptionForm([
-                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
-                            TextInput::make('code')->required(),
-                            TextInput::make('name')->required(),
-                            Select::make('type')->options(
-                                collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
-                            )->required(),
-                        ])
-                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
-                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
-                        ->createOptionAction(function ($action) {
-                            return $action->modalWidth('lg');
-                        })
                         ->required(),
-                    Select::make('accrued_interest_account_id')
+                    AccountSelectField::make('accrued_interest_account_id')
                         ->label(__('accounting::loan.accrued_interest'))
-                        ->searchable()
-                        ->preload()
-                        ->options(function () {
-                            $tenant = Filament::getTenant();
-                            $q = Account::query();
-                            if ($tenant instanceof Company) {
-                                $q->where('company_id', $tenant->getKey());
-                            }
-
-                            return $q->pluck('name', 'id');
-                        })
-                        ->createOptionForm([
-                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
-                            TextInput::make('code')->required(),
-                            TextInput::make('name')->required(),
-                            Select::make('type')->options(
-                                collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
-                            )->required(),
-                        ])
-                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
-                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
-                        ->createOptionAction(function ($action) {
-                            return $action->modalWidth('lg');
-                        })
                         ->required(),
                     TextInput::make('for_month_sequence')
                         ->label(__('accounting::loan.installment'))
@@ -195,86 +147,14 @@ class ViewLoanAgreement extends ViewRecord
                             return $action->modalWidth('lg');
                         })
                         ->required(),
-                    Select::make('bank_account_id')
+                    AccountSelectField::make('bank_account_id')
                         ->label(__('accounting::loan.bank_account'))
-                        ->searchable()
-                        ->preload()
-                        ->options(function () {
-                            $tenant = Filament::getTenant();
-                            $q = Account::query();
-                            if ($tenant instanceof Company) {
-                                $q->where('company_id', $tenant->getKey());
-                            }
-
-                            return $q->pluck('name', 'id');
-                        })
-                        ->createOptionForm([
-                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
-                            TextInput::make('code')->required(),
-                            TextInput::make('name')->required(),
-                            Select::make('type')->options(
-                                collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
-                            )->required(),
-                        ])
-                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
-                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
-                        ->createOptionAction(function ($action) {
-                            return $action->modalWidth('lg');
-                        })
                         ->required(),
-                    Select::make('loan_account_id')
+                    AccountSelectField::make('loan_account_id')
                         ->label(__('accounting::loan.loan_account'))
-                        ->searchable()
-                        ->preload()
-                        ->options(function () {
-                            $tenant = Filament::getTenant();
-                            $q = Account::query();
-                            if ($tenant instanceof Company) {
-                                $q->where('company_id', $tenant->getKey());
-                            }
-
-                            return $q->pluck('name', 'id');
-                        })
-                        ->createOptionForm([
-                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
-                            TextInput::make('code')->required(),
-                            TextInput::make('name')->required(),
-                            Select::make('type')->options(
-                                collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
-                            )->required(),
-                        ])
-                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
-                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
-                        ->createOptionAction(function ($action) {
-                            return $action->modalWidth('lg');
-                        })
                         ->required(),
-                    Select::make('accrued_interest_account_id')
+                    AccountSelectField::make('accrued_interest_account_id')
                         ->label(__('accounting::loan.accrued_interest'))
-                        ->searchable()
-                        ->preload()
-                        ->options(function () {
-                            $tenant = Filament::getTenant();
-                            $q = Account::query();
-                            if ($tenant instanceof Company) {
-                                $q->where('company_id', $tenant->getKey());
-                            }
-
-                            return $q->pluck('name', 'id');
-                        })
-                        ->createOptionForm([
-                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
-                            TextInput::make('code')->required(),
-                            TextInput::make('name')->required(),
-                            Select::make('type')->options(
-                                collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
-                            )->required(),
-                        ])
-                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
-                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
-                        ->createOptionAction(function ($action) {
-                            return $action->modalWidth('lg');
-                        })
                         ->required(),
                     TextInput::make('for_month_sequence')
                         ->label(__('accounting::loan.installment'))
@@ -331,59 +211,11 @@ class ViewLoanAgreement extends ViewRecord
                             return $action->modalWidth('lg');
                         })
                         ->required(),
-                    Select::make('long_term_account_id')
+                    AccountSelectField::make('long_term_account_id')
                         ->label(__('accounting::loan.long_term_account'))
-                        ->searchable()
-                        ->preload()
-                        ->options(function () {
-                            $tenant = Filament::getTenant();
-                            $q = Account::query();
-                            if ($tenant instanceof Company) {
-                                $q->where('company_id', $tenant->getKey());
-                            }
-
-                            return $q->pluck('name', 'id');
-                        })
-                        ->createOptionForm([
-                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
-                            TextInput::make('code')->required(),
-                            TextInput::make('name')->required(),
-                            Select::make('type')->options(
-                                collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
-                            )->required(),
-                        ])
-                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
-                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
-                        ->createOptionAction(function ($action) {
-                            return $action->modalWidth('lg');
-                        })
                         ->required(),
-                    Select::make('short_term_account_id')
+                    AccountSelectField::make('short_term_account_id')
                         ->label(__('accounting::loan.short_term_account'))
-                        ->searchable()
-                        ->preload()
-                        ->options(function () {
-                            $tenant = Filament::getTenant();
-                            $q = Account::query();
-                            if ($tenant instanceof Company) {
-                                $q->where('company_id', $tenant->getKey());
-                            }
-
-                            return $q->pluck('name', 'id');
-                        })
-                        ->createOptionForm([
-                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
-                            TextInput::make('code')->required(),
-                            TextInput::make('name')->required(),
-                            Select::make('type')->options(
-                                collect(\Kezi\Accounting\Enums\Accounting\AccountType::cases())->mapWithKeys(fn ($t) => [$t->value => $t->label()])
-                            )->required(),
-                        ])
-                        ->createOptionUsing(fn (array $data) => Account::query()->create($data)->getKey())
-                        ->createOptionModalHeading(__('accounting::common.modal_title_create_account'))
-                        ->createOptionAction(function ($action) {
-                            return $action->modalWidth('lg');
-                        })
                         ->required(),
                     TextInput::make('months')
                         ->label(__('accounting::loan.months'))

@@ -14,6 +14,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Kezi\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\PettyCash\PettyCashVoucherResource\Pages;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Foundation\Filament\Forms\Components\PartnerSelectField;
 use Kezi\Payment\Enums\PettyCash\PettyCashVoucherStatus;
 use Kezi\Payment\Models\PettyCash\PettyCashVoucher;
@@ -71,12 +72,9 @@ class PettyCashVoucherResource extends Resource
                             ->prefix('IQD')
                             ->label(__('accounting::petty_cash.fields.amount')),
 
-                        Select::make('expense_account_id')
-                            ->relationship('expenseAccount', 'name', fn ($query) => $query->where('type', 'expense'))
+                        AccountSelectField::make('expense_account_id')
+                            ->accountFilter('expense')
                             ->required()
-                            ->searchable()
-                            ->preload()
-                            ->preload() // Removed duplicate
                             ->label(__('accounting::petty_cash.fields.expense_category'))
                             ->helperText(__('accounting::petty_cash.helpers.expense_category')),
 

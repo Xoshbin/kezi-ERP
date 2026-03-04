@@ -8,6 +8,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 
 class DeductionRuleForm
 {
@@ -58,11 +59,9 @@ class DeductionRuleForm
                         ->searchable()
                         ->visible(fn (Get $get): bool => $get('type') === 'fixed_amount'),
 
-                    Select::make('liability_account_id')
+                    AccountSelectField::make('liability_account_id')
                         ->label(__('hr::payroll.liability_account'))
-                        ->relationship('liabilityAccount', 'name')
-                        ->searchable()
-                        ->preload(),
+                        ->accountFilter('liability'),
 
                     Toggle::make('is_statutory')
                         ->label(__('hr::payroll.is_statutory'))

@@ -739,18 +739,6 @@ parameters:
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/FiscalYears/Pages/CreateFiscalYear.php
 
 		-
-			message: '#^Binary operation "\." between non\-falsy\-string and array\<string, string\>\|string results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/FiscalYears/Pages/EditFiscalYear.php
-
-		-
-			message: '#^Parameter \#1 \$company of method Kezi\\Accounting\\Services\\FiscalYearService\:\:getEquityAccounts\(\) expects App\\Models\\Company, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/FiscalYears/Pages/EditFiscalYear.php
-
-		-
 			message: '#^Parameter \#1 \$company of method Kezi\\Accounting\\Services\\FiscalYearService\:\:getRetainedEarningsAccount\(\) expects App\\Models\\Company, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -771,12 +759,6 @@ parameters:
 		-
 			message: '#^Parameter \$createdByUserId of class Kezi\\Accounting\\DataTransferObjects\\Accounting\\CreateOpeningBalanceEntryDTO constructor expects int, int\|string\|null given\.$#'
 			identifier: argument.type
-			count: 1
-			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/FiscalYears/Pages/EditFiscalYear.php
-
-		-
-			message: '#^Unable to resolve the template type TMapWithKeysValue in call to method Illuminate\\Support\\Collection\<int,Kezi\\Accounting\\Models\\Account\>\:\:mapWithKeys\(\)$#'
-			identifier: argument.templateType
 			count: 1
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/FiscalYears/Pages/EditFiscalYear.php
 
@@ -1215,7 +1197,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 7
+			count: 5
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/RecurringTemplates/RecurringTemplateResource.php
 
 		-
@@ -1331,6 +1313,12 @@ parameters:
 			identifier: generics.notGeneric
 			count: 1
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/WithholdingTax/Pages/CreateWithholdingTaxType.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/accounting/app/Filament/Forms/Components/AccountSelectField.php
 
 		-
 			message: '#^Method Kezi\\Accounting\\Filament\\Pages\\TaxReports\:\:getGenerators\(\) return type has no value type specified in iterable type array\.$#'
@@ -5543,6 +5531,36 @@ parameters:
 			identifier: property.nonObject
 			count: 1
 			path: packages/kezi/accounting/tests/Feature/Filament/FiscalYearResourceTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Forms/Components/AccountSelectFieldTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 6
+			path: packages/kezi/accounting/tests/Feature/Filament/Forms/Components/AccountSelectFieldTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:assertDatabaseHas\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Forms/Components/AccountSelectFieldTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\TestCase\:\:setupWithConfiguredCompany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Forms/Components/AccountSelectFieldTest.php
+
+		-
+			message: '#^Trying to invoke Closure\|null but it might not be a callable\.$#'
+			identifier: callable.nonCallable
+			count: 1
+			path: packages/kezi/accounting/tests/Feature/Filament/Forms/Components/AccountSelectFieldTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -10505,12 +10523,6 @@ parameters:
 			identifier: generics.notGeneric
 			count: 1
 			path: packages/kezi/hr/app/Filament/Clusters/HumanResources/Resources/EmploymentContracts/Pages/CreateEmploymentContract.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$currency_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: packages/kezi/hr/app/Filament/Clusters/HumanResources/Resources/EmploymentContracts/Schemas/EmploymentContractForm.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -28537,12 +28549,6 @@ parameters:
 			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/RelationManagers/VendorBillsRelationManager.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Schemas/PurchaseOrderForm.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Product\\Models\\Product\>\|Kezi\\Product\\Models\\Product\:\:\$description\.$#'
 			identifier: property.notFound
 			count: 1
@@ -28561,44 +28567,8 @@ parameters:
 			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Schemas/PurchaseOrderForm.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$currency\.$#'
-			identifier: property.notFound
-			count: 1
-			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Schemas/PurchaseOrderForm.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Product\\Models\\Product\>\|Kezi\\Product\\Models\\Product\:\:purchaseTaxes\(\)\.$#'
 			identifier: method.notFound
-			count: 1
-			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Schemas/PurchaseOrderForm.php
-
-		-
-			message: '#^Instanceof between Brick\\Money\\Money and Brick\\Money\\Money will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Schemas/PurchaseOrderForm.php
-
-		-
-			message: '#^Parameter \#1 \$currency of method Kezi\\Foundation\\Services\\CurrencyConverterService\:\:getExchangeRate\(\) expects Kezi\\Foundation\\Models\\Currency, Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency given\.$#'
-			identifier: argument.type
-			count: 1
-			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Schemas/PurchaseOrderForm.php
-
-		-
-			message: '#^Parameter \#1 \$currency of method Kezi\\Foundation\\Services\\CurrencyConverterService\:\:getLatestExchangeRate\(\) expects Kezi\\Foundation\\Models\\Currency, Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency given\.$#'
-			identifier: argument.type
-			count: 1
-			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Schemas/PurchaseOrderForm.php
-
-		-
-			message: '#^Parameter \#2 \$company of method Kezi\\Foundation\\Services\\CurrencyConverterService\:\:getLatestExchangeRate\(\) expects App\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Schemas/PurchaseOrderForm.php
-
-		-
-			message: '#^Parameter \#3 \$company of method Kezi\\Foundation\\Services\\CurrencyConverterService\:\:getExchangeRate\(\) expects App\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
 			count: 1
 			path: packages/kezi/purchase/app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Schemas/PurchaseOrderForm.php
 
@@ -32577,7 +32547,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$currency_id\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 1
 			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/Quotes/Schemas/QuoteForm.php
 
 		-
@@ -32615,12 +32585,6 @@ parameters:
 			identifier: instanceof.alwaysTrue
 			count: 1
 			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/Pages/EditSalesOrder.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/Pages/ViewSalesOrder.php
 
 		-
 			message: '#^Cannot access property \$company on Illuminate\\Database\\Eloquent\\Model\|int\|string\|null\.$#'
@@ -32683,12 +32647,6 @@ parameters:
 			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/RelationManagers/InvoicesRelationManager.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/Schemas/SalesOrderForm.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Product\\Models\\Product\>\|Kezi\\Product\\Models\\Product\:\:\$description\.$#'
 			identifier: property.notFound
 			count: 1
@@ -32703,48 +32661,12 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Product\\Models\\Product\>\|Kezi\\Product\\Models\\Product\:\:\$unit_price\.$#'
 			identifier: property.notFound
-			count: 2
-			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/Schemas/SalesOrderForm.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$currency\.$#'
-			identifier: property.notFound
-			count: 1
-			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/Schemas/SalesOrderForm.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$currency_id\.$#'
-			identifier: property.notFound
 			count: 1
 			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/Schemas/SalesOrderForm.php
 
 		-
 			message: '#^Instanceof between Brick\\Money\\Money and Brick\\Money\\Money will always evaluate to true\.$#'
 			identifier: instanceof.alwaysTrue
-			count: 2
-			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/Schemas/SalesOrderForm.php
-
-		-
-			message: '#^Parameter \#1 \$currency of method Kezi\\Foundation\\Services\\CurrencyConverterService\:\:getExchangeRate\(\) expects Kezi\\Foundation\\Models\\Currency, Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency given\.$#'
-			identifier: argument.type
-			count: 1
-			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/Schemas/SalesOrderForm.php
-
-		-
-			message: '#^Parameter \#1 \$currency of method Kezi\\Foundation\\Services\\CurrencyConverterService\:\:getLatestExchangeRate\(\) expects Kezi\\Foundation\\Models\\Currency, Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency given\.$#'
-			identifier: argument.type
-			count: 1
-			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/Schemas/SalesOrderForm.php
-
-		-
-			message: '#^Parameter \#2 \$company of method Kezi\\Foundation\\Services\\CurrencyConverterService\:\:getLatestExchangeRate\(\) expects App\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/Schemas/SalesOrderForm.php
-
-		-
-			message: '#^Parameter \#3 \$company of method Kezi\\Foundation\\Services\\CurrencyConverterService\:\:getExchangeRate\(\) expects App\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
 			count: 1
 			path: packages/kezi/sales/app/Filament/Clusters/Sales/Resources/SalesOrders/Schemas/SalesOrderForm.php
 
