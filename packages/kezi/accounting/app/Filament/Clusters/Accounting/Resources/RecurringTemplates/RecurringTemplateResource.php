@@ -26,7 +26,6 @@ use Kezi\Accounting\Models\Journal;
 use Kezi\Accounting\Models\RecurringTemplate;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Models\Currency;
-use Kezi\Foundation\Models\Partner;
 use Kezi\Foundation\Models\PaymentTerm;
 use Kezi\Product\Models\Product;
 
@@ -159,10 +158,8 @@ class RecurringTemplateResource extends Resource
                             TextInput::make('credit')
                                 ->numeric()
                                 ->default(0),
-                            Select::make('partner_id')
-                                ->label(__('accounting::recurring.partner'))
-                                ->options(fn () => Partner::where('company_id', Filament::getTenant()?->id)->pluck('name', 'id'))
-                                ->searchable(),
+                            \Kezi\Foundation\Filament\Forms\Components\PartnerSelectField::make('partner_id')
+                                ->label(__('accounting::recurring.partner')),
                         ]),
                 ])
                 ->columns(1)
@@ -175,10 +172,8 @@ class RecurringTemplateResource extends Resource
         return [
             Grid::make(3)
                 ->schema([
-                    Select::make('customer_id')
+                    \Kezi\Foundation\Filament\Forms\Components\PartnerSelectField::make('customer_id')
                         ->label(__('accounting::recurring.customer'))
-                        ->options(fn () => Partner::where('company_id', Filament::getTenant()?->id)->pluck('name', 'id'))
-                        ->searchable()
                         ->required(),
                     Select::make('currency_id')
                         ->label(__('accounting::currency.currency'))

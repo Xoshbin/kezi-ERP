@@ -2,7 +2,6 @@
 
 namespace Kezi\Sales\Filament\Clusters\Sales\Resources\SalesOrders\Schemas;
 
-use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -19,6 +18,7 @@ use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
+use Kezi\Foundation\Filament\Forms\Components\PartnerSelectField;
 use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Product\Filament\Forms\Components\ProductSelectField;
@@ -139,18 +139,9 @@ class SalesOrderForm
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                Select::make('customer_id')
+                                PartnerSelectField::make('customer_id')
                                     ->label(__('sales::sales_orders.fields.customer'))
-                                    ->relationship('customer', 'name')
-                                    ->searchable()
-                                    ->preload()
-                                    ->required()
-                                    ->createOptionAction(
-                                        fn (Action $action) => $action
-                                            ->modalHeading(__('sales::partner.create_customer'))
-                                            ->modalSubmitActionLabel(__('sales::partner.create'))
-                                            ->modalWidth('lg')
-                                    ),
+                                    ->required(),
 
                                 Select::make('currency_id')
                                     ->label(__('sales::sales_orders.fields.currency'))

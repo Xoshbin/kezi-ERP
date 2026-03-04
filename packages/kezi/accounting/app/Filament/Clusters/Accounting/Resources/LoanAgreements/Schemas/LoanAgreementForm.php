@@ -22,9 +22,9 @@ use Kezi\Accounting\Models\LoanAgreement;
 use Kezi\Accounting\Rules\NotInLockedPeriod;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
+use Kezi\Foundation\Filament\Forms\Components\PartnerSelectField;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\CurrencyRate;
-use Kezi\Foundation\Models\Partner;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class LoanAgreementForm
@@ -37,23 +37,9 @@ class LoanAgreementForm
             Section::make(__('accounting::loan.form.counterparty_currency') ?: 'Counterparty & Currency')
                 ->compact()
                 ->schema([
-                    TranslatableSelect::make('partner_id')
-                        ->relationship('partner', 'name')
+                    PartnerSelectField::make('partner_id')
                         ->label(__('accounting::loan.form.partner') ?: 'Partner')
-                        ->searchableFields(['name', 'email', 'contact_person'])
-                        ->searchable()
-                        ->preload()
-                        ->columnSpanFull()
-                        ->createOptionForm([
-                            Hidden::make('company_id')->default(fn () => Filament::getTenant()?->getKey()),
-                            TextInput::make('name')->label(__('accounting::partner.name'))->required(),
-                            Select::make('type')->label(__('accounting::partner.type'))->options(\Kezi\Foundation\Enums\Partners\PartnerType::class)->required(),
-                            TextInput::make('email')->label(__('accounting::partner.email'))->email(),
-                            TextInput::make('contact_person')->label(__('accounting::partner.contact_person')),
-                        ])
-                        ->createOptionUsing(fn (array $data) => Partner::create($data)->getKey())
-                        ->createOptionModalHeading(__('accounting::common.modal_title_create_partner') ?: 'Create Partner')
-                        ->createOptionAction(fn (Action $action) => $action->modalWidth('lg')),
+                        ->columnSpanFull(),
 
                     Group::make()
                         ->schema([
