@@ -18,8 +18,7 @@ class CashAdvanceForm
                             ->searchable()
                             ->preload()
                             ->required(),
-                        \Filament\Forms\Components\Select::make('currency_id')
-                            ->relationship('currency', 'code')
+                        \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                             ->default(fn () => \Filament\Facades\Filament::getTenant()?->currency_id)
                             ->required(),
                         \Kezi\Foundation\Filament\Forms\Components\MoneyInput::make('requested_amount')

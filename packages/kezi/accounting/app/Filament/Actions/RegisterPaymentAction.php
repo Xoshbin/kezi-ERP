@@ -101,9 +101,8 @@ class RegisterPaymentAction extends Action
                             static::recalculateAmount($get, $set, $record);
                         }
                     }),
-                Select::make('currency_id')
+                \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                     ->label(__('accounting::payment.form.currency_id'))
-                    ->options(Currency::pluck('code', 'id'))
                     ->default(fn (Invoice|VendorBill $record) => $record->currency_id)
                     ->required()
                     ->live()

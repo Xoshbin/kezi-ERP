@@ -87,11 +87,9 @@ class ChequeResource extends Resource
                                 ->numeric()
                                 ->prefix('IQD'),
 
-                            // Currency (for now select from currencies table)
-                            Select::make('currency_id')
-                                ->relationship('currency', 'code')
-                                ->required()
-                                ->default(1), // Default to IQD or base
+                            // Currency
+                            \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
+                                ->required(),
 
                             // Cheque Number
                             TextInput::make('cheque_number')
