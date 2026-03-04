@@ -61,8 +61,7 @@ class PaymentsRelationManager extends RelationManager
                             ->label(__('accounting::invoice.payments_relation_manager.journal'))
                             ->required(),
 
-                        Select::make('currency_id')
-                            ->relationship('currency', 'name')
+                        \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                             ->label(__('accounting::invoice.payments_relation_manager.currency'))
                             ->required()
                             ->default(function (): ?int {

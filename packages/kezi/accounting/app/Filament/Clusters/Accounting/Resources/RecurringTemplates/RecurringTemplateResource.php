@@ -25,7 +25,6 @@ use Kezi\Accounting\Models\FiscalPosition;
 use Kezi\Accounting\Models\Journal;
 use Kezi\Accounting\Models\RecurringTemplate;
 use Kezi\Accounting\Models\Tax;
-use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\PaymentTerm;
 use Kezi\Product\Models\Product;
 
@@ -135,10 +134,8 @@ class RecurringTemplateResource extends Resource
                         ->options(fn () => Journal::where('company_id', Filament::getTenant()?->id)->pluck('name', 'id'))
                         ->searchable()
                         ->required(),
-                    Select::make('currency_id')
+                    \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                         ->label(__('accounting::currency.currency'))
-                        ->options(fn () => Currency::pluck('name', 'id'))
-                        ->searchable()
                         ->required(),
                     Textarea::make('description')
                         ->columnSpanFull(),
@@ -175,10 +172,8 @@ class RecurringTemplateResource extends Resource
                     \Kezi\Foundation\Filament\Forms\Components\PartnerSelectField::make('customer_id')
                         ->label(__('accounting::recurring.customer'))
                         ->required(),
-                    Select::make('currency_id')
+                    \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                         ->label(__('accounting::currency.currency'))
-                        ->options(fn () => Currency::pluck('name', 'id'))
-                        ->searchable()
                         ->required(),
                     Select::make('payment_term_id')
                         ->label(__('accounting::recurring.payment_term'))

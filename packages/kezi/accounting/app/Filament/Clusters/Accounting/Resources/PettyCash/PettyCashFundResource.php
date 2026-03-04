@@ -71,8 +71,7 @@ class PettyCashFundResource extends Resource
                             ->required()
                             ->label(__('accounting::journal.fields.bank_account')),
 
-                        Select::make('currency_id')
-                            ->relationship('currency', 'code')
+                        \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                             ->required()
                             ->default(1) // IQD
                             ->label(__('accounting::invoice.currency')),

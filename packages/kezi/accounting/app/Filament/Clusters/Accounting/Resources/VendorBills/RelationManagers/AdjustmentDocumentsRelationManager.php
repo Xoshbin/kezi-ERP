@@ -55,8 +55,7 @@ class AdjustmentDocumentsRelationManager extends RelationManager
                                 return $owner instanceof VendorBill ? $owner->company_id : null;
                             }),
 
-                        Select::make('currency_id')
-                            ->relationship('currency', 'name')
+                        \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                             ->label(__('accounting::bill.adjustment_documents_relation_manager.currency'))
                             ->required()
                             ->default(function (): ?int {
