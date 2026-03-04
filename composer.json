@@ -35,7 +35,7 @@
         "laravel/tinker": "^2.10.1",
         "pxlrbt/filament-environment-indicator": "^3.2",
         "xoshbin/filament-custom-fields": "^0.0.2@beta",
-        "xoshbin/filament-translatable-select": "dev-main",
+        "xoshbin/filament-translatable-select": "^1.0",
         "xoshbin/pertuk": "dev-main"
     },
     "repositories": [
