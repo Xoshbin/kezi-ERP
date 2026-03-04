@@ -38,32 +38,53 @@ class AccountSelectField extends TranslatableSelect
 
                 return $query;
             })
-            ->createOptionForm([
-                TextInput::make('code')
-                    ->label(__('accounting::account.code'))
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('name')
-                    ->label(__('accounting::account.name'))
-                    ->required()
-                    ->maxLength(255),
-                Select::make('type')
-                    ->label(__('accounting::account.type'))
-                    ->required()
-                    ->options(
-                        collect(AccountType::cases())
-                            ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
-                    )
-                    ->searchable(),
-                Toggle::make('is_deprecated')
-                    ->label(__('accounting::account.is_deprecated'))
-                    ->default(false),
-            ])
+            ->createOptionForm(function () {
+                $defaultType = $this->defaultAccountType instanceof AccountType
+                    ? $this->defaultAccountType->value
+                    : $this->defaultAccountType;
+
+                return [
+                    TextInput::make('code')
+                        ->label(__('accounting::account.code'))
+                        ->required()
+                        ->maxLength(255),
+                    TextInput::make('name')
+                        ->label(__('accounting::account.name'))
+                        ->required()
+                        ->maxLength(255),
+                    Select::make('type')
+                        ->label(__('accounting::account.type'))
+                        ->required()
+                        ->options(
+                            collect(AccountType::cases())
+                                ->mapWithKeys(fn (AccountType $type) => [$type->value => $type->label()])
+                        )
+                        ->default($defaultType)
+                        ->searchable(),
+                    Toggle::make('is_deprecated')
+                        ->label(__('accounting::account.is_deprecated'))
+                        ->default(false),
+                ];
+            })
             ->createOptionUsing(function (array $data): int {
                 $data['company_id'] = Filament::getTenant()?->getKey();
 
                 return Account::create($data)->id;
             });
+    }
+
+    protected AccountType|string|null $defaultAccountType = null;
+
+    public function createOptionDefaultType(AccountType|string|null $type): static
+    {
+        $this->defaultAccountType = $type;
+
+        return $this;
+    }
+
+    public function getDefaultAccountType(): AccountType|string|null
+    {
+        return $this->defaultAccountType;
     }
 
     protected ?Closure $accountFilter = null;
