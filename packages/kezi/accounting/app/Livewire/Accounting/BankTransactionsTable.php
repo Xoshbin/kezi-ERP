@@ -7,7 +7,6 @@ use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -20,6 +19,7 @@ use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\BankStatement;
 use Kezi\Accounting\Models\BankStatementLine;
@@ -73,13 +73,9 @@ class BankTransactionsTable extends Component implements HasActions, HasForms, H
                     ->icon('heroicon-o-x-mark')
                     ->color('danger')
                     ->schema([
-                        Select::make('account_id')
+                        AccountSelectField::make('account_id')
                             ->label(__('accounting::bank_statement.write_off_account'))
-                            ->options(function () {
-                                return Account::where('company_id', $this->bankStatement->company_id)
-                                    ->where('type', 'expense')
-                                    ->pluck('name', 'id');
-                            })
+                            ->accountFilter(fn ($query) => $query->where('type', 'expense'))
                             ->required(),
                         Textarea::make('reason')
                             ->label(__('accounting::bank_statement.write_off_reason'))

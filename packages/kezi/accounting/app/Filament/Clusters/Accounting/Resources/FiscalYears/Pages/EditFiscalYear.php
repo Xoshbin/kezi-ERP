@@ -13,10 +13,12 @@ use Filament\Schemas\Components\Wizard\Step;
 use Kezi\Accounting\Actions\Accounting\CloseFiscalYearAction;
 use Kezi\Accounting\Actions\Accounting\ReopenFiscalYearAction;
 use Kezi\Accounting\DataTransferObjects\Accounting\CloseFiscalYearDTO;
+use Kezi\Accounting\Enums\Accounting\AccountType;
 use Kezi\Accounting\Enums\Accounting\FiscalYearState;
 use Kezi\Accounting\Exceptions\FiscalYearCannotBeReopenedException;
 use Kezi\Accounting\Exceptions\FiscalYearNotReadyToCloseException;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\FiscalYears\FiscalYearResource;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Accounting\Models\FiscalYear;
 use Kezi\Accounting\Services\FiscalYearService;
 
@@ -98,15 +100,11 @@ class EditFiscalYear extends EditRecord
                         $suggestedAccount = $service->getRetainedEarningsAccount($company);
 
                         return [
-                            Select::make('retained_earnings_account_id')
+                            AccountSelectField::make('retained_earnings_account_id')
                                 ->label(__('accounting::fiscal_year.field_retained_earnings_account'))
-                                ->options(
-                                    $service->getEquityAccounts($company)
-                                        ->mapWithKeys(fn ($account) => [$account->id => $account->code.' - '.$account->name])
-                                )
+                                ->accountFilter(fn ($query) => $query->where('type', AccountType::Equity->value))
                                 ->default($suggestedAccount?->id)
                                 ->required()
-                                ->searchable()
                                 ->helperText(__('accounting::fiscal_year.field_retained_earnings_account_help')),
 
                             Textarea::make('description')
@@ -172,6 +170,7 @@ class EditFiscalYear extends EditRecord
                     /** @var FiscalYear $currentYear */
                     $currentYear = $this->getRecord();
 
+                    /** @var FiscalYear|null $previousYear */
                     $previousYear = FiscalYear::forCompany($currentYear->company)
                         ->where('end_date', '<', $currentYear->start_date)
                         ->orderBy('end_date', 'desc')

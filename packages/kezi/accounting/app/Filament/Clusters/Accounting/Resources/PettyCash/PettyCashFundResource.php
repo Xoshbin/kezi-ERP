@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Kezi\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\PettyCash\PettyCashFundResource\Pages;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Payment\Enums\PettyCash\PettyCashFundStatus;
 use Kezi\Payment\Models\PettyCash\PettyCashFund;
 
@@ -61,13 +62,13 @@ class PettyCashFundResource extends Resource
                             ->preload()
                             ->label(__('accounting::petty_cash.fields.custodian')),
 
-                        Select::make('account_id')
-                            ->relationship('account', 'name', fn ($query) => $query->where('type', 'asset'))
+                        AccountSelectField::make('account_id')
+                            ->accountFilter('asset')
                             ->required()
                             ->label(__('accounting::account.label')),
 
-                        Select::make('bank_account_id')
-                            ->relationship('bankAccount', 'name', fn ($query) => $query->where('type', 'asset'))
+                        AccountSelectField::make('bank_account_id')
+                            ->accountFilter('asset')
                             ->required()
                             ->label(__('accounting::journal.fields.bank_account')),
 

@@ -6,14 +6,12 @@ use Carbon\Carbon;
 use Exception;
 use Filament\Actions;
 use Filament\Actions\Action;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource;
-use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Sales\Actions\Sales\CreateDeliveryFromSalesOrderAction;
 use Kezi\Sales\Actions\Sales\CreateInvoiceFromSalesOrderAction;
 use Kezi\Sales\DataTransferObjects\Sales\CreateDeliveryFromSalesOrderDTO;
@@ -67,15 +65,10 @@ class ViewSalesOrder extends ViewRecord
                         ->default(now()->addDays(30))
                         ->native(false),
 
-                    Select::make('default_income_account_id')
+                    AccountSelectField::make('default_income_account_id')
                         ->label(__('sales::invoice.income_account'))
-                        ->options(function () {
-                            return Account::where('company_id', Filament::getTenant()?->id)
-                                ->where('type', 'income')
-                                ->pluck('name', 'id');
-                        })
-                        ->required()
-                        ->searchable(),
+                        ->accountFilter('income')
+                        ->required(),
                 ])
                 ->action(function (array $data) {
                     try {
