@@ -268,7 +268,7 @@ class SalesOrderForm
                                         if ($state) {
                                             $product = Product::find($state);
                                             if ($product) {
-                                                $set('description', $product->name);
+                                                $set('description', $product->description ?: $product->name);
 
                                                 // Handle Price Conversion
                                                 $exchangeRate = (float) $get('../../exchange_rate_at_creation') ?: 1.0;
