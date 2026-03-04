@@ -11,7 +11,6 @@ use Filament\Forms\Components\Toggle;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Kezi\Foundation\Models\Currency;
-use Kezi\Foundation\Models\CurrencyRate;
 use Kezi\Product\Models\Product;
 use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
@@ -108,25 +107,16 @@ class CurrencySelectField extends TranslatableSelect
             $baseCurrency = $company->currency ?? null;
             $newRate = 1.0;
 
-            if ($currency instanceof Currency && $baseCurrency instanceof Currency) {
-                if ($currency->id === $baseCurrency->id) {
+            if ($currency instanceof Currency) {
+                if ($baseCurrency instanceof Currency && $currency->id === $baseCurrency->id) {
                     if ($exchangeRateFieldName) {
-                        $set($exchangeRateFieldName, 1);
+                        $set($exchangeRateFieldName, 1.0);
                     }
                     $newRate = 1.0;
                 } else {
                     $service = app(\Kezi\Foundation\Services\CurrencyConverterService::class);
                     $rate = $service->getExchangeRate($currency, now(), $company) ?? $service->getLatestExchangeRate($currency, $company);
                     $newRate = $rate ?? 1.0;
-                    if ($exchangeRateFieldName) {
-                        $set($exchangeRateFieldName, $newRate);
-                    }
-                }
-            } elseif ($currency instanceof Currency && $currency->id !== $company->currency_id) {
-                // Fallback to CurrencyRate logic if service is not sufficient
-                $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
-                if ($latestRate) {
-                    $newRate = $latestRate;
                     if ($exchangeRateFieldName) {
                         $set($exchangeRateFieldName, $newRate);
                     }
