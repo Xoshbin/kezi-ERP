@@ -16,7 +16,6 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\RepeatableEntry;
@@ -44,6 +43,7 @@ use Kezi\Accounting\Rules\NotInLockedPeriod;
 use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
+use Kezi\Foundation\Filament\Forms\Components\PartnerSelectField;
 use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Foundation\Models\Currency;
@@ -125,45 +125,10 @@ class VendorBillResource extends Resource
             Section::make(__('accounting::bill.vendor_currency_info'))
                 ->description(__('accounting::bill.vendor_currency_info_description'))
                 ->schema([
-                    TranslatableSelect::make('vendor_id')
-                        ->relationship('vendor', 'name')
+                    PartnerSelectField::make('vendor_id')
                         ->label(__('accounting::bill.vendor'))
-                        ->searchableFields(['name', 'email', 'contact_person'])
-                        ->searchable()
-                        ->preload()
                         ->required()
-                        ->columnSpan(1)
-                        ->createOptionForm([
-                            TextInput::make('name')
-                                ->label(__('accounting::partner.name'))
-                                ->required()
-                                ->maxLength(255),
-                            Select::make('type')
-                                ->label(__('accounting::partner.type'))
-                                ->required()
-                                ->options(
-                                    collect(\Kezi\Foundation\Enums\Partners\PartnerType::cases())
-                                        ->mapWithKeys(fn (\Kezi\Foundation\Enums\Partners\PartnerType $type) => [$type->value => $type->label()])
-                                ),
-                            TextInput::make('contact_person')
-                                ->label(__('accounting::partner.contact_person'))
-                                ->maxLength(255),
-                            TextInput::make('email')
-                                ->label(__('accounting::partner.email'))
-                                ->email()
-                                ->maxLength(255),
-                            TextInput::make('phone')
-                                ->label(__('accounting::partner.phone'))
-                                ->maxLength(255),
-                            Textarea::make('address')
-                                ->label(__('accounting::partner.address'))
-                                ->columnSpanFull(),
-                        ])
-                        ->createOptionModalHeading(__('accounting::common.modal_title_create_partner'))
-                        ->createOptionAction(function (Action $action) {
-                            return $action
-                                ->modalWidth('lg');
-                        }),
+                        ->columnSpan(1),
                     TranslatableSelect::forModel('currency_id', Currency::class, 'name')
                         ->label(__('accounting::bill.currency'))
                         ->required()

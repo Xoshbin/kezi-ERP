@@ -72,11 +72,8 @@ class ChequeResource extends Resource
                                 ->disabled(fn (?Cheque $record) => $record && $record->exists), // Cannot change type after creation
 
                             // Payee / Drawer
-                            Select::make('partner_id')
-                                ->relationship('partner', 'name')
+                            \Kezi\Foundation\Filament\Forms\Components\PartnerSelectField::make('partner_id')
                                 ->required()
-                                ->searchable()
-                                ->preload()
                                 ->label(fn (Get $get) => $get('type') === ChequeType::Payable->value ? __('accounting::cheque.payee') : __('accounting::cheque.drawer')),
 
                         ])->columnSpanFull(),
