@@ -80,8 +80,7 @@ class LetterOfCreditResource extends Resource
                                 ->prefix('IQD')
                                 ->afterStateHydrated(fn (TextInput $component, $state) => $component->state($state instanceof \Brick\Money\Money ? $state->getAmount()->toFloat() : $state)),
 
-                            Select::make('currency_id')
-                                ->relationship('currency', 'code')
+                            \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                                 ->required()
                                 ->default(1),
 

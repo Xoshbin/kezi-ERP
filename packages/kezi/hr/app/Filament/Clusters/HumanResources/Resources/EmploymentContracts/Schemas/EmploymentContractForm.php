@@ -78,13 +78,9 @@ class EmploymentContractForm
             Section::make(__('hr::employment_contract.compensation_details'))
                 ->description(__('hr::employment_contract.compensation_details_description'))
                 ->schema([
-                    Select::make('currency_id')
+                    \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                         ->label(__('hr::employment_contract.fields.currency'))
-                        ->relationship('currency', 'name')
-                        ->searchable()
-                        ->preload()
                         ->required()
-                        ->default(fn () => \Filament\Facades\Filament::getTenant()?->currency_id)
                         ->columnSpan(1),
 
                     MoneyInput::make('base_salary')

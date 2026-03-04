@@ -47,7 +47,6 @@ use Kezi\Foundation\Filament\Forms\Components\PartnerSelectField;
 use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Foundation\Models\Currency;
-use Kezi\Foundation\Models\CurrencyRate;
 use Kezi\Payment\Enums\Payments\PaymentType;
 use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 use Kezi\Product\Models\Product;
@@ -129,66 +128,10 @@ class VendorBillResource extends Resource
                         ->label(__('accounting::bill.vendor'))
                         ->required()
                         ->columnSpan(1),
-                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
+                    \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                         ->label(__('accounting::bill.currency'))
                         ->required()
-                        ->live()
-                        ->searchable()
-                        ->preload()
-                        ->columnSpan(1)
-                        ->default(function (): ?int {
-                            $tenant = Filament::getTenant();
-
-                            return $tenant instanceof Company ? $tenant->currency_id : null;
-                        })
-                        ->afterStateUpdated(function (callable $set, $state) {
-                            if ($state) {
-                                $currency = Currency::find($state);
-                                // Ensure we have a single Currency model, not a collection
-                                if ($currency instanceof Collection) {
-                                    $currency = $currency->first();
-                                }
-                                $company = Filament::getTenant();
-
-                                if ($currency && $company instanceof Company && $currency->id !== $company->currency_id) {
-                                    // Get latest exchange rate for this company
-                                    $latestRate = CurrencyRate::getLatestRate($currency->id, $company->id);
-                                    if ($latestRate) {
-                                        $set('exchange_rate_at_creation', $latestRate);
-                                    }
-                                } else {
-                                    $set('exchange_rate_at_creation', 1.0);
-                                }
-                            }
-                        })
-                        ->createOptionForm([
-                            TextInput::make('code')
-                                ->label(__('accounting::currency.code'))
-                                ->required()
-                                ->maxLength(255),
-                            TextInput::make('name')
-                                ->label(__('accounting::currency.name'))
-                                ->required()
-                                ->maxLength(255),
-                            TextInput::make('symbol')
-                                ->label(__('accounting::currency.symbol'))
-                                ->required()
-                                ->maxLength(5),
-                            TextInput::make('exchange_rate')
-                                ->label(__('accounting::currency.exchange_rate'))
-                                ->required()
-                                ->numeric()
-                                ->default(1),
-                            Toggle::make('is_active')
-                                ->label(__('accounting::currency.is_active'))
-                                ->required()
-                                ->default(true),
-                        ])
-                        ->createOptionModalHeading(__('accounting::common.modal_title_create_currency'))
-                        ->createOptionAction(function (Action $action) {
-                            return $action
-                                ->modalWidth('lg');
-                        }),
+                        ->columnSpan(1),
                     ExchangeRateInput::make('exchange_rate_at_creation')
                         ->columnSpan(1)
                         ->disabled(fn (?VendorBill $record) => $record && $record->status !== VendorBillStatus::Draft),

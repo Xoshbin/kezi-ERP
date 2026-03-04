@@ -9,7 +9,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Models\Currency;
-use Kezi\Foundation\Support\TranslatableHelper;
 use Kezi\HR\Models\Employee;
 
 class PayrollForm
@@ -45,12 +44,8 @@ class PayrollForm
                         ->preload()
                         ->columnSpan(2),
 
-                    Select::make('currency_id')
+                    \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                         ->label(__('hr::payroll.fields.currency'))
-                        ->options(fn () => Currency::all()->mapWithKeys(function ($currency) {
-                            return [$currency->id => TranslatableHelper::getLocalizedValue($currency->name)." ({$currency->code})"];
-                        }))
-                        ->searchable()
                         ->required()
                         ->default(fn () => Currency::where('code', 'IQD')->first()?->id)
                         ->columnSpan(1),
