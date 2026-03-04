@@ -96,6 +96,7 @@ class CashAdvancesTable
                         AccountSelectField::make('bank_account_id')
                             ->label(__('hr::cash_advance.bank_account'))
                             ->accountFilter('bank_and_cash')
+                            ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::BankAndCash)
                             ->required(),
                     ])
                     ->action(function (\Kezi\HR\Models\CashAdvance $record, array $data) {
@@ -116,6 +117,7 @@ class CashAdvancesTable
                             ->label(__('hr::cash_advance.bank_account'))
                             ->helperText(__('hr::cash_advance.bank_account_helper'))
                             ->accountFilter('bank_and_cash')
+                            ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::BankAndCash)
                             ->visible(fn ($get) => in_array($get('settlement_method'), ['cash_return', 'reimbursement'])),
                     ])
                     ->action(function (\Kezi\HR\Models\CashAdvance $record, array $data) {

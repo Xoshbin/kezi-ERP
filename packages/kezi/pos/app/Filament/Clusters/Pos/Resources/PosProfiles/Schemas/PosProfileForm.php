@@ -80,6 +80,7 @@ class PosProfileForm
                         AccountSelectField::make('default_income_account_id')
                             ->label(__('pos::pos_profile.default_income_account'))
                             ->accountFilter('income')
+                            ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::Income)
                             ->required(),
 
                         Select::make('default_payment_journal_id')

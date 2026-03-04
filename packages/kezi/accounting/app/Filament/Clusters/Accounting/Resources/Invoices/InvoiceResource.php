@@ -293,6 +293,7 @@ class InvoiceResource extends Resource
                             AccountSelectField::make('income_account_id')
                                 ->label(__('accounting::invoice.income_account'))
                                 ->accountFilter('income')
+                                ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::Income)
                                 ->required()
                                 ->columnSpan(3),
                             DatePicker::make('deferred_start_date')

@@ -77,6 +77,7 @@ describe('AccountSelectField', function () {
             // company_id intentionally NOT provided — must be set server-side
         ];
 
+        /** @var \Closure $callback */
         $callback = $field->getCreateOptionUsing();
         $id = $callback($data);
 
@@ -89,6 +90,7 @@ describe('AccountSelectField', function () {
     });
 
     it('ignores tampered company_id in createOptionUsing and enforces tenant', function () {
+        /** @var \App\Models\Company $otherCompany */
         $otherCompany = \App\Models\Company::factory()->create();
 
         $field = AccountSelectField::make('account_id');
@@ -99,6 +101,7 @@ describe('AccountSelectField', function () {
             'company_id' => $otherCompany->id, // attacker-supplied foreign company
         ];
 
+        /** @var \Closure $callback */
         $callback = $field->getCreateOptionUsing();
         $id = $callback($data);
 

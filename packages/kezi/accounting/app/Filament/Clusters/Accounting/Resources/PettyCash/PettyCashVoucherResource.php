@@ -74,6 +74,7 @@ class PettyCashVoucherResource extends Resource
 
                         AccountSelectField::make('expense_account_id')
                             ->accountFilter('expense')
+                            ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::Expense)
                             ->required()
                             ->label(__('accounting::petty_cash.fields.expense_category'))
                             ->helperText(__('accounting::petty_cash.helpers.expense_category')),

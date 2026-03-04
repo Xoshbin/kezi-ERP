@@ -68,6 +68,7 @@ class EditSalesOrder extends EditRecord
                     AccountSelectField::make('default_income_account_id')
                         ->label(__('sales::sales_orders.form.default_income_account'))
                         ->accountFilter('income')
+                        ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::Income)
                         ->required(),
                 ])
                 ->action(function (SalesOrder $record, array $data) {
