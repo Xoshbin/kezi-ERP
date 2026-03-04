@@ -6,6 +6,10 @@ This project is a robust, integrated accounting and ERP system built on the Lara
 
 The system features a comprehensive suite of accounting modules managed through a clean, service-oriented architecture and a premium administrative interface powered by **Filament**. All business logic is encapsulated within dedicated service classes, ensuring that financial rules are consistently enforced across the application.
 
+**🚀 Live Demo:** [https://kezierp.com/kezi/login](https://kezierp.com/kezi/login)  
+**Email:** `demo@kezierp.com`  
+**Password:** `password`
+
 ## Core Principles
 
 The architecture is built upon a foundation of strict accounting principles:
