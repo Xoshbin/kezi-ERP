@@ -114,11 +114,8 @@ class QuoteForm
                             ->reorderable(true)
                             ->minItems(1)
                             ->schema([
-                                Select::make('product_id')
-                                    ->label(__('sales::quote.fields.product'))
-                                    ->options(Product::pluck('name', 'id'))
-                                    ->searchable()
-                                    ->preload()
+                                \Kezi\Product\Filament\Forms\Components\ProductSelectField::make('product_id')
+                                    ->required()
                                     ->live()
                                     ->afterStateUpdated(function (callable $set, callable $get, $state) {
                                         if ($state) {
@@ -318,6 +315,7 @@ class QuoteForm
 
         if ($inCompanyCurrency) {
             $exchangeRate = (float) ($get('exchange_rate') ?? 1.0);
+            /** @var \App\Models\Company|null $company */
             $company = Filament::getTenant();
             $companyCurrency = $company ? Currency::find($company->currency_id) : null;
 

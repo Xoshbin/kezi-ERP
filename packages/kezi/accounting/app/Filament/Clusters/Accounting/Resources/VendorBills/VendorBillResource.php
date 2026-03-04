@@ -49,6 +49,7 @@ use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Foundation\Models\CurrencyRate;
 use Kezi\Payment\Enums\Payments\PaymentType;
+use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 use Kezi\Product\Models\Product;
 use Kezi\Purchase\Enums\Purchases\VendorBillStatus;
 use Kezi\Purchase\Models\VendorBill;
@@ -380,11 +381,7 @@ class VendorBillResource extends Resource
                                 }),
                         ])
                         ->schema([
-                            TranslatableSelect::forModel('product_id', Product::class, 'name')
-                                ->label(__('accounting::bill.product'))
-                                ->searchableFields(['name', 'sku', 'description'])
-                                ->searchable()
-                                ->preload()
+                            ProductSelectField::make('product_id')
                                 ->reactive()
                                 ->afterStateUpdated(function (callable $set, $state, callable $get) {
                                     if ($state) {
@@ -414,39 +411,7 @@ class VendorBillResource extends Resource
                                         }
                                     }
                                 })
-                                ->createOptionForm([
-                                    Select::make('company_id')
-                                        ->relationship('company', 'name')
-                                        ->label(__('product.company'))
-                                        ->required(),
-                                    TextInput::make('name')
-                                        ->label(__('product.name'))
-                                        ->required()
-                                        ->maxLength(255),
-                                    TextInput::make('sku')
-                                        ->label(__('product.sku'))
-                                        ->required()
-                                        ->maxLength(255),
-                                    Select::make('type')
-                                        ->label(__('product.type'))
-                                        ->required()
-                                        ->live()
-                                        ->options(
-                                            collect(\Kezi\Product\Enums\Products\ProductType::cases())
-                                                ->mapWithKeys(fn (\Kezi\Product\Enums\Products\ProductType $type) => [$type->value => $type->label()])
-                                        ),
-                                    Textarea::make('description')
-                                        ->label(__('product.description'))
-                                        ->rows(3),
-                                    Toggle::make('is_active')
-                                        ->label(__('product.is_active'))
-                                        ->default(true),
-                                ])
-                                ->createOptionModalHeading(__('accounting::common.modal_title_create_product'))
-                                ->createOptionAction(function (Action $action) {
-                                    return $action
-                                        ->modalWidth('lg');
-                                }),
+                                ->columnSpan(3),
                             TextInput::make('description')
                                 ->label(__('accounting::bill.description'))
                                 ->maxLength(255)
