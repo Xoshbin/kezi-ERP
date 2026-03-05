@@ -25,6 +25,15 @@ class EmployeeSelectField extends TranslatableSelect
         $this->preload();
         $this->required();
 
+        $this->modifyQueryUsing(function ($query) {
+            $tenantId = \Filament\Facades\Filament::getTenant()?->id;
+            if ($tenantId) {
+                $query->where('company_id', $tenantId);
+            }
+
+            return $query;
+        });
+
         $this->getOptionLabelFromRecordUsing(fn (Employee $record): string => $record->full_name);
 
         $this->actionSchemaModel(Employee::class);
@@ -40,6 +49,12 @@ class EmployeeSelectField extends TranslatableSelect
         });
 
         $this->createOptionUsing(function (array $data): int {
+            $tenantId = \Filament\Facades\Filament::getTenant()?->id;
+
+            if ($tenantId) {
+                $data['company_id'] = $tenantId;
+            }
+
             $employee = Employee::create($data);
 
             return $employee->getKey();
