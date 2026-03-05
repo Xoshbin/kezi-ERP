@@ -9,6 +9,8 @@ use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class EmployeeSelectField extends TranslatableSelect
 {
+    protected ?\Closure $customQueryModifier = null;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -26,9 +28,14 @@ class EmployeeSelectField extends TranslatableSelect
         $this->required();
 
         $this->modifyQueryUsing(function ($query) {
-            $tenantId = \Filament\Facades\Filament::getTenant()?->id;
-            if ($tenantId) {
-                $query->where('company_id', $tenantId);
+            $tenant = \Filament\Facades\Filament::getTenant();
+
+            if ($tenant instanceof \Illuminate\Database\Eloquent\Model) {
+                $query->where('company_id', $tenant->getKey());
+            }
+
+            if ($this->customQueryModifier) {
+                $query = ($this->customQueryModifier)($query) ?? $query;
             }
 
             return $query;
@@ -49,16 +56,29 @@ class EmployeeSelectField extends TranslatableSelect
         });
 
         $this->createOptionUsing(function (array $data): int {
-            $tenantId = \Filament\Facades\Filament::getTenant()?->id;
+            $tenant = \Filament\Facades\Filament::getTenant();
 
-            if ($tenantId) {
-                $data['company_id'] = $tenantId;
+            if ($tenant instanceof \Illuminate\Database\Eloquent\Model) {
+                $data['company_id'] = $tenant->getKey();
             }
 
-            $employee = Employee::create($data);
+            /** @var Employee $employee */
+            $employee = Employee::query()->create($data);
 
-            return $employee->getKey();
+            return (int) $employee->getKey();
         });
+    }
+
+    public function query(\Closure $callback): static
+    {
+        $this->customQueryModifier = $callback;
+
+        return $this;
+    }
+
+    public function getCustomQueryModifier(): ?\Closure
+    {
+        return $this->customQueryModifier;
     }
 
     public static function make(?string $name = null): static
