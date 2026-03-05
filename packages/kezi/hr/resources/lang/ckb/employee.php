@@ -85,4 +85,7 @@ return [
     // Navigation
     'navigation_label' => 'کارمەندان',
     'navigation_group' => 'سەرچاوە مرۆییەکان',
+
+    'label' => 'کارمەند',
+    'create' => 'دروستکردنی کارمەند',
 ];

@@ -79,4 +79,7 @@ return [
     // Navigation
     'navigation_label' => 'الموظفون',
     'navigation_group' => 'الموارد البشرية',
+
+    'label' => 'موظف',
+    'create' => 'إنشاء موظف',
 ];

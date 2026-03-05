@@ -12,12 +12,8 @@ class CashAdvanceForm
             ->components([
                 \Filament\Schemas\Components\Section::make(__('hr::cash_advance.sections.request_details'))
                     ->schema([
-                        \Filament\Forms\Components\Select::make('employee_id')
-                            ->relationship('employee', 'first_name')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->full_name)
-                            ->searchable()
-                            ->preload()
-                            ->required(),
+                        \Kezi\HR\Filament\Forms\Components\EmployeeSelectField::make('employee_id')
+                            ->label(__('hr::cash_advance.fields.employee')),
                         \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                             ->default(fn () => \Filament\Facades\Filament::getTenant()?->currency_id)
                             ->required(),
