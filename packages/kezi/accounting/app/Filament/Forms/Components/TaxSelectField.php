@@ -95,6 +95,9 @@ class TaxSelectField extends TranslatableSelect
 
     protected ?\Closure $taxFilter = null;
 
+    /**
+     * @param  \Closure|TaxType|string|array<int, TaxType|string>|null  $callback
+     */
     public function taxFilter(\Closure|TaxType|string|array|null $callback): static
     {
         if ($callback instanceof TaxType || is_string($callback) || is_array($callback)) {
