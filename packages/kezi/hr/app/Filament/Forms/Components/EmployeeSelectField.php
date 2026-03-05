@@ -41,7 +41,7 @@ class EmployeeSelectField extends TranslatableSelect
             return $query;
         });
 
-        $this->getOptionLabelFromRecordUsing(fn (Employee $record): string => $record->full_name);
+        $this->getOptionLabelFromRecordUsing(fn (Employee $record): string => $record->display_name);
 
         $this->actionSchemaModel(Employee::class);
 
