@@ -3,17 +3,19 @@
 namespace Kezi\Accounting\Tests\Feature\Filament\Forms\Components;
 
 use Filament\Facades\Filament;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Filament\Forms\Components\Field;
 use Kezi\Accounting\Filament\Forms\Components\TaxSelectField;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\Tax;
 use Tests\Traits\WithConfiguredCompany;
 
-uses(RefreshDatabase::class, WithConfiguredCompany::class);
+/** @var \Tests\TestCase $this */
+uses(WithConfiguredCompany::class);
 
 beforeEach(function () {
-    $this->setupWithConfiguredCompany();
-    Filament::setTenant($this->company);
+    /** @var \Tests\TestCase $test */
+    $test = $this;
+    $test->setupWithConfiguredCompany();
 });
 
 describe('TaxSelectField', function () {
@@ -43,7 +45,9 @@ describe('TaxSelectField', function () {
         expect($components)->toBeArray()
             ->and($components)->not->toBeEmpty();
 
-        $names = collect($components)->map(fn ($c) => method_exists($c, 'getName') ? $c->getName() : null)->filter()->values()->toArray();
+        $names = collect((array) $components)->map(function (mixed $c) {
+            return ($c instanceof Field) ? $c->getName() : null;
+        })->filter()->values()->toArray();
 
         expect($names)->toContain('tax_account_id')
             ->toContain('name')
@@ -53,14 +57,16 @@ describe('TaxSelectField', function () {
     });
 
     it('can create tax using createOptionUsing with tenant company_id', function () {
-        $account = Account::factory()->create(['company_id' => $this->company->id]);
+        /** @var \App\Models\Company $company */
+        $company = Filament::getTenant();
+        $account = Account::factory()->create(['company_id' => (int) $company->getKey()]);
 
         $field = TaxSelectField::make('tax_id');
         $data = [
             'name' => 'Test Tax',
             'rate' => 15.0,
             'type' => \Kezi\Accounting\Enums\Accounting\TaxType::Sales->value,
-            'tax_account_id' => $account->id,
+            'tax_account_id' => (int) $account->getKey(),
             'is_active' => true,
         ];
 
@@ -69,15 +75,21 @@ describe('TaxSelectField', function () {
         $id = $callback($data);
 
         expect($id)->toBeInt();
-        $this->assertDatabaseHas('taxes', [
+        /** @var \App\Models\Company $company */
+        $company = Filament::getTenant();
+        /** @var \Tests\TestCase $test */
+        $test = $this;
+        $test->assertDatabaseHas('taxes', [
             'id' => $id,
             'name' => json_encode(['en' => 'Test Tax']),
-            'company_id' => $this->company->id,
+            'company_id' => (int) $company->getKey(),
         ]);
     });
 
     it('ignores tampered company_id in createOptionUsing and enforces tenant', function () {
-        $account = Account::factory()->create(['company_id' => $this->company->id]);
+        /** @var \App\Models\Company $company */
+        $company = Filament::getTenant();
+        $account = Account::factory()->create(['company_id' => (int) $company->getKey()]);
         $otherCompany = \App\Models\Company::factory()->create();
 
         $field = TaxSelectField::make('tax_id');
@@ -85,36 +97,42 @@ describe('TaxSelectField', function () {
             'name' => 'Tampered Tax',
             'rate' => 10.0,
             'type' => \Kezi\Accounting\Enums\Accounting\TaxType::Purchase->value,
-            'tax_account_id' => $account->id,
+            'tax_account_id' => (int) $account->getKey(),
             'is_active' => true,
-            'company_id' => $otherCompany->id,
+            'company_id' => (int) $otherCompany->getKey(),
         ];
 
         /** @var \Closure $callback */
         $callback = $field->getCreateOptionUsing();
         $id = $callback($data);
 
-        $this->assertDatabaseHas('taxes', [
+        /** @var \App\Models\Company $company */
+        $company = Filament::getTenant();
+        /** @var \Tests\TestCase $test */
+        $test = $this;
+        $test->assertDatabaseHas('taxes', [
             'id' => $id,
-            'company_id' => $this->company->id,
+            'company_id' => (int) $company->getKey(),
         ]);
-        $this->assertDatabaseMissing('taxes', [
+        $test->assertDatabaseMissing('taxes', [
             'id' => $id,
-            'company_id' => $otherCompany->id,
+            'company_id' => (int) $otherCompany->getKey(),
         ]);
     });
 
     it('scopes taxes to current company', function () {
+        /** @var \App\Models\Company $company */
+        $company = Filament::getTenant();
         $otherCompany = \App\Models\Company::factory()->create();
 
         Tax::factory()->create([
-            'company_id' => $otherCompany->id,
+            'company_id' => (int) $otherCompany->getKey(),
             'name' => ['en' => 'Other Company Tax'],
             'is_active' => true,
         ]);
 
         Tax::factory()->create([
-            'company_id' => $this->company->id,
+            'company_id' => (int) $company->getKey(),
             'name' => ['en' => 'My Company Tax'],
             'is_active' => true,
         ]);
@@ -129,15 +147,18 @@ describe('TaxSelectField', function () {
 
 describe('TaxSelectField Filtering and Defaults', function () {
     it('can filter taxes by type', function () {
+        /** @var \App\Models\Company $company */
+        $company = Filament::getTenant();
+
         Tax::factory()->create([
-            'company_id' => $this->company->id,
+            'company_id' => (int) $company->getKey(),
             'name' => ['en' => 'Sales Tax'],
             'type' => \Kezi\Accounting\Enums\Accounting\TaxType::Sales,
             'is_active' => true,
         ]);
 
         Tax::factory()->create([
-            'company_id' => $this->company->id,
+            'company_id' => (int) $company->getKey(),
             'name' => ['en' => 'Purchase Tax'],
             'type' => \Kezi\Accounting\Enums\Accounting\TaxType::Purchase,
             'is_active' => true,
@@ -153,22 +174,25 @@ describe('TaxSelectField Filtering and Defaults', function () {
     });
 
     it('can filter taxes by multiple types', function () {
+        /** @var \App\Models\Company $company */
+        $company = Filament::getTenant();
+
         Tax::factory()->create([
-            'company_id' => $this->company->id,
+            'company_id' => (int) $company->getKey(),
             'name' => ['en' => 'Sales Tax'],
             'type' => \Kezi\Accounting\Enums\Accounting\TaxType::Sales,
             'is_active' => true,
         ]);
 
         Tax::factory()->create([
-            'company_id' => $this->company->id,
+            'company_id' => (int) $company->getKey(),
             'name' => ['en' => 'Both Tax'],
             'type' => \Kezi\Accounting\Enums\Accounting\TaxType::Both,
             'is_active' => true,
         ]);
 
         Tax::factory()->create([
-            'company_id' => $this->company->id,
+            'company_id' => (int) $company->getKey(),
             'name' => ['en' => 'Purchase Tax'],
             'type' => \Kezi\Accounting\Enums\Accounting\TaxType::Purchase,
             'is_active' => true,
