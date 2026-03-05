@@ -14,6 +14,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Kezi\Accounting\Enums\Accounting\TaxType;
 use Kezi\Accounting\Filament\Forms\Components\TaxSelectField;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Enums\Incoterm;
@@ -262,6 +263,8 @@ class PurchaseOrderForm
                                     ->columnSpan(3),
 
                                 TaxSelectField::make('tax_id')
+                                    ->taxFilter([TaxType::Purchase, TaxType::Both])
+                                    ->createOptionDefaultType(TaxType::Purchase)
                                     ->live()
                                     ->columnSpan(3),
 

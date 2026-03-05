@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Kezi\Accounting\Enums\Accounting\RecurringFrequency;
 use Kezi\Accounting\Enums\Accounting\RecurringStatus;
 use Kezi\Accounting\Enums\Accounting\RecurringTargetType;
+use Kezi\Accounting\Enums\Accounting\TaxType;
 use Kezi\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Accounting\Filament\Forms\Components\TaxSelectField;
@@ -199,7 +200,9 @@ class RecurringTemplateResource extends Resource
                                 ->options(fn () => Product::pluck('name', 'id'))
                                 ->searchable(),
                             TaxSelectField::make('tax_id')
-                                ->label(__('accounting::recurring.tax')),
+                                ->label(__('accounting::recurring.tax'))
+                                ->taxFilter([TaxType::Sales, TaxType::Both])
+                                ->createOptionDefaultType(TaxType::Sales),
                         ]),
                 ])
                 ->columns(1)

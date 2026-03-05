@@ -15,6 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Kezi\Accounting\Enums\Accounting\TaxType;
 use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Accounting\Filament\Forms\Components\TaxSelectField;
 
@@ -48,7 +49,10 @@ class InvoiceLinesRelationManager extends RelationManager
                 TextInput::make('description')->label(__('accounting::invoice.description'))->required()->maxLength(255),
                 TextInput::make('quantity')->label(__('accounting::invoice.quantity'))->required()->numeric(),
                 TextInput::make('unit_price')->label(__('accounting::invoice.unit_price'))->required()->numeric(),
-                TaxSelectField::make('tax_id')->label(__('accounting::invoice.tax')),
+                TaxSelectField::make('tax_id')
+                    ->label(__('accounting::invoice.tax'))
+                    ->taxFilter([TaxType::Sales, TaxType::Both])
+                    ->createOptionDefaultType(TaxType::Sales),
                 AccountSelectField::make('income_account_id')
                     ->label(__('accounting::invoice.income_account'))
                     ->required(),

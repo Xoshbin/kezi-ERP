@@ -28,6 +28,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
+use Kezi\Accounting\Enums\Accounting\TaxType;
 use Kezi\Accounting\Enums\Assets\DepreciationMethod;
 use Kezi\Accounting\Filament\Clusters\Accounting\AccountingCluster;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\CreateVendorBill;
@@ -333,7 +334,9 @@ class VendorBillResource extends Resource
                                 ->label(__('accounting::bill.expense_account'))
                                 ->required(),
                             TaxSelectField::make('tax_id')
-                                ->label(__('accounting::bill.tax')),
+                                ->label(__('accounting::bill.tax'))
+                                ->taxFilter([TaxType::Purchase, TaxType::Both])
+                                ->createOptionDefaultType(TaxType::Purchase),
 
                             // Hidden fields to store advanced settings so they are persisted and saved
                             Hidden::make('deferred_start_date'),

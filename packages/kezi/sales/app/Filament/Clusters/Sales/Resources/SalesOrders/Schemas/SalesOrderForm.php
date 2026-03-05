@@ -245,7 +245,7 @@ class SalesOrderForm
                                     ->columnSpan(3),
                                 TaxSelectField::make('tax_id')
                                     ->label(__('sales::sales_orders.fields.tax'))
-                                    ->taxFilter(\Kezi\Accounting\Enums\Accounting\TaxType::Sales)
+                                    ->taxFilter([\Kezi\Accounting\Enums\Accounting\TaxType::Sales, \Kezi\Accounting\Enums\Accounting\TaxType::Both])
                                     ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\TaxType::Sales)
                                     ->live()
                                     ->columnSpan(3),
