@@ -8,6 +8,7 @@ parameters:
     paths:
         - app/
         - packages/kezi/
+        - tests/
 
     # Level 10 is the highest level
     level: 8

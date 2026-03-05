@@ -37,8 +37,8 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\Lis
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\AdjustmentDocumentsRelationManager;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\PaymentsRelationManager;
 use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
+use Kezi\Accounting\Filament\Forms\Components\TaxSelectField;
 use Kezi\Accounting\Models\AssetCategory;
-use Kezi\Accounting\Models\Tax;
 use Kezi\Accounting\Rules\NotInLockedPeriod;
 use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
@@ -333,47 +333,10 @@ class VendorBillResource extends Resource
                             AccountSelectField::make('expense_account_id')
                                 ->label(__('accounting::bill.expense_account'))
                                 ->required(),
-                            TranslatableSelect::forModel('tax_id', Tax::class, 'name')
+                            TaxSelectField::make('tax_id')
                                 ->label(__('accounting::bill.tax'))
-                                ->options(function () {
-                                    return Tax::where('company_id', Filament::getTenant()?->getKey())
-                                        ->where('is_active', true)
-                                        ->pluck('name', 'id');
-                                })
-                                ->searchable()
-                                ->preload()
-                                ->createOptionForm([
-                                    Hidden::make('company_id')
-                                        ->default(fn () => Filament::getTenant()?->getKey()),
-                                    AccountSelectField::make('tax_account_id')
-                                        ->label(__('accounting::tax.tax_account'))
-                                        ->required(),
-                                    TextInput::make('name')
-                                        ->label(__('accounting::tax.name'))
-                                        ->required()
-                                        ->maxLength(255),
-                                    TextInput::make('rate')
-                                        ->label(__('accounting::tax.rate'))
-                                        ->required()
-                                        ->numeric(),
-                                    Select::make('type')
-                                        ->label(__('accounting::tax.type'))
-                                        ->options(collect(TaxType::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
-                                        ->required(),
-                                    Toggle::make('is_active')
-                                        ->label(__('accounting::tax.is_active'))
-                                        ->default(true),
-                                ])
-                                ->createOptionUsing(function (array $data): int {
-                                    $tax = Tax::create($data);
-
-                                    return $tax->getKey();
-                                })
-                                ->createOptionModalHeading(__('accounting::common.modal_title_create_tax'))
-                                ->createOptionAction(function (Action $action) {
-                                    return $action
-                                        ->modalWidth('lg');
-                                }),
+                                ->taxFilter([TaxType::Purchase, TaxType::Both])
+                                ->createOptionDefaultType(TaxType::Purchase),
 
                             // Hidden fields to store advanced settings so they are persisted and saved
                             Hidden::make('deferred_start_date'),
