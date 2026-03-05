@@ -85,4 +85,7 @@ return [
     // Navigation
     'navigation_label' => 'Employees',
     'navigation_group' => 'Human Resources',
+
+    'label' => 'Employee',
+    'create' => 'Create Employee',
 ];

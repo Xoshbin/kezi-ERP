@@ -19,19 +19,8 @@ class EmploymentContractForm
             Section::make(__('hr::employment_contract.basic_information'))
                 ->description(__('hr::employment_contract.basic_information_description'))
                 ->schema([
-                    Select::make('employee_id')
+                    \Kezi\HR\Filament\Forms\Components\EmployeeSelectField::make('employee_id')
                         ->label(__('hr::employment_contract.fields.employee'))
-                        ->relationship('employee', 'first_name', function ($query) {
-                            $tenantId = \Filament\Facades\Filament::getTenant()?->id;
-                            if ($tenantId) {
-                                $query->where('company_id', $tenantId);
-                            }
-
-                            return $query;
-                        })
-                        ->searchable(['first_name', 'last_name', 'employee_number'])
-                        ->preload()
-                        ->required()
                         ->columnSpan(1),
 
                     TextInput::make('contract_number')
