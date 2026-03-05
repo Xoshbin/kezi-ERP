@@ -15,7 +15,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
-use Kezi\Accounting\Enums\Accounting\TaxType;
+use Kezi\Accounting\Filament\Forms\Components\TaxSelectField;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
@@ -154,16 +154,10 @@ class QuoteForm
                                     ->suffix('%')
                                     ->live(onBlur: true)
                                     ->columnSpan(2),
-
-                                Select::make('tax_id')
+                                TaxSelectField::make('tax_id')
                                     ->label(__('sales::quote.fields.tax'))
-                                    ->options(function () {
-                                        return Tax::where('company_id', Filament::getTenant()?->getKey())
-                                            ->where('type', TaxType::Sales->value)
-                                            ->pluck('name', 'id');
-                                    })
-                                    ->searchable()
-                                    ->preload()
+                                    ->taxFilter([\Kezi\Accounting\Enums\Accounting\TaxType::Sales, \Kezi\Accounting\Enums\Accounting\TaxType::Both])
+                                    ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\TaxType::Sales)
                                     ->live()
                                     ->columnSpan(3),
                             ])

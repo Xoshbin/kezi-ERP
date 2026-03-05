@@ -13,7 +13,9 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Kezi\Accounting\Enums\Accounting\TaxType;
 use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
+use Kezi\Accounting\Filament\Forms\Components\TaxSelectField;
 
 /**
  * @extends RelationManager<\Kezi\Purchase\Models\VendorBill>
@@ -30,7 +32,10 @@ class VendorBillLinesRelationManager extends RelationManager
                 TextInput::make('description')->required()->maxLength(255)->label(__('accounting::bill.description')),
                 TextInput::make('quantity')->required()->numeric()->label(__('accounting::bill.quantity')),
                 TextInput::make('unit_price')->required()->numeric()->label(__('accounting::bill.unit_price')),
-                Select::make('tax_id')->relationship('tax', 'name')->label(__('accounting::bill.tax')),
+                TaxSelectField::make('tax_id')
+                    ->label(__('accounting::bill.tax'))
+                    ->taxFilter([TaxType::Purchase, TaxType::Both])
+                    ->createOptionDefaultType(TaxType::Purchase),
                 AccountSelectField::make('expense_account_id')
                     ->label(__('accounting::bill.expense_account'))
                     ->required(),

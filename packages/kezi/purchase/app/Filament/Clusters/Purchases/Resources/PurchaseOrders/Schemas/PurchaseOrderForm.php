@@ -3,7 +3,6 @@
 namespace Kezi\Purchase\Filament\Clusters\Purchases\Resources\PurchaseOrders\Schemas;
 
 use Brick\Money\Money;
-use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -12,12 +11,11 @@ use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Kezi\Accounting\Enums\Accounting\TaxType;
-use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
+use Kezi\Accounting\Filament\Forms\Components\TaxSelectField;
 use Kezi\Accounting\Models\Tax;
 use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
@@ -264,42 +262,10 @@ class PurchaseOrderForm
                                     ->live(onBlur: true)
                                     ->columnSpan(3),
 
-                                Select::make('tax_id')
-                                    ->options(fn () => Tax::all()->pluck('name', 'id'))
-                                    ->searchable()
-                                    ->preload()
+                                TaxSelectField::make('tax_id')
+                                    ->taxFilter([TaxType::Purchase, TaxType::Both])
+                                    ->createOptionDefaultType(TaxType::Purchase)
                                     ->live()
-                                    ->createOptionForm([
-                                        Hidden::make('company_id')
-                                            ->default(fn () => Filament::getTenant()?->getKey()),
-                                        AccountSelectField::make('tax_account_id')
-                                            ->label(__('accounting::tax.tax_account'))
-                                            ->required(),
-                                        TextInput::make('name')
-                                            ->label(__('accounting::tax.name'))
-                                            ->required()
-                                            ->maxLength(255),
-                                        TextInput::make('rate')
-                                            ->label(__('accounting::tax.rate'))
-                                            ->required()
-                                            ->numeric(),
-                                        Select::make('type')
-                                            ->label(__('accounting::tax.type'))
-                                            ->options(collect(TaxType::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
-                                            ->required(),
-                                        Toggle::make('is_active')
-                                            ->label(__('accounting::tax.is_active'))
-                                            ->default(true),
-                                    ])
-                                    ->createOptionUsing(function (array $data): int {
-                                        $tax = Tax::create($data);
-
-                                        return $tax->getKey();
-                                    })
-                                    ->createOptionModalHeading(__('foundation::common.modal_title_create_tax'))
-                                    ->createOptionAction(function (Action $action) {
-                                        return $action->modalWidth('lg');
-                                    })
                                     ->columnSpan(3),
 
                                 DatePicker::make('expected_delivery_date')
