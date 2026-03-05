@@ -48,13 +48,12 @@ it('can create an employee using the component logic', function () {
     expect($createOptionUsing)->toBeCallable();
 
     /** @var \App\Models\Company $company */
-    $company = \App\Models\Company::first();
+    $company = $this->company;
 
     $data = [
         'first_name' => 'John',
         'last_name' => 'Doe',
         'email' => 'john.doe@example.com',
-        'company_id' => $company->id,
         'employee_number' => 'EMP2024001',
         'hire_date' => now()->format('Y-m-d'),
     ];
