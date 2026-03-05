@@ -126,3 +126,68 @@ describe('TaxSelectField', function () {
             ->and($options->values())->not->toContain('Other Company Tax');
     });
 });
+
+describe('TaxSelectField Filtering and Defaults', function () {
+    it('can filter taxes by type', function () {
+        Tax::factory()->create([
+            'company_id' => $this->company->id,
+            'name' => ['en' => 'Sales Tax'],
+            'type' => \Kezi\Accounting\Enums\Accounting\TaxType::Sales,
+            'is_active' => true,
+        ]);
+
+        Tax::factory()->create([
+            'company_id' => $this->company->id,
+            'name' => ['en' => 'Purchase Tax'],
+            'type' => \Kezi\Accounting\Enums\Accounting\TaxType::Purchase,
+            'is_active' => true,
+        ]);
+
+        $field = TaxSelectField::make('tax_id')
+            ->taxFilter(\Kezi\Accounting\Enums\Accounting\TaxType::Sales);
+
+        $options = collect($field->getOptions());
+
+        expect($options->values())->toContain('Sales Tax')
+            ->and($options->values())->not->toContain('Purchase Tax');
+    });
+
+    it('can filter taxes by multiple types', function () {
+        Tax::factory()->create([
+            'company_id' => $this->company->id,
+            'name' => ['en' => 'Sales Tax'],
+            'type' => \Kezi\Accounting\Enums\Accounting\TaxType::Sales,
+            'is_active' => true,
+        ]);
+
+        Tax::factory()->create([
+            'company_id' => $this->company->id,
+            'name' => ['en' => 'Both Tax'],
+            'type' => \Kezi\Accounting\Enums\Accounting\TaxType::Both,
+            'is_active' => true,
+        ]);
+
+        Tax::factory()->create([
+            'company_id' => $this->company->id,
+            'name' => ['en' => 'Purchase Tax'],
+            'type' => \Kezi\Accounting\Enums\Accounting\TaxType::Purchase,
+            'is_active' => true,
+        ]);
+
+        $field = TaxSelectField::make('tax_id')
+            ->taxFilter([\Kezi\Accounting\Enums\Accounting\TaxType::Sales, \Kezi\Accounting\Enums\Accounting\TaxType::Both]);
+
+        $options = collect($field->getOptions());
+
+        expect($options->values())->toContain('Sales Tax')
+            ->toContain('Both Tax')
+            ->and($options->values())->not->toContain('Purchase Tax');
+    });
+
+    it('sets default tax type for creation', function () {
+        $field = TaxSelectField::make('tax_id')
+            ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\TaxType::Sales);
+
+        expect($field->getDefaultTaxType())->toBe(\Kezi\Accounting\Enums\Accounting\TaxType::Sales);
+    });
+});
