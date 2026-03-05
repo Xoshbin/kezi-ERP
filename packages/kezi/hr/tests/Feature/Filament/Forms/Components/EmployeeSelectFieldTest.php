@@ -12,7 +12,9 @@ use Livewire\Component;
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class, \Tests\Traits\WithConfiguredCompany::class);
 
 beforeEach(function () {
-    $this->setupWithConfiguredCompany();
+    /** @var \Tests\TestCase $test */
+    $test = $this;
+    $test->setupWithConfiguredCompany();
 
     \Filament\Facades\Filament::setCurrentPanel(
         \Filament\Facades\Filament::getPanel('kezi')
@@ -41,6 +43,8 @@ it('can extract schema from EmployeeResource', function () {
 });
 
 it('can create an employee using the component logic', function () {
+    /** @var \Tests\TestCase $test */
+    $test = $this;
     $component = EmployeeSelectField::make('employee_id');
 
     /** @var \Closure $createOptionUsing */
@@ -48,7 +52,7 @@ it('can create an employee using the component logic', function () {
     expect($createOptionUsing)->toBeCallable();
 
     /** @var \App\Models\Company $company */
-    $company = $this->company;
+    $company = \Filament\Facades\Filament::getTenant();
 
     $data = [
         'first_name' => 'John',
@@ -58,7 +62,7 @@ it('can create an employee using the component logic', function () {
         'hire_date' => now()->format('Y-m-d'),
     ];
 
-    $id = $createOptionUsing($data);
+    $id = (int) $createOptionUsing($data);
 
     expect($id)->toBeInt();
     $this->assertDatabaseHas('employees', [
@@ -70,4 +74,45 @@ it('can create an employee using the component logic', function () {
     /** @var Employee $employee */
     $employee = Employee::find($id);
     expect($employee->first_name)->toBe('John');
+});
+
+it('can apply a custom query filter', function () {
+    /** @var \Tests\TestCase $test */
+    $test = $this;
+    /** @var \App\Models\Company $company */
+    $company = \Filament\Facades\Filament::getTenant();
+
+    $activeEmployee = Employee::factory()->create([
+        'company_id' => $company->id,
+        'is_active' => true,
+        'employment_status' => 'active',
+        'first_name' => 'Active',
+    ]);
+
+    $inactiveEmployee = Employee::factory()->create([
+        'company_id' => $company->id,
+        'is_active' => false,
+        'employment_status' => 'terminated',
+        'first_name' => 'Inactive',
+    ]);
+
+    $component = EmployeeSelectField::make('employee_id')
+        ->query(fn ($query) => $query->where('is_active', true)->where('employment_status', 'active'));
+
+    /** @var \Closure $customQueryModifier */
+    $customQueryModifier = $component->getCustomQueryModifier();
+    expect($customQueryModifier)->toBeCallable();
+
+    $query = Employee::query();
+    $customQueryModifier($query);
+
+    $results = $query->get();
+
+    expect($results)->toHaveCount(1);
+
+    /** @var Employee $fistResult */
+    $fistResult = $results->first();
+
+    expect($fistResult->id)->toBe($activeEmployee->id)
+        ->and($results->pluck('id'))->not->toContain($inactiveEmployee->id);
 });
