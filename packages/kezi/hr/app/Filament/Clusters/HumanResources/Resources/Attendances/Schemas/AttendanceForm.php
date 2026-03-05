@@ -6,7 +6,6 @@ namespace Kezi\HR\Filament\Clusters\HumanResources\Resources\Attendances\Schemas
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -15,12 +14,8 @@ class AttendanceForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
-            Select::make('employee_id')
-                ->label(__('hr::attendance.employee'))
-                ->relationship('employee', 'first_name')
-                ->searchable()
-                ->preload()
-                ->required(),
+            \Kezi\HR\Filament\Forms\Components\EmployeeSelectField::make('employee_id')
+                ->label(__('hr::attendance.employee')),
             DatePicker::make('attendance_date')
                 ->label(__('hr::attendance.attendance_date'))
                 ->required(),

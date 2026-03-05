@@ -20,12 +20,7 @@ class TimesheetForm
             ->components([
                 Grid::make()
                     ->schema([
-                        Select::make('employee_id')
-                            ->relationship('employee', 'first_name') // Assuming first_name, check Employee model if name exists
-                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name}")
-                            ->required()
-                            ->searchable()
-                            ->preload(),
+                        \Kezi\HR\Filament\Forms\Components\EmployeeSelectField::make('employee_id'),
                         Select::make('status')
                             ->options(TimesheetStatus::class)
                             ->default(TimesheetStatus::Draft)
