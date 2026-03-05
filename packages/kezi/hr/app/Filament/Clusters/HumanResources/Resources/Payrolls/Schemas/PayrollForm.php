@@ -9,7 +9,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Models\Currency;
-use Kezi\HR\Models\Employee;
 
 class PayrollForm
 {
@@ -20,28 +19,9 @@ class PayrollForm
                 ->description(__('hr::payroll.sections.basic_information_description'))
                 ->icon('heroicon-o-user-circle')
                 ->schema([
-                    Select::make('employee_id')
+                    \Kezi\HR\Filament\Forms\Components\EmployeeSelectField::make('employee_id')
                         ->label(__('hr::payroll.fields.employee'))
-                        ->relationship('employee', 'first_name')
-                        ->getOptionLabelFromRecordUsing(fn (Employee $record): string => $record->full_name.' ('.$record->employee_number.')')
-                        ->getSearchResultsUsing(
-                            fn (string $search): array => Employee::where('is_active', true)
-                                ->where('employment_status', 'active')
-                                ->where(function ($query) use ($search) {
-                                    $query->where('first_name', 'like', "%{$search}%")
-                                        ->orWhere('last_name', 'like', "%{$search}%")
-                                        ->orWhere('employee_number', 'like', "%{$search}%");
-                                })
-                                ->limit(50)
-                                ->get()
-                                ->mapWithKeys(fn (Employee $employee): array => [
-                                    $employee->id => $employee->full_name.' ('.$employee->employee_number.')',
-                                ])
-                                ->toArray()
-                        )
-                        ->required()
-                        ->searchable()
-                        ->preload()
+                        ->query(fn ($query) => $query->where('is_active', true)->where('employment_status', 'active'))
                         ->columnSpan(2),
 
                     \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')

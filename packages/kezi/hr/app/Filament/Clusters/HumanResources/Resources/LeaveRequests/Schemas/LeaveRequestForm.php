@@ -9,7 +9,6 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Kezi\HR\Models\Employee;
 
 class LeaveRequestForm
 {
@@ -29,13 +28,8 @@ class LeaveRequestForm
                         ->dehydrated()
                         ->columnSpan(1),
 
-                    Select::make('employee_id')
+                    \Kezi\HR\Filament\Forms\Components\EmployeeSelectField::make('employee_id')
                         ->label(__('hr::leave_request.employee'))
-                        ->relationship('employee', 'first_name')
-                        ->searchable(['first_name', 'last_name', 'employee_number'])
-                        ->getOptionLabelFromRecordUsing(fn (Employee $record) => $record->full_name.' ('.$record->employee_number.')')
-                        ->required()
-                        ->preload()
                         ->columnSpan(1),
 
                     Select::make('leave_type_id')
@@ -92,13 +86,10 @@ class LeaveRequestForm
                         ->rows(3)
                         ->columnSpanFull(),
 
-                    Select::make('delegate_employee_id')
+                    \Kezi\HR\Filament\Forms\Components\EmployeeSelectField::make('delegate_employee_id')
                         ->label(__('hr::leave_request.delegate_employee'))
-                        ->relationship('delegateEmployee', 'first_name')
-                        ->searchable(['first_name', 'last_name', 'employee_number'])
-                        ->getOptionLabelFromRecordUsing(fn (Employee $record) => $record->full_name.' ('.$record->employee_number.')')
-                        ->preload()
                         ->helperText(__('hr::leave_request.delegate_employee_helper'))
+                        ->required(false)
                         ->columnSpan(2),
 
                     Textarea::make('delegation_notes')
