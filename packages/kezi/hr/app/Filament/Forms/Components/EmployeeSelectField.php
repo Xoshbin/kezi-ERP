@@ -83,6 +83,10 @@ class EmployeeSelectField extends TranslatableSelect
 
     public static function make(?string $name = null): static
     {
+        if ($name === null) {
+            throw new \InvalidArgumentException('EmployeeSelectField requires a name.');
+        }
+
         return parent::make($name);
     }
 }
