@@ -21,6 +21,7 @@ class PayrollForm
                 ->schema([
                     \Kezi\HR\Filament\Forms\Components\EmployeeSelectField::make('employee_id')
                         ->label(__('hr::payroll.fields.employee'))
+                        ->required()
                         ->query(fn ($query) => $query->where('is_active', true)->where('employment_status', 'active'))
                         ->columnSpan(2),
 
