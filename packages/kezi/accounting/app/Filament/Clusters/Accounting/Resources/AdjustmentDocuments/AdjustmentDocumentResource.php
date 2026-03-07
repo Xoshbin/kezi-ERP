@@ -30,13 +30,14 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\P
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\EditAdjustmentDocument;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\AdjustmentDocuments\Pages\ListAdjustmentDocuments;
 use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
-use Kezi\Accounting\Models\Tax;
+use Kezi\Accounting\Filament\Forms\Components\TaxSelectField;
 use Kezi\Accounting\Rules\NotInLockedPeriod;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Inventory\Enums\Adjustments\AdjustmentDocumentStatus;
 use Kezi\Inventory\Enums\Adjustments\AdjustmentDocumentType;
 use Kezi\Inventory\Models\AdjustmentDocument;
+use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 use Kezi\Product\Models\Product;
 use Kezi\Purchase\Models\VendorBill;
 use Kezi\Sales\Models\Invoice;
@@ -249,11 +250,8 @@ class AdjustmentDocumentResource extends Resource
                         ->reorderable(false)
                         ->minItems(1)
                         ->schema([
-                            TranslatableSelect::forModel('product_id', Product::class, 'name')
+                            ProductSelectField::make('product_id')
                                 ->label(__('accounting::adjustment_document.product'))
-                                ->searchable()
-                                ->searchableFields(['name', 'sku', 'description'])
-                                ->preload()
                                 ->reactive()
                                 ->afterStateUpdated(function (callable $set, $state) {
                                     if ($state) {
@@ -315,33 +313,8 @@ class AdjustmentDocumentResource extends Resource
                                 ->currencyField('../../currency_id')
                                 ->required()
                                 ->columnSpan(3),
-                            TranslatableSelect::forModel('tax_id', Tax::class, 'name')
-                                ->searchable()
-                                ->preload()
-                                ->createOptionForm([
-                                    Select::make('company_id')
-                                        ->relationship('company', 'name')
-                                        ->label(__('accounting::tax.company'))
-                                        ->required(),
-                                    Select::make('tax_account_id')
-                                        ->relationship('taxAccount', 'name')
-                                        ->label(__('accounting::tax.tax_account'))
-                                        ->required(),
-                                    TextInput::make('name')
-                                        ->label(__('accounting::tax.name'))
-                                        ->required()
-                                        ->maxLength(255),
-                                    TextInput::make('rate')
-                                        ->label(__('accounting::tax.rate'))
-                                        ->required()
-                                        ->numeric()
-                                        ->suffix('%'),
-                                ])
-                                ->createOptionModalHeading(__('accounting::common.modal_title_create_tax'))
-                                ->createOptionAction(function (Action $action) {
-                                    return $action
-                                        ->modalWidth('lg');
-                                })
+                            TaxSelectField::make('tax_id')
+                                ->label(__('accounting::adjustment_document.tax'))
                                 ->columnSpan(3),
                             AccountSelectField::make('account_id')
                                 ->label(__('accounting::adjustment_document.account'))
