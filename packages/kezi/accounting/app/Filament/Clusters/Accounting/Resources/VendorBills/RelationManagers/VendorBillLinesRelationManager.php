@@ -7,7 +7,6 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -15,7 +14,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Kezi\Accounting\Enums\Accounting\TaxType;
 use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
+use Kezi\Accounting\Filament\Forms\Components\AnalyticAccountSelectField;
 use Kezi\Accounting\Filament\Forms\Components\TaxSelectField;
+use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 
 /**
  * @extends RelationManager<\Kezi\Purchase\Models\VendorBill>
@@ -28,7 +29,7 @@ class VendorBillLinesRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                Select::make('product_id')->relationship('product', 'name')->label(__('accounting::bill.product')),
+                ProductSelectField::make('product_id')->label(__('accounting::bill.product')),
                 TextInput::make('description')->required()->maxLength(255)->label(__('accounting::bill.description')),
                 TextInput::make('quantity')->required()->numeric()->label(__('accounting::bill.quantity')),
                 TextInput::make('unit_price')->required()->numeric()->label(__('accounting::bill.unit_price')),
@@ -39,6 +40,8 @@ class VendorBillLinesRelationManager extends RelationManager
                 AccountSelectField::make('expense_account_id')
                     ->label(__('accounting::bill.expense_account'))
                     ->required(),
+                AnalyticAccountSelectField::make('analytic_account_id')
+                    ->label(__('accounting::bill.analytic_account')),
             ]);
     }
 
