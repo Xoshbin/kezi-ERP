@@ -12,6 +12,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 use Kezi\QualityControl\Enums\QualityAlertStatus;
 use Kezi\QualityControl\Filament\Clusters\QualityControl\Resources\QualityAlertResource\Pages;
 use Kezi\QualityControl\Filament\Clusters\QualityControlCluster;
@@ -79,12 +80,9 @@ class QualityAlertResource extends Resource
                             ])
                             ->columnSpan(1),
 
-                        Forms\Components\Select::make('product_id')
+                        ProductSelectField::make('product_id')
                             ->label(__('qualitycontrol::alert.product'))
-                            ->relationship('product', 'name')
                             ->required()
-                            ->searchable()
-                            ->preload()
                             ->columnSpan(1),
 
                         Forms\Components\Select::make('defect_type_id')

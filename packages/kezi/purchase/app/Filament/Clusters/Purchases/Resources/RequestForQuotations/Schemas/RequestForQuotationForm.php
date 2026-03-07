@@ -8,12 +8,12 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
-use Kezi\Accounting\Models\Tax;
-use Kezi\Foundation\Enums\Partners\PartnerType;
+use Kezi\Accounting\Filament\Forms\Components\TaxSelectField;
+use Kezi\Foundation\Filament\Forms\Components\CurrencySelectField;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
+use Kezi\Foundation\Filament\Forms\Components\PartnerSelectField;
 use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
-use Kezi\Foundation\Models\Partner;
 use Kezi\Product\Models\Product;
 use Kezi\Purchase\Enums\Purchases\RequestForQuotationStatus;
 
@@ -64,14 +64,11 @@ class RequestForQuotationForm
                     ->schema([
                         Grid::make(1)
                             ->schema([
-                                Forms\Components\Select::make('vendor_id')
+                                PartnerSelectField::make('vendor_id')
                                     ->label(__('purchase::request_for_quotation.fields.vendor'))
-                                    ->options(fn () => Partner::query()->whereIn('type', [PartnerType::Vendor, PartnerType::Both])->pluck('name', 'id'))
-                                    ->searchable()
-                                    ->preload()
                                     ->required(),
 
-                                \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
+                                CurrencySelectField::make('currency_id')
                                     ->label(__('purchase::request_for_quotation.fields.currency'))
                                     ->required()
                                     ->exchangeRateFieldName('exchange_rate'),
@@ -133,11 +130,10 @@ class RequestForQuotationForm
                                     ->live(onBlur: true)
                                     ->columnSpan(3),
 
-                                Forms\Components\Select::make('tax_id')
+                                TaxSelectField::make('tax_id')
                                     ->label(__('purchase::request_for_quotation.lines.tax'))
-                                    ->options(fn () => Tax::all()->pluck('name', 'id'))
-                                    ->searchable()
-                                    ->preload()
+                                    ->nullable()
+                                    ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\TaxType::Purchase)
                                     ->live()
                                     ->columnSpan(3),
                             ])

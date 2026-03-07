@@ -9,6 +9,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 use Kezi\QualityControl\Enums\QualityCheckStatus;
 use Kezi\QualityControl\Filament\Clusters\QualityControl\Resources\QualityCheckResource\Pages;
 use Kezi\QualityControl\Filament\Clusters\QualityControlCluster;
@@ -87,9 +88,8 @@ class QualityCheckResource extends Resource
                             ->disabled()
                             ->columnSpan(1),
 
-                        Forms\Components\Select::make('product_id')
+                        ProductSelectField::make('product_id')
                             ->label(__('qualitycontrol::check.product'))
-                            ->relationship('product', 'name')
                             ->disabled()
                             ->columnSpan(1),
 

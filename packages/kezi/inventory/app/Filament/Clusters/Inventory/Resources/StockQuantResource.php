@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Kezi\Inventory\Filament\Clusters\Inventory\InventoryCluster;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\StockQuantResource\Pages;
 use Kezi\Inventory\Models\StockQuant;
+use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 
 class StockQuantResource extends Resource
 {
@@ -57,11 +58,8 @@ class StockQuantResource extends Resource
             Section::make(__('inventory::stock_quant.sections.basic_info'))
                 ->schema([
                     Grid::make(3)->schema([
-                        Forms\Components\Select::make('product_id')
+                        ProductSelectField::make('product_id')
                             ->label(__('inventory::stock_quant.fields.product'))
-                            ->relationship('product', 'name')
-                            ->searchable()
-                            ->preload()
                             ->required(),
 
                         Forms\Components\Select::make('location_id')

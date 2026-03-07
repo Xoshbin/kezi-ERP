@@ -13,7 +13,8 @@ class CashAdvanceForm
                 \Filament\Schemas\Components\Section::make(__('hr::cash_advance.sections.request_details'))
                     ->schema([
                         \Kezi\HR\Filament\Forms\Components\EmployeeSelectField::make('employee_id')
-                            ->label(__('hr::cash_advance.fields.employee')),
+                            ->label(__('hr::cash_advance.fields.employee'))
+                            ->required(),
                         \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                             ->default(fn () => \Filament\Facades\Filament::getTenant()?->currency_id)
                             ->required(),

@@ -10,6 +10,9 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Kezi\Accounting\Filament\Forms\Components\AnalyticAccountSelectField;
+use Kezi\Foundation\Filament\Forms\Components\PartnerSelectField;
+use Kezi\HR\Filament\Forms\Components\EmployeeSelectField;
 use Kezi\ProjectManagement\Enums\BillingType;
 use Kezi\ProjectManagement\Enums\ProjectStatus;
 
@@ -29,15 +32,10 @@ class ProjectForm
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
-                        Select::make('customer_id')
-                            ->relationship('customer', 'name')
-                            ->searchable()
-                            ->preload(),
-                        Select::make('manager_id')
-                            ->relationship('manager', 'first_name')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name}")
-                            ->searchable()
-                            ->preload(),
+                        PartnerSelectField::make('customer_id')
+                            ->label(__('projectmanagement::project.customer')),
+                        EmployeeSelectField::make('manager_id')
+                            ->label(__('projectmanagement::project.manager')),
                         Select::make('status')
                             ->options(ProjectStatus::class)
                             ->default(ProjectStatus::Draft)
@@ -77,8 +75,7 @@ class ProjectForm
                             ->default(fn () => auth()->user()->current_company_id ?? null)
                             ->disabled()
                             ->dehydrated(),
-                        Select::make('analytic_account_id')
-                            ->relationship('analyticAccount', 'name')
+                        AnalyticAccountSelectField::make('analytic_account_id')
                             ->disabled()
                             ->dehydrated(false)
                             ->helperText(__('projectmanagement::project.form.helper_texts.analytic_account_auto')),

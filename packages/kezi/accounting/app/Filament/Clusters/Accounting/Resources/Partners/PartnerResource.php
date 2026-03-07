@@ -34,6 +34,7 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Partners\RelationMana
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Partners\RelationManagers\VendorBillsRelationManager;
 use Kezi\Accounting\Models\Account;
 use Kezi\Accounting\Models\Tax;
+use Kezi\Foundation\Filament\Forms\Components\PaymentTermSelectField;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Foundation\Models\Partner;
 use Xoshbin\CustomFields\Filament\Forms\Components\CustomFieldsComponent;
@@ -298,6 +299,14 @@ class PartnerResource extends Resource
                                     ->createOptionModalHeading(__('accounting::partner.create_default_tax'))
                                     ->helperText(__('accounting::partner.default_tax_help'))
                                     ->prefixIcon('heroicon-m-percent-badge'),
+
+                                PaymentTermSelectField::make('customer_payment_term_id')
+                                    ->label(__('accounting::partner.customer_payment_term'))
+                                    ->prefixIcon('heroicon-m-clock'),
+
+                                PaymentTermSelectField::make('vendor_payment_term_id')
+                                    ->label(__('accounting::partner.vendor_payment_term'))
+                                    ->prefixIcon('heroicon-m-clock'),
                             ]),
                     ])
                     ->columnSpanFull()

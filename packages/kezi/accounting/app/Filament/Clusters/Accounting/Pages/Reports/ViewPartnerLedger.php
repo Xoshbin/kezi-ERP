@@ -9,7 +9,6 @@ use Exception;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -71,25 +70,14 @@ class ViewPartnerLedger extends Page
             ->components([
                 Section::make(__('accounting::reports.filter_options'))
                     ->schema([
-                        Select::make('partnerId')
+                        \Kezi\Foundation\Filament\Forms\Components\PartnerSelectField::make('partnerId')
                             ->label(__('accounting::reports.partner'))
                             ->required()
-                            ->searchable()
-                            ->options(function () {
-                                $user = Filament::auth()->user();
-                                if (! $user) {
-                                    return [];
-                                }
+                            ->getOptionLabelFromRecordUsing(function (Partner $record) {
+                                $hasAccounts = $record->receivable_account_id && $record->payable_account_id;
+                                $suffix = $hasAccounts ? '' : ' (⚠️ Missing Accounts)';
 
-                                return Partner::where('company_id', $user->company_id)
-                                    ->with(['receivableAccount', 'payableAccount'])
-                                    ->get()
-                                    ->mapWithKeys(function ($partner) {
-                                        $hasAccounts = $partner->receivable_account_id && $partner->payable_account_id;
-                                        $suffix = $hasAccounts ? '' : ' (⚠️ Missing Accounts)';
-
-                                        return [$partner->id => $partner->name.$suffix];
-                                    });
+                                return $record->name.$suffix;
                             })
                             ->placeholder(__('accounting::reports.select_partner'))
                             ->helperText(__('accounting::reports.partner_accounts_required')),
