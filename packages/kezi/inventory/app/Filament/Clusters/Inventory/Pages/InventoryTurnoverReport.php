@@ -6,9 +6,7 @@ use BackedEnum;
 use Carbon\Carbon;
 use Exception;
 use Filament\Actions\Action;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
@@ -18,7 +16,6 @@ use Filament\Schemas\Schema;
 use Kezi\Inventory\Filament\Clusters\Inventory\InventoryCluster;
 use Kezi\Inventory\Services\Inventory\InventoryCSVExportService;
 use Kezi\Inventory\Services\Inventory\InventoryReportingService;
-use Kezi\Product\Models\Product;
 
 class InventoryTurnoverReport extends Page implements HasForms
 {
@@ -93,16 +90,9 @@ class InventoryTurnoverReport extends Page implements HasForms
                             ->live()
                             ->afterStateUpdated(fn () => $this->generateReport()),
 
-                        Select::make('product_ids')
+                        \Kezi\Product\Filament\Forms\Components\ProductSelectField::make('product_ids')
                             ->label(__('inventory::inventory_reports.turnover.filters.products'))
-                            ->options(function () {
-                                return Product::query()
-                                    ->where('company_id', Filament::getTenant()?->getKey())
-                                    ->pluck('name', 'id');
-                            })
                             ->multiple()
-                            ->searchable()
-                            ->preload()
                             ->live()
                             ->afterStateUpdated(fn () => $this->generateReport()),
                     ])
