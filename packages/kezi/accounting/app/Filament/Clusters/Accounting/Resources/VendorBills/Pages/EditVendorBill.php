@@ -137,7 +137,7 @@ class EditVendorBill extends EditRecord
                     try {
                         $user = Auth::user();
                         if (! $user) {
-                            throw new Exception('User must be authenticated to confirm vendor bill');
+                            throw new Exception(__('accounting::exceptions.common.user_not_authenticated'));
                         }
                         $vendorBillService->post($record, $user);
                         Notification::make()->title(__('accounting::bill.notification_bill_confirmed_success'))->success()->send();
@@ -146,6 +146,7 @@ class EditVendorBill extends EditRecord
                         Notification::make()
                             ->title($e->getMessage())
                             ->danger()
+                            ->persistent()
                             ->send();
                     } catch (Exception $e) {
                         Log::error('Vendor bill confirmation failed', [
@@ -177,7 +178,7 @@ class EditVendorBill extends EditRecord
             DeleteAction::make()
                 ->action(function (Model $record) {
                     if (! $record instanceof VendorBill) {
-                        throw new Exception('Invalid record type');
+                        throw new Exception(__('accounting::exceptions.common.invalid_record_type'));
                     }
                     app(VendorBillService::class)->delete($record);
                     $this->redirect(VendorBillResource::getUrl('index'));

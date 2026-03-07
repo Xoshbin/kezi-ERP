@@ -31,7 +31,7 @@ class LockDateService
         foreach ($lockTypes as $lockType) {
             $lockedDate = $this->getLockDateForType($company, $lockType);
             if ($lockedDate && $date->lte($lockedDate)) {
-                throw new \Kezi\Accounting\Exceptions\PeriodIsLockedException("The period is locked until {$lockedDate->format('Y-m-d')}.");
+                throw new \Kezi\Accounting\Exceptions\PeriodIsLockedException(__('accounting::exceptions.lock_date.period_locked', ['date' => $lockedDate->format('Y-m-d')]));
             }
         }
     }

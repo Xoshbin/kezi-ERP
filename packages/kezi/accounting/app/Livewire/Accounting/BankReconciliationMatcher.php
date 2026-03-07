@@ -106,6 +106,7 @@ class BankReconciliationMatcher extends Component
             Notification::make()
                 ->title(__('accounting::bank_statement.reconciliation_not_balanced'))
                 ->danger()
+                ->persistent()
                 ->send();
 
             return;
@@ -123,7 +124,7 @@ class BankReconciliationMatcher extends Component
         // Use the service to reconcile
         $user = Auth::user();
         if (! $user) {
-            throw new Exception('User must be authenticated to reconcile transactions');
+            throw new Exception(__('accounting::exceptions.common.user_not_authenticated'));
         }
         app(\Kezi\Accounting\Services\BankReconciliationService::class)->reconcileMultiple(
             $this->selectedBankLines,

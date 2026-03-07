@@ -112,12 +112,12 @@ class BankStatementLinesRelationManager extends RelationManager
                         try {
                             $journalEntry = $record->journalEntry;
                             if (! $journalEntry instanceof JournalEntry) {
-                                throw new Exception('Journal entry not found');
+                                throw new Exception(__('accounting::exceptions.common.journal_entry_not_found'));
                             }
 
                             $user = Auth::user();
                             if (! $user) {
-                                throw new Exception('User must be authenticated to reverse journal entry');
+                                throw new Exception(__('accounting::exceptions.common.user_not_authenticated'));
                             }
                             $reverseAction = app(ReverseJournalEntryAction::class);
                             $reverseAction->execute(
@@ -135,6 +135,7 @@ class BankStatementLinesRelationManager extends RelationManager
                                 ->title(__('accounting::bank_statement.error_reversing_write_off'))
                                 ->body($e->getMessage())
                                 ->danger()
+                                ->persistent()
                                 ->send();
                         }
                     }),

@@ -134,7 +134,7 @@ class PerformCurrencyRevaluationAction
     public function postRevaluation(CurrencyRevaluation $revaluation, Company $company, int $userId): void
     {
         if (! $revaluation->canBePosted()) {
-            throw new RuntimeException('This revaluation cannot be posted.');
+            throw new RuntimeException(__('accounting::exceptions.revaluation.cannot_be_posted'));
         }
 
         $baseCurrencyCode = $company->currency->code;
@@ -142,12 +142,14 @@ class PerformCurrencyRevaluationAction
 
         $gainLossAccountId = $company->default_gain_loss_account_id;
         if (! $gainLossAccountId) {
-            throw new RuntimeException('Company must have a default gain/loss account configured.');
+            $url = \App\Filament\Clusters\Settings\Resources\Companies\CompanyResource::getUrl('edit', ['record' => $company]);
+            throw new RuntimeException(__('accounting::exceptions.exchange_gain_loss.account_id_required', ['company' => $company->name, 'url' => $url]));
         }
 
         $bankJournalId = $company->default_bank_journal_id;
         if (! $bankJournalId) {
-            throw new RuntimeException('Company must have a default bank journal configured.');
+            $url = \App\Filament\Clusters\Settings\Resources\Companies\CompanyResource::getUrl('edit', ['record' => $company]);
+            throw new RuntimeException(__('accounting::exceptions.exchange_gain_loss.bank_journal_required', ['company' => $company->name, 'url' => $url]));
         }
 
         $zero = Money::zero($baseCurrencyCode);

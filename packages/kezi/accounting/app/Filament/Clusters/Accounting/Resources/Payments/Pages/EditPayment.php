@@ -45,12 +45,12 @@ class EditPayment extends EditRecord
                     try {
                         $user = Auth::user();
                         if (! $user) {
-                            throw new Exception('User must be authenticated to confirm payment');
+                            throw new Exception(__('accounting::exceptions.common.user_not_authenticated'));
                         }
                         $service->confirm($record, $user);
                         Notification::make()->title(__('accounting::payment.action.confirm.notification.success'))->success()->send();
                     } catch (Exception $e) {
-                        Notification::make()->title(__('accounting::payment.action.confirm.notification.error'))->body($e->getMessage())->danger()->send();
+                        Notification::make()->title(__('accounting::payment.action.confirm.notification.error'))->body($e->getMessage())->danger()->persistent()->send();
                     }
                 }),
             Action::make('cancel')
@@ -61,7 +61,7 @@ class EditPayment extends EditRecord
                     try {
                         $user = Auth::user();
                         if (! $user) {
-                            throw new Exception('User not authenticated');
+                            throw new Exception(__('accounting::exceptions.common.user_not_authenticated'));
                         }
                         app(PaymentService::class)->cancel($record, $user, 'Payment cancelled via UI');
                         Notification::make()
@@ -76,6 +76,7 @@ class EditPayment extends EditRecord
                             ->title(__('accounting::payment.action.cancel.notification.error'))
                             ->body($e->getMessage())
                             ->danger()
+                            ->persistent()
                             ->send();
                     }
                 })
@@ -100,7 +101,7 @@ class EditPayment extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         if (! $record instanceof Payment) {
-            throw new InvalidArgumentException('Expected Payment record');
+            throw new InvalidArgumentException(__('accounting::exceptions.common.invalid_record_type'));
         }
 
         $currency = Currency::findOrFail($data['currency_id']);
@@ -108,7 +109,7 @@ class EditPayment extends EditRecord
         if ($currency instanceof Collection) {
             $currency = $currency->first();
             if (! $currency) {
-                throw new InvalidArgumentException('Currency not found');
+                throw new InvalidArgumentException(__('accounting::exceptions.consolidation.invoice_company_not_found')); // Or similar generic error
             }
         }
 

@@ -28,6 +28,6 @@ class PayrollCurrencyMoneyCast extends MoneyCast
             }
         }
 
-        throw new InvalidArgumentException('Could not resolve payroll currency for model '.get_class($model).'. Please ensure the model has a valid payroll relationship.');
+        throw new InvalidArgumentException(__('hr::exceptions.casts.payroll_currency_resolution_failed', ['model' => get_class($model)]));
     }
 }

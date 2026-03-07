@@ -242,12 +242,14 @@ class UnreconciledEntriesRelationManager extends RelationManager
                 ->title(__('accounting::partner.unreconciled_entries_relation_manager.reconciliation_error'))
                 ->body($e->getMessage())
                 ->danger()
+                ->persistent()
                 ->send();
         } catch (Exception $e) {
             Notification::make()
                 ->title(__('accounting::partner.unreconciled_entries_relation_manager.reconciliation_error'))
                 ->body(__('accounting::partner.unreconciled_entries_relation_manager.reconciliation_error_generic'))
                 ->danger()
+                ->persistent()
                 ->send();
         }
     }

@@ -442,7 +442,7 @@ class InvoiceResource extends Resource
                         try {
                             $user = Auth::user();
                             if (! $user) {
-                                throw new Exception('User must be authenticated to confirm invoice');
+                                throw new Exception(__('accounting::exceptions.common.user_not_authenticated'));
                             }
                             $invoiceService->confirm($record, $user);
                             Notification::make()
@@ -454,6 +454,7 @@ class InvoiceResource extends Resource
                                 ->title(__('accounting::invoice.error_confirming_invoice'))
                                 ->body($e->getMessage())
                                 ->danger()
+                                ->persistent()
                                 ->send();
                         }
                     })
@@ -484,7 +485,7 @@ class InvoiceResource extends Resource
                             $user = Auth::user();
 
                             if (! $user) {
-                                throw new \Exception('User must be authenticated');
+                                throw new \Exception(__('accounting::exceptions.common.user_not_authenticated'));
                             }
 
                             $invoiceService->resetToDraft($record, $user, $data['reason']);
@@ -497,6 +498,7 @@ class InvoiceResource extends Resource
                                 ->title(__('accounting::invoice.notification.reset_error'))
                                 ->body($e->getMessage())
                                 ->danger()
+                                ->persistent()
                                 ->send();
                         }
                     }),

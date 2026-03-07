@@ -46,7 +46,7 @@ class CurrencyTranslationService
 
             case CurrencyTranslationMethod::AverageRate:
                 if (! $period || ! isset($period['start'], $period['end'])) {
-                    throw new InvalidArgumentException('Period start and end dates are required for Average Rate translation.');
+                    throw new InvalidArgumentException(__('accounting::exceptions.consolidation.average_rate_period_required'));
                 }
 
                 $averageRate = $this->getAverageRate(
@@ -60,7 +60,10 @@ class CurrencyTranslationService
                 if ($averageRate === null) {
                     // Fallback?? Or standard converter logic?
                     // Standard converter throws exception.
-                    throw new InvalidArgumentException("No average rate calculable for {$sourceCurrencyCode} to {$targetCurrency->code}");
+                    throw new InvalidArgumentException(__('accounting::exceptions.consolidation.average_rate_not_calculable', [
+                        'source' => $sourceCurrencyCode,
+                        'target' => $targetCurrency->code,
+                    ]));
                 }
 
                 return $this->converter->convertWithRate($amount, $averageRate, $targetCurrency->code, false); // false = convert Foreign -> Base (Multiply)
@@ -70,7 +73,7 @@ class CurrencyTranslationService
                 // Let's clarify getAverageRate return logic.
 
             default:
-                throw new InvalidArgumentException("Unsupported translation method: {$method->value}");
+                throw new InvalidArgumentException(__('accounting::exceptions.consolidation.unsupported_translation_method', ['method' => $method->value]));
         }
     }
 

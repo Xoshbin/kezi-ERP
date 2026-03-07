@@ -154,7 +154,7 @@ class EditInvoice extends EditRecord
                     try {
                         $user = Auth::user();
                         if (! $user) {
-                            throw new Exception('User must be authenticated to confirm invoice');
+                            throw new Exception(__('accounting::exceptions.common.user_not_authenticated'));
                         }
                         $service->confirm($record, $user);
                         Notification::make()->title(__('accounting::invoice.invoice_confirmed_successfully'))->success()->send();
@@ -164,6 +164,7 @@ class EditInvoice extends EditRecord
                             ->title(__('accounting::invoice.error_confirming_invoice'))
                             ->body(implode("\n", Arr::flatten($e->errors())))
                             ->danger()
+                            ->persistent()
                             ->send();
                     } catch (Throwable $e) {
                         Log::error('Invoice confirmation failed', [
@@ -171,7 +172,7 @@ class EditInvoice extends EditRecord
                             'error' => $e->getMessage(),
                             'trace' => $e->getTraceAsString(),
                         ]);
-                        Notification::make()->title(__('accounting::invoice.error_confirming_invoice'))->body($e->getMessage())->danger()->send();
+                        Notification::make()->title(__('accounting::invoice.error_confirming_invoice'))->body($e->getMessage())->danger()->persistent()->send();
                     }
                 }),
 
@@ -191,7 +192,7 @@ class EditInvoice extends EditRecord
                     try {
                         $user = Auth::user();
                         if (! $user) {
-                            throw new Exception('User must be authenticated to reset invoice');
+                            throw new Exception(__('accounting::exceptions.common.user_not_authenticated'));
                         }
                         $service->resetToDraft($record, $user, $data['reason']);
                         Notification::make()
@@ -204,6 +205,7 @@ class EditInvoice extends EditRecord
                             ->title(__('accounting::invoice.notification.reset_error'))
                             ->body($e->getMessage())
                             ->danger()
+                            ->persistent()
                             ->send();
                     }
                 }),
@@ -211,7 +213,7 @@ class EditInvoice extends EditRecord
             DeleteAction::make()
                 ->action(function (Model $record) {
                     if (! $record instanceof Invoice) {
-                        throw new Exception('Invalid record type');
+                        throw new Exception(__('accounting::exceptions.common.invalid_record_type'));
                     }
                     app(InvoiceService::class)->delete($record);
                     $this->redirect(InvoiceResource::getUrl('index'));

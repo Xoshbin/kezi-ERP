@@ -37,21 +37,21 @@ class AssetObserver
         // Safety net: Prevent deletion of non-draft assets
         if ($asset->status !== AssetStatus::Draft) {
             throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException(
-                'Cannot delete a confirmed asset. Only draft assets can be deleted.'
+                __('accounting::exceptions.asset.deletion_not_allowed_confirmed')
             );
         }
 
         // Safety net: Prevent deletion of assets with depreciation entries
         if ($asset->depreciationEntries()->exists()) {
             throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException(
-                'Cannot delete an asset with depreciation entries. Depreciation history must be preserved.'
+                __('accounting::exceptions.asset.deletion_not_allowed_depreciation')
             );
         }
 
         // Safety net: Prevent deletion of assets with journal entries
         if ($asset->journalEntries()->exists()) {
             throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException(
-                'Cannot delete an asset with associated journal entries. Financial records must be preserved.'
+                __('accounting::exceptions.asset.deletion_not_allowed_journal')
             );
         }
     }
