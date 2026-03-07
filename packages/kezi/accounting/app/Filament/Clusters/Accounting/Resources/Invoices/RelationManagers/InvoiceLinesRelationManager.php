@@ -7,7 +7,6 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -18,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 use Kezi\Accounting\Enums\Accounting\TaxType;
 use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Accounting\Filament\Forms\Components\TaxSelectField;
+use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 
 /**
  * @extends RelationManager<\Kezi\Sales\Models\Invoice>
@@ -45,7 +45,7 @@ class InvoiceLinesRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                Select::make('product_id')->relationship('product', 'name')->label(__('accounting::invoice.product')),
+                ProductSelectField::make('product_id')->label(__('accounting::invoice.product')),
                 TextInput::make('description')->label(__('accounting::invoice.description'))->required()->maxLength(255),
                 TextInput::make('quantity')->label(__('accounting::invoice.quantity'))->required()->numeric(),
                 TextInput::make('unit_price')->label(__('accounting::invoice.unit_price'))->required()->numeric(),

@@ -18,6 +18,7 @@ use Kezi\Manufacturing\Filament\Clusters\Manufacturing\ManufacturingCluster;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\BillOfMaterialResource\Pages;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\BillOfMaterialResource\RelationManagers;
 use Kezi\Manufacturing\Models\BillOfMaterial;
+use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 
 class BillOfMaterialResource extends Resource
 {
@@ -44,11 +45,8 @@ class BillOfMaterialResource extends Resource
         return $schema->components([
             Section::make(__('manufacturing::manufacturing.bom.section_bom_information'))
                 ->schema([
-                    Forms\Components\Select::make('product_id')
+                    ProductSelectField::make('product_id')
                         ->label(__('manufacturing::manufacturing.bom.finished_product'))
-                        ->relationship('product', 'name')
-                        ->searchable()
-                        ->preload()
                         ->required()
                         ->columnSpanFull(),
 

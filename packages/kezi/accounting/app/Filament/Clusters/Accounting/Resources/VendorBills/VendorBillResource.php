@@ -37,6 +37,7 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\Pages\Lis
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\AdjustmentDocumentsRelationManager;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\VendorBills\RelationManagers\PaymentsRelationManager;
 use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
+use Kezi\Accounting\Filament\Forms\Components\AnalyticAccountSelectField;
 use Kezi\Accounting\Filament\Forms\Components\TaxSelectField;
 use Kezi\Accounting\Models\AssetCategory;
 use Kezi\Accounting\Rules\NotInLockedPeriod;
@@ -44,6 +45,7 @@ use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Filament\Forms\Components\PartnerSelectField;
+use Kezi\Foundation\Filament\Forms\Components\PaymentTermSelectField;
 use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Foundation\Models\Currency;
@@ -177,11 +179,7 @@ class VendorBillResource extends Resource
                     DatePicker::make('due_date')
                         ->label(__('accounting::bill.due_date'))
                         ->columnSpan(1),
-                    TranslatableSelect::make('payment_term_id')
-                        ->relationship('paymentTerm', 'name')
-                        ->label(__('accounting::bill.payment_term'))
-                        ->searchable()
-                        ->preload()
+                    PaymentTermSelectField::make('payment_term_id')
                         ->columnSpan(1),
                 ])
                 ->columns(4)
@@ -198,6 +196,7 @@ class VendorBillResource extends Resource
                             TableColumn::make(__('accounting::bill.unit_price'))->width('15%'),
                             TableColumn::make(__('accounting::bill.expense_account'))->width('20%'),
                             TableColumn::make(__('accounting::bill.tax'))->width('15%'),
+                            TableColumn::make(__('accounting::bill.analytic_account'))->width('15%'),
                         ])
                         ->live()
                         ->reorderable(true)
@@ -337,6 +336,8 @@ class VendorBillResource extends Resource
                                 ->label(__('accounting::bill.tax'))
                                 ->taxFilter([TaxType::Purchase, TaxType::Both])
                                 ->createOptionDefaultType(TaxType::Purchase),
+                            AnalyticAccountSelectField::make('analytic_account_id')
+                                ->label(__('accounting::bill.analytic_account')),
 
                             // Hidden fields to store advanced settings so they are persisted and saved
                             Hidden::make('deferred_start_date'),

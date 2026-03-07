@@ -15,7 +15,8 @@ class AttendanceForm
     {
         return $schema->components([
             \Kezi\HR\Filament\Forms\Components\EmployeeSelectField::make('employee_id')
-                ->label(__('hr::attendance.employee')),
+                ->label(__('hr::attendance.employee'))
+                ->required(),
             DatePicker::make('attendance_date')
                 ->label(__('hr::attendance.attendance_date'))
                 ->required(),

@@ -21,6 +21,7 @@ class EmploymentContractForm
                 ->schema([
                     \Kezi\HR\Filament\Forms\Components\EmployeeSelectField::make('employee_id')
                         ->label(__('hr::employment_contract.fields.employee'))
+                        ->required()
                         ->columnSpan(1),
 
                     TextInput::make('contract_number')

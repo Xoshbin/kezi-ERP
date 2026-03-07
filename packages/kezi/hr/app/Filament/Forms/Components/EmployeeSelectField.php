@@ -25,7 +25,6 @@ class EmployeeSelectField extends TranslatableSelect
         $this->searchableFields(['first_name', 'last_name', 'email', 'employee_number']);
         $this->searchable();
         $this->preload();
-        $this->required();
 
         $this->modifyQueryUsing(function ($query) {
             $tenant = \Filament\Facades\Filament::getTenant();
