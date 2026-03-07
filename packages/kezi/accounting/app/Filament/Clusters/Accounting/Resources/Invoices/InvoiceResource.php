@@ -38,13 +38,14 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\RelationMana
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\InvoiceLinesRelationManager;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\RelationManagers\PaymentsRelationManager;
 use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
+use Kezi\Accounting\Filament\Forms\Components\TaxSelectField;
 use Kezi\Accounting\Models\FiscalPosition;
-use Kezi\Accounting\Models\Tax;
 use Kezi\Accounting\Rules\NotInLockedPeriod;
 use Kezi\Foundation\Enums\Incoterm;
 use Kezi\Foundation\Filament\Forms\Components\ExchangeRateInput;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Filament\Forms\Components\PartnerSelectField;
+use Kezi\Foundation\Filament\Forms\Components\PaymentTermSelectField;
 use Kezi\Foundation\Filament\Helpers\DocumentAttachmentsHelper;
 use Kezi\Foundation\Filament\Helpers\DocumentTotalsHelper;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
@@ -180,11 +181,7 @@ class InvoiceResource extends Resource
                     DatePicker::make('due_date')
                         ->label(__('accounting::invoice.due_date'))
                         ->required(),
-                    TranslatableSelect::make('payment_term_id')
-                        ->relationship('paymentTerm', 'name')
-                        ->label(__('accounting::invoice.payment_term'))
-                        ->searchable()
-                        ->preload(),
+                    PaymentTermSelectField::make('payment_term_id'),
                 ])
                 ->columns(4)
                 ->columnSpanFull(),
@@ -248,47 +245,10 @@ class InvoiceResource extends Resource
                                 ->currencyField('../../currency_id')
                                 ->required()
                                 ->columnSpan(3),
-                            TranslatableSelect::forModel('tax_id', Tax::class, 'name')
+                            TaxSelectField::make('tax_id')
                                 ->label(__('accounting::invoice.tax'))
-                                ->options(function () {
-                                    return Tax::where('company_id', Filament::getTenant()?->getKey())
-                                        ->where('is_active', true)
-                                        ->pluck('name', 'id');
-                                })
-                                ->searchable()
-                                ->preload()
-                                ->createOptionForm([
-                                    Hidden::make('company_id')
-                                        ->default(fn () => Filament::getTenant()?->getKey()),
-                                    AccountSelectField::make('tax_account_id')
-                                        ->label(__('accounting::tax.tax_account'))
-                                        ->required(),
-                                    TextInput::make('name')
-                                        ->label(__('accounting::tax.name'))
-                                        ->required()
-                                        ->maxLength(255),
-                                    TextInput::make('rate')
-                                        ->label(__('accounting::tax.rate'))
-                                        ->required()
-                                        ->numeric(),
-                                    Select::make('type')
-                                        ->label(__('accounting::tax.type'))
-                                        ->options(collect(TaxType::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
-                                        ->required(),
-                                    Toggle::make('is_active')
-                                        ->label(__('accounting::tax.is_active'))
-                                        ->default(true),
-                                ])
-                                ->createOptionUsing(function (array $data): int {
-                                    $tax = Tax::create($data);
-
-                                    return $tax->getKey();
-                                })
-                                ->createOptionModalHeading(__('accounting::invoice.modal_title_create_tax'))
-                                ->createOptionAction(function (Action $action) {
-                                    return $action
-                                        ->modalWidth('lg');
-                                })
+                                ->taxFilter([TaxType::Sales, TaxType::Both])
+                                ->createOptionDefaultType(TaxType::Sales)
                                 ->columnSpan(3),
                             AccountSelectField::make('income_account_id')
                                 ->label(__('accounting::invoice.income_account'))
