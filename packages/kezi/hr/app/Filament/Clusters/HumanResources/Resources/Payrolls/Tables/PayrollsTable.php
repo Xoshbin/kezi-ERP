@@ -97,7 +97,7 @@ class PayrollsTable
                     ->action(function (Payroll $record) {
                         $user = auth()->user();
                         if (! $user) {
-                            throw new Exception('User must be authenticated to approve payroll');
+                            throw new Exception(__('hr::exceptions.common.user_not_authenticated'));
                         }
                         $payrollService = app(PayrollService::class);
                         $payrollService->approvePayroll($record, $user);
@@ -122,7 +122,7 @@ class PayrollsTable
                     ->action(function (Payroll $record) {
                         $user = auth()->user();
                         if (! $user) {
-                            throw new Exception('User must be authenticated to pay employee');
+                            throw new Exception(__('hr::exceptions.common.user_not_authenticated'));
                         }
                         $payrollService = app(PayrollService::class);
                         $payrollService->payEmployee($record, $user);

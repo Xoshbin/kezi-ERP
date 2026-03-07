@@ -42,7 +42,7 @@ class PayrollService
         return DB::transaction(function () use ($employee, $periodStartDate, $periodEndDate, $payDate, $user) {
             $contract = $employee->currentContract;
             if (! $contract) {
-                throw new Exception('Employee does not have an active contract.');
+                throw new Exception(__('hr::exceptions.payroll.active_contract_required'));
             }
 
             // Calculate attendance-based amounts
@@ -109,7 +109,7 @@ class PayrollService
         Gate::forUser($user)->authorize('approve', $payroll);
 
         if ($payroll->status !== 'draft') {
-            throw new Exception('Only draft payrolls can be approved.');
+            throw new Exception(__('hr::exceptions.payroll.only_draft_can_be_approved'));
         }
 
         DB::transaction(function () use ($payroll, $user) {
@@ -378,11 +378,11 @@ class PayrollService
         Gate::forUser($user)->authorize('pay', $payroll);
 
         if ($payroll->payment_id) {
-            throw new Exception('Payroll has already been paid.');
+            throw new Exception(__('hr::exceptions.payroll.already_paid'));
         }
 
         if ($payroll->status !== 'processed') {
-            throw new InvalidArgumentException('Only processed payrolls can be paid.');
+            throw new InvalidArgumentException(__('hr::exceptions.payroll.only_processed_can_be_paid'));
         }
 
         $this->lockDateService->enforce($payroll->company, $payroll->pay_date);

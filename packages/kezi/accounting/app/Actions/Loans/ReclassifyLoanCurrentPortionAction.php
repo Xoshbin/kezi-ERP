@@ -32,7 +32,7 @@ class ReclassifyLoanCurrentPortionAction
             $loan->loadMissing('currency', 'company', 'scheduleEntries');
             $currencyModel = $loan->currency;
             if (! $currencyModel) {
-                throw new RuntimeException('Loan currency missing');
+                throw new RuntimeException(__('accounting::exceptions.loan.currency_not_found'));
             }
             $code = (string) data_get($currencyModel, 'code');
 

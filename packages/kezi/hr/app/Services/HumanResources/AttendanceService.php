@@ -3,8 +3,8 @@
 namespace Kezi\HR\Services\HumanResources;
 
 use App\Models\User;
-use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Kezi\HR\Actions\HumanResources\CreateAttendanceAction;
 use Kezi\HR\DataTransferObjects\HumanResources\CreateAttendanceDTO;
@@ -26,9 +26,9 @@ class AttendanceService
         $currentTime = now()->format('H:i:s');
 
         // Check if already clocked in today
-        $existingAttendance = $employee->getAttendanceForDate(now());
+        $existingAttendance = $employee->getAttendanceForDate(Carbon::now());
         if ($existingAttendance && $existingAttendance->clock_in_time) {
-            throw new Exception('Employee has already clocked in today.');
+            throw new Exception(__('hr::exceptions.attendance.already_clocked_in'));
         }
 
         $createAttendanceDTO = new CreateAttendanceDTO(
@@ -64,13 +64,13 @@ class AttendanceService
         $today = now()->format('Y-m-d');
         $currentTime = now()->format('H:i:s');
 
-        $attendance = $employee->getAttendanceForDate(now());
+        $attendance = $employee->getAttendanceForDate(Carbon::now());
         if (! $attendance || ! $attendance->clock_in_time) {
-            throw new Exception('Employee has not clocked in today.');
+            throw new Exception(__('hr::exceptions.attendance.not_clocked_in'));
         }
 
         if ($attendance->clock_out_time) {
-            throw new Exception('Employee has already clocked out today.');
+            throw new Exception(__('hr::exceptions.attendance.already_clocked_out'));
         }
 
         // Calculate total hours
@@ -103,7 +103,7 @@ class AttendanceService
 
         $freshAttendance = $attendance->fresh();
         if (! $freshAttendance) {
-            throw new Exception('Failed to refresh attendance after clock out');
+            throw new Exception(__('hr::exceptions.attendance.refresh_failed_after_clock_out'));
         }
 
         return $freshAttendance;
@@ -114,13 +114,13 @@ class AttendanceService
      */
     public function startBreak(Employee $employee): Attendance
     {
-        $attendance = $employee->getAttendanceForDate(now());
+        $attendance = $employee->getAttendanceForDate(Carbon::now());
         if (! $attendance || ! $attendance->clock_in_time) {
-            throw new Exception('Employee has not clocked in today.');
+            throw new Exception(__('hr::exceptions.attendance.not_clocked_in'));
         }
 
         if ($attendance->break_start_time) {
-            throw new Exception('Break has already been started.');
+            throw new Exception(__('hr::exceptions.attendance.break_already_started'));
         }
 
         $attendance->update([
@@ -129,7 +129,7 @@ class AttendanceService
 
         $freshAttendance = $attendance->fresh();
         if (! $freshAttendance) {
-            throw new Exception('Failed to refresh attendance after starting break');
+            throw new Exception(__('hr::exceptions.attendance.refresh_failed_after_break_start'));
         }
 
         return $freshAttendance;
@@ -140,13 +140,13 @@ class AttendanceService
      */
     public function endBreak(Employee $employee): Attendance
     {
-        $attendance = $employee->getAttendanceForDate(now());
+        $attendance = $employee->getAttendanceForDate(Carbon::now());
         if (! $attendance || ! $attendance->break_start_time) {
-            throw new Exception('Break has not been started.');
+            throw new Exception(__('hr::exceptions.attendance.break_not_started'));
         }
 
         if ($attendance->break_end_time) {
-            throw new Exception('Break has already been ended.');
+            throw new Exception(__('hr::exceptions.attendance.break_already_ended'));
         }
 
         $currentTime = now()->format('H:i:s');
@@ -163,7 +163,7 @@ class AttendanceService
 
         $freshAttendance = $attendance->fresh();
         if (! $freshAttendance) {
-            throw new Exception('Failed to refresh attendance after ending break');
+            throw new Exception(__('hr::exceptions.attendance.refresh_failed_after_break_end'));
         }
 
         return $freshAttendance;

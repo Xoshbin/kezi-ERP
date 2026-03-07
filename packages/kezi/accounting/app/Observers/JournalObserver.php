@@ -13,7 +13,7 @@ class JournalObserver
     public function deleting(Journal $journal): void
     {
         if ($journal->journalEntries()->exists()) {
-            throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException('Cannot delete a journal with associated journal entries.');
+            throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException(__('accounting::exceptions.journal.deletion_not_allowed_entries'));
         }
     }
 }

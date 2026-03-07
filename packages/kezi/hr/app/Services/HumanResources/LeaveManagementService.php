@@ -41,7 +41,7 @@ class LeaveManagementService
         Gate::forUser($approver)->authorize('approve', $leaveRequest);
 
         if ($leaveRequest->status !== 'pending') {
-            throw new Exception('Only pending leave requests can be approved.');
+            throw new Exception(__('hr::exceptions.leave_request.only_pending_can_be_approved'));
         }
 
         DB::transaction(function () use ($leaveRequest, $approver, $notes) {
@@ -75,7 +75,7 @@ class LeaveManagementService
         Gate::forUser($approver)->authorize('approve', $leaveRequest);
 
         if ($leaveRequest->status !== 'pending') {
-            throw new Exception('Only pending leave requests can be rejected.');
+            throw new Exception(__('hr::exceptions.leave_request.only_pending_can_be_rejected'));
         }
 
         $leaveRequest->update([
@@ -104,7 +104,7 @@ class LeaveManagementService
         Gate::forUser($user)->authorize('cancel', $leaveRequest);
 
         if (! in_array($leaveRequest->status, ['pending', 'approved'])) {
-            throw new Exception('Only pending or approved leave requests can be cancelled.');
+            throw new Exception(__('hr::exceptions.leave_request.only_pending_approved_can_be_cancelled'));
         }
 
         DB::transaction(function () use ($leaveRequest, $reason, $user) {
@@ -204,19 +204,19 @@ class LeaveManagementService
         // Check if employee has sufficient leave balance
         $balance = $this->getLeaveBalance($employee, $leaveType);
         if ($dto->days_requested > $balance['remaining_days']) {
-            throw new Exception('Insufficient leave balance. Available: '.$balance['remaining_days'].' days.');
+            throw new Exception(__('hr::exceptions.leave_request.insufficient_balance', ['available' => $balance['remaining_days']]));
         }
 
         // Check minimum notice period
         $startDate = Carbon::parse($dto->start_date);
         $noticeGiven = now()->diffInDays($startDate);
         if ($noticeGiven < $leaveType->min_notice_days) {
-            throw new Exception('Minimum notice of '.$leaveType->min_notice_days.' days required.');
+            throw new Exception(__('hr::exceptions.leave_request.minimum_notice_required', ['days' => $leaveType->min_notice_days]));
         }
 
         // Check maximum consecutive days
         if ($leaveType->exceedsMaxConsecutiveDays((int) $dto->days_requested)) {
-            throw new Exception('Maximum consecutive days allowed: '.$leaveType->max_consecutive_days);
+            throw new Exception(__('hr::exceptions.leave_request.maximum_consecutive_days_exceeded', ['days' => $leaveType->max_consecutive_days]));
         }
 
         // Check for overlapping leave requests
@@ -234,7 +234,7 @@ class LeaveManagementService
             ->exists();
 
         if ($overlapping) {
-            throw new Exception('Leave request overlaps with existing leave.');
+            throw new Exception(__('hr::exceptions.leave_request.overlapping_request'));
         }
     }
 

@@ -144,6 +144,7 @@ class FiscalYearResource extends Resource
                             Notification::make()
                                 ->title(__('accounting::fiscal_year.cannot_delete_closed'))
                                 ->danger()
+                                ->persistent()
                                 ->send();
 
                             return false;

@@ -67,7 +67,7 @@ class EmployeeService
 
             $freshEmployee = $employee->fresh(['currentContract', 'department', 'position', 'manager']);
             if (! $freshEmployee) {
-                throw new Exception('Failed to refresh employee after creation');
+                throw new Exception(__('hr::exceptions.employee.refresh_failed_after_creation'));
             }
 
             return $freshEmployee;
@@ -174,7 +174,7 @@ class EmployeeService
         Gate::forUser($user)->authorize('update', $employee);
 
         if ($employee->employment_status !== 'terminated') {
-            throw new Exception('Only terminated employees can be reactivated.');
+            throw new Exception(__('hr::exceptions.employee.only_terminated_can_be_reactivated'));
         }
 
         DB::transaction(function () use ($employee, $reactivationDate, $user) {

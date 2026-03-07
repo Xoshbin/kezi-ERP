@@ -124,8 +124,12 @@ class BudgetControlService
                 $budgetName = $budget->name;
 
                 throw new BudgetExceededException(
-                    "The transaction exceeds the available budget: Budget exceeded for {$budgetName} (Account: {$accountName}). ".
-                    "Available: {$available->formatTo('en_US')}, Requested: {$amountToCheck->formatTo('en_US')}"
+                    __('accounting::exceptions.budget.exceeded', [
+                        'budget' => $budgetName,
+                        'account' => $accountName,
+                        'available' => $available->formatTo('en_US'),
+                        'requested' => $amountToCheck->formatTo('en_US'),
+                    ])
                 );
             }
         }

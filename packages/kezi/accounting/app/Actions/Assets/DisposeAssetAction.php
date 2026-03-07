@@ -54,7 +54,7 @@ class DisposeAssetAction
 
             // Debit Cash/Bank for the proceeds from the sale
             if (! $company->default_bank_account_id) {
-                throw new InvalidArgumentException('Company default bank account is not configured');
+                throw new InvalidArgumentException(__('accounting::exceptions.asset.default_bank_account_missing'));
             }
             $lines[] = new CreateJournalEntryLineDTO(
                 account_id: $company->default_bank_account_id,
@@ -98,7 +98,7 @@ class DisposeAssetAction
 
             // 3. Prepare the DTO to create the final journal entry
             if (! $company->default_bank_journal_id) {
-                throw new RuntimeException('Default Bank Journal is not configured for the company.');
+                throw new RuntimeException(__('accounting::exceptions.asset.default_bank_journal_missing'));
             }
 
             $journalEntryDTO = new CreateJournalEntryDTO(

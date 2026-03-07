@@ -50,7 +50,7 @@ class EditJournalEntry extends EditRecord
                         $journalEntryService->post($record);
                         Notification::make()->title(__('accounting::journal_entry.entry_posted_successfully'))->success()->send();
                     } catch (Exception $e) {
-                        Notification::make()->title(__('accounting::journal_entry.error_posting_entry'))->body($e->getMessage())->danger()->send();
+                        Notification::make()->title(__('accounting::journal_entry.error_posting_entry'))->body($e->getMessage())->danger()->persistent()->send();
                     }
                 }),
 

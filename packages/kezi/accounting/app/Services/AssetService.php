@@ -60,21 +60,21 @@ class AssetService
         // Guard Clause 1: Only allow deleting if the status is Draft.
         if ($asset->status !== AssetStatus::Draft) {
             throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException(
-                'Cannot delete a confirmed asset. Only draft assets can be deleted.'
+                __('accounting::exceptions.asset.deletion_not_allowed_confirmed')
             );
         }
 
         // Guard Clause 2: Check for any depreciation entries (even draft ones).
         if ($asset->depreciationEntries()->exists()) {
             throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException(
-                'Cannot delete an asset with depreciation entries. Depreciation history must be preserved.'
+                __('accounting::exceptions.asset.deletion_not_allowed_depreciation')
             );
         }
 
         // Guard Clause 3: Check for any journal entries.
         if ($asset->journalEntries()->exists()) {
             throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException(
-                'Cannot delete an asset with associated journal entries. Financial records must be preserved.'
+                __('accounting::exceptions.asset.deletion_not_allowed_journal')
             );
         }
 

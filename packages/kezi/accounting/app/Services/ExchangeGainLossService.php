@@ -250,7 +250,7 @@ class ExchangeGainLossService
         $lineDTOs = [];
         foreach ($lines as $line) {
             if (! $line['account_id']) {
-                throw new Exception('Account ID is required for exchange gain/loss journal entry line');
+                throw new Exception(__('accounting::exceptions.exchange_gain_loss.account_id_required'));
             }
             $lineDTOs[] = new CreateJournalEntryLineDTO(
                 account_id: $line['account_id'],
@@ -263,7 +263,8 @@ class ExchangeGainLossService
         }
 
         if (! $company->default_bank_journal_id) {
-            throw new Exception('Company must have a default bank journal for exchange gain/loss entries');
+            $url = \App\Filament\Clusters\Settings\Resources\Companies\CompanyResource::getUrl('edit', ['record' => $company]);
+            throw new Exception(__('accounting::exceptions.exchange_gain_loss.bank_journal_required', ['company' => $company->name, 'url' => $url]));
         }
 
         $entryDTO = new CreateJournalEntryDTO(

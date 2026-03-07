@@ -20,11 +20,6 @@ uses(RefreshDatabase::class, WithConfiguredCompany::class);
 // Setup a default company, user, and journal for all tests
 beforeEach(function () {
     $this->setupWithConfiguredCompany();
-
-    $this->bankJournal = Journal::factory()->create([
-        'company_id' => $this->company->id,
-        'type' => JournalType::Bank,
-    ]);
 });
 
 it('throws an exception if the company is missing default accounts', function () {
@@ -35,9 +30,14 @@ it('throws an exception if the company is missing default accounts', function ()
         'default_outstanding_receipts_account_id' => null,
     ]);
 
+    $bankJournal = Journal::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => JournalType::Bank,
+    ]);
+
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
-        'journal_id' => $this->bankJournal->id,
+        'journal_id' => $bankJournal->id,
         'status' => PaymentStatus::Confirmed,
     ]);
 
@@ -45,7 +45,7 @@ it('throws an exception if the company is missing default accounts', function ()
 
     // Act & Assert
     expect(fn () => $service->reconcile([], [$payment->id], $this->user))
-        ->toThrow(\RuntimeException::class, "Company '{$this->company->name}' is missing default bank or outstanding accounts configuration.");
+        ->toThrow(\RuntimeException::class, "Company \"{$this->company->name}\" is missing default bank or outstanding accounts configuration. Please <a href=\"".\App\Filament\Clusters\Settings\Resources\Companies\CompanyResource::getUrl('edit', ['record' => $this->company]).'" class="underline font-medium text-danger-600 dark:text-danger-400">configure it here</a>.');
 });
 
 it('successfully reconciles a payment and a bank statement line', function () {
@@ -56,11 +56,16 @@ it('successfully reconciles a payment and a bank statement line', function () {
         'default_outstanding_receipts_account_id' => Account::factory()->create(['company_id' => $this->company->id])->id,
     ]);
 
+    $bankJournal = Journal::factory()->create([
+        'company_id' => $this->company->id,
+        'type' => JournalType::Bank,
+    ]);
+
     $currency = Currency::firstOrCreate(['code' => 'USD'], ['name' => 'US Dollar', 'symbol' => '$', 'exchange_rate' => 1, 'is_active' => true, 'decimal_places' => 2]);
 
     $statement = BankStatement::factory()->create([
         'company_id' => $this->company->id,
-        'journal_id' => $this->bankJournal->id,
+        'journal_id' => $bankJournal->id,
         'currency_id' => $currency->id,
     ]);
 
@@ -73,7 +78,7 @@ it('successfully reconciles a payment and a bank statement line', function () {
 
     $payment = Payment::factory()->create([
         'company_id' => $this->company->id,
-        'journal_id' => $this->bankJournal->id,
+        'journal_id' => $bankJournal->id,
         'currency_id' => $currency->id,
         'status' => PaymentStatus::Confirmed, // <-- FIX WAS HERE
         'amount' => Money::of(1000, 'USD'),
@@ -125,9 +130,11 @@ it('creates a write-off for a single bank statement line', function () {
     ]);
 
     // 4. Create the bank statement
-    $currency = $this->company->currency;
+    /** @var Company $company */
+    $company = $this->company;
+    $currency = $company->currency;
     $statement = BankStatement::factory()->create([
-        'company_id' => $this->company->id,
+        'company_id' => $company->id,
         'journal_id' => $bankJournal->id,
         'currency_id' => $currency->id,
     ]);

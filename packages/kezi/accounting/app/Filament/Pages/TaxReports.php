@@ -95,6 +95,7 @@ class TaxReports extends Page
                 ->title(__('accounting::reports.error_generating_report'))
                 ->body($e->getMessage())
                 ->danger()
+                ->persistent()
                 ->send();
         }
     }

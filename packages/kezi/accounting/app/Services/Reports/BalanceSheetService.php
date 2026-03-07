@@ -48,7 +48,10 @@ class BalanceSheetService
         // Crucial accounting validation
         if (! $totalAssets->isEqualTo($totalLiabilitiesAndEquity)) {
             throw new BalanceSheetNotBalancedException(
-                "Assets ({$totalAssets}) do not equal Liabilities and Equity ({$totalLiabilitiesAndEquity})."
+                __('accounting::exceptions.balance_sheet.not_balanced', [
+                    'assets' => $totalAssets,
+                    'liabilities_equity' => $totalLiabilitiesAndEquity,
+                ])
             );
         }
 

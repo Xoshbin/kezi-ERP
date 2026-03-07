@@ -60,7 +60,8 @@ test('it throws exception when posting if default gain/loss account is missing',
 
     // Act & Assert
     $this->expectException(\RuntimeException::class);
-    $this->expectExceptionMessage('Company must have a default gain/loss account configured.');
+    $url = \App\Filament\Clusters\Settings\Resources\Companies\CompanyResource::getUrl('edit', ['record' => $this->company]);
+    $this->expectExceptionMessage(__('accounting::exceptions.exchange_gain_loss.account_id_required', ['company' => $this->company->name, 'url' => $url]));
 
     $this->action->execute($dto);
 });
@@ -105,7 +106,8 @@ test('it throws exception when posting if default bank journal is missing', func
 
     // Act & Assert
     $this->expectException(\RuntimeException::class);
-    $this->expectExceptionMessage('Company must have a default bank journal configured.');
+    $url = \App\Filament\Clusters\Settings\Resources\Companies\CompanyResource::getUrl('edit', ['record' => $this->company]);
+    $this->expectExceptionMessage(__('accounting::exceptions.exchange_gain_loss.bank_journal_required', ['company' => $this->company->name, 'url' => $url]));
 
     $this->action->execute($dto);
 });

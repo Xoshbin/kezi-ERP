@@ -151,7 +151,7 @@ class RegisterPaymentAction extends Action
                     // Create and confirm payment
                     $user = Auth::user();
                     if (! $user) {
-                        throw new Exception('User must be authenticated to create payment');
+                        throw new Exception(__('accounting::exceptions.common.user_not_authenticated'));
                     }
                     /** @phpstan-ignore-next-line */
                     $payment = app(CreatePaymentAction::class)->execute($paymentDTO, $user);
