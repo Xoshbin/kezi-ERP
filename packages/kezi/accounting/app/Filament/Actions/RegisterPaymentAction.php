@@ -160,6 +160,7 @@ class RegisterPaymentAction extends Action
 
                     Notification::make()
                         ->title(__('accounting::payment.action.confirm.notification.success'))
+                        ->body(__('accounting::payment.action.confirm.notification.success_body'))
                         ->success()
                         ->send();
                 } catch (Exception $e) {
@@ -167,6 +168,7 @@ class RegisterPaymentAction extends Action
                         ->title(__('accounting::payment.action.confirm.notification.error'))
                         ->body($e->getMessage())
                         ->danger()
+                        ->persistent()
                         ->send();
                 }
             });

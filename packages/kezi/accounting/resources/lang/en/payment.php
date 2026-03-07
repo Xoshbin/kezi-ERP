@@ -38,6 +38,7 @@ return [
         'confirm' => [
             'notification' => [
                 'success' => 'Payment confirmed successfully',
+                'success_body' => 'The payment has been confirmed and the corresponding journal entry has been created.',
                 'error' => 'Error confirming payment',
             ],
         ],
@@ -140,5 +141,8 @@ return [
                 'label' => 'Confirm',
             ],
         ],
+    ],
+    'validation' => [
+        'journal_no_bank_account' => 'The journal <strong>:journal</strong> is not configured with a default bank account. Please <a href=":url" class="underline font-medium text-danger-600 dark:text-danger-400">configure it here</a> before registering payments.',
     ],
 ];

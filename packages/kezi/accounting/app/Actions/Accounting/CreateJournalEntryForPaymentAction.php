@@ -40,7 +40,13 @@ class CreateJournalEntryForPaymentAction
         // 1. Determine the correct accounts based on accounting rules.
         $bankAccountId = $payment->journal->default_debit_account_id;
         if (! $bankAccountId) {
-            throw new InvalidArgumentException('The payment journal is not configured with a default bank account.');
+            throw new InvalidArgumentException(__('accounting::payment.validation.journal_no_bank_account', [
+                'journal' => $payment->journal->getTranslation('name', app()->getLocale()),
+                'url' => route('filament.accounting.settings.resources.journals.edit', [
+                    'record' => $payment->journal_id,
+                    'tenant' => $payment->company_id,
+                ]),
+            ]));
         }
 
         $lines = [];

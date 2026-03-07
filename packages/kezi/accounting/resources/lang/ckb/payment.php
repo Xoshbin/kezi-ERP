@@ -38,6 +38,7 @@ return [
         'confirm' => [
             'notification' => [
                 'success' => 'پارەدان بە سەرکەوتوویی پشتڕاستکرایەوە',
+                'success_body' => 'پارەدانەکە پشتڕاستکرایەوە و تۆماری ڕۆژنامەی پەیوەندیدار دروستکرا.',
                 'error' => 'هەڵە لە پشتڕاستکردنەوەی پارەدان',
             ],
         ],
@@ -140,5 +141,8 @@ return [
                 'label' => 'پشتڕاستکردنەوە',
             ],
         ],
+    ],
+    'validation' => [
+        'journal_no_bank_account' => 'دەفتەری ڕۆژنامەی <strong>:journal</strong> هەژماری بانکی بنەڕەتی بۆ دانەنراوە. تکایە <a href=":url" class="underline font-medium text-danger-600 dark:text-danger-400">لێرەدا ڕێکی بخە</a> پێش تۆمارکردنی پارەدانەکان.',
     ],
 ];
