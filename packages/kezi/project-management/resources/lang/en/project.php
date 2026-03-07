@@ -5,6 +5,8 @@ return [
         'name' => 'Project Management',
         'label' => 'Project Management',
     ],
+    'customer' => 'Customer',
+    'manager' => 'Manager',
     'budget' => [
         'total_budget' => 'Total Budget',
         'name' => 'Name',

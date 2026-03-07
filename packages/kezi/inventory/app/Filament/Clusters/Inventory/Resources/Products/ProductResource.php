@@ -34,6 +34,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
+use Kezi\Accounting\Filament\Forms\Components\TaxSelectField;
 use Kezi\Foundation\Filament\Forms\Components\MoneyInput;
 use Kezi\Foundation\Filament\Tables\Columns\MoneyColumn;
 use Kezi\Inventory\Enums\Inventory\ValuationMethod;
@@ -50,7 +51,6 @@ use Kezi\Product\Models\Product;
 use Kezi\Product\Models\ProductAttribute;
 use Kezi\Product\Models\ProductAttributeValue;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 // use Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\RelationManagers\StockMovesRelationManager;
 
@@ -194,14 +194,13 @@ class ProductResource extends Resource
                             ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\AccountType::Expense),
                     ]),
                     Grid::make(2)->schema([
-                        TranslatableSelect::make('purchaseTaxes')
+                        TaxSelectField::make('purchaseTaxes')
                             ->relationship('purchaseTaxes', 'name')
                             ->label(__('product.purchase_tax'))
+                            ->taxFilter([\Kezi\Accounting\Enums\Accounting\TaxType::Purchase, \Kezi\Accounting\Enums\Accounting\TaxType::Both])
+                            ->createOptionDefaultType(\Kezi\Accounting\Enums\Accounting\TaxType::Purchase)
                             ->multiple()
-                            ->nullable()
-                            ->searchable()
-                            ->preload()
-                            ->modifyQueryUsing(fn ($query) => $query->whereIn('type', [\Kezi\Accounting\Enums\Accounting\TaxType::Purchase, \Kezi\Accounting\Enums\Accounting\TaxType::Both])),
+                            ->preload(),
                     ]),
                 ]),
 

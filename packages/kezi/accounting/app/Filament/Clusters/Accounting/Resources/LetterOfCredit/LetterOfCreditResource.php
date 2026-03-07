@@ -89,9 +89,7 @@ class LetterOfCreditResource extends Resource
                                 ->searchable()
                                 ->label(__('accounting::lc.purchase_order')),
 
-                            Select::make('issuing_bank_partner_id')
-                                ->relationship('issuingBank', 'name')
-                                ->searchable()
+                            PartnerSelectField::make('issuing_bank_partner_id')
                                 ->label(__('accounting::lc.issuing_bank')),
                         ])->columns(2),
 

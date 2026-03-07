@@ -3,6 +3,8 @@
 return [
     // Labels
     'analytic_account' => 'هەژماری شیکاری',
+    'label' => 'هەژماری شیکاری',
+    'create_analytic_account' => 'دروستکردنی هەژماری شیکاری',
     'analytic_accounts' => 'هەژمارە شیکارییەکان',
     'analytic_plan' => 'پلانی شیکاری',
     'analytic_plans' => 'پلانە شیکارییەکان',

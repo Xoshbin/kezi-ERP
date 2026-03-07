@@ -7,7 +7,6 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -15,6 +14,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
+use Kezi\Accounting\Filament\Forms\Components\AnalyticAccountSelectField;
 
 /**
  * @extends RelationManager<\Kezi\Accounting\Models\Budget>
@@ -34,9 +34,8 @@ class BudgetLinesRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                Select::make('analytic_account_id')
-                    ->label(__('accounting::budget.budget_lines.form.analytic_account_id'))
-                    ->relationship('analyticAccount', 'name'),
+                AnalyticAccountSelectField::make('analytic_account_id')
+                    ->label(__('accounting::budget.budget_lines.form.analytic_account_id')),
                 AccountSelectField::make('account_id')
                     ->label(__('accounting::budget.budget_lines.form.account_id')),
                 TextInput::make('budgeted_amount')
