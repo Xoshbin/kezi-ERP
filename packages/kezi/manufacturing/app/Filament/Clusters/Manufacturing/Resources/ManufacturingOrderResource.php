@@ -20,6 +20,7 @@ use Kezi\Manufacturing\Filament\Clusters\Manufacturing\ManufacturingCluster;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\ManufacturingOrderResource\Pages;
 use Kezi\Manufacturing\Filament\Clusters\Manufacturing\Resources\ManufacturingOrderResource\RelationManagers;
 use Kezi\Manufacturing\Models\ManufacturingOrder;
+use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 
 class ManufacturingOrderResource extends Resource
 {
@@ -69,11 +70,8 @@ class ManufacturingOrderResource extends Resource
                             }
                         }),
 
-                    Forms\Components\Select::make('product_id')
+                    ProductSelectField::make('product_id')
                         ->label(__('manufacturing::manufacturing.order.product'))
-                        ->relationship('product', 'name')
-                        ->searchable()
-                        ->preload()
                         ->required()
                         ->disabled(fn ($get) => $get('bom_id') !== null)
                         ->dehydrated(),

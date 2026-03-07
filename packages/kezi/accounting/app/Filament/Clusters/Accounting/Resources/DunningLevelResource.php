@@ -18,6 +18,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\DunningLevelResource\Pages;
 use Kezi\Accounting\Models\DunningLevel;
+use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 
 class DunningLevelResource extends Resource
 {
@@ -80,11 +81,9 @@ class DunningLevelResource extends Resource
 
                         \Filament\Schemas\Components\Grid::make(3)
                             ->schema([
-                                \Filament\Forms\Components\Select::make('fee_product_id')
+                                ProductSelectField::make('fee_product_id')
                                     ->label(__('accounting::dunning_level.fields.fee_product'))
-                                    ->relationship('feeProduct', 'name')
-                                    ->requiredIf('charge_fee', true)
-                                    ->searchable(),
+                                    ->requiredIf('charge_fee', true),
 
                                 \Filament\Forms\Components\TextInput::make('fee_amount')
                                     ->label(__('accounting::dunning_level.fields.fee_amount'))

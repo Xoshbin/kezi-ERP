@@ -8,6 +8,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 
 class LinesRelationManager extends RelationManager
 {
@@ -21,11 +22,8 @@ class LinesRelationManager extends RelationManager
     public function form(Schema $schema): Schema
     {
         return $schema->components([
-            Forms\Components\Select::make('product_id')
+            ProductSelectField::make('product_id')
                 ->label(__('manufacturing::manufacturing.lines.component_product'))
-                ->relationship('product', 'name')
-                ->searchable()
-                ->preload()
                 ->required(),
 
             Forms\Components\TextInput::make('quantity_required')

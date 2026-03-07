@@ -8,6 +8,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Kezi\HR\Filament\Forms\Components\EmployeeSelectField;
 
 class EmployeeForm
 {
@@ -72,12 +73,8 @@ class EmployeeForm
                         ->preload()
                         ->columnSpan(1),
 
-                    Select::make('manager_id')
+                    EmployeeSelectField::make('manager_id')
                         ->label(__('hr::employee.manager'))
-                        ->relationship('manager', 'first_name')
-                        ->searchable(['first_name', 'last_name', 'employee_number'])
-                        ->preload()
-                        ->getOptionLabelUsing(fn ($record) => $record ? $record->first_name.' '.$record->last_name.' ('.$record->employee_number.')' : '')
                         ->columnSpan(1),
                 ])
                 ->columns(2)

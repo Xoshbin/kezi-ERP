@@ -7,13 +7,13 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
+use Kezi\Accounting\Filament\Forms\Components\AnalyticAccountSelectField;
 use Kezi\Foundation\Filament\Forms\Components\PartnerSelectField;
 
 /**
@@ -34,7 +34,7 @@ class JournalEntryLinesRelationManager extends RelationManager
                 TextInput::make('credit')->label(__('accounting::journal_entry.credit'))->required()->numeric(),
                 TextInput::make('description')->label(__('accounting::journal_entry.description'))->maxLength(255),
                 PartnerSelectField::make('partner_id')->label(__('accounting::journal_entry.partner')),
-                Select::make('analytic_account_id')->label(__('accounting::journal_entry.analytic_account'))->relationship('analyticAccount', 'name'),
+                AnalyticAccountSelectField::make('analytic_account_id')->label(__('accounting::journal_entry.analytic_account')),
             ]);
     }
 

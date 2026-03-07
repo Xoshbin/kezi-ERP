@@ -23,6 +23,7 @@ use Kezi\Inventory\Filament\Clusters\Inventory\Resources\SerialNumbers\Pages\Cre
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\SerialNumbers\Pages\EditSerialNumber;
 use Kezi\Inventory\Filament\Clusters\Inventory\Resources\SerialNumbers\Pages\ListSerialNumbers;
 use Kezi\Inventory\Models\SerialNumber;
+use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 
 class SerialNumberResource extends Resource
 {
@@ -57,12 +58,9 @@ class SerialNumberResource extends Resource
                 ->icon('heroicon-o-qr-code')
                 ->schema([
                     Grid::make(2)->schema([
-                        Select::make('product_id')
-                            ->relationship('product', 'name')
+                        ProductSelectField::make('product_id')
                             ->label(__('product.label'))
                             ->required()
-                            ->searchable()
-                            ->preload()
                             ->disabled(fn ($record) => $record !== null),
 
                         TextInput::make('serial_code')

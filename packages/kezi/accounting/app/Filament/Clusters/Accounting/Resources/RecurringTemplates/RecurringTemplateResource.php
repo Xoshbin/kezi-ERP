@@ -26,8 +26,8 @@ use Kezi\Accounting\Filament\Forms\Components\TaxSelectField;
 use Kezi\Accounting\Models\FiscalPosition;
 use Kezi\Accounting\Models\Journal;
 use Kezi\Accounting\Models\RecurringTemplate;
-use Kezi\Foundation\Models\PaymentTerm;
-use Kezi\Product\Models\Product;
+use Kezi\Foundation\Filament\Forms\Components\PaymentTermSelectField;
+use Kezi\Product\Filament\Forms\Components\ProductSelectField;
 
 class RecurringTemplateResource extends Resource
 {
@@ -174,10 +174,8 @@ class RecurringTemplateResource extends Resource
                     \Kezi\Foundation\Filament\Forms\Components\CurrencySelectField::make('currency_id')
                         ->label(__('accounting::currency.currency'))
                         ->required(),
-                    Select::make('payment_term_id')
-                        ->label(__('accounting::recurring.payment_term'))
-                        ->options(fn () => PaymentTerm::where('company_id', Filament::getTenant()?->id)->pluck('name', 'id'))
-                        ->searchable(),
+                    PaymentTermSelectField::make('payment_term_id')
+                        ->label(__('accounting::recurring.payment_term')),
                     Select::make('fiscal_position_id')
                         ->label(__('accounting::recurring.fiscal_position'))
                         ->options(fn () => FiscalPosition::where('company_id', Filament::getTenant()?->id)->pluck('name', 'id'))
@@ -195,10 +193,8 @@ class RecurringTemplateResource extends Resource
                             AccountSelectField::make('income_account_id')
                                 ->label(__('accounting::account.income_account'))
                                 ->required(),
-                            Select::make('product_id')
-                                ->label(__('accounting::recurring.product'))
-                                ->options(fn () => Product::pluck('name', 'id'))
-                                ->searchable(),
+                            ProductSelectField::make('product_id')
+                                ->label(__('accounting::recurring.product')),
                             TaxSelectField::make('tax_id')
                                 ->label(__('accounting::recurring.tax'))
                                 ->taxFilter([TaxType::Sales, TaxType::Both])
