@@ -20,7 +20,6 @@ use Kezi\Inventory\Filament\Clusters\Inventory\InventoryCluster;
 use Kezi\Inventory\Models\StockLocation;
 use Kezi\Inventory\Services\Inventory\InventoryCSVExportService;
 use Kezi\Inventory\Services\Inventory\InventoryReportingService;
-use Kezi\Product\Models\Product;
 
 class ReorderStatusReport extends Page implements HasForms
 {
@@ -79,16 +78,9 @@ class ReorderStatusReport extends Page implements HasForms
             ->components([
                 Section::make(__('inventory::inventory_reports.reorder.filters.title'))
                     ->schema([
-                        Select::make('product_ids')
+                        \Kezi\Product\Filament\Forms\Components\ProductSelectField::make('product_ids')
                             ->label(__('inventory::inventory_reports.reorder.filters.products'))
-                            ->options(function () {
-                                return Product::query()
-                                    ->where('company_id', Filament::getTenant()?->getKey())
-                                    ->pluck('name', 'id');
-                            })
                             ->multiple()
-                            ->searchable()
-                            ->preload()
                             ->live()
                             ->afterStateUpdated(fn () => $this->generateReport()),
 
