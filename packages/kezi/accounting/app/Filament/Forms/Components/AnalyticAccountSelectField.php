@@ -49,8 +49,12 @@ class AnalyticAccountSelectField extends TranslatableSelect
         });
 
         $this->createOptionUsing(function (array $data): int {
-            $data['company_id'] = Filament::getTenant()?->getKey();
-            $account = AnalyticAccount::create($data);
+            $account = AnalyticAccount::create([
+                'company_id' => Filament::getTenant()?->getKey(),
+                'name' => $data['name'],
+                'reference' => $data['reference'] ?? null,
+                'is_active' => $data['is_active'] ?? true,
+            ]);
 
             return $account->getKey();
         });
