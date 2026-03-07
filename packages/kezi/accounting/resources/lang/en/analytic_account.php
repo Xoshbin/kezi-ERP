@@ -3,6 +3,8 @@
 return [
     // Labels
     'analytic_account' => 'Analytic Account',
+    'label' => 'Analytic Account',
+    'create_analytic_account' => 'Create Analytic Account',
     'analytic_accounts' => 'Analytic Accounts',
     'analytic_plan' => 'Analytic Plan',
     'analytic_plans' => 'Analytic Plans',

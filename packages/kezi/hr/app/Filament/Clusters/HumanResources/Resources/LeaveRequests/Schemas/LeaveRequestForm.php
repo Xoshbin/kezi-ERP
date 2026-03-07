@@ -30,6 +30,7 @@ class LeaveRequestForm
 
                     \Kezi\HR\Filament\Forms\Components\EmployeeSelectField::make('employee_id')
                         ->label(__('hr::leave_request.employee'))
+                        ->required()
                         ->columnSpan(1),
 
                     Select::make('leave_type_id')

@@ -2,6 +2,9 @@
 
 namespace Kezi\Accounting\Tests\Feature\Filament\Forms\Components;
 
+/**
+ * @property-read \App\Models\Company $company
+ */
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Kezi\Accounting\Filament\Forms\Components\AnalyticAccountSelectField;
@@ -11,8 +14,9 @@ use Tests\Traits\WithConfiguredCompany;
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
-    $this->setupWithConfiguredCompany();
-    Filament::setTenant($this->company);
+    /** @var \Tests\TestCase $test */
+    $test = $this;
+    $test->setupWithConfiguredCompany();
 });
 
 describe('AnalyticAccountSelectField', function () {
@@ -20,7 +24,7 @@ describe('AnalyticAccountSelectField', function () {
         $field = AnalyticAccountSelectField::make('analytic_account_id');
 
         expect($field->getName())->toBe('analytic_account_id')
-            ->and($field->getLabel())->toBe(__('accounting::analytic_account.label'));
+            ->and($field->getLabel())->toBe(__('accounting::analytic_account.analytic_account'));
     });
 
     it('has create option form with correct fields', function () {
@@ -47,33 +51,40 @@ describe('AnalyticAccountSelectField', function () {
         $field = AnalyticAccountSelectField::make('analytic_account_id');
         $data = [
             'name' => 'Test Analytic Account',
-            'code' => 'TAA001',
+            'reference' => 'TAA001',
         ];
 
-        /** @var \Closure $callback */
+        /** @var \Closure(array<string, mixed>): int $callback */
         $callback = $field->getCreateOptionUsing();
         $id = $callback($data);
+
+        /** @var \App\Models\Company $company */
+        $company = Filament::getTenant();
 
         expect($id)->toBeInt();
         $this->assertDatabaseHas('analytic_accounts', [
             'id' => $id,
-            'name' => json_encode(['en' => 'Test Analytic Account']),
-            'code' => 'TAA001',
-            'company_id' => $this->company->id,
+            'name' => 'Test Analytic Account',
+            'reference' => 'TAA001',
+            'company_id' => $company->id,
         ]);
     });
 
     it('scopes analytic accounts to current company', function () {
+        /** @var \App\Models\Company $otherCompany */
         $otherCompany = \App\Models\Company::factory()->create();
 
         AnalyticAccount::factory()->create([
             'company_id' => $otherCompany->id,
-            'name' => ['en' => 'Other Analytic Account'],
+            'name' => 'Other Analytic Account',
         ]);
 
+        /** @var \App\Models\Company $company */
+        $company = Filament::getTenant();
+
         AnalyticAccount::factory()->create([
-            'company_id' => $this->company->id,
-            'name' => ['en' => 'My Analytic Account'],
+            'company_id' => $company->id,
+            'name' => 'My Analytic Account',
         ]);
 
         $field = AnalyticAccountSelectField::make('analytic_account_id');

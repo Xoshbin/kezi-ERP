@@ -42,6 +42,8 @@ return [
     'default_tax' => 'Default Tax',
     'default_tax_help' => 'The default tax rate to automatically apply when creating invoices or bills for this partner',
     'create_default_tax' => 'Create Default Tax',
+    'customer_payment_term' => 'Customer Payment Term',
+    'vendor_payment_term' => 'Vendor Payment Term',
 
     // Address
     'address' => 'Address',

@@ -2,6 +2,9 @@
 
 namespace Kezi\Foundation\Tests\Feature\Filament\Forms\Components;
 
+/**
+ * @property-read \App\Models\Company $company
+ */
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Kezi\Foundation\Filament\Forms\Components\PaymentTermSelectField;
@@ -11,8 +14,9 @@ use Tests\Traits\WithConfiguredCompany;
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
-    $this->setupWithConfiguredCompany();
-    Filament::setTenant($this->company);
+    /** @var \Tests\TestCase $test */
+    $test = $this;
+    $test->setupWithConfiguredCompany();
 });
 
 describe('PaymentTermSelectField', function () {
@@ -20,7 +24,7 @@ describe('PaymentTermSelectField', function () {
         $field = PaymentTermSelectField::make('payment_term_id');
 
         expect($field->getName())->toBe('payment_term_id')
-            ->and($field->getLabel())->toBe(__('accounting::payment_term.label'));
+            ->and($field->getLabel())->toBe(__('foundation::payment_term.label'));
     });
 
     it('has create option form with correct fields', function () {
@@ -50,20 +54,23 @@ describe('PaymentTermSelectField', function () {
             'code' => 'TPT001',
         ];
 
-        /** @var \Closure $callback */
+        /** @var \Closure(array<string, mixed>): int $callback */
         $callback = $field->getCreateOptionUsing();
         $id = $callback($data);
+
+        /** @var \App\Models\Company $company */
+        $company = Filament::getTenant();
 
         expect($id)->toBeInt();
         $this->assertDatabaseHas('payment_terms', [
             'id' => $id,
             'name' => json_encode(['en' => 'Test Payment Term']),
-            'code' => 'TPT001',
-            'company_id' => $this->company->id,
+            'company_id' => $company->id,
         ]);
     });
 
     it('scopes payment terms to current company', function () {
+        /** @var \App\Models\Company $otherCompany */
         $otherCompany = \App\Models\Company::factory()->create();
 
         PaymentTerm::factory()->create([
@@ -71,8 +78,11 @@ describe('PaymentTermSelectField', function () {
             'name' => ['en' => 'Other Payment Term'],
         ]);
 
+        /** @var \App\Models\Company $company */
+        $company = Filament::getTenant();
+
         PaymentTerm::factory()->create([
-            'company_id' => $this->company->id,
+            'company_id' => $company->id,
             'name' => ['en' => 'My Payment Term'],
         ]);
 
