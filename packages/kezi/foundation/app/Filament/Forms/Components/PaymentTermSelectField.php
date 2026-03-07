@@ -19,7 +19,7 @@ class PaymentTermSelectField extends TranslatableSelect
         $this->relationshipTitleAttribute = 'name';
         $this->configureForModel();
 
-        $this->label(__('accounting::invoice.payment_term'));
+        $this->label(__('foundation::payment_term.label'));
         $this->searchable();
         $this->preload();
 
@@ -48,8 +48,12 @@ class PaymentTermSelectField extends TranslatableSelect
         });
 
         $this->createOptionUsing(function (array $data): int {
-            $data['company_id'] = Filament::getTenant()?->getKey();
-            $term = PaymentTerm::create($data);
+            $term = PaymentTerm::create([
+                'company_id' => Filament::getTenant()?->getKey(),
+                'name' => ['en' => $data['name']],
+                'description' => ['en' => $data['description'] ?? null],
+                'is_active' => $data['is_active'] ?? true,
+            ]);
 
             return $term->getKey();
         });
