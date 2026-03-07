@@ -5,7 +5,6 @@ namespace Kezi\Inventory\Filament\Clusters\Inventory\Pages;
 use BackedEnum;
 use Exception;
 use Filament\Actions\Action;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -75,15 +74,8 @@ class LotTraceabilityReport extends Page implements HasForms
             ->components([
                 Section::make(__('inventory::inventory_reports.lot_trace.filters.title'))
                     ->schema([
-                        Select::make('product_id')
+                        \Kezi\Product\Filament\Forms\Components\ProductSelectField::make('product_id')
                             ->label(__('inventory::inventory_reports.lot_trace.filters.product'))
-                            ->options(function () {
-                                return Product::query()
-                                    ->where('company_id', Filament::getTenant()?->getKey())
-                                    ->pluck('name', 'id');
-                            })
-                            ->searchable()
-                            ->preload()
                             ->live()
                             ->afterStateUpdated(function ($state) {
                                 $this->selectedProduct = $state ? Product::find($state) : null;
