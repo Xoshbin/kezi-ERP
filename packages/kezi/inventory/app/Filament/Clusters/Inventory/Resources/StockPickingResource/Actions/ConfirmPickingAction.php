@@ -24,13 +24,13 @@ class ConfirmPickingAction extends Action
     {
         parent::setUp();
 
-        $this->label(__('Confirm'))
+        $this->label(__('inventory::stock_picking.states.confirmed'))
             ->icon('heroicon-o-check-circle')
             ->color('success')
             ->requiresConfirmation()
-            ->modalHeading(__('Confirm Picking'))
-            ->modalDescription(__('Are you sure you want to confirm this picking? This will confirm all associated stock moves.'))
-            ->modalSubmitActionLabel(__('Confirm'))
+            ->modalHeading(__('inventory::stock_picking.notifications.confirmed'))
+            ->modalDescription(__('inventory::stock_picking.notifications.confirm_description'))
+            ->modalSubmitActionLabel(__('inventory::stock_picking.states.confirmed'))
             ->action(function (Model $record) {
                 /** @var StockPicking $record */
                 $this->confirmPicking($record);
@@ -58,8 +58,8 @@ class ConfirmPickingAction extends Action
             });
 
             Notification::make()
-                ->title(__('Picking Confirmed'))
-                ->body(__('The picking has been confirmed successfully. All stock moves are now confirmed.'))
+                ->title(__('inventory::stock_picking.notifications.confirmed'))
+                ->body(__('inventory::stock_picking.notifications.confirmed_body'))
                 ->success()
                 ->send();
 
@@ -67,8 +67,9 @@ class ConfirmPickingAction extends Action
             $this->getLivewire()->redirect(StockPickingResource::getUrl('view', ['record' => $picking]));
         } catch (Exception $e) {
             Notification::make()
-                ->title(__('Error'))
-                ->body(__('Failed to confirm picking: :error', ['error' => $e->getMessage()]))
+                ->title(__('inventory::stock_picking.notifications.error'))
+                ->body(__('inventory::stock_picking.notifications.failed_to_confirm', ['error' => $e->getMessage()]))
+                ->persistent()
                 ->danger()
                 ->send();
         }

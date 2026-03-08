@@ -46,6 +46,36 @@ return [
         'done' => 'تەواو',
         'cancelled' => 'هەڵوەشاوە',
     ],
+    'actions' => [
+        'confirm' => 'پەسەندکردنی جوڵە',
+        'confirm_modal_heading' => 'پەسەندکردنی جوڵەی کۆگا',
+        'confirm_modal_description' => 'ئایا دڵنیایت لە پەسەندکردنی ئەم جوڵەی کۆگایە؟ ئەمە گۆڕانکارییەکانی کۆگا جێبەجێ دەکات و ناتوانرێت پاشگەز ببییتەوە.',
+    ],
+    'notifications' => [
+        'confirmed' => 'جوڵە پەسەندکرا',
+        'confirmed_body' => 'جوڵەی کۆگا بە سەرکەوتوویی پەسەندکرا. بڕی کاڵاکان لە کۆگا نوێکرانەوە.',
+    ],
     'edit_title' => 'دەستکاریکردنی جوڵەی کۆگا',
     'view_title' => 'بینینی جوڵەی کۆگا',
+    'valuation' => [
+        'labels' => [
+            'cogs' => 'تێچووی کاڵای فرۆشراو (COGS)',
+            'scrap_expense' => 'خەرجی تەلەفکردن',
+        ],
+        'descriptions' => [
+            'stock_in' => 'وەرگرتنی کاڵا بۆ :product (بڕ: :quantity)',
+            'stock_out' => 'ناردنی کاڵا بۆ :product (بڕ: :quantity)',
+            'stock_input' => 'داخڵکردنی کاڵا بۆ :product (بڕ: :quantity)',
+            'inventory_reduction' => 'کەمکردنەوەی کۆگا بۆ :product (بڕ: :quantity)',
+            'cogs' => 'تێچووی کاڵای فرۆشراو بۆ :product (بڕ: :quantity)',
+            'scrap' => 'خەرجی تەلەفکردن بۆ :product (بڕ: :quantity)',
+            'consolidated_receipt' => 'وەرگرتنی کاڵای یەکخراو بۆ :products',
+            'consolidated_delivery' => 'ناردنی کاڵای یەکخراو بۆ :products',
+            'landed_cost_stock' => 'تێچووی تێکەڵ (کۆگا): :product',
+            'landed_cost_sold' => 'تێچووی تێکەڵ (فرۆشراو): :product',
+            'landed_cost' => 'تێچووی تێکەڵ: :product',
+            'landed_cost_allocation' => 'دابەشکردنی تێچووی تێکەڵ: :details',
+            'landed_cost_expense' => 'خەرجی تێچووی تێکەڵ: :description',
+        ],
+    ],
 ];

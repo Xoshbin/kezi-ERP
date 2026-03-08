@@ -189,6 +189,7 @@ class InventoryValuationReport extends Page implements HasForms
                         Notification::make()
                             ->title(__('inventory::inventory_reports.valuation.no_data_to_export'))
                             ->danger()
+                            ->persistent()
                             ->send();
 
                         return;
@@ -216,6 +217,7 @@ class InventoryValuationReport extends Page implements HasForms
                         Notification::make()
                             ->title(__('inventory::inventory_reports.valuation.export_failed'))
                             ->body($e->getMessage())
+                            ->persistent()
                             ->danger()
                             ->send();
                     }

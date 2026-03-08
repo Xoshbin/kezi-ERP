@@ -61,7 +61,7 @@ class GoodsReceiptService
     public function cancel(StockPicking $picking, User $user): void
     {
         if ($picking->isDone()) {
-            throw new \InvalidArgumentException('Cannot cancel a validated goods receipt. Use reversal instead.');
+            throw new \InvalidArgumentException(__('inventory::exceptions.grn.cannot_cancel_validated'));
         }
 
         if ($picking->isCancelled()) {

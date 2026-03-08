@@ -28,7 +28,7 @@ class ScrapAction
             ->first();
 
         if (! $scrapLocation) {
-            throw new Exception('No Scrap location found. Please configure one.');
+            throw new Exception(__('inventory::exceptions.stock.no_scrap_location'));
         }
 
         DB::transaction(function () use ($companyId, $sourceLocationId, $items, $scrapLocation, $reference, $sourceType, $sourceId) {

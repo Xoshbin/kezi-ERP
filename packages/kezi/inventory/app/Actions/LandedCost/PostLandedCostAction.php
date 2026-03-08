@@ -67,10 +67,16 @@ class PostLandedCostAction
                 $cogsAccountId = $product->default_cogs_account_id;
 
                 if (! $inventoryAccountId) {
-                    throw new \Exception("Product {$product->id} ({$product->name}) does not have an inventory account configured");
+                    throw new \Exception(__('inventory::exceptions.landed_cost.missing_inventory_account', [
+                        'product_id' => $product->id,
+                        'product_name' => $product->name,
+                    ]));
                 }
                 if (! $cogsAccountId) {
-                    throw new \Exception("Product {$product->id} ({$product->name}) does not have a COGS account configured");
+                    throw new \Exception(__('inventory::exceptions.landed_cost.missing_cogs_account', [
+                        'product_id' => $product->id,
+                        'product_name' => $product->name,
+                    ]));
                 }
 
                 /** @var ValuationMethod $valuationMethod */
@@ -123,15 +129,15 @@ class PostLandedCostAction
 
                     // Add to Debits
                     if ($inventoryPortion->isPositive()) {
-                        $addDebit($inventoryAccountId, $inventoryPortion, "Landed Cost (Stock): {$product->name}");
+                        $addDebit($inventoryAccountId, $inventoryPortion, __('inventory::stock_move.valuation.descriptions.landed_cost_stock', ['product' => $product->name]));
                     }
                     if ($cogsPortion->isPositive()) {
-                        $addDebit($cogsAccountId, $cogsPortion, "Landed Cost (Sold): {$product->name}");
+                        $addDebit($cogsAccountId, $cogsPortion, __('inventory::stock_move.valuation.descriptions.landed_cost_sold', ['product' => $product->name]));
                     }
 
                 } else {
                     // Fallback to original behavior for AVCO/Standard: Everything to Asset
-                    $addDebit($inventoryAccountId, $additionalCost, "Landed Cost: {$product->name}");
+                    $addDebit($inventoryAccountId, $additionalCost, __('inventory::stock_move.valuation.descriptions.landed_cost', ['product' => $product->name]));
                 }
 
                 // Record Valuation Move for history
@@ -159,7 +165,9 @@ class PostLandedCostAction
                         account_id: $accountId,
                         debit: $amount,
                         credit: $zero,
-                        description: 'Landed Cost Allocation: '.substr($descStr, 0, 200),
+                        description: __('inventory::stock_move.valuation.descriptions.landed_cost_allocation', [
+                            'details' => substr($descStr, 0, 200),
+                        ]),
                         partner_id: $landedCost->vendorBill?->vendor_id,
                         analytic_account_id: null,
                     );
@@ -171,14 +179,18 @@ class PostLandedCostAction
                 ?? $company->inventory_adjustment_account_id;
 
             if (! $expenseAccountId) {
-                throw new \Exception("Company {$company->id} does not have a default expense account or inventory adjustment account configured for landed costs");
+                throw new \Exception(__('inventory::exceptions.landed_cost.missing_expense_account', [
+                    'company_id' => $company->id,
+                ]));
             }
 
             $journalEntryLines[] = new CreateJournalEntryLineDTO(
                 account_id: $expenseAccountId,
                 debit: $zero,
                 credit: $landedCost->amount_total,
-                description: "Landed Cost Expense: {$landedCost->description}",
+                description: __('inventory::stock_move.valuation.descriptions.landed_cost_expense', [
+                    'description' => $landedCost->description,
+                ]),
                 partner_id: $landedCost->vendorBill?->vendor_id,
                 analytic_account_id: null,
             );
@@ -190,7 +202,9 @@ class PostLandedCostAction
                 currency_id: $company->currency_id,
                 entry_date: $landedCost->date->toDateString(),
                 reference: "LC-{$landedCost->id}",
-                description: "Landed Cost: {$landedCost->description}",
+                description: __('inventory::stock_move.valuation.descriptions.landed_cost', [
+                    'product' => $landedCost->description,
+                ]),
                 created_by_user_id: (int) (Auth::id() ?? $landedCost->created_by_user_id ?? 1),
                 is_posted: true,
                 lines: $journalEntryLines,
