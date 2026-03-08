@@ -76,6 +76,11 @@ return [
         'converted_to_invoice' => 'Quote converted to Invoice',
         'revision_created' => 'New quote revision created',
         'duplicated' => 'Quote duplicated successfully',
+        'delivery_creation_failed' => 'Failed to create delivery',
+        'update_not_allowed' => 'Update Not Allowed',
+        'confirmation_failed' => 'Sales Order Confirmation Failed',
+        'send_failed' => 'Failed to send quote',
+        'conversion_failed' => 'Quote conversion failed',
     ],
     'sections' => [
         'basic_info' => 'Basic Information',

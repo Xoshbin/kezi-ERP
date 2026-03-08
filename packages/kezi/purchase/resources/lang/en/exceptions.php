@@ -37,4 +37,8 @@ return [
         'missing_lines' => 'Cannot calculate match status without Purchase Order Line OR Vendor Bill Line.',
         'goods_not_received_post_bill' => 'Cannot post vendor bill: goods have not been received. Please validate the Goods Receipt first.',
     ],
+    'actions' => [
+        'view_budget' => 'View Budget',
+        'view_vendor_bills' => 'View Vendor Bills',
+    ],
 ];

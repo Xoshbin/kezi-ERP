@@ -41,8 +41,9 @@ The following files contain `->danger()` notifications. These notifications ofte
 - [x] `app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Pages/EditPurchaseOrder.php`
 
 ### Sales
-- `app/Filament/Clusters/Sales/Resources/SalesOrders/Pages/EditSalesOrder.php`
-- `app/Filament/Clusters/Sales/Resources/SalesOrders/Pages/ViewSalesOrder.php`
+- [x] `app/Filament/Clusters/Sales/Resources/SalesOrders/Pages/EditSalesOrder.php`
+- [x] `app/Filament/Clusters/Sales/Resources/SalesOrders/Pages/ViewSalesOrder.php`
+- [x] `app/Filament/Clusters/Sales/Resources/Quotes/Pages/ViewQuote.php`
 
 ### Manufacturing
 - `app/Filament/Clusters/Manufacturing/Resources/ManufacturingOrderResource.php`
@@ -83,10 +84,10 @@ The following files include `throw new ...Exception(...)` statements. These exce
 - [x] Resources: `EditPurchaseOrder.php`
 
 ### Sales
-- Services: `InvoiceService.php`
-- Actions: `CreateCreditNoteAction.php`, `RejectQuoteAction.php`, `CreateStockMovesForInvoiceAction.php`, `UpdateQuoteAction.php`, `ConvertQuoteToSalesOrderAction.php`, `SendQuoteAction.php`, `ConvertQuoteToInvoiceAction.php`, `UpdateInvoiceAction.php`, `CreateInvoiceAction.php`, `UpdateSalesOrderAction.php`, `CancelQuoteAction.php`, `AcceptQuoteAction.php`, `CreateQuoteRevisionAction.php`, `CreateInvoiceLineAction.php`
-- Observers: `QuoteObserver.php`, `QuoteLineObserver.php`
-- Resources: `EditSalesOrder.php`
+- [x] Services: `InvoiceService.php`, `QuoteService.php`
+- [x] Actions: `CreateCreditNoteAction.php`, `RejectQuoteAction.php`, `CreateStockMovesForInvoiceAction.php`, `UpdateQuoteAction.php`, `ConvertQuoteToSalesOrderAction.php`, `SendQuoteAction.php`, `ConvertQuoteToInvoiceAction.php`, `UpdateInvoiceAction.php`, `CreateInvoiceAction.php`, `UpdateSalesOrderAction.php`, `CancelQuoteAction.php`, `AcceptQuoteAction.php`, `CreateQuoteRevisionAction.php`, `CreateInvoiceLineAction.php`, `CreateInvoiceFromSalesOrderAction.php`
+- [x] Observers: `QuoteObserver.php`, `QuoteLineObserver.php`
+- [x] Resources: `EditSalesOrder.php`
 
 ### Manufacturing
 - Services: `BOMService.php`

@@ -5,7 +5,6 @@ namespace Kezi\Sales\Actions\Sales;
 use App\Models\Company;
 use Brick\Money\Money;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Support\Facades\DB;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Sales\DataTransferObjects\Sales\CreateInvoiceDTO;
@@ -58,7 +57,7 @@ class CreateInvoiceAction
 
         $freshInvoice = $invoice->fresh();
         if (! $freshInvoice) {
-            throw new Exception('Failed to refresh invoice after creation');
+            throw new \Exception(__('sales::exceptions.invoice.refresh_failed'));
         }
 
         return $freshInvoice;

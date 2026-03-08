@@ -86,6 +86,13 @@ class ViewPurchaseOrder extends ViewRecord
                         ->body($e->getMessage())
                         ->danger()
                         ->persistent()
+                        ->actions([
+                            Action::make('view_vendor_bills')
+                                ->label(__('purchase::exceptions.actions.view_vendor_bills'))
+                                ->button()
+                                ->url(route('filament.kezi.accounting.resources.vendor-bills.index', ['tenant' => Filament::getTenant()]))
+                                ->openUrlInNewTab(),
+                        ])
                         ->send();
                 }
             });

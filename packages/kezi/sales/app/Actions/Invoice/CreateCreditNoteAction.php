@@ -24,11 +24,11 @@ class CreateCreditNoteAction
         $invoice = Invoice::findOrFail($dto->invoice_id);
 
         if ($invoice->status !== InvoiceStatus::Posted && $invoice->status !== InvoiceStatus::Paid) {
-            throw new Exception('Credit notes can only be created for confirmed/posted invoices.');
+            throw new Exception(__('sales::exceptions.invoice.credit_note_posted_only'));
         }
 
         if ($invoice->company_id !== $dto->company_id) {
-            throw new Exception('Invoice does not belong to the requested company.');
+            throw new Exception(__('sales::exceptions.invoice.belongs_to_another_company'));
         }
 
         // Map Lines
