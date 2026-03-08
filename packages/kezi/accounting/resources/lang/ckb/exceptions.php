@@ -121,7 +121,7 @@ return [
         'entries_must_have_same_currency' => 'پێویستە هەموو قەیدەکان هەمان دراویان هەبێت.',
     ],
     'reconciliation' => [
-        'default_bank_or_outstanding_receipts_missing' => 'هەژماری بانک یان وەسڵی ماوەی بنەڕەتی دیارینەکراوە بۆ ئەم کۆمپانیایە.',
+        'default_bank_or_outstanding_receipts_missing' => 'هەژماری بانک یان وەسڵی ماوەی بنەڕەتی دیارینەکراوە بۆ ئەم کۆمپانیایە. تکایە <a href=":url" class="underline font-medium text-danger-600 dark:text-danger-400">لێرەدا ڕێکی بخە</a>.',
     ],
     'payroll' => [
         'payroll_line_has_no_amount' => 'دێڕی مووچەی :id هیچ بڕێکی نییە.',
