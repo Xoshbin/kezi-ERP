@@ -48,4 +48,34 @@ return [
         'done' => 'Done',
         'cancelled' => 'Cancelled',
     ],
+    'actions' => [
+        'confirm' => 'Confirm Movement',
+        'confirm_modal_heading' => 'Confirm Stock Movement',
+        'confirm_modal_description' => 'Are you sure you want to confirm this stock movement? This will process the inventory changes and cannot be undone.',
+    ],
+    'notifications' => [
+        'confirmed' => 'Movement Confirmed',
+        'confirmed_body' => 'The stock movement has been confirmed successfully. Inventory quantities have been updated.',
+    ],
+    'valuation' => [
+        'labels' => [
+            'cogs' => 'COGS',
+            'scrap_expense' => 'Scrap Expense',
+        ],
+        'descriptions' => [
+            'stock_in' => 'Stock receipt for :product (Qty: :quantity)',
+            'stock_out' => 'Stock delivery for :product (Qty: :quantity)',
+            'stock_input' => 'Stock input for :product (Qty: :quantity)',
+            'inventory_reduction' => 'Inventory reduction for :product (Qty: :quantity)',
+            'cogs' => 'COGS for :product (Qty: :quantity)',
+            'scrap' => 'Scrap Expense for :product (Qty: :quantity)',
+            'consolidated_receipt' => 'Consolidated stock receipt for :products',
+            'consolidated_delivery' => 'Consolidated stock delivery for :products',
+            'landed_cost_stock' => 'Landed Cost (Stock): :product',
+            'landed_cost_sold' => 'Landed Cost (Sold): :product',
+            'landed_cost' => 'Landed Cost: :product',
+            'landed_cost_allocation' => 'Landed Cost Allocation: :details',
+            'landed_cost_expense' => 'Landed Cost Expense: :description',
+        ],
+    ],
 ];

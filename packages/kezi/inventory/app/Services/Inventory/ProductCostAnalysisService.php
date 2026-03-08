@@ -84,39 +84,39 @@ class ProductCostAnalysisService
 
         // Vendor bill related suggestions
         if (! $vendorBillAnalysis['has_vendor_bills']) {
-            $suggestions[] = 'Create and post a vendor bill for this product to establish purchase cost';
+            $suggestions[] = __('inventory::exceptions.cost_analysis.create_bill');
         } elseif ($vendorBillAnalysis['draft_count'] > 0 && $vendorBillAnalysis['posted_count'] === 0) {
-            $suggestions[] = "Post the {$vendorBillAnalysis['draft_count']} draft vendor bill(s) for this product to establish cost";
+            $suggestions[] = __('inventory::exceptions.cost_analysis.post_draft_bills', ['count' => $vendorBillAnalysis['draft_count']]);
         } elseif ($vendorBillAnalysis['posted_count'] > 0) {
             if ($product->inventory_valuation_method === ValuationMethod::Avco && ! $hasAverageCost) {
-                $suggestions[] = 'Check why posted vendor bills are not updating the average cost - verify product configuration and bill posting process';
+                $suggestions[] = __('inventory::exceptions.cost_analysis.check_avco_mismatch');
             } elseif ($product->inventory_valuation_method !== ValuationMethod::Avco && ! $hasCostLayers) {
-                $suggestions[] = 'Check why posted vendor bills are not creating cost layers - verify inventory accounting configuration';
+                $suggestions[] = __('inventory::exceptions.cost_analysis.check_layers_mismatch');
             }
         }
 
         // Valuation method specific suggestions
         if ($product->inventory_valuation_method === ValuationMethod::Avco) {
             if (! $hasAverageCost && $vendorBillAnalysis['posted_count'] === 0) {
-                $suggestions[] = 'Average cost is calculated automatically from posted vendor bills - no manual entry needed';
+                $suggestions[] = __('inventory::exceptions.cost_analysis.avco_auto_calc');
             }
         } else {
             // FIFO/LIFO methods
             if (! $hasCostLayers) {
-                $suggestions[] = 'Cost layers (historical purchase costs) are created when vendor bills with storable products are posted';
+                $suggestions[] = __('inventory::exceptions.cost_analysis.layers_auto_create');
             }
         }
 
         // Proper cost establishment guidance (no fallbacks to unreliable data)
         if (! $this->isReadyForInventoryMovements($product)) {
-            $suggestions[] = 'Cost information is required before processing inventory movements';
+            $suggestions[] = __('inventory::exceptions.cost_analysis.cost_info_required');
 
             // Add specific establishment steps
             $establishmentSteps = $this->getEstablishmentSteps($product);
             $suggestions = array_merge($suggestions, $establishmentSteps);
 
             // Add minimum requirements reference
-            $suggestions[] = 'Review minimum requirements for cost establishment in product documentation';
+            $suggestions[] = __('inventory::exceptions.cost_analysis.review_requirements');
         }
 
         return $suggestions;
@@ -129,25 +129,25 @@ class ProductCostAnalysisService
     {
         $vendorBillAnalysis = $this->analyzeVendorBillStatus($product);
 
-        $explanation = "Cannot determine cost for product '{$product->name}' (ID: {$product->id}). ";
+        $explanation = __('inventory::exceptions.cost_analysis.explanation.main', ['product_name' => $product->name, 'product_id' => $product->id]);
 
         if ($product->inventory_valuation_method === ValuationMethod::Avco) {
-            $explanation .= 'Using AVCO valuation method - requires positive average cost. ';
+            $explanation .= __('inventory::exceptions.cost_analysis.explanation.avco');
 
             if ($vendorBillAnalysis['posted_count'] > 0) {
-                $explanation .= "Found {$vendorBillAnalysis['posted_count']} posted vendor bill(s) but average cost is not set. ";
+                $explanation .= __('inventory::exceptions.cost_analysis.explanation.posted_no_cost', ['count' => $vendorBillAnalysis['posted_count']]);
             } elseif ($vendorBillAnalysis['draft_count'] > 0) {
-                $explanation .= "Found {$vendorBillAnalysis['draft_count']} draft vendor bill(s) - these need to be posted to calculate average cost. ";
+                $explanation .= __('inventory::exceptions.cost_analysis.explanation.draft_no_cost', ['count' => $vendorBillAnalysis['draft_count']]);
             } else {
-                $explanation .= 'No vendor bills found for this product. ';
+                $explanation .= __('inventory::exceptions.cost_analysis.explanation.no_bills');
             }
         } else {
-            $explanation .= "Using {$product->inventory_valuation_method->label()} valuation method - requires cost layers. ";
+            $explanation .= __('inventory::exceptions.cost_analysis.explanation.fifo_lifo', ['method' => $product->inventory_valuation_method->label()]);
 
             if ($vendorBillAnalysis['posted_count'] > 0) {
-                $explanation .= "Found {$vendorBillAnalysis['posted_count']} posted vendor bill(s) but no cost layers available. ";
+                $explanation .= __('inventory::exceptions.cost_analysis.explanation.posted_no_layers', ['count' => $vendorBillAnalysis['posted_count']]);
             } else {
-                $explanation .= 'No posted vendor bills found to create cost layers. ';
+                $explanation .= __('inventory::exceptions.cost_analysis.explanation.no_bills');
             }
         }
 
@@ -163,25 +163,25 @@ class ProductCostAnalysisService
         $vendorBillAnalysis = $this->analyzeVendorBillStatus($product);
 
         if (! $vendorBillAnalysis['has_vendor_bills']) {
-            $steps[] = '1. Obtain purchase invoices from your supplier for this product';
-            $steps[] = '2. Create a vendor bill in the system using the purchase invoice data';
-            $steps[] = '3. Ensure the vendor bill includes this product with correct quantities and unit prices';
-            $steps[] = '4. Post the vendor bill to establish cost information';
+            $steps[] = __('inventory::exceptions.cost_analysis.establishment.obtain_invoices');
+            $steps[] = __('inventory::exceptions.cost_analysis.establishment.create_bill');
+            $steps[] = __('inventory::exceptions.cost_analysis.establishment.ensure_correct_price');
+            $steps[] = __('inventory::exceptions.cost_analysis.establishment.post_bill');
         } elseif ($vendorBillAnalysis['draft_count'] > 0 && $vendorBillAnalysis['posted_count'] === 0) {
-            $steps[] = '1. Review the draft vendor bill(s) for accuracy';
-            $steps[] = '2. Verify product quantities and unit prices are correct';
-            $steps[] = '3. Post the vendor bill(s) to establish cost information';
+            $steps[] = __('inventory::exceptions.cost_analysis.establishment.review_drafts');
+            $steps[] = __('inventory::exceptions.cost_analysis.establishment.verify_quantities');
+            $steps[] = __('inventory::exceptions.cost_analysis.establishment.post_reviewed_bills');
         } elseif ($vendorBillAnalysis['posted_count'] > 0) {
-            $steps[] = '1. Verify the posted vendor bills contain this product';
-            $steps[] = '2. Check that inventory accounting is properly configured';
-            $steps[] = '3. Ensure the product has proper inventory accounts assigned';
-            $steps[] = '4. Contact system administrator if cost calculation is not working';
+            $steps[] = __('inventory::exceptions.cost_analysis.establishment.verify_posted_product');
+            $steps[] = __('inventory::exceptions.cost_analysis.establishment.check_accounting_config');
+            $steps[] = __('inventory::exceptions.cost_analysis.establishment.ensure_accounts_assigned');
+            $steps[] = __('inventory::exceptions.cost_analysis.establishment.contact_admin');
         }
 
         if ($product->inventory_valuation_method === ValuationMethod::Avco) {
-            $steps[] = 'Note: AVCO method automatically calculates average cost from all posted vendor bills';
+            $steps[] = __('inventory::exceptions.cost_analysis.establishment.avco_note');
         } else {
-            $steps[] = 'Note: FIFO/LIFO methods create individual cost layers for each purchase transaction';
+            $steps[] = __('inventory::exceptions.cost_analysis.establishment.fifo_lifo_note');
         }
 
         return $steps;
@@ -205,16 +205,16 @@ class ProductCostAnalysisService
     public function getMinimumRequirements(Product $product): array
     {
         $requirements = [
-            'product_type' => 'Product must be of type "Storable"',
-            'vendor_bill' => 'At least one posted vendor bill containing this product',
-            'unit_price' => 'Vendor bill must have positive unit price for the product',
-            'inventory_accounts' => 'Product must have inventory accounts configured',
+            'product_type' => __('inventory::exceptions.cost_analysis.requirements.product_type'),
+            'vendor_bill' => __('inventory::exceptions.cost_analysis.requirements.vendor_bill'),
+            'unit_price' => __('inventory::exceptions.cost_analysis.requirements.unit_price'),
+            'inventory_accounts' => __('inventory::exceptions.cost_analysis.requirements.inventory_accounts'),
         ];
 
         if ($product->inventory_valuation_method === ValuationMethod::Avco) {
-            $requirements['valuation_method'] = 'AVCO method requires average cost calculation from vendor bills';
+            $requirements['valuation_method'] = __('inventory::exceptions.cost_analysis.requirements.avco_method');
         } else {
-            $requirements['valuation_method'] = 'FIFO/LIFO methods require cost layer creation from vendor bills';
+            $requirements['valuation_method'] = __('inventory::exceptions.cost_analysis.requirements.fifo_lifo_method');
         }
 
         return $requirements;

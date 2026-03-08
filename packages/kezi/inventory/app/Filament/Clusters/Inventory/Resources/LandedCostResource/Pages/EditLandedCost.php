@@ -24,36 +24,46 @@ class EditLandedCost extends EditRecord
                 ->visible(fn ($record) => $record->status === LandedCostStatus::Draft)
                 ->requiresConfirmation()
                 ->action(function ($record) {
-                    // Validate: Ensure at least one stock picking is attached
-                    if ($record->stockPickings()->count() === 0) {
+                    try {
+                        // Validate: Ensure at least one stock picking is attached
+                        if ($record->stockPickings()->count() === 0) {
+                            \Filament\Notifications\Notification::make()
+                                ->title(__('inventory::landed_cost.notifications.no_pickings'))
+                                ->body(__('inventory::landed_cost.notifications.no_pickings_body'))
+                                ->persistent()
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
+                        // Get all stock moves from attached pickings
+                        $stockMoves = $record->stockPickings()
+                            ->with('moves.productLines')
+                            ->get()
+                            ->pluck('moves')
+                            ->flatten();
+
+                        // Allocate costs to stock moves
+                        app(AllocateLandedCostsAction::class)->execute($record, $stockMoves);
+
+                        // Post the landed cost
+                        app(PostLandedCostAction::class)->execute($record);
+
                         \Filament\Notifications\Notification::make()
-                            ->title(__('inventory::landed_cost.notifications.no_pickings'))
-                            ->body(__('inventory::landed_cost.notifications.no_pickings_body'))
-                            ->danger()
+                            ->title(__('inventory::landed_cost.notifications.posted'))
+                            ->success()
                             ->send();
 
-                        return;
+                        return redirect()->route('filament.kezi.inventory.resources.landed-costs.edit', ['record' => $record, 'tenant' => \Filament\Facades\Filament::getTenant()]);
+                    } catch (\Exception $e) {
+                        \Filament\Notifications\Notification::make()
+                            ->title(__('inventory::exceptions.generic_error.title'))
+                            ->body($e->getMessage())
+                            ->persistent()
+                            ->danger()
+                            ->send();
                     }
-
-                    // Get all stock moves from attached pickings
-                    $stockMoves = $record->stockPickings()
-                        ->with('moves.productLines')
-                        ->get()
-                        ->pluck('moves')
-                        ->flatten();
-
-                    // Allocate costs to stock moves
-                    app(AllocateLandedCostsAction::class)->execute($record, $stockMoves);
-
-                    // Post the landed cost
-                    app(PostLandedCostAction::class)->execute($record);
-
-                    \Filament\Notifications\Notification::make()
-                        ->title(__('inventory::landed_cost.notifications.posted'))
-                        ->success()
-                        ->send();
-
-                    return redirect()->route('filament.admin.resources.landed-costs.edit', $record);
                 })
                 ->color('success'),
             Actions\DeleteAction::make(),

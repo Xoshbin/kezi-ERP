@@ -24,7 +24,7 @@ class CreateJournalEntryForStockMoveAction
                 $product = $productLine->product;
 
                 if (! $product) {
-                    throw new RuntimeException("Product not found for product line ID {$productLine->id}");
+                    throw new RuntimeException(__('inventory::exceptions.valuation.product_not_found_for_line', ['line_id' => $productLine->id]));
                 }
 
                 // Create journal entries based on move type

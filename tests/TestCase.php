@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use AllowDynamicProperties;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithTime;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
@@ -70,6 +71,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
  * @method void assertSame($expected, $actual, string $message = '')
  * @method void assertInstanceOf(string $expected, $actual, string $message = '')
  */
+#[AllowDynamicProperties]
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;

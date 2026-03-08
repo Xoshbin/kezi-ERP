@@ -36,7 +36,7 @@ class ShipTransferAction
             $transitLocationId = $picking->transit_location_id;
 
             if (! $transitLocationId) {
-                throw new \RuntimeException('Transfer has no transit location configured.');
+                throw new \RuntimeException(__('inventory::exceptions.transfer.missing_transit_location'));
             }
 
             // Create stock moves from source to transit for each product line
@@ -60,7 +60,7 @@ class ShipTransferAction
                             ),
                         ],
                         reference: "SHIP-{$picking->reference}",
-                        description: "Ship transfer to transit: {$picking->reference}",
+                        description: __('inventory::exceptions.transfer.ship_description', ['reference' => $picking->reference]),
                         source_type: StockPicking::class,
                         source_id: $picking->id,
                     );

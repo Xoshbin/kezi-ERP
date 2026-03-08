@@ -150,7 +150,7 @@ it('provides establishment steps when no bills exist', function () {
     $steps = $service->getEstablishmentSteps($product);
 
     expect($steps)->toBeArray()
-        ->and($steps[0])->toContain('Obtain purchase invoices');
+        ->and($steps[0])->toContain(__('inventory::exceptions.cost_analysis.establishment.obtain_invoices'));
 });
 
 it('provides establishment steps when draft bills exist', function () {
@@ -174,7 +174,7 @@ it('provides establishment steps when draft bills exist', function () {
 
     $steps = $service->getEstablishmentSteps($product);
 
-    expect($steps[0])->toContain('Review the draft vendor bill');
+    expect($steps[0])->toContain(__('inventory::exceptions.cost_analysis.establishment.review_drafts'));
 });
 
 it('provides contextual suggestions correctly', function () {
@@ -192,10 +192,10 @@ it('provides contextual suggestions correctly', function () {
     $suggestions = $service->getContextualCostSuggestions($product);
 
     // Should suggest creating bills since none exist
-    expect($suggestions)->toContain('Create and post a vendor bill for this product to establish purchase cost');
+    expect($suggestions)->toContain(__('inventory::exceptions.cost_analysis.create_bill'));
 
     // Also since not ready, should contain establishment steps
-    expect($suggestions)->toContain('1. Obtain purchase invoices from your supplier for this product');
+    expect($suggestions)->toContain(__('inventory::exceptions.cost_analysis.establishment.obtain_invoices'));
 });
 
 it('provides cost status explanation for AVCO', function () {
@@ -211,6 +211,6 @@ it('provides cost status explanation for AVCO', function () {
 
     $explanation = $service->getCostStatusExplanation($product);
 
-    expect($explanation)->toContain('Using AVCO valuation method')
-        ->toContain('No vendor bills found');
+    expect($explanation)->toContain(__('inventory::exceptions.cost_analysis.explanation.avco'))
+        ->toContain(__('inventory::exceptions.cost_analysis.explanation.no_bills'));
 });

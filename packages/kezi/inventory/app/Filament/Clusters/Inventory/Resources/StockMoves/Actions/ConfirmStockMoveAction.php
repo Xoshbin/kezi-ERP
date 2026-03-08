@@ -25,13 +25,13 @@ class ConfirmStockMoveAction extends Action
     {
         parent::setUp();
 
-        $this->label(__('Confirm Movement'))
+        $this->label(__('inventory::stock_move.actions.confirm'))
             ->icon('heroicon-o-check-circle')
             ->color('success')
             ->requiresConfirmation()
-            ->modalHeading(__('Confirm Stock Movement'))
-            ->modalDescription(__('Are you sure you want to confirm this stock movement? This will process the inventory changes and cannot be undone.'))
-            ->modalSubmitActionLabel(__('Confirm Movement'))
+            ->modalHeading(__('inventory::stock_move.actions.confirm_modal_heading'))
+            ->modalDescription(__('inventory::stock_move.actions.confirm_modal_description'))
+            ->modalSubmitActionLabel(__('inventory::stock_move.actions.confirm'))
             ->visible(
                 fn (Model $record): bool => $record instanceof StockMove && $record->status === StockMoveStatus::Draft
             )
@@ -51,8 +51,8 @@ class ConfirmStockMoveAction extends Action
             app(ConfirmStockMoveActionClass::class)->execute($dto);
 
             Notification::make()
-                ->title(__('Movement Confirmed'))
-                ->body(__('The stock movement has been confirmed successfully. Inventory quantities have been updated.'))
+                ->title(__('inventory::stock_move.notifications.confirmed'))
+                ->body(__('inventory::stock_move.notifications.confirmed_body'))
                 ->success()
                 ->send();
 
@@ -77,7 +77,7 @@ class ConfirmStockMoveAction extends Action
             ->persistent()
             ->actions([
                 Action::make('create_vendor_bill')
-                    ->label(__('Create Vendor Bill'))
+                    ->label(__('inventory::exceptions.cost_validation_errors.notifications.create_vendor_bill'))
                     ->button()
                     ->url(route('filament.kezi.accounting.resources.vendor-bills.create', ['tenant' => Filament::getTenant()]))
                     ->openUrlInNewTab(),
@@ -88,8 +88,9 @@ class ConfirmStockMoveAction extends Action
     protected function handleGenericError(Exception $exception): void
     {
         Notification::make()
-            ->title(__('Error Confirming Movement'))
-            ->body(__('An unexpected error occurred while confirming the stock movement. Please try again or contact support.'))
+            ->title(__('inventory::exceptions.generic_error.title'))
+            ->body($exception->getMessage() ?: __('inventory::exceptions.generic_error.body'))
+            ->persistent()
             ->danger()
             ->send();
 

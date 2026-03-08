@@ -39,13 +39,12 @@ class ValidateGoodsReceiptAction
 
             // Validate picking can be validated
             if (! $picking->isGoodsReceipt()) {
-                throw new \InvalidArgumentException('Only receipt pickings can be validated as goods receipts.');
+                throw new \InvalidArgumentException(__('inventory::exceptions.grn.only_receipt_validated'));
             }
 
             if ($picking->isDone() || $picking->isCancelled()) {
-                throw new \InvalidArgumentException('Cannot validate a picking that is already done or cancelled.');
+                throw new \InvalidArgumentException(__('inventory::exceptions.grn.cannot_validate_done_cancelled'));
             }
-
             $receivedLines = [];
             $backorderItems = [];
 
@@ -151,7 +150,7 @@ class ValidateGoodsReceiptAction
             'partner_id' => $originalPicking->partner_id,
             'purchase_order_id' => $originalPicking->purchase_order_id,
             'scheduled_date' => now(),
-            'origin' => ($originalPicking->reference ?? $originalPicking->origin).' (Backorder)',
+            'origin' => ($originalPicking->reference ?? $originalPicking->origin).__('inventory::exceptions.grn.backorder_origin_suffix'),
             'reference' => ($originalPicking->reference ?? 'GRN').'-BO-'.rand(100, 999),
             'created_by_user_id' => $userId,
         ]);

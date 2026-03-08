@@ -143,7 +143,7 @@ class ValidateStockPicking extends Page
     protected function processValidation(array $data, bool $createBackorder): void
     {
         if (empty($data['moves'])) {
-            Notification::make()->title(__('inventory::stock_picking.notifications.error'))->body(__('inventory::stock_picking.notifications.no_lines_to_validate'))->danger()->send();
+            Notification::make()->title(__('inventory::stock_picking.notifications.error'))->body(__('inventory::stock_picking.notifications.no_lines_to_validate'))->danger()->persistent()->send();
 
             return;
         }
@@ -160,10 +160,25 @@ class ValidateStockPicking extends Page
                 ->title(__('inventory::stock_picking.notifications.error'))
                 ->body(implode("\n", $e->validator->errors()->all()))
                 ->danger()
+                ->persistent()
+                ->send();
+        } catch (\Kezi\Inventory\Exceptions\Inventory\InsufficientCostInformationException $e) {
+            Notification::make()
+                ->title(__('inventory::exceptions.cost_validation_errors.title'))
+                ->body($e->getUserFriendlyMessage())
+                ->danger()
+                ->persistent()
+                ->actions([
+                    \Filament\Actions\Action::make('create_vendor_bill')
+                        ->label(__('inventory::exceptions.cost_validation_errors.notifications.create_vendor_bill'))
+                        ->button()
+                        ->url(route('filament.kezi.accounting.resources.vendor-bills.create', ['tenant' => \Filament\Facades\Filament::getTenant()]))
+                        ->openUrlInNewTab(),
+                ])
                 ->send();
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Validation Exception: '.$e->getMessage());
-            Notification::make()->title(__('inventory::stock_picking.notifications.error'))->body($e->getMessage())->danger()->send();
+            Notification::make()->title(__('inventory::stock_picking.notifications.error'))->body($e->getMessage())->danger()->persistent()->send();
         }
     }
 }

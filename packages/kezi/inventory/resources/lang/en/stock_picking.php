@@ -103,5 +103,13 @@ return [
         'assigned_body' => 'The picking has been assigned successfully. Stock has been reserved and lots have been allocated.',
         'failed_to_assign' => 'Failed to assign picking: :error',
         'no_lines_to_validate' => 'No lines to validate.',
+        'confirmed' => 'Picking Confirmed',
+        'confirmed_body' => 'The picking has been confirmed successfully. All stock moves are now confirmed.',
+        'cancelled' => 'Picking Cancelled',
+        'cancelled_body' => 'The picking has been cancelled successfully. All reservations have been released.',
+        'confirm_description' => 'Are you sure you want to confirm this picking? This will confirm all associated stock moves.',
+        'cancel_description' => 'Are you sure you want to cancel this picking? This will cancel all associated stock moves and release any reservations.',
+        'failed_to_confirm' => 'Failed to confirm picking: :error',
+        'failed_to_cancel' => 'Failed to cancel picking: :error',
     ],
 ];

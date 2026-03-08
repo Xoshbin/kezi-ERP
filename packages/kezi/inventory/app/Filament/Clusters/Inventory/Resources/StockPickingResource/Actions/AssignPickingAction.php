@@ -185,6 +185,7 @@ class AssignPickingAction extends Action
             Notification::make()
                 ->title(__('inventory::stock_picking.notifications.error'))
                 ->body(__('inventory::stock_picking.notifications.failed_to_assign', ['error' => $e->getMessage()]))
+                ->persistent()
                 ->danger()
                 ->send();
         }

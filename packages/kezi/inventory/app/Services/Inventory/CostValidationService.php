@@ -33,7 +33,7 @@ class CostValidationService
 
         // Only validate for incoming moves (outgoing moves use different logic)
         if ($moveType !== StockMoveType::Incoming) {
-            return CostValidationResult::success('Cost validation not required for this move type');
+            return CostValidationResult::success(__('inventory::exceptions.cost_validation_errors.validation_not_required'));
         }
 
         // Create a temporary stock move for validation if none provided
@@ -53,7 +53,7 @@ class CostValidationService
             );
 
             return CostValidationResult::success(
-                'Cost can be determined',
+                __('inventory::exceptions.cost_validation_errors.cost_available'),
                 $costResult
             );
         } catch (InsufficientCostInformationException $e) {
@@ -87,7 +87,7 @@ class CostValidationService
 
         $costResult = $validation->getCostResult();
         if (! $costResult) {
-            return CostPreviewResult::invalid('No cost result available');
+            return CostPreviewResult::invalid(__('inventory::exceptions.cost_validation_errors.no_result'));
         }
 
         $totalCost = $costResult->cost->multipliedBy($quantity);
