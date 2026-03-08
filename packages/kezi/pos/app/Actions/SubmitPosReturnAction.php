@@ -12,7 +12,7 @@ class SubmitPosReturnAction
     {
         return DB::transaction(function () use ($return) {
             if ($return->status !== PosReturnStatus::Draft) {
-                throw new \InvalidArgumentException('Only draft returns can be submitted');
+                throw new \InvalidArgumentException(__('pos::exceptions.pos_return.only_draft_can_be_submitted'));
             }
 
             // Determine next status based on approval requirement

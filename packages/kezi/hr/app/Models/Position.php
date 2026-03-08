@@ -218,7 +218,7 @@ class Position extends Model
         }
 
         if (! $this->salaryCurrency) {
-            throw new RuntimeException('Position salary currency not found');
+            throw new RuntimeException(__('hr::exceptions.position.salary_currency_not_found'));
         }
 
         if ($this->min_salary && $this->max_salary) {
@@ -227,14 +227,14 @@ class Position extends Model
         }
 
         if ($this->min_salary) {
-            return 'From '.$this->min_salary->formatTo($this->salaryCurrency->code);
+            return __('hr::exceptions.position.from', ['amount' => $this->min_salary->formatTo($this->salaryCurrency->code)]);
         }
 
         if (! $this->max_salary) {
-            throw new RuntimeException('Position max salary not found');
+            throw new RuntimeException(__('hr::exceptions.position.max_salary_not_found'));
         }
 
-        return 'Up to '.$this->max_salary->formatTo($this->salaryCurrency->code);
+        return __('hr::exceptions.position.up_to', ['amount' => $this->max_salary->formatTo($this->salaryCurrency->code)]);
     }
 
     /**

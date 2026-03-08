@@ -38,6 +38,19 @@ class ViewQuote extends ViewRecord
                         ->send();
 
                     $this->refreshFormData(['status']);
+                })
+                ->failureNotification(function (\Exception $e) {
+                    return Notification::make()
+                        ->danger()
+                        ->title(__('sales::quote.notifications.send_failed'))
+                        ->body($e->getMessage())
+                        ->persistent()
+                        ->actions([
+                            \Filament\Actions\Action::make('edit_quote')
+                                ->label(__('sales::exceptions.actions.edit_quote'))
+                                ->button()
+                                ->url(fn ($record) => QuoteResource::getUrl('edit', ['record' => $record])),
+                        ]);
                 }),
 
             Action::make('accept')
@@ -98,6 +111,18 @@ class ViewQuote extends ViewRecord
                         ->send();
 
                     $this->refreshFormData(['status', 'converted_to_sales_order_id']);
+                })->failureNotification(function (\Exception $e) {
+                    return Notification::make()
+                        ->danger()
+                        ->title(__('sales::quote.notifications.conversion_failed'))
+                        ->body($e->getMessage())
+                        ->persistent()
+                        ->actions([
+                            \Filament\Actions\Action::make('edit_quote')
+                                ->label(__('sales::exceptions.actions.edit_quote'))
+                                ->button()
+                                ->url(fn ($record) => QuoteResource::getUrl('edit', ['record' => $record])),
+                        ]);
                 }),
 
             Action::make('convert_to_invoice')
@@ -116,6 +141,19 @@ class ViewQuote extends ViewRecord
                         ->send();
 
                     $this->refreshFormData(['status', 'converted_to_invoice_id']);
+                })->failureNotification(function (\Exception $e) {
+                    return Notification::make()
+                        ->danger()
+                        ->title(__('sales::quote.notifications.conversion_failed'))
+                        ->body($e->getMessage())
+                        ->persistent()
+                        ->actions([
+                            \Filament\Actions\Action::make('view_invoices')
+                                ->label(__('sales::exceptions.actions.view_invoices'))
+                                ->button()
+                                ->url(\Kezi\Accounting\Filament\Clusters\Accounting\Resources\Invoices\InvoiceResource::getUrl('index'))
+                                ->openUrlInNewTab(),
+                        ]);
                 }),
 
             Action::make('create_revision')

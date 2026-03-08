@@ -26,7 +26,7 @@ class CreateQuoteRevisionAction
         // Validate quote can have a revision created
         if (! $originalQuote->status->canCreateRevision()) {
             throw new QuoteCannotBeModifiedException(
-                'Only sent or rejected quotes can have revisions created.'
+                __('sales::exceptions.quote.revision_sent_rejected_only')
             );
         }
 

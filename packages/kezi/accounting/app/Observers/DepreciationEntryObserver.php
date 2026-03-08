@@ -10,14 +10,14 @@ class DepreciationEntryObserver
     public function updating(DepreciationEntry $depreciationEntry): void
     {
         if ($depreciationEntry->getOriginal('status') === DepreciationEntryStatus::Posted) {
-            throw new \Kezi\Foundation\Exceptions\UpdateNotAllowedException('Posted depreciation entries cannot be updated.');
+            throw new \Kezi\Foundation\Exceptions\UpdateNotAllowedException(__('accounting::exceptions.asset.posted_depreciation_cannot_be_updated'));
         }
     }
 
     public function deleting(DepreciationEntry $depreciationEntry): void
     {
         if ($depreciationEntry->status === DepreciationEntryStatus::Posted) {
-            throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException('Posted depreciation entries cannot be deleted.');
+            throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException(__('accounting::exceptions.asset.posted_depreciation_cannot_be_deleted'));
         }
     }
 }

@@ -335,7 +335,7 @@ class Partner extends Model
             $this->loadMissing('company.currency');
 
             if (! $this->company?->currency) {
-                throw new RuntimeException('Partner company or currency not found');
+                throw new RuntimeException(__('foundation::exceptions.partner.company_or_currency_not_found'));
             }
 
             return Money::of(0, $this->company->currency->code);
@@ -344,7 +344,7 @@ class Partner extends Model
         $this->loadMissing('company.currency');
 
         if (! $this->company?->currency) {
-            throw new RuntimeException('Partner company or currency not found');
+            throw new RuntimeException(__('foundation::exceptions.partner.company_or_currency_not_found'));
         }
 
         /** @var Collection<int, Invoice> $invoices */
@@ -369,7 +369,7 @@ class Partner extends Model
             $this->loadMissing('company.currency');
 
             if (! $this->company?->currency) {
-                throw new RuntimeException('Partner company or currency not found');
+                throw new RuntimeException(__('foundation::exceptions.partner.company_or_currency_not_found'));
             }
 
             return Money::of(0, $this->company->currency->code);
@@ -378,7 +378,7 @@ class Partner extends Model
         $this->loadMissing('company.currency');
 
         if (! $this->company?->currency) {
-            throw new RuntimeException('Partner company or currency not found');
+            throw new RuntimeException(__('foundation::exceptions.partner.company_or_currency_not_found'));
         }
 
         /** @var Collection<int, VendorBill> $vendorBills */
@@ -403,7 +403,7 @@ class Partner extends Model
             $this->loadMissing('company.currency');
 
             if (! $this->company?->currency) {
-                throw new RuntimeException('Partner company or currency not found');
+                throw new RuntimeException(__('foundation::exceptions.partner.company_or_currency_not_found'));
             }
 
             return Money::of(0, $this->company->currency->code);
@@ -412,7 +412,7 @@ class Partner extends Model
         $this->loadMissing('company.currency');
 
         if (! $this->company?->currency) {
-            throw new RuntimeException('Partner company or currency not found');
+            throw new RuntimeException(__('foundation::exceptions.partner.company_or_currency_not_found'));
         }
 
         /** @var Collection<int, Invoice> $overdueInvoices */
@@ -438,7 +438,7 @@ class Partner extends Model
             $this->loadMissing('company.currency');
 
             if (! $this->company?->currency) {
-                throw new RuntimeException('Partner company or currency not found');
+                throw new RuntimeException(__('foundation::exceptions.partner.company_or_currency_not_found'));
             }
 
             return Money::of(0, $this->company->currency->code);
@@ -447,7 +447,7 @@ class Partner extends Model
         $this->loadMissing('company.currency');
 
         if (! $this->company?->currency) {
-            throw new RuntimeException('Partner company or currency not found');
+            throw new RuntimeException(__('foundation::exceptions.partner.company_or_currency_not_found'));
         }
 
         /** @var Collection<int, VendorBill> $overdueBills */
@@ -500,7 +500,7 @@ class Partner extends Model
         $this->loadMissing('company.currency');
 
         if (! $this->company?->currency) {
-            throw new RuntimeException('Partner company or currency not found');
+            throw new RuntimeException(__('foundation::exceptions.partner.company_or_currency_not_found'));
         }
 
         $invoiceTotal = $this->invoices()
@@ -532,7 +532,7 @@ class Partner extends Model
             $this->loadMissing('company.currency');
 
             if (! $this->company?->currency) {
-                throw new RuntimeException('Partner company or currency not found');
+                throw new RuntimeException(__('foundation::exceptions.partner.company_or_currency_not_found'));
             }
 
             return Money::of(0, $this->company->currency->code);
@@ -541,7 +541,7 @@ class Partner extends Model
         $this->loadMissing('company.currency');
 
         if (! $this->company?->currency) {
-            throw new RuntimeException('Partner company or currency not found');
+            throw new RuntimeException(__('foundation::exceptions.partner.company_or_currency_not_found'));
         }
 
         $dueDate = Carbon::today()->addDays($days);
@@ -570,7 +570,7 @@ class Partner extends Model
             $this->loadMissing('company.currency');
 
             if (! $this->company?->currency) {
-                throw new RuntimeException('Partner company or currency not found');
+                throw new RuntimeException(__('foundation::exceptions.partner.company_or_currency_not_found'));
             }
 
             return Money::of(0, $this->company->currency->code);
@@ -579,7 +579,7 @@ class Partner extends Model
         $this->loadMissing('company.currency');
 
         if (! $this->company?->currency) {
-            throw new RuntimeException('Partner company or currency not found');
+            throw new RuntimeException(__('foundation::exceptions.partner.company_or_currency_not_found'));
         }
 
         $dueDate = Carbon::today()->addDays($days);
@@ -624,7 +624,7 @@ class Partner extends Model
         $this->loadMissing('company.currency');
 
         if (! $this->company?->currency) {
-            throw new RuntimeException('Partner company or currency not found');
+            throw new RuntimeException(__('foundation::exceptions.partner.company_or_currency_not_found'));
         }
 
         $startOfMonth = Carbon::now()->startOfMonth();

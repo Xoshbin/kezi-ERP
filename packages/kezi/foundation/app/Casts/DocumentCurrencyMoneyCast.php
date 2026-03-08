@@ -38,7 +38,7 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             if ($currency instanceof Collection) {
                 $currency = $currency->first();
                 if (! $currency) {
-                    throw new InvalidArgumentException('Currency collection is empty');
+                    throw new InvalidArgumentException(__('foundation::exceptions.cast.empty_currency'));
                 }
             }
 
@@ -156,52 +156,52 @@ class DocumentCurrencyMoneyCast extends MoneyCast
         if (method_exists($model, 'invoice') && $model->getAttribute('invoice_id')) {
             $invoice = $model->invoice()->with('currency')->first();
 
-            return $invoice->currency ?? throw new InvalidArgumentException('Invoice currency not found');
+            return $invoice->currency ?? throw new InvalidArgumentException(__('foundation::exceptions.cast.invoice_currency_not_found'));
         }
         if (method_exists($model, 'vendorBill') && $model->getAttribute('vendor_bill_id')) {
             $vendorBill = $model->vendorBill()->with('currency')->first();
 
-            return $vendorBill->currency ?? throw new InvalidArgumentException('Vendor bill currency not found');
+            return $vendorBill->currency ?? throw new InvalidArgumentException(__('foundation::exceptions.cast.vendor_bill_currency_not_found'));
         }
         if (method_exists($model, 'adjustmentDocument') && $model->getAttribute('adjustment_document_id')) {
             $adj = $model->adjustmentDocument()->with('currency')->first();
 
-            return $adj->currency ?? throw new InvalidArgumentException('Adjustment document currency not found');
+            return $adj->currency ?? throw new InvalidArgumentException(__('foundation::exceptions.cast.adjustment_document_currency_not_found'));
         }
         if (method_exists($model, 'payment') && $model->getAttribute('payment_id')) {
             $payment = $model->payment()->with('currency')->first();
 
-            return $payment->currency ?? throw new InvalidArgumentException('Payment currency not found');
+            return $payment->currency ?? throw new InvalidArgumentException(__('foundation::exceptions.cast.payment_currency_not_found'));
         }
         if (method_exists($model, 'bankStatement') && $model->getAttribute('bank_statement_id')) {
             $stmt = $model->bankStatement()->with('currency')->first();
 
-            return $stmt->currency ?? throw new InvalidArgumentException('Bank statement currency not found');
+            return $stmt->currency ?? throw new InvalidArgumentException(__('foundation::exceptions.cast.bank_statement_currency_not_found'));
         }
         if (method_exists($model, 'loan') && $model->getAttribute('loan_id')) {
             $loan = $model->loan()->with('currency')->first();
 
-            return $loan->currency ?? throw new InvalidArgumentException('Loan currency not found');
+            return $loan->currency ?? throw new InvalidArgumentException(__('foundation::exceptions.cast.loan_currency_not_found'));
         }
         if (method_exists($model, 'purchaseOrder') && $model->getAttribute('purchase_order_id')) {
             $purchaseOrder = $model->purchaseOrder()->with('currency')->first();
 
-            return $purchaseOrder->currency ?? throw new InvalidArgumentException('Purchase order currency not found');
+            return $purchaseOrder->currency ?? throw new InvalidArgumentException(__('foundation::exceptions.cast.purchase_order_currency_not_found'));
         }
         if (method_exists($model, 'salesOrder') && $model->getAttribute('sales_order_id')) {
             $salesOrder = $model->salesOrder()->with('currency')->first();
 
-            return $salesOrder->currency ?? throw new InvalidArgumentException('Sales order currency not found');
+            return $salesOrder->currency ?? throw new InvalidArgumentException(__('foundation::exceptions.cast.sales_order_currency_not_found'));
         }
         if (method_exists($model, 'quote') && $model->getAttribute('quote_id')) {
             $quote = $model->quote()->with('currency')->first();
 
-            return $quote->currency ?? throw new InvalidArgumentException('Quote currency not found');
+            return $quote->currency ?? throw new InvalidArgumentException(__('foundation::exceptions.cast.quote_currency_not_found'));
         }
         if (method_exists($model, 'installmentable') && $model->getAttribute('installment_id')) {
             $parent = $model->installmentable()->with('currency')->first();
 
-            return $parent->currency ?? throw new InvalidArgumentException('Installmentable currency not found');
+            return $parent->currency ?? throw new InvalidArgumentException(__('foundation::exceptions.cast.installmentable_currency_not_found'));
         }
         // Some models expose a direct currency() relationship (e.g., PaymentDocumentLink)
         if (method_exists($model, 'currency')) {
@@ -211,7 +211,7 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             }
         }
 
-        throw new InvalidArgumentException('Could not resolve document currency for model '.get_class($model).'. Please ensure the model has a valid parent document relationship.');
+        throw new InvalidArgumentException(__('foundation::exceptions.cast.resolve_document_currency', ['class' => get_class($model)]));
     }
 
     /**
@@ -273,6 +273,6 @@ class DocumentCurrencyMoneyCast extends MoneyCast
             return [$key => $money->getMinorAmount()->toInt()];
         }
 
-        throw new InvalidArgumentException('Invalid value for MoneyCast: must be numeric or Money instance.');
+        throw new InvalidArgumentException(__('foundation::exceptions.cast.invalid_money_value'));
     }
 }

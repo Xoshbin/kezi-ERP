@@ -23,13 +23,13 @@ class CancelPickingAction extends Action
     {
         parent::setUp();
 
-        $this->label(__('Cancel'))
+        $this->label(__('inventory::stock_picking.states.cancelled'))
             ->icon('heroicon-o-x-circle')
             ->color('danger')
             ->requiresConfirmation()
-            ->modalHeading(__('Cancel Picking'))
-            ->modalDescription(__('Are you sure you want to cancel this picking? This will cancel all associated stock moves and release any reservations.'))
-            ->modalSubmitActionLabel(__('Cancel'))
+            ->modalHeading(__('inventory::stock_picking.notifications.cancelled'))
+            ->modalDescription(__('inventory::stock_picking.notifications.cancel_description'))
+            ->modalSubmitActionLabel(__('inventory::stock_picking.states.cancelled'))
             ->action(function (Model $record) {
                 /** @var StockPicking $record */
                 $this->cancelPicking($record);
@@ -63,8 +63,8 @@ class CancelPickingAction extends Action
             });
 
             Notification::make()
-                ->title(__('Picking Cancelled'))
-                ->body(__('The picking has been cancelled successfully. All reservations have been released.'))
+                ->title(__('inventory::stock_picking.notifications.cancelled'))
+                ->body(__('inventory::stock_picking.notifications.cancelled_body'))
                 ->success()
                 ->send();
 
@@ -72,8 +72,9 @@ class CancelPickingAction extends Action
             $this->getLivewire()->redirect(request()->url());
         } catch (Exception $e) {
             Notification::make()
-                ->title(__('Error'))
-                ->body(__('Failed to cancel picking: :error', ['error' => $e->getMessage()]))
+                ->title(__('inventory::stock_picking.notifications.error'))
+                ->body(__('inventory::stock_picking.notifications.failed_to_cancel', ['error' => $e->getMessage()]))
+                ->persistent()
                 ->danger()
                 ->send();
         }

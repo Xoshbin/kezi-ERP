@@ -30,7 +30,7 @@ class ScrapManufacturingAction
             ->first();
 
         if (! $scrapLocation) {
-            throw new Exception("No Scrap location found for company {$company->name}. Please configure one.");
+            throw new Exception(__('manufacturing::exceptions.order.no_scrap_location', ['company' => $company->name]));
         }
 
         DB::transaction(function () use ($manufacturingOrder, $items, $scrapLocation) {

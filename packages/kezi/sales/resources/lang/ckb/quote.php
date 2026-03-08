@@ -76,6 +76,11 @@ return [
         'converted_to_invoice' => 'تەرسیمە گۆڕدرا بۆ وەسڵ',
         'revision_created' => 'وەشانی نوێ دروستکرا',
         'duplicated' => 'تەرسیمە بە سەرکەوتوویی لەبەرگیرایەوە',
+        'delivery_creation_failed' => 'دروستکردنی گەیاندن سەرکەوتوو نەبوو',
+        'update_not_allowed' => 'نوێکردنەوە ڕێگەپێدراو نییە',
+        'confirmation_failed' => 'پشتڕاستکردنەوەی فەرمانی فرۆشتن سەرکەوتوو نەبوو',
+        'send_failed' => 'ناردنی تەرسیمە سەرکەوتوو نەبوو',
+        'conversion_failed' => 'گۆڕینی تەرسیمە سەرکەوتوو نەبوو',
     ],
     'sections' => [
         'basic_info' => 'زانیاری سەرەتایی',

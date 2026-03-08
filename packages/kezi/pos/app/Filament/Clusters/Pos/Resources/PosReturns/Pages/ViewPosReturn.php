@@ -74,6 +74,7 @@ class ViewPosReturn extends ViewRecord
                             ->danger()
                             ->title(__('pos::pos_return.notification.process_failed'))
                             ->body($e->getMessage())
+                            ->persistent()
                             ->send();
                     }
                 }),

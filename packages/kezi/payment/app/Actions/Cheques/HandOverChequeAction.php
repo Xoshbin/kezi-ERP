@@ -21,11 +21,11 @@ class HandOverChequeAction
     public function execute(Cheque $cheque, User $user): void
     {
         if ($cheque->type !== ChequeType::Payable) {
-            throw new \InvalidArgumentException('Only payable cheques can be handed over.');
+            throw new \InvalidArgumentException(__('payment::exceptions.cheque.payable_only_for_handover'));
         }
 
         if (! in_array($cheque->status, [ChequeStatus::Draft, ChequeStatus::Printed])) {
-            throw new \DomainException('Cheque must be in Draft or Printed status to be handed over.');
+            throw new \DomainException(__('payment::exceptions.cheque.must_be_draft_or_printed_for_handover'));
         }
 
         $this->lockDateService->enforce($cheque->company, Carbon::now());

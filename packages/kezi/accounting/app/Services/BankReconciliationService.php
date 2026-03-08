@@ -66,7 +66,7 @@ class BankReconciliationService
         }
 
         if ($lines->isEmpty() && $payments->isEmpty()) {
-            throw new InvalidArgumentException('No items selected for reconciliation.');
+            throw new InvalidArgumentException(__('accounting::exceptions.bank_reconciliation.no_items_selected'));
         }
 
         // **THIS IS THE CRITICAL NEW VALIDATION STEP**
@@ -74,7 +74,8 @@ class BankReconciliationService
         foreach ($payments as $payment) {
             $company = $payment->company;
             if (! $company->default_bank_account_id || ! $company->default_outstanding_receipts_account_id) {
-                throw new RuntimeException("Company '{$company->name}' is missing default bank or outstanding accounts configuration.");
+                $url = \App\Filament\Clusters\Settings\Resources\Companies\CompanyResource::getUrl('edit', ['record' => $company]);
+                throw new RuntimeException(__('accounting::exceptions.bank_reconciliation.missing_config', ['company' => $company->name, 'url' => $url]));
             }
         }
 
@@ -136,7 +137,7 @@ class BankReconciliationService
             // Validate that totals match using proper Money arithmetic
             $firstBankLine = $bankLines->first();
             if (! $firstBankLine) {
-                throw new Exception('No bank lines provided for reconciliation');
+                throw new Exception(__('accounting::exceptions.bank_reconciliation.no_bank_lines'));
             }
             $currency = $firstBankLine->bankStatement->currency;
             $bankTotal = Money::of(0, $currency->code);
@@ -162,7 +163,7 @@ class BankReconciliationService
             }
 
             if (! $bankTotal->isEqualTo($paymentTotal)) {
-                throw new RuntimeException('Bank statement lines total does not match payments total');
+                throw new RuntimeException(__('accounting::exceptions.bank_reconciliation.totals_mismatch'));
             }
 
             // Update all bank statement lines

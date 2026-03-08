@@ -50,7 +50,7 @@ class CreateJournalEntryForManufacturingAction
             $manufacturingJournalId = $company->default_manufacturing_journal_id;
 
             if (! $finishedGoodsAccountId || ! $wipAccountId || ! $manufacturingJournalId) {
-                throw new RuntimeException('Manufacturing accounts (Finished Goods, WIP, Manufacturing Journal) are not configured for this company.');
+                throw new RuntimeException(__('manufacturing::exceptions.order.manufacturing_accounts_not_configured', ['company' => $company->name]));
             }
 
             $lineDTOs = [];
@@ -95,7 +95,7 @@ class CreateJournalEntryForManufacturingAction
             // Credit Overhead Account if applicable
             if (! $totalOverheadCost->isZero()) {
                 if (! $overheadAccountId) {
-                    throw new RuntimeException('Manufacturing Overhead account is not configured but overhead costs were calculated.');
+                    throw new RuntimeException(__('manufacturing::exceptions.order.overhead_account_not_configured', ['company' => $company->name]));
                 }
 
                 $lineDTOs[] = new CreateJournalEntryLineDTO(

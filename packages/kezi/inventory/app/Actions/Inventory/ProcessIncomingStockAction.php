@@ -46,7 +46,7 @@ class ProcessIncomingStockAction
 
         $product = $productLine->product;
         if (! $product instanceof Product) {
-            throw new Exception('Product not found for product line');
+            throw new Exception(__('inventory::exceptions.stock.product_not_found'));
         }
 
         $sourceDocument = $stockMove->source;
@@ -149,7 +149,10 @@ class ProcessIncomingStockAction
             ->first();
 
         if (! ($line instanceof VendorBillLine)) {
-            throw new Exception("No vendor bill line found for product {$productLine->product_id} in vendor bill {$vendorBill->getKey()}");
+            throw new Exception(__('inventory::exceptions.stock.no_vendor_bill_line', [
+                'product_id' => $productLine->product_id,
+                'vendor_bill_id' => $vendorBill->getKey(),
+            ]));
         }
 
         $unitPrice = $line->unit_price;

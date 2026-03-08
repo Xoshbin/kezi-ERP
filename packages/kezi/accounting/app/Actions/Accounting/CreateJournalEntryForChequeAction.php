@@ -26,7 +26,7 @@ class CreateJournalEntryForChequeAction
                 'handover' => $this->getHandoverLines($cheque), // Payable only
                 'deposit' => $this->getDepositLines($cheque),   // Receivable only
                 'clear' => $this->getClearLines($cheque),       // Both
-                default => throw new \InvalidArgumentException("Invalid context: $context"),
+                default => throw new \InvalidArgumentException(__('accounting::exceptions.cheque.invalid_context', ['context' => $context])),
             };
 
             if (empty($linesData)) {
@@ -80,14 +80,14 @@ class CreateJournalEntryForChequeAction
     private function getHandoverLines(Cheque $cheque): array
     {
         if ($cheque->type !== ChequeType::Payable) {
-            throw new \InvalidArgumentException('Handover is only for Payable cheques.');
+            throw new \InvalidArgumentException(__('accounting::exceptions.cheque.handover_only_payable'));
         }
 
         $company = $cheque->company;
         $payableAccount = $company->defaultPdcPayableAccount;
 
         if (! $payableAccount) {
-            throw new \RuntimeException('Default PDC Payable Account not configured.');
+            throw new \RuntimeException(__('accounting::exceptions.cheque.default_pdc_payable_missing'));
         }
 
         // Dr. AP (Partner)
@@ -112,14 +112,14 @@ class CreateJournalEntryForChequeAction
     private function getDepositLines(Cheque $cheque): array
     {
         if ($cheque->type !== ChequeType::Receivable) {
-            throw new \InvalidArgumentException('Deposit is only for Receivable cheques.');
+            throw new \InvalidArgumentException(__('accounting::exceptions.cheque.deposit_only_receivable'));
         }
 
         $company = $cheque->company;
         $pdcReceivableAccount = $company->defaultPdcReceivableAccount; // "Cheques in Collection"
 
         if (! $pdcReceivableAccount) {
-            throw new \RuntimeException('Default PDC Receivable Account not configured.');
+            throw new \RuntimeException(__('accounting::exceptions.cheque.default_pdc_receivable_missing'));
         }
 
         // Dr. Cheques in Collection
@@ -147,14 +147,14 @@ class CreateJournalEntryForChequeAction
         $bankAccountId = $cheque->journal->default_debit_account_id; // The specific bank account
 
         if (! $bankAccountId) {
-            throw new \RuntimeException('Journal default debit account not configured.');
+            throw new \RuntimeException(__('accounting::exceptions.common.journal_default_debit_account_missing'));
         }
 
         if ($cheque->type === ChequeType::Payable) {
 
             $payableAccount = $company->defaultPdcPayableAccount;
             if (! $payableAccount) {
-                throw new \RuntimeException('Default PDC Payable Account not configured.');
+                throw new \RuntimeException(__('accounting::exceptions.cheque.default_pdc_payable_missing'));
             }
 
             // Dr. Outstanding Cheques Payable
@@ -182,7 +182,7 @@ class CreateJournalEntryForChequeAction
 
             $pdcReceivableAccount = $company->defaultPdcReceivableAccount;
             if (! $pdcReceivableAccount) {
-                throw new \RuntimeException('Default PDC Receivable Account not configured.');
+                throw new \RuntimeException(__('accounting::exceptions.cheque.default_pdc_receivable_missing'));
             }
 
             return [

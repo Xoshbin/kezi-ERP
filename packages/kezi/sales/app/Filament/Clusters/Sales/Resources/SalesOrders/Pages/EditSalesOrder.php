@@ -34,7 +34,7 @@ class EditSalesOrder extends EditRecord
                     try {
                         $user = auth()->user();
                         if (! $user) {
-                            throw new \Exception('User must be authenticated to confirm sales order');
+                            throw new \Exception(__('sales::exceptions.sales_order.user_not_authenticated'));
                         }
                         app(ConfirmSalesOrderAction::class)->execute($record, $user);
 
@@ -46,9 +46,17 @@ class EditSalesOrder extends EditRecord
                         $this->refreshFormData(['status']);
                     } catch (\Exception $e) {
                         \Filament\Notifications\Notification::make()
-                            ->title(__('sales::sales_orders.form.error'))
+                            ->title(__('sales::sales_orders.notifications.confirmation_failed'))
                             ->body($e->getMessage())
                             ->danger()
+                            ->persistent()
+                            ->actions([
+                                \Filament\Actions\Action::make('view_journals')
+                                    ->label(__('sales::exceptions.actions.view_journals'))
+                                    ->button()
+                                    ->url(\Kezi\Accounting\Filament\Clusters\Accounting\Resources\Journals\JournalResource::getUrl('index'))
+                                    ->openUrlInNewTab(),
+                            ])
                             ->send();
                     }
                 })
@@ -117,7 +125,7 @@ class EditSalesOrder extends EditRecord
     protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
     {
         if (! $record instanceof SalesOrder) {
-            throw new \InvalidArgumentException('Expected SalesOrder record');
+            throw new \InvalidArgumentException(__('sales::exceptions.sales_order.expected_record'));
         }
 
         // Create line DTOs from form data

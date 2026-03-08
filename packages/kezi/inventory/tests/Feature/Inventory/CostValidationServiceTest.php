@@ -155,7 +155,7 @@ it('provides appropriate suggested actions', function () {
     $suggestions = $this->costValidationService->getSuggestedActions($product);
 
     // Assert: Should include relevant suggestions
-    expect($suggestions)->toContain('Average cost is calculated automatically from posted vendor bills - no manual entry needed');
-    expect($suggestions)->toContain('Create and post a vendor bill for this product to establish purchase cost');
-    expect($suggestions)->toContain('Cost information is required before processing inventory movements');
+    expect($suggestions)->toContain(__('inventory::exceptions.cost_analysis.avco_auto_calc'));
+    expect($suggestions)->toContain(__('inventory::exceptions.cost_analysis.create_bill'));
+    expect($suggestions)->toContain(__('inventory::exceptions.cost_analysis.cost_info_required'));
 });

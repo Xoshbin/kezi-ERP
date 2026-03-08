@@ -110,7 +110,7 @@ class InventoryValuationService
         $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($date));
 
         if ($product->inventory_valuation_method === ValuationMethod::Standard) {
-            throw new Exception('Standard costing is not supported in Phase 1');
+            throw new Exception(__('inventory::exceptions.valuation.standard_costing_unsupported'));
         }
 
         // Calculate total cost for this incoming stock
@@ -231,7 +231,7 @@ class InventoryValuationService
         $this->lockDateService->enforce(Company::findOrFail($product->company_id), Carbon::parse($date));
 
         if ($product->inventory_valuation_method === ValuationMethod::Standard) {
-            throw new Exception('Standard costing is not supported in Phase 1');
+            throw new Exception(__('inventory::exceptions.valuation.standard_costing_unsupported'));
         }
 
         // Calculate COGS based on valuation method
@@ -291,7 +291,7 @@ class InventoryValuationService
         // This is a simplified example. A real implementation would need to calculate the value of the adjustment.
         // For now, we will assume the value is the quantity * the product's average cost.
         if (! $product->average_cost) {
-            throw new Exception('Product must have an average cost for inventory adjustment');
+            throw new Exception(__('inventory::exceptions.valuation.missing_average_cost_adjustment'));
         }
         $adjustmentValue = $product->average_cost->multipliedBy($dto->quantity, RoundingMode::HALF_UP);
 
@@ -334,7 +334,7 @@ class InventoryValuationService
             // For AVCO, use the product's average cost
             if (! $product->average_cost || ! $product->average_cost->isPositive()) {
                 Log::warning("Product {$product->id} has no positive average cost set, cannot calculate COGS");
-                throw new RuntimeException("Cannot calculate COGS for product {$product->id}: no positive average cost available");
+                throw new RuntimeException(__('inventory::exceptions.valuation.cannot_calculate_cogs', ['product_id' => $product->id]));
             }
 
             return $product->average_cost->multipliedBy($quantity, RoundingMode::HALF_UP);
@@ -370,7 +370,7 @@ class InventoryValuationService
             $quantityToConsume = min($remainingQuantity, $layer->remaining_quantity);
             $costPerUnit = $layer->cost_per_unit;
             if (! $costPerUnit) {
-                throw new Exception('Cost layer must have a cost per unit');
+                throw new Exception(__('inventory::exceptions.valuation.missing_cost_per_unit'));
             }
 
             // Ensure the cost is in the company's base currency before adding to total COGS
@@ -414,16 +414,16 @@ class InventoryValuationService
 
         // Validate required accounts
         if (! $product->default_cogs_account_id) {
-            throw new Exception("Product {$product->id} does not have a COGS account configured");
+            throw new Exception(__('inventory::exceptions.valuation.missing_cogs_account', ['product_id' => $product->id]));
         }
         if (! $product->default_inventory_account_id) {
-            throw new Exception("Product {$product->id} does not have an inventory account configured");
+            throw new Exception(__('inventory::exceptions.valuation.missing_inventory_account', ['product_id' => $product->id]));
         }
 
         // Use the sales journal for COGS entries (or create a dedicated inventory journal if needed)
         $journalId = $company->default_sales_journal_id;
         if (! $journalId) {
-            throw new Exception("Company {$company->id} does not have a default sales journal configured");
+            throw new Exception(__('inventory::exceptions.valuation.missing_sales_journal', ['company_id' => $company->id]));
         }
 
         // Generate reference - include product ID to make it unique per product
@@ -508,7 +508,10 @@ class InventoryValuationService
 
             if (! $stockMove) {
                 $moveTypeStr = $moveType ? $moveType->value : 'outgoing';
-                throw new Exception("No {$moveTypeStr} stock move found for product {$product->id} and source document");
+                throw new Exception(__('inventory::exceptions.valuation.no_outgoing_move_found', [
+                    'move_type' => $moveTypeStr,
+                    'product_id' => $product->id,
+                ]));
             }
         }
 
@@ -591,16 +594,16 @@ class InventoryValuationService
 
         // Validate required accounts
         if (! $product->default_inventory_account_id) {
-            throw new Exception("Product {$product->id} does not have an inventory account configured");
+            throw new Exception(__('inventory::exceptions.valuation.missing_inventory_account', ['product_id' => $product->id]));
         }
         if (! $product->default_stock_input_account_id) {
-            throw new Exception("Product {$product->id} does not have a stock input account configured");
+            throw new Exception(__('inventory::exceptions.valuation.missing_stock_input_account', ['product_id' => $product->id]));
         }
 
         // Use the purchase journal for incoming stock entries
         $journalId = $company->default_purchase_journal_id;
         if (! $journalId) {
-            throw new Exception("Company {$company->id} does not have a default purchase journal configured");
+            throw new Exception(__('inventory::exceptions.valuation.missing_purchase_journal', ['company_id' => $company->id]));
         }
 
         // Generate reference including product ID to avoid duplicates when processing multiple products
@@ -754,7 +757,7 @@ class InventoryValuationService
                 ->first();
 
             if (! $stockMove) {
-                throw new Exception("No incoming stock move found for product {$product->id} and source document");
+                throw new Exception(__('inventory::exceptions.valuation.no_incoming_move_found', ['product_id' => $product->id]));
             }
         }
 
@@ -848,23 +851,25 @@ class InventoryValuationService
             $quantity = $productLine->quantity;
 
             if (! $product) {
-                throw new Exception("Product not found for product line ID {$productLine->id}");
+                throw new Exception(__('inventory::exceptions.valuation.product_not_found_for_line', ['line_id' => $productLine->id]));
             }
 
             // Validate required accounts
             if (! $product->default_inventory_account_id) {
-                throw new Exception("Product {$product->id} does not have an inventory account configured");
+                throw new Exception(__('inventory::exceptions.valuation.missing_inventory_account', ['product_id' => $product->id]));
             }
 
             if ($isOutgoing) {
                 // Outgoing Move Logic (COGS or Scrap)
                 $isScrap = $productLine->toLocation?->type === \Kezi\Inventory\Enums\Inventory\StockLocationType::Scrap;
                 $debitAccountId = $isScrap ? $company->default_scrap_account_id : $product->default_cogs_account_id;
-                $accountLabel = $isScrap ? 'Scrap Expense' : 'COGS';
+                $accountLabel = $isScrap
+                    ? __('inventory::stock_move.valuation.labels.scrap_expense')
+                    : __('inventory::stock_move.valuation.labels.cogs');
 
                 if (! $debitAccountId) {
                     $missingConfig = $isScrap ? 'Default Scrap Account (Company)' : "COGS Account (Product {$product->id})";
-                    throw new Exception("Missing accounting configuration: {$missingConfig}");
+                    throw new Exception(__('inventory::exceptions.valuation.missing_accounting_configuration', ['config' => $missingConfig]));
                 }
 
                 $cogsAmount = $this->calculateCOGS($product, $quantity);
@@ -882,7 +887,10 @@ class InventoryValuationService
                     account_id: $debitAccountId,
                     debit: $cogsAmount,
                     credit: $zero,
-                    description: "{$accountLabel} for {$product->name} (Qty: {$quantity})",
+                    description: __($isScrap ? 'inventory::stock_move.valuation.descriptions.scrap' : 'inventory::stock_move.valuation.descriptions.cogs', [
+                        'product' => $product->name,
+                        'quantity' => $quantity,
+                    ]),
                     analytic_account_id: $productLine->analytic_account_id,
                     partner_id: null,
                 );
@@ -892,7 +900,10 @@ class InventoryValuationService
                     account_id: $product->default_inventory_account_id,
                     debit: $zero,
                     credit: $cogsAmount,
-                    description: "Inventory reduction for {$product->name} (Qty: {$quantity})",
+                    description: __('inventory::stock_move.valuation.descriptions.inventory_reduction', [
+                        'product' => $product->name,
+                        'quantity' => $quantity,
+                    ]),
                     analytic_account_id: $productLine->analytic_account_id,
                     partner_id: null,
                 );
@@ -900,7 +911,7 @@ class InventoryValuationService
             } else {
                 // Incoming Move Logic (Stock Input)
                 if (! $product->default_stock_input_account_id) {
-                    throw new Exception("Product {$product->id} does not have a stock input account configured");
+                    throw new Exception(__('inventory::exceptions.valuation.missing_stock_input_account', ['product_id' => $product->id]));
                 }
 
                 // Calculate cost for this product using enhanced method
@@ -919,7 +930,10 @@ class InventoryValuationService
                     account_id: $product->default_inventory_account_id,
                     debit: $productTotalCost,
                     credit: $zero,
-                    description: "Stock receipt for {$product->name} (Qty: {$quantity})",
+                    description: __('inventory::stock_move.valuation.descriptions.stock_in', [
+                        'product' => $product->name,
+                        'quantity' => $quantity,
+                    ]),
                     analytic_account_id: $productLine->analytic_account_id,
                     partner_id: null,
                     original_currency_amount: $this->getOriginalCurrencyAmount($stockMove, $productTotalCost),
@@ -931,7 +945,10 @@ class InventoryValuationService
                     account_id: $product->default_stock_input_account_id,
                     debit: $zero,
                     credit: $productTotalCost,
-                    description: "Stock input for {$product->name} (Qty: {$quantity})",
+                    description: __('inventory::stock_move.valuation.descriptions.stock_input', [
+                        'product' => $product->name,
+                        'quantity' => $quantity,
+                    ]),
                     analytic_account_id: $productLine->analytic_account_id,
                     partner_id: null,
                     original_currency_amount: $this->getOriginalCurrencyAmount($stockMove, $productTotalCost),
@@ -956,7 +973,9 @@ class InventoryValuationService
 
         $referencePrefix = $isOutgoing ? 'STOCK-OUT' : 'STOCK-IN';
         $journalId = $isOutgoing ? $company->default_sales_journal_id : $company->default_purchase_journal_id;
-        $descriptionPrefix = $isOutgoing ? 'Stock delivery' : 'Stock receipt';
+        $descriptionPrefixKey = $isOutgoing
+            ? 'inventory::stock_move.valuation.descriptions.consolidated_delivery'
+            : 'inventory::stock_move.valuation.descriptions.consolidated_receipt';
 
         $sourceDocument = ($stockMove->source_type && class_exists($stockMove->source_type))
             ? ($stockMove->source ?? $stockMove)
@@ -970,7 +989,9 @@ class InventoryValuationService
             currency_id: $company->currency_id,
             entry_date: Carbon::parse($stockMove->move_date)->toDateString(),
             reference: $reference,
-            description: "{$descriptionPrefix} for ".implode(', ', $productNames),
+            description: __($descriptionPrefixKey, [
+                'products' => implode(', ', $productNames),
+            ]),
             created_by_user_id: (int) (Auth::id() ?? 1),
             is_posted: true,
             lines: $journalEntryLines,
@@ -1036,7 +1057,7 @@ class InventoryValuationService
     public function createConsolidatedIncomingStockJournalEntry(array $stockMoves, $sourceDocument): JournalEntry
     {
         if (empty($stockMoves)) {
-            throw new Exception('No stock moves provided for consolidated journal entry');
+            throw new Exception(__('inventory::exceptions.valuation.no_stock_moves'));
         }
 
         $firstStockMove = $stockMoves[0];
@@ -1047,7 +1068,7 @@ class InventoryValuationService
         // Use the purchase journal for incoming stock entries
         $journalId = $company->default_purchase_journal_id;
         if (! $journalId) {
-            throw new Exception("Company {$company->id} does not have a default purchase journal configured");
+            throw new Exception(__('inventory::exceptions.valuation.missing_purchase_journal', ['company_id' => $company->id]));
         }
 
         // Generate reference without product ID since this is consolidated
@@ -1079,10 +1100,10 @@ class InventoryValuationService
 
                 // Validate required accounts
                 if (! $product->default_inventory_account_id) {
-                    throw new Exception("Product {$product->id} does not have an inventory account configured");
+                    throw new Exception(__('inventory::exceptions.valuation.missing_inventory_account', ['product_id' => $product->id]));
                 }
                 if (! $product->default_stock_input_account_id) {
-                    throw new Exception("Product {$product->id} does not have a stock input account configured");
+                    throw new Exception(__('inventory::exceptions.valuation.missing_stock_input_account', ['product_id' => $product->id]));
                 }
 
                 // Calculate cost for this product using enhanced method
@@ -1101,7 +1122,10 @@ class InventoryValuationService
                     account_id: $product->default_inventory_account_id,
                     debit: $productTotalCost,
                     credit: $zero,
-                    description: "Stock receipt for {$product->name} (Qty: {$quantity})",
+                    description: __('inventory::stock_move.valuation.descriptions.stock_in', [
+                        'product' => $product->name,
+                        'quantity' => $quantity,
+                    ]),
                     analytic_account_id: null,
                     partner_id: $sourceDocument->vendor_id ?? null,
                 );
@@ -1111,7 +1135,10 @@ class InventoryValuationService
                     account_id: $product->default_stock_input_account_id,
                     debit: $zero,
                     credit: $productTotalCost,
-                    description: "Stock input for {$product->name} (Qty: {$quantity})",
+                    description: __('inventory::stock_move.valuation.descriptions.stock_input', [
+                        'product' => $product->name,
+                        'quantity' => $quantity,
+                    ]),
                     analytic_account_id: null,
                     partner_id: $sourceDocument->vendor_id ?? null,
                 );
@@ -1128,7 +1155,9 @@ class InventoryValuationService
             currency_id: $company->currency_id,
             entry_date: Carbon::parse($firstStockMove->move_date)->toDateString(),
             reference: $reference,
-            description: 'Consolidated stock receipt for '.implode(', ', $productNames),
+            description: __('inventory::stock_move.valuation.descriptions.consolidated_receipt', [
+                'products' => implode(', ', array_unique($productNames)),
+            ]),
             created_by_user_id: (int) (Auth::id() ?? 1),
             is_posted: true,
             source_type: get_class($sourceDocument),
@@ -1294,7 +1323,7 @@ class InventoryValuationService
                     $unitPrice,
                     CostSource::VendorBill,
                     "VendorBill:{$vendorBill->id}",
-                    ['Using latest posted vendor bill for cost determination'],
+                    [__('inventory::exceptions.valuation.cost_warning_latest_bill')],
                     $attemptedSources
                 );
             }
@@ -1331,7 +1360,7 @@ class InventoryValuationService
         if ($allowFallbacks) {
             $attemptedSources[] = 'unit_price';
             if ($product->unit_price && $product->unit_price->isPositive()) {
-                $warnings[] = 'Using product unit price as cost - this may not reflect actual purchase cost';
+                $warnings[] = __('inventory::exceptions.valuation.cost_warning_unit_price');
 
                 return CostDeterminationResult::withWarnings(
                     $product->unit_price,

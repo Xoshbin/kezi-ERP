@@ -38,7 +38,9 @@ class InvoiceNumberRaceConditionTest extends TestCase
 
         // Create test data
         $this->currency = Currency::factory()->createSafely(['code' => 'USD']);
-        $this->company = Company::factory()->create(['currency_id' => $this->currency->id]);
+        /** @var Company $company */
+        $company = Company::factory()->create(['currency_id' => $this->currency->id]);
+        $this->company = $company;
         $this->customer = Partner::factory()->create(['company_id' => $this->company->id]);
         $this->user = User::factory()->create();
 

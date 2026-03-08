@@ -83,7 +83,7 @@ class EmployeeSelectField extends TranslatableSelect
     public static function make(?string $name = null): static
     {
         if ($name === null) {
-            throw new \InvalidArgumentException('EmployeeSelectField requires a name.');
+            throw new \InvalidArgumentException(__('hr::exceptions.common.field_name_required'));
         }
 
         return parent::make($name);

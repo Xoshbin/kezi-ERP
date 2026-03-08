@@ -11,14 +11,14 @@ class LockDateObserver
     public function updating(LockDate $lockDate): void
     {
         if ($lockDate->lock_type === LockDateType::HardLock) {
-            throw new \Kezi\Foundation\Exceptions\UpdateNotAllowedException('A hard lock date cannot be modified.');
+            throw new \Kezi\Foundation\Exceptions\UpdateNotAllowedException(__('accounting::exceptions.lock_date.cannot_modify_hard_lock'));
         }
     }
 
     public function deleting(LockDate $lockDate): void
     {
         if ($lockDate->lock_type === LockDateType::HardLock) {
-            throw new \Kezi\Foundation\Exceptions\UpdateNotAllowedException('A hard lock date cannot be removed.');
+            throw new \Kezi\Foundation\Exceptions\UpdateNotAllowedException(__('accounting::exceptions.lock_date.cannot_remove_hard_lock'));
         }
     }
 

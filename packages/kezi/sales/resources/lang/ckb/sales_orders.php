@@ -96,6 +96,7 @@ return [
         'delivery_created_count' => ':count بڕگەی گەیاندن دروستکرا',
         'delivery_creation_failed' => 'نەتوانرا گەیاندن دروست بکرێت',
         'update_not_allowed' => 'نوێکردنەوە ڕێگەپێنەدراوە',
+        'confirmation_failed' => 'پشتڕاستکردنەوەی فەرمانی فرۆشتن سەرکەوتوو نەبوو',
     ],
     'invoicing_status' => [
         'not_invoiced' => 'پسوڵە نەکراوە',

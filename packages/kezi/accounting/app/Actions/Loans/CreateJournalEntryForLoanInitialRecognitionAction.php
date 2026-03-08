@@ -22,11 +22,11 @@ class CreateJournalEntryForLoanInitialRecognitionAction
             $loan->loadMissing('company', 'currency');
             $company = $loan->company;
             if (! $company) {
-                throw new RuntimeException('Loan company missing');
+                throw new RuntimeException(__('accounting::exceptions.loan.company_not_found'));
             }
             $currencyModel = $loan->currency;
             if (! $currencyModel) {
-                throw new RuntimeException('Loan currency missing');
+                throw new RuntimeException(__('accounting::exceptions.loan.currency_not_found'));
             }
             $currencyCode = (string) data_get($currencyModel, 'code');
 

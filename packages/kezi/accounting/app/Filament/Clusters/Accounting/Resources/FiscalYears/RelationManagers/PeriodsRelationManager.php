@@ -125,6 +125,7 @@ class PeriodsRelationManager extends RelationManager
                 ->title(__('accounting::fiscal_period.close_failed'))
                 ->body($e->getMessage())
                 ->danger()
+                ->persistent()
                 ->send();
         }
     }
@@ -146,6 +147,7 @@ class PeriodsRelationManager extends RelationManager
                 ->title(__('accounting::fiscal_period.reopen_failed'))
                 ->body($e->getMessage())
                 ->danger()
+                ->persistent()
                 ->send();
         }
     }

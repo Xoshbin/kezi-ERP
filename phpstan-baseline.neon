@@ -1197,7 +1197,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 4
+			count: 3
 			path: packages/kezi/accounting/app/Filament/Clusters/Accounting/Resources/RecurringTemplates/RecurringTemplateResource.php
 
 		-
@@ -3441,7 +3441,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 36
+			count: 40
 			path: packages/kezi/accounting/tests/Feature/Currency/PerformCurrencyRevaluationActionEdgeCaseTest.php
 
 		-
@@ -7435,15 +7435,9 @@ parameters:
 			path: packages/kezi/accounting/tests/Unit/Services/BankReconciliationServiceTest.php
 
 		-
-			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$bankJournal\.$#'
-			identifier: property.notFound
-			count: 4
-			path: packages/kezi/accounting/tests/Unit/Services/BankReconciliationServiceTest.php
-
-		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$company\.$#'
 			identifier: property.notFound
-			count: 15
+			count: 16
 			path: packages/kezi/accounting/tests/Unit/Services/BankReconciliationServiceTest.php
 
 		-
@@ -9479,12 +9473,6 @@ parameters:
 			identifier: generics.notGeneric
 			count: 1
 			path: packages/kezi/hr/app/Filament/Clusters/HumanResources/Resources/EmploymentContracts/Pages/CreateEmploymentContract.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: packages/kezi/hr/app/Filament/Clusters/HumanResources/Resources/EmploymentContracts/Schemas/EmploymentContractForm.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Kezi\\Foundation\\Models\\Currency\>\|Kezi\\Foundation\\Models\\Currency\:\:\$code\.$#'

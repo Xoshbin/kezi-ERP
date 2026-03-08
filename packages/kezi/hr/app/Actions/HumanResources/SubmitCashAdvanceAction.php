@@ -13,7 +13,7 @@ class SubmitCashAdvanceAction
     {
         DB::transaction(function () use ($cashAdvance) {
             if ($cashAdvance->status !== CashAdvanceStatus::Draft) {
-                throw new \InvalidArgumentException('Only draft cash advances can be submitted.');
+                throw new \InvalidArgumentException(__('hr::exceptions.cash_advance.only_draft_can_be_submitted'));
             }
 
             $cashAdvance->update([

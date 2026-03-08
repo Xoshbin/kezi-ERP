@@ -82,7 +82,9 @@ class QualityAlertResolutionTest extends TestCase
             'product_id' => $product->id,
         ]);
 
-        $this->seedStock($product, $this->company->defaultStockLocation, 10);
+        /** @var \Kezi\Inventory\Models\StockLocation $stockLocation */
+        $stockLocation = $this->company->defaultStockLocation;
+        $this->seedStock($product, $stockLocation, 10);
 
         $alert = QualityAlert::factory()->create([
             'company_id' => $this->company->id,

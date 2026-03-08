@@ -24,7 +24,7 @@ class ReceiveChequeAction
         $this->lockDateService->enforce($company, Carbon::parse($dto->issue_date));
 
         if ($dto->type !== ChequeType::Receivable) {
-            throw new \InvalidArgumentException('ReceiveChequeAction is only for receivable cheques.');
+            throw new \InvalidArgumentException(__('payment::exceptions.cheque.receivable_only'));
         }
 
         return DB::transaction(function () use ($dto, $company) {

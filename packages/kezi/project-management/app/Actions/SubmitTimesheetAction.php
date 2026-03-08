@@ -12,13 +12,13 @@ class SubmitTimesheetAction
     public function execute(Timesheet $timesheet): void
     {
         if (! $timesheet->isDraft()) {
-            throw new RuntimeException('Only draft timesheets can be submitted.');
+            throw new RuntimeException(__('projectmanagement::exceptions.timesheet.submit_draft_only'));
         }
 
         DB::transaction(function () use ($timesheet) {
             // Validate lines (e.g., ensure projects key are valid - usually handled by UI/Validation layer but good to have safeguard)
             if ($timesheet->lines()->count() === 0) {
-                throw new RuntimeException('Cannot submit an empty timesheet.');
+                throw new RuntimeException(__('projectmanagement::exceptions.timesheet.cannot_submit_empty'));
             }
 
             $timesheet->update([

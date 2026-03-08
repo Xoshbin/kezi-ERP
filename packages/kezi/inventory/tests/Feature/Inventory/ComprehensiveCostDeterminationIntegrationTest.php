@@ -25,6 +25,15 @@ use Kezi\Purchase\Models\VendorBill;
 use Kezi\Purchase\Models\VendorBillLine;
 use Tests\Traits\WithConfiguredCompany;
 
+/**
+ * @property \Kezi\Inventory\Services\Inventory\CostValidationService $costValidationService
+ * @property \Kezi\Inventory\Services\Inventory\InventoryValuationService $inventoryValuationService
+ * @property \Kezi\Accounting\Models\Account $inventoryAccount
+ * @property \Kezi\Accounting\Models\Account $cogsAccount
+ * @property \Kezi\Accounting\Models\Account $stockInputAccount
+ * @property \Kezi\Inventory\Models\StockLocation $fromLocation
+ * @property \Kezi\Inventory\Models\StockLocation $toLocation
+ */
 uses(RefreshDatabase::class, WithConfiguredCompany::class);
 
 beforeEach(function () {
@@ -145,9 +154,10 @@ it('demonstrates complete cost determination workflow from vendor bill to manual
     expect($manualValuation->cost_warnings)->toBeArray();
 
     // Step 4: Test cost validation service
-    $validationResult = $this->costValidationService->validateCostAvailability($product, StockMoveType::Incoming);
-    expect($validationResult->isValid())->toBeTrue();
-    expect($validationResult->getMessage())->toContain('Cost can be determined');
+    $result = $this->costValidationService->validateCostAvailability($product, StockMoveType::Incoming);
+    expect($result->isValid())->toBeTrue();
+    expect($result->getMessage())->toBe(__('inventory::exceptions.cost_validation_errors.cost_available'));
+    expect($result->getCostResult())->not->toBeNull();
 
     // Step 5: Test cost preview
     $previewResult = $this->costValidationService->getCostPreview($product, 25.0, StockMoveType::Incoming);
@@ -183,12 +193,12 @@ it('demonstrates fallback cost determination with warnings', function () {
     expect($costResult->cost)->toEqual(Money::of(75000, 'IQD'));
     expect($costResult->source)->toBe(CostSource::UnitPrice);
     expect($costResult->hasWarnings())->toBeTrue();
-    expect($costResult->warnings)->toContain('Using product unit price as cost - this may not reflect actual purchase cost');
+    expect($costResult->warnings)->toContain(__('inventory::exceptions.valuation.cost_warning_unit_price'));
 
     // Test validation service recognizes the warning
     $validationResult = $this->costValidationService->validateCostAvailability($product, StockMoveType::Incoming);
     expect($validationResult->isValid())->toBeFalse();
-    expect($validationResult->getSuggestedActions())->toContain('Create and post a vendor bill for this product to establish purchase cost');
+    expect($validationResult->getSuggestedActions())->toContain(__('inventory::exceptions.cost_analysis.create_bill'));
 });
 
 it('demonstrates complete failure scenario with actionable suggestions', function () {
@@ -216,10 +226,11 @@ it('demonstrates complete failure scenario with actionable suggestions', functio
         ->toThrow(InsufficientCostInformationException::class);
 
     // Test validation service provides actionable suggestions
-    $validationResult = $this->costValidationService->validateCostAvailability($product, StockMoveType::Incoming);
-    expect($validationResult->isValid())->toBeFalse();
-    expect($validationResult->getSuggestedActions())->toContain('Create and post a vendor bill for this product to establish purchase cost');
-    expect($validationResult->getSuggestedActions())->toContain('Average cost is calculated automatically from posted vendor bills - no manual entry needed');
+    $result = $this->costValidationService->validateCostAvailability($product, StockMoveType::Incoming);
+    expect($result->isValid())->toBeFalse();
+    expect($result->getMessage())->toContain(__('inventory::exceptions.cost_analysis.explanation.main', ['product_name' => $product->name, 'product_id' => $product->id]));
+    expect($result->getSuggestedActions())->toContain(__('inventory::exceptions.cost_analysis.create_bill'));
+    expect($result->getSuggestedActions())->toContain(__('inventory::exceptions.cost_analysis.avco_auto_calc'));
 
     // Test that creating a stock move with this product fails gracefully
     $dto = new CreateStockMoveDTO(

@@ -20,14 +20,14 @@ class SendQuoteAction
         // Validate quote can be sent
         if (! $quote->status->canBeSent()) {
             throw new QuoteCannotBeModifiedException(
-                'Only draft quotes can be sent.'
+                __('sales::exceptions.quote.send_draft_only')
             );
         }
 
         // Validate quote has lines
         if ($quote->lines()->count() === 0) {
             throw new QuoteCannotBeModifiedException(
-                'Cannot send a quote without line items.'
+                __('sales::exceptions.quote.send_no_lines')
             );
         }
 

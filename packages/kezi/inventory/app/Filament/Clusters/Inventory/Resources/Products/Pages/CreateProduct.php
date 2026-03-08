@@ -2,6 +2,7 @@
 
 namespace Kezi\Inventory\Filament\Clusters\Inventory\Resources\Products\Pages;
 
+use App\Models\Company;
 use Exception;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
@@ -38,7 +39,7 @@ class CreateProduct extends CreateRecord
         /** @var Company|null $tenant */
         $tenant = Filament::getTenant();
         if (! $tenant) {
-            throw new Exception('No tenant set when creating Product');
+            throw new Exception(__('inventory::exceptions.stock.no_tenant'));
         }
         $data['company_id'] = $tenant->getKey();
 

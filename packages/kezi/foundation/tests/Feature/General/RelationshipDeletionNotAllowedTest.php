@@ -92,7 +92,7 @@ test('a partner linked to a posted invoice cannot be deleted', function () {
     expect(fn () => $customer->delete())
         ->toThrow(
             \Kezi\Foundation\Exceptions\DeletionNotAllowedException::class,
-            'Cannot delete a partner with associated financial documents (invoices, bills, or payments).'
+            __('foundation::exceptions.partner.in_use')
         );
 
     // Verify: The partner must still exist in the database.

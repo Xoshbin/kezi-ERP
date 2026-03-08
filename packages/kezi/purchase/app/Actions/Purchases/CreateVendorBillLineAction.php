@@ -16,7 +16,7 @@ class CreateVendorBillLineAction
         if ($dto->product_id) {
             $product = \Kezi\Product\Models\Product::find($dto->product_id);
             if ($product && $product->is_template) {
-                throw new \InvalidArgumentException('Cannot create vendor bill lines for template products');
+                throw new \InvalidArgumentException(__('purchase::exceptions.vendor_bill.cannot_create_line_template'));
             }
         }
 

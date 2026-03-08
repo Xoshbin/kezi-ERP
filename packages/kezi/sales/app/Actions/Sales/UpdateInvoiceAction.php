@@ -21,7 +21,7 @@ class UpdateInvoiceAction
         $invoice = $dto->invoice;
 
         if ($invoice->status !== InvoiceStatus::Draft) {
-            throw new \Kezi\Foundation\Exceptions\UpdateNotAllowedException('Cannot modify a non-draft invoice.');
+            throw new \Kezi\Foundation\Exceptions\UpdateNotAllowedException(__('sales::exceptions.invoice.modify_non_draft'));
         }
 
         $this->lockDateService->enforce($invoice->company, Carbon::parse($dto->invoice_date));

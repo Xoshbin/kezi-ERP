@@ -24,11 +24,11 @@ class CreateDebitNoteAction
         $vendorBill = VendorBill::findOrFail($dto->vendor_bill_id);
 
         if ($vendorBill->status !== VendorBillStatus::Posted && $vendorBill->status !== VendorBillStatus::Paid) {
-            throw new Exception('Debit notes can only be created for posted/paid vendor bills.');
+            throw new Exception(__('purchase::exceptions.debit_note.posted_paid_only'));
         }
 
         if ($vendorBill->company_id !== $dto->company_id) {
-            throw new Exception('Vendor bill does not belong to the requested company.');
+            throw new Exception(__('purchase::exceptions.debit_note.company_mismatch'));
         }
 
         // Map Lines

@@ -28,7 +28,7 @@ class DisburseCashAdvanceAction
     {
         DB::transaction(function () use ($cashAdvance, $bankAccountId, $user) {
             if ($cashAdvance->status !== CashAdvanceStatus::Approved) {
-                throw new \InvalidArgumentException('Only approved cash advances can be disbursed.');
+                throw new \InvalidArgumentException(__('hr::exceptions.cash_advance.only_approved_can_be_disbursed'));
             }
 
             $company = $cashAdvance->company;
@@ -40,7 +40,7 @@ class DisburseCashAdvanceAction
             // Get employee advance receivable account
             $receivableAccountId = $company->default_employee_advance_receivable_account_id;
             if (! $receivableAccountId) {
-                throw new \RuntimeException('Employee advance receivable account not configured for company.');
+                throw new \RuntimeException(__('hr::exceptions.cash_advance.receivable_account_not_configured'));
             }
 
             // Get default cash journal
@@ -54,7 +54,7 @@ class DisburseCashAdvanceAction
                     ->first();
 
                 if (! $cashJournal) {
-                    throw new \RuntimeException('No cash or bank journal found for company.');
+                    throw new \RuntimeException(__('hr::exceptions.cash_advance.no_journal_found'));
                 }
 
                 $journalId = $cashJournal->id;

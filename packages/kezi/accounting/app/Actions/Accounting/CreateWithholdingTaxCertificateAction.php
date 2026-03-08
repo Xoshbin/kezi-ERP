@@ -19,7 +19,7 @@ class CreateWithholdingTaxCertificateAction
         return DB::transaction(function () use ($dto) {
             // Validate that we have entries to certify
             if (empty($dto->entry_ids)) {
-                throw new InvalidArgumentException('At least one withholding tax entry must be selected for the certificate.');
+                throw new InvalidArgumentException(__('accounting::exceptions.withholding_tax.at_least_one_entry_required'));
             }
 
             // Fetch the entries and validate they are uncertified
@@ -30,13 +30,13 @@ class CreateWithholdingTaxCertificateAction
                 ->get();
 
             if ($entries->count() !== count($dto->entry_ids)) {
-                throw new InvalidArgumentException('Some entries are already certified or do not belong to the specified vendor.');
+                throw new InvalidArgumentException(__('accounting::exceptions.withholding_tax.entries_certified_or_invalid_vendor'));
             }
 
             // Verify all entries have the same currency
             $currencyIds = $entries->pluck('currency_id')->unique();
             if ($currencyIds->count() > 1) {
-                throw new InvalidArgumentException('All entries must have the same currency.');
+                throw new InvalidArgumentException(__('accounting::exceptions.withholding_tax.entries_must_have_same_currency'));
             }
 
             // Calculate totals from entries

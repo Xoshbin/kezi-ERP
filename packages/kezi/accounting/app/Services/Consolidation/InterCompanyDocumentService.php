@@ -24,7 +24,7 @@ class InterCompanyDocumentService
     {
         // 1. Validation
         if (! $invoice->company) {
-            throw new RuntimeException('Invoice company not found.');
+            throw new RuntimeException(__('accounting::exceptions.consolidation.invoice_company_not_found'));
         }
 
         $customer = $invoice->customer;
@@ -44,7 +44,10 @@ class InterCompanyDocumentService
             ->first();
 
         if (! $vendor) {
-            throw new ModelNotFoundException("Reciprocal vendor partner not found in company {$targetCompany->name} linked to {$invoice->company->name}. Please create this partner manually first.");
+            throw new ModelNotFoundException(__('accounting::exceptions.consolidation.reciprocal_vendor_not_found', [
+                'target_company' => $targetCompany->name,
+                'source_company' => $invoice->company->name,
+            ]));
         }
 
         return DB::transaction(function () use ($invoice, $targetCompany, $vendor) {

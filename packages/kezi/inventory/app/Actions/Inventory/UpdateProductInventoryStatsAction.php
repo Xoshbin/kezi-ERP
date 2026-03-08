@@ -35,7 +35,7 @@ class UpdateProductInventoryStatsAction
 
             $purchaseValue = $purchasePricePerUnit->multipliedBy($quantityChange, RoundingMode::HALF_UP);
             if (! $product->average_cost) {
-                throw new Exception('Product must have an average cost for inventory update');
+                throw new Exception(__('inventory::exceptions.valuation.missing_average_cost_update'));
             }
             $oldValue = $product->average_cost->multipliedBy($currentQuantity, RoundingMode::HALF_UP);
             $totalQuantity = $currentQuantity + $quantityChange;

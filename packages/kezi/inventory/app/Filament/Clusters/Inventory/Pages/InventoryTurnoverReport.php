@@ -194,6 +194,7 @@ class InventoryTurnoverReport extends Page implements HasForms
                     if (! $this->reportData) {
                         Notification::make()
                             ->title(__('inventory::inventory_reports.turnover.no_data_to_export'))
+                            ->persistent()
                             ->danger()
                             ->send();
 
@@ -222,6 +223,7 @@ class InventoryTurnoverReport extends Page implements HasForms
                         Notification::make()
                             ->title(__('inventory::inventory_reports.turnover.export_failed'))
                             ->body($e->getMessage())
+                            ->persistent()
                             ->danger()
                             ->send();
                     }

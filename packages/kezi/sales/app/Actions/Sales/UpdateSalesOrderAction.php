@@ -28,7 +28,7 @@ class UpdateSalesOrderAction
         // Ensure the SO can be edited
         if (! $salesOrder->status->canBeEdited()) {
             throw new \Kezi\Foundation\Exceptions\UpdateNotAllowedException(
-                'This sales order cannot be edited in its current status.'
+                __('sales::exceptions.sales_order.update_not_allowed')
             );
         }
 

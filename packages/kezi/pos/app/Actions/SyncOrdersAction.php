@@ -38,7 +38,7 @@ class SyncOrdersAction
                         ->first();
 
                     if (! $session) {
-                        throw new \Exception('Invalid or unauthorized session.');
+                        throw new \Exception(__('pos::exceptions.common.invalid_session'));
                     }
 
                     // Idempotency check: If order with this UUID exists for this company, skip processing
@@ -51,7 +51,7 @@ class SyncOrdersAction
                     if (! isset($currencies[$orderData->currency_id])) {
                         $currency = \Kezi\Foundation\Models\Currency::find($orderData->currency_id);
                         if (! $currency) {
-                            throw new \Exception("Currency ID {$orderData->currency_id} not found.");
+                            throw new \Exception(__('pos::exceptions.common.currency_not_found', ['id' => $orderData->currency_id]));
                         }
                         $currencies[$orderData->currency_id] = $currency->code;
                     }

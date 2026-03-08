@@ -12,7 +12,7 @@ class CancelChequeAction
     public function execute(Cheque $cheque, User $user): void
     {
         if ($cheque->status !== ChequeStatus::Draft) {
-            throw new \DomainException('Only draft cheques can be cancelled. Use Void or Bounce for processed cheques.');
+            throw new \DomainException(__('payment::exceptions.cheque.draft_only_for_cancel'));
         }
 
         DB::transaction(function () use ($cheque) {

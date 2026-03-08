@@ -22,11 +22,11 @@ class DepositChequeAction
     public function execute(Cheque $cheque, DepositChequeDTO $dto, User $user): void
     {
         if ($cheque->type !== ChequeType::Receivable) {
-            throw new \InvalidArgumentException('Only receivable cheques can be deposited.');
+            throw new \InvalidArgumentException(__('payment::exceptions.cheque.receivable_only_for_deposit'));
         }
 
         if ($cheque->status !== ChequeStatus::Draft) {
-            throw new \DomainException('Cheque must be in Draft status to be deposited.');
+            throw new \DomainException(__('payment::exceptions.cheque.must_be_draft_to_deposit'));
         }
 
         $this->lockDateService->enforce($cheque->company, Carbon::parse($dto->deposited_at));

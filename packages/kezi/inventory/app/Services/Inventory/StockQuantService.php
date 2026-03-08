@@ -118,17 +118,17 @@ class StockQuantService
 
             // Serial-tracked products must have quantity of 0 or 1
             if ($serialNumberId && $newQty > 1) {
-                throw new RuntimeException('Serial-tracked product quantity cannot exceed 1');
+                throw new RuntimeException(__('inventory::exceptions.stock_quant.serial_exceeds_one'));
             }
 
             if ($newQty < 0 && ! self::$allowNegativeStock) {
-                throw new RuntimeException('Insufficient quantity for adjustment');
+                throw new RuntimeException(__('inventory::exceptions.stock_quant.insufficient_quantity'));
             }
             if ($newReserved < 0) {
-                throw new RuntimeException('Reserved quantity cannot be negative');
+                throw new RuntimeException(__('inventory::exceptions.stock_quant.negative_reserved'));
             }
             if ($newReserved > $newQty && ! self::$allowNegativeStock) {
-                throw new RuntimeException('Reserved quantity cannot exceed available quantity');
+                throw new RuntimeException(__('inventory::exceptions.stock_quant.reserved_exceeds_available'));
             }
 
             $quant->forceFill([

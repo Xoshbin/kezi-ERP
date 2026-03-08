@@ -15,7 +15,7 @@ class CreateInvoiceLineAction
     {
         $product = \Kezi\Product\Models\Product::find($dto->product_id);
         if ($product && $product->is_template) {
-            throw new \InvalidArgumentException('Cannot create invoice lines for template products');
+            throw new \InvalidArgumentException(__('sales::exceptions.invoice.template_product_not_allowed'));
         }
 
         $currency = $invoice->currency;

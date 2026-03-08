@@ -4,9 +4,7 @@ namespace Kezi\Payment\Actions\Payments;
 
 use Brick\Money\Money;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 use Kezi\Foundation\Models\Currency;
 use Kezi\Payment\DataTransferObjects\Payments\UpdatePaymentDTO;
 use Kezi\Payment\Enums\Payments\PaymentStatus;
@@ -28,16 +26,16 @@ class UpdatePaymentAction
         $payment = $dto->payment;
 
         if ($payment->status !== PaymentStatus::Draft) {
-            throw new \Kezi\Foundation\Exceptions\UpdateNotAllowedException('Only draft payments can be updated.');
+            throw new \Kezi\Foundation\Exceptions\UpdateNotAllowedException(__('payment::exceptions.payment.draft_only_for_update'));
         }
 
         // Infer flow from presence of document links
         $isSettlement = ! empty($dto->document_links);
         if ($isSettlement && empty($dto->document_links)) {
-            throw new InvalidArgumentException('Settlement payments must be linked to at least one document.');
+            throw new \InvalidArgumentException(__('payment::exceptions.payment.settlement_needs_documents'));
         }
         if (! $isSettlement && empty($dto->paid_to_from_partner_id)) {
-            throw new InvalidArgumentException('Payments without document links must specify a partner.');
+            throw new \InvalidArgumentException(__('payment::exceptions.payment.non_partner_needs_partner'));
         }
 
         $this->lockDateService->enforce($payment->company, Carbon::parse($dto->payment_date));
@@ -105,7 +103,7 @@ class UpdatePaymentAction
                 }
 
                 if (count($documentTypes) > 1) {
-                    throw new InvalidArgumentException('A payment cannot be linked to both invoices and vendor bills simultaneously.');
+                    throw new \InvalidArgumentException(__('payment::exceptions.payment.mixed_documents_not_allowed'));
                 }
                 $paymentType = key($documentTypes) === 'invoice' ? PaymentType::Inbound : PaymentType::Outbound;
 
@@ -149,7 +147,7 @@ class UpdatePaymentAction
 
             $freshPayment = $payment->fresh();
             if (! $freshPayment) {
-                throw new Exception('Failed to refresh payment after update');
+                throw new \Exception(__('payment::exceptions.payment.refresh_failed'));
             }
 
             return $freshPayment;

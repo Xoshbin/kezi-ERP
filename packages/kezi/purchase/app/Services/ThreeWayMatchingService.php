@@ -99,7 +99,7 @@ class ThreeWayMatchingService
         // In strict mode, block posting if goods not received
         if ($strictMode && $status->blocksPosting()) {
             throw new \InvalidArgumentException(
-                'Cannot post vendor bill: goods have not been received. Please validate the Goods Receipt first.'
+                __('purchase::exceptions.three_way_matching.goods_not_received_post_bill')
             );
         }
 

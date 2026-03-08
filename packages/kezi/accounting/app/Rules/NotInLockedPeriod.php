@@ -27,7 +27,7 @@ class NotInLockedPeriod implements ValidationRule
                 // Fallback to user's company for non-Filament contexts
                 $user = Auth::user();
                 if (! $user || ! $user->company) {
-                    throw new InvalidArgumentException('Company is required for lock date validation');
+                    throw new InvalidArgumentException(__('accounting::exceptions.lock_date.company_required'));
                 }
                 $this->company = $user->company;
             }

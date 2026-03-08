@@ -34,7 +34,7 @@ class CreateJournalEntryForPayrollAction
             }
 
             if (! $payrollJournalId) {
-                throw new RuntimeException('Default Payroll Journal is not configured for this company.');
+                throw new RuntimeException(__('accounting::exceptions.common.default_payroll_journal_missing'));
             }
 
             $lineDTOs = [];
@@ -45,7 +45,7 @@ class CreateJournalEntryForPayrollAction
                 $amount = $payrollLine->amount;
 
                 if (! $amount) {
-                    throw new InvalidArgumentException("Payroll line {$payrollLine->id} has no amount");
+                    throw new InvalidArgumentException(__('accounting::exceptions.payroll.payroll_line_has_no_amount', ['id' => $payrollLine->id]));
                 }
 
                 if ($payrollLine->debit_credit === 'debit') {

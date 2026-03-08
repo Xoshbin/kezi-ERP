@@ -32,7 +32,7 @@ class CreateJournalEntryForInvoiceAction implements InvoiceJournalEntryCreatorCo
             $salesJournalId = $company->default_sales_journal_id;
 
             if (! $arAccountId || ! $salesJournalId) {
-                throw new RuntimeException('Default Accounts Receivable or Sales Journal is not configured for this company.');
+                throw new RuntimeException(__('accounting::exceptions.common.default_accounts_receivable_or_sales_journal_missing'));
             }
 
             // 2. Prepare the lines for the journal entry based on accounting rules.

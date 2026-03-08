@@ -34,7 +34,7 @@ class SettleCashAdvanceAction
         $cashAdvance->refresh();
         DB::transaction(function () use ($cashAdvance, $settlementMethod, $bankAccountId, $user) {
             if ($cashAdvance->status !== CashAdvanceStatus::PendingSettlement) {
-                throw new \InvalidArgumentException('Only pending settlement cash advances can be settled.');
+                throw new \InvalidArgumentException(__('hr::exceptions.cash_advance.only_pending_settlement_can_be_settled'));
             }
 
             $company = $cashAdvance->company;
@@ -46,9 +46,9 @@ class SettleCashAdvanceAction
             // Get employee advance receivable account
             $receivableAccountId = $company->default_employee_advance_receivable_account_id;
             if (! $receivableAccountId) {
-                throw new \RuntimeException('Employee advance receivable account not configured for company.');
+                $url = \App\Filament\Clusters\Settings\Resources\Companies\CompanyResource::getUrl('edit', ['record' => $company]);
+                throw new \RuntimeException(__('hr::exceptions.cash_advance.receivable_account_not_configured', ['link' => $url]));
             }
-
             // Get default journal (operations or misc usually, but let's use default_journal_id or find one)
             // For expenses, we usually use a Vendor Bills journal or General/Misc operations.
             // Let's look for a 'miscellaneous' or 'general' journal.
@@ -64,7 +64,7 @@ class SettleCashAdvanceAction
             }
 
             if (! $journal) {
-                throw new \RuntimeException('No journal found for company.');
+                throw new \RuntimeException(__('hr::exceptions.cash_advance.no_journal_found'));
             }
             $journalId = $journal->id;
 
@@ -138,7 +138,7 @@ class SettleCashAdvanceAction
 
             if ($balance->isPositive() && $settlementMethod === 'cash_return') {
                 if (! $bankAccountId) {
-                    throw new \InvalidArgumentException('Bank account required for cash return.');
+                    throw new \InvalidArgumentException(__('hr::exceptions.cash_advance.bank_account_required_for_return'));
                 }
 
                 // Employee returns cash. Receipt.
@@ -235,7 +235,7 @@ class SettleCashAdvanceAction
 
             } elseif ($balance->isNegative() && $settlementMethod === 'reimbursement') {
                 if (! $bankAccountId) {
-                    throw new \InvalidArgumentException('Bank account required for reimbursement.');
+                    throw new \InvalidArgumentException(__('hr::exceptions.cash_advance.bank_account_required_for_reimbursement'));
                 }
 
                 $reimbursementAmount = $balance->abs();

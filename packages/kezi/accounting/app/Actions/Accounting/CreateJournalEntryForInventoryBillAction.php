@@ -27,13 +27,13 @@ class CreateJournalEntryForInventoryBillAction
             $storableLines = $vendorBill->lines->where('product.type', 'storable');
 
             if ($storableLines->isEmpty()) {
-                throw new RuntimeException('This action should only be called for bills with storable items.');
+                throw new RuntimeException(__('accounting::exceptions.inventory_bill.only_storable_items'));
             }
 
             // Determine Accounts Payable account: vendor-specific or company default
             $apAccountId = $vendorBill->vendor->payable_account_id ?? $company->default_accounts_payable_id;
             if (! $apAccountId) {
-                throw new RuntimeException('Default Accounts Payable account is not configured for this company.');
+                throw new RuntimeException(__('accounting::exceptions.common.default_accounts_payable_missing'));
             }
 
             $lineDTOs = [];
@@ -41,11 +41,11 @@ class CreateJournalEntryForInventoryBillAction
 
             foreach ($storableLines as $line) {
                 if (! $line->product) {
-                    throw new RuntimeException("Product is missing for line ID {$line->id}.");
+                    throw new RuntimeException(__('accounting::exceptions.common.product_missing_for_line', ['id' => $line->id]));
                 }
                 $inventoryAccount = $line->product->inventoryAccount;
                 if (! $inventoryAccount) {
-                    throw new RuntimeException("Product ID {$line->product_id} is missing default inventory account.");
+                    throw new RuntimeException(__('accounting::exceptions.inventory_bill.product_missing_inventory_account', ['id' => $line->product_id]));
                 }
 
                 // Debit Inventory for net amount (exclude deductible tax)
@@ -63,7 +63,7 @@ class CreateJournalEntryForInventoryBillAction
                 if ($line->tax_id && $line->total_line_tax->isPositive()) {
                     $taxAccountId = $company->default_tax_receivable_id ?? $company->default_tax_account_id;
                     if (! $taxAccountId) {
-                        throw new RuntimeException('Default tax account is not configured for this company.');
+                        throw new RuntimeException(__('accounting::exceptions.common.default_tax_account_missing'));
                     }
                     $lineDTOs[] = new CreateJournalEntryLineDTO(
                         account_id: $taxAccountId,
@@ -88,7 +88,7 @@ class CreateJournalEntryForInventoryBillAction
             );
 
             if (! $company->default_purchase_journal_id) {
-                throw new InvalidArgumentException('Company default purchase journal is not configured');
+                throw new InvalidArgumentException(__('accounting::exceptions.common.default_purchase_journal_missing'));
             }
 
             $journalEntryDTO = new CreateJournalEntryDTO(

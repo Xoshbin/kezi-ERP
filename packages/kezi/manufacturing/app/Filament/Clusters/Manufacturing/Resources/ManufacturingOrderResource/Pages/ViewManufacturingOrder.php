@@ -37,15 +37,22 @@ class ViewManufacturingOrder extends ViewRecord
                         Notification::make()
                             ->success()
                             ->title(__('manufacturing::manufacturing.notifications.confirmed'))
-                            ->body('The manufacturing order has been confirmed and is ready for production.')
+                            ->body(__('manufacturing::exceptions.notifications.order_confirmed'))
                             ->send();
 
                         redirect()->to(static::getResource()::getUrl('view', ['record' => $this->record]));
                     } catch (\Exception $e) {
                         Notification::make()
                             ->danger()
-                            ->title(__('manufacturing::manufacturing.notifications.error'))
+                            ->title(__('manufacturing::exceptions.notifications.confirm_failed'))
                             ->body($e->getMessage())
+                            ->persistent()
+                            ->actions([
+                                Action::make('edit_manufacturing_order')
+                                    ->label(__('manufacturing::exceptions.actions.edit_order'))
+                                    ->button()
+                                    ->url(ManufacturingOrderResource::getUrl('edit', ['record' => $this->record])),
+                            ])
                             ->send();
                     }
                 }),
@@ -63,15 +70,22 @@ class ViewManufacturingOrder extends ViewRecord
                         Notification::make()
                             ->success()
                             ->title(__('manufacturing::manufacturing.notifications.started'))
-                            ->body('Components have been consumed and production has started.')
+                            ->body(__('manufacturing::exceptions.notifications.production_started'))
                             ->send();
 
                         redirect()->to(static::getResource()::getUrl('view', ['record' => $this->record]));
                     } catch (\Exception $e) {
                         Notification::make()
                             ->danger()
-                            ->title(__('manufacturing::manufacturing.notifications.error'))
+                            ->title(__('manufacturing::exceptions.notifications.start_failed'))
                             ->body($e->getMessage())
+                            ->persistent()
+                            ->actions([
+                                Action::make('edit_manufacturing_order')
+                                    ->label(__('manufacturing::exceptions.actions.edit_order'))
+                                    ->button()
+                                    ->url(ManufacturingOrderResource::getUrl('edit', ['record' => $this->record])),
+                            ])
                             ->send();
                     }
                 }),
@@ -89,21 +103,35 @@ class ViewManufacturingOrder extends ViewRecord
                         Notification::make()
                             ->success()
                             ->title(__('manufacturing::manufacturing.notifications.completed'))
-                            ->body('Finished goods have been added to inventory.')
+                            ->body(__('manufacturing::exceptions.notifications.production_completed'))
                             ->send();
 
                         redirect()->to(static::getResource()::getUrl('view', ['record' => $this->record]));
                     } catch (\Illuminate\Validation\ValidationException $e) {
                         Notification::make()
                             ->danger()
-                            ->title(__('manufacturing::manufacturing.notifications.error'))
+                            ->title(__('manufacturing::exceptions.notifications.complete_failed'))
                             ->body(implode("\n", $e->validator->errors()->all()))
+                            ->persistent()
+                            ->actions([
+                                Action::make('edit_manufacturing_order')
+                                    ->label(__('manufacturing::exceptions.actions.edit_order'))
+                                    ->button()
+                                    ->url(ManufacturingOrderResource::getUrl('edit', ['record' => $this->record])),
+                            ])
                             ->send();
                     } catch (\Exception $e) {
                         Notification::make()
                             ->danger()
-                            ->title(__('manufacturing::manufacturing.notifications.error'))
+                            ->title(__('manufacturing::exceptions.notifications.complete_failed'))
                             ->body($e->getMessage())
+                            ->persistent()
+                            ->actions([
+                                Action::make('edit_manufacturing_order')
+                                    ->label(__('manufacturing::exceptions.actions.edit_order'))
+                                    ->button()
+                                    ->url(ManufacturingOrderResource::getUrl('edit', ['record' => $this->record])),
+                            ])
                             ->send();
                     }
                 }),
@@ -131,8 +159,15 @@ class ViewManufacturingOrder extends ViewRecord
                     } catch (\Exception $e) {
                         Notification::make()
                             ->danger()
-                            ->title(__('manufacturing::manufacturing.notifications.error'))
+                            ->title(__('manufacturing::exceptions.notifications.cancel_failed'))
                             ->body($e->getMessage())
+                            ->persistent()
+                            ->actions([
+                                Action::make('view_manufacturing_order')
+                                    ->label(__('manufacturing::exceptions.actions.view_order'))
+                                    ->button()
+                                    ->url(ManufacturingOrderResource::getUrl('view', ['record' => $this->record])),
+                            ])
                             ->send();
                     }
                 }),

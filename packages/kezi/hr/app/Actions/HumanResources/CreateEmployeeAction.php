@@ -19,7 +19,7 @@ class CreateEmployeeAction
             if (empty($employeeNumber)) {
                 $company = Company::find($createEmployeeDTO->company_id);
                 if (! $company) {
-                    throw new InvalidArgumentException('Company not found');
+                    throw new InvalidArgumentException(__('hr::exceptions.contract.company_not_found'));
                 }
                 $employeeNumber = Employee::generateEmployeeNumber($company);
             }
@@ -62,7 +62,7 @@ class CreateEmployeeAction
 
             $fresh = $employee->fresh();
             if (! $fresh) {
-                throw new RuntimeException('Failed to refresh employee after creation');
+                throw new RuntimeException(__('hr::exceptions.employee.refresh_failed_after_creation'));
             }
 
             return $fresh;

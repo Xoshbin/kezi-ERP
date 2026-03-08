@@ -17,7 +17,7 @@ class BOMService
         // Validate that finished product is not in component list
         foreach ($dto->lines as $line) {
             if ($line->productId === $dto->productId) {
-                throw new \InvalidArgumentException('A product cannot be a component of itself in a BOM.');
+                throw new \InvalidArgumentException(__('manufacturing::exceptions.bom.self_reference'));
             }
         }
 
@@ -30,7 +30,7 @@ class BOMService
     public function calculateTotalMaterialCost(BillOfMaterial $bom, array $processedBoms = []): \Brick\Money\Money
     {
         if (in_array($bom->id, $processedBoms)) {
-            throw new \RuntimeException('Circular BOM dependency detected');
+            throw new \RuntimeException(__('manufacturing::exceptions.bom.circular_dependency'));
         }
 
         $processedBoms[] = $bom->id;

@@ -111,13 +111,13 @@ class EditStockMove extends EditRecord
         } catch (InsufficientCostInformationException $e) {
             // Show user-friendly error notification
             Notification::make()
-                ->title(__('inventory::inventory_accounting.cost_validation_errors.title'))
+                ->title(__('inventory::exceptions.cost_validation_errors.title'))
                 ->body($e->getUserFriendlyMessage())
                 ->danger()
                 ->persistent()
                 ->actions([
                     Action::make('create_vendor_bill')
-                        ->label(__('Create Vendor Bill'))
+                        ->label(__('inventory::exceptions.cost_validation_errors.notifications.create_vendor_bill'))
                         ->button()
                         ->url(route('filament.kezi.accounting.resources.vendor-bills.create', ['tenant' => Filament::getTenant()]))
                         ->openUrlInNewTab(),
