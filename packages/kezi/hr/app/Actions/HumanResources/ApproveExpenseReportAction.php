@@ -13,7 +13,7 @@ class ApproveExpenseReportAction
     {
         DB::transaction(function () use ($expenseReport, $user) {
             if ($expenseReport->status !== ExpenseReportStatus::Submitted) {
-                throw new \InvalidArgumentException('Only submitted expense reports can be approved.');
+                throw new \InvalidArgumentException(__('hr::exceptions.expense_report.only_submitted_can_be_approved'));
             }
 
             $expenseReport->update([

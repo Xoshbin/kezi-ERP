@@ -53,7 +53,7 @@ The following files contain `->danger()` notifications. If they indicate configu
 - [x] `app/Filament/Resources/NumberingSettingsResource/Pages/EditNumberingSettings.php`
 
 ### POS (New)
-- [ ] `app/Filament/Clusters/Pos/Resources/PosReturns/Pages/ViewPosReturn.php`
+- [x] `app/Filament/Clusters/Pos/Resources/PosReturns/Pages/ViewPosReturn.php`
 
 ---
 
@@ -62,15 +62,15 @@ The following files include `throw new ...Exception(...)` statements using hardc
 
 ### Accounting (Partial Re-Scan Needed)
 - [x] Services: `LockDateService.php`, `InterCompanyDocumentService.php`, `BalanceSheetService.php`, etc.
-- [ ] Actions (Remaining): `BuildLoanPaymentJournalEntryAction.php`, `ComputeLoanScheduleAction.php`, `AccrueLoanInterestAction.php`, `CalculateEIRAction.php` (Loan currency missing)
-- [ ] Actions (Remaining): `CreateJournalEntryForExpenseBillAction.php`, `CreateJournalEntryForPaymentAction.php`, `CreateJournalEntryForInvoiceAction.php`, `CreateJournalEntryForInventoryBillAction.php`, `CreateJournalEntryForDepreciationAction.php`, `CreateJournalEntryForPayrollAction.php`, `CreateJournalEntryForReconciliationAction.php`, `CreateJournalEntryAction.php`, `CreateJournalEntryForAssetAcquisitionAction.php`, `CreateJournalEntryForVendorBillAction.php`, `CreateJournalEntryForAdjustmentAction.php`
-- [ ] Actions (Remaining): `PostDepreciationEntryAction.php` (Failed to refresh)
+- [x] Actions (Remaining): `BuildLoanPaymentJournalEntryAction.php`, `ComputeLoanScheduleAction.php`, `AccrueLoanInterestAction.php`, `CalculateEIRAction.php`
+- [x] Actions (Remaining): `CreateJournalEntryForExpenseBillAction.php`, `CreateJournalEntryForPaymentAction.php`, `CreateJournalEntryForInvoiceAction.php`, `CreateJournalEntryForInventoryBillAction.php`, `CreateJournalEntryForDepreciationAction.php`, `CreateJournalEntryForPayrollAction.php`, `CreateJournalEntryForReconciliationAction.php`, `CreateJournalEntryAction.php`, `CreateJournalEntryForAssetAcquisitionAction.php`, `CreateJournalEntryForVendorBillAction.php`, `CreateJournalEntryForAdjustmentAction.php`
+- [x] Actions (Remaining): `PostDepreciationEntryAction.php`
 
 ### HR (Partial Re-Scan Needed)
 - [x] `app/Models/Position.php`
 - [x] `app/Casts/SalaryCurrencyMoneyCast.php`
 - [x] `app/Casts/PayrollCurrencyMoneyCast.php`
-- [ ] Actions (Remaining): `CreateAttendanceAction.php` (Failed to refresh attendance)
+- [x] Actions (Remaining): `CreateAttendanceAction.php`
 
 ### Inventory
 - [x] Services: `GoodsReceiptService.php`, `StockMoveService.php`, etc.
@@ -99,7 +99,7 @@ The following files include `throw new ...Exception(...)` statements using hardc
 - [x] Actions: `SubmitTimesheetAction.php`, `RejectTimesheetAction.php`, `ApproveTimesheetAction.php`
 
 ### Payment (New)
-- [ ] Actions: `CreateJournalEntryForLCChargeAction.php` (Default bank journal not configured)
+- [x] Actions: `CreateJournalEntryForLCChargeAction.php`
 
 ---
 
@@ -109,13 +109,13 @@ The audit has been expanded to include the `pos` and `payment` modules. Addition
 
 | Module | Danger Notifications | Hardcoded Exceptions | `exceptions.php` | Status |
 |--------|---|---|---|---|
-| Accounting | ✅ 14 files | ⚠️ Partial Remainder | ✅ | Ongoing |
-| HR | ✅ 7 files | ⚠️ Partial Remainder | ✅ | Ongoing |
+| Accounting | ✅ 14 files | ✅ | ✅ | Complete |
+| HR | ✅ 7 files | ✅ | ✅ | Complete |
 | Inventory | ✅ 4 groups | ✅ | ✅ | Complete |
 | Purchase | ✅ 2 files | ✅ | ✅ | Complete |
 | Sales | ✅ 3 files | ✅ | ✅ | Complete |
 | Manufacturing | ✅ 2 files | ✅ | ✅ | Complete |
 | Foundation | ✅ 1 file | ✅ | ✅ | Complete |
 | Project Management | ✅ none | ✅ | ✅ | Complete |
-| POS | ❌ 1 missing | ✅ | ❌ | New Audit |
-| Payment | ✅ none | ❌ 1 missing | ❌ | New Audit |
+| POS | ✅ 1 file | ✅ | ✅ | Complete |
+| Payment | ✅ none | ✅ | ✅ | Complete |

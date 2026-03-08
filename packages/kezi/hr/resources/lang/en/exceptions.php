@@ -41,6 +41,7 @@ return [
         'break_not_started' => 'Break has not been started.',
         'break_already_ended' => 'Break has already been ended.',
         'refresh_failed_after_break_end' => 'Failed to refresh attendance after ending break.',
+        'refresh_failed_after_creation' => 'Failed to refresh attendance after creation.',
     ],
     'employee' => [
         'refresh_failed_after_creation' => 'Failed to refresh employee after creation.',
@@ -53,6 +54,10 @@ return [
         'no_journal_found' => 'No journal found for company.',
         'bank_account_required_for_return' => 'Bank account required for cash return.',
         'bank_account_required_for_reimbursement' => 'Bank account required for reimbursement.',
+        'only_pending_can_be_rejected' => 'Only pending cash advances can be rejected.',
+        'only_pending_can_be_approved' => 'Only pending cash advances can be approved.',
+        'approved_amount_cannot_exceed_requested' => 'Approved amount cannot exceed requested amount.',
+        'only_approved_can_be_disbursed' => 'Only approved cash advances can be disbursed.',
     ],
     'contract' => [
         'refresh_failed_after_creation' => 'Failed to refresh contract after creation.',
@@ -62,5 +67,9 @@ return [
     'common' => [
         'user_not_authenticated' => 'User must be authenticated to perform this action.',
         'field_name_required' => 'A field name is required.',
+    ],
+    'expense_report' => [
+        'only_submitted_can_be_approved' => 'Only submitted expense reports can be approved.',
+        'only_draft_can_be_submitted' => 'Only draft expense reports can be submitted.',
     ],
 ];

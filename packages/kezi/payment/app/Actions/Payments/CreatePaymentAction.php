@@ -30,10 +30,10 @@ class CreatePaymentAction
         // Infer flow from presence of document links: if provided => settlement; else => partner advance/credit
         $isSettlement = ! empty($dto->document_links);
         if ($isSettlement === true && empty($dto->document_links)) {
-            throw new InvalidArgumentException('Settlement payments must be linked to at least one document.');
+            throw new \InvalidArgumentException(__('payment::exceptions.payment.settlement_needs_documents'));
         }
         if ($isSettlement === false && empty($dto->paid_to_from_partner_id)) {
-            throw new InvalidArgumentException('Payments without document links must specify a partner.');
+            throw new \InvalidArgumentException(__('payment::exceptions.payment.non_partner_needs_partner'));
         }
 
         $company = Company::findOrFail($dto->company_id);
@@ -112,7 +112,7 @@ class CreatePaymentAction
                 }
 
                 if (count($documentTypes) > 1) {
-                    throw new InvalidArgumentException('A payment cannot be linked to both invoices and vendor bills simultaneously.');
+                    throw new \InvalidArgumentException(__('payment::exceptions.payment.mixed_documents_not_allowed'));
                 }
                 $paymentType = key($documentTypes) === 'invoice' ? PaymentType::Inbound : PaymentType::Outbound;
 

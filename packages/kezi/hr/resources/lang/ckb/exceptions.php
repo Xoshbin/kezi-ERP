@@ -41,6 +41,7 @@ return [
         'break_not_started' => 'پشووەکە دەستی پێنەکراوە.',
         'break_already_ended' => 'پشووەکە پێشتر کۆتایی پێهێنراوە.',
         'refresh_failed_after_break_end' => 'نوێکردنەوەی زانیارییەکانی ئامادەبوون شکستیهێنا دوای کۆتاییهێنان بە پشوو.',
+        'refresh_failed_after_creation' => 'نوێکردنەوەی ئامادەبوونی دوای دروستکردن سەرکەوتوو نەبوو.',
     ],
     'employee' => [
         'refresh_failed_after_creation' => 'نوێکردنەوەی زانیارییەکانی کارمەند شکستیهێنا دوای دروستکردنی.',
@@ -53,6 +54,10 @@ return [
         'no_journal_found' => 'هیچ جۆرناڵێک بۆ کۆمپانیا نەدۆزرایەوە.',
         'bank_account_required_for_return' => 'هەژماری بانکی پێویستە بۆ گەڕاندنەوەی نەختینە.',
         'bank_account_required_for_reimbursement' => 'هەژماری بانکی پێویستە بۆ قەرەبووکردنەوە (Reimbursement).',
+        'only_pending_can_be_rejected' => 'تەنها پێشوەختەیەک کە چاوەڕوانە دەتوانرێت ڕەتبکرێتەوە.',
+        'only_pending_can_be_approved' => 'تەنها پێشوەختەیەک کە چاوەڕوانە دەتوانرێت پەسەند بکرێت.',
+        'approved_amount_cannot_exceed_requested' => 'بڕی پەسەندکراو ناتوانێت لە بڕی داواکراو زیاتر بێت.',
+        'only_approved_can_be_disbursed' => 'تەنها ئەو پێشوەختانەی پەسەندکراون دەتوانرێت خەرج بکرێن.',
     ],
     'contract' => [
         'refresh_failed_after_creation' => 'نوێکردنەوەی گرێبەست شکستیهێنا دوای دروستکردنی.',
@@ -62,5 +67,9 @@ return [
     'common' => [
         'user_not_authenticated' => 'بۆ ئەنجامدانی ئەم کارە دەبێت چوونەژوورەوەت (Login) کردبێت.',
         'field_name_required' => 'ناوی کێڵگەکە پێویستە.',
+    ],
+    'expense_report' => [
+        'only_submitted_can_be_approved' => 'تەنها ئەو ڕاپۆرتانەی خەرجی کە نێردراون دەتوانرێت پەسەند بکرێن.',
+        'only_draft_can_be_submitted' => 'تەنها ڕشنووسی ڕاپۆرتی خەرجی دەتوانرێت بنێردرێت.',
     ],
 ];

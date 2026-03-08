@@ -97,7 +97,7 @@ class CreateOpeningBalanceEntryAction
                 }
 
                 if (! $reAccount) {
-                    throw new \RuntimeException('Cannot generate Opening Entry: Previous year is open/unbalanced, and no Equity/Retained Earnings account could be found to park the Net Income.');
+                    throw new \RuntimeException(__('accounting::exceptions.fiscal_year.cannot_generate_opening_entry'));
                 }
 
                 // If Net Income is POSITIVE (Profit), it's a CREDIT to Equity.
@@ -131,7 +131,7 @@ class CreateOpeningBalanceEntryAction
                 ->first();
 
             if (! $journal) {
-                throw new \RuntimeException('No Miscellaneous Journal found for Opening Entry.');
+                throw new \RuntimeException(__('accounting::exceptions.fiscal_year.no_miscellaneous_journal_found'));
             }
 
             $entryDTO = new CreateJournalEntryDTO(

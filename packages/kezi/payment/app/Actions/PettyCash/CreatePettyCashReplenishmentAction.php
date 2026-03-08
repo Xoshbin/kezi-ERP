@@ -30,7 +30,7 @@ class CreatePettyCashReplenishmentAction
 
             // Validate fund is active
             if ($fund->status !== PettyCashFundStatus::Active) {
-                throw new \InvalidArgumentException('Cannot replenish a closed fund.');
+                throw new \InvalidArgumentException(__('payment::exceptions.petty_cash.closed_fund_not_replenishable'));
             }
 
             // Check lock date

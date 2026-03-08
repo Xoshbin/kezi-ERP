@@ -25,7 +25,7 @@ class PostDepreciationEntryAction
 
             $fresh = $depreciationEntry->fresh();
             if (! $fresh) {
-                throw new RuntimeException('Failed to refresh depreciation entry after update');
+                throw new RuntimeException(__('accounting::exceptions.asset.failed_to_refresh_depreciation_entry'));
             }
 
             return $fresh;

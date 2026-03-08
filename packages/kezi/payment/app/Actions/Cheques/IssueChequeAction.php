@@ -25,7 +25,7 @@ class IssueChequeAction
         $this->lockDateService->enforce($company, Carbon::parse($dto->issue_date));
 
         if ($dto->type !== ChequeType::Payable) {
-            throw new \InvalidArgumentException('IssueChequeAction is only for payable cheques.');
+            throw new \InvalidArgumentException(__('payment::exceptions.cheque.payable_only_for_issue'));
         }
 
         return DB::transaction(function () use ($dto, $company) {

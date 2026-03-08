@@ -24,7 +24,7 @@ class CreateJournalEntryForReconciliationAction
         $currency = $journal->currency;
 
         if (! $currency) {
-            throw new InvalidArgumentException('Journal currency is not configured');
+            throw new InvalidArgumentException(__('accounting::exceptions.common.journal_currency_missing'));
         }
 
         $currencyCode = $currency->code;
@@ -38,7 +38,7 @@ class CreateJournalEntryForReconciliationAction
         $outstandingAccountId = $company->default_outstanding_receipts_account_id;
 
         if (! $bankAccountId || ! $outstandingAccountId) {
-            throw new RuntimeException('Default bank or outstanding receipts account is not configured for this company.');
+            throw new RuntimeException(__('accounting::exceptions.reconciliation.default_bank_or_outstanding_receipts_missing'));
         }
 
         // 3. Build the journal entry lines based on reconciliation accounting rules.
