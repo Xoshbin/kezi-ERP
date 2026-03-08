@@ -17,7 +17,7 @@ class ConfirmManufacturingOrderAction
         return DB::transaction(function () use ($mo) {
             // Validate current status
             if ($mo->status !== ManufacturingOrderStatus::Draft) {
-                throw new \InvalidArgumentException('Only draft manufacturing orders can be confirmed.');
+                throw new \InvalidArgumentException(__('manufacturing::exceptions.order.confirm_draft_only'));
             }
 
             // Update status

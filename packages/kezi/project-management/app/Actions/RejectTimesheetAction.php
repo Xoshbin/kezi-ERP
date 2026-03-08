@@ -13,7 +13,7 @@ class RejectTimesheetAction
     public function execute(Timesheet $timesheet, User $rejector, string $reason): void
     {
         if (! $timesheet->isSubmitted()) {
-            throw new RuntimeException('Only submitted timesheets can be rejected.');
+            throw new RuntimeException(__('project-management::exceptions.timesheet.reject_submitted_only'));
         }
 
         DB::transaction(function () use ($timesheet, $reason) {

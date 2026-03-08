@@ -125,7 +125,7 @@ it('throws exception if manufacturing accounts are not configured', function () 
 
     // Act & Assert
     expect(fn () => $this->action->execute($mo, $this->user))
-        ->toThrow(\RuntimeException::class, 'Manufacturing accounts (Finished Goods, WIP, Manufacturing Journal) are not configured for this company.');
+        ->toThrow(\RuntimeException::class, __('manufacturing::exceptions.order.manufacturing_accounts_not_configured', ['company' => $this->company->name]));
 });
 
 it('handles multi-currency manufacturing costs correctly by using company currency', function () {

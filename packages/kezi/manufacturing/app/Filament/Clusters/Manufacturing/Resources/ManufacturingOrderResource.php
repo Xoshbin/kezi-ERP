@@ -253,14 +253,28 @@ class ManufacturingOrderResource extends Resource
                         } catch (\Illuminate\Validation\ValidationException $e) {
                             \Filament\Notifications\Notification::make()
                                 ->danger()
-                                ->title(__('manufacturing::manufacturing.notifications.error'))
+                                ->title(__('manufacturing::exceptions.notifications.cancel_failed'))
                                 ->body(implode("\n", $e->validator->errors()->all()))
+                                ->persistent()
+                                ->actions([
+                                    FilamentAction::make('view_manufacturing_order')
+                                        ->label(__('manufacturing::exceptions.actions.view_order'))
+                                        ->button()
+                                        ->url(ManufacturingOrderResource::getUrl('view', ['record' => $record])),
+                                ])
                                 ->send();
                         } catch (\Exception $e) {
                             \Filament\Notifications\Notification::make()
                                 ->danger()
-                                ->title(__('manufacturing::manufacturing.notifications.error'))
+                                ->title(__('manufacturing::exceptions.notifications.cancel_failed'))
                                 ->body($e->getMessage())
+                                ->persistent()
+                                ->actions([
+                                    FilamentAction::make('view_manufacturing_order')
+                                        ->label(__('manufacturing::exceptions.actions.view_order'))
+                                        ->button()
+                                        ->url(ManufacturingOrderResource::getUrl('view', ['record' => $record])),
+                                ])
                                 ->send();
                         }
                     }),

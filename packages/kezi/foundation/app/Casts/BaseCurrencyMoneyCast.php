@@ -190,6 +190,6 @@ class BaseCurrencyMoneyCast extends MoneyCast
         }
 
         // If we still can't resolve the currency, throw an exception
-        throw new InvalidArgumentException('Could not resolve base currency for model '.get_class($model).'. Please ensure the model has a valid company relationship.');
+        throw new InvalidArgumentException(__('foundation::exceptions.cast.resolve_base_currency', ['class' => get_class($model)]));
     }
 }

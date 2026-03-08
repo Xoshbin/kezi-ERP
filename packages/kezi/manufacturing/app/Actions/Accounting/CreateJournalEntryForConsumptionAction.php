@@ -41,9 +41,8 @@ class CreateJournalEntryForConsumptionAction
             $manufacturingJournalId = $company->default_manufacturing_journal_id;
 
             if (! $rawMaterialsAccountId || ! $wipAccountId || ! $manufacturingJournalId) {
-                throw new RuntimeException('Manufacturing accounts (Raw Materials, WIP, Manufacturing Journal) are not configured for this company.');
+                throw new RuntimeException(__('manufacturing::exceptions.order.consumption_accounts_not_configured', ['company' => $company->name]));
             }
-
             $lineDTOs = [];
             $totalCost = Money::of(0, $currency->code);
 
