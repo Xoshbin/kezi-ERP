@@ -23,15 +23,41 @@ use Kezi\Sales\Services\QuoteService;
 
 beforeEach(function () {
     /** @var \Tests\TestCase $this */
-    $this->createAction = Mockery::mock(CreateQuoteAction::class);
-    $this->updateAction = Mockery::mock(UpdateQuoteAction::class);
-    $this->sendAction = Mockery::mock(SendQuoteAction::class);
-    $this->acceptAction = Mockery::mock(AcceptQuoteAction::class);
-    $this->rejectAction = Mockery::mock(RejectQuoteAction::class);
-    $this->cancelAction = Mockery::mock(CancelQuoteAction::class);
-    $this->convertToOrderAction = Mockery::mock(ConvertQuoteToSalesOrderAction::class);
-    $this->convertToInvoiceAction = Mockery::mock(ConvertQuoteToInvoiceAction::class);
-    $this->revisionAction = Mockery::mock(CreateQuoteRevisionAction::class);
+    /** @var CreateQuoteAction&\Mockery\MockInterface $createAction */
+    $createAction = Mockery::mock(CreateQuoteAction::class);
+    $this->createAction = $createAction;
+
+    /** @var UpdateQuoteAction&\Mockery\MockInterface $updateAction */
+    $updateAction = Mockery::mock(UpdateQuoteAction::class);
+    $this->updateAction = $updateAction;
+
+    /** @var SendQuoteAction&\Mockery\MockInterface $sendAction */
+    $sendAction = Mockery::mock(SendQuoteAction::class);
+    $this->sendAction = $sendAction;
+
+    /** @var AcceptQuoteAction&\Mockery\MockInterface $acceptAction */
+    $acceptAction = Mockery::mock(AcceptQuoteAction::class);
+    $this->acceptAction = $acceptAction;
+
+    /** @var RejectQuoteAction&\Mockery\MockInterface $rejectAction */
+    $rejectAction = Mockery::mock(RejectQuoteAction::class);
+    $this->rejectAction = $rejectAction;
+
+    /** @var CancelQuoteAction&\Mockery\MockInterface $cancelAction */
+    $cancelAction = Mockery::mock(CancelQuoteAction::class);
+    $this->cancelAction = $cancelAction;
+
+    /** @var ConvertQuoteToSalesOrderAction&\Mockery\MockInterface $convertToOrderAction */
+    $convertToOrderAction = Mockery::mock(ConvertQuoteToSalesOrderAction::class);
+    $this->convertToOrderAction = $convertToOrderAction;
+
+    /** @var ConvertQuoteToInvoiceAction&\Mockery\MockInterface $convertToInvoiceAction */
+    $convertToInvoiceAction = Mockery::mock(ConvertQuoteToInvoiceAction::class);
+    $this->convertToInvoiceAction = $convertToInvoiceAction;
+
+    /** @var CreateQuoteRevisionAction&\Mockery\MockInterface $revisionAction */
+    $revisionAction = Mockery::mock(CreateQuoteRevisionAction::class);
+    $this->revisionAction = $revisionAction;
 
     $this->service = new QuoteService(
         createAction: $this->createAction,

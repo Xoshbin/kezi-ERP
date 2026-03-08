@@ -95,7 +95,7 @@ class CreateJournalEntryForPaymentAction
                 foreach ($whtEntries as $entry) {
                     $whtAccount = $entry->withholdingTaxType->withholding_account_id;
                     if (! $whtAccount) {
-                        throw new RuntimeException(__('accounting::exceptions.payment.withholding_tax_account_missing', ['type' => $entry->withholdingTaxType->name]));
+                        throw new RuntimeException(__('accounting::exceptions.payment.withholding_tax_account_missing', ['type' => $entry->withholdingTaxType->getTranslation('name', app()->getLocale())]));
                     }
                     $lines[] = new CreateJournalEntryLineDTO(
                         account_id: $whtAccount,
@@ -144,7 +144,7 @@ class CreateJournalEntryForPaymentAction
                 foreach ($whtEntries as $entry) {
                     $whtAccount = $entry->withholdingTaxType->withholding_account_id;
                     if (! $whtAccount) {
-                        throw new RuntimeException(__('accounting::exceptions.payment.withholding_tax_account_missing', ['type' => $entry->withholdingTaxType->name]));
+                        throw new RuntimeException(__('accounting::exceptions.payment.withholding_tax_account_missing', ['type' => $entry->withholdingTaxType->getTranslation('name', app()->getLocale())]));
                     }
                     $lines[] = new CreateJournalEntryLineDTO(
                         account_id: $whtAccount,

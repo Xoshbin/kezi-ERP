@@ -48,9 +48,14 @@ class SalesOrderAccountingFlowTest extends TestCase
             ['code' => 'IQD'],
             ['name' => 'Iraqi Dinar', 'symbol' => 'IQD', 'decimal_places' => 3, 'is_active' => true]
         );
-        $this->company = Company::factory()->create([
-            'currency_id' => $this->currency->id,
-        ]);
+        $this->company = (function () {
+            /** @var Company $company */
+            $company = Company::factory()->create([
+                'currency_id' => $this->currency->id,
+            ]);
+
+            return $company;
+        })();
 
         $this->user = User::factory()->create();
         // Manually attaching company if relationship exists, or just skipping if column missing.
