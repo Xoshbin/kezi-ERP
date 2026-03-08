@@ -28,7 +28,7 @@ class ConvertQuoteToSalesOrderAction
         // Validate quote can be converted
         if (! $quote->canBeConverted()) {
             throw new QuoteCannotBeModifiedException(
-                'Only accepted quotes that have not been converted can be converted to a sales order.'
+                __('sales::exceptions.quote.conversion_accepted_only')
             );
         }
 

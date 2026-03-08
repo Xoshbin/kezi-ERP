@@ -28,7 +28,7 @@ class UpdateQuoteAction
             // Check if quote can be edited
             if (! $quote->isEditable()) {
                 throw new QuoteCannotBeModifiedException(
-                    'Only draft or sent quotes can be updated.'
+                    __('sales::exceptions.quote.update_draft_sent_only')
                 );
             }
 

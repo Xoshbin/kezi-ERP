@@ -136,7 +136,7 @@ class CreateStockMovesForInvoiceAction
         StockLocation $customerLocation,
     ): StockMove {
         if (! $line->product_id) {
-            throw new Exception('Invoice line must have a product to create stock move');
+            throw new Exception(__('sales::exceptions.stock_move.invoice_line_no_product'));
         }
 
         $productLineDto = new CreateStockMoveProductLineDTO(
@@ -156,7 +156,7 @@ class CreateStockMovesForInvoiceAction
             status: StockMoveStatus::Done,
             move_date: $invoice->posted_at ?? now(),
             reference: $invoice->invoice_number,
-            description: "Stock delivery for invoice {$invoice->invoice_number}",
+            description: __('sales::exceptions.stock_move.delivery_for_invoice', ['number' => $invoice->invoice_number]),
             source_id: $invoice->id,
             source_type: Invoice::class,
             created_by_user_id: $user->id,

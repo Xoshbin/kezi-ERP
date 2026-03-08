@@ -96,6 +96,7 @@ return [
         'delivery_created_count' => ':count delivery item(s) created',
         'delivery_creation_failed' => 'Failed to create delivery',
         'update_not_allowed' => 'Update Not Allowed',
+        'confirmation_failed' => 'Sales Order Confirmation Failed',
     ],
     'invoicing_status' => [
         'not_invoiced' => 'Not Invoiced',
