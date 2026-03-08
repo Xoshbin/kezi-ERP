@@ -22,11 +22,11 @@ class ConvertRFQToPurchaseOrderAction
             $rfq = RequestForQuotation::findOrFail($dto->rfqId);
 
             if (! in_array($rfq->status, [RequestForQuotationStatus::BidReceived, RequestForQuotationStatus::Accepted])) {
-                throw new \Exception("RFQ must be in 'Bid Received' or 'Accepted' status to convert.");
+                throw new \Exception(__('purchase::exceptions.rfq.must_be_bid_received'));
             }
 
             if ($rfq->converted_to_purchase_order_id) {
-                throw new \Exception('RFQ is already converted to a Purchase Order.');
+                throw new \Exception(__('purchase::exceptions.rfq.already_converted'));
             }
 
             // Prepare PO DTO

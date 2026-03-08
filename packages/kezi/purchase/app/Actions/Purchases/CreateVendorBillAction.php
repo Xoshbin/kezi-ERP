@@ -64,7 +64,7 @@ class CreateVendorBillAction
             // We just need to reload the relationship to get the fresh data.
             $freshVendorBill = $vendorBill->fresh('lines');
             if (! $freshVendorBill) {
-                throw new Exception('Failed to refresh vendor bill after creation');
+                throw new Exception(__('purchase::exceptions.vendor_bill.failed_to_refresh_bill'));
             }
 
             return $freshVendorBill;

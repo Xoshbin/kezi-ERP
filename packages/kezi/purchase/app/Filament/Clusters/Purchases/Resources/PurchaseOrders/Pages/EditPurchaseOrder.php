@@ -86,6 +86,7 @@ class EditPurchaseOrder extends EditRecord
                         Notification::make()
                             ->title($e->getMessage())
                             ->danger()
+                            ->persistent()
                             ->send();
                     } catch (Exception $e) {
                         Notification::make()
@@ -164,6 +165,7 @@ class EditPurchaseOrder extends EditRecord
                             ->title(__('purchase::purchase_orders.notifications.bill_creation_failed'))
                             ->body($e->getMessage())
                             ->danger()
+                            ->persistent()
                             ->send();
                     }
                 }),
@@ -236,7 +238,7 @@ class EditPurchaseOrder extends EditRecord
     protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
     {
         if (! $record instanceof PurchaseOrder) {
-            throw new \InvalidArgumentException('Expected PurchaseOrder record');
+            throw new \InvalidArgumentException(__('purchase::exceptions.purchase_order.expected_record'));
         }
 
         $currencyId = $data['currency_id'] ?? $record->currency_id;

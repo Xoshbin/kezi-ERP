@@ -41,11 +41,11 @@ class VendorBillObserver
         $product = $line->product;
         $company = $vendorBill->company->fresh();
         if (! $company) {
-            throw new RuntimeException('Failed to refresh company for vendor bill');
+            throw new RuntimeException(__('purchase::exceptions.vendor_bill.failed_to_refresh_company'));
         }
 
         if (! $company->vendorLocation || ! $company->defaultStockLocation) {
-            throw new RuntimeException("Default Vendor or Stock Location is not configured for Company ID: {$company->id}.");
+            throw new RuntimeException(__('purchase::exceptions.vendor_bill.missing_default_vendor_location', ['company_id' => $company->id]));
         }
 
         // Create the physical stock move record
