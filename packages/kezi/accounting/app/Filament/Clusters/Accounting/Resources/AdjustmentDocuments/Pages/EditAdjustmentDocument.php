@@ -210,7 +210,7 @@ class EditAdjustmentDocument extends EditRecord
         if ($currency instanceof Collection) {
             $currency = $currency->first();
             if (! $currency) {
-                throw new InvalidArgumentException(__('accounting::exceptions.consolidation.invoice_company_not_found')); // Or similar generic error
+                throw new InvalidArgumentException(__('accounting::exceptions/common.common.currency_not_found'));
             }
         }
         $lineDTOs = [];
