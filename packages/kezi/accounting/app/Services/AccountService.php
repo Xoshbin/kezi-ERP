@@ -49,7 +49,7 @@ class AccountService
     public function delete(Account $account): void
     {
         if ($account->journalEntryLines()->exists()) {
-            throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException('Cannot delete account with associated financial records.');
+            throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException(__('accounting::exceptions.account.deletion_not_allowed_financial_records'));
         }
 
         $account->delete();

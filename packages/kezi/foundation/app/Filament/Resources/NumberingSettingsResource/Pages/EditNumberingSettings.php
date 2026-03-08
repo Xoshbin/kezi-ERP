@@ -28,6 +28,7 @@ class EditNumberingSettings extends EditRecord
                 ->title(__('foundation::numbering.settings.cannot_change_title'))
                 ->body(__('foundation::numbering.settings.cannot_change_message').' ('.implode(', ', $errors).')')
                 ->danger()
+                ->persistent()
                 ->send();
 
             $this->halt();

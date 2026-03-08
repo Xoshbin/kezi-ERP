@@ -27,7 +27,7 @@ class UpdatePurchaseOrderAction
         // Ensure the PO can be edited
         if (! $purchaseOrder->canBeEdited()) {
             throw new \Kezi\Foundation\Exceptions\UpdateNotAllowedException(
-                'This purchase order cannot be edited in its current status.'
+                __('purchase::exceptions.purchase_order.cannot_be_updated')
             );
         }
 

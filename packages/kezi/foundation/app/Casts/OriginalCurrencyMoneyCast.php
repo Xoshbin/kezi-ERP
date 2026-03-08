@@ -29,7 +29,7 @@ class OriginalCurrencyMoneyCast extends MoneyCast
             if ($currency instanceof Collection) {
                 $currency = $currency->first();
                 if (! $currency) {
-                    throw new InvalidArgumentException('Original currency collection is empty');
+                    throw new InvalidArgumentException(__('foundation::exceptions.cast.empty_original_currency'));
                 }
             }
 
@@ -43,7 +43,7 @@ class OriginalCurrencyMoneyCast extends MoneyCast
             if ($currency instanceof Collection) {
                 $currency = $currency->first();
                 if (! $currency) {
-                    throw new InvalidArgumentException('Foreign currency collection is empty');
+                    throw new InvalidArgumentException(__('foundation::exceptions.cast.empty_foreign_currency'));
                 }
             }
 
@@ -56,7 +56,7 @@ class OriginalCurrencyMoneyCast extends MoneyCast
             if ($currency instanceof Collection) {
                 $currency = $currency->first();
                 if (! $currency) {
-                    throw new InvalidArgumentException('Currency collection is empty');
+                    throw new InvalidArgumentException(__('foundation::exceptions.cast.empty_currency'));
                 }
             }
 
@@ -64,6 +64,6 @@ class OriginalCurrencyMoneyCast extends MoneyCast
         }
 
         // Return the currency by ID
-        throw new InvalidArgumentException('Model does not have an original_currency_id or foreign_currency_id for OriginalCurrencyMoneyCast.');
+        throw new InvalidArgumentException(__('foundation::exceptions.cast.missing_internal_currency'));
     }
 }

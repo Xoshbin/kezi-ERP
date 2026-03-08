@@ -29,11 +29,11 @@ class CreatePaymentFromPayrollAction
     {
         // Validate payroll status
         if ($payroll->status !== 'processed') {
-            throw new InvalidArgumentException('Only processed payrolls can be paid.');
+            throw new InvalidArgumentException(__('hr::exceptions.payroll.only_processed_can_be_paid'));
         }
 
         if ($payroll->payment_id) {
-            throw new InvalidArgumentException('Payroll has already been paid.');
+            throw new InvalidArgumentException(__('hr::exceptions.payroll.already_paid'));
         }
 
         // Get company's default bank journal for payments
@@ -42,13 +42,15 @@ class CreatePaymentFromPayrollAction
         $bankJournal = $company->defaultBankJournal;
 
         if (! $bankJournal instanceof Journal) {
-            throw new InvalidArgumentException('No default bank journal found for company.');
+            $url = \App\Filament\Clusters\Settings\Resources\Companies\CompanyResource::getUrl('edit', ['record' => $company]);
+            throw new InvalidArgumentException(__('hr::exceptions.payroll.no_bank_journal_found', ['link' => $url]));
         }
 
         // Get salary payable account from company defaults
         $salaryPayableAccountId = $company->default_salary_payable_account_id;
         if (! $salaryPayableAccountId) {
-            throw new InvalidArgumentException('No default salary payable account configured for company.');
+            $url = \App\Filament\Clusters\Settings\Resources\Companies\CompanyResource::getUrl('edit', ['record' => $company]);
+            throw new InvalidArgumentException(__('hr::exceptions.payroll.salary_payable_account_not_configured', ['link' => $url]));
         }
 
         // For now, we'll use the employee's name as the partner reference

@@ -106,6 +106,7 @@ class BudgetControlService
             return;
         }
 
+        /** @var BudgetLine $budgetLine */
         foreach ($budgetLines as $budgetLine) {
             $budget = $budgetLine->budget;
 
@@ -124,8 +125,12 @@ class BudgetControlService
                 $budgetName = $budget->name;
 
                 throw new BudgetExceededException(
-                    "The transaction exceeds the available budget: Budget exceeded for {$budgetName} (Account: {$accountName}). ".
-                    "Available: {$available->formatTo('en_US')}, Requested: {$amountToCheck->formatTo('en_US')}"
+                    __('accounting::exceptions.budget.exceeded', [
+                        'budget' => $budgetName,
+                        'account' => $accountName,
+                        'available' => $available->formatTo('en_US'),
+                        'requested' => $amountToCheck->formatTo('en_US'),
+                    ])
                 );
             }
         }
@@ -156,16 +161,22 @@ class BudgetControlService
             $query->where('analytic_account_id', $line->analytic_account_id);
         }
 
-        // We sum (debit - credit) to get net expense
-        $netAmount = $query->sum(
-            \Illuminate\Support\Facades\DB::raw('debit - credit')
-        );
+        // Aggregate debits and credits
+        $totals = $query->selectRaw('SUM(debit) as debits, SUM(credit) as credits')->first();
 
-        // Result is in minor units (integer) because stored as such?
-        // No, 'debit' and 'credit' columns are usually big integers in database for Money?
-        // Let's verify JournalEntryLine schema.
-        // Assuming they are stored as integers (minor units) based on other parts of the app using MoneyCast.
-        // But sum() on DB returns the raw value.
+        // Convert the raw sums to integers (minor units)
+        $debitAmount = (int) ($totals->debits ?? 0);
+        $creditAmount = (int) ($totals->credits ?? 0);
+
+        // For Expense accounts: Debit (Expense) - Credit (Rejection/Refund) = Net Usage
+        $netAmount = $debitAmount - $creditAmount;
+
+        if ($line->analytic_account_id) {
+            // Analytic entries use 'amount' which is typically positive for costs
+            // If they come from JE lines, we should verify the sign convention.
+            // For now, assuming standard accounting where Expense = Positive.
+            $netAmount = -$netAmount;
+        }
 
         return Money::ofMinor($netAmount, $line->budget->currency->code);
     }
@@ -242,14 +253,15 @@ class BudgetControlService
         // It handles partial billing and full billing correctly (Committed reduces as Actuals increase).
 
         // 1. Total PO Amount for this account/period
-        $poQuery = \Kezi\Purchase\Models\PurchaseOrderLine::query()
+        $poLineQuery = \Kezi\Purchase\Models\PurchaseOrderLine::query()
             ->whereHas('purchaseOrder', function ($q) use ($line) {
                 $q->where('company_id', $line->company_id)
                     ->whereIn('status', [
                         \Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus::Confirmed,
                         \Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus::ToReceive,
-                        \Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus::ToBill,
                         \Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus::PartiallyReceived,
+                        \Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus::FullyReceived,
+                        \Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus::ToBill,
                         \Kezi\Purchase\Enums\Purchases\PurchaseOrderStatus::PartiallyBilled,
                     ])
                     ->whereDate('po_date', '>=', $line->budget->period_start_date)
@@ -275,7 +287,8 @@ class BudgetControlService
         // Let's use PHP iteration to be safe with Money objects and casting, unless performance is critical.
         // For "Budget Control", performance is important but accuracy is paramount.
         // Optimization: Chunking.
-        $poQuery->chunk(100, function ($poLines) use (&$totalPOAmount) {
+        $poLineQuery->chunk(100, function ($poLines) use (&$totalPOAmount) {
+            /** @var \Kezi\Purchase\Models\PurchaseOrderLine $poLine */
             foreach ($poLines as $poLine) {
                 $totalPOAmount = $totalPOAmount->plus($poLine->getSubtotalInCompanyCurrency());
             }
@@ -304,6 +317,7 @@ class BudgetControlService
 
         $totalBilledLinkedToPO = Money::of(0, $currency->code);
         $billedQuery->chunk(100, function ($billLines) use (&$totalBilledLinkedToPO) {
+            /** @var \Kezi\Purchase\Models\VendorBillLine $billLine */
             foreach ($billLines as $billLine) {
                 // We rely on `subtotal_company_currency`
                 $amount = $billLine->subtotal_company_currency ?? $billLine->subtotal; // fallback

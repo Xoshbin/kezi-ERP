@@ -13,7 +13,7 @@ class ApproveTimesheetAction
     public function execute(Timesheet $timesheet, User $approver): void
     {
         if (! $timesheet->isSubmitted()) {
-            throw new RuntimeException('Only submitted timesheets can be approved.');
+            throw new RuntimeException(__('projectmanagement::exceptions.timesheet.approve_submitted_only'));
         }
 
         DB::transaction(function () use ($timesheet, $approver) {

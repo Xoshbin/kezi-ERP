@@ -25,7 +25,7 @@ class CreateJournalEntryForLCChargeAction
         $creditAccountId = $company->default_bank_account_id;
 
         if (! $journalId || ! $creditAccountId) {
-            throw new RuntimeException('Default bank journal or bank account not configured for the company.');
+            throw new RuntimeException(__('payment::exceptions.lc.config_missing'));
         }
 
         $lineDTOs = [

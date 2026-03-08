@@ -425,7 +425,7 @@ class InventoryReportingService
         // Get from current tenant context
         $company = Filament::getTenant();
         if (! $company instanceof Company) {
-            throw new RuntimeException('Company context is required for inventory reporting');
+            throw new RuntimeException(__('inventory::exceptions.reporting.company_context_required'));
         }
 
         return $company;

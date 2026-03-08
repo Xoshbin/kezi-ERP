@@ -197,6 +197,7 @@ class LotTraceabilityReport extends Page implements HasForms
                     if (! $this->reportData) {
                         Notification::make()
                             ->title(__('inventory::inventory_reports.lot_trace.no_data_to_export'))
+                            ->persistent()
                             ->danger()
                             ->send();
 
@@ -225,6 +226,7 @@ class LotTraceabilityReport extends Page implements HasForms
                         Notification::make()
                             ->title(__('inventory::inventory_reports.lot_trace.export_failed'))
                             ->body($e->getMessage())
+                            ->persistent()
                             ->danger()
                             ->send();
                     }

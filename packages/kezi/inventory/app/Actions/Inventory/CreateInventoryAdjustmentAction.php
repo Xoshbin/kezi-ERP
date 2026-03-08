@@ -44,7 +44,7 @@ class CreateInventoryAdjustmentAction
             $adjustmentLocation = $company->adjustmentLocation;
 
             if (! $adjustmentLocation) {
-                throw new InvalidArgumentException('Company must have an adjustment location configured');
+                throw new InvalidArgumentException(__('inventory::exceptions.adjustment.missing_adjustment_location'));
             }
 
             $picking = null;
@@ -83,7 +83,7 @@ class CreateInventoryAdjustmentAction
     {
         foreach ($dto->lines as $line) {
             if ($line->counted_quantity < 0) {
-                throw new InvalidArgumentException('Counted quantity cannot be negative');
+                throw new InvalidArgumentException(__('inventory::exceptions.adjustment.negative_counted_quantity'));
             }
         }
     }
@@ -141,7 +141,7 @@ class CreateInventoryAdjustmentAction
             quantity: $quantity,
             from_location_id: $adjustmentLocationId,
             to_location_id: $line->location_id,
-            description: "Adjustment for {$product->name}",
+            description: __('inventory::exceptions.adjustment.description', ['product_name' => $product->name]),
             source_type: 'InventoryAdjustment',
             source_id: 1,
         );
@@ -207,7 +207,7 @@ class CreateInventoryAdjustmentAction
             quantity: $quantity,
             from_location_id: $line->location_id,
             to_location_id: $adjustmentLocationId,
-            description: "Adjustment for {$product->name}",
+            description: __('inventory::exceptions.adjustment.description', ['product_name' => $product->name]),
             source_type: 'InventoryAdjustment',
             source_id: 1,
         );
@@ -302,7 +302,7 @@ class CreateInventoryAdjustmentAction
             'currency_id' => $company->currency_id,
             'entry_date' => $move->move_date,
             'reference' => "ADJ-{$move->reference}",
-            'description' => "Inventory adjustment - {$product->name}",
+            'description' => __('inventory::exceptions.adjustment.inventory_description', ['product_name' => $product->name]),
             'total_debit' => $totalCost,
             'total_credit' => $totalCost,
         ]);
@@ -314,7 +314,7 @@ class CreateInventoryAdjustmentAction
             'account_id' => $product->default_inventory_account_id,
             'debit' => $totalCost,
             'credit' => Money::of(0, $company->currency->code),
-            'description' => "Inventory adjustment - {$product->name}",
+            'description' => __('inventory::exceptions.adjustment.inventory_description', ['product_name' => $product->name]),
         ]);
 
         // Find an adjustment account (expense type)
@@ -336,7 +336,7 @@ class CreateInventoryAdjustmentAction
             'account_id' => $adjustmentAccount->id,
             'debit' => Money::of(0, $company->currency->code),
             'credit' => $totalCost,
-            'description' => "Inventory adjustment - {$product->name}",
+            'description' => __('inventory::exceptions.adjustment.inventory_description', ['product_name' => $product->name]),
         ]);
 
         // Create StockMoveValuation record to link the move with the journal entry
@@ -386,7 +386,7 @@ class CreateInventoryAdjustmentAction
             'currency_id' => $company->currency_id,
             'entry_date' => $move->move_date,
             'reference' => "ADJ-{$move->reference}",
-            'description' => "Inventory adjustment - {$product->name}",
+            'description' => __('inventory::exceptions.adjustment.inventory_description', ['product_name' => $product->name]),
             'total_debit' => $totalCost,
             'total_credit' => $totalCost,
         ]);
@@ -410,7 +410,7 @@ class CreateInventoryAdjustmentAction
             'account_id' => $adjustmentAccount->id,
             'debit' => $totalCost,
             'credit' => Money::of(0, $company->currency->code),
-            'description' => "Inventory adjustment - {$product->name}",
+            'description' => __('inventory::exceptions.adjustment.inventory_description', ['product_name' => $product->name]),
         ]);
 
         // Credit inventory account
@@ -420,7 +420,7 @@ class CreateInventoryAdjustmentAction
             'account_id' => $product->default_inventory_account_id,
             'debit' => Money::of(0, $company->currency->code),
             'credit' => $totalCost,
-            'description' => "Inventory adjustment - {$product->name}",
+            'description' => __('inventory::exceptions.adjustment.inventory_description', ['product_name' => $product->name]),
         ]);
 
         // Create StockMoveValuation record to link the move with the journal entry

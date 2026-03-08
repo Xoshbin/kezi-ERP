@@ -32,14 +32,14 @@ class CreateInvoiceFromSalesOrderAction
         // Validate that the sales order can create an invoice
         if (! $salesOrder->canCreateInvoice()) {
             throw ValidationException::withMessages([
-                'sales_order' => 'This sales order cannot be invoiced in its current status.',
+                'sales_order' => __('sales::exceptions.sales_order.cannot_invoice_status'),
             ]);
         }
 
         // Validate that there are no existing invoices for this sales order
         if ($salesOrder->hasInvoices()) {
             throw ValidationException::withMessages([
-                'sales_order' => 'An invoice already exists for this sales order.',
+                'sales_order' => __('sales::exceptions.sales_order.invoice_already_exists'),
             ]);
         }
 

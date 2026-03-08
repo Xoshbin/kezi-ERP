@@ -27,12 +27,12 @@ class PostPettyCashVoucherAction
         return DB::transaction(function () use ($voucher, $user) {
             // Validate fund is active
             if ($voucher->fund->status !== PettyCashFundStatus::Active) {
-                throw new \InvalidArgumentException('Cannot post voucher for a closed fund.');
+                throw new \InvalidArgumentException(__('payment::exceptions.petty_cash.closed_fund_not_postable'));
             }
 
             // Validate sufficient funds
             if ($voucher->fund->current_balance->isLessThan($voucher->amount)) {
-                throw new \InvalidArgumentException('Insufficient petty cash balance.');
+                throw new \InvalidArgumentException(__('payment::exceptions.petty_cash.insufficient_balance'));
             }
 
             // Check lock date
@@ -50,7 +50,7 @@ class PostPettyCashVoucherAction
                     ->first();
 
                 if (! $cashJournal) {
-                    throw new \RuntimeException('No cash journal found for company. Please configure a default cash journal.');
+                    throw new \RuntimeException(__('payment::exceptions.petty_cash.cash_journal_missing'));
                 }
 
                 $journalId = $cashJournal->id;

@@ -45,7 +45,7 @@ class JournalEntryService
 
         // MODIFIED: Use isEqualTo() for Money object comparison
         if (! $totalDebit->isEqualTo($totalCredit)) {
-            throw ValidationException::withMessages(['lines' => 'Cannot post an unbalanced entry.']);
+            throw ValidationException::withMessages(['lines' => __('accounting::exceptions.journal_entry.unbalanced')]);
         }
 
         // Add other checks here (lock dates, etc.)
@@ -81,7 +81,7 @@ class JournalEntryService
         // Block deletion if the entry has been posted. This is the non-negotiable immutability rule.
         if ($journalEntry->is_posted) {
             throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException(
-                'Cannot delete a posted journal entry. Corrections must be made with a new reversal entry.'
+                __('accounting::exceptions.journal_entry.deletion_not_allowed_posted')
             );
         }
 
@@ -107,7 +107,7 @@ class JournalEntryService
     public function createReversal(JournalEntry $originalEntry, string $reason, User $user): JournalEntry
     {
         if (! $originalEntry->is_posted) {
-            throw new Exception('Only posted journal entries can be reversed.');
+            throw new Exception(__('accounting::exceptions.journal_entry.only_posted_can_be_reversed'));
         }
 
         return app(ReverseJournalEntryAction::class)->execute($originalEntry, $reason, $user);

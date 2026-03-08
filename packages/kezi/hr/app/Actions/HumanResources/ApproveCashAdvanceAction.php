@@ -15,11 +15,11 @@ class ApproveCashAdvanceAction
     {
         DB::transaction(function () use ($cashAdvance, $approvedAmount, $user) {
             if ($cashAdvance->status !== CashAdvanceStatus::PendingApproval) {
-                throw new \InvalidArgumentException('Only pending cash advances can be approved.');
+                throw new \InvalidArgumentException(__('hr::exceptions.cash_advance.only_pending_can_be_approved'));
             }
 
             if ($approvedAmount->isGreaterThan($cashAdvance->requested_amount)) {
-                throw new \InvalidArgumentException('Approved amount cannot exceed requested amount.');
+                throw new \InvalidArgumentException(__('hr::exceptions.cash_advance.approved_amount_cannot_exceed_requested'));
             }
             $cashAdvance->update([
                 'approved_amount' => $approvedAmount,

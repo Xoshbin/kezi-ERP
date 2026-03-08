@@ -116,12 +116,12 @@ class EditAdjustmentDocument extends EditRecord
                     try {
                         $user = auth()->user();
                         if (! $user) {
-                            throw new Exception('User must be authenticated to post adjustment document');
+                            throw new Exception(__('accounting::exceptions.common.user_not_authenticated'));
                         }
                         $service->post($record, $user);
                         Notification::make()->title(__('accounting::adjustment_document.notification_document_posted_successfully'))->success()->send();
                     } catch (Exception $e) {
-                        Notification::make()->title(__('accounting::adjustment_document.notification_document_post_error'))->body($e->getMessage())->danger()->send();
+                        Notification::make()->title(__('accounting::adjustment_document.notification_document_post_error'))->body($e->getMessage())->danger()->persistent()->send();
                     }
                 }),
             DeleteAction::make(),
@@ -226,7 +226,7 @@ class EditAdjustmentDocument extends EditRecord
         }
 
         if (! $record instanceof AdjustmentDocument) {
-            throw new Exception('Invalid record type');
+            throw new Exception(__('accounting::exceptions.common.invalid_record_type'));
         }
 
         $dto = new UpdateAdjustmentDocumentDTO(

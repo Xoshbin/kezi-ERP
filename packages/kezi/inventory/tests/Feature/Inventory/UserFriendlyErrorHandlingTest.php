@@ -13,7 +13,10 @@ use Kezi\Purchase\Models\VendorBill;
 use Kezi\Purchase\Models\VendorBillLine;
 
 beforeEach(function () {
-    $this->company = Company::factory()->create();
+    /** @var \Tests\TestCase $this */
+    /** @var Company $company */
+    $company = Company::factory()->create();
+    $this->company = $company;
     $this->user = User::factory()->create();
 
     $this->product = Product::factory()->create([
@@ -52,9 +55,9 @@ it('converts InsufficientCostInformationException to user-friendly error data', 
         'help_text',
     ]);
 
-    expect($errorData['title'])->toBe(__('inventory::inventory_accounting.cost_validation_errors.title'));
+    expect($errorData['title'])->toBe(__('inventory::exceptions.cost_validation_errors.title'));
     expect($errorData['message'])->toContain($this->product->name);
-    expect($errorData['explanation'])->toContain('First In, First Out');
+    expect($errorData['explanation'])->toContain(__('inventory::exceptions.cost_validation_errors.explanation.fifo'));
     expect($errorData['next_steps'])->toBeArray();
     expect($errorData['next_steps'])->not->toBeEmpty();
 });
@@ -69,7 +72,7 @@ it('generates appropriate notification message for products without vendor bills
     $message = $errorService->getNotificationMessage($exception);
 
     expect($message)->toContain($this->product->name);
-    expect($message)->toContain('create and confirm a vendor bill');
+    expect($message)->toContain(__('inventory::exceptions.cost_validation_errors.notifications.create_confirm_bill'));
     expect($message)->not->toContain('cost layers'); // Should avoid technical jargon
     expect($message)->not->toContain('FIFO'); // Should avoid technical jargon
 });
@@ -110,7 +113,7 @@ it('provides different solutions based on vendor bill status', function () {
     );
 
     $message1 = $errorService->getNotificationMessage($exception1);
-    expect($message1)->toContain('create and confirm a vendor bill');
+    expect($message1)->toContain(__('inventory::exceptions.cost_validation_errors.notifications.create_confirm_bill'));
 
     // Create a draft vendor bill for the product
     $vendorBill = VendorBill::factory()->create([
@@ -132,7 +135,7 @@ it('provides different solutions based on vendor bill status', function () {
     );
 
     $message2 = $errorService->getNotificationMessage($exception2);
-    expect($message2)->toContain('confirm the existing draft vendor bills');
+    expect($message2)->toContain(__('inventory::exceptions.cost_validation_errors.notifications.confirm_existing_draft'));
 });
 
 it('uses business terminology instead of technical jargon', function () {
@@ -152,11 +155,11 @@ it('uses business terminology instead of technical jargon', function () {
     expect($message)->not->toContain('attempted sources');
 
     // Should contain business-friendly terms
-    expect($message)->toContain('inventory movement');
+    expect($message)->toContain(__('inventory::exceptions.cost_validation_errors.notifications.base_message', ['product_name' => $this->product->name]));
     expect($message)->toContain('vendor bill');
 
     // Details can contain more technical information but in user-friendly way
-    expect($details['explanation'])->toContain('First In, First Out');
+    expect($details['explanation'])->toContain(__('inventory::exceptions.cost_validation_errors.explanation.fifo'));
     expect($details['explanation'])->toContain('purchase cost information');
 });
 
@@ -173,10 +176,10 @@ it('provides step-by-step instructions for different scenarios', function () {
     $steps = $details['steps'];
 
     expect($steps)->toHaveCount(4);
-    expect($steps[0])->toContain('Go to Vendor Bills');
-    expect($steps[1])->toContain('Add this product');
-    expect($steps[2])->toContain('Confirm the vendor bill');
-    expect($steps[3])->toContain('Return here');
+    expect($steps[0])->toContain(__('inventory::exceptions.cost_validation_errors.next_steps.create_bill'));
+    expect($steps[1])->toContain(__('inventory::exceptions.cost_validation_errors.next_steps.add_product'));
+    expect($steps[2])->toContain(__('inventory::exceptions.cost_validation_errors.next_steps.confirm_bill'));
+    expect($steps[3])->toContain(__('inventory::exceptions.cost_validation_errors.next_steps.retry_movement'));
 });
 
 it('exception provides user-friendly methods', function () {

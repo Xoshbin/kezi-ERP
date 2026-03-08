@@ -13,7 +13,7 @@ class ApprovePosReturnAction
     {
         return DB::transaction(function () use ($return, $approver) {
             if (! $return->canBeApproved()) {
-                throw new \InvalidArgumentException('Return cannot be approved in current status');
+                throw new \InvalidArgumentException(__('pos::exceptions.pos_return.cannot_be_approved_in_status'));
             }
 
             $return->update([

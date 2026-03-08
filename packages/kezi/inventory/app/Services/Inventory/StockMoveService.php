@@ -72,7 +72,7 @@ class StockMoveService
 
             if ($product && $product->is_template) {
                 throw new \InvalidArgumentException(
-                    'Cannot create stock moves for template products. Use variants instead.'
+                    __('inventory::exceptions.services.template_product_not_allowed')
                 );
             }
         }

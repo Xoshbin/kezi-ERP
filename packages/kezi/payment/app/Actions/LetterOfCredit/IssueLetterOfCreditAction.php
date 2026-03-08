@@ -15,7 +15,7 @@ class IssueLetterOfCreditAction
         DB::transaction(function () use ($lc, $dto) {
             // Only draft LCs can be issued
             if ($lc->status !== LCStatus::Draft) {
-                throw new \RuntimeException('Only draft LCs can be issued');
+                throw new \RuntimeException(__('payment::exceptions.lc.draft_only_for_issue'));
             }
 
             $lc->update([

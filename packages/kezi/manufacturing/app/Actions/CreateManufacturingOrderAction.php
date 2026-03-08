@@ -66,7 +66,7 @@ class CreateManufacturingOrderAction
     private function recursiveExplode(BillOfMaterial $bom, float $parentQuantity, int $depth): array
     {
         if ($depth > 10) {
-            throw new \RuntimeException('Max BOM explosion depth reached (circular dependency?)');
+            throw new \RuntimeException(__('manufacturing::exceptions.bom.max_explosion_depth'));
         }
 
         $lines = [];

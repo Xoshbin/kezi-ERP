@@ -15,12 +15,12 @@ class UtilizeLetterOfCreditAction
         return DB::transaction(function () use ($lc, $dto) {
             // Validate LC can be utilized
             if (! $lc->canBeUtilized()) {
-                throw new \RuntimeException('LC cannot be utilized in current status or is expired');
+                throw new \RuntimeException(__('payment::exceptions.lc.invalid_status_or_expired'));
             }
 
             // Validate amount doesn't exceed balance
             if ($dto->utilized_amount->isGreaterThan($lc->balance)) {
-                throw new \RuntimeException('Utilization amount exceeds LC balance');
+                throw new \RuntimeException(__('payment::exceptions.lc.utilization_exceeds_balance'));
             }
 
             // Create utilization record

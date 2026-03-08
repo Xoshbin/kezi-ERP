@@ -37,7 +37,7 @@ class InvoiceService
     {
         // Guard Clause: Only allow deleting if the status is InvoiceStatus::Draft.
         if ($invoice->status !== InvoiceStatus::Draft) {
-            throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException('Cannot delete a posted invoice.');
+            throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException(__('sales::exceptions.invoice.delete_non_draft'));
         }
 
         // If the guard passes, proceed with the deletion.
@@ -86,19 +86,19 @@ class InvoiceService
     public function resetToDraft(Invoice $invoice, User $user, string $reason): void
     {
         if ($invoice->status !== InvoiceStatus::Posted) {
-            throw new Exception('Only posted invoices can be reset to draft.');
+            throw new Exception(__('sales::exceptions.invoice.reset_non_posted'));
         }
 
         // Safety Case: Check for linked payments.
         // If an invoice has confirmed payments, it should NOT be reset to draft.
         if ($invoice->isFullyPaid() || $invoice->isPartiallyPaid()) {
-            throw new Exception('Cannot reset a paid or partially paid invoice to draft. Please cancel the payments first.');
+            throw new Exception(__('sales::exceptions.invoice.reset_paid'));
         }
 
         // Safety Case: Check for adjustment documents.
         // If an invoice has credit notes or other adjustments, they must be cancelled/reversed first.
         if ($invoice->adjustmentDocuments()->exists()) {
-            throw new Exception('Cannot reset an invoice that has linked adjustment documents. Please cancel those documents first.');
+            throw new Exception(__('sales::exceptions.invoice.reset_linked_adjustments'));
         }
 
         // Accounting Principle: Enforce lock date for the invoice date (since we are reversing it)
@@ -107,7 +107,7 @@ class InvoiceService
         DB::transaction(function () use ($invoice, $user, $reason) {
             $originalEntry = $invoice->journalEntry;
             if (! $originalEntry) {
-                throw new Exception('Cannot reset an invoice without a journal entry.');
+                throw new Exception(__('sales::exceptions.invoice.reset_no_journal_entry'));
             }
 
             // Step 1: Create a detailed audit log explaining the action.
@@ -162,13 +162,13 @@ class InvoiceService
         Gate::forUser($user)->authorize('cancel', $invoice); // You may want a specific policy for this
 
         if ($invoice->status !== InvoiceStatus::Posted) {
-            throw new Exception('Only posted invoices can be cancelled.');
+            throw new Exception(__('sales::exceptions.invoice.cancel_non_posted'));
         }
 
         DB::transaction(function () use ($invoice, $user, $reason) {
             $originalEntry = $invoice->journalEntry;
             if (! $originalEntry) {
-                throw new Exception('Cannot cancel an invoice without a journal entry.');
+                throw new Exception(__('sales::exceptions.invoice.cancel_no_journal_entry'));
             }
 
             // Step 1: Create a detailed audit log explaining the action.

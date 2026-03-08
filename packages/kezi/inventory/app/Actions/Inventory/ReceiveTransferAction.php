@@ -39,7 +39,7 @@ class ReceiveTransferAction
             $destinationLocationId = $picking->destination_location_id;
 
             if (! $transitLocationId || ! $destinationLocationId) {
-                throw new \RuntimeException('Transfer has no transit or destination location configured.');
+                throw new \RuntimeException(__('inventory::exceptions.transfer.missing_locations'));
             }
 
             // Create stock moves from transit to destination for each product line
@@ -63,7 +63,7 @@ class ReceiveTransferAction
                             ),
                         ],
                         reference: "RECV-{$picking->reference}",
-                        description: "Receive transfer from transit: {$picking->reference}",
+                        description: __('inventory::exceptions.transfer.receive_description', ['reference' => $picking->reference]),
                         source_type: StockPicking::class,
                         source_id: $picking->id,
                     );

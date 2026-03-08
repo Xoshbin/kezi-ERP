@@ -86,11 +86,11 @@ class TransferOrderService
     public function confirm(StockPicking $picking, User $user): StockPicking
     {
         if (! $picking->isDraft()) {
-            throw new \RuntimeException('Only draft transfers can be confirmed.');
+            throw new \RuntimeException(__('inventory::exceptions.transfer.only_draft_confirmed'));
         }
 
         if (! $picking->isInternalTransfer()) {
-            throw new \RuntimeException('Only internal transfers can be confirmed through this service.');
+            throw new \RuntimeException(__('inventory::exceptions.transfer.only_internal_confirmed'));
         }
 
         return DB::transaction(function () use ($picking): StockPicking {
@@ -126,7 +126,7 @@ class TransferOrderService
     public function ship(StockPicking $picking, ShipTransferDTO $dto, User $user): StockPicking
     {
         if (! $picking->canBeShipped()) {
-            throw new \RuntimeException('Transfer cannot be shipped in its current state.');
+            throw new \RuntimeException(__('inventory::exceptions.transfer.cannot_ship_state'));
         }
 
         return $this->shipTransferAction->execute($picking, $dto, $user);
@@ -138,7 +138,7 @@ class TransferOrderService
     public function receive(StockPicking $picking, ReceiveTransferDTO $dto, User $user): StockPicking
     {
         if (! $picking->canBeReceived()) {
-            throw new \RuntimeException('Transfer cannot be received in its current state.');
+            throw new \RuntimeException(__('inventory::exceptions.transfer.cannot_receive_state'));
         }
 
         return $this->receiveTransferAction->execute($picking, $dto, $user);
@@ -150,7 +150,7 @@ class TransferOrderService
     public function cancel(StockPicking $picking, User $user): StockPicking
     {
         if ($picking->isShipped() || $picking->isDone()) {
-            throw new \RuntimeException('Shipped or completed transfers cannot be cancelled.');
+            throw new \RuntimeException(__('inventory::exceptions.transfer.cannot_cancel_shipped_completed'));
         }
 
         return DB::transaction(function () use ($picking): StockPicking {

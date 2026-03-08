@@ -46,7 +46,7 @@ class CreateJournalEntryAction implements JournalEntryCreatorContract
 
         $currency = Currency::find($dto->currency_id);
         if (! $currency) {
-            throw new Exception("Currency with ID {$dto->currency_id} not found.");
+            throw new Exception(__('accounting::exceptions.common.currency_id_not_found', ['id' => $dto->currency_id]));
         }
 
         // Calculate totals in company base currency
@@ -143,7 +143,7 @@ class CreateJournalEntryAction implements JournalEntryCreatorContract
             // This ensures the $journalEntry object is fully hydrated before we use it.
             $journalEntry = $journalEntry->fresh();
             if (! $journalEntry) {
-                throw new RuntimeException('Failed to refresh journal entry after creation');
+                throw new RuntimeException(__('accounting::exceptions.journal_entry.failed_to_refresh_after_creation'));
             }
             $journalEntry->load('currency');
 

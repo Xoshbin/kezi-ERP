@@ -73,10 +73,12 @@ class CreateStockMovesOnVendorBillConfirmed
     ): void {
         $company = $vendorBill->company;
 
-        if (! $company->vendorLocation || ! $company->defaultStockLocation) {
-            throw new RuntimeException(
-                "Default Vendor or Stock Location is not configured for Company ID: {$company->getKey()}."
-            );
+        if (! $company->vendorLocation) {
+            throw new RuntimeException(__('inventory::exceptions.grn.missing_vendor_location', ['company_id' => $company->getKey()]));
+        }
+
+        if (! $company->defaultStockLocation) {
+            throw new RuntimeException(__('inventory::exceptions.grn.missing_default_location', ['company_id' => $company->getKey()]));
         }
 
         // Create a Receipt picking to group all moves for this bill
@@ -150,7 +152,7 @@ class CreateStockMovesOnVendorBillConfirmed
             status: StockMoveStatus::Draft,
             move_date: $vendorBill->bill_date,
             reference: $vendorBill->bill_reference,
-            description: "Stock receipt from vendor bill {$vendorBill->bill_reference}",
+            description: __('inventory::exceptions.grn.bill_description', ['bill_reference' => $vendorBill->bill_reference]),
             source_type: VendorBill::class,
             source_id: $vendorBill->getKey(),
             created_by_user_id: $userId

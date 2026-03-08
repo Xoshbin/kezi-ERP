@@ -27,13 +27,13 @@ class ProduceFinishedGoodsAction
         return DB::transaction(function () use ($mo, $user) {
             // Validate current status
             if ($mo->status !== ManufacturingOrderStatus::InProgress) {
-                throw new \InvalidArgumentException('Only in-progress manufacturing orders can produce finished goods.');
+                throw new \InvalidArgumentException(__('manufacturing::exceptions.order.produce_in_progress_only'));
             }
 
             // Resolve user for accountability
             $currentUser = $user ?? Auth::user();
             if (! $currentUser) {
-                throw new \RuntimeException('A user is required to record production finished goods.');
+                throw new \RuntimeException(__('manufacturing::exceptions.order.user_required_for_production'));
             }
 
             // Quality Control Gate
@@ -59,7 +59,7 @@ class ProduceFinishedGoodsAction
             $firstLine = $mo->lines->first();
             if (! $firstLine) {
                 // Should not happen for a valid MO, but safe to handle
-                throw new \RuntimeException("Manufacturing Order {$mo->number} has no lines to process.");
+                throw new \RuntimeException(__('manufacturing::exceptions.order.no_lines_to_process', ['order' => $mo->number]));
             }
             $totalCost = Money::zero($firstLine->currency_code);
 

@@ -40,7 +40,7 @@ class CreateGoodsReceiptFromPurchaseOrderAction
 
             if ($storableLines->isEmpty()) {
                 throw new \InvalidArgumentException(
-                    'Cannot create goods receipt: Purchase Order has no storable products.'
+                    __('inventory::exceptions.grn.no_storable_products')
                 );
             }
 
@@ -63,7 +63,7 @@ class CreateGoodsReceiptFromPurchaseOrderAction
 
             if (! $destinationLocation) {
                 throw new \RuntimeException(
-                    "No internal stock location configured for Company ID: {$company->id}"
+                    __('inventory::exceptions.grn.missing_internal_location', ['company_id' => $company->id])
                 );
             }
 
@@ -96,7 +96,7 @@ class CreateGoodsReceiptFromPurchaseOrderAction
                     'move_date' => $dto->receiptDate ?? now(),
                     'created_by_user_id' => $dto->userId,
                     'reference' => $line->description,
-                    'description' => "Receive {$purchaseOrder->po_number}",
+                    'description' => __('inventory::exceptions.grn.description', ['po_number' => $purchaseOrder->po_number]),
                     'source_type' => get_class($line),
                     'source_id' => $line->id,
                 ]);

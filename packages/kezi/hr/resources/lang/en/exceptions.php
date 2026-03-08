@@ -1,0 +1,75 @@
+<?php
+
+return [
+    'leave_request' => [
+        'only_pending_can_be_approved' => 'Only pending leave requests can be approved.',
+        'only_pending_can_be_rejected' => 'Only pending leave requests can be rejected.',
+        'only_pending_approved_can_be_cancelled' => 'Only pending or approved leave requests can be cancelled.',
+        'insufficient_balance' => 'Insufficient leave balance. Available: :available days.',
+        'minimum_notice_required' => 'Minimum notice of :days days required.',
+        'maximum_consecutive_days_exceeded' => 'Maximum consecutive days allowed: :days.',
+        'overlapping_request' => 'Leave request overlaps with existing leave.',
+        'refresh_failed_after_creation' => 'Failed to refresh leave request after creation.',
+    ],
+    'position' => [
+        'salary_currency_not_found' => 'Position salary currency not found.',
+        'max_salary_not_found' => 'Position max salary not found.',
+        'from' => 'From :amount',
+        'up_to' => 'Up to :amount',
+    ],
+    'casts' => [
+        'salary_currency_resolution_failed' => 'Could not resolve salary currency for model :model. Please ensure the model has a valid currency_id or company relationship.',
+        'payroll_currency_resolution_failed' => 'Could not resolve payroll currency for model :model. Please ensure the model has a valid payroll relationship.',
+        'collection_empty' => 'Salary currency collection is empty.',
+    ],
+    'payroll' => [
+        'active_contract_required' => 'Employee does not have an active contract.',
+        'only_draft_can_be_approved' => 'Only draft payrolls can be approved.',
+        'already_paid' => 'Payroll has already been paid.',
+        'only_processed_can_be_paid' => 'Only processed payrolls can be paid.',
+        'no_bank_journal_found' => 'No default bank journal found for company. <a href=":link" class="underline font-bold">Configure in Company Settings</a>.',
+        'salary_payable_account_not_configured' => 'No default salary payable account configured for company. <a href=":link" class="underline font-bold">Configure in Company Settings</a>.',
+        'refresh_failed_after_creation' => 'Failed to refresh payroll after creation.',
+    ],
+    'attendance' => [
+        'already_clocked_in' => 'Employee has already clocked in today.',
+        'not_clocked_in' => 'Employee has not clocked in today.',
+        'already_clocked_out' => 'Employee has already clocked out today.',
+        'refresh_failed_after_clock_out' => 'Failed to refresh attendance after clock out.',
+        'break_already_started' => 'Break has already been started.',
+        'refresh_failed_after_break_start' => 'Failed to refresh attendance after starting break.',
+        'break_not_started' => 'Break has not been started.',
+        'break_already_ended' => 'Break has already been ended.',
+        'refresh_failed_after_break_end' => 'Failed to refresh attendance after ending break.',
+        'refresh_failed_after_creation' => 'Failed to refresh attendance after creation.',
+    ],
+    'employee' => [
+        'refresh_failed_after_creation' => 'Failed to refresh employee after creation.',
+        'only_terminated_can_be_reactivated' => 'Only terminated employees can be reactivated.',
+    ],
+    'cash_advance' => [
+        'only_draft_can_be_submitted' => 'Only draft cash advances can be submitted.',
+        'only_pending_settlement_can_be_settled' => 'Only pending settlement cash advances can be settled.',
+        'receivable_account_not_configured' => 'Employee advance receivable account not configured for company. <a href=":link" class="underline font-bold">Configure in Company Settings</a>.',
+        'no_journal_found' => 'No journal found for company.',
+        'bank_account_required_for_return' => 'Bank account required for cash return.',
+        'bank_account_required_for_reimbursement' => 'Bank account required for reimbursement.',
+        'only_pending_can_be_rejected' => 'Only pending cash advances can be rejected.',
+        'only_pending_can_be_approved' => 'Only pending cash advances can be approved.',
+        'approved_amount_cannot_exceed_requested' => 'Approved amount cannot exceed requested amount.',
+        'only_approved_can_be_disbursed' => 'Only approved cash advances can be disbursed.',
+    ],
+    'contract' => [
+        'refresh_failed_after_creation' => 'Failed to refresh contract after creation.',
+        'currency_not_found' => 'Currency not found.',
+        'company_not_found' => 'Company not found.',
+    ],
+    'common' => [
+        'user_not_authenticated' => 'User must be authenticated to perform this action.',
+        'field_name_required' => 'A field name is required.',
+    ],
+    'expense_report' => [
+        'only_submitted_can_be_approved' => 'Only submitted expense reports can be approved.',
+        'only_draft_can_be_submitted' => 'Only draft expense reports can be submitted.',
+    ],
+];

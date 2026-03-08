@@ -20,14 +20,14 @@ class AcceptQuoteAction
         // Validate quote can be accepted
         if (! $quote->status->canBeAccepted()) {
             throw new QuoteCannotBeModifiedException(
-                'Only sent quotes can be accepted.'
+                __('sales::exceptions.quote.accept_sent_only')
             );
         }
 
         // Check if quote has expired
         if ($quote->isExpired()) {
             throw new QuoteCannotBeModifiedException(
-                'Cannot accept an expired quote. Please create a new revision.'
+                __('sales::exceptions.quote.accept_expired')
             );
         }
 

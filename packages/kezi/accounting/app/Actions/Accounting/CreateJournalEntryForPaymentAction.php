@@ -40,7 +40,13 @@ class CreateJournalEntryForPaymentAction
         // 1. Determine the correct accounts based on accounting rules.
         $bankAccountId = $payment->journal->default_debit_account_id;
         if (! $bankAccountId) {
-            throw new InvalidArgumentException('The payment journal is not configured with a default bank account.');
+            throw new InvalidArgumentException(__('accounting::payment.validation.journal_no_bank_account', [
+                'journal' => $payment->journal->getTranslation('name', app()->getLocale()),
+                'url' => route('filament.accounting.settings.resources.journals.edit', [
+                    'record' => $payment->journal_id,
+                    'tenant' => $payment->company_id,
+                ]),
+            ]));
         }
 
         $lines = [];
@@ -72,7 +78,7 @@ class CreateJournalEntryForPaymentAction
                 // Use partner's individual receivable account if available, otherwise fall back to default
                 $counterpartAccountId = $payment->partner->receivable_account_id ?? $company->default_accounts_receivable_id;
                 if (! $counterpartAccountId) {
-                    throw new RuntimeException('Default Accounts Receivable is not configured for this company.');
+                    throw new RuntimeException(__('accounting::exceptions.common.default_accounts_receivable_missing'));
                 }
                 // Rule: Inbound payment DEBITS the bank, CREDITS Accounts Receivable.
                 // With WHT: DEBIT Bank (Net), DEBIT WHT Receivable (Tax), CREDIT AR (Gross)
@@ -89,7 +95,7 @@ class CreateJournalEntryForPaymentAction
                 foreach ($whtEntries as $entry) {
                     $whtAccount = $entry->withholdingTaxType->withholding_account_id;
                     if (! $whtAccount) {
-                        throw new RuntimeException('Withholding Tax account not configured for type: '.$entry->withholdingTaxType->name);
+                        throw new RuntimeException(__('accounting::exceptions.payment.withholding_tax_account_missing', ['type' => $entry->withholdingTaxType->getTranslation('name', app()->getLocale())]));
                     }
                     $lines[] = new CreateJournalEntryLineDTO(
                         account_id: $whtAccount,
@@ -113,7 +119,7 @@ class CreateJournalEntryForPaymentAction
                 // Use partner's individual payable account if available, otherwise fall back to default
                 $counterpartAccountId = $payment->partner->payable_account_id ?? $company->default_accounts_payable_id;
                 if (! $counterpartAccountId) {
-                    throw new RuntimeException('Default Accounts Payable is not configured for this company.');
+                    throw new RuntimeException(__('accounting::exceptions.common.default_accounts_payable_missing'));
                 }
                 // Rule: Outbound payment DEBITS Accounts Payable, CREDITS the bank.
                 // With WHT: DEBIT AP (Gross), CREDIT Bank (Net), CREDIT WHT Payable (Tax)
@@ -138,7 +144,7 @@ class CreateJournalEntryForPaymentAction
                 foreach ($whtEntries as $entry) {
                     $whtAccount = $entry->withholdingTaxType->withholding_account_id;
                     if (! $whtAccount) {
-                        throw new RuntimeException('Withholding Tax account not configured for type: '.$entry->withholdingTaxType->name);
+                        throw new RuntimeException(__('accounting::exceptions.payment.withholding_tax_account_missing', ['type' => $entry->withholdingTaxType->getTranslation('name', app()->getLocale())]));
                     }
                     $lines[] = new CreateJournalEntryLineDTO(
                         account_id: $whtAccount,
@@ -161,7 +167,7 @@ class CreateJournalEntryForPaymentAction
                     // Use partner's individual receivable account if available, otherwise fall back to default
                     $counterpartAccountId = $payment->partner->receivable_account_id ?? $company->default_accounts_receivable_id;
                     if (! $counterpartAccountId) {
-                        throw new RuntimeException('Default Accounts Receivable is not configured for this company.');
+                        throw new RuntimeException(__('accounting::exceptions.common.default_accounts_receivable_missing'));
                     }
                     // Inbound payment DEBITS the bank, CREDITS A/R
                     $lines[] = new CreateJournalEntryLineDTO(
@@ -197,7 +203,7 @@ class CreateJournalEntryForPaymentAction
                     // Use partner's individual payable account if available, otherwise fall back to default
                     $counterpartAccountId = $payment->partner->payable_account_id ?? $company->default_accounts_payable_id;
                     if (! $counterpartAccountId) {
-                        throw new RuntimeException('Default Accounts Payable is not configured for this company.');
+                        throw new RuntimeException(__('accounting::exceptions.common.default_accounts_payable_missing'));
                     }
                     // Outbound payment DEBITS A/P, CREDITS bank
                     $lines[] = new CreateJournalEntryLineDTO(
@@ -233,9 +239,9 @@ class CreateJournalEntryForPaymentAction
             } else {
                 // Truly standalone non-partner payments: require explicit counterpart account
                 if ($whtEntries->isNotEmpty()) {
-                    throw new RuntimeException('Standalone payments cannot have Withholding Tax entries without a partner.');
+                    throw new RuntimeException(__('accounting::exceptions.payment.standalone_withholding_needs_partner'));
                 }
-                throw new InvalidArgumentException('Standalone non-partner payments must have a counterpart account.');
+                throw new InvalidArgumentException(__('accounting::exceptions.payment.standalone_needs_counterpart_account'));
             }
         }
 

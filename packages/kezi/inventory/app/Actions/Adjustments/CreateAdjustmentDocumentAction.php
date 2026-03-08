@@ -30,7 +30,7 @@ class CreateAdjustmentDocumentAction
         return DB::transaction(function () use ($dto): AdjustmentDocument {
             $currency = Currency::find($dto->currency_id);
             if (! $currency) {
-                throw new InvalidArgumentException('Currency not found');
+                throw new InvalidArgumentException(__('inventory::exceptions.general.currency_not_found'));
             }
             $currencyCode = $currency->code;
 
@@ -64,7 +64,7 @@ class CreateAdjustmentDocumentAction
             // Return the fresh model with all updates
             $fresh = $adjustmentDocument->fresh();
             if (! $fresh) {
-                throw new RuntimeException('Failed to refresh adjustment document after creation');
+                throw new RuntimeException(__('inventory::exceptions.adjustment.refresh_failed'));
             }
 
             return $fresh;
@@ -167,7 +167,7 @@ class CreateAdjustmentDocumentAction
         $doc = $line->adjustmentDocument;
 
         if (! $line->unit_price) {
-            throw new InvalidArgumentException('Line unit price is required');
+            throw new InvalidArgumentException(__('inventory::exceptions.adjustment.unit_price_required'));
         }
 
         $unitPriceCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
@@ -179,7 +179,7 @@ class CreateAdjustmentDocumentAction
         );
 
         if (! $line->subtotal) {
-            throw new InvalidArgumentException('Line subtotal is required');
+            throw new InvalidArgumentException(__('inventory::exceptions.adjustment.subtotal_required'));
         }
 
         $subtotalCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(
@@ -191,7 +191,7 @@ class CreateAdjustmentDocumentAction
         );
 
         if (! $line->total_line_tax) {
-            throw new InvalidArgumentException('Line total tax is required');
+            throw new InvalidArgumentException(__('inventory::exceptions.adjustment.tax_required'));
         }
 
         $totalLineTaxCompanyCurrency = $this->currencyConverter->convertToBaseCurrency(

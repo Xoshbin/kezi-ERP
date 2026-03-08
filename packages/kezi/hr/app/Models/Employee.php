@@ -453,7 +453,7 @@ class Employee extends Model
     /**
      * Get the employee's attendance for a specific date.
      */
-    public function getAttendanceForDate(Carbon $date): ?Attendance
+    public function getAttendanceForDate(\Carbon\CarbonInterface $date): ?Attendance
     {
         /** @var Attendance|null $attendance */
         $attendance = $this->attendances()

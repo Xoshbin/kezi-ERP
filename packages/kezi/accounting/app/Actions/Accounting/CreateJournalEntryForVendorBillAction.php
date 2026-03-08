@@ -32,7 +32,7 @@ class CreateJournalEntryForVendorBillAction implements VendorBillJournalEntryCre
             $exchangeRate = $vendorBill->exchange_rate_at_creation ?? 1.0;
             $apAccountId = $vendorBill->vendor->payable_account_id ?? $company->default_accounts_payable_id;
             if (! $apAccountId) {
-                throw new RuntimeException('Default Accounts Payable account is not configured for this company.');
+                throw new RuntimeException(__('accounting::exceptions.common.default_accounts_payable_missing'));
             }
 
             $lineDTOs = [];
@@ -96,7 +96,7 @@ class CreateJournalEntryForVendorBillAction implements VendorBillJournalEntryCre
                 if ($isStorable && $line->product) {
                     $stockInputAccount = $line->product->stockInputAccount;
                     if (! $stockInputAccount) {
-                        throw new RuntimeException("Product ID {$line->product_id} missing stock input account");
+                        throw new RuntimeException(__('accounting::exceptions.vendor_bill.product_missing_stock_input_account', ['id' => $line->product_id]));
                     }
                     // Convert subtotal to company currency
                     $subtotalCompanyCurrency = $convertToCompanyCurrency($line->subtotal);
@@ -124,7 +124,7 @@ class CreateJournalEntryForVendorBillAction implements VendorBillJournalEntryCre
                 } elseif ($isAsset) {
                     $category = AssetCategory::find($line->asset_category_id);
                     if (! $category) {
-                        throw new RuntimeException('Invalid asset category on bill line.');
+                        throw new RuntimeException(__('accounting::exceptions.vendor_bill.invalid_asset_category'));
                     }
                     // Convert subtotal to company currency
                     $subtotalCompanyCurrency = $convertToCompanyCurrency($line->subtotal);
@@ -185,7 +185,7 @@ class CreateJournalEntryForVendorBillAction implements VendorBillJournalEntryCre
                         $taxAccountId = $tax->tax_account_id ?? ($company->default_tax_receivable_id ?? $company->default_tax_account_id);
 
                         if (! $taxAccountId) {
-                            throw new RuntimeException("Tax account not configured for tax '{$tax->name}' and no default company input tax account set.");
+                            throw new RuntimeException(__('accounting::exceptions.common.tax_account_missing_for_tax', ['tax' => $tax->getTranslation('name', app()->getLocale())]));
                         }
 
                         $lineDTOs[] = new CreateJournalEntryLineDTO(
@@ -217,7 +217,7 @@ class CreateJournalEntryForVendorBillAction implements VendorBillJournalEntryCre
             );
 
             if (! $company->default_purchase_journal_id) {
-                throw new InvalidArgumentException('Company default purchase journal is not configured');
+                throw new InvalidArgumentException(__('accounting::exceptions.common.default_purchase_journal_missing'));
             }
 
             $journalEntryDTO = new CreateJournalEntryDTO(

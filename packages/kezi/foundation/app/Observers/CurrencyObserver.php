@@ -14,7 +14,7 @@ class CurrencyObserver
     {
         // Add a check for journal entries as well for robustness.
         if ($currency->companies()->exists() || $currency->journalEntries()->exists()) {
-            throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException('Cannot delete a currency that is in use.');
+            throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException(__('foundation::exceptions.currency.in_use'));
         }
     }
 }

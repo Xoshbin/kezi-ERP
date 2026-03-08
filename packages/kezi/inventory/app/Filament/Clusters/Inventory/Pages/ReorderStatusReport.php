@@ -214,6 +214,7 @@ class ReorderStatusReport extends Page implements HasForms
                     if (! $this->reportData) {
                         Notification::make()
                             ->title(__('inventory::inventory_reports.reorder.no_data_to_export'))
+                            ->persistent()
                             ->danger()
                             ->send();
 
@@ -242,6 +243,7 @@ class ReorderStatusReport extends Page implements HasForms
                         Notification::make()
                             ->title(__('inventory::inventory_reports.reorder.export_failed'))
                             ->body($e->getMessage())
+                            ->persistent()
                             ->danger()
                             ->send();
                     }

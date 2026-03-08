@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use AllowDynamicProperties;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithTime;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
@@ -23,6 +24,9 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
  * @property \Kezi\Accounting\Models\Account $finishedGoodsAccount
  * @property \Kezi\Accounting\Models\Account $rawMaterialsAccount
  * @property \Kezi\Accounting\Models\Account $wipAccount
+ * @property \Kezi\Accounting\Models\Account $rmAccount
+ * @property \Kezi\Accounting\Models\Account $fgAccount
+ * @property \Kezi\Accounting\Models\Account $overheadAccount
  * @property \Kezi\Accounting\Models\Journal $manufacturingJournal
  * @property \Kezi\Inventory\Models\StockLocation $sourceLocation
  * @property \Kezi\Inventory\Models\StockLocation $destinationLocation
@@ -35,7 +39,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
  * @property \Kezi\Accounting\Models\Account $expenseAccount
  * @property \Kezi\Product\Models\Product $storableProduct
  * @property \Kezi\Product\Models\Product $serviceProduct
- * @property \Kezi\Purchase\Actions\Purchases\CreateVendorBillFromPurchaseOrderAction $action
+ * @property mixed $action
  * @property \Kezi\Sales\Actions\Sales\CreateQuoteAction&\Mockery\MockInterface $createAction
  * @property \Kezi\Sales\Actions\Sales\UpdateQuoteAction&\Mockery\MockInterface $updateAction
  * @property \Kezi\Sales\Actions\Sales\SendQuoteAction&\Mockery\MockInterface $sendAction
@@ -70,6 +74,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
  * @method void assertSame($expected, $actual, string $message = '')
  * @method void assertInstanceOf(string $expected, $actual, string $message = '')
  */
+#[AllowDynamicProperties]
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;

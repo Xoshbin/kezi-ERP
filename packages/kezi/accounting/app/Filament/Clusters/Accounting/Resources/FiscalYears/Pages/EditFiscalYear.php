@@ -139,6 +139,7 @@ class EditFiscalYear extends EditRecord
                         ->title(__('accounting::fiscal_year.close_failed'))
                         ->body($e->getMessage())
                         ->danger()
+                        ->persistent()
                         ->send();
                 }
             });
@@ -179,8 +180,9 @@ class EditFiscalYear extends EditRecord
 
                     if (! $previousYear) {
                         Notification::make()
-                            ->title('No previous fiscal year found.')
+                            ->title(__('accounting::exceptions.fiscal_year.no_previous_year_found', ['company' => $currentYear->company->name]))
                             ->danger()
+                            ->persistent()
                             ->send();
 
                         return;
@@ -207,6 +209,7 @@ class EditFiscalYear extends EditRecord
                         ->title(__('accounting::fiscal_year.opening_entry_failed'))
                         ->body($e->getMessage())
                         ->danger()
+                        ->persistent()
                         ->send();
                 }
             });
@@ -243,6 +246,7 @@ class EditFiscalYear extends EditRecord
                         ->title(__('accounting::fiscal_year.reopen_failed'))
                         ->body($e->getMessage())
                         ->danger()
+                        ->persistent()
                         ->send();
                 }
             });

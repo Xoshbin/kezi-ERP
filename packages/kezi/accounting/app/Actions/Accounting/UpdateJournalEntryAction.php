@@ -28,21 +28,21 @@ class UpdateJournalEntryAction
         // 1. Perform all necessary validation before touching the database.
         $company = Company::find($journalEntry->company_id);
         if (! $company) {
-            throw new InvalidArgumentException('Company not found');
+            throw new InvalidArgumentException(__('accounting::exceptions.common.company_not_found'));
         }
         $this->lockDateService->enforce($company, Carbon::parse($journalEntry->entry_date));
 
         if ($journalEntry->is_posted) {
-            throw new \Kezi\Foundation\Exceptions\UpdateNotAllowedException('Cannot modify a posted journal entry.');
+            throw new \Kezi\Foundation\Exceptions\UpdateNotAllowedException(__('accounting::exceptions.journal_entry.cannot_modify_posted'));
         }
 
         $currency = Currency::find($dto->currency_id);
         if (! $currency) {
-            throw new InvalidArgumentException('Currency not found');
+            throw new InvalidArgumentException(__('accounting::exceptions.common.currency_not_found'));
         }
         $companyCurrency = $company->currency;
         if (! $companyCurrency) {
-            throw new InvalidArgumentException('Company base currency not found');
+            throw new InvalidArgumentException(__('accounting::exceptions.common.company_base_currency_not_found'));
         }
 
         $totalDebit = Money::zero($companyCurrency->code);

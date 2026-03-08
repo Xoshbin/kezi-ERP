@@ -40,7 +40,7 @@ class CreateStockMove extends CreateRecord
         /** @var Company|null $tenant */
         $tenant = Filament::getTenant();
         if (! $tenant) {
-            throw new RuntimeException('Company context is required to create a stock move.');
+            throw new RuntimeException(__('inventory::exceptions.general.company_context_required'));
         }
 
         // Convert product lines data to DTOs
@@ -75,13 +75,13 @@ class CreateStockMove extends CreateRecord
         } catch (InsufficientCostInformationException $e) {
             // Show user-friendly error notification
             Notification::make()
-                ->title(__('inventory::inventory_accounting.cost_validation_errors.title'))
+                ->title(__('inventory::exceptions.cost_validation_errors.title'))
                 ->body($e->getUserFriendlyMessage())
                 ->danger()
                 ->persistent()
                 ->actions([
                     Action::make('create_vendor_bill')
-                        ->label(__('Create Vendor Bill'))
+                        ->label(__('inventory::exceptions.cost_validation_errors.notifications.create_vendor_bill'))
                         ->button()
                         ->url(route('filament.kezi.accounting.resources.vendor-bills.create', ['tenant' => Filament::getTenant()]))
                         ->openUrlInNewTab(),

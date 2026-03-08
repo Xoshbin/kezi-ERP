@@ -85,6 +85,14 @@ class ViewPurchaseOrder extends ViewRecord
                         ->title(__('purchase::purchase_orders.notifications.bill_creation_failed'))
                         ->body($e->getMessage())
                         ->danger()
+                        ->persistent()
+                        ->actions([
+                            Action::make('view_vendor_bills')
+                                ->label(__('purchase::exceptions.actions.view_vendor_bills'))
+                                ->button()
+                                ->url(route('filament.kezi.accounting.resources.vendor-bills.index', ['tenant' => Filament::getTenant()]))
+                                ->openUrlInNewTab(),
+                        ])
                         ->send();
                 }
             });

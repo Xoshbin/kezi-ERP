@@ -44,6 +44,18 @@ class ViewSalesOrder extends ViewRecord
                         ->send();
 
                     $this->refreshFormData(['status']);
+                })->failureNotification(function (\Exception $e) {
+                    return Notification::make()
+                        ->danger()
+                        ->title(__('sales::sales_orders.notifications.confirmation_failed'))
+                        ->body($e->getMessage())
+                        ->persistent()
+                        ->actions([
+                            \Filament\Actions\Action::make('edit_sales_order')
+                                ->label(__('sales::exceptions.actions.edit_sales_order'))
+                                ->button()
+                                ->url(fn ($record) => SalesOrderResource::getUrl('edit', ['record' => $record])),
+                        ]);
                 })
                 ->visible(fn () => $this->record->status === \Kezi\Sales\Enums\Sales\SalesOrderStatus::Draft),
 
@@ -94,6 +106,14 @@ class ViewSalesOrder extends ViewRecord
                             ->title(__('sales::sales_orders.notifications.invoice_creation_failed'))
                             ->body($e->getMessage())
                             ->danger()
+                            ->persistent()
+                            ->actions([
+                                \Filament\Actions\Action::make('view_journals')
+                                    ->label(__('sales::exceptions.actions.view_journals'))
+                                    ->button()
+                                    ->url(\Kezi\Accounting\Filament\Clusters\Accounting\Resources\Journals\JournalResource::getUrl('index'))
+                                    ->openUrlInNewTab(),
+                            ])
                             ->send();
                     }
                 }),
@@ -144,6 +164,7 @@ class ViewSalesOrder extends ViewRecord
                             ->title(__('sales::sales_orders.notifications.delivery_creation_failed'))
                             ->body($e->getMessage())
                             ->danger()
+                            ->persistent()
                             ->send();
                     }
                 }),
