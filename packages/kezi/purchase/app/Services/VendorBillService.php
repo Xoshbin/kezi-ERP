@@ -91,7 +91,7 @@ class VendorBillService
 
         if ($vendorBill->status !== VendorBillStatus::Draft) {
             throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException(
-                'Cannot delete a posted vendor bill. Corrections must be made with a new reversal entry.'
+                __('purchase::exceptions.vendor_bill.only_draft_deleted')
             );
         }
 
@@ -110,13 +110,13 @@ class VendorBillService
         Gate::forUser($user)->authorize('cancel', $vendorBill);
 
         if ($vendorBill->status !== VendorBillStatus::Posted) {
-            throw new Exception('Only posted vendor bills can be cancelled.');
+            throw new Exception(__('purchase::exceptions.vendor_bill.only_posted_cancelled'));
         }
 
         DB::transaction(function () use ($vendorBill, $user, $reason) {
             $originalEntry = $vendorBill->journalEntry;
             if (! $originalEntry) {
-                throw new Exception('Cannot cancel a bill without a journal entry.');
+                throw new Exception(__('purchase::exceptions.vendor_bill.cannot_cancel_without_journal'));
             }
 
             // Step 1: Create a detailed audit log *before* making changes.
@@ -279,7 +279,7 @@ class VendorBillService
         Gate::forUser($user)->authorize('resetToDraft', $vendorBill);
 
         if ($vendorBill->status !== VendorBillStatus::Posted) {
-            throw new Exception('Only posted vendor bills can be reset to draft.');
+            throw new Exception(__('purchase::exceptions.vendor_bill.only_posted_reset'));
         }
 
         DB::transaction(function () use ($vendorBill, $user, $reason) {

@@ -85,6 +85,7 @@ class ViewPurchaseOrder extends ViewRecord
                         ->title(__('purchase::purchase_orders.notifications.bill_creation_failed'))
                         ->body($e->getMessage())
                         ->danger()
+                        ->persistent()
                         ->send();
                 }
             });

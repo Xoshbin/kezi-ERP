@@ -29,11 +29,11 @@ class PurchaseOrderService
     public function sendRFQ(PurchaseOrder $purchaseOrder, User $user): PurchaseOrder
     {
         if (! $purchaseOrder->status->canSendRFQ()) {
-            throw new InvalidArgumentException('RFQ cannot be sent in the current state.');
+            throw new InvalidArgumentException(__('purchase::exceptions.rfq.cannot_send_state'));
         }
 
         if ($purchaseOrder->lines->isEmpty()) {
-            throw new InvalidArgumentException('Cannot send RFQ without any lines.');
+            throw new InvalidArgumentException(__('purchase::exceptions.rfq.cannot_send_empty'));
         }
 
         return DB::transaction(function () use ($purchaseOrder) {
@@ -50,11 +50,11 @@ class PurchaseOrderService
     public function send(PurchaseOrder $purchaseOrder, User $user): PurchaseOrder
     {
         if (! $purchaseOrder->status->canBeSent()) {
-            throw new InvalidArgumentException('Purchase order cannot be sent in its current state.');
+            throw new InvalidArgumentException(__('purchase::exceptions.purchase_order.cannot_send_state'));
         }
 
         if ($purchaseOrder->lines->isEmpty()) {
-            throw new InvalidArgumentException('Cannot send purchase order without any lines.');
+            throw new InvalidArgumentException(__('purchase::exceptions.purchase_order.cannot_send_empty'));
         }
 
         $this->lockDateService->enforce($purchaseOrder->company, $purchaseOrder->po_date);
@@ -82,11 +82,11 @@ class PurchaseOrderService
     public function confirm(PurchaseOrder $purchaseOrder, User $user): PurchaseOrder
     {
         if (! $purchaseOrder->canBeConfirmed()) {
-            throw new InvalidArgumentException('Purchase order cannot be confirmed in its current state.');
+            throw new InvalidArgumentException(__('purchase::exceptions.purchase_order.cannot_confirm'));
         }
 
         if ($purchaseOrder->lines->isEmpty()) {
-            throw new InvalidArgumentException('Cannot confirm purchase order without any lines.');
+            throw new InvalidArgumentException(__('purchase::exceptions.purchase_order.cannot_confirm_empty'));
         }
 
         $this->lockDateService->enforce($purchaseOrder->company, $purchaseOrder->po_date);
@@ -136,7 +136,7 @@ class PurchaseOrderService
     public function cancel(PurchaseOrder $purchaseOrder, User $user, ?string $reason = null): PurchaseOrder
     {
         if (! $purchaseOrder->canBeCancelled()) {
-            throw new InvalidArgumentException('Purchase order cannot be cancelled in its current state.');
+            throw new InvalidArgumentException(__('purchase::exceptions.purchase_order.cannot_cancel'));
         }
 
         $this->lockDateService->enforce($purchaseOrder->company, $purchaseOrder->po_date);
@@ -162,7 +162,7 @@ class PurchaseOrderService
     public function updateReceivedQuantity(PurchaseOrder $purchaseOrder, int $lineId, float $receivedQuantity): PurchaseOrder
     {
         if (! $purchaseOrder->canReceiveGoods()) {
-            throw new InvalidArgumentException('Cannot receive goods for this purchase order.');
+            throw new InvalidArgumentException(__('purchase::exceptions.purchase_order.cannot_receive'));
         }
 
         return DB::transaction(function () use ($purchaseOrder, $lineId, $receivedQuantity) {
@@ -229,7 +229,7 @@ class PurchaseOrderService
     public function markAsDone(PurchaseOrder $purchaseOrder, User $user): PurchaseOrder
     {
         if ($purchaseOrder->status !== PurchaseOrderStatus::FullyBilled) {
-            throw new InvalidArgumentException('Purchase order must be fully billed before it can be marked as done.');
+            throw new InvalidArgumentException(__('purchase::exceptions.purchase_order.not_fully_billed'));
         }
 
         return DB::transaction(function () use ($purchaseOrder) {

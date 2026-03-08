@@ -31,14 +31,14 @@ The following files contain `->danger()` notifications. These notifications ofte
 - [x] `app/Filament/Clusters/HumanResources/Resources/Payrolls/Tables/PayrollsTable.php`
 
 ### Inventory
-- `app/Filament/Clusters/Inventory/Pages/*.php` (Valuation, Turnover, Reorder, Aging, LotTraceability Reports)
-- `app/Filament/Clusters/Inventory/Resources/StockMoves/*` (ConfirmStockMove, Create, Edit)
-- `app/Filament/Clusters/Inventory/Resources/StockPickingResource/*` (Validate, Confirm, Assign, Cancel)
-- `app/Filament/Clusters/Inventory/Resources/LandedCostResource/Pages/EditLandedCost.php`
+- [x] `app/Filament/Clusters/Inventory/Pages/*.php` (Valuation, Turnover, Reorder, Aging, LotTraceability Reports)
+- [x] `app/Filament/Clusters/Inventory/Resources/StockMoves/*` (ConfirmStockMove, Create, Edit)
+- [x] `app/Filament/Clusters/Inventory/Resources/StockPickingResource/*` (Validate, Confirm, Assign, Cancel)
+- [x] `app/Filament/Clusters/Inventory/Resources/LandedCostResource/Pages/EditLandedCost.php`
 
 ### Purchase
-- `app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Pages/ViewPurchaseOrder.php`
-- `app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Pages/EditPurchaseOrder.php`
+- [x] `app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Pages/ViewPurchaseOrder.php`
+- [x] `app/Filament/Clusters/Purchases/Resources/PurchaseOrders/Pages/EditPurchaseOrder.php`
 
 ### Sales
 - `app/Filament/Clusters/Sales/Resources/SalesOrders/Pages/EditSalesOrder.php`
@@ -71,16 +71,16 @@ The following files include `throw new ...Exception(...)` statements. These exce
 - [x] `app/Casts/PayrollCurrencyMoneyCast.php`
 
 ### Inventory
-- Services: `GoodsReceiptService.php`, `StockMoveService.php`, `InventoryValuationService.php`, `StockQuantService.php`, `InventoryReportingService.php`, `TransferOrderService.php`
-- Actions: `CreateAdjustmentDocumentAction.php`, `CreateGoodsReceiptFromPurchaseOrderAction.php`, `ValidateGoodsReceiptAction.php`, `ProcessIncomingStockAction.php`, `UpdateProductInventoryStatsAction.php`, `CreateJournalEntryForStockMoveAction.php`, `ReceiveTransferAction.php`, `PostLandedCostAction.php`, `ScrapAction.php`, `ShipTransferAction.php`, `CreateInventoryAdjustmentAction.php`
-- Listeners: `CreateStockMovesOnVendorBillConfirmed.php`
-- Resources: `CreateStockMove.php`, `CreateProduct.php`
+- [x] Services: `GoodsReceiptService.php`, `StockMoveService.php`, `InventoryValuationService.php`, `StockQuantService.php`, `InventoryReportingService.php`, `TransferOrderService.php`
+- [x] Actions: `CreateAdjustmentDocumentAction.php`, `CreateGoodsReceiptFromPurchaseOrderAction.php`, `ValidateGoodsReceiptAction.php`, `ProcessIncomingStockAction.php`, `UpdateProductInventoryStatsAction.php`, `CreateJournalEntryForStockMoveAction.php`, `ReceiveTransferAction.php`, `PostLandedCostAction.php`, `ScrapAction.php`, `ShipTransferAction.php`, `CreateInventoryAdjustmentAction.php`
+- [x] Listeners: `CreateStockMovesOnVendorBillConfirmed.php`
+- [x] Resources: `CreateStockMove.php`, `CreateProduct.php`
 
 ### Purchase
-- Services: `PurchaseOrderService.php`, `VendorBillService.php`, `ThreeWayMatchingService.php`
-- Actions: `CreateVendorBillLineAction.php`, `CreateDebitNoteAction.php`, `UpdateVendorBillAction.php`, `ConvertRFQToPurchaseOrderAction.php`, `UpdatePurchaseOrderAction.php`, `CreateVendorBillAction.php`
-- Observers: `VendorBillObserver.php`
-- Resources: `EditPurchaseOrder.php`
+- [x] Services: `PurchaseOrderService.php`, `VendorBillService.php`, `ThreeWayMatchingService.php`
+- [x] Actions: `CreateVendorBillLineAction.php`, `CreateDebitNoteAction.php`, `UpdateVendorBillAction.php`, `ConvertRFQToPurchaseOrderAction.php`, `UpdatePurchaseOrderAction.php`, `CreateVendorBillAction.php`
+- [x] Observers: `VendorBillObserver.php`
+- [x] Resources: `EditPurchaseOrder.php`
 
 ### Sales
 - Services: `InvoiceService.php`

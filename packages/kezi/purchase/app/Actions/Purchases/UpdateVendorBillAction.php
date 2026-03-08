@@ -21,7 +21,7 @@ class UpdateVendorBillAction
         $vendorBill = $updateVendorBillDTO->vendorBill;
 
         if ($vendorBill->status !== VendorBillStatus::Draft) {
-            throw new \Kezi\Foundation\Exceptions\UpdateNotAllowedException('Only draft vendor bills can be updated.');
+            throw new \Kezi\Foundation\Exceptions\UpdateNotAllowedException(__('purchase::exceptions.vendor_bill.only_draft_updated'));
         }
 
         $this->lockDateService->enforce($vendorBill->company, Carbon::parse($updateVendorBillDTO->bill_date));
