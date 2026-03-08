@@ -42,7 +42,7 @@ class CreateJournalEntryForPaymentAction
         if (! $bankAccountId) {
             throw new InvalidArgumentException(__('accounting::payment.validation.journal_no_bank_account', [
                 'journal' => $payment->journal->getTranslation('name', app()->getLocale()),
-                'url' => route('filament.accounting.settings.resources.journals.edit', [
+                'url' => route('filament.kezi.settings.resources.journals.edit', [
                     'record' => $payment->journal_id,
                     'tenant' => $payment->company_id,
                 ]),

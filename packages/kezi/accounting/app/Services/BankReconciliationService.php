@@ -74,7 +74,7 @@ class BankReconciliationService
         foreach ($payments as $payment) {
             $company = $payment->company;
             if (! $company->default_bank_account_id || ! $company->default_outstanding_receipts_account_id) {
-                $url = \App\Filament\Clusters\Settings\Resources\Companies\CompanyResource::getUrl('edit', ['record' => $company]);
+                $url = \App\Filament\Clusters\Settings\Resources\Companies\CompanyResource::getUrl('edit', ['record' => $company, 'tenant' => $company->id]);
                 throw new RuntimeException(__('accounting::exceptions.bank_reconciliation.missing_config', ['company' => $company->name, 'url' => $url]));
             }
         }

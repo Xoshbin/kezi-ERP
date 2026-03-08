@@ -38,7 +38,8 @@ class CreateJournalEntryForReconciliationAction
         $outstandingAccountId = $company->default_outstanding_receipts_account_id;
 
         if (! $bankAccountId || ! $outstandingAccountId) {
-            throw new RuntimeException(__('accounting::exceptions.reconciliation.default_bank_or_outstanding_receipts_missing'));
+            $url = \App\Filament\Clusters\Settings\Resources\Companies\CompanyResource::getUrl('edit', ['record' => $company, 'tenant' => $company->id]);
+            throw new RuntimeException(__('accounting::exceptions.reconciliation.default_bank_or_outstanding_receipts_missing', ['url' => $url]));
         }
 
         // 3. Build the journal entry lines based on reconciliation accounting rules.
