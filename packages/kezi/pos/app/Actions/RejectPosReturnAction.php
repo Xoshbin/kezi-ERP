@@ -13,7 +13,7 @@ class RejectPosReturnAction
     {
         return DB::transaction(function () use ($return, $rejector, $reason) {
             if (! $return->canBeApproved()) {
-                throw new \InvalidArgumentException('Return cannot be rejected in current status');
+                throw new \InvalidArgumentException(__('pos::exceptions.pos_return.cannot_be_rejected_in_status'));
             }
 
             $return->update([

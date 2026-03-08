@@ -14,7 +14,7 @@ class SubmitExpenseReportAction
     {
         DB::transaction(function () use ($expenseReport) {
             if ($expenseReport->status !== ExpenseReportStatus::Draft) {
-                throw new \InvalidArgumentException('Only draft expense reports can be submitted.');
+                throw new \InvalidArgumentException(__('hr::exceptions.expense_report.only_draft_can_be_submitted'));
             }
 
             $expenseReport->update([

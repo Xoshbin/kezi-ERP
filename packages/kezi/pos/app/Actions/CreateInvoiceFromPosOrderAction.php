@@ -66,7 +66,7 @@ class CreateInvoiceFromPosOrderAction
             ->first();
 
         if (! $journal) {
-            throw new \Exception("No Sales Journal found for Company {$companyId}. Please configure a Sales Journal.");
+            throw new \Exception(__('pos::exceptions.common.no_sales_journal_found_configure', ['company' => $companyId]));
         }
         $journalId = $journal->id;
 
@@ -126,7 +126,7 @@ class CreateInvoiceFromPosOrderAction
         // This triggers journal entries and stock moves (via listeners)
         // We act as the user who opened the session
         if (! $order->session) {
-            throw new \Exception("POS Order {$order->uuid} has no associated session.");
+            throw new \Exception(__('pos::exceptions.common.no_associated_session', ['uuid' => $order->uuid]));
         }
         $user = $order->session->user;
         $this->invoiceService->confirm($invoice, $user);
@@ -137,7 +137,7 @@ class CreateInvoiceFromPosOrderAction
 
         $paymentJournalId = $profile->default_payment_journal_id;
         if (! $paymentJournalId) {
-            throw new \Exception("No Payment Journal configured for POS Profile. Cannot register payment for Order {$order->order_number}.");
+            throw new \Exception(__('pos::exceptions.common.no_payment_journal_register_payment', ['order' => $order->order_number]));
         }
 
         // Load the split payment rows (always present — sync action ensures at least one row)

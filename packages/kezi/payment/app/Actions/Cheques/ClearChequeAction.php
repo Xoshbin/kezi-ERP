@@ -21,7 +21,7 @@ class ClearChequeAction
     public function execute(Cheque $cheque, ClearChequeDTO $dto, User $user): void
     {
         if (! in_array($cheque->status, [ChequeStatus::HandedOver, ChequeStatus::Deposited])) {
-            throw new \DomainException('Cheque must be Handed Over or Deposited to be cleared.');
+            throw new \DomainException(__('payment::exceptions.cheque.must_be_active_to_clear'));
         }
 
         $this->lockDateService->enforce($cheque->company, Carbon::parse($dto->cleared_at));

@@ -14,7 +14,7 @@ class RejectCashAdvanceAction
     {
         DB::transaction(function () use ($cashAdvance, $reason, $user) {
             if ($cashAdvance->status !== CashAdvanceStatus::PendingApproval) {
-                throw new \InvalidArgumentException('Only pending cash advances can be rejected.');
+                throw new \InvalidArgumentException(__('hr::exceptions.cash_advance.only_pending_can_be_rejected'));
             }
 
             $cashAdvance->update([

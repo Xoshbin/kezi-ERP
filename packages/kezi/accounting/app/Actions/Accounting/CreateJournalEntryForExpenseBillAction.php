@@ -29,7 +29,7 @@ class CreateJournalEntryForExpenseBillAction
             $apAccountId = $vendorBill->vendor->payable_account_id ?? $company->default_accounts_payable_id;
 
             if (! $apAccountId) {
-                throw new RuntimeException('Default Accounts Payable account is not configured for this company.');
+                throw new RuntimeException(__('accounting::exceptions.common.default_accounts_payable_missing'));
             }
 
             $expenseLines = $vendorBill->lines->where('product.type', '!=', 'storable');
@@ -42,7 +42,7 @@ class CreateJournalEntryForExpenseBillAction
                 if ($line->asset_category_id) {
                     $category = AssetCategory::find($line->asset_category_id);
                     if (! $category) {
-                        throw new RuntimeException('Invalid asset category selected on bill line.');
+                        throw new RuntimeException(__('accounting::exceptions.expense_bill.invalid_asset_category'));
                     }
                     // Dr Asset (subtotal), Dr Input Tax, Cr AP
                     $lineDTOs[] = new CreateJournalEntryLineDTO(
@@ -58,7 +58,7 @@ class CreateJournalEntryForExpenseBillAction
                     if ($line->tax_id && $line->total_line_tax->isPositive()) {
                         $taxAccountId = $company->default_tax_receivable_id ?? $company->default_tax_account_id;
                         if (! $taxAccountId) {
-                            throw new InvalidArgumentException('Company default tax account is not configured');
+                            throw new InvalidArgumentException(__('accounting::exceptions.common.default_tax_account_missing'));
                         }
                         $lineDTOs[] = new CreateJournalEntryLineDTO(
                             account_id: $taxAccountId,
@@ -86,7 +86,7 @@ class CreateJournalEntryForExpenseBillAction
                     if ($line->tax_id && $line->total_line_tax->isPositive()) {
                         $taxAccountId = $company->default_tax_receivable_id ?? $company->default_tax_account_id; // Or a more specific tax account if needed
                         if (! $taxAccountId) {
-                            throw new InvalidArgumentException('Company default tax account is not configured');
+                            throw new InvalidArgumentException(__('accounting::exceptions.common.default_tax_account_missing'));
                         }
                         $lineDTOs[] = new CreateJournalEntryLineDTO(
                             account_id: $taxAccountId,
@@ -112,7 +112,7 @@ class CreateJournalEntryForExpenseBillAction
             );
 
             if (! $company->default_purchase_journal_id) {
-                throw new InvalidArgumentException('Company default purchase journal is not configured');
+                throw new InvalidArgumentException(__('accounting::exceptions.common.default_purchase_journal_missing'));
             }
 
             $journalEntryDTO = new CreateJournalEntryDTO(

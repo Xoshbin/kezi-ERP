@@ -43,7 +43,7 @@ class ProcessPosReturnAction
     {
         return DB::transaction(function () use ($return, $user) {
             if ($return->status !== PosReturnStatus::Approved) {
-                throw new \InvalidArgumentException('Only approved returns can be processed');
+                throw new \InvalidArgumentException(__('pos::exceptions.pos_return.only_approved_can_be_processed'));
             }
 
             $return->update(['status' => PosReturnStatus::Processing]);
@@ -84,7 +84,7 @@ class ProcessPosReturnAction
             ->first();
 
         if (! $journal) {
-            throw new \Exception("No Sales Journal found for company {$return->company_id}");
+            throw new \Exception(__('pos::exceptions.common.no_sales_journal_found', ['company' => $return->company_id]));
         }
 
         $refundAmount = $return->refund_amount->multipliedBy(-1);
@@ -143,7 +143,7 @@ class ProcessPosReturnAction
 
         $paymentJournalId = $profile->default_payment_journal_id;
         if (! $paymentJournalId) {
-            throw new \Exception('No Payment Journal configured for POS Profile');
+            throw new \Exception(__('pos::exceptions.common.no_payment_journal_configured'));
         }
 
         // Create outbound payment (refund)
@@ -184,7 +184,7 @@ class ProcessPosReturnAction
         $locationId = (int) ($returnPolicy['default_restock_location_id'] ?? $profile->stock_location_id);
 
         if (! $locationId) {
-            throw new \Exception('No stock location configured for restocking');
+            throw new \Exception(__('pos::exceptions.common.no_stock_location_restocking'));
         }
 
         $dto = new CreateStockMoveDTO(

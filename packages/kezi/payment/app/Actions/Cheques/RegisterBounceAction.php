@@ -19,7 +19,7 @@ class RegisterBounceAction
     public function execute(Cheque $cheque, BounceChequeDTO $dto, User $user): void
     {
         if (! in_array($cheque->status, [ChequeStatus::HandedOver, ChequeStatus::Deposited])) {
-            throw new \DomainException('Cheque must be active (Handed Over/Deposited) to bounce.');
+            throw new \DomainException(__('payment::exceptions.cheque.must_be_active_to_bounce'));
         }
 
         DB::transaction(function () use ($cheque, $dto, $user) {

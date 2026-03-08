@@ -28,7 +28,7 @@ class ComputeLoanScheduleAction
             $n = (int) $loan->duration_months; // monthly frequency for now
             $currencyModel = $loan->currency;
             if (! $currencyModel) {
-                throw new RuntimeException('Loan currency is missing');
+                throw new RuntimeException(__('accounting::exceptions.loan.currency_missing'));
             }
             /** @var string $currency */
             $currency = (string) data_get($currencyModel, 'code');

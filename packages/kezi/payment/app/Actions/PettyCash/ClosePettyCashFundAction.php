@@ -14,7 +14,7 @@ class ClosePettyCashFundAction
         DB::transaction(function () use ($fund) {
             // Validate that the fund has zero balance before closing
             if (! $fund->current_balance->isZero()) {
-                throw new \InvalidArgumentException('Cannot close petty cash fund with non-zero balance.');
+                throw new \InvalidArgumentException(__('payment::exceptions.petty_cash.zero_balance_required_for_close'));
             }
 
             $fund->update([

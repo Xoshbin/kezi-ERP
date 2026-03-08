@@ -68,7 +68,7 @@ class CreateAttendanceAction
 
             $fresh = $attendance->fresh();
             if (! $fresh) {
-                throw new RuntimeException('Failed to refresh attendance after creation');
+                throw new RuntimeException(__('hr::exceptions.attendance.refresh_failed_after_creation'));
             }
 
             return $fresh;
