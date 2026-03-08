@@ -46,12 +46,11 @@ The following files contain `->danger()` notifications. These notifications ofte
 - [x] `app/Filament/Clusters/Sales/Resources/Quotes/Pages/ViewQuote.php`
 
 ### Manufacturing
-- `app/Filament/Clusters/Manufacturing/Resources/ManufacturingOrderResource.php`
-- `app/Filament/Clusters/Manufacturing/Resources/ManufacturingOrderResource/Pages/ViewManufacturingOrder.php`
+- [x] `app/Filament/Clusters/Manufacturing/Resources/ManufacturingOrderResource.php`
+- [x] `app/Filament/Clusters/Manufacturing/Resources/ManufacturingOrderResource/Pages/ViewManufacturingOrder.php`
 
 ### Foundation
-- `app/Filament/Resources/NumberingSettingsResource/Pages/EditNumberingSettings.php`
-
+- [x] `app/Filament/Resources/NumberingSettingsResource/Pages/EditNumberingSettings.php`
 
 ---
 
@@ -90,21 +89,32 @@ The following files include `throw new ...Exception(...)` statements. These exce
 - [x] Resources: `EditSalesOrder.php`
 
 ### Manufacturing
-- Services: `BOMService.php`
-- Actions: `ConsumeComponentsAction.php`, `CreateJournalEntryForConsumptionAction.php`, `CreateJournalEntryForManufacturingAction.php`, `ConfirmManufacturingOrderAction.php`, `ScrapManufacturingAction.php`, `ProduceFinishedGoodsAction.php`, `StartProductionAction.php`, `CreateManufacturingOrderAction.php`
+- [x] Services: `BOMService.php`
+- [x] Actions: `ConsumeComponentsAction.php`, `CreateJournalEntryForConsumptionAction.php`, `CreateJournalEntryForManufacturingAction.php`, `ConfirmManufacturingOrderAction.php`, `ScrapManufacturingAction.php`, `ProduceFinishedGoodsAction.php`, `StartProductionAction.php`, `CreateManufacturingOrderAction.php`
 
 ### Foundation
-- Services: `ExchangeRateService.php`, `CurrencyConverterService.php`
-- Casts: `MoneyCast.php`, `BaseCurrencyMoneyCast.php`, `OriginalCurrencyMoneyCast.php`, `DocumentCurrencyMoneyCast.php`
-- Observers: `CurrencyObserver.php`, `PartnerObserver.php`
-- Models: `Partner.php`
+- [x] Services: `ExchangeRateService.php`, `CurrencyConverterService.php`
+- [x] Casts: `MoneyCast.php`, `BaseCurrencyMoneyCast.php`, `OriginalCurrencyMoneyCast.php`, `DocumentCurrencyMoneyCast.php`
+- [x] Observers: `CurrencyObserver.php`, `PartnerObserver.php`
+- [x] Models: `Partner.php`
 
 ### Project Management
-- Services: `ProjectInvoicingService.php`
-- Actions: `SubmitTimesheetAction.php`, `RejectTimesheetAction.php`, `ApproveTimesheetAction.php`
+- [x] Services: `ProjectInvoicingService.php`
+- [x] Actions: `SubmitTimesheetAction.php`, `RejectTimesheetAction.php`, `ApproveTimesheetAction.php`
 
 ---
 
-### Recommended Next Steps:
-1. Review the `->danger()` notifications in the **Accounting** and **Inventory** resources/pages first. Add `->persistent()` and consider if an action array (`->actions([ Action::make('fix')->url(...) ])`) would help user flow.
-2. Review `Exception` messages in core **Services** and **Actions** (e.g., `LockDateService`, `InventoryValuationService`). Convert hardcoded strings like `throw new Exception("Inventory is locked")` to `throw new Exception(__('inventory::messages.locked_error', ['link' => ...]))`.
+### Status: ✅ All Modules Complete
+
+All hardcoded exception messages and danger notifications across all modules have been localized. Translation files (`exceptions.php`) exist for `en`, `ar`, and `ckb` in each of the following packages:
+
+| Module | Section 1: Danger Notifications | Section 2: Hardcoded Exceptions | `exceptions.php` |
+|--------|---|---|---|
+| Accounting | ✅ 14 files | ✅ Services, Actions, Observers, Rules | ✅ |
+| HR | ✅ 7 files | ✅ Models, Casts | ✅ |
+| Inventory | ✅ 4 groups | ✅ Services, Actions, Listeners, Resources | ✅ |
+| Purchase | ✅ 2 files | ✅ Services, Actions, Observers, Resources | ✅ |
+| Sales | ✅ 3 files | ✅ Services, Actions, Observers, Resources | ✅ |
+| Manufacturing | ✅ 2 files | ✅ Services, Actions | ✅ created |
+| Foundation | ✅ 1 file | ✅ Services, Casts, Observers, Models | ✅ created |
+| Project Management | ✅ none | ✅ Services, Actions | ✅ created |
