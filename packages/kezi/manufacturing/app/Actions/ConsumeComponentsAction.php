@@ -27,13 +27,13 @@ class ConsumeComponentsAction
         return DB::transaction(function () use ($mo, $user) {
             // Validate current status
             if ($mo->status !== ManufacturingOrderStatus::InProgress) {
-                throw new \InvalidArgumentException('Only in-progress manufacturing orders can consume components.');
+                throw new \InvalidArgumentException(__('manufacturing::exceptions.order.consume_in_progress_only'));
             }
 
             // Resolve user for accountability
             $currentUser = $user ?? Auth::user();
             if (! $currentUser) {
-                throw new \RuntimeException('A user is required to perform component consumption and accounting entries.');
+                throw new \RuntimeException(__('manufacturing::exceptions.order.user_required_for_consumption'));
             }
 
             // Create stock move for component consumption

@@ -19,7 +19,7 @@ class StartProductionAction
         return DB::transaction(function () use ($mo) {
             // Validate current status
             if ($mo->status !== ManufacturingOrderStatus::Confirmed) {
-                throw new \InvalidArgumentException('Only confirmed manufacturing orders can be started.');
+                throw new \InvalidArgumentException(__('manufacturing::exceptions.order.start_confirmed_only'));
             }
 
             // Update MO status and start time

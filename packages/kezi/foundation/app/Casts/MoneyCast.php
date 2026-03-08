@@ -66,7 +66,7 @@ abstract class MoneyCast implements CastsAttributes
             return [$key => $money->getMinorAmount()->toInt()];
         }
 
-        throw new InvalidArgumentException('Invalid value for MoneyCast: must be numeric or Money instance.');
+        throw new InvalidArgumentException(__('foundation::exceptions.cast.invalid_money_value'));
     }
 
     /**

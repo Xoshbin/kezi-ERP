@@ -19,7 +19,7 @@ class PartnerObserver
         ) {
             // Throw the exception to completely block the deletion.
             throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException(
-                'Cannot delete a partner with associated financial documents (invoices, bills, or payments).'
+                __('foundation::exceptions.partner.in_use')
             );
         }
     }

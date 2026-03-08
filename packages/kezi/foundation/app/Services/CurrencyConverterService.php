@@ -35,7 +35,7 @@ class CurrencyConverterService
         $fromCurrency = Currency::where('code', $amount->getCurrency()->getCurrencyCode())->first();
 
         if (! $fromCurrency) {
-            throw new InvalidArgumentException("Currency {$amount->getCurrency()->getCurrencyCode()} not found");
+            throw new InvalidArgumentException(__('foundation::exceptions.currency.not_found', ['currency' => $amount->getCurrency()->getCurrencyCode()]));
         }
 
         // If same currency, return the original amount
@@ -78,7 +78,7 @@ class CurrencyConverterService
 
         // If still no rate found, throw exception
         if ($rate === null) {
-            throw new InvalidArgumentException("No exchange rate found for {$fromCurrency->code} on {$date}");
+            throw new InvalidArgumentException(__('foundation::exceptions.currency.no_exchange_rate', ['currency' => $fromCurrency->code, 'date' => $date]));
         }
 
         // Convert using the rate (rate represents how much base currency = 1 foreign currency)
@@ -106,7 +106,7 @@ class CurrencyConverterService
 
         // If still no rate found, throw exception
         if ($rate === null) {
-            throw new InvalidArgumentException("No exchange rate found for {$toCurrency->code} on {$date}");
+            throw new InvalidArgumentException(__('foundation::exceptions.currency.no_exchange_rate', ['currency' => $toCurrency->code, 'date' => $date]));
         }
 
         // Convert from base currency (divide by rate)

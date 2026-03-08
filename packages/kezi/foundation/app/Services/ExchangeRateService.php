@@ -80,7 +80,7 @@ class ExchangeRateService
     public function setDefaultProvider(string $identifier): self
     {
         if (! isset($this->providers[$identifier])) {
-            throw new \InvalidArgumentException("Provider '{$identifier}' is not registered");
+            throw new \InvalidArgumentException(__('foundation::exceptions.currency.provider_not_registered', ['identifier' => $identifier]));
         }
 
         $this->defaultProvider = $identifier;
