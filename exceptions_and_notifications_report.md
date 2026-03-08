@@ -1,9 +1,9 @@
 # Generic Exceptions and Danger Notifications Report
 
-This report identifies files in the codebase that contain hardcoded exception messages (`throw new Exception('...')`) or danger notifications (`->danger()`) which could benefit from better error guidance, such as localized translations, persistent notifications, or direct configuration links (similar to commit `e57a5f57`).
+This report identifies files in the codebase that contain hardcoded exception messages (`throw new Exception('...')`) or danger notifications (`->danger()`) which could benefit from better error guidance, such as localized translations, persistent notifications, or direct configuration links.
 
 ## 1. Danger Notifications Lacking Persistence or Links
-The following files contain `->danger()` notifications. These notifications often auto-dismiss quickly. If they indicate configuration errors or require user action, consider making them persistent (`->persistent()`) and adding actionable links within the message.
+The following files contain `->danger()` notifications. If they indicate configuration errors or require user action, they should be persistent (`->persistent()`) and have actionable links.
 
 ### Accounting
 - [x] `app/Filament/Pages/TaxReports.php`
@@ -52,41 +52,37 @@ The following files contain `->danger()` notifications. These notifications ofte
 ### Foundation
 - [x] `app/Filament/Resources/NumberingSettingsResource/Pages/EditNumberingSettings.php`
 
+### POS (New)
+- [ ] `app/Filament/Clusters/Pos/Resources/PosReturns/Pages/ViewPosReturn.php`
+
 ---
 
 ## 2. Hardcoded Exception Messages
-The following files include `throw new ...Exception(...)` statements. These exceptions often use plain, hardcoded English strings instead of localized `__('...')` translations. Consider enhancing them to provide translatable text, contextual data, or direct configuration links.
+The following files include `throw new ...Exception(...)` statements using hardcoded strings. These must be converted to localized `__('...')` translations.
 
-*(Note: Test directories, seeders, and vendor directories have been excluded where possible, but some services or actions may still be listed.)*
+### Accounting (Partial Re-Scan Needed)
+- [x] Services: `LockDateService.php`, `InterCompanyDocumentService.php`, `BalanceSheetService.php`, etc.
+- [ ] Actions (Remaining): `BuildLoanPaymentJournalEntryAction.php`, `ComputeLoanScheduleAction.php`, `AccrueLoanInterestAction.php`, `CalculateEIRAction.php` (Loan currency missing)
+- [ ] Actions (Remaining): `CreateJournalEntryForExpenseBillAction.php`, `CreateJournalEntryForPaymentAction.php`, `CreateJournalEntryForInvoiceAction.php`, `CreateJournalEntryForInventoryBillAction.php`, `CreateJournalEntryForDepreciationAction.php`, `CreateJournalEntryForPayrollAction.php`, `CreateJournalEntryForReconciliationAction.php`, `CreateJournalEntryAction.php`, `CreateJournalEntryForAssetAcquisitionAction.php`, `CreateJournalEntryForVendorBillAction.php`, `CreateJournalEntryForAdjustmentAction.php`
+- [ ] Actions (Remaining): `PostDepreciationEntryAction.php` (Failed to refresh)
 
-### Accounting
-- [x] Services: `LockDateService.php`, `InterCompanyDocumentService.php`, `BalanceSheetService.php`, `CurrencyTranslationService.php`, `PartnerLedgerService.php`, `TaxReportService.php`, `BudgetControlService.php`, `JournalEntryService.php`, `BankReconciliationService.php`, `AssetService.php`, `AccountService.php`, `ExchangeGainLossService.php`
-- [x] Actions: `CreateJournalEntryForLoanInitialRecognitionAction.php`, `ReclassifyLoanCurrentPortionAction.php`, `PerformCurrencyRevaluationAction.php`, `DisposeAssetAction.php`, and other Loan-related actions.
-- [x] Observers: `DepreciationEntryObserver.php`, `AssetObserver.php`, `JournalObserver.php`, `LockDateObserver.php`
-- [x] Other: `NotInLockedPeriod.php` (Rule), `RegisterPaymentAction.php`
-
-### HR
+### HR (Partial Re-Scan Needed)
 - [x] `app/Models/Position.php`
 - [x] `app/Casts/SalaryCurrencyMoneyCast.php`
 - [x] `app/Casts/PayrollCurrencyMoneyCast.php`
+- [ ] Actions (Remaining): `CreateAttendanceAction.php` (Failed to refresh attendance)
 
 ### Inventory
-- [x] Services: `GoodsReceiptService.php`, `StockMoveService.php`, `InventoryValuationService.php`, `StockQuantService.php`, `InventoryReportingService.php`, `TransferOrderService.php`
-- [x] Actions: `CreateAdjustmentDocumentAction.php`, `CreateGoodsReceiptFromPurchaseOrderAction.php`, `ValidateGoodsReceiptAction.php`, `ProcessIncomingStockAction.php`, `UpdateProductInventoryStatsAction.php`, `CreateJournalEntryForStockMoveAction.php`, `ReceiveTransferAction.php`, `PostLandedCostAction.php`, `ScrapAction.php`, `ShipTransferAction.php`, `CreateInventoryAdjustmentAction.php`
-- [x] Listeners: `CreateStockMovesOnVendorBillConfirmed.php`
-- [x] Resources: `CreateStockMove.php`, `CreateProduct.php`
+- [x] Services: `GoodsReceiptService.php`, `StockMoveService.php`, etc.
+- [x] Actions: `CreateAdjustmentDocumentAction.php`, `CreateGoodsReceiptFromPurchaseOrderAction.php`, etc.
 
 ### Purchase
-- [x] Services: `PurchaseOrderService.php`, `VendorBillService.php`, `ThreeWayMatchingService.php`
-- [x] Actions: `CreateVendorBillLineAction.php`, `CreateDebitNoteAction.php`, `UpdateVendorBillAction.php`, `ConvertRFQToPurchaseOrderAction.php`, `UpdatePurchaseOrderAction.php`, `CreateVendorBillAction.php`
-- [x] Observers: `VendorBillObserver.php`
-- [x] Resources: `EditPurchaseOrder.php`
+- [x] Services: `PurchaseOrderService.php`, `VendorBillService.php`, etc.
+- [x] Actions: `CreateVendorBillLineAction.php`, `CreateDebitNoteAction.php`, etc.
 
 ### Sales
-- [x] Services: `InvoiceService.php`, `QuoteService.php`
-- [x] Actions: `CreateCreditNoteAction.php`, `RejectQuoteAction.php`, `CreateStockMovesForInvoiceAction.php`, `UpdateQuoteAction.php`, `ConvertQuoteToSalesOrderAction.php`, `SendQuoteAction.php`, `ConvertQuoteToInvoiceAction.php`, `UpdateInvoiceAction.php`, `CreateInvoiceAction.php`, `UpdateSalesOrderAction.php`, `CancelQuoteAction.php`, `AcceptQuoteAction.php`, `CreateQuoteRevisionAction.php`, `CreateInvoiceLineAction.php`, `CreateInvoiceFromSalesOrderAction.php`
-- [x] Observers: `QuoteObserver.php`, `QuoteLineObserver.php`
-- [x] Resources: `EditSalesOrder.php`
+- [x] Services: `InvoiceService.php`, `QuoteService.php`, etc.
+- [x] Actions: `CreateCreditNoteAction.php`, `RejectQuoteAction.php`, etc.
 
 ### Manufacturing
 - [x] Services: `BOMService.php`
@@ -102,19 +98,24 @@ The following files include `throw new ...Exception(...)` statements. These exce
 - [x] Services: `ProjectInvoicingService.php`
 - [x] Actions: `SubmitTimesheetAction.php`, `RejectTimesheetAction.php`, `ApproveTimesheetAction.php`
 
+### Payment (New)
+- [ ] Actions: `CreateJournalEntryForLCChargeAction.php` (Default bank journal not configured)
+
 ---
 
-### Status: ✅ All Modules Complete
+### Status Summary
 
-All hardcoded exception messages and danger notifications across all modules have been localized. Translation files (`exceptions.php`) exist for `en`, `ar`, and `ckb` in each of the following packages:
+The audit has been expanded to include the `pos` and `payment` modules. Additionally, a deep scan of the `accounting` and `hr` modules revealed that while many items were already localized, specific complex actions were missed in previous passes.
 
-| Module | Section 1: Danger Notifications | Section 2: Hardcoded Exceptions | `exceptions.php` |
-|--------|---|---|---|
-| Accounting | ✅ 14 files | ✅ Services, Actions, Observers, Rules | ✅ |
-| HR | ✅ 7 files | ✅ Models, Casts | ✅ |
-| Inventory | ✅ 4 groups | ✅ Services, Actions, Listeners, Resources | ✅ |
-| Purchase | ✅ 2 files | ✅ Services, Actions, Observers, Resources | ✅ |
-| Sales | ✅ 3 files | ✅ Services, Actions, Observers, Resources | ✅ |
-| Manufacturing | ✅ 2 files | ✅ Services, Actions | ✅ created |
-| Foundation | ✅ 1 file | ✅ Services, Casts, Observers, Models | ✅ created |
-| Project Management | ✅ none | ✅ Services, Actions | ✅ created |
+| Module | Danger Notifications | Hardcoded Exceptions | `exceptions.php` | Status |
+|--------|---|---|---|---|
+| Accounting | ✅ 14 files | ⚠️ Partial Remainder | ✅ | Ongoing |
+| HR | ✅ 7 files | ⚠️ Partial Remainder | ✅ | Ongoing |
+| Inventory | ✅ 4 groups | ✅ | ✅ | Complete |
+| Purchase | ✅ 2 files | ✅ | ✅ | Complete |
+| Sales | ✅ 3 files | ✅ | ✅ | Complete |
+| Manufacturing | ✅ 2 files | ✅ | ✅ | Complete |
+| Foundation | ✅ 1 file | ✅ | ✅ | Complete |
+| Project Management | ✅ none | ✅ | ✅ | Complete |
+| POS | ❌ 1 missing | ✅ | ❌ | New Audit |
+| Payment | ✅ none | ❌ 1 missing | ❌ | New Audit |
