@@ -4,13 +4,11 @@ namespace Kezi\Accounting\Filament\Clusters\Accounting\Resources\Journals;
 
 use App\Filament\Clusters\Settings\SettingsCluster;
 use BackedEnum;
-use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -21,11 +19,10 @@ use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Journals\Pages\Create
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Journals\Pages\EditJournal;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Journals\Pages\ListJournals;
 use Kezi\Accounting\Filament\Clusters\Accounting\Resources\Journals\RelationManagers\JournalEntriesRelationManager;
-use Kezi\Accounting\Models\Account;
+use Kezi\Accounting\Filament\Forms\Components\AccountSelectField;
 use Kezi\Accounting\Models\Journal;
-use Kezi\Foundation\Models\Currency;
+use Kezi\Foundation\Filament\Forms\Components\CurrencySelectField;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
-use Xoshbin\TranslatableSelect\Components\TranslatableSelect;
 
 class JournalResource extends Resource
 {
@@ -85,38 +82,8 @@ class JournalResource extends Resource
                         ->label(__('accounting::journal.short_code'))
                         ->required()
                         ->maxLength(255),
-                    TranslatableSelect::forModel('currency_id', Currency::class, 'name')
-                        ->label(__('accounting::journal.currency'))
-                        ->required()
-                        ->searchable()
-                        ->preload()
-                        ->createOptionForm([
-                            TextInput::make('code')
-                                ->label(__('accounting::currency.code'))
-                                ->required()
-                                ->maxLength(255),
-                            TextInput::make('name')
-                                ->label(__('accounting::currency.name'))
-                                ->required()
-                                ->maxLength(255),
-                            TextInput::make('symbol')
-                                ->label(__('accounting::currency.symbol'))
-                                ->required()
-                                ->maxLength(5),
-                            TextInput::make('exchange_rate')
-                                ->label(__('accounting::currency.exchange_rate'))
-                                ->required()
-                                ->numeric()
-                                ->default(1),
-                            Toggle::make('is_active')
-                                ->label(__('accounting::currency.is_active'))
-                                ->required()
-                                ->default(true),
-                        ])
-                        ->createOptionModalHeading(__('accounting::common.modal_title_create_currency'))
-                        ->createOptionAction(function (Action $action) {
-                            return $action->modalWidth('lg');
-                        }),
+                    CurrencySelectField::make('currency_id')
+                        ->required(),
                 ])
                 ->columns(4)
                 ->columnSpanFull(),
@@ -124,14 +91,10 @@ class JournalResource extends Resource
             Section::make(__('accounting::journal.default_accounts'))
                 ->description(__('accounting::journal.default_accounts_description'))
                 ->schema([
-                    TranslatableSelect::forModel('default_debit_account_id', Account::class, 'name')
-                        ->searchable()
-                        ->preload()
+                    AccountSelectField::make('default_debit_account_id')
                         ->helperText(__('accounting::journal.default_debit_account_helper')),
 
-                    TranslatableSelect::forModel('default_credit_account_id', Account::class, 'name')
-                        ->searchable()
-                        ->preload()
+                    AccountSelectField::make('default_credit_account_id')
                         ->helperText(__('accounting::journal.default_credit_account_helper')),
                 ])
                 ->columns(2)
