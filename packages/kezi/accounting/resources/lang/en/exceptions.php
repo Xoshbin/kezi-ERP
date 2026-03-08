@@ -121,7 +121,7 @@ return [
         'entries_must_have_same_currency' => 'All entries must have the same currency.',
     ],
     'reconciliation' => [
-        'default_bank_or_outstanding_receipts_missing' => 'Default bank or outstanding receipts account is not configured for this company.',
+        'default_bank_or_outstanding_receipts_missing' => 'Default bank or outstanding receipts account is not configured for this company. Please <a href=":url" class="underline font-medium text-danger-600 dark:text-danger-400">configure it here</a>.',
     ],
     'payroll' => [
         'payroll_line_has_no_amount' => 'Payroll line :id has no amount.',
