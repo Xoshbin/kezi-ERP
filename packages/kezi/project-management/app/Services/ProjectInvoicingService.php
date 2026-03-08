@@ -48,7 +48,7 @@ class ProjectInvoicingService
     public function createCustomerInvoice(ProjectInvoice $projectInvoice): \Kezi\Sales\Models\Invoice
     {
         if ($projectInvoice->isInvoiced()) {
-            throw new \Exception(__('project-management::exceptions.invoice.already_invoiced'));
+            throw new \Exception(__('projectmanagement::exceptions.invoice.already_invoiced'));
         }
 
         $lines = [];
@@ -105,7 +105,7 @@ class ProjectInvoicingService
         }
 
         if (! $projectInvoice->project->customer_id) {
-            throw new \Exception(__('project-management::exceptions.invoice.missing_customer'));
+            throw new \Exception(__('projectmanagement::exceptions.invoice.missing_customer'));
         }
 
         $invoiceDto = new \Kezi\Sales\DataTransferObjects\Sales\CreateInvoiceDTO(

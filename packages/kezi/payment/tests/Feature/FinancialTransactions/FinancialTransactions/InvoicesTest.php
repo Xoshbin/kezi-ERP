@@ -109,7 +109,7 @@ test('a posted invoice cannot be updated', function () {
 
     // Assert: Expect the Action to throw the exception because the invoice is posted.
     expect(fn () => app(UpdateInvoiceAction::class)->execute($updateDto))
-        ->toThrow(\Kezi\Foundation\Exceptions\UpdateNotAllowedException::class, 'Cannot modify a non-draft invoice.');
+        ->toThrow(\Kezi\Foundation\Exceptions\UpdateNotAllowedException::class, __('sales::exceptions.invoice.modify_non_draft'));
 
     // Assert: Double-check that the customer_id was not changed in the database.
     $this->assertDatabaseHas('invoices', [
@@ -131,7 +131,7 @@ test('a posted invoice cannot be deleted', function () {
 
     // Assert: Expect the service's delete method to throw our specific exception.
     expect(fn () => (app(InvoiceService::class))->delete($invoice))
-        ->toThrow(\Kezi\Foundation\Exceptions\DeletionNotAllowedException::class, 'Cannot delete a posted invoice.');
+        ->toThrow(\Kezi\Foundation\Exceptions\DeletionNotAllowedException::class, __('sales::exceptions.invoice.delete_non_draft'));
 
     // Assert: As a final check, confirm the model still exists.
     $this->assertModelExists($invoice);

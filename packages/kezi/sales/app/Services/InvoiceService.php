@@ -36,7 +36,10 @@ class InvoiceService
     public function delete(Invoice $invoice): bool
     {
         // Guard Clause: Only allow deleting if the status is InvoiceStatus::Draft.
-        throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException(__('sales::exceptions.invoice.delete_non_draft'));
+        if ($invoice->status !== InvoiceStatus::Draft) {
+            throw new \Kezi\Foundation\Exceptions\DeletionNotAllowedException(__('sales::exceptions.invoice.delete_non_draft'));
+        }
+
         // If the guard passes, proceed with the deletion.
         $result = $invoice->delete();
 
