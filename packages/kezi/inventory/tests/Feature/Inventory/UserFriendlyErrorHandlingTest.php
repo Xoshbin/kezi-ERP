@@ -13,7 +13,10 @@ use Kezi\Purchase\Models\VendorBill;
 use Kezi\Purchase\Models\VendorBillLine;
 
 beforeEach(function () {
-    $this->company = Company::factory()->create();
+    /** @var \Tests\TestCase $this */
+    /** @var Company $company */
+    $company = Company::factory()->create();
+    $this->company = $company;
     $this->user = User::factory()->create();
 
     $this->product = Product::factory()->create([

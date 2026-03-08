@@ -16,39 +16,48 @@ use Tests\Traits\WithConfiguredCompany;
 uses(WithConfiguredCompany::class, RefreshDatabase::class);
 
 beforeEach(function () {
+    /** @var \Tests\TestCase $this */
     $this->setupWithConfiguredCompany();
 
     $this->user = User::factory()->create();
     $this->user->companies()->attach($this->company);
 
     // Setup Accounts
-    $this->rmAccount = Account::factory()->create([
+    /** @var Account $rmAccount */
+    $rmAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => '1010',
         'name' => 'Raw Materials',
         'type' => \Kezi\Accounting\Enums\Accounting\AccountType::CurrentAssets,
     ]);
+    $this->rmAccount = $rmAccount;
 
-    $this->fgAccount = Account::factory()->create([
+    /** @var Account $fgAccount */
+    $fgAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => '1020',
         'name' => 'Finished Goods',
         'type' => \Kezi\Accounting\Enums\Accounting\AccountType::CurrentAssets,
     ]);
+    $this->fgAccount = $fgAccount;
 
-    $this->wipAccount = Account::factory()->create([
+    /** @var Account $wipAccount */
+    $wipAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => '1030',
         'name' => 'WIP',
         'type' => \Kezi\Accounting\Enums\Accounting\AccountType::CurrentAssets,
     ]);
+    $this->wipAccount = $wipAccount;
 
-    $this->overheadAccount = Account::factory()->create([
+    /** @var Account $overheadAccount */
+    $overheadAccount = Account::factory()->create([
         'company_id' => $this->company->id,
         'code' => '5010',
         'name' => 'Manufacturing Overhead',
         'type' => \Kezi\Accounting\Enums\Accounting\AccountType::Expense,
     ]);
+    $this->overheadAccount = $overheadAccount;
 
     // Setup Journal
     $this->manufacturingJournal = Journal::factory()->create([

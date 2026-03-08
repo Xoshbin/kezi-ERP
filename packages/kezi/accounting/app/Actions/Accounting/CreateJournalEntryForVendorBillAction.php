@@ -185,7 +185,7 @@ class CreateJournalEntryForVendorBillAction implements VendorBillJournalEntryCre
                         $taxAccountId = $tax->tax_account_id ?? ($company->default_tax_receivable_id ?? $company->default_tax_account_id);
 
                         if (! $taxAccountId) {
-                            throw new RuntimeException(__('accounting::exceptions.common.tax_account_missing_for_tax', ['tax' => $tax->name]));
+                            throw new RuntimeException(__('accounting::exceptions.common.tax_account_missing_for_tax', ['tax' => $tax->getTranslation('name', app()->getLocale())]));
                         }
 
                         $lineDTOs[] = new CreateJournalEntryLineDTO(
