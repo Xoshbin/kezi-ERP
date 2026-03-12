@@ -12,3 +12,8 @@
         font-size: var(--text-xs);
     }
 }
+
+.fi-sidebar-nav > .environment-indicator {
+    flex-shrink: 0;
+    margin-inline: -0.5rem;
+}
